@@ -86,14 +86,16 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 
 	marshalOpts := protojson.MarshalOptions{EmitUnpopulated: true}
 
-	var msg []byte
-	msg, err = marshalOpts.Marshal(&schedulingAPI.DeviceEvent{
+	deviceEvent := &schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
 		DeviceId:         dutID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 		DeviceName:       device.ID,
-	})
+	}
+
+	var msg []byte
+	msg, err = marshalOpts.Marshal(deviceEvent)
 	if err != nil {
 		return fmt.Errorf("protojson.Marshal err: %w", err)
 	}
@@ -106,7 +108,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device mod
 	if err != nil {
 		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
 	}
-	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", msg)
+	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", deviceEvent)
 	return nil
 }
 
