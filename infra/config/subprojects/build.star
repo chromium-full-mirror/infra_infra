@@ -66,7 +66,6 @@ recipes.simulation_tester(
 luci.cq_tryjob_verifier(
     builder = "chromium:try/linux-utr-tester",
     cq_group = "build",
-    includable_only = True,
 )
 
 # External testers (defined in another projects) for recipe rolls.
