@@ -49,6 +49,8 @@ type GenerateTrv2RequestsCmd struct {
 
 	// Helper structures
 	schedulingUnitsMetadataMap map[string][]*api.SchedulingUnit
+	TrReqsStart                []*analytics.TaskData
+	TrReqsEnd                  []*analytics.TaskData
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -214,7 +216,8 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *
 		step.SetSummaryMarkdown(fmt.Sprintf("error found in %d out of %d requests", errCount, len(cmd.MiddledOutResp.TrReqs)))
 		err = fmt.Errorf("error found in %d out of %d", errCount, len(cmd.MiddledOutResp.TrReqs))
 	}
-
+	cmd.SealTrReqGenStart(ctx)
+	cmd.SealTrReqGenEnd(ctx)
 	return buildMap, err
 }
 func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, shardNum int) (*buildbucketpb.ScheduleBuildRequest, error) {
@@ -390,7 +393,17 @@ func (cmd *GenerateTrv2RequestsCmd) ObserveTrReqGenStart(ctx context.Context, re
 		AnalyticsName: cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetAnalyticsName(),
 		Status:        analytics.Start,
 	}
-	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.GetSuiteInfo(), cmd.BuildState)
+
+	data = analytics.CreateTrReqData(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.GetSuiteInfo(), cmd.BuildState)
+	cmd.TrReqsStart = append(cmd.TrReqsStart, data)
+}
+
+func (cmd *GenerateTrv2RequestsCmd) SealTrReqGenStart(ctx context.Context) {
+	analytics.SoftInsertStepWTrReqBulk(ctx, cmd.BQClient, cmd.TrReqsStart)
+}
+
+func (cmd *GenerateTrv2RequestsCmd) SealTrReqGenEnd(ctx context.Context) {
+	analytics.SoftInsertStepWTrReqBulk(ctx, cmd.BQClient, cmd.TrReqsEnd)
 }
 
 func (cmd *GenerateTrv2RequestsCmd) ObserveTrReqGenFail(ctx context.Context, req *data.TrRequest, key string, err string) {
@@ -402,8 +415,8 @@ func (cmd *GenerateTrv2RequestsCmd) ObserveTrReqGenFail(ctx context.Context, req
 		Status:        analytics.Fail,
 		Freeform:      err,
 	}
-
-	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.SuiteInfo, cmd.BuildState)
+	data = analytics.CreateTrReqData(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.SuiteInfo, cmd.BuildState)
+	cmd.TrReqsEnd = append(cmd.TrReqsEnd, data)
 }
 
 func (cmd *GenerateTrv2RequestsCmd) ObserveTrReqGenSuccess(ctx context.Context, req *data.TrRequest, key string) {
@@ -414,8 +427,8 @@ func (cmd *GenerateTrv2RequestsCmd) ObserveTrReqGenSuccess(ctx context.Context, 
 		Duration:      float32(time.Since(cmd.StartTrReqGenTime).Seconds()),
 		Status:        analytics.Success,
 	}
-
-	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.SuiteInfo, cmd.BuildState)
+	data = analytics.CreateTrReqData(ctx, cmd.BQClient, data, req, cmd.InternalTestPlan.SuiteInfo, cmd.BuildState)
+	cmd.TrReqsEnd = append(cmd.TrReqsEnd, data)
 }
 
 // -------- end analytics funcs ------------
