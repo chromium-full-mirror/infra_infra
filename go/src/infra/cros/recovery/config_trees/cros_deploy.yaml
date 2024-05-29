@@ -14858,6 +14858,8 @@ plans:
                         - Waiting time 150 seconds.
             - name: DUT has expected RO firmware version (ALWAYS_RUN)
               exec_name: cros_is_on_ro_firmware_stable_version
+              exec_args:
+                - only_check_numbers:true
               docs:
                 - Verify that RO FW on the DUT matches stable version.
               recoveries:
@@ -15120,6 +15122,8 @@ plans:
                         - Waiting time 150 seconds.
             - name: DUT has expected RW firmware version (ALWAYS_RUN)
               exec_name: cros_is_on_rw_firmware_stable_version
+              exec_args:
+                - only_check_numbers:true
               docs:
                 - Verify that RW FW on the DUT matches stable version.
               recoveries:
@@ -76992,6 +76996,8 @@ plans:
                             - Waiting time 150 seconds.
                 - name: RO Firmware version matches the recovery-version (Allow to fail)
                   exec_name: cros_is_on_ro_firmware_stable_version
+                  exec_args:
+                    - only_check_numbers:true
                   docs:
                     - Check if the version of RO firmware on DUT matches the stable firmware version.
                   conditions:

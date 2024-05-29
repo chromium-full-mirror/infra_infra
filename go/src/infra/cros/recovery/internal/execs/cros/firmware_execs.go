@@ -70,9 +70,14 @@ func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossy
 	if err != nil {
 		return errors.Annotate(err, "is on stable firmware version").Err()
 	}
-	// For multiple firmware model, firmware name may change based on hwid batch, e.g. "Google_Nivviks.15217.58.0" and "Google_Nivviks_Ufs.15217.58.0".
-	// So we only compare the version number in this case given stable_version can only store one value.
-	versionNumberOnly := firmware.IsMultiFirmwareHwid(info.GetChromeos().GetHwid())
+	actionArgs := info.GetActionArgs(ctx)
+	// Only check number part as we have special fw versions and matching can be different.
+	// Ex: Google_Model.XXXXX.XXX.0 vs Google_Model_Ufs.XXXXX.XXX.0
+	versionNumberOnly := actionArgs.AsBool(ctx, "only_check_numbers", false)
+	if !versionNumberOnly {
+		// For multiple firmware model, firmware name may change based on hwid data.
+		versionNumberOnly = firmware.IsMultiFirmwareHwid(info.GetChromeos().GetHwid())
+	}
 	if versionNumberOnly {
 		delimiter := "."
 		logger.Debugf("Multi-firmware hwid detected, will only compare version number for firmware match validation.")

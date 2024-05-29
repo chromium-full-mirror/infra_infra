@@ -88,6 +88,9 @@ func CrOSBrowserDUTRepairActions() map[string]*Action {
 				"has_stable_version_fw_image",
 			},
 			ExecName: "cros_is_on_ro_firmware_stable_version",
+			ExecExtraArgs: []string{
+				"only_check_numbers:true",
+			},
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
 			},

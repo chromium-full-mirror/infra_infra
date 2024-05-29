@@ -1198,6 +1198,9 @@ func crosRepairActions() map[string]*Action {
 				"Internal storage is responsive",
 			},
 			ExecName: "cros_is_on_ro_firmware_stable_version",
+			ExecExtraArgs: []string{
+				"only_check_numbers:true",
+			},
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
 				"Update FW from fw-image by servo and wait for boot",
