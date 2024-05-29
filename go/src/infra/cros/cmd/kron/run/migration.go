@@ -13,11 +13,13 @@ import (
 
 var (
 	allowedConfigs = map[string]bool{
-		"CrosAVAnalysisPerDay": true,
-		"CTPV2Demo":            true,
-		"CUJWeekly0":           true,
+		"AudioAdvancedKernelnext": true,
+		"Camera_Kernelnext":       true,
+		"CrosAVAnalysisPerDay":    true,
+		"CTPV2Demo":               true,
+		"MfpPrintScan_20_Hour":    true,
+		"PowerTastDaily":          true,
 		"wifi_endtoend_daily__wificell__wifi_endtoend__tauto__daily_hour_15": true,
-		"PreprodDaily": true,
 	}
 )
 
