@@ -41,7 +41,7 @@ func (fl *CommonFlags) Host() (string, error) {
 	case !fl.dev && fl.local:
 		return "localhost:8800", nil
 	case !fl.dev && !fl.local:
-		return "", errors.New("prod not deployed yet")
+		return "fleet-cost-prod-3in3phmqza-uc.a.run.app", nil
 	default:
 		return "", errors.New("-dev and -local are alternatives")
 	}
