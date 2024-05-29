@@ -58,4 +58,6 @@ message CostIndicator {
     double burnout_rate = 8;
     Location location = 9;
     string description = 10;
+    // quantity is true when the value is a quantity and false when it is a cost.
+    bool quantity = 11;
 }
