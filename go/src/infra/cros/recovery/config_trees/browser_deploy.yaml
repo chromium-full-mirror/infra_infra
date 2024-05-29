@@ -166,6 +166,7 @@ plans:
                     - update_ec_attempt_count:1
                     - update_ap_attempt_count:1
                     - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
                   docs:
                     - Download firmware image to DUT, and install via firmware updater.
                     - Update firmware from faft stable image with chromeos-firmwareupdate tool
