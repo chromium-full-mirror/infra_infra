@@ -252,10 +252,11 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 		}
 	}
 	if inputs.ClangVersion != "" {
-		// Set up clang (and other LLVM tools, like llvm-symbolizer) in PATH. Then, set CC to clang to actually use it.
+		// Set up clang (and other LLVM tools, like llvm-symbolizer) in PATH. Then, set CC to clang and CXX to clang++ to actually use it.
 		clangBin := filepath.Join(toolsRoot(ctx), "clang", "bin")
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, clangBin))
 		env.Set("CC", "clang")
+		env.Set("CXX", "clang++")
 	}
 	if inputs.TestTimeoutScale != 0 {
 		// Set the test timeout scale, which is understood by `go tool dist`.
