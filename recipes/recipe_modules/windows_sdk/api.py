@@ -82,16 +82,16 @@ class WindowsSDKApi(recipe_api.RecipeApi):
     # All these environment variables need to be added to the environment
     # for the compiler and linker to work.
     filename = 'SetEnv.%s.json' % {32: 'x86', 64: 'x64'}[self.m.platform.bits]
-    step_result = self.m.json.read(
+    step_result = self.m.file.read_json(
         'read %s' % filename,
         sdk_dir.joinpath('win_sdk', 'bin', filename),
-        step_test_data=lambda: self.m.json.test_api.output({
+        test_data={
             'env': {
                 'PATH': [['..', '..', 'win_sdk', 'bin', 'x64']],
                 'VSINSTALLDIR': [['..', '..\\']],
             },
-        }))
-    data = step_result.json.output.get('env')
+        })
+    data = step_result.get('env')
     for key in data:
       # recipes' Path() does not like .., ., \, or /, so this is cumbersome.
       # What we want to do is:
