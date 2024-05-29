@@ -27,6 +27,9 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+// maxUFSImportJobs sets the maximum concurrent jobs for this cron.
+const maxUFSImportJobs = 100
+
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
@@ -83,17 +86,21 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 	}
 
 	// loop through all active and inactive MachineLSEs and upsert as Devices
+	waitQueue := make(chan struct{}, maxUFSImportJobs)
 	wg := sync.WaitGroup{}
 	for _, d := range inactiveDUTs {
+		waitQueue <- struct{}{}
 		wg.Add(1)
-		go upsertDeviceData(ctx, &wg, serviceClients, d, false)
+		go upsertDeviceData(ctx, waitQueue, &wg, serviceClients, d, false)
 	}
 
 	for _, dutName := range activeDUTs {
+		waitQueue <- struct{}{}
 		wg.Add(1)
-		go upsertDeviceData(ctx, &wg, serviceClients, dutName, true)
+		go upsertDeviceData(ctx, waitQueue, &wg, serviceClients, dutName, true)
 	}
 	wg.Wait()
+	close(waitQueue)
 
 	return nil
 }
@@ -188,12 +195,13 @@ func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 }
 
 // upsertDeviceData upserts to db and publishes a device event with UFS device data
-func upsertDeviceData(ctx context.Context, wg *sync.WaitGroup, serviceClients frontend.ServiceClients, name string, active bool) {
+func upsertDeviceData(ctx context.Context, queue chan struct{}, wg *sync.WaitGroup, serviceClients frontend.ServiceClients, name string, active bool) {
 	// catch panic and continue
 	defer func() {
 		if err := recover(); err != nil {
 			logging.Debugf(ctx, "panic occurred: %s", err)
 		}
+		<-queue
 		wg.Done()
 	}()
 
