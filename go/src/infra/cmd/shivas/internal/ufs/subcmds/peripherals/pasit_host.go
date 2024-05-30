@@ -128,8 +128,8 @@ func (c *managePasitHostCmd) run(a subcommands.Application, args []string, env s
 		fmt.Println("New PASIT host: ", c.hostObj)
 	}
 
-	peripherals := lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
-	peripherals.PasitHost = c.hostObj
+	// peripherals := lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
+	// peripherals.PasitHost = c.hostObj
 
 	_, err = client.UpdateMachineLSE(ctx, &rpc.UpdateMachineLSERequest{MachineLSE: lse})
 	return err

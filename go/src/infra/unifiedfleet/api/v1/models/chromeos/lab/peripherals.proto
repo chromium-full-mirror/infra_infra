@@ -14,7 +14,6 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_host.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
@@ -59,7 +58,8 @@ message Peripherals {
   // Indicate if the DUT uses Dolos as a battery replacement
   Dolos dolos = 20;
   // The host and topology used in peripheral interop test beds.
-  chromiumos.test.lab.api.PasitHost pasit_host = 23;
+  reserved "pasit_host";
+  reserved 23;
 }
 
 

@@ -217,7 +217,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				SimInfos:       getSimInfo(d.GetSiminfo()),
 				ModemInfo:      getModemInfo(d.GetModeminfo()),
 				Cellular:       getCellular(p),
-				PasitHost:      p.GetPasitHost(),
+				// PasitHost:      p.GetPasitHost(),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
