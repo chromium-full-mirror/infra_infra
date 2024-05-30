@@ -21,11 +21,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
 )
-
-const DeviceEventsPubSubTopic string = "device-events-v1"
 
 // GetDevice gets a Device from the database based on a deviceID.
 func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
@@ -68,16 +67,8 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
 func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device model.Device) error {
 	// Send message to PubSub Device events stream
-	topic := psClient.Topic(DeviceEventsPubSubTopic)
+	topic := psClient.Topic(external.DeviceEventsPubSubTopic)
 	defer topic.Stop()
-
-	ok, err := topic.Exists(ctx)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return fmt.Errorf("PublishDeviceEvent: topic %s not found", DeviceEventsPubSubTopic)
-	}
 
 	dutID, err := device.DUTID()
 	if err != nil {

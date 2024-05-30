@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
 )
@@ -572,7 +573,7 @@ func TestUpdateDevice(t *testing.T) {
 		}
 	}()
 
-	_, err = psClient.CreateTopic(ctx, DeviceEventsPubSubTopic)
+	_, err = psClient.CreateTopic(ctx, external.DeviceEventsPubSubTopic)
 	if err != nil {
 		t.Fatalf("failed to create fake pubsub topic")
 	}
