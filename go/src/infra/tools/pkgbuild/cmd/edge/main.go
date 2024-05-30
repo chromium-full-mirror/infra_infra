@@ -46,6 +46,7 @@ func main() {
 		var input Input
 		build.Main(&input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
 			proto.Merge(app.Input, &input) // Merge with default values
+			app.BuildID = state.Build().Id
 			return Main(ctx, app, userArgs)
 		})
 	} else {

@@ -37,12 +37,16 @@ func toCIPDPackage(pkg actions.Package) *cipdPackage {
 }
 
 func (pkg *cipdPackage) check(ctx context.Context, cipdService string) error {
+	return pkg.checkVersion(ctx, cipdService, pkg.derivationTag())
+}
+
+func (pkg *cipdPackage) checkVersion(ctx context.Context, cipdService, version string) error {
 	cipd := pkg.Action.Metadata.GetCipd()
 
 	var b bytes.Buffer
 	cmd := cipdCommand("describe", cipd.Name,
 		"-service-url", cipdService,
-		"-version", pkg.derivationTag(),
+		"-version", version,
 	)
 	cmd.Stderr = &b
 

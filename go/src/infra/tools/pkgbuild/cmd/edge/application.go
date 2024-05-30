@@ -41,6 +41,10 @@ type Application struct {
 	// luciexe is enabled.
 	*Input
 
+	// Optional buildbucket ID from build state.
+	// This may be attached to the uploaded package indicating its source.
+	BuildID int64
+
 	// Logging level for pkgbuild
 	LoggingLevel logging.Level
 
@@ -190,10 +194,19 @@ func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tm
 	step, ctx := build.StartStep(ctx, pkg.Action.Metadata.Cipd.String())
 	defer func() { step.End(err) }()
 
+	var tags []string
+	versionTag := fmt.Sprintf("version:%s", pkg.Action.Metadata.Cipd.Version)
+	if cipdPkg.checkVersion(ctx, a.CipdService, versionTag) != nil {
+		// Only append version tag if it haven't been attached to another package.
+		// We may have packages with different derivation ID representing same
+		// version. It's not ideal but it will persist until we move to a different
+		// version schema.
+		tags = append(tags, versionTag)
+	}
+
 	// Package is available in cipd
 	if err = cipdPkg.check(ctx, a.CipdService); err == nil {
-		// TODO(fancl): add tags and refs
-		err = cipdPkg.setTags(ctx, a.CipdService, nil)
+		err = cipdPkg.setTags(ctx, a.CipdService, tags)
 		return
 	} else if !errors.Is(err, errPackgeNotExist) {
 		return
@@ -206,8 +219,11 @@ func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tm
 	}
 	defer cipdPkg.Handler.DecRef()
 
-	// TODO(fancl): add tags and refs
-	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, nil)
+	// Only attach buildbucket id if we actually build it.
+	if a.BuildID != 0 {
+		tags = append(tags, fmt.Sprintf("build_id:%d", a.BuildID))
+	}
+	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, tags)
 	if err != nil {
 		return
 	}
@@ -272,7 +288,8 @@ func (b *PackageBuilder) Load(ctx context.Context, name string) error {
 
 // BuildAll builds loaded packages.
 // - If skipUploaded is true and a package we loaded is available in cipd, we
-// don't need to rebuild or make it available locally.
+// don't need to rebuild or make it available locally. Note this also mean if
+// any extra tags supplied, they won't be attached to the package.
 // - If a package we added depends on a package available in cipd, we can
 // download the prebuilt package using PreExecuteHook.
 // - Otherwise, we will build the package locally.
