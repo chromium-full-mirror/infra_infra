@@ -619,8 +619,28 @@ func TestUpdateDevice(t *testing.T) {
 			}
 
 			timeNow := time.Now()
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"is_active",
+				"created_time",
+				"last_updated_time",
+				"last_notification_time"}).
+				AddRow(
+					"test-device-1",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					false,
+					timeNow,
+					timeNow,
+					timeNow)
 
-			mock.ExpectExec(regexp.QuoteMeta(`
+			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
 					"Devices"
 				SET
@@ -631,7 +651,17 @@ func TestUpdateDevice(t *testing.T) {
 					last_updated_time=COALESCE($6, last_updated_time),
 					is_active=COALESCE($7, is_active)
 				WHERE
-					id=$1;`)).
+					id=$1;
+				RETURNING
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					is_active,
+					created_time,
+					last_updated_time,
+					last_notification_time`)).
 				WithArgs(
 					"test-device-1",
 					"2.2.2.2:2",
@@ -640,9 +670,9 @@ func TestUpdateDevice(t *testing.T) {
 					`{"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
 					false).
-				WillReturnResult(sqlmock.NewResult(1, 1))
+				WillReturnRows(rows)
 
-			err = UpdateDevice(ctx, tx, Device{
+			updatedDevice, err := UpdateDevice(ctx, tx, Device{
 				ID:            "test-device-1",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
@@ -652,10 +682,25 @@ func TestUpdateDevice(t *testing.T) {
 						Values: []string{"test-value-1"},
 					},
 				},
-				LastUpdatedTime: timeNow,
 				IsActive:        false,
+				LastUpdatedTime: timeNow,
 			})
 			So(err, ShouldBeNil)
+			So(updatedDevice, ShouldEqual, Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				IsActive:             false,
+				CreatedTime:          timeNow,
+				LastUpdatedTime:      timeNow,
+				LastNotificationTime: timeNow,
+			})
 		})
 	})
 }
@@ -730,7 +775,17 @@ func TestUpsertDevice(t *testing.T) {
 func TestDUTID(t *testing.T) {
 	t.Parallel()
 	Convey("DUTID should return dut_id label", t, func() {
-		d := Device{ID: "foo", SchedulableLabels: SchedulableLabels{"dut_id": LabelValues{Values: []string{"bar"}}, "hostname": LabelValues{Values: []string{"baz", "lol"}}}}
+		d := Device{
+			ID: "foo",
+			SchedulableLabels: SchedulableLabels{
+				"dut_id": LabelValues{
+					Values: []string{"bar"},
+				},
+				"hostname": LabelValues{
+					Values: []string{"baz", "lol"},
+				},
+			},
+		}
 		dutID, err := d.DUTID()
 		So(err, ShouldBeNil)
 		So(dutID, ShouldEqual, "bar")

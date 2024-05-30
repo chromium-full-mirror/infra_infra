@@ -25,9 +25,10 @@ type Device struct {
 	DeviceState       string
 	SchedulableLabels SchedulableLabels `json:"SchedulableLabels"`
 
-	CreatedTime     time.Time
-	LastUpdatedTime time.Time
-	IsActive        bool
+	IsActive             bool
+	CreatedTime          time.Time
+	LastUpdatedTime      time.Time
+	LastNotificationTime time.Time
 }
 
 // DeviceIDType indicates the type of ID used to identify a Device in DB.
@@ -247,42 +248,77 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 // UpdateDevice uses COALESCE to only update fields with provided values. If
 // there is no value provided, then it will use the current value of the device
 // field in the db.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, updatedDevice Device) error {
-	result, err := tx.ExecContext(ctx, `
-		UPDATE
-			"Devices"
-		SET
-			device_address=COALESCE(NULLIF($2, ''), device_address),
-			device_type=COALESCE(NULLIF($3, ''), device_type),
-			device_state=COALESCE(NULLIF($4, ''), device_state),
-			schedulable_labels=COALESCE($5, schedulable_labels),
-			last_updated_time=COALESCE($6, last_updated_time),
-			is_active=COALESCE($7, is_active)
-		WHERE
-			id=$1;`,
-		updatedDevice.ID,
-		updatedDevice.DeviceAddress,
-		updatedDevice.DeviceType,
-		updatedDevice.DeviceState,
-		updatedDevice.SchedulableLabels,
-		updatedDevice.LastUpdatedTime,
-		updatedDevice.IsActive,
+func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
+	var (
+		updatedDevice        Device
+		createdTime          sql.NullTime
+		lastUpdatedTime      sql.NullTime
+		lastNotificationTime sql.NullTime
+		query                = `
+			UPDATE
+				"Devices"
+			SET
+				device_address=COALESCE(NULLIF($2, ''), device_address),
+				device_type=COALESCE(NULLIF($3, ''), device_type),
+				device_state=COALESCE(NULLIF($4, ''), device_state),
+				schedulable_labels=COALESCE($5, schedulable_labels),
+				last_updated_time=COALESCE($6, last_updated_time),
+				is_active=COALESCE($7, is_active)
+			WHERE
+				id=$1;
+			RETURNING
+				id,
+				device_address,
+				device_type,
+				device_state,
+				schedulable_labels,
+				is_active,
+				created_time,
+				last_updated_time,
+				last_notification_time`
 	)
+
+	err := tx.QueryRowContext(ctx, query,
+		device.ID,
+		device.DeviceAddress,
+		device.DeviceType,
+		device.DeviceState,
+		device.SchedulableLabels,
+		device.LastUpdatedTime,
+		device.IsActive,
+	).Scan(
+		&updatedDevice.ID,
+		&updatedDevice.DeviceAddress,
+		&updatedDevice.DeviceType,
+		&updatedDevice.DeviceState,
+		&updatedDevice.SchedulableLabels,
+		&updatedDevice.IsActive,
+		&createdTime,
+		&lastUpdatedTime,
+		&lastNotificationTime,
+	)
+
+	// Handle possible null times
+	if createdTime.Valid {
+		updatedDevice.CreatedTime = createdTime.Time
+	}
+	if lastUpdatedTime.Valid {
+		updatedDevice.LastUpdatedTime = lastUpdatedTime.Time
+	}
+	if lastNotificationTime.Valid {
+		updatedDevice.LastNotificationTime = lastNotificationTime.Time
+	}
+
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", updatedDevice.ID, err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logging.Errorf(ctx, "UpdateDevice: unable to rollback: %v", rollbackErr)
 		}
-		return err
+		return Device{}, err
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		logging.Errorf(ctx, "UpdateDevice: error getting rows affected: %s", err)
-	}
-
-	logging.Debugf(ctx, "UpdateDevice: Device %s updated successfully (%d row affected)", updatedDevice.ID, rowsAffected)
-	return nil
+	logging.Debugf(ctx, "UpdateDevice: Device %s updated successfully", updatedDevice.ID)
+	return updatedDevice, nil
 }
 
 // UpsertDevice upserts a Device in a transaction.

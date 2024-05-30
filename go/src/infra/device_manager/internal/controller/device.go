@@ -57,12 +57,12 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 // UpdateDevice updates a Device in a transaction.
 func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, device model.Device) error {
 	// TODO (b/328662436): Collect metrics
-	err := model.UpdateDevice(ctx, tx, device)
+	updatedDevice, err := model.UpdateDevice(ctx, tx, device)
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", device.ID, err)
+		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", updatedDevice.ID, err)
 		return err
 	}
-	return PublishDeviceEvent(ctx, psClient, device)
+	return PublishDeviceEvent(ctx, psClient, updatedDevice)
 }
 
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
