@@ -421,6 +421,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("test_args", "bug_id=12345 qual_run_id=1712172839652"),
 						pbutil.StringPair("test_harness", "Tast"),
 						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
+						pbutil.StringPair("bot_id", "cloudbots-prod-1715342009263-7kz6"),
 						pbutil.StringPair("ufs_zone", "ZONE_SFO36_OS"),
 						pbutil.StringPair("wifi_chip", "marvell"),
 						pbutil.StringPair("wifi_router_models", "gale"),

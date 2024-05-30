@@ -69,7 +69,8 @@
                     "suite_task_id":"59ef5e9532bbd611",
                     "task_name":"bb-8818737803155059937-chromeos/general/Full",
                     "pool":"ChromeOSSkylab",
-                    "label_pool":"DUT_POOL_QUOTA"
+                    "label_pool":"DUT_POOL_QUOTA",
+                    "bot_id": "cloudbots-prod-1715342009263-7kz6"
                 },
                 "buildbucket_info":{
                     "id":8818737803155059937,

@@ -453,6 +453,7 @@ func configSwarmingTags(tags []*pb.StringPair, swarmingInfo *artifactpb.Swarming
 	newTags = AppendTags(newTags, "job_name", swarmingInfo.GetTaskName())
 	newTags = AppendTags(newTags, "pool", swarmingInfo.GetPool())
 	newTags = AppendTags(newTags, "label_pool", swarmingInfo.GetLabelPool())
+	newTags = AppendTags(newTags, "bot_id", swarmingInfo.GetBotId())
 	return newTags
 }
 
