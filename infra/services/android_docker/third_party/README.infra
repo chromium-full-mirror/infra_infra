@@ -1,6 +1,6 @@
 Name: devil
 URL: https://github.com/catapult-project/catapult
-Revision: 0d5d91466f04a2e8e3a036eaca2a0dd9ace0928b
+Revision: c2c81271e18e8cd025c6d3042e008cac520cd3b4
 License: BSD
 
 Description:
@@ -9,5 +9,5 @@ devices. It currently supports SDK level 16 and above.
 
 Local Modifications:
 Copied devil/ and removed tests. Populated via:
- - cp -r $CATAPULT_CHECKOUT/devil/devil/ devil/
+ - cp -r $CATAPULT_CHECKOUT/devil/devil/* devil/
  - find . -name "*test.py" -exec rm {} \;
