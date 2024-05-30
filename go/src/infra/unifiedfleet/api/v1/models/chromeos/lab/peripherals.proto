@@ -14,6 +14,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_host.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
@@ -60,6 +61,7 @@ message Peripherals {
   // The host and topology used in peripheral interop test beds.
   reserved "pasit_host";
   reserved 23;
+  chromiumos.test.lab.api.PasitHost pasit_host2 = 24;
 }
 
 

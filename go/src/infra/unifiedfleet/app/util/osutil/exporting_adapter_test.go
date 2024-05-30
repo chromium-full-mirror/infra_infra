@@ -165,6 +165,31 @@ var lse = ufspb.MachineLSE{
 								},
 								SmartUsbhub:         true,
 								StarfishSlotMapping: "test-map-key:test-value",
+								PasitHost2: &labapi.PasitHost{
+									Devices: []*labapi.PasitHost_Device{
+										{
+											Type: labapi.PasitHost_Device_CAMERA,
+										},
+										{
+											Type: labapi.PasitHost_Device_UNKNOWN,
+										},
+										{
+											Type: labapi.PasitHost_Device_DUT,
+										},
+										{
+											Type: labapi.PasitHost_Device_MONITOR,
+										},
+										{
+											Type: labapi.PasitHost_Device_MONITOR,
+										},
+										{
+											Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+										},
+										{
+											Type: labapi.PasitHost_Device_DOCKING_STATION,
+										},
+									},
+								},
 							},
 							Licenses: []*chromeosLab.License{
 								{
@@ -625,6 +650,10 @@ common {
 			hmr_state: UNKNOWN
 			audio_latency_toolkit_state: WORKING
 			stylus: true
+			pasit_components: "CAMERA-1"
+			pasit_components: "MONITOR-1"
+			pasit_components: "MONITOR-2"
+			pasit_components: "DOCKING_STATION-1"
 		}
 		phase: PHASE_DVT
 		platform: "coral"

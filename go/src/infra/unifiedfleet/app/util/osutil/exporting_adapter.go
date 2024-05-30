@@ -225,20 +225,20 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 	p.SmartUsbhub = &(d.SmartUsbhub)
 	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
 
-	// if h := d.GetPasitHost(); h != nil {
-	// 	count := make(map[labapi.PasitHost_Device_Type]int)
-	// 	p.PasitComponents = []string{}
-	// 	for _, dev := range h.GetDevices() {
-	// 		dType := dev.GetType()
-	// 		// Skip not allowlisted components.
-	// 		if !pasitComponentsMap[dType] {
-	// 			continue
-	// 		}
+	if h := d.GetPasitHost2(); h != nil {
+		count := make(map[labapi.PasitHost_Device_Type]int)
+		p.PasitComponents = []string{}
+		for _, dev := range h.GetDevices() {
+			dType := dev.GetType()
+			// Skip not allowlisted components.
+			if !pasitComponentsMap[dType] {
+				continue
+			}
 
-	// 		count[dType]++
-	// 		p.PasitComponents = append(p.PasitComponents, fmt.Sprintf("%v-%d", dType, count[dType]))
-	// 	}
-	// }
+			count[dType]++
+			p.PasitComponents = append(p.PasitComponents, fmt.Sprintf("%v-%d", dType, count[dType]))
+		}
+	}
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {

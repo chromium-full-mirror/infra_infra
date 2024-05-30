@@ -24,7 +24,6 @@ import (
 
 func TestGetChromeOsDutTopology_single(t *testing.T) {
 	t.Parallel()
-	t.Skip()
 	ctx, cf := context.WithCancel(context.Background())
 	defer cf()
 	s := &fakeServer{
@@ -93,92 +92,92 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 													},
 												},
 											},
-											// PasitHost: &labapi.PasitHost{
-											// 	Hostname: "pasit-host1",
-											// 	Devices: []*labapi.PasitHost_Device{
-											// 		{
-											// 			Id:   "1912901",
-											// 			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
-											// 		},
-											// 		{
-											// 			Id:   "2001901",
-											// 			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
-											// 		},
-											// 		{
-											// 			Id:   "2007902",
-											// 			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
-											// 		},
-											// 		{
-											// 			Id:   "J45SW01",
-											// 			Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
-											// 		},
-											// 		{
-											// 			Id:    "dock_1",
-											// 			Model: "DOCK_XXYY",
-											// 			Type:  labapi.PasitHost_Device_DOCKING_STATION,
-											// 			PowerSupply: &labapi.PasitHost_Device_PowerSupply{
-											// 				Voltage: 1.0,
-											// 				Current: 2.0,
-											// 				Power:   3.0,
-											// 			},
-											// 		},
-											// 		{
-											// 			Id:    "monitor_1",
-											// 			Model: "MONITOR_XXYY",
-											// 			Type:  labapi.PasitHost_Device_MONITOR,
-											// 		},
-											// 		{
-											// 			Id:   "camera_1",
-											// 			Type: labapi.PasitHost_Device_CAMERA,
-											// 		},
-											// 		{
-											// 			Id:   "network_1",
-											// 			Type: labapi.PasitHost_Device_NETWORK,
-											// 		},
-											// 		{
-											// 			Id:   "chromeosX-rackX-rowY-hostN",
-											// 			Type: labapi.PasitHost_Device_DUT,
-											// 		},
-											// 	},
-											// 	Connections: []*labapi.PasitHost_Connection{
-											// 		{
-											// 			Type:     "USBC",
-											// 			ParentId: "chromeosX-rackX-rowY-hostN",
-											// 			ChildId:  "1912901",
-											// 		},
-											// 		{
-											// 			Type:     "USBC",
-											// 			ParentId: "1912901",
-											// 			ChildId:  "dock_1",
-											// 			Speed:    100000,
-											// 		},
-											// 		{
-											// 			Type:     "HDMI",
-											// 			ParentId: "2007902",
-											// 			ChildId:  "monitor_1",
-											// 		},
-											// 		{
-											// 			Type:     "ETHERNET",
-											// 			ParentId: "J45SW01",
-											// 			ChildId:  "network_1",
-											// 		},
-											// 		{
-											// 			Type:     "USBA",
-											// 			ParentId: "dock_1",
-											// 			ChildId:  "2001901",
-											// 		},
-											// 		{
-											// 			Type:     "HDMI",
-											// 			ParentId: "dock_1",
-											// 			ChildId:  "2007902",
-											// 		},
-											// 		{
-											// 			Type:     "ETHERNET",
-											// 			ParentId: "dock_1",
-											// 			ChildId:  "J45SW01",
-											// 		},
-											// 	},
-											// },
+											PasitHost2: &labapi.PasitHost{
+												Hostname: "pasit-host1",
+												Devices: []*labapi.PasitHost_Device{
+													{
+														Id:   "1912901",
+														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+													},
+													{
+														Id:   "2001901",
+														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+													},
+													{
+														Id:   "2007902",
+														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+													},
+													{
+														Id:   "J45SW01",
+														Type: labapi.PasitHost_Device_SWITCH_FIXTURE,
+													},
+													{
+														Id:    "dock_1",
+														Model: "DOCK_XXYY",
+														Type:  labapi.PasitHost_Device_DOCKING_STATION,
+														PowerSupply: &labapi.PasitHost_Device_PowerSupply{
+															Voltage: 1.0,
+															Current: 2.0,
+															Power:   3.0,
+														},
+													},
+													{
+														Id:    "monitor_1",
+														Model: "MONITOR_XXYY",
+														Type:  labapi.PasitHost_Device_MONITOR,
+													},
+													{
+														Id:   "camera_1",
+														Type: labapi.PasitHost_Device_CAMERA,
+													},
+													{
+														Id:   "network_1",
+														Type: labapi.PasitHost_Device_NETWORK,
+													},
+													{
+														Id:   "chromeosX-rackX-rowY-hostN",
+														Type: labapi.PasitHost_Device_DUT,
+													},
+												},
+												Connections: []*labapi.PasitHost_Connection{
+													{
+														Type:     "USBC",
+														ParentId: "chromeosX-rackX-rowY-hostN",
+														ChildId:  "1912901",
+													},
+													{
+														Type:     "USBC",
+														ParentId: "1912901",
+														ChildId:  "dock_1",
+														Speed:    100000,
+													},
+													{
+														Type:     "HDMI",
+														ParentId: "2007902",
+														ChildId:  "monitor_1",
+													},
+													{
+														Type:     "ETHERNET",
+														ParentId: "J45SW01",
+														ChildId:  "network_1",
+													},
+													{
+														Type:     "USBA",
+														ParentId: "dock_1",
+														ChildId:  "2001901",
+													},
+													{
+														Type:     "HDMI",
+														ParentId: "dock_1",
+														ChildId:  "2007902",
+													},
+													{
+														Type:     "ETHERNET",
+														ParentId: "dock_1",
+														ChildId:  "J45SW01",
+													},
+												},
+											},
 										},
 										Modeminfo: &lab.ModemInfo{
 											Type:           lab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
