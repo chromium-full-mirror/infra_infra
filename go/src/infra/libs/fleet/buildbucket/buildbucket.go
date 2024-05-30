@@ -24,12 +24,21 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-// buildBucketHost is the URL host for the BuildBucket API.
 const (
-	buildBucketHost    = "cr-buildbucket.appspot.com"
+	// DefaultSwarmingPriority is the default priority for a Swarming task.
+	DefaultSwarmingPriority = int64(140)
+	// MinSwarmingPriority is the lowest-allowed priority for a Swarming task.
+	MinSwarmingPriority = int64(50)
+	// MaxSwarmingPriority is the highest-allowed priority for a Swarming task.
+	MaxSwarmingPriority = int64(255)
+	// buildBucketHost is the URL host for the BuildBucket API.
+	buildBucketHost = "cr-buildbucket.appspot.com"
+	// defaultImageBucket is the default bucket for getting image archives
 	defaultImageBucket = "chromeos-image-archive"
+	// defaultTestTypeTag is the default type of build bucket test
 	defaultTestTypeTag = "test"
-	defaultCTPTimeout  = 1200
+	// defaultCTPTimeout is the default timeout for CTP builder build.
+	defaultCTPTimeout = 1200
 )
 
 var (
@@ -133,6 +142,7 @@ type Run struct {
 	Tags      map[string]string
 	IsProd    bool
 	BBClient  BuildsClient
+	Priority  int64
 
 	UploadToCpcon bool
 }
@@ -194,6 +204,12 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 	if c.Image == "" {
 		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
 	}
+	if c.TimeoutMins == 0 {
+		c.TimeoutMins = defaultCTPTimeout
+	}
+	if c.Priority == 0 {
+		c.Priority = DefaultSwarmingPriority
+	}
 	res = &builder.CTPBuilder{
 		Image:               c.Image,
 		Board:               c.Board,
@@ -206,10 +222,11 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		ImageBucket:         defaultImageBucket,
 		AuthOptions:         &luciauth.Options{},
 		TestRunnerBuildTags: tags,
-		TimeoutMins:         defaultCTPTimeout,
+		TimeoutMins:         c.TimeoutMins,
 		CTPBuildTags:        tags,
 		TRV2:                c.TRV2,
 		CpconPublish:        c.UploadToCpcon,
+		Priority:            c.Priority,
 	}
 	return res, nil
 }
@@ -238,6 +255,9 @@ func (c *Run) validateDimensions(ctx context.Context) error {
 	}
 	if c.Image != "" && c.Milestone != "" {
 		errs = append(errs, fmt.Errorf("cannot specify both image and release branch"))
+	}
+	if c.Priority != 0 && (c.Priority < MinSwarmingPriority || c.Priority > MaxSwarmingPriority) {
+		errs = append(errs, fmt.Errorf("priority flag should be in [%d, %d]", MinSwarmingPriority, MaxSwarmingPriority))
 	}
 
 	if errs.First() != nil {
