@@ -8,15 +8,11 @@ package xmlrpc
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"math"
-	"net"
 	"net/http"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -24,9 +20,6 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
-
-	"infra/cros/internal/env"
-	"infra/cros/recovery/internal/log"
 )
 
 const (
@@ -515,45 +508,8 @@ func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...interface{}) error {
 
 	// Get RPC timeout duration from context or use default.
 	timeout := getTimeout(ctx, cl)
-	var serverURL string
-	var httpClient *http.Client
-	if env.IsCloudBot() {
-		var tlsConn net.Conn
-		serverURL = fmt.Sprintf("https://%s", r.cloudbotsHostFQDN())
-		tf, err := r.cloudbotsTLSConfig()
-		if err != nil {
-			return errors.Annotate(err, "error getting tls cloudbot tls config").Err()
-		}
-		pa := env.GetCloudbotsProxyAddress()
-		dialer := &tls.Dialer{
-			NetDialer: &net.Dialer{Timeout: time.Second * 3},
-			Config:    tf,
-		}
-		dtc := func(ctx context.Context, network, addr string) (net.Conn, error) {
-			// tls dial to cloudbot proxy
-			var err error
-			tlsConn, err = dialer.DialContext(ctx, network, pa)
-			return tlsConn, err
-		}
-		defer func() {
-			if tlsConn != nil {
-				if err := tlsConn.Close(); err != nil {
-					log.Debugf(ctx, "cloudbots: error %s while closing tlsConn", err)
-				}
-			}
-		}()
-
-		httpClient = &http.Client{
-			Timeout: timeout,
-			Transport: &http.Transport{
-				DialTLSContext: dtc,
-			},
-		}
-	} else {
-		serverURL = fmt.Sprintf("http://%s:%d", r.host, r.port)
-		httpClient = &http.Client{Timeout: timeout}
-
-	}
+	serverURL := fmt.Sprintf("http://%s:%d", r.host, r.port)
+	httpClient := &http.Client{Timeout: timeout}
 	resp, err := httpClient.Post(serverURL, "text/xml", bytes.NewBuffer(body))
 	if err != nil {
 		return errors.Annotate(err, "timeout = %v", timeout).Err()
@@ -580,30 +536,4 @@ func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...interface{}) error {
 		}
 	}
 	return nil
-}
-
-// cloudbotsTLSConfig parses cloudbots env var and returns tls config.
-func (r *XMLRpc) cloudbotsTLSConfig() (*tls.Config, error) {
-	var certPath string
-	var ok bool
-	certPath = env.GetCloudbotsCACertificate()
-	pem, err := os.ReadFile(certPath)
-	if err != nil {
-		return nil, err
-	}
-	rootCAs := x509.NewCertPool()
-	if ok = rootCAs.AppendCertsFromPEM(pem); !ok {
-		return nil, fmt.Errorf("error appending root certificate %q", certPath)
-	}
-	tlsConfig := &tls.Config{
-		RootCAs:    rootCAs,
-		ServerName: r.cloudbotsHostFQDN(),
-	}
-	return tlsConfig, nil
-}
-
-// cloudbotsHostFQDN returns the fully qualified domain name of host
-func (r *XMLRpc) cloudbotsHostFQDN() string {
-	labDomain := env.GetCloudbotsLabDomain()
-	return fmt.Sprintf("%s.%s", r.host, labDomain)
 }

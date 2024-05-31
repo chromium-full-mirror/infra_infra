@@ -40,21 +40,6 @@ func IsCloudBot() bool {
 	return false
 }
 
-// GetCloudbotsLabDomain retrieves the cloudbots lab domain.
-func GetCloudbotsLabDomain() string {
-	return os.Getenv("CLOUDBOTS_LAB_DOMAIN")
-}
-
-// GetCloudbotsCACertificate retrieves the cloudbots CA certificate file path.
-func GetCloudbotsCACertificate() string {
-	return os.Getenv("CLOUDBOTS_CA_CERTIFICATE")
-}
-
-// GetCloudbotsProxyAddress retrieves the cloudbots proxy address.
-func GetCloudbotsProxyAddress() string {
-	return os.Getenv("CLOUDBOTS_PROXY_ADDRESS")
-}
-
 // GetBuildBucketID retrieves the build bucket ID.
 func GetBuildBucketID() string {
 	bbidArr := strings.Split(os.Getenv("LOGDOG_STREAM_PREFIX"), "/")
