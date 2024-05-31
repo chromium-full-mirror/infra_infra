@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cenkalti/backoff/v4"
 	"google.golang.org/grpc"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -28,6 +29,9 @@ const (
 	Oauth2Password = "$(gcloud auth print-access-token)"
 	ImageRegistry  = "us-docker.pkg.dev"
 )
+
+// BackoffFunc exposed for test override.
+var BackoffFunc = backoffFunc
 
 // CrosToolRunner represents the tool that enables communicating with CTRv2.
 type CrosToolRunner struct {
@@ -354,7 +358,14 @@ func (ctr *CrosToolRunner) GcloudAuth(
 	common.WriteProtoToStepLog(ctx, step, &loginReq, "LoginRegistryRequest")
 
 	// Login
-	resp, err := ctr.CtrClient.LoginRegistry(ctx, &loginReq, grpc.EmptyCallOption{})
+	retryFunc := func() (*testapi.LoginRegistryResponse, error) {
+		return ctr.CtrClient.LoginRegistry(ctx, &loginReq, grpc.EmptyCallOption{})
+	}
+	notifyFunc := func(e error, t time.Duration) {
+		logging.Infof(ctx, "Gcloud Auth failed after %s with error: %s", t, e)
+	}
+	resp, err := backoff.RetryNotifyWithData(retryFunc, BackoffFunc(), notifyFunc)
+
 	if err != nil {
 		return nil, errors.Annotate(err, "error in gcloud auth: ").Err()
 	}
@@ -377,4 +388,14 @@ func (ctr *CrosToolRunner) sudoCommand(ctx context.Context, envVarsToPreserve []
 		)
 	}
 	return exec.CommandContext(ctx, "sudo", args...)
+}
+
+// backoffFunc returns the specified exponential backoff
+// for retrying in this context.
+func backoffFunc() backoff.BackOff {
+	return backoff.NewExponentialBackOff(
+		backoff.WithInitialInterval(time.Second*2),
+		backoff.WithMaxInterval(time.Second*16),
+		backoff.WithMaxElapsedTime(time.Minute),
+	)
 }

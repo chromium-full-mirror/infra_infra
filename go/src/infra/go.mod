@@ -32,6 +32,7 @@ require (
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240521192600-a5e60eb5cc47
 	github.com/beevik/etree v1.4.0
 	github.com/bmatcuk/doublestar v1.3.4
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20240212154529-d899e02bfe22
 	github.com/docker/docker v24.0.7+incompatible
@@ -146,7 +147,6 @@ require (
 	github.com/apache/arrow/go/v14 v14.0.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect

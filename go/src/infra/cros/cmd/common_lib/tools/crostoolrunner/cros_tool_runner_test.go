@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 
+	"github.com/cenkalti/backoff/v4"
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 
@@ -342,6 +344,7 @@ func TestGcloudAuth(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
+	BackoffFunc = getMockedBackoff
 
 	Convey("CTR gcloud auth error with no established client", t, func() {
 		ctx := context.Background()
@@ -413,5 +416,9 @@ func getMockedLoginRegistry(mctrclient *MockCrosToolRunnerContainerServiceClient
 	return mctrclient.EXPECT().LoginRegistry(
 		gomock.Any(),
 		gomock.AssignableToTypeOf(&testapi.LoginRegistryRequest{}),
-		gomock.Any())
+		gomock.Any()).AnyTimes()
+}
+
+func getMockedBackoff() backoff.BackOff {
+	return backoff.WithMaxRetries(backoff.NewConstantBackOff(time.Millisecond), 1)
 }
