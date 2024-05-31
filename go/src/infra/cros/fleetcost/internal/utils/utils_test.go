@@ -7,6 +7,7 @@ package utils_test
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 	"testing"
 
 	"google.golang.org/genproto/googleapis/type/money"
@@ -281,5 +282,32 @@ func TestDeleteOneIfExists(t *testing.T) {
 	}, nil)
 	if !utils.ErrorStringContains(err, datastore.ErrNoSuchEntity.Error()) {
 		t.Errorf("unexpected error: %s", err)
+	}
+}
+
+func TestConsumeChannel(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	ch := make(chan int)
+
+	go func() {
+		for i := 1; i <= 1000; i++ {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	var tally atomic.Int32
+	err := utils.ConsumeChannel[int](ctx, ch, func(ctx context.Context, item int) error {
+		fmt.Printf("%d\n", item)
+		tally.Add(1)
+		return nil
+	})
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if n := tally.Load(); n != 1000 {
+		t.Errorf("bad number of iterations: %d", n)
 	}
 }

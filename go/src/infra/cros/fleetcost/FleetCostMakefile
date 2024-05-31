@@ -9,6 +9,7 @@ endef
 
 # GARBAGE is all the generated files that might be created by this makefile
 GARBAGE := fleetcost fleetcostserver ./cmd/fleetcost/fleetcost ./cmd/fleetcost/fleetcostserver
+GARBAGE := $(GARBAGE) fleetcost-race fleetcostserver-race
 
 # The first target is the default. By default, tell the user to create their own makefile.
 .PHONY: fleet-cost-makefile-default
@@ -35,6 +36,21 @@ binaries:
 	$(RM) $(GARBAGE)
 	go build ./cmd/fleetcostserver/
 	go build ./cmd/fleetcost/
+
+# build the binaries with race detection enabled.
+# you shouldn't need to do this very often, so don't bother with the static
+# analysis and whatnot
+#
+# Building the binaries with the race detectors enabled takes a long time to build
+# and should only be used to debug issues with goroutine code locally, or if you
+# suspect a data race.
+.PHONY: binaries-race
+binaries-race:
+	$(RM) $(GARBAGE)
+	go build ./cmd/fleetcostserver/
+	go build ./cmd/fleetcost/
+	go build -o=fleetcostserver-race -race ./cmd/fleetcostserver/
+	go build -o=fleetcost-race ./cmd/fleetcost/
 
 # Run integration tests using the local client and local server binaries.
 .PHONY: integration

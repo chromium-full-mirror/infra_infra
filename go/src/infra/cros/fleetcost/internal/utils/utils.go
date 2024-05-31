@@ -10,6 +10,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/maruel/subcommands"
 	"google.golang.org/genproto/googleapis/type/money"
@@ -192,4 +193,44 @@ func ErrorStringContains(e error, msg string) bool {
 		return msg == ""
 	}
 	return strings.Contains(e.Error(), msg)
+}
+
+// ConsumeChannel consumes a channel containing data until it is closed,
+// then it hands back all the errors it encountered, up to a limit of 100.
+//
+// ConsumeChannel does not leak any goroutines and hands control back to the caller when it is done.
+//
+// Note, however, that ConsumeChannel expects the channel source to *CLOSE*.
+// If the channel does not close, then it will hang forever.
+func ConsumeChannel[T any](ctx context.Context, source <-chan T, callback func(context.Context, T) error) error {
+	var cErrMu sync.Mutex
+	var cErr []error
+	addErr := func(e error) {
+		if e == nil {
+			return
+		}
+		cErrMu.Lock()
+		defer cErrMu.Unlock()
+		if len(cErr) >= 100 {
+			return
+		}
+		cErr = append(cErr, e)
+	}
+
+	consumers := 8
+	var wg sync.WaitGroup
+	consumer := func() {
+		defer wg.Done()
+		for message := range source {
+			err := callback(ctx, message)
+			addErr(err)
+		}
+	}
+
+	for i := 1; i <= consumers; i++ {
+		wg.Add(1)
+		go consumer()
+	}
+	wg.Wait()
+	return errors.Append(cErr...)
 }
