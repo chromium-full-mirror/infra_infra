@@ -254,7 +254,7 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.Version, plats.Host.String()),
 			},
 		},
-		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.stdenv}}", "setup", "main.py")},
+		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", "-u", "-X", "utf8", filepath.Join("{{.stdenv}}", "setup", "main.py")},
 		Env:          env,
 		Dependencies: deps,
 	}

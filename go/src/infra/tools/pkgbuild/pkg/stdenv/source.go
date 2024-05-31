@@ -41,7 +41,7 @@ func (g *Generator) fetchSource(plats generators.Platforms) (generators.Generato
 				},
 				ContextInfo: g.Name + ":" + plats.Host.String(),
 			},
-			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", filepath.Join("{{.git_source_script}}", "git_archive.py"), s.URL, s.Ref},
+			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", "-u", "-X", "utf8", filepath.Join("{{.git_source_script}}", "git_archive.py"), s.URL, s.Ref},
 			Dependencies: []generators.Dependency{
 				{Type: generators.DepsBuildHost, Generator: git},
 				{Type: generators.DepsBuildHost, Generator: cpython},

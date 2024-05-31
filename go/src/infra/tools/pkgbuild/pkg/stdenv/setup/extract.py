@@ -52,17 +52,17 @@ def untar(archive_file, output, stats, safe, include_filter):
     def _extract_member(tarinfo, targetpath, **kwargs):
       unc_targetpath = unc_path(targetpath)
       if safe and not unc_targetpath.startswith(unc_output):
-        print('Skipping %r (would escape root)' % (tarinfo.name,))
+        print('Skipping %s (would escape root)' % (tarinfo.name,))
         stats['skipped']['filecount'] += 1
         stats['skipped']['bytes'] += tarinfo.size
         stats['skipped']['names'].append(tarinfo.name)
         return
 
       if not include_filter(tarinfo.name):
-        print('Skipping %r (does not match include_files)' % (tarinfo.name,))
+        print('Skipping %s (does not match include_files)' % (tarinfo.name,))
         return
 
-      print('Extracting %r' % (tarinfo.name,))
+      print('Extracting %s' % (tarinfo.name,))
       stats['extracted']['filecount'] += 1
       stats['extracted']['bytes'] += tarinfo.size
       em(tarinfo, unc_targetpath, **kwargs)
@@ -86,7 +86,7 @@ def unzip(zip_file, output, stats, include_filter):
   with zipfile.ZipFile(zip_file) as zf:
     for zipinfo in zf.infolist():
       if not include_filter(zipinfo.filename):
-        print('Skipping %r (does not match include_files)' %
+        print('Skipping %s (does not match include_files)' %
               (zipinfo.filename,))
         continue
 
