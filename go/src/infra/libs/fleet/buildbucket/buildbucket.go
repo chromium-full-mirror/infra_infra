@@ -61,7 +61,7 @@ type BuildbucketClient interface {
 
 // client wraps the buildbucket client.
 type client struct {
-	buildBucketClient BuildsClient
+	BuildBucketClient BuildsClient
 }
 
 // BuildsClient is a subset of buildbucketpb.BuildsClient providing a smaller surface area for unit tests
@@ -79,7 +79,7 @@ func NewBuildBucketClient(ctx context.Context) (*client, error) {
 	}
 
 	return &client{
-		buildBucketClient: bbClient,
+		BuildBucketClient: bbClient,
 	}, nil
 }
 
@@ -110,7 +110,7 @@ func (c *client) GetLatestGreenBuild(ctx context.Context) (*bb.Build, error) {
 	}
 	// Avoid the getAllBuilds function since it scrolls through all pages of
 	// the search result, and we only want the most recent build.
-	response, err := c.buildBucketClient.SearchBuilds(ctx, searchBuildsRequest)
+	response, err := c.BuildBucketClient.SearchBuilds(ctx, searchBuildsRequest)
 	if err != nil {
 		return nil, err
 	}
