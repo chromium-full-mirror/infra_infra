@@ -12,6 +12,7 @@ import "google/protobuf/any.proto";
 import "google/protobuf/field_mask.proto";
 import "infra/cros/fleetcost/api/models/indicator.proto";
 import "infra/cros/fleetcost/api/models/result.proto";
+import "infra/cros/fleetcost/api/models/cost_report.proto";
 
 option go_package = "infra/cros/fleetcost/api/rpc;fleetcostpb";
 
@@ -171,6 +172,7 @@ message GetCostResultRequest {
 // GetCostResultResponse is the cost detail information obtained by GetCostResult.
 message GetCostResultResponse {
   models.CostResult result = 1;
+  models.CostReport report = 2;
 }
 
 // DeleteCostIndicatorRequest deletes a cost_indicator

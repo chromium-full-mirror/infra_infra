@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package fleetcost.api.models;
+
+option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
+
+// CostReport is a breakdown of the subtotals of cost.
+message CostReport {
+    repeated CostReportItem item = 1;
+}
+
+// CostReportItem is a subtotal within the ultimate CostResult.
+message CostReportItem {
+    string subtotal_name = 1;
+    double raw_figure = 2;
+    double per_device_figure = 3;
+    // categories are:
+    // - "dedicated"
+    // - "shared"
+    // - "cloud"
+    string category = 4;
+}
