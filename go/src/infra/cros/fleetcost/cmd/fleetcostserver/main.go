@@ -8,6 +8,7 @@ package main
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/option"
@@ -43,7 +44,10 @@ func main() {
 		cfgmodule.NewModuleFromFlags(),
 	}
 
-	server.Main(nil, mods, func(srv *server.Server) error {
+	server.Main(&server.Options{
+		// The Repopulate-Cache RPC takes a while.
+		DefaultRequestTimeout: 10 * time.Minute,
+	}, mods, func(srv *server.Server) error {
 		if srv.Options.CloudProject == "" {
 			const appID = "dev~fleet-cost-dev"
 			srv.Context = memory.UseWithAppID(srv.Context, appID)
