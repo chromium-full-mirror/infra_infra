@@ -13,6 +13,7 @@ import (
 	"infra/cros/botsregulator/internal/regulator"
 )
 
+// Migrate flow migrates and rolls back DUTs based on a config migration file.
 func Migrate(ctx context.Context, r *regulator.RegulatorOptions, l *LastSeenConfig) error {
 	logging.Infof(ctx, "starting migrate-bots")
 	m, err := migrator.NewMigrator(ctx, r)
@@ -31,11 +32,11 @@ func Migrate(ctx context.Context, r *regulator.RegulatorOptions, l *LastSeenConf
 	}
 	cs := migrator.NewConfigSearchable(ctx, cfg.Config)
 	logging.Infof(ctx, "config searchable: %v \n", cs)
-	mcs, err := m.FetchSFOMachines(ctx)
+	mcs, err := m.ListSFOMachines(ctx)
 	if err != nil {
 		return err
 	}
-	lses, err := m.FetchSFOMachineLSEs(ctx)
+	lses, err := m.ListSFOMachineLSEs(ctx)
 	if err != nil {
 		return err
 	}

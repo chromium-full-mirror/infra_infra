@@ -59,8 +59,8 @@ func (m *migrator) GetMigrationConfig(ctx context.Context) (*protos.Migration, e
 	return out, nil
 }
 
-// FetchSFOMachines only returns the machines located in sfo36/em25.
-func (m *migrator) FetchSFOMachines(ctx context.Context) ([]*ufspb.Machine, error) {
+// ListSFOMachines only returns the machines located in sfo36/em25.
+func (m *migrator) ListSFOMachines(ctx context.Context) ([]*ufspb.Machine, error) {
 	logging.Infof(ctx, "fetching machines in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	filters := []string{"zone=ZONE_SFO36_OS"}
@@ -75,8 +75,8 @@ func (m *migrator) FetchSFOMachines(ctx context.Context) ([]*ufspb.Machine, erro
 	return mcs, nil
 }
 
-// FetchSFOMachineLSEs only returns the machineLSEs located in sfo36/em25.
-func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+// ListSFOMachineLSEs only returns the machineLSEs located in sfo36/em25.
+func (m *migrator) ListSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	logging.Infof(ctx, "fetching machineLSEs in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	filters := []string{"zone=ZONE_SFO36_OS"}
@@ -91,8 +91,8 @@ func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE
 	return lses, nil
 }
 
-// FetchSFOCloudbotsMachineLSEs only returns the cloudbots machineLSEs located in sfo36/em25.
-func (m *migrator) FetchSFOCloudbotsMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+// ListSFOCloudbotsMachineLSEs only returns the cloudbots machineLSEs located in sfo36/em25.
+func (m *migrator) ListSFOCloudbotsMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
 	logging.Infof(ctx, "fetching Cloudbots machineLSEs in SFO36")
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	filters := []string{"zone=ZONE_SFO36_OS & hive=cloudbots"}
