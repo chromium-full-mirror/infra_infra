@@ -234,7 +234,7 @@ func upsertDeviceData(ctx context.Context, queue chan struct{}, wg *sync.WaitGro
 		return
 	}
 
-	err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, dbDevice)
+	err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, &dbDevice)
 	if err != nil {
 		return
 	}

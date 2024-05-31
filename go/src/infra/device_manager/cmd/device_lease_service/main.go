@@ -98,6 +98,13 @@ func main() {
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
 			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients)
 		})
+		cron.RegisterHandler("notifier", func(ctx context.Context) error {
+			return jobs.SendNotifications(
+				ctx,
+				deviceLeaseServer.ServiceClients.DBClient.Conn,
+				deviceLeaseServer.ServiceClients.PubSubClient,
+			)
+		})
 
 		logging.Debugf(srv.Context, "main: initialization finished")
 

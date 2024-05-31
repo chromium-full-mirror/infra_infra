@@ -61,11 +61,11 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, devi
 		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", updatedDevice.ID, err)
 		return err
 	}
-	return PublishDeviceEvent(ctx, psClient, updatedDevice)
+	return PublishDeviceEvent(ctx, psClient, &updatedDevice)
 }
 
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
-func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device model.Device) error {
+func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *model.Device) error {
 	// Send message to PubSub Device events stream
 	topic := psClient.Topic(external.DeviceEventsPubSubTopic)
 	defer topic.Stop()
