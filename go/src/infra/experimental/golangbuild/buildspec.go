@@ -266,6 +266,22 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	return env.SetInCtx(ctx)
 }
 
+// setupModuleEnv applies module-specific environment variables.
+// These should be discussed in advance, and kept to a minimum.
+func setupModuleEnv(ctx context.Context, m module) context.Context {
+	switch m.Path {
+	default:
+		return ctx
+	case "golang.org/x/tools/gopls":
+		// setupEnv currently overrides GOTOOLCHAIN to local to catch and report
+		// what happens with the exact local toolchain it selected. Experiment with
+		// not doing that in one module for reasons motivated in go.dev/issue/67749.
+		env := environ.FromCtx(ctx)
+		env.Remove("GOTOOLCHAIN")
+		return env.SetInCtx(ctx)
+	}
+}
+
 func addEnv(ctx context.Context, add ...string) context.Context {
 	env := environ.FromCtx(ctx)
 	for _, e := range add {

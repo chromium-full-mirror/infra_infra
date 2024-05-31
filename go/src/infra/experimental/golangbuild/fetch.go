@@ -318,6 +318,7 @@ func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (
 
 	var errs []error
 	for _, m := range modules {
+		ctx := setupModuleEnv(ctx, m)
 		err := goModDownload(ctx, spec, fmt.Sprintf("fetch %q dependencies", m.Path), m.RootDir)
 		errs = append(errs, err)
 	}

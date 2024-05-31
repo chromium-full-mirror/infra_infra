@@ -287,6 +287,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*gola
 	}
 	var testErrors []error
 	for _, m := range modules {
+		ctx := setupModuleEnv(ctx, m)
 		jsonDumpFile := filepath.Join(spec.workdir, "go.testjson")
 		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...), jsonDumpFile)
 		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false, jsonDumpFile); err != nil {
@@ -304,6 +305,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 		i := i
 		portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
 		for _, m := range modules {
+			portContext := setupModuleEnv(portContext, m)
 			stepName := fmt.Sprintf("test %s module", m.Path)
 			if len(ports) > 1 || !proto.Equal(p, spec.inputs.Target) {
 				stepName += fmt.Sprintf(" for %s", p)
