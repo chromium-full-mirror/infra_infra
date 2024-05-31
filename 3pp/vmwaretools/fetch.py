@@ -26,12 +26,18 @@ _EXTENSION = {
     'windows': '.exe',
 }
 
+_HTTP_HEADERS = {
+    'User-Agent': 'curl/8.5.0',
+}
 
 def do_latest():
-  request = urllib.request.urlopen(
-      'https://packages.vmware.com/tools/releases/latest/windows/')
-  latest = re.findall(r'HREF=".*-(\d+.\d+.\d+-\d+).iso"',
-                      request.read().decode('utf-8'))[0]
+  req = urllib.request.Request(
+      'https://packages.vmware.com/tools/releases/latest/windows/',
+      headers=_HTTP_HEADERS,
+  )
+  resp = urllib.request.urlopen(req)
+  latest = re.findall(r'href=".*-(\d+.\d+.\d+-\d+).iso"',
+                      resp.read().decode('utf-8'))[0]
   print(latest)
 
 
@@ -44,9 +50,10 @@ def get_download_url(version, platform):
   platform = _PLATFORMS[platform]
 
   base_url = f'https://packages.vmware.com/tools/releases/latest/windows/{platform}/'
-  request = urllib.request.urlopen(base_url)
-  file_name = re.findall(rf'HREF="(.*-{version}-{platform_alt}{extension})"',
-                         request.read().decode('utf-8'))[0]
+  req = urllib.request.Request(base_url, headers=_HTTP_HEADERS)
+  resp = urllib.request.urlopen(req)
+  file_name = re.findall(rf'href="(.*-{version}-{platform_alt}{extension})"',
+                         resp.read().decode('utf-8'))[0]
   url = (f'{base_url}{file_name}')
 
   manifest = {
