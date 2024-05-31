@@ -42,6 +42,10 @@ func main() {
 			ctx = logging.SetField(ctx, "activity", "migrate-bots")
 			return cron.Migrate(ctx, &r, &migrateSeenInfo)
 		})
+		scron.RegisterHandler("cleanup-bots", func(ctx context.Context) error {
+			ctx = logging.SetField(ctx, "activity", "cleanup-bots")
+			return cron.Cleanup(ctx, &r)
+		})
 		return nil
 	})
 }

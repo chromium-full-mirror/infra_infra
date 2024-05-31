@@ -91,6 +91,22 @@ func (m *migrator) FetchSFOMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE
 	return lses, nil
 }
 
+// FetchSFOCloudbotsMachineLSEs only returns the cloudbots machineLSEs located in sfo36/em25.
+func (m *migrator) FetchSFOCloudbotsMachineLSEs(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+	logging.Infof(ctx, "fetching Cloudbots machineLSEs in SFO36")
+	ctx = clients.SetUFSNamespace(ctx, "os")
+	filters := []string{"zone=ZONE_SFO36_OS & hive=cloudbots"}
+	res, err := m.ufsClient.BatchListMachineLSEs(ctx, filters, 0, false, false)
+	if err != nil {
+		return nil, err
+	}
+	lses := make([]*ufspb.MachineLSE, len(res))
+	for i, r := range res {
+		lses[i] = r.(*ufspb.MachineLSE)
+	}
+	return lses, nil
+}
+
 // ComputeBoardModelToState returns a map of board/model to migration state.
 // This map represents the current state of the migration for each board/model combination in UFS.
 func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Machine, lses []*ufspb.MachineLSE, searchable *configSearchable) (map[string]*migrationState, error) {
@@ -229,4 +245,39 @@ func shouldExcludePool(pools []string, op map[string]struct{}) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// GetExcludedDUTs returns a list of excluded DUTs to be rolled back to drone.
+func (m *migrator) GetExcludedDUTs(ctx context.Context, lses []*ufspb.MachineLSE, cs *configSearchable) []string {
+	var rollbackDUTs []string
+	for _, lse := range lses {
+		if _, ok := cs.excludeDUTs[lse.GetName()]; ok {
+			rollbackDUTs = append(rollbackDUTs, lse.GetName())
+			continue
+		}
+		for _, pool := range lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools() {
+			if _, ok := cs.excludePools[pool]; ok {
+				rollbackDUTs = append(rollbackDUTs, lse.GetName())
+				break
+			}
+		}
+	}
+	return rollbackDUTs
+}
+
+// RunBatchRollback updates the hive to all the specified lses,
+// effectively rolling them back to Drone.
+func (m *migrator) RunBatchRollback(ctx context.Context, lses []string) error {
+	logging.Infof(ctx, "starting batch update for cloudBots")
+	errs := errors.NewLazyMultiError(len(lses))
+	for i, lse := range lses {
+		req := clients.InitializeUpdateDUTRequest(lse, "e")
+		ctx = clients.SetUFSNamespace(ctx, "os")
+		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
+		if err != nil {
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive drone: %v", lse, err)
+			errs.Assign(i, err)
+		}
+	}
+	return errs.Get()
 }

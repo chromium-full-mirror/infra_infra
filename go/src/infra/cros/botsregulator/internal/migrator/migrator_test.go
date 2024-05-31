@@ -313,6 +313,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 	})
 
 	t.Run("Happy path", func(t *testing.T) {
+		t.Parallel()
 		bms := map[string]*migrationState{
 			"board-1/model-1": {
 				Cloudbots: []string{
@@ -450,4 +451,73 @@ func TestComputeNextMigrationSate(t *testing.T) {
 			t.Errorf("mismatch (-want +got):\n%s", diff)
 		}
 	})
+}
+
+func TestGetExcludedDUTs(t *testing.T) {
+	t.Parallel()
+	m := &migrator{}
+	lses := []*ufspb.MachineLSE{
+		{
+			Name: "dut-1",
+		},
+		{
+			Name: "dut-2",
+		},
+		{
+			Name: "dut-3",
+		},
+		{
+			Name: "dut-4",
+			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+						DeviceLse: &ufspb.ChromeOSDeviceLSE{
+							Device: &ufspb.ChromeOSDeviceLSE_Dut{
+								Dut: &chromeosLab.DeviceUnderTest{
+									Hive:  "",
+									Pools: []string{"pool-1"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "dut-5",
+			Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+						DeviceLse: &ufspb.ChromeOSDeviceLSE{
+							Device: &ufspb.ChromeOSDeviceLSE_Dut{
+								Dut: &chromeosLab.DeviceUnderTest{
+									Hive:  "",
+									Pools: []string{"pool-2"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	cs := &configSearchable{
+		excludeDUTs: map[string]struct{}{
+			"dut-1": {},
+			"dut-2": {},
+		},
+		excludePools: map[string]struct{}{
+			"pool-1": {},
+		},
+	}
+	want := []string{
+		"dut-1",
+		"dut-2",
+		"dut-4",
+	}
+	got := m.GetExcludedDUTs(context.Background(), lses, cs)
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+
 }
