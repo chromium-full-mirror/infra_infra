@@ -48,6 +48,18 @@ func importWindows(cfg *Config) (gs []generators.Generator, err error) {
 		"fc",
 		"where",
 	)
+	// Bat shim is preferable for executables in most cases because mingw symlink
+	// won't work with standard windows executables (e.g nmake, python...).
+	// Cmd is handled differently in setup-hook by setting COMSPEC to its real
+	// path.
+	for k, v := range g.Targets {
+		if k == "cmd.exe" {
+			v.MinGWSymlink = true
+		} else {
+			v.GenerateBatShim = true
+		}
+		g.Targets[k] = v
+	}
 	gs = append(gs, g)
 
 	return
