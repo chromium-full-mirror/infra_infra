@@ -7,9 +7,11 @@ package jobs
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"sync"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/protoadapt"
 
 	"go.chromium.org/luci/common/errors"
@@ -27,14 +29,20 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+// TODO: b/328662436 - Collect metrics and replace logging with metrics.
+// TODO: b/331644796 - Import non-OS device data.
+
 // maxUFSImportJobs sets the maximum concurrent jobs for this cron.
 const maxUFSImportJobs = 100
+
+var (
+	updatedDevicesN        = 0
+	publishedDeviceEventsN = 0
+)
 
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
-	// TODO (b/331644796): Import non-OS device data
-	// TODO (b/328662436): Collect metrics
 	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
@@ -101,6 +109,11 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 	}
 	wg.Wait()
 	close(waitQueue)
+
+	// Publish some counters as logs for now.
+	logging.Debugf(ctx, "Processed %d LSEs from UFS", len(lses))
+	logging.Debugf(ctx, "Upserted %d Devices", updatedDevicesN)
+	logging.Debugf(ctx, "Published %d DeviceEvents", publishedDeviceEventsN)
 
 	return nil
 }
@@ -195,7 +208,7 @@ func getAllDMDevices(ctx context.Context, db *sql.DB) ([]model.Device, error) {
 }
 
 // upsertDeviceData upserts to db and publishes a device event with UFS device data
-func upsertDeviceData(ctx context.Context, queue chan struct{}, wg *sync.WaitGroup, serviceClients frontend.ServiceClients, name string, active bool) {
+func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitGroup, serviceClients frontend.ServiceClients, name string, active bool) {
 	// catch panic and continue
 	defer func() {
 		if err := recover(); err != nil {
@@ -205,39 +218,60 @@ func upsertDeviceData(ctx context.Context, queue chan struct{}, wg *sync.WaitGro
 		wg.Done()
 	}()
 
-	// process Device, upsert to db, and publish DeviceEvent
-	deviceModel := model.Device{
+	var (
+		deviceModel model.Device
+		updateTime  = time.Now()
+	)
+
+	deviceModel = model.Device{
 		ID:              ufsUtil.RemovePrefix(name),
 		DeviceType:      "DEVICE_TYPE_PHYSICAL",
-		LastUpdatedTime: time.Now(),
+		LastUpdatedTime: updateTime,
 		IsActive:        active,
 	}
 
-	// only get dims for active Devices
-	if active {
-		r := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
-		dims, err := device.GetOSResourceDims(ctx, serviceClients.UFSClient, r, name)
-		if err != nil {
-			return
-		}
-		deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
-	}
-
-	// upsert deviceModel to DM db
-	err := model.UpsertDevice(ctx, serviceClients.DBClient.Conn, deviceModel)
+	r := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
+	dims, err := device.GetOSResourceDims(ctx, serviceClients.UFSClient, r, name)
 	if err != nil {
 		return
 	}
+	deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
 
 	dbDevice, err := model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
-	if err != nil {
+
+	// System error in looking up device
+	if err != nil && !errors.Is(err, model.ErrDeviceNotFound) {
+		logging.Errorf(ctx, "Failed to get Device %s: %s", deviceModel.ID, err)
 		return
 	}
 
-	err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, &dbDevice)
-	if err != nil {
+	// Device found and not different
+	if !errors.Is(err, model.ErrDeviceNotFound) && !isDeviceDifferent(ctx, dbDevice, deviceModel) {
+		logging.Debugf(ctx, "Device %s did not change. Did not update Device in database", deviceModel.ID)
 		return
 	}
+
+	// Either Device was not found and is new or it is different
+	logging.Debugf(ctx, "Found changes for Device %s. Upserting to DB", deviceModel.ID)
+	err = model.UpsertDevice(ctx, serviceClients.DBClient.Conn, deviceModel)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to upsert Device %s: %s", deviceModel.ID, err)
+		return
+	}
+	updatedDevicesN++
+
+	// Re-fetch the Device after the upsert to get the updated Device
+	dbDevice, err = model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to re-fetch Device %s: %s", deviceModel.ID, err)
+		return
+	}
+
+	if err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, &dbDevice); err != nil {
+		logging.Errorf(ctx, "Failed to publish Device update to PubSub %s", err)
+		return
+	}
+	publishedDeviceEventsN++
 }
 
 // getInactiveDevices marks inactive Devices as inactive and returns the list.
@@ -268,4 +302,30 @@ func getInactiveDevices(ctx context.Context, serviceClients frontend.ServiceClie
 
 	logging.Debugf(ctx, "getInactiveDevices: found %d inactive DUTs", len(inactiveDevices))
 	return inactiveDevices, nil
+}
+
+// isDeviceDifferent checks if a Device is different from another.
+func isDeviceDifferent(ctx context.Context, d1, d2 model.Device) bool {
+	if d1.ID != d2.ID {
+		panic(fmt.Sprintf("comparing two different devices %s and %s", d1.ID, d2.ID))
+	}
+
+	// compare Device fields
+	if d1.DeviceAddress != d2.DeviceAddress {
+		logging.Debugf(ctx, "%s DeviceAddress is different: %s vs %s", d1.ID, d1.DeviceAddress, d2.DeviceAddress)
+		return true
+	}
+	if d1.DeviceType != d2.DeviceType {
+		logging.Debugf(ctx, "%s DeviceType is different: %s vs %s", d1.ID, d1.DeviceType, d2.DeviceType)
+		return true
+	}
+	if !cmp.Equal(d1.SchedulableLabels, d2.SchedulableLabels) {
+		logging.Debugf(ctx, "%s SchedulableLabels is different:\n %s\n %s", d1.ID, d1.SchedulableLabels, d2.SchedulableLabels)
+		return true
+	}
+	if d1.IsActive != d2.IsActive {
+		logging.Debugf(ctx, "%s IsActive is different", d1.ID)
+		return true
+	}
+	return false
 }

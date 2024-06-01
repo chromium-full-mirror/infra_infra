@@ -9,13 +9,19 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
+
+	"github.com/jackc/pgconn"
 
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/database"
 )
+
+// ErrDeviceNotFound defines a custom error when a Device is not found.
+var ErrDeviceNotFound = errors.New("device not found")
 
 // Device contains a single row from the Devices table in the database.
 type Device struct {
@@ -122,7 +128,10 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 
 	// TODO (b/328662436): Collect metrics on results
 	if err != nil {
-		logging.Errorf(ctx, "GetDeviceByID: failed to get Device %s: %s", deviceID, err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "P0002" {
+			return device, ErrDeviceNotFound
+		}
 		return device, err
 	}
 

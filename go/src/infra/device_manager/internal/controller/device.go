@@ -98,6 +98,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *mo
 	_, err = rsp.Get(ctx)
 	if err != nil {
 		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
+		return err
 	}
 	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", deviceEvent)
 	return nil
