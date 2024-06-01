@@ -26,6 +26,8 @@ import (
 	"infra/libs/skylab/inventory/swarming"
 )
 
+// TODO: b/328662436 - Collect metrics
+
 // GetDevice gets a Device from the database based on a deviceID.
 func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
 	device, err := model.GetDeviceByID(ctx, db, idType, deviceID)
@@ -55,10 +57,8 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 
 // UpdateDevice updates a Device in a transaction.
 func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, device model.Device) error {
-	// TODO (b/328662436): Collect metrics
 	updatedDevice, err := model.UpdateDevice(ctx, tx, device)
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", updatedDevice.ID, err)
 		return err
 	}
 	return PublishDeviceEvent(ctx, psClient, &updatedDevice)

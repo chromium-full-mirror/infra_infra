@@ -274,7 +274,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				last_updated_time=COALESCE($6, last_updated_time),
 				is_active=COALESCE($7, is_active)
 			WHERE
-				id=$1;
+				id=$1
 			RETURNING
 				id,
 				device_address,
@@ -284,9 +284,10 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				is_active,
 				created_time,
 				last_updated_time,
-				last_notification_time`
+				last_notification_time;`
 	)
 
+	logging.Debugf(ctx, "UpdateDevice: %s", query)
 	err := tx.QueryRowContext(ctx, query,
 		device.ID,
 		device.DeviceAddress,
@@ -319,7 +320,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 	}
 
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s: %s", updatedDevice.ID, err)
+		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s to DB: %s", updatedDevice.ID, err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logging.Errorf(ctx, "UpdateDevice: unable to rollback: %v", rollbackErr)
 		}

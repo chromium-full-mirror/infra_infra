@@ -651,7 +651,7 @@ func TestUpdateDevice(t *testing.T) {
 					last_updated_time=COALESCE($6, last_updated_time),
 					is_active=COALESCE($7, is_active)
 				WHERE
-					id=$1;
+					id=$1
 				RETURNING
 					id,
 					device_address,
@@ -661,7 +661,7 @@ func TestUpdateDevice(t *testing.T) {
 					is_active,
 					created_time,
 					last_updated_time,
-					last_notification_time`)).
+					last_notification_time;`)).
 				WithArgs(
 					"test-device-1",
 					"2.2.2.2:2",
