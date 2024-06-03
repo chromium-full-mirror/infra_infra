@@ -30,7 +30,7 @@ It is possible to compile shivas for testing locally. This will make shivas hit
 `localhost` for UFS endpoints. You need to run UFS locally to be able use shivas
 this way. Compile shivas for local use by running
 ```
-go build -tags='dev'
+make dev
 ```
 
 ## Source code survey
