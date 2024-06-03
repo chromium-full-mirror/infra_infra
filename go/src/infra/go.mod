@@ -87,7 +87,7 @@ require (
 	github.com/xinsnake/go-http-digest-auth-client v0.6.0
 	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
 	go.chromium.org/chromiumos/ctp v0.0.0-00010101000000-000000000000
-	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240515181838-a7a5fd53a4ff
+	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240521170946-ec61aab12a90
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.47.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0
@@ -261,4 +261,4 @@ replace (
 )
 
 // Replace longform path to module with proper module name.
-replace go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240520165433-fa0c67297a8a
+replace go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4

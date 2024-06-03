@@ -54,6 +54,8 @@ type Run struct {
 	TRV2        bool
 	Local       bool
 	TimeoutMins int
+	// Runs with Ctpv2 and Quota Scheduler if true and CFT is true
+	RunCtpv2WithQs bool
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
@@ -141,6 +143,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 			Model:               c.Model,
 			Pool:                c.Pool,
 			CFT:                 true,
+			RunCtpv2WithQs:      c.RunCtpv2WithQs,
 			TestPlan:            tp.Cft,
 			BuilderID:           builderId,
 			Dimensions:          dims,
