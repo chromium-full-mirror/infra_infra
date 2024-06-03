@@ -866,11 +866,11 @@ Example Browser machine:
         "description": "adding a machine cr85-XXX",
         "kvmInterface": {
             "kvm": "ax101-kvm1",
-            "port": 34
+            "portName": "34"
         },
         "rpmInterface": {
             "rpm": "rpm-23",
-            "port": 65
+            "portName": "65"
         }
     }
 }
@@ -960,6 +960,7 @@ Example host for a browser machine:
         }
     }
 }
+Required fields: "name", "hostname", "machineLsePrototype", "chromeBrowserMachineLse", "machines"
 
 Example host(DUT) for an OS machine:
 {
@@ -1032,11 +1033,11 @@ Example host(DUT) for an OS machine:
             },
             "rpmInterface": {
                 "rpm": "rpm-asset-tag-123",
-                "port": 23
+                "portName": "23"
             },
             "networkDeviceInterface": {
                 "switch": "switch-1",
-                "port": 23
+                "portName": "23"
             }
         }
     }
@@ -1063,11 +1064,11 @@ Example host(Labstation) for an OS machine:
             },
             "rpmInterface": {
                 "rpm": "rpm-asset-tag-123",
-                "port": 23
+                "portName": "23"
             },
             "networkDeviceInterface": {
                 "switch": "switch-1",
-                "port": 23
+                "portName": "23"
             }
         }
     }
@@ -1342,7 +1343,7 @@ Example nic:
     "macAddress": "00:0d:5d:10:64:8d",
     "switchInterface": {
         "switch": "switch-12",
-        "port": 15
+        "portName": "15"
     },
     "tags": ["dell", "8g"],
     "machine": "mac-1"
@@ -1397,7 +1398,7 @@ Example drac:
     "macAddress": "00:0d:5d:10:64:8d",
     "switchInterface": {
         "switch": "switch-12",
-        "port": 15
+        "portName": "15"
     },
     "password": "WelcomeDrac***",
     "tags": ["dell", "8g"],
