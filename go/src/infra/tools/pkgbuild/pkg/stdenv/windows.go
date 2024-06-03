@@ -53,7 +53,7 @@ func importWindows(cfg *Config) (gs []generators.Generator, err error) {
 	// Cmd is handled differently in setup-hook by setting COMSPEC to its real
 	// path.
 	for k, v := range g.Targets {
-		if k == "cmd.exe" {
+		if k == "bin/cmd.exe" {
 			v.MinGWSymlink = true
 		} else {
 			v.GenerateBatShim = true
