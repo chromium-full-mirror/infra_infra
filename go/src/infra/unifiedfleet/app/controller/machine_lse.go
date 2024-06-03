@@ -91,7 +91,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 				return CreateLabstation(ctx, machinelse)
 			case nil:
 				logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected ChromeOSDeviceLSE to be set", y)
-				return nil, errors.Reason("Unexpcted ChromeOSDeviceLSE type. ChromeOSDeviceLSE is nil").Err()
+				return nil, status.Error(codes.InvalidArgument, "Unexpected ChromeOSDeviceLSE type. ChromeOSDeviceLSE is nil")
 			default:
 				// The machinelse update is of one of the remaining types
 				logging.Debugf(ctx, "CreateMachineLSE[%T]: Creating one of device types. Called createBrowserServer", z)
@@ -100,7 +100,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 
 		case nil:
 			logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected ChromeOSMachineLSE to be set", x)
-			return nil, errors.Reason("Unexpcted ChromeOSMachineLSE type. ChromeOSMachineLSE is nil").Err()
+			return nil, status.Error(codes.InvalidArgument, "Unexpected ChromeOSMachineLSE type. ChromeOSMachineLSE is nil")
 		default:
 			// TODO(anushruth): Should this path be an error. Or refactored?
 			// The machinelse update is of one of the remaining types
@@ -113,7 +113,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 		return createBrowserServer(ctx, machinelse, nwOpt)
 	case nil:
 		logging.Errorf(ctx, "CreateMachineLSE[%T]: Expected Lse to be set", x)
-		return nil, errors.Reason("Unexpcted Lse type. Lse is nil").Err()
+		return nil, status.Error(codes.InvalidArgument, "Unexpected Lse type. Lse is nil")
 	default:
 		// The remaining types of machine lse.
 		logging.Debugf(ctx, "CreateMachineLSE[%T]: Calling createBrowserServer", x)
