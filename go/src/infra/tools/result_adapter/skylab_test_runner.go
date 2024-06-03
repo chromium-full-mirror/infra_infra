@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"time"
 
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -102,6 +103,16 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 		testMetadata, ok := metadata[c.Name]
 		if ok {
 			tr.Tags = append(tr.Tags, metadataToTags(ctx, testMetadata)...)
+			props, err := structpb.NewStruct(tagsToMap(tr.Tags))
+			if err != nil {
+				logging.Warningf(
+					ctx,
+					"could not set metadata properties from %v due to %v",
+					testMetadata, err)
+			} else {
+				tr.TestMetadata.Properties = props
+				tr.TestMetadata.PropertiesSchema = metadataSchema
+			}
 			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
 			if err != nil {
 				logging.Errorf(

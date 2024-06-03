@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -69,6 +69,9 @@ const (
 	// Test execution order within a single build / invocation.
 	// Starts from 1.
 	executionOrderTag = "execution_order"
+
+	// Schema for the test case metadata.
+	metadataSchema = "chromiumos.test.api.TestCaseMetadata"
 )
 
 // summaryTmpl is used to generate SummaryHTML in GTest and JTR-based test
@@ -241,6 +244,51 @@ func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 	return mp, nil
 }
 
+func testCaseInfoToTags(tcInfo *api.TestCaseInfo) []*pb.StringPair {
+	var tags []*pb.StringPair
+	if tcInfo == nil {
+		return tags
+	}
+
+	if tcInfo.Owners != nil {
+		owners := make([]string, 0, len(tcInfo.Owners))
+		for _, o := range tcInfo.Owners {
+			owners = append(owners, o.Email)
+		}
+		tags = AppendTags(tags, "owners", strings.Join(owners, ","))
+	}
+
+	if tcInfo.Requirements != nil {
+		requirements := make([]string, 0, len(tcInfo.Requirements))
+		for _, r := range tcInfo.Requirements {
+			requirements = append(requirements, r.Value)
+		}
+		tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
+	}
+
+	if tcInfo.BugComponent != nil && strings.TrimSpace(tcInfo.BugComponent.Value) != "" {
+		tags = AppendTags(tags, "bug_component", tcInfo.BugComponent.Value)
+	}
+
+	if tcInfo.Criteria != nil && strings.TrimSpace(tcInfo.Criteria.Value) != "" {
+		tags = AppendTags(tags, "criteria", tcInfo.Criteria.Value)
+	}
+
+	if tcInfo.HwAgnostic != nil {
+		tags = AppendTags(tags, "hw_agnostic", strconv.FormatBool(tcInfo.HwAgnostic.Value))
+	}
+
+	if tcInfo.LifeCycleStage != nil && strings.TrimSpace(tcInfo.LifeCycleStage.String()) != "" {
+		tags = AppendTags(tags, "life_cycle_stage", tcInfo.LifeCycleStage.Value.String())
+	}
+
+	if tcInfo.VariantCategory != nil && strings.TrimSpace(tcInfo.VariantCategory.Value) != "" {
+		tags = AppendTags(tags, "variant_category", tcInfo.VariantCategory.Value)
+	}
+
+	return tags
+}
+
 // metadataToTags converts the following TestCaseMetadata to a list of key value
 // string pairs. All tag values will be truncated to the first 256 chars as
 // defined by maxTagValueBytes.
@@ -251,42 +299,26 @@ func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 //   - bug_component, e.g. "b:167191"
 //   - criteria, e.g. "This test is a benchmark"
 //   - hw_agnostic (boolean), e.g. true, false
+//   - life_cycle_Stage e.g. "LIFE_CYCLE_PRODUCTION"
+//   - tags e.g. "group:mainline"
+//   - variant_category e.g. "wifi_perf"
 func metadataToTags(ctx context.Context, metadata *api.TestCaseMetadata) []*pb.StringPair {
 	if metadata == nil {
 		return []*pb.StringPair{}
 	}
 
-	tags := make([]*pb.StringPair, 0)
-
 	// Fetches tags from test case testCaseInfo
-	testCaseInfo := metadata.GetTestCaseInfo()
-	if testCaseInfo != nil {
-		if testCaseInfo.Owners != nil {
-			owners := make([]string, 0)
-			for _, o := range testCaseInfo.Owners {
-				owners = append(owners, o.Email)
+	metadataTags := testCaseInfoToTags(metadata.GetTestCaseInfo())
+
+	testCase := metadata.GetTestCase()
+	if testCase != nil {
+		testTags := testCase.GetTags()
+		if testTags != nil {
+			t := make([]string, 0, len(testTags))
+			for _, r := range testTags {
+				t = append(t, r.Value)
 			}
-			tags = AppendTags(tags, "owners", strings.Join(owners, ","))
-		}
-
-		if testCaseInfo.Requirements != nil {
-			requirements := make([]string, 0)
-			for _, r := range testCaseInfo.Requirements {
-				requirements = append(requirements, r.Value)
-			}
-			tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
-		}
-
-		if testCaseInfo.BugComponent != nil && strings.TrimSpace(testCaseInfo.BugComponent.Value) != "" {
-			tags = AppendTags(tags, "bug_component", testCaseInfo.BugComponent.Value)
-		}
-
-		if testCaseInfo.Criteria != nil {
-			tags = AppendTags(tags, "criteria", testCaseInfo.Criteria.Value)
-		}
-
-		if testCaseInfo.HwAgnostic != nil {
-			tags = AppendTags(tags, "hw_agnostic", strconv.FormatBool(testCaseInfo.HwAgnostic.Value))
+			metadataTags = AppendTags(metadataTags, "tags", strings.Join(t, ","))
 		}
 	}
 
@@ -314,12 +346,12 @@ func metadataToTags(ctx context.Context, metadata *api.TestCaseMetadata) []*pb.S
 			}
 
 			if harness != "" {
-				tags = AppendTags(tags, "test_harness", harness)
+				metadataTags = AppendTags(metadataTags, "test_harness", harness)
 			}
 		}
 	}
 
-	return tags
+	return metadataTags
 }
 
 // parseBugComponentMetadata parses the CFT TestCaseInfo.BugComponent metadata to a
@@ -375,4 +407,12 @@ func parseBugComponent(bugComponent string) (*pb.BugComponent, error) {
 	}
 
 	return nil, nil
+}
+
+func tagsToMap(tags []*pb.StringPair) map[string]any {
+	fields := make(map[string]any, len(tags))
+	for _, t := range tags {
+		fields[t.Key] = t.Value
+	}
+	return fields
 }

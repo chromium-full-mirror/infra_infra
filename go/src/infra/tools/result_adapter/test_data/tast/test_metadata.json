@@ -5,7 +5,15 @@
                 "id": {
                     "value": "tast.lacros.Basic"
                 },
-                "name": "lacros.Basic"
+                "name": "lacros.Basic",
+                "tags": [
+                    {
+                        "value": "group:mainline"
+                    },
+                    {
+                        "value": "wificell-qa"
+                    }
+                ]
             },
             "testCaseExec": {
                 "testHarness": {
@@ -26,7 +34,11 @@
                 },
                 "criteria": {
                     "value": ""
-                }
+                },
+                "lifeCycleStage": {
+                    "value": "LIFE_CYCLE_OWNER_MONITORED"
+                },
+                "variantCategory": {}
             }
         },
         {

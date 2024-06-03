@@ -1,6 +1,6 @@
-// Copyright 2021 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	. "go.chromium.org/luci/common/testing/assertions"
@@ -168,6 +169,8 @@ func TestTastConversions(t *testing.T) {
 						pbutil.StringPair(executionOrderTag, "1"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
 						pbutil.StringPair("bug_component", "b:1234"),
+						pbutil.StringPair("life_cycle_stage", "LIFE_CYCLE_OWNER_MONITORED"),
+						pbutil.StringPair("tags", "group:mainline,wificell-qa"),
 						pbutil.StringPair("test_harness", "Tast"),
 					},
 					TestMetadata: &pb.TestMetadata{
@@ -179,6 +182,16 @@ func TestTastConversions(t *testing.T) {
 								},
 							},
 						},
+						PropertiesSchema: metadataSchema,
+						Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
+							"contacts":         {Kind: &structpb.Value_StringValue{StringValue: "user1@google.com,user2@google.com"}},
+							executionOrderTag:  {Kind: &structpb.Value_StringValue{StringValue: "1"}},
+							"owners":           {Kind: &structpb.Value_StringValue{StringValue: "owner1@test.com,owner2@test.com"}},
+							"bug_component":    {Kind: &structpb.Value_StringValue{StringValue: "b:1234"}},
+							"life_cycle_stage": {Kind: &structpb.Value_StringValue{StringValue: "LIFE_CYCLE_OWNER_MONITORED"}},
+							"tags":             {Kind: &structpb.Value_StringValue{StringValue: "group:mainline,wificell-qa"}},
+							"test_harness":     {Kind: &structpb.Value_StringValue{StringValue: "Tast"}},
+						}},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 1},
@@ -210,6 +223,15 @@ func TestTastConversions(t *testing.T) {
 								},
 							},
 						},
+						PropertiesSchema: metadataSchema,
+						Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
+							"contacts":        {Kind: &structpb.Value_StringValue{StringValue: "user1@google.com,user2@google.com"}},
+							executionOrderTag: {Kind: &structpb.Value_StringValue{StringValue: "2"}},
+							"criteria":        {Kind: &structpb.Value_StringValue{StringValue: "A very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo..."}},
+							"bug_component":   {Kind: &structpb.Value_StringValue{StringValue: "crbug:OS>LaCrOS"}},
+							"requirements":    {Kind: &structpb.Value_StringValue{StringValue: "requirement 1 in a very long list of requirements,requirement 2 in a very long list of requirements,requirement 3 in a very long list of requirements,requirement 4 in a very long list of requirements,requirement 5 in a very long list of requirements,req..."}},
+							"test_harness":    {Kind: &structpb.Value_StringValue{StringValue: "Tast"}},
+						}},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 1},

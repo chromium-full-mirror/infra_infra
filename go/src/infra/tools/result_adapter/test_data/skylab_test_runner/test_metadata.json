@@ -5,7 +5,15 @@
                 "id": {
                     "value": "tauto.test1"
                 },
-                "name": "test1"
+                "name": "test1",
+                "tags": [
+                    {
+                        "value": "group:mainline"
+                    },
+                    {
+                        "value": "wificell-qa"
+                    }
+                ]
             },
             "testCaseExec": {
                 "testHarness": {
@@ -31,7 +39,11 @@
                 },
                 "hwAgnostic": {
                     "value": true
-                }
+                },
+                "lifeCycleStage": {
+                    "value": "LIFE_CYCLE_OWNER_MONITORED"
+                },
+                "variantCategory": {}
             }
         },
         {
