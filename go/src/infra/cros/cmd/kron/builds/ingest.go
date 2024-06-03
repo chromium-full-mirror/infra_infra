@@ -224,7 +224,13 @@ func (h *handler) handleFetchedBuilds(builds *[]*BuildReportPackage, buildsChan 
 		*builds = append(*builds, build)
 	}
 
-	return finalize(builds)
+	common.Stdout.Println("Initializing finalize before ending Pub/Sub Subscription")
+	err := finalize(builds)
+	if err != nil {
+		return err
+	}
+	common.Stdout.Println("Ending finalize before ending Pub/Sub Subscription")
+	return nil
 }
 
 // IngestBuildsFromPubSub connects to pubsub ingests all new build information

@@ -35,6 +35,11 @@ type ctpEvent struct {
 	config     *suschpb.SchedulerConfig
 }
 
+type ctpEventsPerBranch struct {
+	events []*ctpEvent
+	branch suschpb.Branch
+}
+
 type ctpEventBatch struct {
 	events    []*kronpb.Event
 	bbRequest *buildbucketpb.ScheduleBuildRequest
@@ -225,7 +230,7 @@ func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerCo
 // generateBuilderTags generates a list of BuildBucket String pairs which will
 // be used for a builders tags. These tags contain metadata about the CTP
 // request which can be used in PLX analysis later on.
-func generateBuilderTags(suiteName, configName string, requests []*ctpEvent) ([]*buildbucketpb.StringPair, error) {
+func generateBuilderTags(suiteName, configName string, requests []*ctpEvent, skipTag bool) ([]*buildbucketpb.StringPair, error) {
 	tags := []*buildbucketpb.StringPair{
 		{
 			Key:   "kron-run",
@@ -266,17 +271,18 @@ func generateBuilderTags(suiteName, configName string, requests []*ctpEvent) ([]
 		if image == "" {
 			return nil, fmt.Errorf("no ChromeOS build found")
 		}
-
-		tags = append(tags,
-			&buildbucketpb.StringPair{
-				Key:   "build-id",
-				Value: request.event.BuildUuid,
-			})
-		tags = append(tags,
-			&buildbucketpb.StringPair{
-				Key:   "event-id",
-				Value: request.event.EventUuid,
-			})
+		if !skipTag {
+			tags = append(tags,
+				&buildbucketpb.StringPair{
+					Key:   "build-id",
+					Value: request.event.BuildUuid,
+				})
+			tags = append(tags,
+				&buildbucketpb.StringPair{
+					Key:   "event-id",
+					Value: request.event.EventUuid,
+				})
+		}
 		tags = append(tags,
 			&buildbucketpb.StringPair{
 				Key:   "label-image",
@@ -330,8 +336,83 @@ func generateGenericBBProperties(requests []*ctpEvent) (*structpb.Struct, error)
 	return properties, nil
 }
 
+// buildCTPRequestsFor3dConfigs creates list of ctp requests for each config per branch.
+func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList) (map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, error) {
+	ctpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
+
+	// processing each config
+	for _, config := range all3dConfigs {
+		// processing for each release orch. If the milestone for release orch is targeted branch for config, then ctpEvents is created else skipped
+		for _, buildPackage3d := range buildPackagesMap {
+			// skip if no builds
+			if len(buildPackage3d.Builds) == 0 {
+				continue
+			}
+			// if the branch corresponding to this release orchestrator is found in the targeted branch configuration,
+			// generate CTP requests for all child builds.
+			targeted, _, err := totmanager.IsTargetedBranch(int(buildPackage3d.Builds[0].GetMilestone()), config.Branches)
+			if err != nil {
+				return nil, err
+			}
+			if targeted {
+				allCtpEvents := []*ctpEvent{}
+				// create ctpRequest for each build in release orchestrator
+				for _, kronBuild := range buildPackage3d.Builds {
+					ctpRequests, err := buildPerModelConfigs(nil, config, kronBuild, suschpb.Branch_name[int32(buildPackage3d.Branch)])
+					if err != nil {
+						return nil, err
+					}
+					allCtpEvents = append(allCtpEvents, ctpRequests...)
+				}
+				ctpEventsPerBranch := []ctpEventsPerBranch{
+					{
+						branch: buildPackage3d.Branch,
+						events: allCtpEvents,
+					},
+				}
+				ctpMapByConfig[config] = append(ctpMapByConfig[config], ctpEventsPerBranch...)
+
+			}
+		}
+	}
+	// logging map
+	common.Stdout.Printf("Preparing requests for ...\n")
+	for config, ctpEventsPerBranch := range ctpMapByConfig {
+		for _, ctpEvents := range ctpEventsPerBranch {
+			common.Stdout.Printf("Config:%s for branch:%s for %d builds\n", config.Name, ctpEvents.branch, len(ctpEvents.events))
+		}
+	}
+
+	return ctpMapByConfig, nil
+}
+
+// limitStagingRequests3d limits the number of CTP requests to 5 per branch for a given config.
+func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsPerBranch) map[*suschpb.SchedulerConfig][]ctpEventsPerBranch {
+	// Create a new map to hold the result
+	resultCtpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
+
+	// Iterate over the input map
+	for config, ctpEventsPerBranchList := range ctpMapByConfig {
+		// Create a new list to hold the limited events per branch
+		newCtpEventsPerBranchList := make([]ctpEventsPerBranch, len(ctpEventsPerBranchList))
+		for i, ctpEvents := range ctpEventsPerBranchList {
+			if len(ctpEvents.events) > 5 {
+				newCtpEventsPerBranchList[i] = ctpEventsPerBranch{
+					events: ctpEvents.events[:5],
+					branch: ctpEvents.branch,
+				}
+			} else {
+				newCtpEventsPerBranchList[i] = ctpEvents
+			}
+		}
+		resultCtpMapByConfig[config] = newCtpEventsPerBranchList
+	}
+
+	return resultCtpMapByConfig
+}
+
 // mergeRequests merge all CTP requests into one CTP recipe input properties object.
-func mergeRequests(requests []*ctpEvent, suiteName, configName string, isProd, dryRun bool) (*ctpEventBatch, error) {
+func mergeRequests(requests []*ctpEvent, suiteName, configName string, isProd, dryRun bool, skipTag bool) (*ctpEventBatch, error) {
 	properties, err := generateGenericBBProperties(requests)
 	if err != nil {
 		return nil, err
@@ -343,7 +424,7 @@ func mergeRequests(requests []*ctpEvent, suiteName, configName string, isProd, d
 		builder = &buildbucket.CtpBuilderIDProd
 	}
 
-	tags, err := generateBuilderTags(suiteName, configName, requests)
+	tags, err := generateBuilderTags(suiteName, configName, requests, skipTag)
 	if err != nil {
 		return nil, err
 	}
@@ -378,7 +459,7 @@ func batchCTPRequests(ctpRequests map[*suschpb.SchedulerConfig][]*ctpEvent, isPr
 			// If we have reached the max length, merge the current batch list
 			// into a batch event and start a new batch.
 			if len(currentBatch) == common.MultirequestSize {
-				batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun)
+				batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun, false)
 				if err != nil {
 					return nil, err
 				}
@@ -392,11 +473,31 @@ func batchCTPRequests(ctpRequests map[*suschpb.SchedulerConfig][]*ctpEvent, isPr
 		}
 
 		if len(currentBatch) != 0 {
-			batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun)
+			batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun, false)
 			if err != nil {
 				return nil, err
 			}
 
+			batches = append(batches, batch)
+		}
+	}
+	return batches, nil
+}
+
+// batchCTPRequests3d groups all events per config per branch in one batch.
+//
+// NOTE: Requests in these batches will all share the same SuiteScheduler
+// Config.
+func batchCTPRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, isProd, dryRun bool) ([]*ctpEventBatch, error) {
+	batches := []*ctpEventBatch{}
+
+	// Create batches for each config per branch
+	for config, ctpReqsByBranch := range ctpMapByConfig {
+		for _, ctpEvents := range ctpReqsByBranch {
+			batch, err := mergeRequests(ctpEvents.events, config.Suite, config.Name, isProd, dryRun, true)
+			if err != nil {
+				return nil, err
+			}
 			batches = append(batches, batch)
 		}
 	}

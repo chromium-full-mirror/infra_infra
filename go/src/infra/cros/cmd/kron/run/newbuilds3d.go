@@ -32,6 +32,7 @@ type CrOSNewBuild3dCommand struct {
 
 	labConfigs            *configparser.LabConfigs
 	suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs
+	all3dConfigs          configparser.ConfigList
 
 	projectID string
 
@@ -125,8 +126,7 @@ func (c *CrOSNewBuild3dCommand) processBuildPackagesMap(buildReports *[]*builds.
 		} else {
 			// Ack build messages for complete status parent builds
 			for _, msg := range buildPackage3d.Messages {
-				// TODO(b/334117687):while the features are being rolled out do not want the message to disappear.
-				msg.Nack()
+				msg.Ack()
 			}
 		}
 	}
@@ -164,15 +164,39 @@ func (c *CrOSNewBuild3dCommand) FetchBuilds() error {
 	return nil
 }
 
-// FetchTriggeredConfigs takes in a list of kron builds and finds which
-// SuiteScheduler Configs they trigger. This is then organized into a map to be
-// used by the next stage in the pipeline.
+// FetchTriggeredConfigs returns a map where the keys are release orchestrator bbid values
+// and the values are lists of completed builds. The function ensures that the map only
+// contains entries for release orchestrators that have completed.
 func (c *CrOSNewBuild3dCommand) FetchTriggeredConfigs() error {
+	c.all3dConfigs = c.suiteSchedulerConfigs.FetchAllNewBuild3dConfigs()
+	common.Stdout.Printf("Length of 3d configs fetched : %d\n", len(c.all3dConfigs))
 	return nil
 }
 
 // ScheduleRequests generates CTP Requests, batches them into BuildBucket
 // requests, and Schedules them via the BuildBucket API.
 func (c *CrOSNewBuild3dCommand) ScheduleRequests() error {
-	return nil
+	// Build CTP Requests for all 3d configs.
+	ctpMapByConfig, err := buildCTPRequestsFor3dConfigs(c.buildPackagesMap, c.all3dConfigs)
+	if err != nil {
+		return err
+	}
+
+	// check if map is empty
+	if len(ctpMapByConfig) == 0 {
+		common.Stdout.Println("No CTP requests to schedule")
+		return nil
+	}
+
+	if !c.isProd {
+		ctpMapByConfig = limitStagingRequests3d(ctpMapByConfig)
+	}
+
+	// Create batches request for scheduling. Each batch represents one config per branch
+	batches, err := batchCTPRequests3d(ctpMapByConfig, c.isProd, c.dryRun)
+	if err != nil {
+		return err
+	}
+
+	return scheduleBatches(batches, c.isProd, c.dryRun, c.projectID, c.authOpts)
 }
