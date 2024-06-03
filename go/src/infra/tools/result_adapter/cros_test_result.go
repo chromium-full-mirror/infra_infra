@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ import (
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -30,6 +32,9 @@ import (
 // https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/test/artifact/test_result.proto
 type CrosTestResult struct {
 	TestResult *artifactpb.TestResult `json:"test_result"`
+
+	// testhausBaseURL links to the logs for the test result.
+	testhausBaseURL string
 }
 
 // ConvertFromJSON reads the provided reader into the receiver.
@@ -119,6 +124,16 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 				"failed to unmarshal properties for test result").Err()
 		}
 
+		// Add test level artifacts.
+		testCaseDir := testCaseResult.GetResultDirPath().GetPath()
+		testID := testCaseResult.GetTestCaseId().GetValue()
+		arts, err := testResultArtifacts(r.testhausBaseURL, testCaseDir, testCaseResult.GetTestCaseMetadata().GetTestCase().GetName(), testID)
+		if err != nil {
+			logging.Warningf(ctx, "Warning: failed to prepare test level artifacts from dir: %q for test: %q, err: %v", testCaseDir, testID, err)
+		} else {
+			logging.Infof(ctx, "Info: Uploading %d test level artifacts to resultdb from dir: %q for test: %q", len(arts), testCaseDir, testID)
+			tr.Artifacts = arts
+		}
 		ret = append(ret, tr)
 	}
 	return ret, nil
@@ -543,4 +558,34 @@ func configTestMetadataTags(ctx context.Context, tags []*pb.StringPair, testMeta
 	newTags = append(newTags, tags...)
 	newTags = append(newTags, metadataTags...)
 	return newTags
+}
+
+// testResultArtifacts returns the map of relative filepaths to the result sink artifacts by walking the resultDir.
+// It also adds the test level testhaus logs link based on the testhausBaseURL, testName and testID.
+// testhausBaseURL is the base URL of the testhaus logs link.
+// e.g. https://tests.chromeos.goog/p/chromeos/logs/unified/invocation/build-12345
+// Note that testName is the testID without the test harness name.
+func testResultArtifacts(testhausBaseURL, resultDir, testName, testID string) (map[string]*sinkpb.Artifact, error) {
+	artifacts := map[string]*sinkpb.Artifact{}
+	// Map normal relative paths to full paths.
+	normPathToFullPaths, err := processArtifacts(resultDir)
+	if err != nil {
+		return nil, err
+	}
+	for normPath, fullPath := range normPathToFullPaths {
+		artifacts[normPath] = &sinkpb.Artifact{
+			Body: &sinkpb.Artifact_FilePath{FilePath: fullPath},
+		}
+	}
+
+	if testhausBaseURL != "" {
+		artifacts["testhaus_logs"] = &sinkpb.Artifact{
+			Body: &sinkpb.Artifact_Contents{
+				Contents: []byte(fmt.Sprintf("%s?treeQuery=%s&test=%s", strings.TrimSuffix(testhausBaseURL, "/"), url.QueryEscape(testName), url.QueryEscape(testID))),
+			},
+			ContentType: "text/x-uri",
+		}
+	}
+
+	return artifacts, nil
 }

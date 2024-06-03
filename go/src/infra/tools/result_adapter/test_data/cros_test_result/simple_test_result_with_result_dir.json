@@ -1,0 +1,90 @@
+{
+    "version":1,
+    "test_invocation": {
+        "primary_execution_info":{
+            "build_info":{
+                "name":"hatch-cq/R106-15048.0.0",
+                "milestone":106,
+                "chrome_os_version":"15048.0.0",
+                "source":"hatch-cq",
+                "board":"hatch"
+            },
+            "dut_info":{
+                "dut":{
+                    "id": {
+                        "value": "chromeos15-row4-rack5-host1"
+                    },
+                    "chromeos":{
+                        "name":"chromeos15-row4-rack5-host1",
+                        "dut_model":{
+                            "model_name":"nipperkin"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "test_runs":[
+        {
+            "test_case_info":{
+                "test_case_result":{
+                    "test_case_metadata":{
+                        "test_case":{
+                            "id":{
+                                "value":"rlz_CheckPing"
+                            },
+                            "name":"rlz_CheckPing"
+                        }
+                    },
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
+                    "pass":{},
+                    "start_time":"2022-09-07T18:53:33.983328614Z",
+                    "duration": "60s",
+                    "result_dir_path": {
+                        "host_type":  "LOCAL",
+                        "path":  "test_data/cros_test_result/artifacts"
+                    }
+                }
+            },
+            "logs_info":[
+                {
+                    "host_type":"GS",
+                    "path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"
+                }
+            ]
+        },
+        {
+            "test_case_info":{
+                "test_case_result":{
+                    "test_case_metadata":{
+                        "test_case":{
+                            "id":{
+                                "value":"power_Resume"
+                            },
+                            "name":"power_Resume"
+                        }
+                    },
+                    "test_case_id": {
+                        "value": "power_Resume"
+                    },
+                    "fail":{},
+                    "reason": "Test failed",
+                    "start_time":"2022-09-07T18:53:34.983328614Z",
+                    "duration": "120.1s",
+                    "result_dir_path": {
+                        "host_type":  "LOCAL",
+                        "path":  "test_data/cros_test_result/artifacts"
+                    }
+                }
+            },
+            "logs_info":[
+                {
+                    "host_type":"GS",
+                    "path":"gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"
+                }
+            ]
+        }
+    ]
+}

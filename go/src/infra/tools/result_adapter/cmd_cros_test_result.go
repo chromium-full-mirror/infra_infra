@@ -29,6 +29,7 @@ func cmdCrosTestResult() *subcommands.Command {
 		CommandRun: func() subcommands.CommandRun {
 			r := &crosTestResultRun{}
 			r.baseRun.RegisterGlobalFlags()
+			r.registerCrosTestResultFlags()
 			return r
 		},
 	}
@@ -36,6 +37,17 @@ func cmdCrosTestResult() *subcommands.Command {
 
 type crosTestResultRun struct {
 	baseRun
+
+	// Flags.
+	testhausBaseURL string
+}
+
+// registerCrosTestResultFlags registers the CrosTestResult specific flags.
+func (r *crosTestResultRun) registerCrosTestResultFlags() {
+	r.Flags.StringVar(&r.testhausBaseURL, "testhaus-base-url", "", text.Doc(`
+				Base URL to the logs of this invocation in Testhaus.  This will be used to emit a per-test link artifact
+				that is a deep link to the logs of each specific test in Testhaus.
+			`))
 }
 
 func (r *crosTestResultRun) validate() (err error) {
@@ -60,7 +72,7 @@ func (r *crosTestResultRun) generateTestResults(ctx context.Context, _ []byte) (
 	defer f.Close()
 
 	// Convert the results to ResultSink native format.
-	crosTestResultFormat := &CrosTestResult{}
+	crosTestResultFormat := &CrosTestResult{testhausBaseURL: r.testhausBaseURL}
 	if err = crosTestResultFormat.ConvertFromJSON(f); err != nil {
 		return nil, errors.Annotate(err, "failed to recognize as cros_test_result result").Err()
 	}

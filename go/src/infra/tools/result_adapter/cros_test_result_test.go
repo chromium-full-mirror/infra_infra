@@ -6,6 +6,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -47,6 +49,12 @@ const (
 
 	// Test result JSON file with warning test results and a long reason.
 	warnTestResultWithLongReasonFile = "test_data/cros_test_result/warn_test_result_with_long_reason.json"
+
+	// Test result JSON file with test result directory path.
+	testResultDirPathFile = "test_data/cros_test_result/simple_test_result_with_result_dir.json"
+
+	// The testhaus base url flag.
+	testhausBaseURL = "https://tests.chromeos.goog/p/chromeos/logs/unified/build-12345"
 )
 
 func TestCrosTestResultConversions(t *testing.T) {
@@ -211,6 +219,61 @@ func TestCrosTestResultConversions(t *testing.T) {
 			So(testResults, ShouldResembleProto, expected)
 			for _, tr := range testResults {
 				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+			}
+		})
+
+		Convey("Uploads test artifacts when result dir is provided", func() {
+			artBaseDir := filepath.Join("test_data", "cros_test_result", "artifacts")
+			artName1 := "test_artifact_1.txt"
+			artName2 := "test_artifact_2.txt"
+			testCount := 2
+			wantArtifacts := make([]map[string]*sinkpb.Artifact, 0, testCount)
+			for _, testID := range []string{"rlz_CheckPing", "power_Resume"} {
+				wantArtifacts = append(wantArtifacts, map[string]*sinkpb.Artifact{
+					artName1: {
+						Body: &sinkpb.Artifact_FilePath{FilePath: filepath.Join(artBaseDir, artName1)},
+					},
+					artName2: {
+						Body: &sinkpb.Artifact_FilePath{FilePath: filepath.Join(artBaseDir, artName2)},
+					},
+					"testhaus_logs": {
+						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s?treeQuery=%s&test=%s", testhausBaseURL, testID, testID))},
+						ContentType: "text/x-uri",
+					},
+				})
+			}
+			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
+			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+
+			gotTestResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+			So(gotTestResults, ShouldHaveLength, testCount)
+
+			gotArtifacts := make([]map[string]*sinkpb.Artifact, 0, testCount)
+			for _, tr := range gotTestResults {
+				gotArtifacts = append(gotArtifacts, tr.GetArtifacts())
+			}
+			So(gotArtifacts, ShouldResemble, wantArtifacts)
+		})
+
+		Convey("Skips test artifacts upload when result dir is invalid", func() {
+			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
+			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
+			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			So(err, ShouldBeNil)
+
+			// Update the test case result dir to an invalid path
+			for _, tr := range results.TestResult.TestRuns {
+				tr.TestCaseInfo.TestCaseResult.ResultDirPath.Path = "invalid_dir"
+			}
+
+			gotTestResults, err := results.ToProtos(ctx)
+			So(err, ShouldBeNil)
+			So(gotTestResults, ShouldHaveLength, 2)
+			for _, tr := range gotTestResults {
+				So(tr.GetArtifacts(), ShouldBeEmpty)
 			}
 		})
 
