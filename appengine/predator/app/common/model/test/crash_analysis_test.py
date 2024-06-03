@@ -101,6 +101,8 @@ class CrashAnalysisTest(AppengineTestCase):
                      triage_status.UNTRIAGED)
     self.assertEqual(analysis.suspected_project_triage_status,
                      triage_status.UNTRIAGED)
+    self.assertEqual(analysis.suspected_file_paths_triage_status,
+                     triage_status.UNTRIAGED)
     self.assertEqual(analysis.suspected_components_triage_status,
                      triage_status.UNTRIAGED)
 

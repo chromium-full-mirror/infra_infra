@@ -6,7 +6,7 @@ from collections import namedtuple
 
 
 class Culprit(namedtuple('Culprit',
-    ['project', 'components', 'suspected_cls',
+    ['project', 'file_paths', 'components', 'suspected_cls',
      'regression_range', 'algorithm', 'success'])):
   """The result of successfully identifying the culprit of a crash report.
 
@@ -15,6 +15,7 @@ class Culprit(namedtuple('Culprit',
 
   Args:
     project (str): the most-suspected project
+    file_paths (list of str): the suspected file paths.
     components (list of str): the suspected crbug components.
     suspected_cls (list of Suspects): the suspected suspected_cls.
     regression_range (tuple): a pair of the last-good and first-bad versions.
@@ -40,6 +41,7 @@ class Culprit(namedtuple('Culprit',
           # components or regression_range.
           "found": true,
           "suspected_project": "chromium-v8", # Which project is most suspected.
+          "suspected_file_paths": ["chrome/core/v8", "chrome/test/v8"]
           "feedback_url": "https://.."
           "suspected_cls": [
               {
@@ -97,6 +99,7 @@ class Culprit(namedtuple('Culprit',
     result = {}
     result['found'] = (
         bool(self.project) or
+        bool(self.file_paths) or
         bool(self.components) or
         bool(self.suspected_cls) or
         bool(self.regression_range))
@@ -104,19 +107,22 @@ class Culprit(namedtuple('Culprit',
       result['regression_range'] = self.regression_range
     if self.project:
       result['suspected_project'] = self.project
+    if self.file_paths:
+      result['suspected_file_paths'] = self.file_paths
     if self.components:
       result['suspected_components'] = self.components
     if self.suspected_cls:
       result['suspected_cls'] = [cl.ToDict() for cl in self.suspected_cls]
 
     tags = {
-      'suspect_count': len(self.suspected_cls) if self.suspected_cls else 0,
-      'found_suspects': bool(self.suspected_cls),
-      'has_regression_range': bool(self.regression_range),
-      'found_project': bool(self.project),
-      'found_components': bool(self.components),
-      'solution': self.algorithm,
-      'success': self.success,
+        'suspect_count': len(self.suspected_cls) if self.suspected_cls else 0,
+        'found_suspects': bool(self.suspected_cls),
+        'has_regression_range': bool(self.regression_range),
+        'found_project': bool(self.project),
+        'found_file_paths': len(self.file_paths) != 0,
+        'found_components': bool(self.components),
+        'solution': self.algorithm,
+        'success': self.success,
     }
 
     return result, tags

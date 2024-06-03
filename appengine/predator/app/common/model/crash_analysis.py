@@ -95,6 +95,7 @@ class CrashAnalysis(ndb.Model):
   has_regression_range = ndb.BooleanProperty(indexed=True)
   found_suspects = ndb.BooleanProperty(indexed=True)
   found_project = ndb.BooleanProperty(indexed=True)
+  found_file_paths = ndb.BooleanProperty(indexed=True)
   found_components = ndb.BooleanProperty(indexed=True)
 
   # Correct results.
@@ -103,6 +104,7 @@ class CrashAnalysis(ndb.Model):
   culprit_cls = ndb.JsonProperty(indexed=False)
   culprit_components = ndb.JsonProperty(indexed=False)
   culprit_project = ndb.StringProperty(indexed=False)
+  culprit_file_paths = ndb.StringProperty(indexed=False)
 
   # Triage status - 'Untriaged', 'Incorrect', 'Correct', 'Unsure'.
   regression_range_triage_status = ndb.IntegerProperty(
@@ -112,6 +114,8 @@ class CrashAnalysis(ndb.Model):
   suspected_components_triage_status = ndb.IntegerProperty(
       indexed=True, default=triage_status.UNTRIAGED)
   suspected_project_triage_status = ndb.IntegerProperty(
+      indexed=True, default=triage_status.UNTRIAGED)
+  suspected_file_paths_triage_status = ndb.IntegerProperty(
       indexed=True, default=triage_status.UNTRIAGED)
 
   triage_history = ndb.JsonProperty(indexed=False)
@@ -132,6 +136,7 @@ class CrashAnalysis(ndb.Model):
     self.regression_range_triage_status = triage_status.UNTRIAGED
     self.suspected_cls_triage_status = triage_status.UNTRIAGED
     self.suspected_project_triage_status = triage_status.UNTRIAGED
+    self.suspected_file_paths_triage_status = triage_status.UNTRIAGED
     self.suspected_components_triage_status = triage_status.UNTRIAGED
 
   def Update(self, update):

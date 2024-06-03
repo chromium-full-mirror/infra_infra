@@ -26,7 +26,8 @@ class Predator(object): # pragma: no cover
     self.changelist_classifier.SetLog(log)
 
   def _FindCulprit(self, report):
-    """Given a CrashReport, return suspected project, components and cls."""
+    """Given a CrashReport, return suspected project,
+    components, cls and file paths."""
     suspected_cls = self.changelist_classifier(report)
 
     suspected_project = self.project_classifier.ClassifyCallStack(
@@ -43,7 +44,11 @@ class Predator(object): # pragma: no cover
         suspected_components or
         self.component_classifier.ClassifyRepoUrl(report.root_repo_url))
 
-    return suspected_project, suspected_components, suspected_cls
+    suspected_file_paths = self.component_classifier.GetFilePathsFromCallStack(
+        report.stacktrace.crash_stack) if report.stacktrace else []
+
+    return suspected_project, suspected_components, \
+      suspected_cls, suspected_file_paths
 
   def FindCulprit(self, report):
     """Finds the culprit causing the CrashReport.
@@ -57,9 +62,11 @@ class Predator(object): # pragma: no cover
       culprit (Culprit): The culprit result.
     """
     try:
-      suspected_project, suspected_components, suspected_cls = (
+      suspected_project, suspected_components, \
+        suspected_cls, suspected_file_paths = (
           self._FindCulprit(report))
       return Culprit(project=suspected_project,
+                     file_paths=suspected_file_paths,
                      components=suspected_components,
                      suspected_cls=suspected_cls,
                      regression_range=report.regression_range,
@@ -70,6 +77,7 @@ class Predator(object): # pragma: no cover
                    traceback.format_exc(), LogLevel.ERROR)
 
     return Culprit(project='',
+                   file_paths=[],
                    components=[],
                    suspected_cls=[],
                    regression_range=report.regression_range,

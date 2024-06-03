@@ -79,6 +79,7 @@ class CrashAnalysisPipelineTest(AppengineTestCase):
     dummy_suspect = Suspect(dummy_cl, dummy_project_path)
     dummy_culprit = Culprit(
         project = 'PROJECT',
+        file_paths=['path_1', 'path_2'],
         components = ['COMPONENT_1', 'CPOMPONENT_2'],
         suspected_cls = [dummy_suspect],
         # N.B., we must use a list here for the assertion to work
@@ -98,6 +99,7 @@ class CrashAnalysisPipelineTest(AppengineTestCase):
     self.assertTrue(analysis.result['found'])
     self.assertTrue(analysis.found_suspects)
     self.assertTrue(analysis.found_project)
+    self.assertTrue(analysis.found_file_paths)
     self.assertTrue(analysis.found_components)
     dummy_suspect, dummy_tags = dummy_culprit.ToDicts()
     self.assertDictEqual(analysis.result, dummy_suspect)

@@ -74,7 +74,6 @@ class ComponentClassifier(object):
     return (max(component_to_dir_level,
                 key=lambda component: component_to_dir_level[component])
             if component_to_dir_level else None)
-
   def ClassifyStackFrame(self, frame):
     """Determines which component is responsible for this frame."""
     if not frame.dep_path or not frame.file_path:
@@ -111,3 +110,12 @@ class ComponentClassifier(object):
     components = list(
         map(self.ClassifyStackFrame, stack.frames[:self.top_n_frames]))
     return MergeComponents(RankByOccurrence(components, top_n_components))
+
+  def GetFilePathsFromCallStack(self, stack):
+    """Return the file paths for the given call stack"""
+    file_paths = []
+    for frame in stack.frames[:self.top_n_frames]:
+      if frame.dep_path and frame.file_path:
+        dep_path = self._RepoUrlToDepPath(frame.repo_url) or frame.dep_path
+        file_paths.append(os.path.join(dep_path, frame.file_path))
+    return file_paths
