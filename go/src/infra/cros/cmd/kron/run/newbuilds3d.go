@@ -126,7 +126,11 @@ func (c *CrOSNewBuild3dCommand) processBuildPackagesMap(buildReports *[]*builds.
 		} else {
 			// Ack build messages for complete status parent builds
 			for _, msg := range buildPackage3d.Messages {
-				msg.Ack()
+				if c.isTest {
+					msg.Nack()
+				} else {
+					msg.Ack()
+				}
 			}
 		}
 	}
@@ -149,7 +153,12 @@ func (c *CrOSNewBuild3dCommand) FetchBuilds() error {
 	// Fetch BuildReports from the Release Pub/Sub firehose.
 	common.Stdout.Println("Fetching builds from Pub/Sub.")
 
-	subscriptionID := common.BuildsSubscription3dTesting
+	// If we are in test mode then pull from the testing Pub/Sub subscription
+	// where we do not ACK messages.
+	subscriptionID := common.BuildsSubscription3d
+	if c.isTest {
+		subscriptionID = common.BuildsSubscription3dTesting
+	}
 
 	// NOTE: We are ignoring the response from this function because finalize function here
 	// populates the buildPackagesMap field in CrOSNewBuild3dCommand.

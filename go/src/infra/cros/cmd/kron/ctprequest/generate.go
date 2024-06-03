@@ -191,6 +191,9 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 		},
 		TestPlan: getTestPlan(config),
 	}
+	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD_3D {
+		request.Params.DddSuite = true
+	}
 
 	return request
 }
