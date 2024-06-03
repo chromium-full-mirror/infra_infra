@@ -251,13 +251,14 @@ func shouldExcludePool(pools []string, op map[string]struct{}) (string, bool) {
 func (m *migrator) GetExcludedDUTs(ctx context.Context, lses []*ufspb.MachineLSE, cs *configSearchable) []string {
 	var rollbackDUTs []string
 	for _, lse := range lses {
-		if _, ok := cs.excludeDUTs[lse.GetName()]; ok {
-			rollbackDUTs = append(rollbackDUTs, lse.GetName())
+		stripped := ufsUtil.RemovePrefix(lse.GetName())
+		if _, ok := cs.excludeDUTs[stripped]; ok {
+			rollbackDUTs = append(rollbackDUTs, stripped)
 			continue
 		}
 		for _, pool := range lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools() {
 			if _, ok := cs.excludePools[pool]; ok {
-				rollbackDUTs = append(rollbackDUTs, lse.GetName())
+				rollbackDUTs = append(rollbackDUTs, stripped)
 				break
 			}
 		}
