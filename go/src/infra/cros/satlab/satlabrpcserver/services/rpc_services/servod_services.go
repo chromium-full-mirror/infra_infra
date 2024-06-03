@@ -222,7 +222,7 @@ func (s *SatlabRpcServiceServer) verifyServodDaemonIsUp(ctx context.Context, in 
 	if err != nil {
 		return fmt.Errorf("verifyServodDaemonIsUp: exec servodtool: %w", err)
 	}
-	if res.ExitCode == 0 && res != nil {
+	if res != nil && res.ExitCode != 0 {
 		return fmt.Errorf("verifyServodDaemonIsUp: servodtool failed: exit code: %d, response: %s", res.ExitCode, res.Stderr)
 	}
 	logging.Infof(ctx, "Servod container %s has daemon ready", in.GetServodDockerContainerName())
