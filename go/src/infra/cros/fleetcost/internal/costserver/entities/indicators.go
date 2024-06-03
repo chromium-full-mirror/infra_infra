@@ -36,6 +36,7 @@ type CostIndicatorEntity struct {
 	Sku      string `gae:"sku"`
 	Type     string `gae:"type"`
 	Location string `gae:"location"`
+	Quantity bool   `gae:"quantity"`
 }
 
 // Silence staticcheck warning about unused field.
@@ -47,6 +48,7 @@ func (indicator *CostIndicatorEntity) Save(withMeta bool) (datastore.PropertyMap
 	indicator.Board = indicator.CostIndicator.GetBoard()
 	indicator.Model = indicator.CostIndicator.GetModel()
 	indicator.Sku = indicator.CostIndicator.GetSku()
+	indicator.Quantity = indicator.CostIndicator.GetQuantity()
 	if int(indicator.CostIndicator.GetType()) != 0 {
 		indicator.Type = indicator.CostIndicator.GetType().String()
 	}
