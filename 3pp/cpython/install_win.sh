@@ -28,7 +28,9 @@ rm -vrf SourceDir/Tools/Scripts
 mkdir "$PREFIX/bin"
 mv SourceDir/* "$PREFIX/bin"
 
-"$PREFIX/bin/python.exe" "$(where pip_bootstrap.py)" "$PREFIX/bin"
+# We may import where with bat shim in pkgbuild.
+if which where > /dev/null; then WHERE=where; else WHERE=where.bat; fi
+"$PREFIX/bin/python.exe" "$($WHERE pip_bootstrap.py)" "$PREFIX/bin"
 
 # This is full of .exe shims which don't work correctly unless you put
 # python.exe on %PATH% (via a hack in pip_bootstrap.py). Currently (2018/11/12)
