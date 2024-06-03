@@ -10,8 +10,13 @@ import (
 	"sort"
 	"strings"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	common_proto "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -23,7 +28,12 @@ type SummarizeCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	AllTestResults map[string][]*data.TestResults
+	AllTestResults          map[string][]*data.TestResults
+	RequestToTargetChainMap map[string]map[string]string
+	DddTrackerMap           map[string]bool
+
+	// Updates
+	ExecuteResponses *steps.ExecuteResponses
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -55,7 +65,7 @@ func (cmd *SummarizeCmd) UpdateStateKeeper(
 	var err error
 	switch sk := ski.(type) {
 	case *data.PrePostFilterStateKeeper:
-		err = cmd.updateLocalTestStateKeeper(ctx, sk)
+		err = cmd.updatePrePostStateKeeper(ctx, sk)
 	}
 
 	if err != nil {
@@ -75,12 +85,23 @@ func (cmd *SummarizeCmd) extractDepsFromFilterStateKeepr(
 
 	cmd.AllTestResults = sk.AllTestResults
 
+	if sk.RequestToTargetChainMap != nil && len(sk.RequestToTargetChainMap) > 0 {
+		cmd.RequestToTargetChainMap = sk.RequestToTargetChainMap
+	}
+
+	if sk.DddTrackerMap != nil && len(sk.DddTrackerMap) > 0 {
+		cmd.DddTrackerMap = sk.DddTrackerMap
+	}
+
 	return nil
 }
 
-func (cmd *SummarizeCmd) updateLocalTestStateKeeper(
+func (cmd *SummarizeCmd) updatePrePostStateKeeper(
 	ctx context.Context,
 	sk *data.PrePostFilterStateKeeper) error {
+	if cmd.ExecuteResponses != nil {
+		sk.ExecuteResponses = cmd.ExecuteResponses
+	}
 
 	return nil
 }
@@ -115,6 +136,19 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 
 	sort.Strings(suiteKeys)
 
+	// If direct v2, the results will be organized by each separate request(suite).
+	// Otherwise, results will be linked back to the original request name.
+	resultsMap := cmd.AllTestResults
+	if cmd.RequestToTargetChainMap != nil && len(cmd.RequestToTargetChainMap) > 0 {
+		resultsMap, err = cmd.RestructureResultsMap(cmd.AllTestResults)
+		if err != nil {
+			return err
+		}
+	}
+
+	cmd.ExecuteResponses = ToExecuteResponses(resultsMap)
+	common.WriteProtoToStepLog(ctx, step, cmd.ExecuteResponses, "output_properties")
+
 	for _, suite := range suiteKeys {
 		testResults := cmd.AllTestResults[suite]
 		step, ctx := build.StartStep(ctx, suite)
@@ -137,6 +171,38 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 
 	// we don't want the build to fail for this step
 	return nil
+}
+
+func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.TestResults) (map[string][]*data.TestResults, error) {
+	ret := map[string][]*data.TestResults{}
+	for _, results := range testResultMap {
+		for _, result := range results {
+			reqChain := cmd.RequestToTargetChainMap[result.RequestKey]
+			if cmd.DddTrackerMap[result.RequestKey] {
+				// Processing 3d results
+				for _, chainedKey := range reqChain {
+					if _, ok := ret[chainedKey]; !ok {
+						ret[chainedKey] = []*data.TestResults{}
+					}
+					ret[chainedKey] = append(ret[chainedKey], result)
+				}
+			} else {
+				// Processing non-3d results
+				resultBMVkey := common.ExtractPrefixUntilDelimiter(result.Key, "-shard")
+				if _, ok := reqChain[resultBMVkey]; !ok {
+					// should not happen
+					return nil, fmt.Errorf("result key %s not found in request chain!", resultBMVkey)
+				}
+				originalKey := reqChain[resultBMVkey]
+				if _, ok := ret[originalKey]; !ok {
+					ret[originalKey] = []*data.TestResults{}
+				}
+				ret[originalKey] = append(ret[originalKey], result)
+			}
+		}
+	}
+
+	return ret, nil
 }
 
 func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string][]*data.TestResults) error {
@@ -165,11 +231,11 @@ func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string]
 
 			logLink := result.Results.GetLogData().GetTesthausUrl()
 			if logLink != "" {
-				linkStr = fmt.Sprintf("%s[log link](%s)", linkStr, logLink)
+				linkStr = fmt.Sprintf("%s[log link](%s),", linkStr, logLink)
 			}
 
 			if buildUrl != "" {
-				linkStr = fmt.Sprintf("%s, [task link](%s)", linkStr, buildUrl)
+				linkStr = fmt.Sprintf("%s [task link](%s)", linkStr, buildUrl)
 			}
 
 			if linkStr != "* " {
@@ -257,4 +323,66 @@ func NewSummarizeCmd() *SummarizeCmd {
 	abstractCmd := interfaces.NewAbstractCmd(SummarizeCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &SummarizeCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
+}
+
+func ToExecuteResponses(testResultMap map[string][]*data.TestResults) *steps.ExecuteResponses {
+	taggedRes := map[string]*steps.ExecuteResponse{}
+	for key, results := range testResultMap {
+		consolidatedResults := []*steps.ExecuteResponse_ConsolidatedResult{}
+		taskResults := []*steps.ExecuteResponse_TaskResult{}
+		verdict := test_platform.TaskState_VERDICT_NO_VERDICT
+		for _, testResult := range results {
+			taskResults = append(taskResults, TrResultToErTaskResult(testResult))
+			if testResult.GetFailureErr() != nil {
+				verdict = test_platform.TaskState_VERDICT_FAILED
+			} else {
+				verdict = test_platform.TaskState_VERDICT_PASSED
+			}
+		}
+		// consolidated results
+		consolidatedResult := &steps.ExecuteResponse_ConsolidatedResult{
+			Attempts: taskResults,
+		}
+		consolidatedResults = append(consolidatedResults, consolidatedResult)
+
+		taggedRes[key] = &steps.ExecuteResponse{TaskResults: taskResults, ConsolidatedResults: consolidatedResults, State: &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, Verdict: verdict}}
+	}
+
+	return &steps.ExecuteResponses{TaggedResponses: taggedRes}
+}
+
+func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse_TaskResult {
+	if testResult.TopLevelError != nil {
+		switch e := (testResult.TopLevelError).(type) {
+
+		case *data.BotParamsRejectedError:
+			r1, r2 := common.GetDims(e.RejectedDims)
+			r := &steps.ExecuteResponse_TaskResult{
+				Name:                   testResult.Name,
+				State:                  &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_REJECTED},
+				RejectedTaskDimensions: r1,
+				RejectedDimensions:     r2,
+			}
+			return r
+			// TODO: Consider adding enumeration error (v1 does not propagate enumeration error)
+		}
+		return nil
+	}
+	r := &steps.ExecuteResponse_TaskResult{
+		Name: testResult.Name,
+		State: &test_platform.TaskState{
+			LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, // at this point the task must be in completed state
+			Verdict:   common.GetTaskStateVerdict(testResult.Results),
+		},
+		TaskUrl:     testResult.BuildUrl,
+		TestCases:   common.TestCasesToTestCaseResult(testResult.Results.GetAutotestResult().GetTestCases()),
+		PrejobSteps: common.PrejobStepsToTestCaseResult(testResult.Results.GetPrejob().GetStep()),
+		Attempt:     int32(testResult.Attempt),
+	}
+	if ld := testResult.Results.GetLogData(); ld != nil {
+		r.LogData = proto.Clone(ld).(*common_proto.TaskLogData)
+		r.LogUrl = r.LogData.TesthausUrl
+	}
+
+	return r
 }

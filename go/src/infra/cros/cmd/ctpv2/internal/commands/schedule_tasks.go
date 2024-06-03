@@ -60,6 +60,7 @@ type ScheduleTasksCmd struct {
 	// Deps
 	InternalTestPlan *api.InternalTestplan
 	BuildsMap        map[string]*data.BuildRequest
+	RequestKey       string
 
 	// Updates
 	TestResults map[string]*data.TestResults
@@ -142,6 +143,10 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 
 	if sk.CtpReq == nil {
 		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
+	}
+
+	if sk.RequestKey != "" {
+		cmd.RequestKey = sk.RequestKey
 	}
 
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
@@ -234,7 +239,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	defer func() { step.End(err) }()
 
 	// Construct test results
-	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum}
+	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s-shard-%d", suiteName, buildReq.ShardNum)}
 
 	if buildReq.Err != nil {
 		err = buildReq.Err
@@ -298,7 +303,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		Id: scheduledBuild.GetId(),
 	}
 	for {
-
 		buildInfo, err := CheckBuildInfoIfBuildEnded(ctx, statusReq, bbClient)
 		if err != nil || buildInfo == nil {
 			// this means the build didn't end
@@ -362,6 +366,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		if buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount() > int64(retryNum) {
 			newBuildReq := cmd.RetryReqIfQualifies(ctx, trResult, step, buildReq)
 			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
+				logging.Infof(ctx, "total retry left after current retry: %d", buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount()-int64(retryNum))
 				// Schedule retry
 				wg.Add(1)
 				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc)
@@ -407,9 +412,21 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 	trReq := buildReq.OriginalTrReq
 	key := buildReq.Key
 	shardNum := buildReq.ShardNum
-	// '0'ed index because we should always have one hw here. It supports multiple
-	// MO should reduce it down to 1 always. The len check is done at MO step.
-	TrReqhwDef := trReq.Req.GetHwDefinition()[0]
+
+	var TrReqhwDef *api.SwarmingDefinition
+	TrReqhwDef = nil
+
+	var schedUnit *api.SchedulingUnit
+	schedUnit = nil
+	if trReq.NewReq != nil && len(trReq.NewReq.GetSchedulingUnits()) != 0 {
+		// '0'ed index because we should always have one hw here. It supports multiple
+		// MO should reduce it down to 1 always. The len check is done at MO step.
+		schedUnit = trReq.NewReq.GetSchedulingUnits()[0]
+	} else {
+		// '0'ed index because we should always have one hw here. It supports multiple
+		// MO should reduce it down to 1 always. The len check is done at MO step.
+		TrReqhwDef = trReq.Req.GetHwDefinition()[0]
+	}
 	testCases := trReq.Tcs
 
 	// Input validations
@@ -429,6 +446,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 
 	helper := &TrV2ReqHelper{
 		trReqHWDef: TrReqhwDef,
+		schedUnit:  schedUnit,
 		testCases:  testCases,
 		build:      cmd.BuildState,
 		suiteInfo:  cmd.InternalTestPlan.SuiteInfo,
@@ -516,12 +534,12 @@ func determineRetriablity(trResult *skylab_test_runner.Result) map[string]bool {
 // Panics on unknown verdicts.
 func IsTcRetriable(verdict skylab_test_runner.Result_Autotest_TestCase_Verdict) bool {
 	switch verdict {
-	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL,
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
+		skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL,
 		skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR,
 		skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
 		return true
-	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
-		skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
 		return false
 	default:
 		panic(fmt.Sprintf("IsTcRetriable: unknown verdict %s", verdict.String()))

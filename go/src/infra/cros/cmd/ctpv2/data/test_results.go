@@ -13,11 +13,13 @@ import (
 
 type TestResults struct {
 	Suite         string
-	Key           string // board-model-variant
+	Key           string // [board-model-variant]-shard-%d
 	TopLevelError error
 	Results       *skylab_test_runner.Result
 	Attempt       int // 0 means no retry
 	BuildUrl      string
+	RequestKey    string // this is used to link back the results to original request
+	Name          string
 }
 
 func (t *TestResults) GetFailureErr() error {

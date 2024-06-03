@@ -25,14 +25,23 @@ func MockManifestFetcher(ctx context.Context, gcsPath string) (string, error) {
 	} else {
 		return "PRIVATE", nil
 	}
-
 }
+
+func ConstructCtpv2Req(reqTov2Map map[string]*testapi.CTPRequest) *testapi.CTPv2Request {
+	reqs := []*testapi.CTPRequest{}
+	for _, v2Req := range reqTov2Map {
+		reqs = append(reqs, v2Req)
+	}
+	return &testapi.CTPv2Request{Requests: reqs}
+}
+
 func TestCTPv1Tov2Translation(t *testing.T) {
 	Convey("Single Translation", t, func() {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false),
 		}
-		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
 		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
@@ -49,7 +58,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false),
 		}
-		result := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 2)
 		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
@@ -82,7 +92,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false),
 		}
-		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
 		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 2)
@@ -104,7 +115,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false),
 		}
-		result := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 2)
 		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
@@ -182,67 +194,67 @@ func TestGetVariant(t *testing.T) {
 
 func TestCTP2Grouping(t *testing.T) {
 	Convey("Same build, same suite, diff boards", t, func() {
-		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
-			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
-			getCTPv2Request("board2", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
+		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
+			getCTPv2WithKeyRequest("board2", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 		})
 
 		So(groupings, ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets(), ShouldHaveLength, 2)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 2)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
 			ShouldEqual,
-			groupings[0].GetScheduleTargets()[1].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
+			groupings[0].V2.GetScheduleTargets()[1].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
 	})
 
 	Convey("Same build, diff suite", t, func() {
-		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
-			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
-			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite2", ""),
+		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite2", ""),
 		})
 
 		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetSuiteRequest().GetTestSuite().GetName(),
+		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
 			ShouldNotEqual,
-			groupings[1].GetSuiteRequest().GetTestSuite().GetName())
+			groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName())
 	})
 
 	Convey("Diff build, same suite", t, func() {
-		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
-			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
-			getCTPv2Request("board1", "model1", "release", "board1-release/R124.0.0", "", "suite1", ""),
+		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R124.0.0", "", "suite1", ""),
 		})
 
 		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[1].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
 			ShouldNotEqual,
-			groupings[1].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
+			groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
 	})
 
 	Convey("Diff build, diff suite", t, func() {
-		groupings := builders.GroupEligibleV2Requests(context.Background(), []*testapi.CTPRequest{
-			getCTPv2Request("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
-			getCTPv2Request("board1", "model1", "release", "board1-release/R124.0.0", "", "suite2", ""),
+		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
+			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R124.0.0", "", "suite2", ""),
 		})
 
 		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[1].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
 			ShouldNotEqual,
-			groupings[1].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
-		So(groupings[0].GetSuiteRequest().GetTestSuite().GetName(),
+			groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
+		So(groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
 			ShouldNotEqual,
-			groupings[1].GetSuiteRequest().GetTestSuite().GetName())
+			groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName())
 	})
 }
 
@@ -287,8 +299,8 @@ func getCTPv1Request(board, model, build, suite, testArgs string, analyticsName 
 	}
 }
 
-func getCTPv2Request(board, model, build, gcsPath, variant, suite, testArgs string) *testapi.CTPRequest {
-	return &testapi.CTPRequest{
+func getCTPv2WithKeyRequest(board, model, build, gcsPath, variant, suite, testArgs string) *builders.V2WithKey {
+	ctpReq := &testapi.CTPRequest{
 		Pool: "schedukeTest",
 		SchedulerInfo: &testapi.SchedulerInfo{
 			Scheduler: testapi.SchedulerInfo_PRINT_REQUEST_ONLY,
@@ -339,6 +351,8 @@ func getCTPv2Request(board, model, build, gcsPath, variant, suite, testArgs stri
 			},
 		},
 	}
+
+	return builders.NewV2WithKey("", ctpReq)
 }
 
 func getChromeosSoftwareDeps(chromeosBuild string) []*test_platform.Request_Params_SoftwareDependency {

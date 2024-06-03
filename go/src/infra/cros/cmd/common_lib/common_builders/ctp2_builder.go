@@ -7,8 +7,7 @@ package common_builders
 import (
 	"context"
 
-	"golang.org/x/exp/maps"
-
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 
@@ -22,13 +21,22 @@ type CTPV2FromV1 struct {
 
 	ctx             context.Context
 	v2              *testapi.CTPv2Request
-	v1              []*test_platform.Request
+	v1              map[string]*test_platform.Request
 	manifestFetcher ManifestFetcher
+}
+
+type V2WithKey struct {
+	Key string
+	V2  *testapi.CTPRequest
+}
+
+func NewV2WithKey(key string, v2 *testapi.CTPRequest) *V2WithKey {
+	return &V2WithKey{Key: key, V2: v2}
 }
 
 func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request) *CTPV2FromV1 {
 	return &CTPV2FromV1{
-		v1: maps.Values(v1),
+		v1: v1,
 		v2: &testapi.CTPv2Request{
 			Requests: []*testapi.CTPRequest{},
 		},
@@ -42,7 +50,7 @@ func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]
 		manifestFetcher = GetBuilderManifestFromContainer
 	}
 	return &CTPV2FromV1{
-		v1: maps.Values(v1),
+		v1: v1,
 		v2: &testapi.CTPv2Request{
 			Requests: []*testapi.CTPRequest{},
 		},
@@ -51,11 +59,22 @@ func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]
 	}
 }
 
-func (builder *CTPV2FromV1) BuildRequest() *testapi.CTPv2Request {
-	for _, v1Request := range builder.v1 {
-		builder.v2.Requests = append(builder.v2.Requests, buildCTPRequest(v1Request))
+func (builder *CTPV2FromV1) BuildRequest() (map[string]*api.CTPRequest, map[string][]string, map[string]bool) {
+	reqsChainMap := map[string][]string{}
+	v2sWithKeyList := []*V2WithKey{}
+	reqKeyMap := map[string]*api.CTPRequest{}
+	dddTrackerMap := map[string]bool{}
+	for key, v1Request := range builder.v1 {
+		ctpReq := buildCTPRequest(v1Request)
+		builder.v2.Requests = append(builder.v2.Requests, ctpReq)
+		v2sWithKeyList = append(v2sWithKeyList, &V2WithKey{Key: key, V2: ctpReq})
+		dddTrackerMap[key] = ctpReq.GetSuiteRequest().GetDddSuite()
 	}
 
-	builder.v2.Requests = GroupV2Requests(builder.ctx, builder.v2.Requests, builder.manifestFetcher)
-	return builder.v2
+	v2sWithKeyList, reqsChainMap = GroupV2Requests(builder.ctx, v2sWithKeyList, builder.manifestFetcher)
+
+	for _, v2 := range v2sWithKeyList {
+		reqKeyMap[v2.Key] = v2.V2
+	}
+	return reqKeyMap, reqsChainMap, dddTrackerMap
 }

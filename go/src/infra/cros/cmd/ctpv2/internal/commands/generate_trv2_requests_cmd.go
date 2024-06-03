@@ -330,7 +330,7 @@ func GetBoardModelVariantKey(ctx context.Context, trReq *data.TrRequest) (string
 	variant := strings.ToLower(TrReqhwDef.GetVariant())
 	model := strings.ToLower(getModelTargetfromHwDef(TrReqhwDef))
 
-	return ConstructKey(board, model, variant), nil
+	return common.ConstructKey(board, model, variant), nil
 }
 
 func GetBoardModelVariantKeyFromTarget(target *api.Target) string {
@@ -338,19 +338,7 @@ func GetBoardModelVariantKeyFromTarget(target *api.Target) string {
 	model := strings.ToLower(getModelFromSchedulingTarget(target))
 	variant := strings.ToLower(target.GetSwarmingDef().GetVariant())
 
-	return ConstructKey(board, model, variant)
-}
-
-func ConstructKey(board string, model string, variant string) string {
-	key := board
-	if model != "" {
-		key = fmt.Sprintf("%s-%s", key, model)
-	}
-	if variant != "" {
-		key = fmt.Sprintf("%s-%s", key, variant)
-	}
-
-	return fmt.Sprintf("[%s]", key)
+	return common.ConstructKey(board, model, variant)
 }
 
 // ----- analytics funcs --------

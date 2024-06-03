@@ -49,21 +49,24 @@ var (
 // NOTE: The manifest is being fetched from container image info because that's info
 // is used while generating new containers or resuing cache containers. "PUBLIC" manifest
 // boards do not use cached containers and therefore grouping shouldn't be done.
-func GroupV2Requests(ctx context.Context, v2s []*testapi.CTPRequest, manifestFetcher ManifestFetcher) []*testapi.CTPRequest {
+func GroupV2Requests(ctx context.Context, v2s []*V2WithKey, manifestFetcher ManifestFetcher) ([]*V2WithKey, map[string][]string) {
 	eligible, public := FilterV2RequestsBasedOnManifest(ctx, v2s, manifestFetcher)
-	groupedEligibleRequests := GroupEligibleV2Requests(ctx, eligible)
+	groupedEligibleRequests, reqChainMap := GroupEligibleV2Requests(ctx, eligible)
+
 	// merge public group as is with groupedEligibleRequests
 	groupedEligibleRequests = append(groupedEligibleRequests, public...)
-	return groupedEligibleRequests
+
+	return groupedEligibleRequests, reqChainMap
 }
 
 // FilterV2RequestsBasedOnManifest divides the ctp requests into two groups based on the manifest from container
 // image info. One set for "PUBLIC" manifest and another for others.
-func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequest, manifestFetcher ManifestFetcher) ([]*testapi.CTPRequest, []*testapi.CTPRequest) {
-	public := []*testapi.CTPRequest{}
-	nonPublic := []*testapi.CTPRequest{}
+func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*V2WithKey, manifestFetcher ManifestFetcher) ([]*V2WithKey, []*V2WithKey) {
+	public := []*V2WithKey{}
+	nonPublic := []*V2WithKey{}
 	imageManifestMap := make(map[string]string)
-	for _, v2 := range v2s {
+	for _, v2Withkey := range v2s {
+		v2 := v2Withkey.V2
 		// Safe guard against CTPRequests missing targets to schedule on.
 		if len(v2.GetScheduleTargets()) == 0 || len(v2.GetScheduleTargets()[0].GetTargets()) == 0 {
 			logging.Infof(ctx, "request missing targets to schedule on, dropping: %v", v2)
@@ -80,23 +83,23 @@ func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequ
 			if err != nil {
 				// Instead of dropping, add it to public
 				logging.Infof(ctx, "failed to fetch manifest info for %s, add to public list: %v", gcsPath, v2)
-				public = append(public, v2)
+				public = append(public, v2Withkey)
 				continue
 			}
 			// Update the imageManifestMap with manifest info
 			imageManifestMap[gcsPath] = manifest
 			// If manifest is "PUBLIC" then add to public
 			if manifest == Public {
-				public = append(public, v2)
+				public = append(public, v2Withkey)
 			} else {
-				nonPublic = append(nonPublic, v2)
+				nonPublic = append(nonPublic, v2Withkey)
 			}
 		} else {
 			// If manifest is "PUBLIC" then add to public
 			if manifest == Public {
-				public = append(public, v2)
+				public = append(public, v2Withkey)
 			} else {
-				nonPublic = append(nonPublic, v2)
+				nonPublic = append(nonPublic, v2Withkey)
 			}
 		}
 	}
@@ -105,9 +108,13 @@ func FilterV2RequestsBasedOnManifest(ctx context.Context, v2s []*testapi.CTPRequ
 
 // GroupEligibleV2Requests reduces the list of v2 requests by grouping
 // by build and suite request.
-func GroupEligibleV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*testapi.CTPRequest {
-	groups := map[string][]*testapi.CTPRequest{}
-	for _, v2 := range v2s {
+func GroupEligibleV2Requests(ctx context.Context, v2s []*V2WithKey) ([]*V2WithKey, map[string][]string) {
+	reqChainMap := map[string][]string{}
+	groups := map[string][]*V2WithKey{}
+	for _, v2Withkey := range v2s {
+		v2 := v2Withkey.V2
+		reqKey := v2Withkey.Key
+		logging.Infof(ctx, fmt.Sprintf("reqKey:%s", reqKey))
 		// Translator only supplies singular length schedule targets,
 		// and only care about checking the primary target's gcspath when grouping.
 		gcsPath := v2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()
@@ -117,13 +124,16 @@ func GroupEligibleV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*
 			continue
 		}
 		if _, ok := groups[build]; !ok {
-			groups[build] = []*testapi.CTPRequest{}
+			groups[build] = []*V2WithKey{}
+			logging.Infof(ctx, fmt.Sprintf("new group created for reqKey:%s", reqKey))
 		}
 
 		foundMatch := false
 		for _, suiteGroup := range groups[build] {
-			if canBeGrouped(suiteGroup, v2) {
-				combineRequests(suiteGroup, v2)
+			if canBeGrouped(suiteGroup.V2, v2) {
+				combineRequests(suiteGroup.V2, v2)
+				reqChainMap[suiteGroup.Key] = append(reqChainMap[suiteGroup.Key], reqKey)
+				logging.Infof(ctx, fmt.Sprintf("Combining %s with %s", reqKey, suiteGroup.Key))
 				foundMatch = true
 				break
 			}
@@ -131,14 +141,17 @@ func GroupEligibleV2Requests(ctx context.Context, v2s []*testapi.CTPRequest) []*
 		if foundMatch {
 			continue
 		}
-		groups[build] = append(groups[build], v2)
+		groups[build] = append(groups[build], v2Withkey)
+		// Add itself as well
+		reqChainMap[reqKey] = []string{reqKey}
 	}
-	flatRequests := []*testapi.CTPRequest{}
+	flatRequests := []*V2WithKey{}
 	for _, buildRequests := range groups {
 		flatRequests = append(flatRequests, buildRequests...)
+
 	}
 
-	return flatRequests
+	return flatRequests, reqChainMap
 }
 
 // GetBuilderManifestFromContainer returns the manifest info fetched from container image info
@@ -180,12 +193,14 @@ func combineRequests(r1, r2 *testapi.CTPRequest) {
 // together based on factors such as suite equality and matching
 // filters.
 func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
+	// Compare suite request
 	if !proto.Equal(
 		removeNonGroupableSuiteFields(r1.GetSuiteRequest()),
 		removeNonGroupableSuiteFields(r2.GetSuiteRequest())) {
 		return false
 	}
 
+	// Compare filters provided
 	if len(r1.GetKarbonFilters()) != len(r2.GetKarbonFilters()) {
 		return false
 	}
@@ -196,6 +211,24 @@ func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
 			r2.GetKarbonFilters()[i]) {
 			return false
 		}
+	}
+
+	// Compare pool
+	if r1.GetPool() != r2.GetPool() {
+		return false
+	}
+
+	// Compare scheduler
+	if !proto.Equal(r1.GetSchedulerInfo(), r2.GetSchedulerInfo()) {
+		return false
+	}
+
+	// Compare 3D-ness
+	// Don't combine 3D with non-3d requests
+	r1Is3DSuite := r1.GetSuiteRequest().GetDddSuite()
+	r2Is3DSuite := r2.GetSuiteRequest().GetDddSuite()
+	if (r1Is3DSuite && !r2Is3DSuite) || (!r1Is3DSuite && r2Is3DSuite) {
+		return false
 	}
 
 	return true

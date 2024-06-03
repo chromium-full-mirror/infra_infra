@@ -99,3 +99,24 @@ func DutModelFromDut(dut *labapi.Dut) *labapi.DutModel {
 	}
 	return nil
 }
+
+func ConstructKey(board string, model string, variant string) string {
+	key := board
+	if model != "" {
+		key = fmt.Sprintf("%s-%s", key, model)
+	}
+	if variant != "" {
+		key = fmt.Sprintf("%s-%s", key, variant)
+	}
+
+	return fmt.Sprintf("[%s]", key)
+}
+
+// ExtractPrefixUntilDelimiter: Extracts a prefix until a delimiter is found.
+func ExtractPrefixUntilDelimiter(str string, delimiter string) string {
+	index := strings.Index(str, delimiter)
+	if index == -1 {
+		return str // Delimiter not found, return the whole string
+	}
+	return str[:index]
+}

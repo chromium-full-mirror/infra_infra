@@ -5,13 +5,17 @@
 package executions
 
 import (
+	"bytes"
+	"compress/zlib"
 	"container/list"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
@@ -19,13 +23,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 )
 
 // TODO : Re-structure different execution flow properly later.
@@ -53,18 +58,7 @@ func LuciBuildExecution() {
 			}
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp := &steps.CTPv2BinaryBuildOutput{}
-			_, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient)
-			// TODO (azrahman): add compressed result for upstream
-			// if resp != nil {
-			// 	m, _ := proto.Marshal(resp)
-			// 	var b bytes.Buffer
-			// 	w := zlib.NewWriter(&b)
-			// 	_, _ = w.Write(m)
-			// 	_ = w.Close()
-			//
-			// 	resp.CompressedResult = base64.StdEncoding.EncodeToString(b.Bytes())
-			// }
+			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -82,7 +76,8 @@ func executeRequests(
 	input *steps.CTPv2BinaryBuildInput,
 	ctrCipdVersion string,
 	buildState *build.State,
-	BQClient *bigquery.Client) (*api.CTPv2Response, error) {
+	BQClient *bigquery.Client) (*steps.CTPv2BinaryBuildOutput, error) {
+	buildOutput := &steps.CTPv2BinaryBuildOutput{}
 
 	// Validation
 	if ctrCipdVersion == "" {
@@ -131,24 +126,43 @@ func executeRequests(
 	// Execute pre configs
 	err = ctpv2PreConfig.Execute(ctx)
 	if err != nil {
-		return &api.CTPv2Response{}, errors.Annotate(err, "error during executing pre execution configs: ").Err()
+		return nil, errors.Annotate(err, "error during executing pre execution configs: ").Err()
 	}
 
 	// Execute Ctpv2 Reqs
-	resultsMap := executeCtpv2Reqs(ctx, sk.CtpV2Request, input.Config, buildState, ctr, BQClient)
+	// Check if direct ctpv2Request was provided and translate it into a map
+	keyReqMap := map[string]*api.CTPRequest{}
+	if sk.CtpV2Request != nil {
+		for i, req := range sk.CtpV2Request.GetRequests() {
+			keyReqMap[string(rune(i))] = req
+		}
+	} else {
+		keyReqMap = sk.V1KeyToCTPv2Req
+	}
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient)
 	sk.AllTestResults = resultsMap
+	//TODO (azrahman): add compressed result for upstream
+	if sk.ExecuteResponses != nil {
+		m, _ := proto.Marshal(sk.ExecuteResponses)
+		var b bytes.Buffer
+		w := zlib.NewWriter(&b)
+		_, _ = w.Write(m)
+		_ = w.Close()
+
+		buildOutput.CompressedResponses = base64.StdEncoding.EncodeToString(b.Bytes())
+	}
 
 	// Execute post configs
 	err = ctpv2PostConfig.Execute(ctx)
 	if err != nil {
-		return &api.CTPv2Response{}, errors.Annotate(err, "error during executing post execution configs: ").Err()
+		return buildOutput, errors.Annotate(err, "error during executing post execution configs: ").Err()
 	}
 
-	return &api.CTPv2Response{}, nil
+	return buildOutput, nil
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	ctpv2Req *api.CTPv2Request, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -158,7 +172,7 @@ func executeCtpv2Reqs(ctx context.Context,
 	wg := &sync.WaitGroup{}
 	contInfoMap := data.NewContainerInfoMap()
 	suiteCounter := map[string]int{}
-	for _, ctpReq := range ctpv2Req.GetRequests() {
+	for key, ctpReq := range keyRequestMap {
 		suiteName := ctpReq.GetSuiteRequest().GetTestSuite().GetName()
 		suiteDisplayName := suiteName
 		if _, ok := suiteCounter[suiteName]; !ok {
@@ -170,7 +184,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key)
 	}
 	go func() {
 		wg.Wait()
@@ -195,7 +209,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey string) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -213,6 +227,7 @@ func executeFiltersInLuciBuild(
 		ContainerInfoMap:   contInfoMap,
 		BQClient:           BQClient,
 		Config:             config,
+		RequestKey:         reqKey,
 	}
 
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)

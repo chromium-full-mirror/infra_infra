@@ -19,7 +19,9 @@ import (
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/logging"
 )
 
@@ -171,4 +173,97 @@ func IsAnyTestFailure(testResults []*apipb.TestCaseResult) bool {
 	}
 
 	return false
+}
+
+func GetTaskStateVerdict(trResult *skylab_test_runner.Result) test_platform.TaskState_Verdict {
+	if trResult == nil || trResult.GetAutotestResult() == nil {
+		return test_platform.TaskState_VERDICT_UNSPECIFIED
+	}
+	autoTestResult := trResult.GetAutotestResult()
+	if autoTestResult.Incomplete {
+		return test_platform.TaskState_VERDICT_FAILED
+	}
+
+	// By default (if no test cases ran), then there is no verdict.
+	verdict := test_platform.TaskState_VERDICT_NO_VERDICT
+	for _, c := range autoTestResult.GetTestCases() {
+		switch c.Verdict {
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:
+			// Any case failing means the flat verdict is a failure.
+			return test_platform.TaskState_VERDICT_FAILED
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:
+			// Any case failing means the flat verdict is a failure.
+			return test_platform.TaskState_VERDICT_FAILED
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
+			// Any case failing means the flat verdict is a failure.
+			return test_platform.TaskState_VERDICT_FAILED
+		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
+			// Otherwise, at least 1 passing verdict means a pass.
+			verdict = test_platform.TaskState_VERDICT_PASSED
+		default: // VERDICT_UNDEFINED and VERDICT_NO_VERDICT
+			// Treat as no-op and do not affect flat verdict.
+		}
+	}
+	return verdict
+}
+
+var liftTestCaseRunnerVerdict = map[skylab_test_runner.Result_Autotest_TestCase_Verdict]test_platform.TaskState_Verdict{
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:       test_platform.TaskState_VERDICT_PASSED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:       test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT: test_platform.TaskState_VERDICT_NO_VERDICT,
+}
+
+func TestCasesToTestCaseResult(tcs []*skylab_test_runner.Result_Autotest_TestCase) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	if len(tcs) == 0 {
+		// Prefer a nil over an empty slice since it's the proto default.
+		return nil
+	}
+	ret := make([]*steps.ExecuteResponse_TaskResult_TestCaseResult, len(tcs))
+	for i, tc := range tcs {
+		ret[i] = &steps.ExecuteResponse_TaskResult_TestCaseResult{
+			Name:                 tc.GetName(),
+			Verdict:              liftTestCaseRunnerVerdict[tc.Verdict],
+			HumanReadableSummary: tc.GetHumanReadableSummary(),
+		}
+	}
+	return ret
+}
+
+var liftPreJobVerdict = map[skylab_test_runner.Result_Prejob_Step_Verdict]test_platform.TaskState_Verdict{
+	skylab_test_runner.Result_Prejob_Step_VERDICT_PASS:      test_platform.TaskState_VERDICT_PASSED,
+	skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED: test_platform.TaskState_VERDICT_FAILED,
+}
+
+func PrejobStepsToTestCaseResult(pjs []*skylab_test_runner.Result_Prejob_Step) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	if len(pjs) == 0 {
+		// Prefer a nil over an empty slice since it's the proto default.
+		return nil
+	}
+	ret := make([]*steps.ExecuteResponse_TaskResult_TestCaseResult, len(pjs))
+	for i, pj := range pjs {
+		ret[i] = &steps.ExecuteResponse_TaskResult_TestCaseResult{
+			Name:                 pj.GetName(),
+			Verdict:              liftPreJobVerdict[pj.Verdict],
+			HumanReadableSummary: pj.GetHumanReadableSummary(),
+		}
+	}
+	return ret
+}
+
+func GetDims(dims []string) (map[string]string, []*steps.ExecuteResponse_TaskResult_RejectedTaskDimension) {
+	r1 := map[string]string{}
+	r2 := []*steps.ExecuteResponse_TaskResult_RejectedTaskDimension{}
+	for _, dim := range dims {
+		dimsList := strings.Split(dim, ":")
+		if len(dimsList) != 2 {
+			// should never happen
+			return nil, nil
+		}
+		r1[dimsList[0]] = dimsList[1]
+		r2 = append(r2, &steps.ExecuteResponse_TaskResult_RejectedTaskDimension{Key: dimsList[0], Value: dimsList[1]})
+	}
+	return r1, r2
 }
