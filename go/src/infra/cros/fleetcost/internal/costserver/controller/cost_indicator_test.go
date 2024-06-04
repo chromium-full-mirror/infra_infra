@@ -36,7 +36,7 @@ func TestGetCostIndicatorValue(t *testing.T) {
 	cost, err := controller.GetCostIndicatorValue(tf.Ctx, &controller.IndicatorAttribute{
 		IndicatorType: models.IndicatorType_INDICATOR_TYPE_POWER,
 		Location:      models.Location_LOCATION_ALL,
-	}, true, false)
+	}, true, true)
 
 	if cost != 47.0 {
 		t.Errorf("unexpected cost %f", cost)

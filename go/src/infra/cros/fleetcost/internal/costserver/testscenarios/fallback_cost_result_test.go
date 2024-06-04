@@ -37,7 +37,8 @@ func TestFallbackCostResult(t *testing.T) {
 	})
 
 	result, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{
-		Hostname: "fake-octopus-dut-1",
+		Hostname:              "fake-octopus-dut-1",
+		ForgiveMissingEntries: true,
 	})
 
 	if err != nil {

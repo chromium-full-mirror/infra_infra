@@ -48,16 +48,16 @@ func TestGetCostResult(t *testing.T) {
 	tf.RegisterGetDeviceDataFailure(fakeOctopusDut2Matcher, errors.New("a wild error appears"))
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
-		Type:     fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:    "build-target",
-		Model:    "model",
-		Sku:      "",
-		Location: fleetcostModels.Location_LOCATION_ALL,
+		Type:        fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
+		Board:       "build-target",
+		Model:       "model",
+		Sku:         "",
+		Location:    fleetcostModels.Location_LOCATION_ALL,
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 		Cost: &money.Money{
 			CurrencyCode: "USD",
 			Units:        134,
 		},
-		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	_, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{

@@ -6,6 +6,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"math"
 
 	"go.chromium.org/luci/common/errors"
@@ -17,20 +18,47 @@ import (
 	"infra/cros/fleetcost/internal/utils"
 )
 
+func normalizeToHourlyCost(rawCost float64, cadence fleetcostpb.CostCadence) (float64, error) {
+	const dayToHour = 1.0 / 24.0
+	const monthToHour = 1.0 / float64(30*24)
+	const yearToHour = 1.0 / float64(365*24)
+	switch cadence {
+	case fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN:
+		return math.NaN(), errors.New("unkown cost cadence")
+	case fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME:
+		return math.NaN(), errors.New("conversion from one-time cost to time-bound cost not yet supported")
+	case fleetcostpb.CostCadence_COST_CADENCE_ANNUALLY:
+		return rawCost * yearToHour, nil
+	case fleetcostpb.CostCadence_COST_CADENCE_MONTHLY:
+		return rawCost * monthToHour, nil
+	case fleetcostpb.CostCadence_COST_CADENCE_DAILY:
+		return rawCost * dayToHour, nil
+	case fleetcostpb.CostCadence_COST_CADENCE_HOURLY:
+		return rawCost, nil
+	}
+	return math.NaN(), fmt.Errorf("tag not handled yet: %s", cadence.String())
+}
+
 // GetCostIndicatorValue gets the value of a cost indicator, potentially falling back.
+//
+// GetCostIndicatorValue normalizes all values to hourly.
 func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
 	if !usefallbacks {
-		return GetCostIndicatorValueDirectly(ctx, attribute)
+		v, c, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		if err != nil {
+			return 0, err
+		}
+		return normalizeToHourlyCost(v, c)
 	}
 	sequence, err := GetIndicatorFallbacks(attribute)
 	if err != nil {
 		return math.NaN(), err
 	}
 	for _, attribute := range sequence {
-		result, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		result, cadence, err := GetCostIndicatorValueDirectly(ctx, attribute)
 		switch {
 		case err == nil:
-			return result, nil
+			return normalizeToHourlyCost(result, cadence)
 		case datastore.IsErrNoSuchEntity(err):
 			continue
 		default:
@@ -48,12 +76,12 @@ func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, u
 }
 
 // GetCostIndicatorValueDirectly gets the value of a cost indicator.
-func GetCostIndicatorValueDirectly(ctx context.Context, attribute *IndicatorAttribute) (float64, error) {
+func GetCostIndicatorValueDirectly(ctx context.Context, attribute *IndicatorAttribute) (float64, fleetcostpb.CostCadence, error) {
 	entity := attribute.AsEntity()
 	if _, err := entities.GetCostIndicatorEntity(ctx, entity); err != nil {
-		return 0, errors.Annotate(err, "get cost indicator value").Err()
+		return 0, fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN, errors.Annotate(err, "get cost indicator value").Err()
 	}
-	return utils.MoneyToFloat(entity.CostIndicator.GetCost()), nil
+	return utils.MoneyToFloat(entity.CostIndicator.GetCost()), entity.CostIndicator.GetCostCadence(), nil
 }
 
 // GetIndicatorFallbacks takes an indicatorAttribute and returns the list of fallback indicator attributes.
