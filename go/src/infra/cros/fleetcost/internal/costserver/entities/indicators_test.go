@@ -199,6 +199,7 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        100,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -213,6 +214,7 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -227,6 +229,7 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -263,6 +266,7 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        100,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -278,6 +282,7 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -293,6 +298,7 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -325,6 +331,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 12.0,
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}, nil); err != nil {
 		t.Fatalf("failed to insert cost indicator: %s", err)
@@ -334,6 +341,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 14.0,
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 		Board: "fake-board",
 	}, []string{"burnout_rate"})
@@ -345,6 +353,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Board:       "fake-board",
 			BurnoutRate: 14.0,
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 		Board: "fake-board",
 	}).Options(cmp.AllowUnexported(*got)).Diff(); diff != "" {
@@ -367,6 +376,7 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -374,9 +384,10 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 
 	if _, err := tf.Frontend.DeleteCostIndicator(tf.Ctx, &fleetcostAPI.DeleteCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Board:       "fake-board",
+			Location:    fleetcostpb.Location_LOCATION_ACS,
+			Type:        fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -403,6 +414,7 @@ func TestApplyFilter(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        100,
 		},
+		CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	query, err := entities.ApplyFilter(datastore.NewQuery(entities.CostIndicatorKind), &fleetcostAPI.ListCostIndicatorsFilter{
@@ -441,8 +453,9 @@ func TestCostIndicatorQuantity(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        100,
 			},
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Location:    fleetcostpb.Location_LOCATION_ACS,
+			Type:        fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	})
 	if err != nil {

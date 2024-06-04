@@ -35,6 +35,7 @@ func TestRepopulateCache(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        134,
 		},
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_ANNUALLY,
 	})
 
 	tf.RegisterListMachineLSEs(gomock.Any(), &ufsAPI.ListMachineLSEsResponse{

@@ -54,6 +54,7 @@ func TestDUTWithNoPeripherals(t *testing.T) {
 			Cost: &money.Money{
 				Units: 100,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)

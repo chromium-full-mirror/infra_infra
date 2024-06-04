@@ -28,9 +28,10 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			name: "request with user-defined name",
 			in: &fleetcostAPI.CreateCostIndicatorRequest{
 				CostIndicator: &models.CostIndicator{
-					Name:     "aaa",
-					Location: models.Location_LOCATION_IAD65,
-					Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					Name:        "aaa",
+					Location:    models.Location_LOCATION_IAD65,
+					Type:        models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 				},
 			},
 			ok: false,
@@ -39,9 +40,10 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			name: "request with unknown location",
 			in: &fleetcostAPI.CreateCostIndicatorRequest{
 				CostIndicator: &models.CostIndicator{
-					Name:     "",
-					Location: models.Location_LOCATION_UNKNOWN,
-					Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					Name:        "",
+					Location:    models.Location_LOCATION_UNKNOWN,
+					Type:        models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 				},
 			},
 			ok: false,
@@ -50,9 +52,10 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			name: "request with unknown type",
 			in: &fleetcostAPI.CreateCostIndicatorRequest{
 				CostIndicator: &models.CostIndicator{
-					Name:     "",
-					Location: models.Location_LOCATION_ALL,
-					Type:     models.IndicatorType_INDICATOR_TYPE_UNKNOWN,
+					Name:        "",
+					Location:    models.Location_LOCATION_ALL,
+					Type:        models.IndicatorType_INDICATOR_TYPE_UNKNOWN,
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 				},
 			},
 			ok: false,
@@ -68,6 +71,7 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 						CurrencyCode: "USD",
 						Units:        123.0,
 					},
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 				},
 			},
 			ok: false,

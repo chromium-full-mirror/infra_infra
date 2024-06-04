@@ -57,6 +57,7 @@ func TestGetCostResult(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        134,
 		},
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	_, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{

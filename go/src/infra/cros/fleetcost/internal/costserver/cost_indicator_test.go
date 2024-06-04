@@ -29,6 +29,7 @@ func TestCreateCostIndicator(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        12,
 			},
+			CostCadence: models.CostCadence_COST_CADENCE_ANNUALLY,
 		},
 	})
 	if err != nil {

@@ -33,6 +33,7 @@ func TestFallbackCostResult(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        1056,
 		},
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	result, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{

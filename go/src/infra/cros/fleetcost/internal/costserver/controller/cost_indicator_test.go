@@ -30,6 +30,7 @@ func TestGetCostIndicatorValue(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        47,
 		},
+		CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	cost, err := controller.GetCostIndicatorValue(tf.Ctx, &controller.IndicatorAttribute{

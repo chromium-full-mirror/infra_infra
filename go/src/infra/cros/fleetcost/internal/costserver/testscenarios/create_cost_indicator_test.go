@@ -33,6 +33,7 @@ func TestCannotCreateDuplicateCostIndicator(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        100,
 			},
+			CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}
 
@@ -46,6 +47,7 @@ func TestCannotCreateDuplicateCostIndicator(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        200,
 			},
+			CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}
 

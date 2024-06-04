@@ -36,6 +36,7 @@ func TestGetServoCost(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        100.0,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)
@@ -96,6 +97,7 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 				CurrencyCode: "USD",
 				Units:        12,
 			},
+			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
 	}); err != nil {
 		panic(err)

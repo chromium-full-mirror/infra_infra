@@ -30,5 +30,8 @@ func ValidateCreateCostIndicatorRequest(request *fleetcostAPI.CreateCostIndicato
 	if indicator.GetType() == fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
 		errs = append(errs, errors.New("must provide valid type"))
 	}
+	if indicator.GetCostCadence() == fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN {
+		errs = append(errs, errors.New("must provide valid type"))
+	}
 	return errors.Append(errs...)
 }

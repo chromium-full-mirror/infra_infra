@@ -34,6 +34,7 @@ func TestListEmptyLocation(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        3456789,
 		},
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
@@ -44,6 +45,7 @@ func TestListEmptyLocation(t *testing.T) {
 			CurrencyCode: "USD",
 			Units:        70,
 		},
+		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 	})
 
 	resp, err := tf.Frontend.ListCostIndicators(tf.Ctx, &fleetcostAPI.ListCostIndicatorsRequest{
