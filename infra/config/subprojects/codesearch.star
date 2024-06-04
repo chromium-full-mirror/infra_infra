@@ -464,19 +464,3 @@ update_submodules_mirror(
     ),
     execution_timeout = 2 * time.hour,
 )
-update_submodules_mirror(
-    name = "codesearch-update-submodules-mirror-infra",
-    short_name = "infra",
-    source_repo = "https://chromium.googlesource.com/infra/infra",
-    target_repo = "https://chromium.googlesource.com/codesearch/infra/infra",
-    push_to_refs_cs = True,
-    triggered_by = infra.poller(),
-)
-update_submodules_mirror(
-    name = "codesearch-update-submodules-mirror-build",
-    short_name = "build",
-    source_repo = "https://chromium.googlesource.com/chromium/tools/build",
-    target_repo = "https://chromium.googlesource.com/codesearch/chromium/tools/build",
-    push_to_refs_cs = True,
-    triggered_by = build.poller(),
-)
