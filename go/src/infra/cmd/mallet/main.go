@@ -51,6 +51,7 @@ func getApplication() *cli.Application {
 			tasks.SerialConsole,
 			tasks.TestStateChange,
 			tasks.ProvisionBtpeers,
+			tasks.Labqual,
 		},
 	}
 }
