@@ -31,7 +31,9 @@ func TestStartCtrServer(t *testing.T) {
 }
 
 func TestStartCtrServerAsync(t *testing.T) {
-	t.Parallel()
+	// This test closed the tree. Make it non-parallel.
+	//
+	// t.Parallel()
 
 	Convey("CTR server start async error with existing server connection", t, func() {
 		ctx := context.Background()
