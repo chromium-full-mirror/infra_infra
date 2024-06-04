@@ -41,14 +41,6 @@ paths:
       https://chromium.googlesource.com/infra/luci/gae/+/main{/dir}
       https://chromium.googlesource.com/infra/luci/gae/+/main{/dir}/{file}#{line}
 
-  /goma/server:
-    repo: https://chromium.googlesource.com/infra/goma/server
-    vcs: git
-    display: >
-      https://chromium.googlesource.com/infra/goma/server
-      https://chromium.googlesource.com/infra/goma/server/+/main{/dir}
-      https://chromium.googlesource.com/infra/goma/server/+/main{/dir}/{file}#{line}
-
   /luci:
     repo: https://chromium.googlesource.com/infra/luci/luci-go
     vcs: git
