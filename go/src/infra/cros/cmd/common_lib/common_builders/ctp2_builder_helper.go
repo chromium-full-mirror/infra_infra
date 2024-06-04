@@ -456,7 +456,7 @@ func getAnalyticsName(v1 *test_platform.Request) string {
 // IsDDDSuite will return if the suite is to run in ddd.
 // TODO (b:327505895): For now, use the ddd prefix, but long term will move to a proper flag.
 func IsDDDSuite(v1 *test_platform.Request) bool {
-	return strings.HasPrefix(getAnalyticsName(v1), "ddd")
+	return v1.GetParams().GetDddSuite() || strings.HasPrefix(getAnalyticsName(v1), "ddd")
 }
 
 // GetRetryCount returns the retry count from v1 request.
