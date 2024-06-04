@@ -219,8 +219,8 @@ github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1 h1:vi3GIvE
 github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1/go.mod h1:k9FlPXDUqPDWgAALgLoRbx+8gKcZ9/NXGfee4xJKe6c=
 github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5 h1:fm5Ceq2rIwkGYaaw40jjd8y1x0iOuKRnvxdoipWr2JA=
 github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20240521192600-a5e60eb5cc47 h1:R7ZHLLrKhwDTe7iyJJ6KlmEQBIfzl5MVoRaZqQP/QpY=
-github.com/bazelbuild/remote-apis-sdks v0.0.0-20240521192600-a5e60eb5cc47/go.mod h1:xTnFpTrMb0eMa4bsueAUc3/K2MSLiTwhrTjpuDJVSSQ=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240603203232-1716b7d0a075 h1:dDHezrdVeQmcFUJkDOlX6AYUlDGpXIjMRcOo4pIrmX8=
+github.com/bazelbuild/remote-apis-sdks v0.0.0-20240603203232-1716b7d0a075/go.mod h1:xTnFpTrMb0eMa4bsueAUc3/K2MSLiTwhrTjpuDJVSSQ=
 github.com/beevik/etree v1.4.0 h1:oz1UedHRepuY3p4N5OjE0nK1WLCqtzHf25bxplKOHLs=
 github.com/beevik/etree v1.4.0/go.mod h1:cyWiXwGoasx60gHvtnEh5x8+uIjUVnjWqBvEnhnqKDA=
 github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=

@@ -29,7 +29,7 @@ require (
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1
 	github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240521192600-a5e60eb5cc47
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240603203232-1716b7d0a075
 	github.com/beevik/etree v1.4.0
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff/v4 v4.3.0
