@@ -11747,6 +11747,15 @@ plans:
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
+        - name: Mark labstation as servod is in-use (Allow to fail)
+          exec_name: cros_create_servo_in_use
+          docs:
+            - Create lock file is_in_use.
+          conditions:
+            - name: Setup has servo info
+              exec_name: dut_servo_host_present
+            - name: servo_host_is_labstation
+              exec_name: servo_host_is_labstation
         - name: Has repair-request for re-image USB-key
           exec_name: dut_has_any_repair_requests
           exec_args:

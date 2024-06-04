@@ -26,6 +26,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		)
 	}
 	actions = append(actions,
+		"Mark labstation as servod is in-use",
 		"Has repair-request for re-image USB-key",
 		"Has repair-request for re-image by USB-key",
 		"Device is pingable",
@@ -97,6 +98,17 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 
 func crosRepairActions() map[string]*Action {
 	return map[string]*Action{
+		"Mark labstation as servod is in-use": {
+			Docs: []string{
+				"Create lock file is_in_use.",
+			},
+			Conditions: []string{
+				"Setup has servo info",
+				"servo_host_is_labstation",
+			},
+			ExecName:               "cros_create_servo_in_use",
+			AllowFailAfterRecovery: true,
+		},
 		"Set state: ready": {
 			Docs: []string{
 				"The action set devices with state ready for the testing.",
@@ -4507,6 +4519,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
+				"Mark labstation as servod is in-use",
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
