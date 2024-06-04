@@ -72,8 +72,8 @@ type BuildsClient interface {
 }
 
 // NewBuildBucketClient creates a client to communicate with Buildbucket.
-func NewBuildBucketClient(ctx context.Context) (*client, error) {
-	bbClient, err := newBuildsClient(ctx, buildBucketHost)
+func NewBuildBucketClient(ctx context.Context, hclient *http.Client) (*client, error) {
+	bbClient, err := newBuildsClient(ctx, buildBucketHost, hclient)
 	if err != nil {
 		return nil, err
 	}
@@ -83,14 +83,17 @@ func NewBuildBucketClient(ctx context.Context) (*client, error) {
 	}, nil
 }
 
-func newBuildsClient(ctx context.Context, host string) (bb.BuildsClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
-	if err != nil {
-		return nil, err
+func newBuildsClient(ctx context.Context, host string, hclient *http.Client) (bb.BuildsClient, error) {
+	if hclient == nil {
+		t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
+		if err != nil {
+			return nil, err
+		}
+		hclient = &http.Client{Transport: t}
 	}
 	return bb.NewBuildsPRPCClient(
 		&prpc.Client{
-			C:       &http.Client{Transport: t},
+			C:       hclient,
 			Host:    host,
 			Options: prpc.DefaultOptions(),
 		}), nil
