@@ -47261,6 +47261,38 @@ plans:
               docs:
                 - Read and print battery_tempc control value to logs.
                 - Part of analysis of b/267384675
+              conditions:
+                - name: Not Satlab device
+                  exec_name: sample_fail
+                  docs:
+                    - Verify that DUT name is not belong Satlab.
+                  conditions:
+                    - name: Is Satlab device
+                      exec_name: dut_regex_name_match
+                      exec_args:
+                        - regex:^satlab
+                      docs:
+                        - Verify that DUT name is belong Satlab.
+                - name: Servo state is working
+                  exec_name: servo_match_state
+                  exec_args:
+                    - state:WORKING
+                  docs:
+                    - check the servo's state is WORKING.
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
         - name: Audit storage (SMART only) (Allow to fail)
           exec_name: cros_audit_storage_smart
           docs:

@@ -1332,6 +1332,11 @@ func crosRepairActions() map[string]*Action {
 				"Read and print battery_tempc control value to logs.",
 				"Part of analysis of b/267384675",
 			},
+			Conditions: []string{
+				"Not Satlab device",
+				"Servo state is working",
+				"Is servod running",
+			},
 			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{
 				"command:battery_tempc",

@@ -14592,6 +14592,17 @@ plans:
             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
           dependencies:
             - name: Battery temperature below threshold (Allow to fail) ('servo_check_servod_control')
+              conditions:
+                - name: Not Satlab device ('sample_fail')
+                  conditions:
+                    - name: Is Satlab device ('dut_regex_name_match')
+                - name: Servo state is working ('servo_match_state')
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
         - name: Audit storage (SMART only) (Allow to fail) ('cros_audit_storage_smart')
         - name: Audit wifi (Allow to fail) ('cros_audit_wifi')
           dependencies:
