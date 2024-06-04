@@ -12,6 +12,7 @@ import (
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/internal/env"
 	"infra/cros/recovery/internal/localtlw/xmlrpc"
 )
 
@@ -53,6 +54,7 @@ type RPMPowerRequest struct {
 
 // SetPowerState talks to RPM service via xmltpc to set power state based on a RPMPowerRequest.
 func SetPowerState(ctx context.Context, req *RPMPowerRequest) error {
+	var err error
 	if err := validateRequest(req); err != nil {
 		return errors.Annotate(err, "set power state").Err()
 	}
@@ -60,7 +62,12 @@ func SetPowerState(ctx context.Context, req *RPMPowerRequest) error {
 	// We need to convert PowerState type back to string here as xmlrpc.NewValue cannot recognize the customized type during unpack.
 	call := xmlrpc.NewCallTimeout(setPowerTimeout, "set_power_via_rpm", req.Hostname, req.PowerUnitHostname, req.PowerunitOutlet, req.HydraHostname, string(req.State))
 	result := &xmlrpc_value.Value{}
-	if err := c.Run(ctx, call, result); err != nil {
+	if env.IsCloudBot() {
+		err = c.RunOnCloudBots(ctx, call, result)
+	} else {
+		err = c.Run(ctx, call, result)
+	}
+	if err != nil {
 		return errors.Annotate(err, "set power state").Err()
 	}
 	// We only expect a boolean response from rpm server to determine if the operation success or not.

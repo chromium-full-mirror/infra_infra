@@ -32,6 +32,21 @@ func GetSwarmingBotID() string {
 	return os.Getenv("SWARMING_BOT_ID")
 }
 
+// GetCloudbotsLabDomain retrieves the cloudbots lab domain.
+func GetCloudbotsLabDomain() string {
+	return os.Getenv("CLOUDBOTS_LAB_DOMAIN")
+}
+
+// GetCloudbotsCACertificate retrieves the cloudbots CA certificate file path.
+func GetCloudbotsCACertificate() string {
+	return os.Getenv("CLOUDBOTS_CA_CERTIFICATE")
+}
+
+// GetCloudbotsProxyAddress retrieves the cloudbots proxy address.
+func GetCloudbotsProxyAddress() string {
+	return os.Getenv("CLOUDBOTS_PROXY_ADDRESS")
+}
+
 // IsCloudBot returns whether the process is running on cloud bot VM.
 func IsCloudBot() bool {
 	if swarmingBotID := GetSwarmingBotID(); strings.HasPrefix(swarmingBotID, "cloudbots-") {
