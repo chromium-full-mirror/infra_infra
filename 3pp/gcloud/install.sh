@@ -12,6 +12,7 @@ PREFIX="$1"
 
 # By default config will be written to home directory.
 export CLOUDSDK_CONFIG="$(pwd)/.config"
+export CLOUDSDK_PYTHON=python3
 
 # Install additional components. This will also install their dependencies.
 #
