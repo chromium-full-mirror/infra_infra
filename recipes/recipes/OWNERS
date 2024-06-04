@@ -7,9 +7,6 @@ per-file cros_flash*=bpastene@chromium.org
 per-file depot_tools_builder.py=iannucci@chromium.org
 
 
-per-file goma_hello_world.py=tikuta@chromium.org
-per-file goma_hello_world.py=vadimsh@chromium.org
-
 per-file gsubtreed.py=iannucci@chromium.org
 
 # For Go changes.
