@@ -1638,6 +1638,14 @@ func generateBotInfo(bot *swarmingapi.BotInfo) *pb.BotInfo {
 		botInfo.BotState = pb.BotInfo_NO_STATE_SET
 	}
 
+	for _, dim := range bot.GetDimensions() {
+		stringListPair := &pb.StringListPair{
+			Key:    dim.GetKey(),
+			Values: dim.GetValue(),
+		}
+		botInfo.Dimensions = append(botInfo.Dimensions, stringListPair)
+	}
+
 	return botInfo
 }
 

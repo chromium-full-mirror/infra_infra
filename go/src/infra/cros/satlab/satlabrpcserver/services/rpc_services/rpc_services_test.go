@@ -2109,7 +2109,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 	}
 
 	// ignore pb fields in `FirmwareUpdateCommandOutput`
-	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{}, pb.BotInfo{})
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutsResponse{}, pb.Dut{}, pb.BotInfo{}, pb.StringListPair{})
 	// Create a expected result
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
@@ -2128,6 +2128,12 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 					BotState:    pb.BotInfo_BUSY,
 					CurrentTask: "https://chromeos-swarming.appspot.com/task?id=abcd",
 					TaskName:    "Running",
+					Dimensions: []*pb.StringListPair{
+						{
+							Key:    "drone",
+							Values: []string{"satlab-satlab-id"},
+						},
+					},
 				},
 				CcdStatus: "Unknown",
 			},
