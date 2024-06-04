@@ -105,17 +105,21 @@ func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 			return err
 		}
 		s.schedukeHTTPClient = &http.Client{}
-		return nil
+	} else {
+		sa := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
+			UseIDTokens: true,
+			Audience:    s.baseURL,
+		}))
+		sc, err := sa.Client()
+		if err != nil {
+			return errors.Annotate(err, "create Scheduke http client").Err()
+		}
+		s.schedukeHTTPClient = sc
 	}
-	sa := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
-		UseIDTokens: true,
-		Audience:    s.baseURL,
-	}))
-	sc, err := sa.Client()
-	if err != nil {
-		return errors.Annotate(err, "create Scheduke http client").Err()
+	// Ping Scheduke base URL to confirm IAM works.
+	if _, err = s.makeRequest(http.MethodGet, s.baseURL, nil); err != nil {
+		return errors.Annotate(err, "confirming Scheduke auth").Err()
 	}
-	s.schedukeHTTPClient = sc
 	return nil
 }
 
