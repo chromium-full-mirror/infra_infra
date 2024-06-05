@@ -2830,6 +2830,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -3397,6 +3400,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -4174,6 +4180,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -4683,6 +4692,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -5289,6 +5301,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -6062,6 +6077,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -6581,6 +6599,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -7119,6 +7140,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -7615,6 +7639,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -8249,6 +8276,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -8777,6 +8807,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -9289,6 +9322,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -9945,6 +9981,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -11002,6 +11041,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -11540,6 +11582,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -12195,6 +12240,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -12830,6 +12878,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -13349,6 +13400,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -14007,6 +14061,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -14783,6 +14840,9 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                       conditions:
@@ -15302,6 +15362,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -15960,6 +16023,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -16897,6 +16963,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -18049,6 +18118,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -18842,6 +18914,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -19612,6 +19687,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -20585,6 +20663,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -21110,6 +21191,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -21645,6 +21729,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -22184,6 +22271,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -22722,6 +22812,9 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                       conditions:
@@ -23258,6 +23351,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -23792,6 +23888,9 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                       conditions:
@@ -24325,6 +24424,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -24835,6 +24937,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -25363,6 +25468,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -25873,6 +25981,9 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                     - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                       conditions:
@@ -26404,6 +26515,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -26914,6 +27028,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -27420,6 +27537,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -27930,6 +28050,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -28446,6 +28569,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -29192,6 +29318,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -29976,6 +30105,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -30634,6 +30766,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -31737,6 +31872,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -32255,6 +32393,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -32950,6 +33091,9 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                                 - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                                   conditions:
@@ -33716,6 +33860,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -34274,6 +34421,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
@@ -34895,6 +35045,9 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                              conditions:
+                                - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                             - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                             - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                               conditions:
@@ -35555,6 +35708,9 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                          conditions:
+                            - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
                           conditions:
