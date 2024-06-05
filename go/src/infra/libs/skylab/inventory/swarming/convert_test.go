@@ -35,6 +35,7 @@ self_serve_pools: "poolval"
 stability: true
 reference_design: "reef"
 wifi_chip: "wireless_xxxx"
+wifi_on_site: true
 hwid_component: [
 	"cellular/fake_cellular"
 ]
@@ -207,6 +208,7 @@ self_serve_pools: "poolval"
 stability: true
 reference_design: "reef"
 wifi_chip: "wireless_xxxx"
+wifi_on_site: true
 hwid_component: [
 	"cellular/fake_cellular"
 ]
@@ -486,6 +488,7 @@ var fullDimensions = Dimensions{
 	"label-cr50_rw_keyid":            {"b"},
 	"label-cr50_rw_version":          {"21.22.23"},
 	"label-wifi_chip":                {"wireless_xxxx"},
+	"label-wifi_on_site":             {"True"},
 	"label-working_bluetooth_btpeer": {"1", "2", "3"},
 	"label-pasit_components":         {"CAMERA-1", "MONITOR-1", "MONITOR-2", "DOCKING_STATION-1"},
 }

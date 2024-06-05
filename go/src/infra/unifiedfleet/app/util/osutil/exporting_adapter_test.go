@@ -669,7 +669,8 @@ common {
 		variant: "test_variant"
 		critical_pools: DUT_POOL_QUOTA
 		self_serve_pools: "hotrod"
-		wifi_chip: ""
+		wifi_chip: "",
+		wifi_on_site: true
 	}
 }
 `
@@ -778,7 +779,8 @@ common {
 				usb_detect: false
 				use_lid: false
 		}
-		wifi_chip: ""
+		wifi_chip: "",
+		wifi_on_site: true
 	}
 }
 `

@@ -698,6 +698,10 @@ func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *i
 	if boardsHasCrosEc.Has(platform) || boardsHasCrosEc.Has(mappedPlatform) {
 		labels.EcType = &ecTypeCros
 	}
+	// See b/343614317, IAD65 doesn't have wifi network setup for test yet.
+	if machine.GetLocation().GetZone() != ufspb.Zone_ZONE_IAD65_OS {
+		labels.WifiOnSite = &trueValue
+	}
 	return &labels
 }
 

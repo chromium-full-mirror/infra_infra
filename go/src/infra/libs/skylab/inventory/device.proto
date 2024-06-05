@@ -305,6 +305,9 @@ message SchedulableLabels {
   // devboard_type specifies the type of devboard
   optional DevboardType devboard_type = 39;
 
+  // Indicates whether we have wifi network setup on the hosting location.
+  optional bool wifi_on_site = 41;
+
   // NEXT TAG: 4
   enum DevboardType {
     DEVBOARD_TYPE_INVALID = 0;

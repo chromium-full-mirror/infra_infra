@@ -39,6 +39,7 @@ hwid_component: [
 	"cellular/fake_cellular"
 ]
 wifi_chip: "wireless_xxxx"
+wifi_on_site: false
 platform: "platformval"
 phase: 4
 peripherals: {
@@ -690,6 +691,7 @@ self_serve_pools: "poolval"
 stability: false
 reference_design: "reef"
 wifi_chip: "wireless_xxxx"
+wifi_on_site: false
 platform: "platformval"
 phase: 4
 peripherals: {

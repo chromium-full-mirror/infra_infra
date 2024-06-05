@@ -66,9 +66,11 @@ func basicConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 			}
 		}
 	}
-
 	if ls.GetStability() {
 		dims["label-device-stable"] = []string{"True"}
+	}
+	if ls.GetWifiOnSite() {
+		dims["label-wifi_on_site"] = []string{"True"}
 	}
 }
 
@@ -109,6 +111,7 @@ func basicReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	delete(d, "label-variant")
 
 	d = assignLastBoolValueAndDropKey(d, ls.Stability, "label-device-stable")
+	d = assignLastBoolValueAndDropKey(d, ls.WifiOnSite, "label-wifi_on_site")
 	return d
 }
 
