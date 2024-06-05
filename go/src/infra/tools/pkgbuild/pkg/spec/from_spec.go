@@ -24,9 +24,7 @@ import (
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
-// TODO(fancl): Use all:from_spec/build-support after go 1.18.
-//
-//go:embed from_spec/*
+//go:embed all:from_spec/build-support
 var fromSpecEmbed embed.FS
 var fromSpecGen = generators.InitEmbeddedFS(
 	"from_spec_support", fromSpecEmbed,
@@ -202,7 +200,6 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 		g.Env.Set("MACOSX_DEPLOYMENT_TARGET", "10.10")
 	case "mac-arm64":
 		g.Env.Set("MACOSX_DEPLOYMENT_TARGET", "11.0")
-		// TODO(fancl): set CROSS_TRIPLE for Mac?
 	}
 
 	l.pkgs[pkgCacheKey] = g

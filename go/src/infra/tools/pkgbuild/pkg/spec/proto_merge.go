@@ -1,6 +1,6 @@
-// Copyright 2022 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // This file is modified from https://github.com/protocolbuffers/protobuf-go/blob/6875c3d7242d1a3db910ce8a504f124cb840c23a/proto/merge.go#L64 .
 // The only difference is to accommodate the merge behaviour in 3pp, which
@@ -25,8 +25,9 @@ import (
 // the corresponding map field in dst, possibly replacing existing entries.
 // The unknown fields of src are appended to the unknown fields of dst.
 func protoMerge(dst, src proto.Message) {
-	// TODO: Should nil src be treated as semantically equivalent to a
-	// untyped, read-only, empty message? What about a nil dst?
+	if src == nil {
+		return
+	}
 
 	dstMsg, srcMsg := dst.ProtoReflect(), src.ProtoReflect()
 	if dstMsg.Descriptor() != srcMsg.Descriptor() {
