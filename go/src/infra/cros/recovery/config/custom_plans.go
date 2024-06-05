@@ -169,9 +169,7 @@ func EnableSerialConsoleConfig() *Configuration {
 func SetFwTargets(ecTarget, apTarget string) *Configuration {
 	return &Configuration{
 		PlanNames: []string{
-			PlanServo,
 			PlanCrOS,
-			PlanClosing,
 		},
 		Plans: map[string]*Plan{
 			PlanCrOS: {
