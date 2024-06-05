@@ -1174,14 +1174,13 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Power OFF DUT by servo (ALWAYS_RUN)
+                - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                   exec_name: servo_set
                   exec_args:
-                    - command:power_state
-                    - string_value:off
-                    - timeout:30
+                    - command:image_usbkey_direction
+                    - string_value:dut_sees_usbkey
                   docs:
-                    - Turn DUT OFF by servo and do not wait.
+                    - Switch servo's USB-drive to point to DUT.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass
@@ -1197,13 +1196,27 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
+                - name: Boot Flex from USB on next boot (ALWAYS_RUN)
+                  exec_name: cros_flex_usb_nextboot
+                  docs:
+                    - Use efibootmgr to boot from USB on the next boot.
+                  conditions:
+                    - name: Device has UEFI firmware (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:test -d /sys/firmware/efi
+                        - background:false
+                      docs:
+                        - Check if the device has UEFI firmware.
+                - name: Power OFF DUT by servo (ALWAYS_RUN)
                   exec_name: servo_set
                   exec_args:
-                    - command:image_usbkey_direction
-                    - string_value:dut_sees_usbkey
+                    - command:power_state
+                    - string_value:off
+                    - timeout:30
                   docs:
-                    - Switch servo's USB-drive to point to DUT.
+                    - Turn DUT OFF by servo and do not wait.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass

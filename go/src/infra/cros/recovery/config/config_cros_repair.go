@@ -2795,8 +2795,9 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
-				"Power OFF DUT by servo",
 				"Direct USB-drive to DUT",
+				"Boot Flex from USB on next boot",
+				"Power OFF DUT by servo",
 				"Sleep 10 seconds",
 				"Power ON DUT by servo",
 				"Sleep 10 seconds",
@@ -4672,6 +4673,28 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
+		},
+		"Boot Flex from USB on next boot": {
+			Docs: []string{
+				"Use efibootmgr to boot from USB on the next boot.",
+			},
+			Conditions: []string{
+				"Device has UEFI firmware",
+			},
+			ExecName:   "cros_flex_usb_nextboot",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Device has UEFI firmware": {
+			Docs: []string{
+				"Check if the device has UEFI firmware.",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:test -d /sys/firmware/efi",
+				"background:false",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 	}
 }

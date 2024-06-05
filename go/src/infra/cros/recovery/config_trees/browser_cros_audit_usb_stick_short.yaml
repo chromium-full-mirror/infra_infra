@@ -2341,7 +2341,7 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                     - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
+                - name: Direct USB-drive to DUT ('servo_set') (ALWAYS_RUN) (time:'20s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -2349,7 +2349,10 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Direct USB-drive to DUT ('servo_set') (ALWAYS_RUN) (time:'20s')
+                - name: Boot Flex from USB on next boot ('cros_flex_usb_nextboot') (ALWAYS_RUN)
+                  conditions:
+                    - name: Device has UEFI firmware ('cros_run_command') (ALWAYS_RUN)
+                - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:

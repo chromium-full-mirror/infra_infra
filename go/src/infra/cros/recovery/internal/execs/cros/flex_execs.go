@@ -6,6 +6,9 @@ package cros
 
 import (
 	"context"
+	"regexp"
+	"strings"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -44,8 +47,40 @@ func getFlexAMTClient() amt.AMTClient {
 	return amt.NewAMTClient("192.168.231.218", "admin", "P@ssword1")
 }
 
+// Get the device number for the servo-attached USB.
+func findDeviceNumInOutput(output string) (string, error) {
+	re := regexp.MustCompile(`^Boot([0-9A-F]{4})\* USB HDD`)
+	lines := strings.Split(output, "\n")
+	for i := 0; i < len(lines); i++ {
+		match := re.FindStringSubmatch(lines[i])
+		if match[1] == "" {
+			continue
+		}
+		return match[1], nil
+	}
+	return "", errors.Reason("flex USB device number: not found").Err()
+}
+
+// setUSBForNextFlexBoot sets USB-drive as next boot device for the DUT.
+func setUSBForNextFlexBoot(ctx context.Context, info *execs.ExecInfo) error {
+	timeout := 2 * time.Second
+	run := info.DefaultRunner()
+	// Get the output of `efibootmgr`.
+	out, err := run(ctx, timeout, "efibootmgr")
+	if err != nil {
+		return errors.Annotate(err, "set USB as next boot: fail to read efibootmgr").Err()
+	}
+	devnum, err := findDeviceNumInOutput(out)
+	if err != nil {
+		return err
+	}
+	_, err = run(ctx, timeout, "efibootmgr", "--bootnext", devnum)
+	return errors.Annotate(err, "set USB as next boot: fail to set efibootmgr bootnext").Err()
+}
+
 func init() {
 	execs.Register("cros_flex_amt_present", flexAMTPresent)
 	execs.Register("cros_flex_amt_power_off", flexAMTPowerOff)
 	execs.Register("cros_flex_amt_power_on", flexAMTPowerOn)
+	execs.Register("cros_flex_usb_nextboot", setUSBForNextFlexBoot)
 }
