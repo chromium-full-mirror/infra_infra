@@ -90,10 +90,14 @@ func (c AMTClient) AMTPresent() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if resp.StatusCode != http.StatusOK {
+	// Is the URI is not found then AMT is not enabled.
+	if resp.StatusCode == http.StatusNotFound {
+		return false, nil
+	} else if resp.StatusCode == http.StatusUnauthorized {
+		return true, nil
+	} else {
 		return false, errors.Reason("responded with status %d", resp.StatusCode).Err()
 	}
-	return true, nil
 }
 
 // GetPowerState returns the power state as an int.
