@@ -4723,8 +4723,9 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Device has UEFI firmware",
 			},
-			ExecName:   "cros_flex_usb_nextboot",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "cros_flex_usb_nextboot",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Device has UEFI firmware": {
 			Docs: []string{
@@ -4736,7 +4737,8 @@ func crosRepairActions() map[string]*Action {
 				"command:test -d /sys/firmware/efi",
 				"background:false",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Power-off the DUT using AMT": {
 			Docs: []string{
@@ -4781,7 +4783,8 @@ func crosRepairActions() map[string]*Action {
 				"Is Flex device",
 				"Intel AMT is present",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device does not have Intel AMT": {
 			Docs: []string{
@@ -4791,7 +4794,8 @@ func crosRepairActions() map[string]*Action {
 				"Is Flex device",
 				"Intel AMT is present",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
 }
