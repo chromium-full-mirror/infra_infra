@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // servodStateRecord holds state of servod before apply preparation of programmer.
@@ -71,6 +72,7 @@ func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string)
 	if err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("ec_chip", ecChip))
 	var cmd string
 	if ecChip == "stm32" {
 		cmd = fmt.Sprintf(ecProgrammerStm32CmdGlob, ecChip, imagePath, p.servod.Port())
