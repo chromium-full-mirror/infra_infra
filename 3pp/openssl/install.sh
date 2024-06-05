@@ -87,7 +87,9 @@ case $_3PP_PLATFORM in
   windows-*)
     nmake
     if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then # not cross-compiling
-      nmake test
+      # openssl tests require windows tools.
+      # TODO(fancl): add a "system" build dependency to replace ad-hoc fixes.
+      PATH="$(cygpath "${SYSTEMROOT}\\System32"):${PATH}" nmake test
     fi
     nmake install_sw
     ;;
