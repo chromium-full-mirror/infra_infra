@@ -661,9 +661,6 @@ SPECS.update({
             'google-crc32c',
             '1.3.0',
             packaged=[],
-            # Other platforms not yet tested.
-            only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'] +
-            build_platform.ALL_MAC,
             pyversions=['py3'],
             skip_auditwheel=True,
         ),
