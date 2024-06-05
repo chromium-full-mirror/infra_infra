@@ -299,7 +299,7 @@ func TestConsumeChannel(t *testing.T) {
 	}()
 
 	var tally atomic.Int32
-	err := utils.ConsumeChannel[int](ctx, ch, func(ctx context.Context, item int) error {
+	err := utils.ConsumeChannel[int](ctx, nil, ch, func(ctx context.Context, item int) error {
 		fmt.Printf("%d\n", item)
 		tally.Add(1)
 		return nil

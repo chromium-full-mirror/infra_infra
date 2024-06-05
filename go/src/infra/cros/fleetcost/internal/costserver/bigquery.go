@@ -65,8 +65,9 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 	consumer := func(ctx context.Context, item protoadapt.MessageV1) error {
 		return processCostResult(ctx, item, f, request.ForgiveMissingEntries, &tally)
 	}
+
 	// utils.ConsumeChannel will block until machineNameChannel is closed. MachineChannel
-	err := utils.ConsumeChannel(ctx, machineNameChannel, consumer)
+	err := utils.ConsumeChannel(ctx, nil, machineNameChannel, consumer)
 	if err != nil {
 		// Here we swallow up rErr if it is non-nil.
 		// I know, I know.

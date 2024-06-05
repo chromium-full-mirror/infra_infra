@@ -195,14 +195,40 @@ func ErrorStringContains(e error, msg string) bool {
 	return strings.Contains(e.Error(), msg)
 }
 
+// ConsumeChannelOptions provides options for controlling the parallelism and maximum number
+// of returned errors.
+type ConsumeChannelOptions struct {
+	Jobs      int
+	MaxErrors int
+}
+
+// GetJobs gets the number of jobs and applies a default of 10000.
+func (c *ConsumeChannelOptions) GetJobs() int {
+	if c == nil || c.Jobs <= 0 {
+		return 10000
+	}
+	return c.Jobs
+}
+
+// GetMaxErrors gets the number of errors and applies a default of 10000.
+func (c *ConsumeChannelOptions) GetMaxErrors() int {
+	if c == nil || c.MaxErrors <= 0 {
+		return 10000
+	}
+	return c.MaxErrors
+}
+
 // ConsumeChannel consumes a channel containing data until it is closed,
-// then it hands back all the errors it encountered, up to a limit of 100.
+// then it hands back all the errors it encountered, up to a maximum.
 //
 // ConsumeChannel does not leak any goroutines and hands control back to the caller when it is done.
 //
 // Note, however, that ConsumeChannel expects the channel source to *CLOSE*.
 // If the channel does not close, then it will hang forever.
-func ConsumeChannel[T any](ctx context.Context, source <-chan T, callback func(context.Context, T) error) error {
+//
+// TODO(gregorynisbet): This is a generic parallelism utility. Move it to a LUCI area or
+// another general purpose library once it is mature enough to do so.
+func ConsumeChannel[T any](ctx context.Context, opts *ConsumeChannelOptions, source <-chan T, callback func(context.Context, T) error) error {
 	var cErrMu sync.Mutex
 	var cErr []error
 	addErr := func(e error) {
@@ -211,13 +237,13 @@ func ConsumeChannel[T any](ctx context.Context, source <-chan T, callback func(c
 		}
 		cErrMu.Lock()
 		defer cErrMu.Unlock()
-		if len(cErr) >= 100 {
+		if len(cErr) >= opts.GetMaxErrors() {
 			return
 		}
 		cErr = append(cErr, e)
 	}
 
-	consumers := 8
+	consumers := opts.GetMaxErrors()
 	var wg sync.WaitGroup
 	consumer := func() {
 		defer wg.Done()
