@@ -54,9 +54,9 @@ TOOLS_SPEC_FILE = '.tools_spec.json'
 #
 # Some builders use "legacy" and "bleeding_edge" variants.
 TOOLSET_VERSIONS = {
-    'default': '1.22.3',
-    'legacy': '1.22.3',
-    'bleeding_edge': '1.22.3',
+    'default': '1.22.4',
+    'legacy': '1.22.4',
+    'bleeding_edge': '1.22.4',
 }
 
 # Layout is the layout of the bootstrap installation.
