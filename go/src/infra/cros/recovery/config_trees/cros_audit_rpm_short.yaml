@@ -2304,6 +2304,12 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
+                - name: Device does not have Intel AMT ('sample_fail')
+                  dependencies:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
               dependencies:
                 - name: Servo USB-Key needs to be reflashed ('sample_pass')
                   conditions:
@@ -2379,14 +2385,12 @@ plans:
                   dependencies:
                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
-                - name: Power OFF DUT by servo ('servo_set') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
-                          conditions:
-                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Power-off the DUT using AMT ('cros_flex_amt_power_off') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -2395,7 +2399,24 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Power ON DUT by servo ('servo_set') (ALWAYS_RUN)
+                - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -2403,6 +2424,100 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
+                - name: Device has Intel AMT ('sample_pass')
+                  dependencies:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+              dependencies:
+                - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                  conditions:
+                    - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                  dependencies:
+                    - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                  conditions:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Stable version image is missing from servo usbkey ('sample_fail')
+                      conditions:
+                        - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                  dependencies:
+                    - name: servo_servod_echo_host
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                    - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Power-off the DUT using AMT ('cros_flex_amt_power_off') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Direct USB-drive to DUT ('servo_set') (ALWAYS_RUN) (time:'20s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Run chromeos-install for Flex ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
+                  dependencies:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Power-off the DUT using AMT ('cros_flex_amt_power_off') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Power-on the DUT using AMT ('cros_flex_amt_power_on') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in DEV mode by USB-drive ('sample_pass') (ALWAYS_RUN)
