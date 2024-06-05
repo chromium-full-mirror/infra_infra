@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server"
 
 	"infra/unifiedfleet/app/cron"
@@ -175,7 +176,13 @@ var Jobs = []*cron.CronTab{
 }
 
 // InitServer initializes a cron server.
-func InitServer(srv *server.Server) {
+func InitServer(srv *server.Server) error {
+	// Perform any initialization for the cron jobs
+	if err := initializeUFSInventoryTsmonState(srv); err != nil {
+		return errors.Annotate(err, "Could not initalize tsmon state for reporting UFS inventory").Err()
+	}
+
+	// Schedule the cron jobs
 	for _, job := range Jobs {
 		// make a copy of the job to avoid race condition.
 		t := job
@@ -184,6 +191,7 @@ func InitServer(srv *server.Server) {
 			cron.Run(ctx, t)
 		})
 	}
+	return nil
 }
 
 // TriggerJob triggers a job by name. Returns error if the job is not found.

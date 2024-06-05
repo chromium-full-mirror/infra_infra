@@ -10,8 +10,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+	"go.chromium.org/luci/common/tsmon/monitor"
+	"go.chromium.org/luci/common/tsmon/store"
+	"go.chromium.org/luci/common/tsmon/target"
+	"go.chromium.org/luci/server"
+	tsmonsrv "go.chromium.org/luci/server/tsmon"
 
 	"infra/cros/dutstate"
 	invV1 "infra/libs/skylab/inventory"
@@ -38,9 +44,40 @@ var suMetric = metric.NewInt(
 	field.String("status"),
 )
 
+var suMetricState *tsmon.State
+
+// initializeUFSInventoryTsmonState creates a tsmon.State for tracking the suMetric.
+func initializeUFSInventoryTsmonState(srv *server.Server) error {
+	suMetricState = tsmon.NewState()
+	suMetricState.SetStore(store.NewInMemory(&target.Task{
+		DataCenter:  "appengine",
+		ServiceName: srv.Options.TsMonServiceName,
+		JobName:     srv.Options.TsMonJobName,
+		HostName:    srv.Options.Hostname,
+	}))
+	suMetricState.InhibitGlobalCallbacksOnFlush()
+
+	var mon monitor.Monitor
+	switch {
+	case srv.Options.Prod && srv.Options.TsMonAccount != "":
+		var err error
+		mon, err = tsmonsrv.NewProdXMonitor(srv.Context, 4096, srv.Options.TsMonAccount)
+		if err != nil {
+			return err
+		}
+	case !srv.Options.Prod:
+		mon = monitor.NewDebugMonitor("")
+	default:
+		mon = monitor.NewNilMonitor()
+	}
+	suMetricState.SetMonitor(mon)
+	return nil
+}
+
 // reportUFSInventoryCronHandler push the ufs duts metrics to tsmon
 func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	logging.Infof(ctx, "Reporting UFS inventory DUT metrics")
+
 	env := config.Get(ctx).SelfStorageBucket
 	// Set namespace to OS to get only MachineLSEs for chromeOS.
 	ctx, err = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
@@ -104,15 +141,20 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		c[*b]++
 	}
 	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
-	c.Report(ctx)
-	return nil
-}
 
-func (c inventoryCounter) Report(ctx context.Context) {
+	// Add metric state to context
+	mctx := tsmon.WithState(ctx, suMetricState)
+	// Reset the metric to stop reporting no-longer-existing devices and states.
+	defer suMetricState.Store().Reset(mctx, suMetric)
+	// Report the metrics and flush
 	for b, count := range c {
 		logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
-		suMetric.Set(ctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.status)
+		suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.status)
 	}
+	if err := suMetricState.ParallelFlush(ctx, nil, 32); err != nil {
+		return errors.Annotate(err, "failed to flush values to monitoring").Err()
+	}
+	return nil
 }
 
 // getMachineForLse returns the Machine that's attached to the MachineLSE
