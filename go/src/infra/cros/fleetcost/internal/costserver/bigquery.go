@@ -41,7 +41,9 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 
 	// The machine channel is used to send machine responses from UFS to
 	// worker goroutines that produce updated costs.
-	machineChannel := make(chan protoadapt.MessageV1)
+	//
+	// These machines only have the name field populated, nothing else.
+	machineNameChannel := make(chan protoadapt.MessageV1)
 
 	var rErr error
 	var tally atomic.Int32
@@ -53,8 +55,8 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 		//
 		// Its failure causes our overall RPC to fail, but its success alone is not
 		// enough for our RPC to be successful.
-		_, err := ufs.GetAllMachineLSEs(ctx, f.fleetClient, false, machineChannel)
-		defer close(machineChannel)
+		_, err := ufs.GetAllMachineLSEs(ctx, f.fleetClient, true, machineNameChannel)
+		defer close(machineNameChannel)
 		if err != nil {
 			rErr = errors.Annotate(err, "reading machine LSEs from UFS").Err()
 		}
@@ -63,8 +65,8 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 	consumer := func(ctx context.Context, item protoadapt.MessageV1) error {
 		return processCostResult(ctx, item, f, request.ForgiveMissingEntries, &tally)
 	}
-	// utils.ConsumeChannel will block until machineChannel is closed. MachineChannel
-	err := utils.ConsumeChannel(ctx, machineChannel, consumer)
+	// utils.ConsumeChannel will block until machineNameChannel is closed. MachineChannel
+	err := utils.ConsumeChannel(ctx, machineNameChannel, consumer)
 	if err != nil {
 		// Here we swallow up rErr if it is non-nil.
 		// I know, I know.
@@ -85,11 +87,7 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 // processCostResult computes the cost of a single device and puts it in datastore.
 func processCostResult(ctx context.Context, machineLSE protoadapt.MessageV1, f *FleetCostFrontend, forgiveMissingEntries bool, tally *atomic.Int32) error {
 	m := machineLSE.(*ufspb.MachineLSE)
-	hostname := m.GetHostname()
-	if hostname == "" {
-		logging.Debugf(ctx, "machine %q has empty hostname, skipping. Full record %v", m.GetName(), m)
-		return nil
-	}
+	hostname := ufsUtil.RemovePrefix(m.GetName())
 	if _, err := f.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{
 		Hostname:              hostname,
 		ForceUpdate:           true,
