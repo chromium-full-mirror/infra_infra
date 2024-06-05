@@ -15,6 +15,7 @@ import (
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/fleetcosterror"
+	"infra/cros/fleetcost/internal/site"
 	"infra/cros/fleetcost/internal/utils"
 	"infra/cros/fleetcost/internal/validation"
 )
@@ -32,6 +33,8 @@ func MustCreateCostIndicator(ctx context.Context, f *FleetCostFrontend, costIndi
 
 // CreateCostIndicator creates a cost indicator.
 func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fleetcostAPI.CreateCostIndicatorRequest) (*fleetcostAPI.CreateCostIndicatorResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
+	defer cancel()
 	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.FailedPrecondition, err)
 	}
@@ -47,6 +50,8 @@ func (f *FleetCostFrontend) CreateCostIndicator(ctx context.Context, request *fl
 
 // ListCostIndicators lists the cost indicators in the database satisfying the request.
 func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fleetcostAPI.ListCostIndicatorsRequest) (*fleetcostAPI.ListCostIndicatorsResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.MediumRPCDuration, site.ErrMediumRPCEnded)
+	defer cancel()
 	out, err := entities.ListCostIndicators(ctx, 0, request.GetFilter())
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "list cost indicators").Err())
@@ -58,6 +63,8 @@ func (f *FleetCostFrontend) ListCostIndicators(ctx context.Context, request *fle
 
 // UpdateCostIndicator updates a CostIndicator.
 func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fleetcostAPI.UpdateCostIndicatorRequest) (*fleetcostAPI.UpdateCostIndicatorResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
+	defer cancel()
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
 	out, err := entities.UpdateCostIndicatorEntity(ctx, entity, request.GetUpdateMask().GetPaths())
 	if err != nil {
@@ -70,6 +77,8 @@ func (f *FleetCostFrontend) UpdateCostIndicator(ctx context.Context, request *fl
 
 // DeleteCostIndicator deletes a CostIndicator.
 func (f *FleetCostFrontend) DeleteCostIndicator(ctx context.Context, request *fleetcostAPI.DeleteCostIndicatorRequest) (*fleetcostAPI.DeleteCostIndicatorResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
+	defer cancel()
 	entity := entities.NewCostIndicatorEntity(request.GetCostIndicator())
 	if err := utils.DeleteOneIfExists(ctx, entity, nil); err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "delete cost indicator").Err())

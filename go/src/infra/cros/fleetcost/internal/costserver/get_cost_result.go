@@ -18,11 +18,14 @@ import (
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/fleetcosterror"
+	"infra/cros/fleetcost/internal/site"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // GetCostResult gets cost result of a fleet resource(DUT, scheduling unit).
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
+	defer cancel()
 	if req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
 	}

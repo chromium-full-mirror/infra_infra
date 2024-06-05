@@ -5,15 +5,27 @@
 package site
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
-const MaxIterations = 1000000
+// ShortRPCDuration is the duration for short RPCs.
+const ShortRPCDuration = 30 * time.Second
+
+// ErrShortRPCEnded is used when the ShortRPCDuration deadline has ended.
+var ErrShortRPCEnded = errors.New("short RPC ended")
+
+// MediumRPCDuration is the duration for medium RPCs that can touch many records.
+const MediumRPCDuration = 3 * time.Minute
+
+// ErrMediumRPCEnded is used when the MediumRPCDuration deadline has ended.
+var ErrMediumRPCEnded = errors.New("medium RPC ended")
 
 // progName is the name of the program
 const progName = "fleetcost"

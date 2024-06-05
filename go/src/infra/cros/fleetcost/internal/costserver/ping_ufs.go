@@ -10,11 +10,14 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	"infra/cros/fleetcost/internal/site"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 )
 
 // PingUFS takes a PingUFSRequest which is empty and pings UFS, returning a description of what it did.
 func (f *FleetCostFrontend) PingUFS(ctx context.Context, _ *fleetcostAPI.PingUFSRequest) (*fleetcostAPI.PingUFSResponse, error) {
+	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
+	defer cancel()
 	req := &ufspb.ListMachineLSEsRequest{
 		KeysOnly: true,
 		PageSize: 3,
