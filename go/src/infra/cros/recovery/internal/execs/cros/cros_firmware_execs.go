@@ -52,6 +52,27 @@ func collectFirmwareTargetExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
+// setFirmwareTargetsExec sets fw-targets
+func setFirmwareTargetsExec(ctx context.Context, info *execs.ExecInfo) error {
+	cros := info.GetChromeos()
+	if cros == nil {
+		return errors.Reason("set fw-targets: only for chromeos devices").Err()
+	}
+	fi := cros.GetFirmwareInfo()
+	if fi == nil {
+		return errors.Reason("set fw-targets: only for override firmware targets").Err()
+	}
+	argsMap := info.GetActionArgs(ctx)
+	if target := argsMap.AsString(ctx, "ec_target", ""); target != "" {
+		fi.EcTarget = target
+	}
+	if target := argsMap.AsString(ctx, "ap_target", ""); target != "" {
+		fi.ApTarget = target
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_collect_firmware_target", collectFirmwareTargetExec)
+	execs.Register("cros_set_fw_targets", setFirmwareTargetsExec)
 }

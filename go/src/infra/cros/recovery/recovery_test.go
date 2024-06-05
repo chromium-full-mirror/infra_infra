@@ -640,6 +640,12 @@ var customConfigurationTestCases = []struct {
 		},
 	},
 	{
+		"Update fw targets plan",
+		func() *config.Configuration {
+			return config.SetFwTargets("ec-target", "ap-target")
+		},
+	},
+	{
 		"BTpeer provision plan",
 		func() *config.Configuration {
 			return config.ProvisionBtpeerConfig("test_url")

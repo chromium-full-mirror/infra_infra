@@ -52,6 +52,7 @@ func getApplication() *cli.Application {
 			tasks.TestStateChange,
 			tasks.ProvisionBtpeers,
 			tasks.Labqual,
+			tasks.SetFwTarget,
 		},
 	}
 }

@@ -164,3 +164,30 @@ func EnableSerialConsoleConfig() *Configuration {
 		},
 	}
 }
+
+// SetFwTargets creates a custom configuration to update fw-targets.
+func SetFwTargets(ecTarget, apTarget string) *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanServo,
+			PlanCrOS,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Set Fw-targets",
+				},
+				Actions: map[string]*Action{
+					"Set Fw-targets": {
+						ExecName: "cros_set_fw_targets",
+						ExecExtraArgs: []string{
+							fmt.Sprintf("ec_target:%s", ecTarget),
+							fmt.Sprintf("ap_target:%s", apTarget),
+						},
+					},
+				},
+			},
+		},
+	}
+}
