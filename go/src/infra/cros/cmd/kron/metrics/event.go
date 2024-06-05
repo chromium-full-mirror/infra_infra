@@ -18,21 +18,22 @@ import (
 )
 
 // GenerateEventMessage builds a metric event.
-func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *kronpb.SchedulingDecision, bbid int64, buildUUID, board, model string) (*kronpb.Event, error) {
+func GenerateEventMessage(config *suschpb.SchedulerConfig, schedulingDecision *kronpb.SchedulingDecision, bbid int64, buildUUID, board, model, buildTarget string) (*kronpb.Event, error) {
 	if runID == "" {
 		return nil, fmt.Errorf("runID cannot be empty")
 	}
 
 	return &kronpb.Event{
-		RunUuid:    runID,
-		EventUuid:  uuid.NewString(),
-		ConfigName: config.GetName(),
-		SuiteName:  config.GetSuite(),
-		EventTime:  common.TimestamppbNowWithoutNanos(),
-		Decision:   schedulingDecision,
-		Bbid:       bbid,
-		BuildUuid:  buildUUID,
-		Board:      board,
-		Model:      model,
+		RunUuid:     runID,
+		EventUuid:   uuid.NewString(),
+		ConfigName:  config.GetName(),
+		SuiteName:   config.GetSuite(),
+		EventTime:   common.TimestamppbNowWithoutNanos(),
+		Decision:    schedulingDecision,
+		Bbid:        bbid,
+		BuildUuid:   buildUUID,
+		Board:       board,
+		Model:       model,
+		BuildTarget: buildTarget,
 	}, nil
 }

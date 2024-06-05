@@ -161,19 +161,19 @@ func checkForMissingBuilds(requiredBuildList []*builds.RequiredBuild, fetchedBui
 
 // buildConfigEventsPerModel generates an event message for the current config,
 // board, model(s).
-func buildConfigEventsPerModel(models []string, config *suschpb.SchedulerConfig, board, buildUUID string, schedulingDecision *kronpb.SchedulingDecision) ([]*kronpb.Event, error) {
+func buildConfigEventsPerModel(models []string, config *suschpb.SchedulerConfig, board, buildUUID, buildTarget string, schedulingDecision *kronpb.SchedulingDecision) ([]*kronpb.Event, error) {
 	events := []*kronpb.Event{}
 
 	if len(models) > 0 {
 		for _, model := range models {
-			event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, model)
+			event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, model, buildTarget)
 			if err != nil {
 				return nil, err
 			}
 			events = append(events, event)
 		}
 	} else {
-		event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, "")
+		event, err := metrics.GenerateEventMessage(config, schedulingDecision, 0, buildUUID, board, "", buildTarget)
 		if err != nil {
 			return nil, err
 		}
@@ -208,7 +208,7 @@ func buildAndPublishUnschedulableEvents(config *suschpb.SchedulerConfig, suiteSc
 	}
 
 	// Get get the branch target which this build matched with.
-	events, err := buildConfigEventsPerModel(targetOptions.Models, config, buildInfo.Board, buildUUID, schedulingDecision)
+	events, err := buildConfigEventsPerModel(targetOptions.Models, config, buildInfo.Board, buildUUID, buildInfo.BuildTarget, schedulingDecision)
 	if err != nil {
 		return err
 	}
@@ -287,7 +287,7 @@ func logStaleBuilds(fetchedBuilds []*kronpb.Build, requiredBuildsMap map[builds.
 			if isBuildTooOld(fetchedBuild.GetCreateTime(), config.GetLaunchCriteria().GetLaunchProfile()) {
 				common.Stdout.Printf("Build for buildTarget %s board %s at milestone %d from long term storage was too old and marked as stale for config %s.", fetchedBuild.BuildTarget, fetchedBuild.Board, fetchedBuild.Milestone, config.Name)
 				schedulingDecision := &kronpb.SchedulingDecision{
-					Type:         kronpb.DecisionType_NO_PASSING_BUILD,
+					Type:         kronpb.DecisionType_STALE_BUILD,
 					Scheduled:    false,
 					FailedReason: fmt.Sprintf("Build %s is too old for config %s on testing cadence %s", fetchedBuild.GetBuildUuid(), config.Name, suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile_name[int32(*config.GetLaunchCriteria().GetLaunchProfile().Enum())]),
 				}

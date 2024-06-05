@@ -162,7 +162,7 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 		for _, model := range models {
 			ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), model, build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
 
-			event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), model)
+			event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), model, build.GetBuildTarget())
 			if err != nil {
 				return nil, err
 			}
@@ -177,7 +177,7 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 	} else {
 		ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), "", build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
 
-		event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), "")
+		event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), "", build.GetBuildTarget())
 		if err != nil {
 			return nil, err
 		}
