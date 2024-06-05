@@ -390,7 +390,6 @@ func (c *client) CancelBuildsByUser(ctx context.Context, printer common.CLIPrint
 		buildsToCancel = append(scheduledBuilds, startedBuilds...)
 	}
 	if len(buildsToCancel) == 0 {
-		printer.WriteTextStdout("No scheduled or active builds found that were launched by the current user (%s)", user)
 		return nil
 	}
 

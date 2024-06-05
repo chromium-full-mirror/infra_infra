@@ -116,8 +116,9 @@ func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 		}
 		s.schedukeHTTPClient = sc
 	}
-	// Ping Scheduke base URL to confirm IAM works.
-	if _, err = s.makeRequest(http.MethodGet, s.baseURL, nil); err != nil {
+	// Ping Scheduke base URL to confirm IAM works; don't use exponential backoff
+	// here so that we return errors quickly to the end-user.
+	if _, err = s.makeRequest(http.MethodGet, s.baseURL, nil, false); err != nil {
 		return errors.Annotate(err, "confirming Scheduke auth").Err()
 	}
 	return nil
@@ -215,7 +216,7 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 	if err != nil {
 		return nil, errors.Annotate(err, "marshal request").Err()
 	}
-	response, err := s.makeRequest(http.MethodPost, endpoint, bytes.NewReader(data))
+	response, err := s.makeRequest(http.MethodPost, endpoint, bytes.NewReader(data), true)
 	if err != nil {
 		return nil, errors.Annotate(err, "HttpPost").Err()
 	}
@@ -224,7 +225,7 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 
 // makeRequest makes the given HTTP request and returns an error if the response
 // was not 200.
-func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) (*http.Response, error) {
+func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader, useBackoff bool) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, errors.Annotate(err, "creating new HTTP request").Err()
@@ -242,7 +243,7 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader) 
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req, true)
+	r, err := sendHTTPRequestWithRetries(s.schedukeHTTPClient, req, useBackoff)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
@@ -427,7 +428,7 @@ func (s *SchedukeClient) ReadTaskStates(taskStateIDs []int64, users, deviceNames
 	}
 
 	fullReadURL := fmt.Sprintf("%s?%s", readEndpoint, schedukeParams(taskStateIDs, users, deviceNames))
-	r, err := s.makeRequest(http.MethodGet, fullReadURL, nil)
+	r, err := s.makeRequest(http.MethodGet, fullReadURL, nil, true)
 	if err != nil {
 		return nil, errors.Annotate(err, "executing HTTP request").Err()
 	}
@@ -443,7 +444,7 @@ func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []
 	}
 
 	fullCancelURL := fmt.Sprintf("%s?%s", cancelEndpoint, schedukeParams(taskStateIDs, users, deviceNames))
-	_, err = s.makeRequest(http.MethodPost, fullCancelURL, nil)
+	_, err = s.makeRequest(http.MethodPost, fullCancelURL, nil, true)
 	if err != nil {
 		return errors.Annotate(err, "executing HTTP request").Err()
 	}

@@ -109,7 +109,7 @@ func Leases(ctx context.Context, authOpts auth.Options, dev bool) ([]*LeaseInfo,
 // ShouldUseScheduke returns a bool indicating whether a lease request in the
 // pool should use this Scheduke API.
 func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) (bool, error) {
-	sc, err := NewSchedukeClientForEnv(ctx, true, authOpts)
+	sc, err := NewSchedukeClientForEnv(ctx, false, authOpts)
 	if err != nil {
 		return false, err
 	}
