@@ -1,28 +1,7 @@
 [
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@exception@Traceback (most recent call last):@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 285, in _roll_project@@@",
-      "@@@STEP_LOG_LINE@exception@    return self._roll_project_impl(@@@",
-      "@@@STEP_LOG_LINE@exception@           ^^^^^^^^^^^^^^^^^^^^^^^^@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 321, in _roll_project_impl@@@",
-      "@@@STEP_LOG_LINE@exception@    issue_result = self._process_successful_roll(@@@",
-      "@@@STEP_LOG_LINE@exception@                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[infra]/recipes/recipe_modules/recipe_autoroller/api.py\", line 450, in _process_successful_roll@@@",
-      "@@@STEP_LOG_LINE@exception@    self.m.step.empty(@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in empty@@@",
-      "@@@STEP_LOG_LINE@exception@    self.raise_on_failure(ret)@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in raise_on_failure@@@",
-      "@@@STEP_LOG_LINE@exception@    return self._raise_on_disallowed_statuses(@@@",
-      "@@@STEP_LOG_LINE@exception@           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@@@",
-      "@@@STEP_LOG_LINE@exception@  File \"RECIPE_REPO[recipe_engine]/recipe_modules/step/api.py\", in _raise_on_disallowed_statuses@@@",
-      "@@@STEP_LOG_LINE@exception@    raise exc('.'.join(result.name_tokens), result)@@@",
-      "@@@STEP_LOG_LINE@exception@recipe_engine.recipe_api.StepFailure: Step('build.git cl upload failed') (retcode: 0)@@@",
-      "@@@STEP_LOG_END@exception@@@",
-      "@@@STEP_FAILURE@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -288,6 +267,7 @@
       "@@@STEP_LOG_LINE@recipes.cfg@    },@@@",
       "@@@STEP_LOG_LINE@recipes.cfg@    \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@recipes.cfg@      \"automatic_commit\": true,@@@",
+      "@@@STEP_LOG_LINE@recipes.cfg@      \"self_approve_method\": \"CODE_REVIEW_2_APPROVE\",@@@",
       "@@@STEP_LOG_LINE@recipes.cfg@      \"tbr_emails\": [@@@",
       "@@@STEP_LOG_LINE@recipes.cfg@        \"foo@bar.example.com\",@@@",
       "@@@STEP_LOG_LINE@recipes.cfg@        \"meep@example.com\"@@@",
@@ -390,6 +370,7 @@
       "@@@STEP_LOG_LINE@json.output@        },@@@",
       "@@@STEP_LOG_LINE@json.output@        \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@          \"automaticCommit\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"selfApproveMethod\": \"CODE_REVIEW_2_APPROVE\",@@@",
       "@@@STEP_LOG_LINE@json.output@          \"tbrEmails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\",@@@",
       "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
@@ -433,6 +414,7 @@
       "@@@STEP_LOG_LINE@json.output@          },@@@",
       "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
       "@@@STEP_LOG_LINE@json.output@            \"automaticCommit\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"selfApproveMethod\": \"CODE_REVIEW_2_APPROVE\",@@@",
       "@@@STEP_LOG_LINE@json.output@            \"tbrEmails\": [@@@",
       "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\",@@@",
       "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
@@ -545,10 +527,9 @@
       "recipe-dep-roll",
       "--hashtag",
       "trivial-roll",
-      "--set-bot-commit",
       "-r",
       "meep@example.com",
-      "--use-commit-queue",
+      "--cq-dry-run",
       "--bypass-hooks",
       "-f",
       "--cc=foo@chromium.org",
@@ -598,26 +579,45 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue\": null,@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://code-review.googlesource.com/123456789\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Issue 123456789@https://code-review.googlesource.com/123456789@@@"
     ]
   },
   {
-    "cmd": [],
-    "name": "build.git cl upload failed",
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://code-review.googlesource.com/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.gsutil upload",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_TEXT@no issue metadata returned@@@",
-      "@@@STEP_FAILURE@@@"
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
     ]
   },
   {
-    "failure": {
-      "failure": {},
-      "humanReason": "Rolls failed for the following projects: build"
-    },
     "name": "$result"
   }
 ]

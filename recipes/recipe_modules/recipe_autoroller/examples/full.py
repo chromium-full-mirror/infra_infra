@@ -198,25 +198,30 @@ def GenTests(api):
           'build', repo_spec(trivial_commit=False, trivial_dryrun=True)),
   )
 
-  CODE_REVIEW_1_APPROVE = AutorollRecipeOptions.TrivialOptions.CODE_REVIEW_1_APPROVE
+  opts = AutorollRecipeOptions.TrivialOptions
   yield test(
       'trivial_code_review_1',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method=CODE_REVIEW_1_APPROVE)),
+          'build', repo_spec(self_approve_method=opts.CODE_REVIEW_1_APPROVE)),
   )
 
-  CODE_REVIEW_2_APPROVE = AutorollRecipeOptions.TrivialOptions.CODE_REVIEW_2_APPROVE
   yield test(
       'trivial_code_review_2',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method=CODE_REVIEW_2_APPROVE)),
+          'build', repo_spec(self_approve_method=opts.CODE_REVIEW_2_APPROVE)),
   )
 
-  NO_LABELS_APPROVE = AutorollRecipeOptions.TrivialOptions.NO_LABELS_APPROVE
   yield test(
       'trivial_no_labels_approval',
       api.recipe_autoroller.roll_data(
-          'build', repo_spec(self_approve_method=NO_LABELS_APPROVE)),
+          'build', repo_spec(self_approve_method=opts.NO_LABELS_APPROVE)),
+  )
+
+  yield test(
+      'trivial_code_review_led',
+      api.recipe_autoroller.roll_data(
+          'build', repo_spec(self_approve_method=opts.CODE_REVIEW_2_APPROVE)),
+      api.properties(**{'$recipe_engine/led': {'shadowed_bucket': 'roll'}}),
   )
 
   yield test(

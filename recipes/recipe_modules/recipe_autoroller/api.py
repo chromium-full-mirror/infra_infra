@@ -351,7 +351,11 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       upload_args.extend(('--hashtag', 'trivial-roll'))
       s = spec.autoroll_recipe_options.trivial
       opts = AutorollRecipeOptions.TrivialOptions
-      if s.self_approve_method == opts.CODE_REVIEW_1_APPROVE:
+      if self.m.led.launched_by_led:
+        # No-op to ensure that we require code coverage for this branch.
+        # If launched by led then we shouldn't self-approve.
+        pass
+      elif s.self_approve_method == opts.CODE_REVIEW_1_APPROVE:
         upload_args.extend(['-o', '-l=Code-Review+1'])
       elif s.self_approve_method == opts.CODE_REVIEW_2_APPROVE:
         upload_args.extend(['-o', '-l=Code-Review+2'])
@@ -365,7 +369,11 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         upload_args.extend(['-r', self.m.random.choice(s.tbr_emails)])
 
       if s.automatic_commit:
-        upload_args.append('--use-commit-queue')
+        if self.m.led.launched_by_led:
+          # Since we're not self-approving for led builds, don't CQ+2 either.
+          upload_args.append('--cq-dry-run')
+        else:
+          upload_args.append('--use-commit-queue')
       else:
         if not spec.autoroll_recipe_options.no_owners:
           upload_args.append('--r-owners')

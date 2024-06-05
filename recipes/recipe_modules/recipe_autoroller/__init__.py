@@ -14,6 +14,7 @@ DEPS = [
     'recipe_engine/file',
     'recipe_engine/futures',
     'recipe_engine/json',
+    'recipe_engine/led',
     'recipe_engine/path',
     'recipe_engine/proto',
     'recipe_engine/random',
