@@ -5,7 +5,12 @@
 package costserver
 
 import (
+	"context"
+
 	"google.golang.org/grpc"
+
+	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/cron"
 
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/libs/bqwrapper"
@@ -60,4 +65,28 @@ func SetBQClient(costFrontend *FleetCostFrontend, client bqwrapper.BQIf) {
 // SetProjectID records the projectID, needed for writing to BigQuery.
 func SetProjectID(costFrontend *FleetCostFrontend, projectID string) {
 	costFrontend.projectID = projectID
+}
+
+// InstallCron installs cron jobs into the frontend.
+func InstallCron(costFrontend *FleetCostFrontend) {
+	cron.RegisterHandler(
+		"persist-to-bq",
+		func(ctx context.Context) error {
+			_, err := costFrontend.PersistToBigquery(
+				ctx,
+				&fleetcostAPI.PersistToBigqueryRequest{},
+			)
+			return grpcutil.WrapIfTransient(err)
+		},
+	)
+	cron.RegisterHandler(
+		"repopulate-cache",
+		func(ctx context.Context) error {
+			_, err := costFrontend.RepopulateCache(
+				ctx,
+				&fleetcostAPI.RepopulateCacheRequest{},
+			)
+			return grpcutil.WrapIfTransient(err)
+		},
+	)
 }

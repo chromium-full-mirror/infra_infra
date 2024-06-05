@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
@@ -42,6 +43,7 @@ func main() {
 	mods := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
 		cfgmodule.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
 	}
 
 	server.Main(&server.Options{
@@ -80,6 +82,7 @@ func main() {
 		costserver.SetBQClient(fleetCostFrontend, bqwrapper.NewCloudBQ(bqClient))
 		costserver.InstallServices(fleetCostFrontend, srv)
 		costserver.SetProjectID(fleetCostFrontend, srv.Options.CloudProject)
+		costserver.InstallCron(fleetCostFrontend)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})
