@@ -137,6 +137,10 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
 			return errors.New(fmt.Sprintf("machines field is empty in json. It is a required parameter for json input."))
 		}
+		if machinelse.GetChromeBrowserMachineLse() == nil && machinelse.GetChromeosMachineLse() == nil &&
+			machinelse.GetAttachedDeviceLse() == nil {
+			return errors.New("json must have one of these fields defined: chromeBrowserMachineLse, chromeosMachineLse, attachedDeviceLse")
+		}
 	} else {
 		machine, err := ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, c.machineName)})
 		if err != nil {
@@ -256,7 +260,7 @@ func (c *addHost) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-machine' is required, no mode ('-f' or '-i') is specified.")
 		}
 		if c.prototype == "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-prototype' is required, no mode ('-f' or '-i') is specified. Please run `shivas list machine-prototype` to check valid prototypes for your host")
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-prototype' is required, no mode ('-f' or '-i') is specified. Please run `shivas get machine-prototype` to check valid prototypes for your host")
 		}
 	}
 	return nil

@@ -960,7 +960,6 @@ Example host for a browser machine:
         }
     }
 }
-Required fields: "name", "hostname", "machineLsePrototype", "chromeBrowserMachineLse", "machines"
 
 Example host(DUT) for an OS machine:
 {
