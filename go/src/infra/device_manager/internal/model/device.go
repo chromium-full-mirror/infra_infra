@@ -129,7 +129,11 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 	// TODO (b/328662436): Collect metrics on results
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "P0002" {
+		if errors.As(err, &pgErr) {
+			logging.Debugf(ctx, "SQLSTATE:", pgErr.Code)
+			logging.Debugf(ctx, "Error Message:", pgErr.Message)
+		}
+		if errors.Is(err, sql.ErrNoRows) || (errors.As(err, &pgErr) && pgErr.Code == "P0002") {
 			return device, ErrDeviceNotFound
 		}
 		return device, err
