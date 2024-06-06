@@ -32,7 +32,7 @@ func createServoInUseFlagExec(ctx context.Context, info *execs.ExecInfo) error {
 	if servo.GetName() == "" {
 		return errors.Reason("create servo in use flag: servo is not present as part of dut info").Err()
 	}
-	run := info.DefaultRunner()
+	run := info.NewRunner(servo.GetName())
 	if _, err := run(ctx, time.Minute, fmt.Sprintf(inUseFlagFileCreateSingleGlob, info.NewServod().Port())); err != nil {
 		// Print finish result as we ignore any errors.
 		log.Debugf(ctx, "Create in-use flag file: %s", err)

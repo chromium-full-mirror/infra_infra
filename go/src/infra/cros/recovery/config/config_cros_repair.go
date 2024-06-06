@@ -106,8 +106,28 @@ func crosRepairActions() map[string]*Action {
 				"Setup has servo info",
 				"servo_host_is_labstation",
 			},
+			Dependencies: []string{
+				"Labstation is SSHable",
+			},
 			ExecName:               "cros_create_servo_in_use",
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Labstation is SSHable": {
+			Docs: []string{
+				"Verify that labstation is SSHable.",
+				"Limited to 15 seconds.",
+			},
+			Dependencies: []string{
+				"servo_host_is_labstation",
+			},
+			ExecName: "cros_ssh",
+			ExecExtraArgs: []string{
+				"device_type:servo",
+			},
+			ExecTimeout:   &durationpb.Duration{Seconds: 15},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Set state: ready": {
 			Docs: []string{

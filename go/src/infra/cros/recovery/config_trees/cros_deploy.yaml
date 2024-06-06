@@ -23397,6 +23397,17 @@ plans:
                   exec_name: dut_servo_host_present
                 - name: servo_host_is_labstation
                   exec_name: servo_host_is_labstation
+              dependencies:
+                - name: Labstation is SSHable (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:servo
+                  docs:
+                    - Verify that labstation is SSHable.
+                    - Limited to 15 seconds.
+                  dependencies:
+                    - name: servo_host_is_labstation
+                      exec_name: servo_host_is_labstation
             - name: Has repair-request for re-image USB-key
               exec_name: dut_has_any_repair_requests
               exec_args:
