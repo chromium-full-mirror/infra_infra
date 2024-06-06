@@ -141,7 +141,13 @@ func executeRequests(
 	}
 	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient)
 	sk.AllTestResults = resultsMap
-	//TODO (azrahman): add compressed result for upstream
+
+	// Execute post configs
+	err = ctpv2PostConfig.Execute(ctx)
+	if err != nil {
+		return buildOutput, errors.Annotate(err, "error during executing post execution configs: ").Err()
+	}
+
 	if sk.ExecuteResponses != nil {
 		m, _ := proto.Marshal(sk.ExecuteResponses)
 		var b bytes.Buffer
@@ -150,12 +156,6 @@ func executeRequests(
 		_ = w.Close()
 
 		buildOutput.CompressedResponses = base64.StdEncoding.EncodeToString(b.Bytes())
-	}
-
-	// Execute post configs
-	err = ctpv2PostConfig.Execute(ctx)
-	if err != nil {
-		return buildOutput, errors.Annotate(err, "error during executing post execution configs: ").Err()
 	}
 
 	return buildOutput, nil
