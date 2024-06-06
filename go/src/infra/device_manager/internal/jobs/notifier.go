@@ -100,7 +100,7 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 		logging.Debugf(ctx, "Queued Device %s for publishing event to Pub/Sub", device.ID)
 	}
 
-	wg.Done()
+	wg.Wait()
 	return nil
 }
 
