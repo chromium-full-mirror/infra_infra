@@ -745,12 +745,12 @@ Args:
 Returns: QMP json response for status query
 ### *recipe_modules* / [recipe\_autoroller](/recipes/recipe_modules/recipe_autoroller)
 
-[DEPS](/recipes/recipe_modules/recipe_autoroller/__init__.py#7): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/futures][recipe_engine/recipe_modules/futures], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/led][recipe_engine/recipe_modules/led], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/random][recipe_engine/recipe_modules/random], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
+[DEPS](/recipes/recipe_modules/recipe_autoroller/__init__.py#7): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/futures][recipe_engine/recipe_modules/futures], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/led][recipe_engine/recipe_modules/led], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/random][recipe_engine/recipe_modules/random], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
 
 
-#### **class [RecipeAutorollerApi](/recipes/recipe_modules/recipe_autoroller/api.py#167)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [RecipeAutorollerApi](/recipes/recipe_modules/recipe_autoroller/api.py#173)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [roll\_projects](/recipes/recipe_modules/recipe_autoroller/api.py#168)(self, projects, db_gcs_bucket):**
+&mdash; **def [roll\_projects](/recipes/recipe_modules/recipe_autoroller/api.py#174)(self, projects, db_gcs_bucket):**
 
 Attempts to roll each project from the provided list.
 
@@ -1808,10 +1808,10 @@ Rolls recipes.cfg dependencies for public projects.
 &mdash; **def [RunSteps](/recipes/recipes/recipe_autoroller.py#32)(api, projects, db_gcs_bucket):**
 ### *recipes* / [recipe\_autoroller:examples/full](/recipes/recipe_modules/recipe_autoroller/examples/full.py)
 
-[DEPS](/recipes/recipe_modules/recipe_autoroller/examples/full.py#7): [recipe\_autoroller](#recipe_modules-recipe_autoroller), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/time][recipe_engine/recipe_modules/time]
+[DEPS](/recipes/recipe_modules/recipe_autoroller/examples/full.py#9): [recipe\_autoroller](#recipe_modules-recipe_autoroller), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/time][recipe_engine/recipe_modules/time]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/recipe_autoroller/examples/full.py#34)(api, projects, db_gcs_bucket):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/recipe_autoroller/examples/full.py#36)(api, projects, db_gcs_bucket):**
 ### *recipes* / [recipe\_bundler](/recipes/recipes/recipe_bundler.py)
 
 [DEPS](/recipes/recipes/recipe_bundler.py#10): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

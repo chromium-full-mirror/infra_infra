@@ -6,6 +6,7 @@ PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
     'depot_tools/depot_tools',
+    'depot_tools/gerrit',
     'depot_tools/git',
     'depot_tools/git_cl',
     'depot_tools/gsutil',

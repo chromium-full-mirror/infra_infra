@@ -7,6 +7,8 @@ from dataclasses import dataclass
 import datetime
 import re
 import traceback
+from typing import Optional
+import urllib.parse
 
 from google.protobuf import json_format as jsonpb
 
@@ -15,6 +17,10 @@ from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.recipe_engine.recipes_cfg import (AutorollRecipeOptions, DepRepoSpecs,
                                           RepoSpec)
 from PB.recipe_engine import result as result_pb2
+
+_TRIVIAL_ROLL_HASHTAG = 'trivial-roll'
+_NONTRIVIAL_ROLL_HASHTAG = 'nontrivial-roll'
+_RECIPE_DEP_ROLL_HASHTAG = 'recipe-dep-roll'
 
 
 class RepoData(object):
@@ -32,7 +38,7 @@ class RepoData(object):
     self.last_roll_ts_utc = last_roll_ts_utc
 
   @classmethod
-  def from_json(cls, obj):
+  def from_json(cls, obj):  # pragma: no cover
     return cls(
       obj['issue'],
       obj['issue_url'],
@@ -236,11 +242,10 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     return workdir
 
-  def _check_previous_roll(self, project_url, workdir, db_gcs_bucket):
+  def _check_previous_roll(self, project_url, workdir):
     # Check status of last known CL for this repo. Ensure there's always
     # at most one roll CL in flight.
-    repo_data, cl_status = self._get_pending_cl_status(project_url, workdir,
-                                                       db_gcs_bucket)
+    repo_data, cl_status = self._get_pending_cl_status(project_url, workdir)
     if repo_data:
       last_roll_elapsed = self.m.time.utcnow() - repo_data.last_roll_ts_utc
 
@@ -303,7 +308,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       rslt.presentation.status = self.m.step.WARNING
       return _Status(ROLL_SKIP)
 
-    status = self._check_previous_roll(project_url, workdir, db_gcs_bucket)
+    status = self._check_previous_roll(project_url, workdir)
     if status is not None:
       # This means that the previous roll is still going, or similar. In this
       # situation we're done with this repo, for now.
@@ -346,9 +351,9 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     spec = jsonpb.ParseDict(picked_details['spec'], RepoSpec())
 
-    upload_args = ['--send-mail', '--hashtag', 'recipe-dep-roll']
+    upload_args = ['--send-mail', '--hashtag', _RECIPE_DEP_ROLL_HASHTAG]
     if roll_result['trivial']:
-      upload_args.extend(('--hashtag', 'trivial-roll'))
+      upload_args.extend(('--hashtag', _TRIVIAL_ROLL_HASHTAG))
       s = spec.autoroll_recipe_options.trivial
       opts = AutorollRecipeOptions.TrivialOptions
       if self.m.led.launched_by_led:
@@ -380,7 +385,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
         if s.dry_run:
           upload_args.append('--cq-dry-run')
     else:
-      upload_args.extend(('--hashtag', 'nontrivial-roll'))
+      upload_args.extend(('--hashtag', _NONTRIVIAL_ROLL_HASHTAG))
       s = spec.autoroll_recipe_options.nontrivial
       if s.extra_reviewer_emails:
         upload_args.append('--reviewers=%s' % ','.join(s.extra_reviewer_emails))
@@ -462,39 +467,75 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     issue_step.presentation.links['Issue %s' % repo_data.issue] = (
         repo_data.issue_url)
 
+    # TODO: b/40275665 - Stop uploading to GCS.
     self.m.gsutil.upload(
         self.m.json.input(repo_data.to_json()), db_gcs_bucket,
         _gs_path(project_url))
 
     return issue_result
 
-  def _get_pending_cl_status(self, project_url, workdir, db_gcs_bucket):
+  def _get_pending_cl_status(self, project_url, workdir):
     """Returns (current_repo_data, git_cl_status_string) of the last known
     roll CL for given repo.
 
     If no such CL has been recorded, returns (None, None).
     """
-    cat_result = self.m.gsutil.cat(
-        'gs://%s/%s' % (db_gcs_bucket, _gs_path(project_url)),
-        stdout=self.m.raw_io.output_text(),
-        stderr=self.m.raw_io.output_text(),
-        ok_ret=(0, 1),
-        name='repo_state',
-        step_test_data=lambda: self.m.raw_io.test_api.stream_output_text(
-            'No URLs matched', stream='stderr', retcode=1))
+    url = urllib.parse.urlparse(project_url)
+    host = f'{url.scheme}://{url.netloc}'
+    host = host.replace(".googlesource.com", "-review.googlesource.com")
+    project = url.path.lstrip('/').removesuffix('.git')
 
-    if cat_result.retcode:
-      cat_result.presentation.logs['stderr'] = [
-          self.m.step.active_result.stderr]
-      if not re.search('No URLs matched', cat_result.stderr): # pragma: no cover
-        raise Exception('gsutil failed in an unexpected way; see stderr log')
+    # We're only considering the first change returned to see if CV is running,
+    # but we will abandon additional matching changes.
+    changes = self.m.gerrit.get_changes(
+        host,
+        query_params=(
+            ('is', 'open'),
+            ('owner', 'self'),
+            ('project', project),
+            ('hashtag', _RECIPE_DEP_ROLL_HASHTAG),
+        ),
+        name='find changes',
+        limit=10,
+        step_test_data=self.m.gerrit.test_api.get_empty_changes_response_data,
+    )
+
+    if not changes:
       return None, None
 
-    repo_data = RepoData.from_json(self.m.json.loads(cat_result.stdout))
-    cat_result.presentation.links['Issue %s' % repo_data.issue] = (
-        repo_data.issue_url)
+    # The created time is still a str and not a datetime but it should still
+    # sort fine. Gerrit will sort these too, but we explicitly want to sort by
+    # creation time, not the time the change was last modified. If those differ,
+    # it's likely because a human touched a (possibly old) change.
+    changes.sort(key=lambda x: x['created'], reverse=True)
+
+    repo_data: Optional[RepoData] = None
+
+    for i, change in enumerate(changes):
+      number = change['_number']
+      if i == 0:
+        # Only consider the first one as possibly "current".
+        created_str = re.sub(r'\.0+$', '', change['created'])
+        created = datetime.datetime.strptime(created_str, '%Y-%m-%d %H:%M:%S')
+
+        repo_data = RepoData(
+            issue=str(number),
+            issue_url=f'{host}/c/{project}/+/{number}',
+            trivial=_TRIVIAL_ROLL_HASHTAG in change['hashtags'],
+            last_roll_ts_utc=created,
+        )
+
+      else:
+        # Just abandon other matching changes.
+        self.m.gerrit.abandon_change(
+            host, change=number, name=f'abandon {number}',
+            message=self.m.buildbucket.build_url(),
+        )
+
+    step = self.m.step.empty('issue')
+    step.presentation.links['Issue %s' % repo_data.issue] = repo_data.issue_url
     if repo_data.trivial:
-      cat_result.presentation.step_text += ' (trivial)'
+      step.presentation.step_text += ' (trivial)'
 
     with self.m.context(cwd=workdir):
       status_result = self.m.git_cl(

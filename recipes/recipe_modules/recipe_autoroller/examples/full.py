@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
+
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
@@ -127,7 +129,7 @@ def GenTests(api):
           'build',
           trivial=True,
           status='commit',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.time.seed(1451606400),
   )
 
@@ -138,7 +140,7 @@ def GenTests(api):
           'build',
           trivial=True,
           status='commit',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.time.seed(1454371200),
       status='FAILURE',
   )
@@ -147,7 +149,7 @@ def GenTests(api):
       'repo_data_trivial_open',
       api.recipe_autoroller.repo_data(
           'build', trivial=True, status='open',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.recipe_autoroller.roll_data('build'),
       api.time.seed(1451606400),
       api.post_process(MustRun, 'build.git cl set-close'),
@@ -159,7 +161,7 @@ def GenTests(api):
           'build',
           trivial=True,
           status='closed',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.recipe_autoroller.roll_data('build'),
       api.time.seed(1451606400),
   )
@@ -171,7 +173,7 @@ def GenTests(api):
           'build',
           trivial=False,
           status='waiting',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.time.seed(1451606400),
   )
 
@@ -182,7 +184,7 @@ def GenTests(api):
           'build',
           trivial=False,
           status='waiting',
-          timestamp='2016-02-01T01:23:45'),
+          timestamp=datetime.datetime(2016, 2, 1, 1, 23, 45)),
       api.time.seed(1454371200),
       status='FAILURE',
   )

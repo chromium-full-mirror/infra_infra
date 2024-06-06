@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import datetime
 import json
+from typing import Union
 
 from google.protobuf import json_format
 
@@ -103,20 +105,32 @@ class RecipeAutorollerTestApi(recipe_test_api.RecipeTestApi):
     ret += self.step_data('%s.roll' % project, self.m.json.output(roll_result))
     return ret
 
-  def repo_data(self, project, trivial, status, timestamp):
-    return (self.override_step_data(
-        '%s.gsutil repo_state' % project,
-        self.m.raw_io.stream_output_text(
-            json.dumps({
-                'issue': '123456789',
-                'issue_url': 'https://codereview.chromium.org/123456789',
-                'trivial': trivial,
-                'last_roll_ts_utc': timestamp,
-            }),
-            stream='stdout'),
-        self.m.raw_io.stream_output_text('', stream='stderr')) +
-            self.step_data('%s.git cl status' % project,
-                           self.m.raw_io.stream_output_text(status)))
+  def gerrit_change(self, number: Union[str, int], trivial: bool,
+                    timestamp: datetime.datetime):
+    return self.m.gerrit.gerrit_change_data(
+        number,
+        hashtags=['trivial-roll' if trivial else 'nontrivial-roll'],
+        created=timestamp.strftime('%Y-%m-%d %H:%M:%S.000000000'))
+
+  def gerrit_changes(self, project: str, changes: list):
+    return self.override_step_data(
+        f'{project}.gerrit find changes',
+        self.m.gerrit.get_multiple_changes_response_data(changes))
+
+  def roll_status(self, project: str, status: str):
+    return self.step_data(f'{project}.git cl status',
+                          self.m.raw_io.stream_output_text(status))
+
+  def repo_data(self, project: str, trivial: bool, status: str,
+                timestamp: datetime.datetime):
+    changes = [
+        self.gerrit_change(222222, trivial, timestamp),
+        self.gerrit_change(111111, trivial,
+                           timestamp - datetime.timedelta(days=1))
+    ]
+
+    return self.gerrit_changes(project, changes) + self.roll_status(
+        project, status)
 
   def recipe_cfg(self, project, spec=None):
     """Returns mock recipes.cfg data (only) for |project|.

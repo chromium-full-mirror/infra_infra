@@ -285,15 +285,28 @@
   },
   {
     "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cat",
-      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "changes",
+      "--verbose",
+      "--host",
+      "https://example.com",
+      "--json_file",
+      "/path/to/tmp/json",
+      "--limit",
+      "10",
+      "-p",
+      "is=open",
+      "-p",
+      "owner=self",
+      "-p",
+      "project=build",
+      "-p",
+      "hashtag=recipe-dep-roll"
     ],
+    "env": {
+      "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
+    },
     "infra_step": true,
     "luci_context": {
       "realm": {
@@ -307,11 +320,11 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "build.gsutil repo_state",
+    "name": "build.gerrit find changes",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@stderr@No URLs matched@@@",
-      "@@@STEP_LOG_END@stderr@@@"
+      "@@@STEP_LOG_LINE@json.output@[]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
