@@ -9,13 +9,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
 
 // kernelBootPriorityChangedExec checks if kernel priority changed.
 func kernelBootPriorityChangedExec(ctx context.Context, info *execs.ExecInfo) error {
-	yes, err := IsKernelPriorityChanged(ctx, info.NewRunner(info.GetDut().Name))
+	yes, err := cros.IsKernelPriorityChanged(ctx, info.NewRunner(info.GetDut().Name))
 	if err != nil {
 		return errors.Annotate(err, "kernel boot priority changed").Err()
 	}
@@ -28,7 +29,7 @@ func kernelBootPriorityChangedExec(ctx context.Context, info *execs.ExecInfo) er
 
 // kernelBootPriorityPersistExec checks if kernel priority has not changed.
 func kernelBootPriorityPersistExec(ctx context.Context, info *execs.ExecInfo) error {
-	yes, err := IsKernelPriorityChanged(ctx, info.NewRunner(info.GetDut().Name))
+	yes, err := cros.IsKernelPriorityChanged(ctx, info.NewRunner(info.GetDut().Name))
 	if err != nil {
 		return errors.Annotate(err, "kernel boot priority persist").Err()
 	}
@@ -39,7 +40,14 @@ func kernelBootPriorityPersistExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
+// switchKernelBootPriorityExec switch kernel priority.
+func switchKernelBootPriorityExec(ctx context.Context, info *execs.ExecInfo) error {
+	err := cros.SwitchKernelPriority(ctx, info.NewRunner(info.GetDut().Name))
+	return errors.Annotate(err, "switch kernel boot priority").Err()
+}
+
 func init() {
 	execs.Register("cros_kernel_priority_has_changed", kernelBootPriorityChangedExec)
 	execs.Register("cros_kernel_priority_has_not_changed", kernelBootPriorityPersistExec)
+	execs.Register("cros_switch_kernel_priority", switchKernelBootPriorityExec)
 }
