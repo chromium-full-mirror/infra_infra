@@ -15,15 +15,15 @@ import (
 	"infra/cros/fleetcost/internal/costserver/entities"
 )
 
-// CacheTTL is how long a cache entity lives.
-var CacheTTL = 4 * time.Hour
+// cacheTTL is how long a cache entity lives.
+var cacheTTL = 4 * time.Hour
 
 // StoreCachedCostResult stores a cached cost result.
 func StoreCachedCostResult(ctx context.Context, hostname string, result *models.CostResult) error {
 	return datastore.Put(ctx, &entities.CachedCostResultEntity{
 		Hostname:       hostname,
 		CostResult:     result,
-		ExpirationTime: time.Now().UTC().Add(CacheTTL),
+		ExpirationTime: time.Now().UTC().Add(cacheTTL),
 	})
 }
 

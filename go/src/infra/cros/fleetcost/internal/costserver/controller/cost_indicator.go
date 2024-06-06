@@ -42,7 +42,7 @@ func normalizeToHourlyCost(rawCost float64, cadence fleetcostpb.CostCadence) (fl
 // GetCostIndicatorValue gets the value of a cost indicator, potentially falling back.
 //
 // GetCostIndicatorValue normalizes all values to hourly.
-func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
+func GetCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
 	if !usefallbacks {
 		v, c, err := GetCostIndicatorValueDirectly(ctx, attribute)
 		if err != nil {
@@ -76,7 +76,7 @@ func GetCostIndicatorValue(ctx context.Context, attribute *IndicatorAttribute, u
 }
 
 // GetCostIndicatorValueDirectly gets the value of a cost indicator.
-func GetCostIndicatorValueDirectly(ctx context.Context, attribute *IndicatorAttribute) (float64, fleetcostpb.CostCadence, error) {
+func GetCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttribute) (float64, fleetcostpb.CostCadence, error) {
 	entity := attribute.AsEntity()
 	if _, err := entities.GetCostIndicatorEntity(ctx, entity); err != nil {
 		return 0, fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN, errors.Annotate(err, "get cost indicator value").Err()
@@ -85,7 +85,7 @@ func GetCostIndicatorValueDirectly(ctx context.Context, attribute *IndicatorAttr
 }
 
 // GetIndicatorFallbacks takes an indicatorAttribute and returns the list of fallback indicator attributes.
-func GetIndicatorFallbacks(attribute *IndicatorAttribute) ([]*IndicatorAttribute, error) {
+func GetIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute, error) {
 	typ := attribute.IndicatorType
 	board := attribute.Board
 	model := attribute.Model
@@ -101,7 +101,7 @@ func GetIndicatorFallbacks(attribute *IndicatorAttribute) ([]*IndicatorAttribute
 
 	hasLocationAll := location == fleetcostpb.Location_LOCATION_ALL
 
-	var output []*IndicatorAttribute
+	var output []*indicatorAttribute
 
 	// TODO(gregorynisbet): rework this logic so that it isn't hardcoded.
 	if sku != "" {
