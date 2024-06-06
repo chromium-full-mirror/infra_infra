@@ -55,8 +55,11 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 				last_updated_time
 			FROM "Devices"
 			WHERE
-			  last_updated_time > last_notification_time
-				OR last_notification_time IS NULL`
+				is_active = true
+			  AND (
+					last_updated_time > last_notification_time
+					OR last_notification_time IS NULL
+				);`
 		lastUpdatedTime sql.NullTime
 	)
 	rows, err := db.QueryContext(ctx, query)
@@ -130,12 +133,15 @@ func updateWorker(ctx context.Context, db *sql.DB, updateTime time.Time, devices
 	)
 
 	updateDevices := func() {
+		if len(pendingUpdates) == 0 {
+			return
+		}
 		query := `
 			UPDATE "Devices"
 			SET
 				last_notification_time = $1
 			WHERE
-				id IN (%s)`
+				id IN (%s);`
 		query = fmt.Sprintf(query, strings.Join(pendingUpdates, ", "))
 		_, err := db.QueryContext(ctx, query, updateTime)
 		if err != nil {
