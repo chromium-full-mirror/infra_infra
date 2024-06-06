@@ -393,6 +393,10 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		ResultsConfig:     nil, // TODO (azrahman): Investigate if we need this.
 	}
 
+	if trHelper.config.GetTestRunner().GetSwarmingPool() != "" {
+		args.SwarmingPool = trHelper.config.GetTestRunner().GetSwarmingPool()
+	}
+
 	labels, err := createLabels(trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating labels: ").Err()
