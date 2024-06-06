@@ -133,28 +133,31 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 	opt := site.GetAuthOption(ctx)
 
 	if tp.Cft != nil {
-		// append the args to the first suite if a suite exists
-		if len(tp.Cft.Suite) > 0 {
-			tp.Cft.Suite[0].TestArgs = c.TestArgs
+		singleTestPlans := splitTestPlan(tp.Cft)
+		for _, stp := range singleTestPlans {
+			// append the args to the first suite if a suite exists
+			if len(stp.Suite) > 0 {
+				stp.Suite[0].TestArgs = c.TestArgs
+			}
+			res = append(res, &builder.CTPBuilder{
+				Image:               c.Image,
+				Board:               c.Board,
+				Model:               c.Model,
+				Pool:                c.Pool,
+				CFT:                 true,
+				RunCtpv2WithQs:      c.RunCtpv2WithQs,
+				TestPlan:            stp,
+				BuilderID:           builderId,
+				Dimensions:          dims,
+				ImageBucket:         site.GetGCSImageBucket(),
+				AuthOptions:         &opt,
+				TestRunnerBuildTags: tags,
+				TimeoutMins:         c.setTimeout(),
+				CTPBuildTags:        tags,
+				TRV2:                c.TRV2,
+				CpconPublish:        c.UploadToCpcon,
+			})
 		}
-		res = append(res, &builder.CTPBuilder{
-			Image:               c.Image,
-			Board:               c.Board,
-			Model:               c.Model,
-			Pool:                c.Pool,
-			CFT:                 true,
-			RunCtpv2WithQs:      c.RunCtpv2WithQs,
-			TestPlan:            tp.Cft,
-			BuilderID:           builderId,
-			Dimensions:          dims,
-			ImageBucket:         site.GetGCSImageBucket(),
-			AuthOptions:         &opt,
-			TestRunnerBuildTags: tags,
-			TimeoutMins:         c.setTimeout(),
-			CTPBuildTags:        tags,
-			TRV2:                c.TRV2,
-			CpconPublish:        c.UploadToCpcon,
-		})
 	}
 
 	if tp.NonCft != nil {
@@ -176,6 +179,39 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 		})
 	}
 	return res, nil
+}
+
+// splitTestPlans splits the testplan with suites into those with single suite.
+func splitTestPlan(tp *test_platform.Request_TestPlan) []*test_platform.Request_TestPlan {
+	suites := tp.GetSuite()
+	tests := tp.GetTest()
+	res := []*test_platform.Request_TestPlan{}
+	for _, suite := range suites {
+		singleTestPlan := &test_platform.Request_TestPlan{
+			Suite:                  []*test_platform.Request_Suite{suite},
+			Enumeration:            tp.GetEnumeration(),
+			TagCriteria:            tp.GetTagCriteria(),
+			Seed:                   tp.GetSeed(),
+			TestArgs:               tp.GetTestArgs(),
+			TotalShards:            tp.GetTotalShards(),
+			MaxInShard:             tp.GetMaxInShard(),
+			EnableAutotestSharding: tp.GetEnableAutotestSharding(),
+		}
+		res = append(res, singleTestPlan)
+	}
+	if len(tests) > 0 {
+		res = append(res, &test_platform.Request_TestPlan{
+			Test:                   tests,
+			Enumeration:            tp.GetEnumeration(),
+			TagCriteria:            tp.GetTagCriteria(),
+			Seed:                   tp.GetSeed(),
+			TestArgs:               tp.GetTestArgs(),
+			TotalShards:            tp.GetTotalShards(),
+			MaxInShard:             tp.GetMaxInShard(),
+			EnableAutotestSharding: tp.GetEnableAutotestSharding(),
+		})
+	}
+	return res
 }
 
 func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {
