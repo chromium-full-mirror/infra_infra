@@ -5,6 +5,7 @@
 package amt
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,6 +17,8 @@ import (
 	dac "github.com/xinsnake/go-http-digest-auth-client"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/log"
 )
 
 // Map of human-readable states to AMT power states.
@@ -60,7 +63,8 @@ func NewAMTClient(hostname string, username string, password string) AMTClient {
 	return AMTClient{uri, username, password}
 }
 
-func (c AMTClient) post(request string) (string, error) {
+func (c AMTClient) post(ctx context.Context, request string) (string, error) {
+	log.Debugf(ctx, "Posting HTTP request: %s", request)
 	t := dac.NewTransport(c.username, c.password)
 	r, err := http.NewRequest("POST", c.uri, strings.NewReader(request))
 	if err != nil {
@@ -68,6 +72,7 @@ func (c AMTClient) post(request string) (string, error) {
 	}
 	r.Header.Add("Content-Type", "application/soap+xml;charset=UTF-8")
 	resp, err := t.RoundTrip(r)
+	log.Debugf(ctx, "Received HTTP status code: %d", resp.StatusCode)
 	if err != nil {
 		return "", errors.Reason("failed to post the data").Err()
 	}
@@ -78,11 +83,12 @@ func (c AMTClient) post(request string) (string, error) {
 		return "", errors.Reason("responded with status %d", resp.StatusCode).Err()
 	}
 	body, _ := io.ReadAll(resp.Body)
+	log.Debugf(ctx, "Received HTTP response: %s", body)
 	return string(body), nil
 }
 
 // AMTPresent returns true if the client URI is accessible.
-func (c AMTClient) AMTPresent() (bool, error) {
+func (c AMTClient) AMTPresent(ctx context.Context) (bool, error) {
 	client := http.Client{
 		Timeout: 500 * time.Millisecond,
 	}
@@ -101,8 +107,8 @@ func (c AMTClient) AMTPresent() (bool, error) {
 }
 
 // GetPowerState returns the power state as an int.
-func (c AMTClient) GetPowerState() (int, error) {
-	resp, err := c.post(createReadAMTPowerStateRequest(c.uri))
+func (c AMTClient) GetPowerState(ctx context.Context) (int, error) {
+	resp, err := c.post(ctx, createReadAMTPowerStateRequest(c.uri))
 	if err != nil {
 		return 0, err
 	}
@@ -110,12 +116,13 @@ func (c AMTClient) GetPowerState() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	log.Debugf(ctx, "Got power state: %d", state)
 	return state, nil
 }
 
 // PowerOn powers on the DUT using Intel AMT (vPro).
-func (c AMTClient) PowerOn() error {
-	resp, err := c.post(createUpdateAMTPowerStateRequest(c.uri, powerStateMap["on"]))
+func (c AMTClient) PowerOn(ctx context.Context) error {
+	resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, powerStateMap["on"]))
 	if err != nil {
 		return err
 	}
@@ -130,8 +137,8 @@ func (c AMTClient) PowerOn() error {
 }
 
 // PowerOff powers off the DUT using Intel AMT (vPro).
-func (c AMTClient) PowerOff() error {
-	resp, err := c.post(createUpdateAMTPowerStateRequest(c.uri, powerStateMap["off"]))
+func (c AMTClient) PowerOff(ctx context.Context) error {
+	resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, powerStateMap["off"]))
 	if err != nil {
 		return err
 	}

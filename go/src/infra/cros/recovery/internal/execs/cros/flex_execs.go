@@ -14,12 +14,13 @@ import (
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/cros/amt"
+	"infra/cros/recovery/internal/log"
 )
 
 // flexAMTPresent returns true if Intel AMT (vPro) is present.
 func flexAMTPresent(ctx context.Context, info *execs.ExecInfo) error {
 	client := getFlexAMTClient()
-	present, err := client.AMTPresent()
+	present, err := client.AMTPresent(ctx)
 	if err != nil {
 		return errors.Annotate(err, "flex AMT present").Err()
 	}
@@ -32,13 +33,13 @@ func flexAMTPresent(ctx context.Context, info *execs.ExecInfo) error {
 // flexAMTPowerOff powers the DUT off using Intel AMT (vPro).
 func flexAMTPowerOff(ctx context.Context, info *execs.ExecInfo) error {
 	client := getFlexAMTClient()
-	return errors.Annotate(client.PowerOff(), "flex AMT power-off").Err()
+	return errors.Annotate(client.PowerOff(ctx), "flex AMT power-off").Err()
 }
 
 // flexAMTPowerOn powers the DUT on using Intel AMT (vPro).
 func flexAMTPowerOn(ctx context.Context, info *execs.ExecInfo) error {
 	client := getFlexAMTClient()
-	return errors.Annotate(client.PowerOn(), "flex AMT power-off").Err()
+	return errors.Annotate(client.PowerOn(ctx), "flex AMT power-off").Err()
 }
 
 // Configure and return an AMTClient.
@@ -71,6 +72,7 @@ func setUSBForNextFlexBoot(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "set USB as next boot: fail to read efibootmgr").Err()
 	}
 	devnum, err := findDeviceNumInOutput(out)
+	log.Debugf(ctx, "USB-drive number is: %s", devnum)
 	if err != nil {
 		return err
 	}
