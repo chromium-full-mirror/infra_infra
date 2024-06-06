@@ -23,6 +23,11 @@ import (
 )
 
 // GetCostResult gets cost result of a fleet resource(DUT, scheduling unit).
+//
+// TODO(gregorynisbet):
+//
+//		 Include "missing entries forgiveness" disposition in the cache.
+//	         We don't want strict and lax cache entries interfering with each other.
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
 	ctx, cancel := context.WithTimeoutCause(ctx, site.ShortRPCDuration, site.ErrShortRPCEnded)
 	defer cancel()

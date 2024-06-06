@@ -16,6 +16,7 @@ import (
 	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
 	"infra/cros/fleetcost/internal/utils"
 	ufspb "infra/unifiedfleet/api/v1/models"
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -102,93 +103,169 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	dut := data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut()
 	peripherals := dut.GetPeripherals()
 	servo := peripherals.GetServo()
+
 	// TODO: add a map that convert UFS location to cost indicator location. Hardcode to all for now.
 	location := fleetcostpb.Location_LOCATION_ALL
 	if dut == nil {
 		return nil, utils.MaybeErrorf(ctx, errors.Reason("%s is not a valid ChromeOS DUT", data.GetLabConfig().GetHostname()).Err())
 	}
-	var dedicateCost, sharedCost, cloudCost float64
-	// Cost for DUT hardware.
-	dutCost, err := GetDutHardwareCost(ctx, data.GetMachine().GetChromeosMachine(), location, forgiveMissingEntries)
+
+	m := data.GetMachine().GetChromeosMachine()
+
+	sharedCost, err := getSharedCost(ctx, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
+		return nil, err
 	}
-	dedicateCost = dedicateCost + dutCost
-	// Cost for servo related items.
+	dedicatedCost, err := getDUTDedicatedHardwareCost(ctx, m, servo, location, forgiveMissingEntries)
+	if err != nil {
+		return nil, err
+	}
+	cloudCost, err := getCloudCost(ctx, location, forgiveMissingEntries)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cost for labstation, which is special
 	if servo.GetServoHostname() != "" {
-		servoCost, err := GetServoCost(ctx, servo.GetServoType(), location, forgiveMissingEntries)
+		labstationCost, err := getLabstationHardwareCost(ctx, ic, servo.GetServoHostname(), location, forgiveMissingEntries)
 		if err != nil {
 			return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
 		}
-		dedicateCost = dedicateCost + float64(servoCost)
-		labstationCost, err := getLabstationCost(ctx, ic, servo.GetServoHostname(), location, forgiveMissingEntries)
-		sharedCost = sharedCost + labstationCost
-		if err != nil {
-			return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
-		}
+		sharedCost += labstationCost
 	}
 	return &fleetcostpb.CostResult{
-		DedicatedCost:    dedicateCost,
+		DedicatedCost:    dedicatedCost,
 		SharedCost:       sharedCost,
 		CloudServiceCost: cloudCost,
 	}, nil
 }
 
-// GetServoCost gets the cost of a servo.
-func GetServoCost(ctx context.Context, servoType string, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
-	indicator := &IndicatorAttribute{
-		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
-		Board:         servoType,
-		Location:      location,
-	}
-	v, err := GetCostIndicatorValue(ctx, indicator, true, forgiveMissingEntries)
-	if err != nil {
-		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get servo cost").Err())
-	}
-	return v, nil
-}
-
-// GetDutHardwareCost gets the hardware cost for a single DUT.
-func GetDutHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
-	indicator := &IndicatorAttribute{
-		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:         m.GetBuildTarget(),
-		Model:         m.GetModel(),
-		Sku:           m.GetSku(),
-		Location:      location,
-	}
-	v, err := GetCostIndicatorValue(ctx, indicator, true, forgiveMissingEntries)
-	if err != nil {
-		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get dut hardware cost for %q", indicator.FriendlyString()).Err())
-	}
-	return v, nil
-}
-
-func getLabstationCost(ctx context.Context, ic ufsAPI.FleetClient, hostname string, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
+// getLabstationHardwareCost gets the hardware cost of a labstation
+func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostname string, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	data, err := ufsFetcher.GetChromeosDeviceData(ctx, ic, hostname)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	m := data.GetMachine().GetChromeosMachine()
-	indicator := &IndicatorAttribute{
+
+	sharedCost := 0.0
+	v, err := GetCostIndicatorValue(ctx, &IndicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
-		Sku:           m.GetSku(),
-		Location:      location,
-	}
-	v, err := GetCostIndicatorValue(ctx, indicator, true, forgiveMissingEntries)
+
+		Sku:      m.GetSku(),
+		Location: location,
+	}, true, forgiveMissingEntries)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
+	sharedCost += v
+
+	v, err = GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_USBHUB,
+		Board:         "",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, err
+	}
+	sharedCost += v
+
 	labMap, err := ufsFetcher.GetLabstationDutMapping(ctx, ic, []string{hostname})
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
 	}
 	if l, ok := labMap[hostname]; ok {
 		if len(l) > 0 {
-			return v / float64(len(l)), nil
+			return sharedCost / float64(len(l)), nil
 		}
 	}
 	return 0, utils.MaybeErrorf(ctx, errors.Reason("Unable to get number of DUTs under %s", hostname).Err())
+}
+
+// getSharedCost gets the shared costs except for labstation costs.
+func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
+	sharedCost := 0.0
+	v, err := GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "rack-networking",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, err
+	}
+	sharedCost += v
+	v, err = GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "drone-server",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, err
+	}
+	sharedCost += v
+	v, err = GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "rack-setup",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, err
+	}
+	sharedCost += v
+	return sharedCost, nil
+}
+
+// getDUTDedicatedHardwareCost gets the acquisition cost of a DUT and servo, which are the only two
+// resources that are DUT-specific
+func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
+	out := 0.0
+	v, err := GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
+		Board:         m.GetBuildTarget(),
+		Model:         m.GetModel(),
+		Sku:           m.GetSku(),
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0, err
+	}
+	out += v
+	if servo != nil {
+		servoCost, err := GetCostIndicatorValue(ctx, &IndicatorAttribute{
+			IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
+			Board:         servo.GetServoType(),
+			Model:         "",
+			Sku:           "",
+			Location:      location,
+		}, true, forgiveMissingEntries)
+		if err != nil {
+			return 0, err
+		}
+		out += servoCost
+	}
+	return out, nil
+}
+
+func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
+	v, err := GetCostIndicatorValue(ctx, &IndicatorAttribute{
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+		Board:         "",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0, err
+	}
+	return v, nil
 }
