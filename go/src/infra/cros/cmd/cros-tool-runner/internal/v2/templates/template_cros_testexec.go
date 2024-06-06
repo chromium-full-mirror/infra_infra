@@ -82,10 +82,19 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, HostServiceAcctCredsDir))
 	}
 
+	var envvars []string
+	// Required for Satlab's Docker TLS daemon. See b/197875817
+	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", path, path))
+		var tlsVars = []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
+		envvars = append(envvars, tlsVars...)
+	}
+
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,
 		Volume:  volumes,
+		Env:     envvars,
 	}
 	// It is necessary to do sudo here because /tmp/test is owned by root inside docker
 	// when docker mount /tmp/test. However, the user that is running cros-test is

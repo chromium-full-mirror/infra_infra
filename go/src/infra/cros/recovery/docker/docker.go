@@ -36,7 +36,6 @@ import (
 const (
 	// Connection to docker service can be set by socket or by open tcp connection.
 	dockerSocketFilePath = "/var/run/docker.sock"
-	dockerTcpPath        = "tcp://192.168.231.1:2375"
 
 	// Enable more debug logs to triage issue.
 	// Will be set to false after stabilize work with container.
@@ -83,11 +82,19 @@ func createDockerClient(ctx context.Context, useSocketFile bool) (*client.Client
 			}
 		} else {
 			log.Debugf(ctx, "Docker client connecting over docker.sock")
-			return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+			return client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 		}
 	}
-	// Use the tcp connection local host IP 192.168.231.1:2375
 	log.Debugf(ctx, "Docker client connecting over TCP")
+	// For TLS create Docker Client from env variables.
+	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
+		// Use the tcp connection, host IP is defined by DOCKER_HOST env variable.
+		return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	}
+	// TODO(klimkowicz): remove this legacy Docker Client fallback when
+	// Satlab with TLS dockerd is fully rolled out.
+	dockerTCPPath := "tcp://192.168.231.1:2375"
+
 	// Default HTTPClient inside the Docker Client object fails to
 	// connects to docker daemon. Create the transport with DialContext and use
 	// this while initializing new docker client object.
@@ -98,7 +105,7 @@ func createDockerClient(ctx context.Context, useSocketFile bool) (*client.Client
 		}).DialContext,
 	}
 	c := http.Client{Transport: transport}
-	return client.NewClientWithOpts(client.WithHost(dockerTcpPath), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
+	return client.NewClientWithOpts(client.WithHost(dockerTCPPath), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
 }
 
 // Pull is pulling docker image.

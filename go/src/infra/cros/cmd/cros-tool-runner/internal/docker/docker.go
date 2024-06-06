@@ -233,6 +233,10 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
 		args = append(args, cloudbotsDockerArgs()...)
 	}
+	// Add Satlab related args such as env var, volume.
+	if droneName := os.Getenv("DRONE_AGENT_HIVE"); strings.Contains(droneName, "satlab") {
+		args = append(args, satlabTLSDockerArgs()...)
+	}
 	// Set to automatically remove the container when it exits.
 	args = append(args, "--rm")
 	if d.Network != "" {
@@ -329,6 +333,20 @@ func cloudbotsDockerArgs() []string {
 		log.Printf("warning: cloudbots .ssh/config file do no exist")
 	} else {
 		args = append(args, "-v", fmt.Sprintf("%s:%s", hostSSHConfig, cntSSHConfig))
+	}
+	return args
+}
+
+// satlabTLSDockerArgs returns Satlab specific args such as env vars and volume.
+func satlabTLSDockerArgs() []string {
+	var args []string
+	// Required for Satlab's Docker TLS daemon. See b/197875817
+	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
+		args = append(args, "-v", fmt.Sprintf("%s:%s", path, path))
+		var tlsVars = []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
+		for _, env := range tlsVars {
+			args = append(args, "--env", env)
+		}
 	}
 	return args
 }
