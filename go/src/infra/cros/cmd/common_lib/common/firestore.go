@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 // Package firestore implements an interface for all firestore API actions.
-package firestore
+package common
 
 import (
 	"context"
 
 	"cloud.google.com/go/firestore"
+	"google.golang.org/api/option"
 )
 
 // InitClient returns a firestore client set to access the given project and
 // database. A databaseID is required as the default database (default) requires
 // a separate process.
-func InitClient(ctx context.Context, projectID, databaseID string) (*firestore.Client, error) {
-	client, err := firestore.NewClientWithDatabase(ctx, projectID, databaseID)
+func InitClient(ctx context.Context, projectID, databaseID string, opts ...option.ClientOption) (*firestore.Client, error) {
+	client, err := firestore.NewClientWithDatabase(ctx, projectID, databaseID, opts...)
 	if err != nil {
 		return nil, err
 	}

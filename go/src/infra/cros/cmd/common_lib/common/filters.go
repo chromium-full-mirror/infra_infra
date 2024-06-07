@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"cloud.google.com/go/firestore"
 	"golang.org/x/exp/slices"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
@@ -268,4 +269,24 @@ func ListToJson(list *list.List) []byte {
 	}
 
 	return retBytes
+}
+
+// FetchDigestFromFirestore grabs the digest and previous digest
+// from the collection based on the container name.
+func FetchDigestFromFirestore(ctx context.Context, collection *firestore.CollectionRef, containerName string) (digest string, prevDigest string) {
+	doc, err := collection.Doc(containerName).Get(ctx)
+	if err != nil {
+		return
+	}
+	data := doc.Data()
+	digest, ok := data["digest"].(string)
+	if !ok {
+		return "", ""
+	}
+	prevDigest, ok = data["prevDigest"].(string)
+	if !ok {
+		return digest, ""
+	}
+
+	return
 }

@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
+	infra_common "infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
-	"infra/cros/cmd/kron/firestore"
 )
 
 // firestoreCommand is the interface for the firestore-sync subcommand
@@ -66,8 +66,8 @@ func fetchToTConfigs() ([]*suschpb.SchedulerConfig, error) {
 
 // generateFirestoreItemList returns a properly formatted Firestore item for us
 // to insert into the database.
-func generateFirestoreItemList(configs []*suschpb.SchedulerConfig) ([]*firestore.FirestoreItem, error) {
-	insertItems := []*firestore.FirestoreItem{}
+func generateFirestoreItemList(configs []*suschpb.SchedulerConfig) ([]*infra_common.FirestoreItem, error) {
+	insertItems := []*infra_common.FirestoreItem{}
 	for _, config := range configs {
 		jsonData, err := protojson.Marshal(config)
 		if err != nil {
@@ -78,7 +78,7 @@ func generateFirestoreItemList(configs []*suschpb.SchedulerConfig) ([]*firestore
 			"configJSON": string(jsonData),
 		}
 
-		firestoreItem := firestore.FirestoreItem{
+		firestoreItem := infra_common.FirestoreItem{
 			DocName: config.Name,
 			Datum:   datum,
 		}
@@ -101,7 +101,7 @@ func (c *firestoreCommand) Run(a subcommands.Application, args []string, env sub
 
 	// Initialize the client at the target projectID.
 	common.Stdout.Printf("Initializing firestore client with db name %s\n", common.FirestoreDatabaseName)
-	firestoreClient, err := firestore.InitClient(ctx, projectID, common.FirestoreDatabaseName)
+	firestoreClient, err := infra_common.InitClient(ctx, projectID, common.FirestoreDatabaseName)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
@@ -134,7 +134,7 @@ func (c *firestoreCommand) Run(a subcommands.Application, args []string, env sub
 
 	// Batch write the config items to firestore.
 	common.Stdout.Println("Sending batch request to Firestore.")
-	writeJobResults, err := firestore.BatchSet(ctx, configCollection, firestoreClient, insertItems)
+	writeJobResults, err := infra_common.BatchSet(ctx, configCollection, firestoreClient, insertItems)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1

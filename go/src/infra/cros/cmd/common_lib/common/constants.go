@@ -42,6 +42,12 @@ const (
 	SwarmingBasePath                       = "https://chromeos-swarming.appspot.com/_ah/api/swarming/v1/"
 	SwarmingMaxLimitForEachQuery           = 1000
 	ContainerMetadataPath                  = "/metadata/containers.jsonpb"
+	TestPlatformDataProjectID              = "chromeos-test-platform-data"
+	TestPlatformFireStore                  = "test-platform-store"
+	FireStoreContainersStagingCollection   = "containers-staging"
+	FireStoreContainersProdCollection      = "containers-prod"
+	LabelStaging                           = "staging"
+	LabelProd                              = "prod"
 	BotParamsRejectedErrKey                = "Bot Params Rejected"
 	EnumerationErrKey                      = "Enumeration Error"
 	OtherErrKey                            = "Other Error"
