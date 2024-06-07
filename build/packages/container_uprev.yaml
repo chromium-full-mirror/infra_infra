@@ -1,0 +1,11 @@
+package: chromiumos/infra/container_uprev/${platform}
+description: Uprev service responsible for building and pushing
+ images filled with CIPD packages.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/container_uprev
+root: ../../go/bin
+data:
+  - file: container_uprev${exe_suffix}
+  - version_file: .versions/container_uprev${exe_suffix}.cipd_version
