@@ -117,21 +117,22 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 	}
 	bms := make(map[string]*migrationState)
 	for _, lse := range lses {
+		stripped := ufsUtil.RemovePrefix(lse.GetName())
 		// Filtering out DUTs based on DUT name.
-		if _, ok := searchable.excludeDUTs[ufsUtil.RemovePrefix(lse.GetName())]; ok {
-			logging.Infof(ctx, "machineLSE: %s found in exclude_duts in %s; skipping", ufsUtil.RemovePrefix(lse.GetName()), migrationFile)
+		if _, ok := searchable.excludeDUTs[stripped]; ok {
+			logging.Infof(ctx, "machineLSE: %s found in exclude_duts in %s; skipping", stripped, migrationFile)
 			continue
 		}
 		// Filtering out DUTs based on pool name.
 		if pool, ok := shouldExcludePool(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), searchable.excludePools); ok {
-			logging.Infof(ctx, "pool: %s found in exclude_pools in %s for DUT %s; skipping", pool, migrationFile, ufsUtil.RemovePrefix(lse.GetName()))
+			logging.Infof(ctx, "pool: %s found in exclude_pools in %s for DUT %s; skipping", pool, migrationFile, stripped)
 			continue
 		}
 		for _, machine := range lse.GetMachines() {
 			m, ok := machines[machine]
 			if !ok {
 				// Should not happen. These lses are filtered by sfo36 zone.
-				logging.Errorf(ctx, "ComputeBoardModelToState: machine %s from lse %v is not present in sfo machine set", machine, lse.GetName())
+				logging.Errorf(ctx, "machine: %s from lse: %v is not present in sfo machine set", machine, lse.GetName())
 				continue
 			}
 			key := fmt.Sprintf("%s/%s", m.GetChromeosMachine().GetBuildTarget(), m.GetChromeosMachine().GetModel())
@@ -140,11 +141,11 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 			}
 			switch lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive() {
 			case "cloudbots":
-				bms[key].Cloudbots = append(bms[key].Cloudbots, ufsUtil.RemovePrefix(lse.GetName()))
+				bms[key].Cloudbots = append(bms[key].Cloudbots, stripped)
 			case "e", "":
 				// e and empty hive are the only values drone-queen captures.
 				// TODO(b/338233053): change to e after backfill.
-				bms[key].Drone = append(bms[key].Drone, ufsUtil.RemovePrefix(lse.GetName()))
+				bms[key].Drone = append(bms[key].Drone, stripped)
 			}
 		}
 	}

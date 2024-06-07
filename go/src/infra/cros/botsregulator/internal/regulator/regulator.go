@@ -138,7 +138,7 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, dbs []*apipb.B
 			s := ufsUtil.RemovePrefix(su.GetName())
 			// The SU is still running on Drone.
 			if _, ok := droneDUTs[s]; ok {
-				logging.Infof(ctx, "Scheduling Unit %s is still running on Drone; skipping")
+				logging.Infof(ctx, "Scheduling Unit %s is still running on Drone; skipping", s)
 				continue
 			}
 			ad = append(ad, s)
@@ -151,7 +151,7 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, dbs []*apipb.B
 		}
 		// The DUT is still running on Drone.
 		if _, ok := droneDUTs[lse]; ok {
-			logging.Infof(ctx, "DUT %s is still running on Drone; skipping")
+			logging.Infof(ctx, "DUT %s is still running on Drone; skipping", lse)
 			continue
 		}
 		ad = append(ad, lse)
