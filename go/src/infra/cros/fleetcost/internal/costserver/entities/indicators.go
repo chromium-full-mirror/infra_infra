@@ -31,12 +31,12 @@ type CostIndicatorEntity struct {
 	Extra         datastore.PropertyMap      `gae:",extra"`
 	CostIndicator *fleetcostpb.CostIndicator `gae:"cost_indicator"`
 	// Indexed fields for improved query performance.
-	Board    string `gae:"board"`
-	Model    string `gae:"model"`
-	Sku      string `gae:"sku"`
-	Type     string `gae:"type"`
-	Location string `gae:"location"`
-	Quantity bool   `gae:"quantity"`
+	Board               string  `gae:"board"`
+	Model               string  `gae:"model"`
+	Sku                 string  `gae:"sku"`
+	Type                string  `gae:"type"`
+	Location            string  `gae:"location"`
+	AmortizationInYears float64 `gae:"amortization_in_years"`
 }
 
 // Silence staticcheck warning about unused field.
@@ -48,7 +48,7 @@ func (indicator *CostIndicatorEntity) Save(withMeta bool) (datastore.PropertyMap
 	indicator.Board = indicator.CostIndicator.GetBoard()
 	indicator.Model = indicator.CostIndicator.GetModel()
 	indicator.Sku = indicator.CostIndicator.GetSku()
-	indicator.Quantity = indicator.CostIndicator.GetQuantity()
+	indicator.AmortizationInYears = indicator.CostIndicator.GetAmortizationInYears()
 	if int(indicator.CostIndicator.GetType()) != 0 {
 		indicator.Type = indicator.CostIndicator.GetType().String()
 	}
