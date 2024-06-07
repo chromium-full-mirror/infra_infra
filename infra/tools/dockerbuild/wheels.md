@@ -3749,20 +3749,35 @@ wheel: <
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 
-### 1.3.0
+### 1.3.0.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/google-crc32c/${vpython_platform}"
-  version: "version:1.3.0"
+  version: "version:1.3.0.chromium.1"
 >
 ```
 
 
-* *linux-arm64-py3.11*
-* *linux-arm64-py3.8*
-* *linux-armv6-py3.11*
-* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
+### 1.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-crc32c/${vpython_platform}"
+  version: "version:1.5.0"
+>
+```
+
+
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
 * *mac-x64-py3.11*
