@@ -43,24 +43,26 @@ var UpdateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
+		c.Flags.Float64Var(&c.amortizationInYears, "am", 0, "amortization time in years")
 		return c
 	},
 }
 
 type updateCostIndicatorCommand struct {
 	subcommands.CommandRunBase
-	authFlags   authcli.Flags
-	commonFlags site.CommonFlags
-	name        string
-	typ         fleetcostpb.IndicatorType
-	board       string
-	model       string
-	sku         string
-	cost        *money.Money
-	costCadence fleetcostpb.CostCadence
-	burnoutRate float64
-	location    fleetcostpb.Location
-	description string
+	authFlags           authcli.Flags
+	commonFlags         site.CommonFlags
+	name                string
+	typ                 fleetcostpb.IndicatorType
+	board               string
+	model               string
+	sku                 string
+	cost                *money.Money
+	costCadence         fleetcostpb.CostCadence
+	burnoutRate         float64
+	location            fleetcostpb.Location
+	description         string
+	amortizationInYears float64
 }
 
 // Run is the main entrypoint to update-ci.
@@ -101,6 +103,9 @@ func (c *updateCostIndicatorCommand) getFieldMaskPaths() []string {
 	}
 	if c.description != "" {
 		out = append(out, "description")
+	}
+	if c.amortizationInYears != 0 {
+		out = append(out, "amortization_in_years")
 	}
 	return out
 }

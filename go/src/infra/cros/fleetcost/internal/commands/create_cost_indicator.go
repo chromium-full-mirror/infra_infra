@@ -43,24 +43,26 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
+		c.Flags.Float64Var(&c.amortizationInYears, "am", 0, "amortization time in years")
 		return c
 	},
 }
 
 type createCostIndicatorCommand struct {
 	subcommands.CommandRunBase
-	authFlags   authcli.Flags
-	commonFlags site.CommonFlags
-	name        string
-	typ         fleetcostpb.IndicatorType
-	board       string
-	model       string
-	sku         string
-	cost        *money.Money
-	costCadence fleetcostpb.CostCadence
-	burnoutRate float64
-	location    fleetcostpb.Location
-	description string
+	authFlags           authcli.Flags
+	commonFlags         site.CommonFlags
+	name                string
+	typ                 fleetcostpb.IndicatorType
+	board               string
+	model               string
+	sku                 string
+	cost                *money.Money
+	costCadence         fleetcostpb.CostCadence
+	burnoutRate         float64
+	location            fleetcostpb.Location
+	description         string
+	amortizationInYears float64
 }
 
 // Run is the main entrypoint to the create-ci.
@@ -97,15 +99,16 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	request := &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Name:        c.name,
-			Type:        c.typ,
-			Board:       c.board,
-			Model:       c.model,
-			Cost:        c.cost,
-			CostCadence: c.costCadence,
-			BurnoutRate: c.burnoutRate,
-			Location:    c.location,
-			Description: c.description,
+			Name:                c.name,
+			Type:                c.typ,
+			Board:               c.board,
+			Model:               c.model,
+			Cost:                c.cost,
+			CostCadence:         c.costCadence,
+			BurnoutRate:         c.burnoutRate,
+			Location:            c.location,
+			Description:         c.description,
+			AmortizationInYears: c.amortizationInYears,
 		},
 	}
 	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {

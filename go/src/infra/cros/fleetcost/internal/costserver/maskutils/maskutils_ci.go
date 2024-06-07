@@ -47,6 +47,8 @@ func updateCostIndicatorField(dst *fleetcostpb.CostIndicator, src *fleetcostpb.C
 		dst.Location = src.GetLocation()
 	case "description":
 		dst.Description = src.GetDescription()
+	case "amortization_in_years":
+		dst.AmortizationInYears = src.GetAmortizationInYears()
 	}
 }
 

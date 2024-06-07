@@ -94,6 +94,22 @@ func TestUpdateCostIndicatorProto(t *testing.T) {
 				Board: "new-board",
 			},
 		},
+		{
+			name: "amortization in years",
+			dst: &fleetcostpb.CostIndicator{
+				Name:                "platypus",
+				AmortizationInYears: 400,
+			},
+			src: &fleetcostpb.CostIndicator{
+				Name:                "platypus",
+				AmortizationInYears: 2,
+			},
+			fieldmask: []string{"amortization_in_years"},
+			output: &fleetcostpb.CostIndicator{
+				Name:                "platypus",
+				AmortizationInYears: 2,
+			},
+		},
 	}
 
 	for _, tt := range cases {
