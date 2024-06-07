@@ -49,7 +49,7 @@ def _getBazel(api):
   with api.step.nest('get bazel'):  # pragma: no cover
     bazel_path = api.path.mkdtemp(prefix='bazel')
     bazel_bin = bazel_path / 'bazel'
-    api.gsutil.download('bazel', '6.1.2/release/bazel-6.1.2-linux-x86_64',
+    api.gsutil.download('bazel', '7.1.2/release/bazel-7.1.2-linux-x86_64',
                         bazel_bin)
     api.step('make bazel executable', ['chmod', '+x', bazel_bin])
     return bazel_path
