@@ -7696,6 +7696,20 @@ wheel: <
 
 * *universal*
 
+## **pyfakefs-py3**
+
+### 5.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyfakefs-py3"
+  version: "version:5.5.0"
+>
+```
+
+
+* *universal*
+
 ## **pyflakes**
 
 ### 3.0.1
