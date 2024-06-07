@@ -10,3 +10,6 @@ type IndicatorAttribute = indicatorAttribute
 // Export functions as variables
 var NormalizeToHourlyCost = normalizeToHourlyCost
 var GetCostIndicatorValue = getCostIndicatorValue
+var GetIndicatorFallbacks = getIndicatorFallbacks
+var NewIndicatorAttribute = newIndicatorAttribute
+var CalculateCostForSingleChromeosDut = calculateCostForSingleChromeosDut

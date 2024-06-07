@@ -34,10 +34,10 @@ type indicatorAttribute struct {
 	Location      fleetcostpb.Location
 }
 
-// NewIndicatorAttribute creates a new indicator attribute.
+// newIndicatorAttribute creates a new indicator attribute.
 //
 // TODO(gregorynisbet): Rethink the API for this function, maybe move it to utils.
-func NewIndicatorAttribute(typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *indicatorAttribute {
+func newIndicatorAttribute(typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *indicatorAttribute {
 	return &indicatorAttribute{
 		IndicatorType: typ,
 		Board:         board,
@@ -59,8 +59,8 @@ func (attribute *indicatorAttribute) FriendlyString() string {
 	return message
 }
 
-// AsEntity converts an IndicatorAttribute to a datastore Entity.
-func (attribute *indicatorAttribute) AsEntity() *entities.CostIndicatorEntity {
+// asEntity converts an IndicatorAttribute to a datastore Entity.
+func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 	if attribute == nil {
 		return nil
 	}
@@ -89,7 +89,7 @@ func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, host
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
 		logging.Infof(ctx, "detected that %q is a ChromeOS device", hostname)
-		resp, err := CalculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData(), forgiveMissingEntries)
+		resp, err := calculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData(), forgiveMissingEntries)
 		return resp, errors.Annotate(err, "calculate ChromeOS device cost").Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
@@ -100,8 +100,8 @@ func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, host
 	}
 }
 
-// CalculateCostForSingleChromeosDut calculates the cost of a ChromeOS DUT.
-func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData, forgiveMissingEntries bool) (*fleetcostpb.CostResult, error) {
+// calculateCostForSingleChromeosDut calculates the cost of a ChromeOS DUT.
+func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData, forgiveMissingEntries bool) (*fleetcostpb.CostResult, error) {
 	logging.Infof(ctx, "calculating cost for %q with forgive=%v", data.GetMachine().GetName(), forgiveMissingEntries)
 	dut := data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut()
 	peripherals := dut.GetPeripherals()
@@ -153,7 +153,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	m := data.GetMachine().GetChromeosMachine()
 
 	sharedCost := 0.0
-	v, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
@@ -166,7 +166,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	}
 	sharedCost += v
 
-	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_USBHUB,
 		Board:         "",
 		Model:         "",
@@ -193,7 +193,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 // getSharedCost gets the shared costs except for labstation costs.
 func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	sharedCost := 0.0
-	v, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-networking",
 		Model:         "",
@@ -205,7 +205,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	}
 	sharedCost += v
 
-	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "drone server costs",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "drone-server",
@@ -218,7 +218,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	}
 	sharedCost += v
 
-	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "rack setup costs",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-setup",
@@ -255,7 +255,7 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 	}
 	out += v
 	if servo != nil {
-		servoCost, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		servoCost, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 			IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 			Board:         servo.GetServoType(),
 			Model:         "",

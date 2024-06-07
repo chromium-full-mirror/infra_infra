@@ -89,7 +89,7 @@ func BurnoutRateLinearPenalty(costPerHour float64, annualBurnoutRate float64, am
 	return costPerHour + hourlyBurnoutRate*reacquisitionCost, nil
 }
 
-func GetAmortizedCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
+func getAmortizedCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
 	ent, err := getCostIndicatorValue(ctx, attribute, usefallbacks, forgiveMissingEntries)
 	if err != nil {
 		return 0, err
@@ -106,18 +106,18 @@ func GetAmortizedCostIndicatorValue(ctx context.Context, attribute *indicatorAtt
 // GetCostIndicatorValue normalizes all values to hourly.
 func getCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (*entities.CostIndicatorEntity, error) {
 	if !usefallbacks {
-		ent, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		ent, err := getCostIndicatorValueDirectly(ctx, attribute)
 		if err != nil {
 			return nil, errors.Annotate(err, "error looking up %q", attribute.ErrorHint).Err()
 		}
 		return ent, nil
 	}
-	sequence, err := GetIndicatorFallbacks(attribute)
+	sequence, err := getIndicatorFallbacks(attribute)
 	if err != nil {
 		return nil, errors.Annotate(err, "error looking up %q", attribute.ErrorHint).Err()
 	}
 	for _, attribute := range sequence {
-		ent, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		ent, err := getCostIndicatorValueDirectly(ctx, attribute)
 		switch {
 		case err == nil:
 			return ent, nil
@@ -136,17 +136,17 @@ func getCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, u
 	return nil, errors.Annotate(datastore.ErrNoSuchEntity, "error looking up %q", attribute.ErrorHint).Err()
 }
 
-// GetCostIndicatorValueDirectly gets the value of a cost indicator.
-func GetCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttribute) (*entities.CostIndicatorEntity, error) {
-	entity := attribute.AsEntity()
+// getCostIndicatorValueDirectly gets the value of a cost indicator.
+func getCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttribute) (*entities.CostIndicatorEntity, error) {
+	entity := attribute.asEntity()
 	if _, err := entities.GetCostIndicatorEntity(ctx, entity); err != nil {
 		return nil, errors.Annotate(err, "get cost indicator value").Err()
 	}
 	return entity, nil
 }
 
-// GetIndicatorFallbacks takes an indicatorAttribute and returns the list of fallback indicator attributes.
-func GetIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute, error) {
+// getIndicatorFallbacks takes an indicatorAttribute and returns the list of fallback indicator attributes.
+func getIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute, error) {
 	typ := attribute.IndicatorType
 	board := attribute.Board
 	model := attribute.Model
@@ -166,28 +166,28 @@ func GetIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute
 
 	// TODO(gregorynisbet): rework this logic so that it isn't hardcoded.
 	if sku != "" {
-		output = append(output, NewIndicatorAttribute(typ, board, model, sku, location))
+		output = append(output, newIndicatorAttribute(typ, board, model, sku, location))
 	}
 	if sku != "" && !hasLocationAll {
-		output = append(output, NewIndicatorAttribute(typ, board, model, sku, fleetcostpb.Location_LOCATION_ALL))
+		output = append(output, newIndicatorAttribute(typ, board, model, sku, fleetcostpb.Location_LOCATION_ALL))
 	}
 	if model != "" {
-		output = append(output, NewIndicatorAttribute(typ, board, model, "", location))
+		output = append(output, newIndicatorAttribute(typ, board, model, "", location))
 	}
 	if model != "" && !hasLocationAll {
-		output = append(output, NewIndicatorAttribute(typ, board, model, "", fleetcostpb.Location_LOCATION_ALL))
+		output = append(output, newIndicatorAttribute(typ, board, model, "", fleetcostpb.Location_LOCATION_ALL))
 	}
 	if board != "" {
-		output = append(output, NewIndicatorAttribute(typ, board, "", "", location))
+		output = append(output, newIndicatorAttribute(typ, board, "", "", location))
 	}
 	if board != "" && !hasLocationAll {
-		output = append(output, NewIndicatorAttribute(typ, board, "", "", fleetcostpb.Location_LOCATION_ALL))
+		output = append(output, newIndicatorAttribute(typ, board, "", "", fleetcostpb.Location_LOCATION_ALL))
 	}
 	if typ != fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
-		output = append(output, NewIndicatorAttribute(typ, "", "", "", location))
+		output = append(output, newIndicatorAttribute(typ, "", "", "", location))
 	}
 	if typ != fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN && !hasLocationAll {
-		output = append(output, NewIndicatorAttribute(typ, "", "", "", fleetcostpb.Location_LOCATION_ALL))
+		output = append(output, newIndicatorAttribute(typ, "", "", "", fleetcostpb.Location_LOCATION_ALL))
 	}
 
 	return output, nil
