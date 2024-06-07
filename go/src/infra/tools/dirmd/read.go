@@ -6,9 +6,7 @@ package dirmd
 
 import (
 	"bufio"
-	"bytes"
 	"context"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -26,33 +24,16 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/tools/dirmd/git"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
 // Filename is the standard name of the metadata file.
 const Filename = "DIR_METADATA"
 
-var gitBinary string
-
-func init() {
-	if runtime.GOOS != "windows" {
-		gitBinary = "git"
-		return
-	}
-
-	gitBinary = "git.exe"
-	if _, err := exec.LookPath("git.bat"); err == nil {
-		// git.bat is available. Prefer git.bat instead.
-		gitBinary = "git.bat"
-	}
-	// Note that this function does not raise errors (by panicking).
-	// Instead, if code execution needs git indeed, then it will fail with a nice
-	// error message (as opposed to a stack trace from panic).
-}
-
 // ReadFile reads metadata from a file.
 func ReadFile(fileName string) (*dirmdpb.Metadata, error) {
-	contents, err := ioutil.ReadFile(fileName)
+	contents, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
@@ -264,16 +245,10 @@ func dirsByRepoRoot(ctx context.Context, dirs []string) (map[string]*repoInfo, e
 		dir = p
 
 		eg.Go(func() error {
-			cmd := exec.CommandContext(ctx, gitBinary, "-C", dir, "rev-parse", "--show-toplevel")
-			stdout, err := cmd.Output()
+			repoRoot, err := git.FindRepoRoot(ctx, dir)
 			if err != nil {
-				if exitErr, _ := err.(*exec.ExitError); exitErr != nil {
-					return errors.Reason("failed to call %q: %s", cmd.Args, exitErr.Stderr).Err()
-				}
-				return errors.Annotate(err, "failed to call %q", cmd.Args).Err()
+				return err
 			}
-			repoRoot := string(bytes.TrimSpace(stdout))
-
 			mu.Lock()
 			defer mu.Unlock()
 			repo := ret[repoRoot]
@@ -350,7 +325,7 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 
 	// Concurrently start `git ls-files`, read its output and read the discovered
 	// metadata files.
-	cmd := exec.CommandContext(ctx, gitBinary, "-C", repo.absRoot, "ls-files", "--full-name", absTreeRoot)
+	cmd := exec.CommandContext(ctx, git.Binary, "-C", repo.absRoot, "ls-files", "--full-name", absTreeRoot)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return err
@@ -474,7 +449,7 @@ func (r *mappingReader) processFiles(ctx context.Context, absDir string, key str
 		for _, fp := range omd.FilePatterns {
 			regexPath := filepath.Join(absDir, fp)
 			// use git ls-files to determine all files associated with for each regex defined.
-			cmd := exec.CommandContext(ctx, gitBinary, "-C", absRoot, "ls-files", "--full-name", regexPath)
+			cmd := exec.CommandContext(ctx, git.Binary, "-C", absRoot, "ls-files", "--full-name", regexPath)
 			stdout, err := cmd.StdoutPipe()
 			if err != nil {
 				return err
