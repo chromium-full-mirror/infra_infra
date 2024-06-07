@@ -22,6 +22,8 @@ import (
 	"google.golang.org/api/option"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -32,6 +34,15 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
+)
+
+const (
+	hostname                = "us-docker.pkg.dev"
+	testServicesRegistry    = "cros-registry/test-services"
+	incrementalRunBinary    = "pvs_incremental_run_filter"
+	incrementalRunContainer = "pvs-incremental-run-filter"
+	incrementalRunDigest    = "sha256:815065a0f464c3f64d6dee321ef9abff9530fc8ca5d8808fc225ccca8ff37ecb"
+	prodTag                 = "prod"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -56,6 +67,8 @@ type Run struct {
 	TimeoutMins int
 	// Runs with Ctpv2 and Quota Scheduler if true and CFT is true
 	RunCtpv2WithQs bool
+	// If true, only runs the tests that have not passed
+	IsIncrementalRun bool
 	// Any configs related to results upload for this test run.
 	AddedDims map[string]string
 	Tags      map[string]string
@@ -156,6 +169,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 				CTPBuildTags:        tags,
 				TRV2:                c.TRV2,
 				CpconPublish:        c.UploadToCpcon,
+				UserDefinedFilters:  c.userDefinedFilters(),
 			})
 		}
 	}
@@ -212,6 +226,29 @@ func splitTestPlan(tp *test_platform.Request_TestPlan) []*test_platform.Request_
 		})
 	}
 	return res
+}
+
+// userDefinedFilters configures the ctpv2 filters based on the parameters set
+// for this Run.
+func (c *Run) userDefinedFilters() []*api.CTPFilter {
+	var userDefinedFilters []*api.CTPFilter
+	if c.IsIncrementalRun {
+		userDefinedFilters = append(userDefinedFilters, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				BinaryName: incrementalRunBinary,
+				Container: &buildapi.ContainerImageInfo{
+					Repository: &buildapi.GcrRepository{
+						Hostname: hostname,
+						Project:  testServicesRegistry,
+					},
+					Name:   incrementalRunContainer,
+					Digest: incrementalRunDigest,
+					Tags:   []string{prodTag},
+				},
+			},
+		})
+	}
+	return userDefinedFilters
 }
 
 func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {

@@ -76,11 +76,12 @@ func (s *SatlabRpcServiceServer) RunQualification(
 		Tags: map[string]string{
 			qualificationIDTag: req.GetQualificationId(),
 		},
-		TRV2:           true,
-		CFT:            true,
-		RunCtpv2WithQs: true,
-		Local:          true,
-		TimeoutMins:    site.MaxIshCTPTimeoutMins,
+		TRV2:             true,
+		CFT:              true,
+		RunCtpv2WithQs:   true,
+		IsIncrementalRun: req.GetIsIncrementalRun(),
+		Local:            true,
+		TimeoutMins:      site.MaxIshCTPTimeoutMins,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
