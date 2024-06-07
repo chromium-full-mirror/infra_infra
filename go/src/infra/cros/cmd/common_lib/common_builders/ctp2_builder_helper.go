@@ -50,6 +50,15 @@ var (
 // is used while generating new containers or resuing cache containers. "PUBLIC" manifest
 // boards do not use cached containers and therefore grouping shouldn't be done.
 func GroupV2Requests(ctx context.Context, v2s []*V2WithKey, manifestFetcher ManifestFetcher) ([]*V2WithKey, map[string][]string) {
+
+	// For 3D requests, group both public and private manifest build targets together.
+	if len(v2s) > 0 && v2s[0].V2.GetSuiteRequest().GetDddSuite() {
+		groupedEligibleRequests, reqChainMap := GroupEligibleV2Requests(ctx, v2s)
+		return groupedEligibleRequests, reqChainMap
+	}
+
+	// If not a 3D suite, group private manifest build targets together.
+	// Each public build target request will be grouped individually.
 	eligible, public := FilterV2RequestsBasedOnManifest(ctx, v2s, manifestFetcher)
 	groupedEligibleRequests, reqChainMap := GroupEligibleV2Requests(ctx, eligible)
 
