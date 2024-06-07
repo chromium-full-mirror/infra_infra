@@ -10,6 +10,7 @@ import (
 	"context"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -45,4 +46,19 @@ func FindRepoRoot(ctx context.Context, dir string) (string, error) {
 		return "", errors.Annotate(err, "failed to call %q", cmd.Args).Err()
 	}
 	return string(bytes.TrimSpace(stdout)), nil
+}
+
+// IsInGitRepo returns true if the provided dir is in a git repository.
+func IsInGitRepo(dir string) bool {
+	cmd := exec.Command(Binary, "-C", dir, "rev-parse", "--is-inside-work-tree")
+	switch stdout, err := cmd.Output(); {
+	case err != nil:
+		// error will be returned instead of "false" if dir is outside of a git
+		// repository.
+		return false
+	case strings.ToLower(string(bytes.TrimSpace(stdout))) == "true":
+		return true
+	default:
+		return false
+	}
 }

@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/common/system/signals"
 
 	"infra/tools/dirmd"
+	"infra/tools/dirmd/git"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
@@ -97,6 +98,9 @@ func (r *readRun) run(ctx context.Context, dirs []string) error {
 		}
 		if !fileInfo.IsDir() {
 			return errors.Reason("%q is not a directory", d).Err()
+		}
+		if !git.IsInGitRepo(d) {
+			return errors.Reason("dir %q is not in a git repository", d).Err()
 		}
 		if dirs[i], err = canonicalFSPath(d); err != nil {
 			return errors.Annotate(err, "failed to canonicalize %q", d).Err()

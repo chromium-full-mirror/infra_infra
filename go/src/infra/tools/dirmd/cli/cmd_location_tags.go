@@ -19,6 +19,7 @@ import (
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
 	"infra/tools/dirmd"
+	"infra/tools/dirmd/git"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
@@ -96,6 +97,8 @@ func (r *tagRun) validate() error {
 		return fmt.Errorf("-repo is required")
 	case strings.HasSuffix(r.repo, ".git"):
 		return fmt.Errorf("-repo must not end with .git")
+	case !git.IsInGitRepo(r.root):
+		return fmt.Errorf("root dir is not in a git repository")
 	default:
 		return nil
 	}
