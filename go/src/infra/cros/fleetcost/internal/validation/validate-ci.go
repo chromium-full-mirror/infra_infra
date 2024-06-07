@@ -24,13 +24,14 @@ func ValidateCreateCostIndicatorRequest(request *fleetcostAPI.CreateCostIndicato
 	if indicator.GetCost() == nil {
 		errs = append(errs, errors.New("cost must be provided"))
 	}
+	if indicator.GetCostCadence() == fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN {
+		errs = append(errs, errors.New("must provide valid cadence"))
+	}
+
 	if indicator.GetLocation() == fleetcostpb.Location_LOCATION_UNKNOWN {
 		errs = append(errs, errors.New("must provide valid location"))
 	}
 	if indicator.GetType() == fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
-		errs = append(errs, errors.New("must provide valid type"))
-	}
-	if indicator.GetCostCadence() == fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN {
 		errs = append(errs, errors.New("must provide valid type"))
 	}
 	return errors.Append(errs...)

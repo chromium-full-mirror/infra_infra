@@ -8,6 +8,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/common/testing/typed"
@@ -15,7 +16,9 @@ import (
 	models "infra/cros/fleetcost/api/models"
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/controller"
+	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // TestGetCostIndicatorValue is a simple smoke test that checks whether we can get a cost indicator.
@@ -33,10 +36,11 @@ func TestGetCostIndicatorValue(t *testing.T) {
 		CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
 	})
 
-	cost, err := controller.GetCostIndicatorValue(tf.Ctx, &controller.IndicatorAttribute{
+	ent, err := controller.GetCostIndicatorValue(tf.Ctx, &controller.IndicatorAttribute{
 		IndicatorType: models.IndicatorType_INDICATOR_TYPE_POWER,
 		Location:      models.Location_LOCATION_ALL,
 	}, true, true)
+	cost := utils.MoneyToFloat(ent.CostIndicator.GetCost())
 
 	if cost != 47.0 {
 		t.Errorf("unexpected cost %f", cost)
@@ -111,6 +115,71 @@ func TestGetIndicatorFallbacks(t *testing.T) {
 				t.Errorf("unexpected error: %s", err)
 			case !tt.ok && err == nil:
 				t.Error("error is unexpectedly nil")
+			}
+		})
+	}
+}
+
+func TestNormalizeToHourlyCost(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name string
+		ent  *entities.CostIndicatorEntity
+		out  float64
+		ok   bool
+	}{
+		{
+			name: "simple hourly cost",
+			ent: &entities.CostIndicatorEntity{
+				CostIndicator: &models.CostIndicator{
+					Cost:        utils.FloatToMoney(56.27),
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
+				},
+			},
+			out: 56.27,
+			ok:  true,
+		},
+		{
+			name: "simple annual cost",
+			ent: &entities.CostIndicatorEntity{
+				CostIndicator: &models.CostIndicator{
+					Cost:        utils.FloatToMoney(25.57),
+					CostCadence: models.CostCadence_COST_CADENCE_ANNUALLY,
+				},
+			},
+			out: 25.57 / 24 / 365,
+			ok:  true,
+		},
+		{
+			name: "hourly cost with burnout rate",
+			ent: &entities.CostIndicatorEntity{
+				CostIndicator: &models.CostIndicator{
+					Cost:                utils.FloatToMoney(67.12),
+					BurnoutRate:         0.218,
+					AmortizationInYears: 1000,
+					CostCadence:         models.CostCadence_COST_CADENCE_HOURLY,
+				},
+			},
+			out: 67.12 + (0.218*1000)*67.12,
+			ok:  true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			actual, err := controller.NormalizeToHourlyCost(tt.ent, false)
+			switch {
+			case tt.ok && err != nil:
+				t.Errorf("unexpected error: %s", err)
+			case !tt.ok && err == nil:
+				t.Error("err is unexpectedly nil")
+			}
+			if diff := typed.Got(actual).Want(tt.out).Options(cmpopts.EquateApprox(0, 0.000001)).Diff(); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
 	}

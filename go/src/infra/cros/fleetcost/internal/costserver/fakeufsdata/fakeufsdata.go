@@ -16,6 +16,9 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+// FakeOctopusDUTHostname is the hostname of a fake octopus DUT.
+const FakeOctopusDUTHostname = "fake-octopus-dut-1"
+
 // FakeOctopusDUTDeviceDataResponse is a fake octopus DUT with hostname "fake-octopus-dut-1".
 //
 // It is very useful in tests.
@@ -29,7 +32,43 @@ var FakeOctopusDUTDeviceDataResponse = &ufsAPI.GetDeviceDataResponse{
 							DeviceLse: &models.ChromeOSDeviceLSE{
 								Device: &models.ChromeOSDeviceLSE_Dut{
 									Dut: &lab.DeviceUnderTest{
-										Hostname: "fake-octopus-dut-1",
+										Hostname: FakeOctopusDUTHostname,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Machine: &models.Machine{
+				Device: &models.Machine_ChromeosMachine{
+					ChromeosMachine: &models.ChromeOSMachine{
+						BuildTarget: "build-target",
+						Model:       "model",
+					},
+				},
+			},
+		},
+	},
+	ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE,
+}
+
+var FakeOctopusDUTWithServoDeviceDataResponse = &ufsAPI.GetDeviceDataResponse{
+	Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
+		ChromeOsDeviceData: &models.ChromeOSDeviceData{
+			LabConfig: &models.MachineLSE{
+				Lse: &models.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &models.ChromeOSMachineLSE{
+						ChromeosLse: &models.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &models.ChromeOSDeviceLSE{
+								Device: &models.ChromeOSDeviceLSE_Dut{
+									Dut: &lab.DeviceUnderTest{
+										Hostname: FakeOctopusDUTHostname,
+										Peripherals: &lab.Peripherals{
+											Servo: &lab.Servo{
+												ServoHostname: "fake-labstation",
+											},
+										},
 									},
 								},
 							},

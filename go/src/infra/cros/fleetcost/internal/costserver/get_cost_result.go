@@ -39,7 +39,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 		return &fleetcostAPI.GetCostResultResponse{Result: readResult}, nil
 	}
 	if !datastore.IsErrNoSuchEntity(readErr) {
-		return nil, readErr
+		return nil, errors.Annotate(readErr, "get cost result").Err()
 	}
 	return f.getCostResultImpl(ctx, req)
 }

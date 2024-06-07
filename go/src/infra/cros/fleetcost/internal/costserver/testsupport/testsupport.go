@@ -19,6 +19,7 @@ import (
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/utils"
+	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	mockufs "infra/unifiedfleet/api/v1/rpc/mock"
 )
@@ -32,6 +33,16 @@ type Fixture struct {
 	Ctx      context.Context
 	Frontend *costserver.FleetCostFrontend
 	MockUFS  *mockufs.MockFleetClient
+}
+
+// RegisterDUTsForLabstation registers a GetChromeOSDeviceData request and response.
+func (tf *Fixture) RegisterDUTsForLabstation(reqMatcher gomock.Matcher, resp *ufsAPI.GetDUTsForLabstationResponse) {
+	tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), reqMatcher).Return(resp, nil)
+}
+
+// RegisterGetChromeOSDeviceDataCall registers a GetChromeOSDeviceData request and response.
+func (tf *Fixture) RegisterGetChromeOSDeviceDataCall(reqMatcher gomock.Matcher, resp *ufspb.ChromeOSDeviceData) {
+	tf.MockUFS.EXPECT().GetChromeOSDeviceData(gomock.Any(), reqMatcher).Return(resp, nil)
 }
 
 // RegisterGetDeviceDataCall registers a GetDeviceData request and response.

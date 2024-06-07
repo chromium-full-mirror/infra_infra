@@ -53,6 +53,14 @@ func ToUSD(x string) (*money.Money, error) {
 	if _, err := fmt.Sscanf(x, "%f", &val); err != nil {
 		return nil, fmt.Errorf("invalid number %q", x)
 	}
+	return FloatToMoney(val), nil
+}
+
+func MoneyToFloat(v *money.Money) float64 {
+	return float64(v.GetUnits()) + float64(v.GetNanos())/billion
+}
+
+func FloatToMoney(val float64) *money.Money {
 	units := int64(val)
 	// Extract the fractional part multiply by 1000 and round to the nearest integer.
 	fPart := math.Round(1000 * (val - float64(units)))
@@ -61,11 +69,7 @@ func ToUSD(x string) (*money.Money, error) {
 		CurrencyCode: "USD",
 		Units:        units,
 		Nanos:        nanos,
-	}, nil
-}
-
-func MoneyToFloat(v *money.Money) float64 {
-	return float64(v.GetUnits()) + float64(v.GetNanos())/billion
+	}
 }
 
 // ToCostCadence converts a string to a cost cadence.
@@ -259,4 +263,18 @@ func ConsumeChannel[T any](ctx context.Context, opts *ConsumeChannelOptions, sou
 	}
 	wg.Wait()
 	return errors.Append(cErr...)
+}
+
+// SafeDivide divides two float64s and panics if the result is nonsensical.
+func SafeDivide(x float64, y float64) (float64, error) {
+	if math.IsNaN(x) {
+		return 0, errors.New("numerator cannot be NaN")
+	}
+	if math.IsNaN(y) {
+		return 0, errors.New("denominator cannot be NaN")
+	}
+	if y == 0 {
+		return 0, errors.New("denominator cannot be zero")
+	}
+	return x / y, nil
 }

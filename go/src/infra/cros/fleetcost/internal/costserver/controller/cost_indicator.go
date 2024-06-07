@@ -7,7 +7,6 @@ package controller
 import (
 	"context"
 	"fmt"
-	"math"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -18,70 +17,132 @@ import (
 	"infra/cros/fleetcost/internal/utils"
 )
 
-func normalizeToHourlyCost(rawCost float64, cadence fleetcostpb.CostCadence) (float64, error) {
+func normalizeToHourlyCost(ent *entities.CostIndicatorEntity, forgiveMissingEntries bool) (float64, error) {
+	if ent == nil {
+		if forgiveMissingEntries {
+			return 0, nil
+		}
+		return 0, errors.New("entity cannot be nil")
+	}
 	const dayToHour = 1.0 / 24.0
 	const monthToHour = 1.0 / float64(30*24)
-	const yearToHour = 1.0 / float64(365*24)
+	const hourToYear = float64(365 * 24)
+	const yearToHour = 1.0 / hourToYear
+	cadence := ent.CostIndicator.GetCostCadence()
+	annualBurnoutRate := ent.CostIndicator.GetBurnoutRate()
+	amortizationTimeInYears := ent.CostIndicator.GetAmortizationInYears()
+	rawCost := utils.MoneyToFloat(ent.CostIndicator.GetCost())
 	switch cadence {
 	case fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN:
-		return math.NaN(), errors.New("unkown cost cadence")
+		return 0, errors.New("unkown cost cadence")
 	case fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME:
-		return math.NaN(), errors.New("conversion from one-time cost to time-bound cost not yet supported")
+		costPerHour, err := utils.SafeDivide(rawCost, amortizationTimeInYears*hourToYear)
+		if err != nil {
+			return 0, err
+		}
+		return BurnoutRateLinearPenalty(costPerHour, annualBurnoutRate, amortizationTimeInYears)
 	case fleetcostpb.CostCadence_COST_CADENCE_ANNUALLY:
-		return rawCost * yearToHour, nil
+		costPerHour := rawCost * yearToHour
+		return BurnoutRateLinearPenalty(costPerHour, annualBurnoutRate, amortizationTimeInYears)
 	case fleetcostpb.CostCadence_COST_CADENCE_MONTHLY:
-		return rawCost * monthToHour, nil
+		costPerHour := rawCost * monthToHour
+		return BurnoutRateLinearPenalty(costPerHour, annualBurnoutRate, amortizationTimeInYears)
 	case fleetcostpb.CostCadence_COST_CADENCE_DAILY:
-		return rawCost * dayToHour, nil
+		costPerHour := rawCost * dayToHour
+		return BurnoutRateLinearPenalty(costPerHour, annualBurnoutRate, amortizationTimeInYears)
 	case fleetcostpb.CostCadence_COST_CADENCE_HOURLY:
-		return rawCost, nil
+		return BurnoutRateLinearPenalty(rawCost, annualBurnoutRate, amortizationTimeInYears)
 	}
-	return math.NaN(), fmt.Errorf("tag not handled yet: %s", cadence.String())
+	return 0, fmt.Errorf("tag not handled yet: %s", cadence.String())
+}
+
+// BurnoutRateLinearPenalty divides the annual burnout rate by the number of hours in a year and uses that to compute additional cost.
+//
+// This is the simplest burnout model that can possibly work. Other alternatives include an exponential model.
+//
+// TODO(gregorynisbet): investigate exponential models for burnout rate.
+// TODO(gregorynisbet): extend the RPC interface to make the burnout penalty its own line item.
+//
+// Basically, we assume that if the burnout rate is 0.2, then that 0.2 will be spread out evenly per every hour of the year.
+// This is not a realistic assumption, but it is an understandable one.
+//
+// Next we assume that *if* the device burns out, then we are metaphorically hit with the cost of acquiring it again.
+// We get the cost of acquiring the device again by multiplying the hourly cost by the amortization period. This isn't ideal.
+//
+// TODO(gregorynisbet): Look into giving EVERY cost indicator a separate reacquisition cost (for dealing with burnout)
+func BurnoutRateLinearPenalty(costPerHour float64, annualBurnoutRate float64, amortizationTimeYears float64) (float64, error) {
+	if annualBurnoutRate == 0 {
+		return costPerHour, nil
+	}
+	if amortizationTimeYears <= 0 {
+		return 0, fmt.Errorf("amortization time %f must be positive when burnout rate is provided", amortizationTimeYears)
+	}
+	const hourToYear = float64(365 * 24)
+	switch {
+	case annualBurnoutRate < 0:
+		return 0, fmt.Errorf("burnout rate %f must be non-negative", annualBurnoutRate)
+	case annualBurnoutRate > 1:
+		return 0, fmt.Errorf("burnout rate %f cannot exceed one", annualBurnoutRate)
+	}
+	hourlyBurnoutRate := annualBurnoutRate / hourToYear
+	reacquisitionCost := costPerHour * hourToYear * amortizationTimeYears
+	return costPerHour + hourlyBurnoutRate*reacquisitionCost, nil
+}
+
+func GetAmortizedCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
+	ent, err := getCostIndicatorValue(ctx, attribute, usefallbacks, forgiveMissingEntries)
+	if err != nil {
+		return 0, err
+	}
+	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
+	if err != nil {
+		return 0, err
+	}
+	return v, nil
 }
 
 // GetCostIndicatorValue gets the value of a cost indicator, potentially falling back.
 //
 // GetCostIndicatorValue normalizes all values to hourly.
-func GetCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (float64, error) {
+func getCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, usefallbacks bool, forgiveMissingEntries bool) (*entities.CostIndicatorEntity, error) {
 	if !usefallbacks {
-		v, c, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		ent, err := GetCostIndicatorValueDirectly(ctx, attribute)
 		if err != nil {
-			return 0, err
+			return nil, errors.Annotate(err, "error looking up %q", attribute.ErrorHint).Err()
 		}
-		return normalizeToHourlyCost(v, c)
+		return ent, nil
 	}
 	sequence, err := GetIndicatorFallbacks(attribute)
 	if err != nil {
-		return math.NaN(), err
+		return nil, errors.Annotate(err, "error looking up %q", attribute.ErrorHint).Err()
 	}
 	for _, attribute := range sequence {
-		result, cadence, err := GetCostIndicatorValueDirectly(ctx, attribute)
+		ent, err := GetCostIndicatorValueDirectly(ctx, attribute)
 		switch {
 		case err == nil:
-			return normalizeToHourlyCost(result, cadence)
+			return ent, nil
 		case datastore.IsErrNoSuchEntity(err):
 			continue
 		default:
-			return math.NaN(), err
+			return nil, errors.Annotate(err, "error looking up %q", attribute.ErrorHint).Err()
 		}
-
 	}
 
 	if forgiveMissingEntries {
 		logging.Debugf(ctx, "forgiving missing attribute: %q", attribute.FriendlyString())
-		return 0.0, nil
+		return nil, nil
 	}
 
-	return math.NaN(), datastore.ErrNoSuchEntity
+	return nil, errors.Annotate(datastore.ErrNoSuchEntity, "error looking up %q", attribute.ErrorHint).Err()
 }
 
 // GetCostIndicatorValueDirectly gets the value of a cost indicator.
-func GetCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttribute) (float64, fleetcostpb.CostCadence, error) {
+func GetCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttribute) (*entities.CostIndicatorEntity, error) {
 	entity := attribute.AsEntity()
 	if _, err := entities.GetCostIndicatorEntity(ctx, entity); err != nil {
-		return 0, fleetcostpb.CostCadence_COST_CADENCE_UNKNOWN, errors.Annotate(err, "get cost indicator value").Err()
+		return nil, errors.Annotate(err, "get cost indicator value").Err()
 	}
-	return utils.MoneyToFloat(entity.CostIndicator.GetCost()), entity.CostIndicator.GetCostCadence(), nil
+	return entity, nil
 }
 
 // GetIndicatorFallbacks takes an indicatorAttribute and returns the list of fallback indicator attributes.

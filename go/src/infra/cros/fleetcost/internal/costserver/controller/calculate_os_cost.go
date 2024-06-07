@@ -24,6 +24,9 @@ import (
 //
 // TODO(gregorynisbet): Remove this type. It duplicates the functionality of the datastore entity and protos.
 type indicatorAttribute struct {
+	// ErrorHint is a description of what you were looking for.
+	// It gets inserted into the error message.
+	ErrorHint     string
 	IndicatorType fleetcostpb.IndicatorType
 	Board         string
 	Model         string
@@ -114,15 +117,16 @@ func CalculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 
 	sharedCost, err := getSharedCost(ctx, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: shared").Err()
 	}
+
 	dedicatedCost, err := getDUTDedicatedHardwareCost(ctx, m, servo, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: dedicated").Err()
 	}
 	cloudCost, err := getCloudCost(ctx, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: cloud").Err()
 	}
 
 	// Cost for labstation, which is special
@@ -149,7 +153,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	m := data.GetMachine().GetChromeosMachine()
 
 	sharedCost := 0.0
-	v, err := GetCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
@@ -162,7 +166,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	}
 	sharedCost += v
 
-	v, err = GetCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_USBHUB,
 		Board:         "",
 		Model:         "",
@@ -189,7 +193,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 // getSharedCost gets the shared costs except for labstation costs.
 func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	sharedCost := 0.0
-	v, err := GetCostIndicatorValue(ctx, &indicatorAttribute{
+	v, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-networking",
 		Model:         "",
@@ -197,10 +201,12 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, err
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
-	v, err = GetCostIndicatorValue(ctx, &indicatorAttribute{
+
+	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "drone server costs",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "drone-server",
 		Model:         "",
@@ -208,10 +214,12 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, err
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
-	v, err = GetCostIndicatorValue(ctx, &indicatorAttribute{
+
+	v, err = GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "rack setup costs",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-setup",
 		Model:         "",
@@ -219,9 +227,10 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, err
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
+
 	return sharedCost, nil
 }
 
@@ -229,7 +238,8 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 // resources that are DUT-specific
 func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	out := 0.0
-	v, err := GetCostIndicatorValue(ctx, &indicatorAttribute{
+	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "DUT cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
@@ -237,33 +247,44 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0, err
+		return 0, errors.Annotate(err, "dut hardware cost for %q %q %q %v", m.GetBuildTarget(), servo, location.String(), forgiveMissingEntries).Err()
+	}
+	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	out += v
 	if servo != nil {
-		servoCost, err := GetCostIndicatorValue(ctx, &indicatorAttribute{
+		servoCost, err := GetAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 			IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 			Board:         servo.GetServoType(),
 			Model:         "",
 			Sku:           "",
 			Location:      location,
 		}, true, forgiveMissingEntries)
+
 		if err != nil {
-			return 0, err
+			return 0, errors.Annotate(err, "dut hardware cost for %q %q %q %v", m.GetBuildTarget(), servo, location.String(), forgiveMissingEntries).Err()
 		}
+
 		out += servoCost
 	}
 	return out, nil
 }
 
 func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
-	v, err := GetCostIndicatorValue(ctx, &indicatorAttribute{
+	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "annual cloud cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 		Board:         "",
 		Model:         "",
 		Sku:           "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0, err
+	}
+	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
 	if err != nil {
 		return 0, err
 	}

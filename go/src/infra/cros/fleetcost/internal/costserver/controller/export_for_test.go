@@ -6,3 +6,7 @@ package controller
 
 // Export definitions to the tests that are not used in non-tests
 type IndicatorAttribute = indicatorAttribute
+
+// Export functions as variables
+var NormalizeToHourlyCost = normalizeToHourlyCost
+var GetCostIndicatorValue = getCostIndicatorValue
