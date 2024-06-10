@@ -23,8 +23,8 @@ func isAllowed(config *suschpb.SchedulerConfig) bool {
 		return false
 	}
 
-	// Allow NEW_BUILD and DAILY configs.
-	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_DAILY {
+	// Allow NEW_BUILD, DAILY, WEEKLY, and FORTNIGHTLY configs.
+	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_DAILY || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_WEEKLY || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY {
 		return true
 	}
 

@@ -44,7 +44,7 @@ func GenerateBuilderID(customBuilder *suschpb.SchedulerConfig_RunOptions_Builder
 	//
 	// NOTE: There will be no differentiation between prod/staging for partner
 	// builds.
-	if customBuilder != nil {
+	if customBuilder.GetProject() != "" && customBuilder.GetBucket() != "" && customBuilder.GetBuilder() != "" {
 		return &bb.BuilderID{
 			Project: customBuilder.GetProject(),
 			Bucket:  customBuilder.GetBucket(),
