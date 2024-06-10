@@ -412,19 +412,16 @@ func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEve
 }
 
 // mergeRequests merge all CTP requests into one CTP recipe input properties object.
-func mergeRequests(requests []*ctpEvent, suiteName, configName string, isProd, dryRun bool, skipTag bool) (*ctpEventBatch, error) {
+func mergeRequests(requests []*ctpEvent, config *suschpb.SchedulerConfig, isProd, dryRun bool, skipTag bool) (*ctpEventBatch, error) {
 	properties, err := generateGenericBBProperties(requests)
 	if err != nil {
 		return nil, err
 	}
 
 	// Based on the isProd flag choose the corresponding builder identification.
-	builder := &buildbucket.CtpBuilderIDStaging
-	if isProd {
-		builder = &buildbucket.CtpBuilderIDProd
-	}
+	builder := buildbucket.GenerateBuilderID(config.GetRunOptions().GetBuilderId(), isProd)
 
-	tags, err := generateBuilderTags(suiteName, configName, requests, skipTag)
+	tags, err := generateBuilderTags(config.GetSuite(), config.GetName(), requests, skipTag)
 	if err != nil {
 		return nil, err
 	}
@@ -459,7 +456,7 @@ func batchCTPRequests(ctpRequests map[*suschpb.SchedulerConfig][]*ctpEvent, isPr
 			// If we have reached the max length, merge the current batch list
 			// into a batch event and start a new batch.
 			if len(currentBatch) == common.MultirequestSize {
-				batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun, false)
+				batch, err := mergeRequests(currentBatch, config, isProd, dryRun, false)
 				if err != nil {
 					return nil, err
 				}
@@ -473,7 +470,7 @@ func batchCTPRequests(ctpRequests map[*suschpb.SchedulerConfig][]*ctpEvent, isPr
 		}
 
 		if len(currentBatch) != 0 {
-			batch, err := mergeRequests(currentBatch, config.Suite, config.Name, isProd, dryRun, false)
+			batch, err := mergeRequests(currentBatch, config, isProd, dryRun, false)
 			if err != nil {
 				return nil, err
 			}
@@ -494,7 +491,7 @@ func batchCTPRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsP
 	// Create batches for each config per branch
 	for config, ctpReqsByBranch := range ctpMapByConfig {
 		for _, ctpEvents := range ctpReqsByBranch {
-			batch, err := mergeRequests(ctpEvents.events, config.Suite, config.Name, isProd, dryRun, true)
+			batch, err := mergeRequests(ctpEvents.events, config, isProd, dryRun, true)
 			if err != nil {
 				return nil, err
 			}

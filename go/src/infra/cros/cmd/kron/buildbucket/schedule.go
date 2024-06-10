@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 
+	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
 	bb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/grpc/prpc"
@@ -22,17 +23,41 @@ import (
 const buildBucketHost = "cr-buildbucket.appspot.com"
 
 var (
-	CtpBuilderIDProd = bb.BuilderID{
+	defaultProdCTPBuilderID = bb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
 		Builder: "cros_test_platform",
 	}
-	CtpBuilderIDStaging = bb.BuilderID{
+	defaultStagingCTPBuilderID = bb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
 		Builder: "cros_test_platform-dev",
 	}
 )
+
+// GenerateBuilderID returns a BuildBucket BuilderID definition for based on the
+// provided arguments. This is aimed to be used only for partner builder
+// generation.
+func GenerateBuilderID(customBuilder *suschpb.SchedulerConfig_RunOptions_BuilderID, isProd bool) *bb.BuilderID {
+	// If the config is a partner config then return the request dimensions as a
+	// BuilderId type.
+	//
+	// NOTE: There will be no differentiation between prod/staging for partner
+	// builds.
+	if customBuilder != nil {
+		return &bb.BuilderID{
+			Project: customBuilder.GetProject(),
+			Bucket:  customBuilder.GetBucket(),
+			Builder: customBuilder.GetBuilder(),
+		}
+	}
+
+	if isProd {
+		return &defaultProdCTPBuilderID
+	} else {
+		return &defaultStagingCTPBuilderID
+	}
+}
 
 // Scheduler interface type describes the BB API functionality connection.
 type Scheduler interface {
@@ -64,14 +89,14 @@ func NewBBClient(ctx context.Context, authOpts *authcli.Flags) (bb.BuildsClient,
 // InitScheduler returns an operable Scheduler interface.
 func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun bool) (Scheduler, error) {
 	// Build the underlying HTTP client with the proper Auth Scoping.
-	bbclient, err := NewBBClient(ctx, authOpts)
+	bbClient, err := NewBBClient(ctx, authOpts)
 	if err != nil {
 		return nil, err
 	}
 
 	return &client{
 		ctx:               ctx,
-		buildBucketClient: bbclient,
+		buildBucketClient: bbClient,
 		isProd:            isProd,
 		dryRun:            dryRun,
 	}, nil

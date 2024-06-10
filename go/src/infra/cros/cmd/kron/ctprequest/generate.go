@@ -8,6 +8,7 @@ package ctprequest
 
 import (
 	"fmt"
+	"path"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -19,8 +20,9 @@ import (
 )
 
 const (
-	GSPrefix                  = "gs://chromeos-image-archive/"
-	ContainerMetadataLocation = "/metadata/containers.jsonpb"
+	GSformat                  = "gs://%s/%s"
+	ContainerMetadataLocation = "metadata/containers.jsonpb"
+	DefaultImageBucket        = "chromeos-image-archive"
 
 	MaxRetry = 3
 
@@ -148,6 +150,22 @@ func formBuildImage(buildTarget, buildMilestone, buildVersion string) string {
 	return buildTarget + "-release" + "/R" + buildMilestone + "-" + buildVersion
 }
 
+// getGCSImageBucket returns the custom image bucket defined by the config or
+// the default one used by public release.
+func getGCSImageBucket(config *suschpb.SchedulerConfig) string {
+	if config.GetRunOptions().GetCrosImageBucket() != "" {
+		return config.GetRunOptions().GetCrosImageBucket()
+	}
+
+	return DefaultImageBucket
+}
+
+// formGCSPath returns a path in the form of gs://<bucket>/<dir>/<dir/...
+func formGCSPath(config *suschpb.SchedulerConfig, items ...string) string {
+	dirPath := path.Join(items...)
+	return fmt.Sprintf(GSformat, getGCSImageBucket(config), dirPath)
+}
+
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
 func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion, branchTrigger string) *requestpb.Request {
@@ -171,14 +189,18 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 						ChromeosBuild: buildImage,
 					},
 				},
+				{
+					Dep: &requestpb.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket{
+						ChromeosBuildGcsBucket: getGCSImageBucket(config),
+					},
+				},
 			},
 			Scheduling: getSchedulingFields(config.GetPoolOptions(), config.GetLaunchCriteria().GetLaunchProfile()),
 			Retry:      getRetryParams(config.GetRunOptions().GetRetry()),
 			Metadata: &requestpb.Request_Params_Metadata{
-				TestMetadataUrl:        GSPrefix + buildImage,
-				DebugSymbolsArchiveUrl: GSPrefix + buildImage,
-
-				ContainerMetadataUrl: GSPrefix + buildImage + ContainerMetadataLocation,
+				TestMetadataUrl:        formGCSPath(config, buildImage),
+				DebugSymbolsArchiveUrl: formGCSPath(config, buildImage),
+				ContainerMetadataUrl:   formGCSPath(config, buildImage, ContainerMetadataLocation),
 			},
 			Time: &requestpb.Request_Params_Time{
 				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.GetRunOptions().GetTimeoutMins())},

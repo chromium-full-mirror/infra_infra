@@ -18,11 +18,6 @@ var (
 // isAllowed checks the migration rules to determine if a config has been
 // migrated to Kron or not.
 func isAllowed(config *suschpb.SchedulerConfig) bool {
-	// Disallow partner configs.
-	if config.GetRunOptions().GetBuilderId().GetProject() != "" && config.GetRunOptions().GetBuilderId().GetBucket() != "" && config.GetRunOptions().GetBuilderId().GetBuilder() != "" {
-		return false
-	}
-
 	// Disallow multi-dut and firmware configs.
 	if configparser.IsMultiDut(config) || configparser.IsFirmware(config) {
 		return false
