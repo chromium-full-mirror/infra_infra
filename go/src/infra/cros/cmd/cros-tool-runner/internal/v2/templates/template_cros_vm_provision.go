@@ -113,15 +113,22 @@ func authCopier(name string, source string, destination string) {
 
 	for {
 		time.Sleep(interval)
-		err := generateAuthFile(source)
+		// Check if the auth file exists. If it doesn't exists, then it means it has been purged and it should no longer be updated with fresh token.
+		authFilePath := fmt.Sprintf("%s/%s", source, "authToken.txt")
+		_, err := os.Stat(authFilePath)
+		if os.IsNotExist(err) {
+			continue
+		}
+		// Generate and copy to vm-provision docker container
+		err = generateAuthFile(source)
 		if err != nil {
 			log.Printf("Error generating auth for vm-provision during goroutine")
 		}
-		containerId := state.ServerState.Containers.GetIdForOwner(name)
-		if containerId == "" {
+		containerID := state.ServerState.Containers.GetIdForOwner(name)
+		if containerID == "" {
 			log.Printf("vm-provision container not started yet")
 		}
-		cmd := &commands.DockerCp{Source: source + authTokenFile, Destination: containerId + ":" + destination + authTokenFile}
+		cmd := &commands.DockerCp{Source: source + authTokenFile, Destination: containerID + ":" + destination + authTokenFile}
 		_, _, err = cmd.Execute(context.Background())
 		if err != nil {
 			log.Printf("Failed to copy auth file for vm-provision during goroutine")
