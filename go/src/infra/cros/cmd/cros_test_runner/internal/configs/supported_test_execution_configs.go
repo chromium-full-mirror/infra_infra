@@ -157,6 +157,12 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 			TestsExecution_CrosTestExecutor)
 	}
 
+	// If VM run, release VM before publish
+	if platform == common.BotProviderGce {
+		mainConfigs = append(mainConfigs,
+			VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true))
+	}
+
 	// Publish commands
 	if !cftHwStepsConfig.GetSkipAllResultPublish() {
 		// Re-auth as long test execution can expire previous auth
@@ -187,7 +193,6 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 	// Stop CTR and result processing commands
 	if platform == common.BotProviderGce {
 		mainConfigs = append(mainConfigs,
-			VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true),
 			CtrStop_CtrExecutor.WithRequired(true),
 			ProcessResults_NoExecutor.WithRequired(true))
 	} else {

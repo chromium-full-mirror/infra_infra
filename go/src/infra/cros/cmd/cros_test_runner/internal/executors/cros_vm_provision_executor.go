@@ -7,6 +7,8 @@ package executors
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -207,9 +209,12 @@ func (ex *CrosVMProvisionExecutor) LeaseDutVM(
 	if ex.CrosVMProvisionServiceClient == nil {
 		return nil, fmt.Errorf("CrosVMProvisionServiceClient is nil in CrosVMProvisionExecutor")
 	}
-
 	vmProvisionOp, err := ex.CrosVMProvisionServiceClient.Install(ctx, installReq, grpc.EmptyCallOption{})
 	if err != nil {
+		purgeErr := ex.purgeAuthToken()
+		if purgeErr != nil {
+			logging.Infof(ctx, "auth token file purge error after lease fail: %s", purgeErr)
+		}
 		return nil, errors.Annotate(err, "vm-provision lease failure: ").Err()
 	}
 
@@ -297,7 +302,16 @@ func (ex *CrosVMProvisionExecutor) ReleaseDutVM(
 
 	vmProvisionOp, err := ex.CrosVMProvisionServiceClient.Install(ctx, installReq, grpc.EmptyCallOption{})
 	if err != nil {
+		purgeErr := ex.purgeAuthToken()
+		if purgeErr != nil {
+			logging.Infof(ctx, "auth token file purge error after release fail: %s", purgeErr)
+		}
 		return nil, errors.Annotate(err, "vm-provision release failure: ").Err()
+	}
+
+	purgeErr := ex.purgeAuthToken()
+	if purgeErr != nil {
+		logging.Infof(ctx, "auth token file purge error after release succeeded: %s", purgeErr)
 	}
 
 	// TODO: Fix this to use common.WaitLro
@@ -342,4 +356,27 @@ func getDiskSizeByBoard(image string) int64 {
 		return 25
 	}
 	return 13
+}
+func (ex *CrosVMProvisionExecutor) purgeAuthToken() error {
+	tempDirLoc, err := ex.Container.GetLogsLocation()
+	if err != nil {
+		return err
+	}
+	// Construct the full path of the file to be deleted
+	filePath := filepath.Join(tempDirLoc, "authToken.txt")
+
+	// Check if the file exists
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+
+	// Attempt to remove the file
+	err = os.Remove(filePath)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
