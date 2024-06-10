@@ -7,6 +7,7 @@ package migrator
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -167,8 +168,8 @@ func TestComputeBoardModelToState(t *testing.T) {
 			},
 		}
 		cs := &configSearchable{
-			excludeDUTs: map[string]struct{}{
-				"dut-1": {},
+			excludeDUTs: []*regexp.Regexp{
+				regexp.MustCompile("dut-1"),
 			},
 			excludePools: map[string]struct{}{
 				"wifi": {},
@@ -193,6 +194,84 @@ func TestComputeBoardModelToState(t *testing.T) {
 				},
 			},
 		}
+		if diff := cmp.Diff(want, got); diff != "" {
+			t.Errorf("mismatch (-want +got):\n%s", diff)
+		}
+	})
+
+	t.Run("Complex regex", func(t *testing.T) {
+		t.Parallel()
+		mcs := []*ufspb.Machine{
+			{
+				Name: "machines/machine-1",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "board-1",
+						Model:       "model-1",
+					},
+				},
+			},
+			{
+				Name: "machines/machine-2",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "board-1",
+						Model:       "model-1",
+					},
+				},
+			},
+		}
+		lses := []*ufspb.MachineLSE{
+			{
+				Name: "machineLSEs/chromeos6-row1-rack10-host53",
+				Machines: []string{
+					"machine-1",
+				},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "cloudbots",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			{
+				Name: "machineLSEs/chromeos8-row1-rack10-phone2a",
+				Machines: []string{
+					"machine-2",
+				},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hive: "cloudbots",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		cs := &configSearchable{
+			excludeDUTs: []*regexp.Regexp{
+				regexp.MustCompile("^chromeos(6|15)"),
+				regexp.MustCompile("phone[0-9A-Za-z]*$"),
+			},
+		}
+		got, err := m.ComputeBoardModelToState(context.Background(), mcs, lses, cs)
+		if err != nil {
+			t.Fatalf("should not error: %v", err)
+		}
+		want := map[string]*migrationState{}
 		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("mismatch (-want +got):\n%s", diff)
 		}
@@ -406,9 +485,9 @@ func TestComputeNextMigrationSate(t *testing.T) {
 			},
 			// computeNextMigrationSate does not filter out excludeDUTs.
 			// The filtering happens earlier.
-			excludeDUTs: map[string]struct{}{
-				"dut-74": {},
-				"dut-75": {},
+			excludeDUTs: []*regexp.Regexp{
+				regexp.MustCompile("dut-74"),
+				regexp.MustCompile("dut-75"),
 			},
 			// computeNextMigrationSate does not filter out excludePools.
 			// The filtering happens earlier.
@@ -502,9 +581,10 @@ func TestGetExcludedDUTs(t *testing.T) {
 		},
 	}
 	cs := &configSearchable{
-		excludeDUTs: map[string]struct{}{
-			"dut-1": {},
-			"dut-2": {},
+		excludeDUTs: []*regexp.Regexp{
+			regexp.MustCompile("dut-1"),
+			regexp.MustCompile("dut-2"),
+			regexp.MustCompile("dut-4"),
 		},
 		excludePools: map[string]struct{}{
 			"pool-1": {},

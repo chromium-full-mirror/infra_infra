@@ -119,12 +119,12 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 	for _, lse := range lses {
 		stripped := ufsUtil.RemovePrefix(lse.GetName())
 		// Filtering out DUTs based on DUT name.
-		if _, ok := searchable.excludeDUTs[stripped]; ok {
-			logging.Infof(ctx, "machineLSE: %s found in exclude_duts in %s; skipping", stripped, migrationFile)
+		if reg, ok := shouldExcludeDUT(searchable, stripped); ok {
+			logging.Infof(ctx, "dut: %s matches regexp: %s in exclude_duts in %s; skipping", stripped, reg, migrationFile)
 			continue
 		}
 		// Filtering out DUTs based on pool name.
-		if pool, ok := shouldExcludePool(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), searchable.excludePools); ok {
+		if pool, ok := shouldExcludePool(searchable, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()); ok {
 			logging.Infof(ctx, "pool: %s found in exclude_pools in %s for DUT %s; skipping", pool, migrationFile, stripped)
 			continue
 		}
@@ -238,10 +238,20 @@ func computeNextModelState(ctx context.Context, bm string, target int32, current
 	}
 }
 
+// shouldExcludeDUT returns true if the DUT name matches any of the exclude_duts regex in the config file.
+func shouldExcludeDUT(searchable *configSearchable, stripped string) (string, bool) {
+	for _, reg := range searchable.excludeDUTs {
+		if reg.MatchString(stripped) {
+			return reg.String(), true
+		}
+	}
+	return "", false
+}
+
 // shouldExcludePool returns true if the DUT pools can be found in the exclude_pools set.
-func shouldExcludePool(pools []string, op map[string]struct{}) (string, bool) {
+func shouldExcludePool(searchable *configSearchable, pools []string) (string, bool) {
 	for _, pool := range pools {
-		if _, ok := op[pool]; ok {
+		if _, ok := searchable.excludePools[pool]; ok {
 			return pool, true
 		}
 	}
@@ -253,15 +263,10 @@ func (m *migrator) GetExcludedDUTs(ctx context.Context, lses []*ufspb.MachineLSE
 	var rollbackDUTs []string
 	for _, lse := range lses {
 		stripped := ufsUtil.RemovePrefix(lse.GetName())
-		if _, ok := cs.excludeDUTs[stripped]; ok {
+		if _, ok := shouldExcludeDUT(cs, stripped); ok {
 			rollbackDUTs = append(rollbackDUTs, stripped)
-			continue
-		}
-		for _, pool := range lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools() {
-			if _, ok := cs.excludePools[pool]; ok {
-				rollbackDUTs = append(rollbackDUTs, stripped)
-				break
-			}
+		} else if _, ok := shouldExcludePool(cs, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()); ok {
+			rollbackDUTs = append(rollbackDUTs, stripped)
 		}
 	}
 	return rollbackDUTs

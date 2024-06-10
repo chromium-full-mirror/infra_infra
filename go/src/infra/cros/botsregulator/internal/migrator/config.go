@@ -7,6 +7,7 @@ package migrator
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"go.chromium.org/luci/common/logging"
 
@@ -16,7 +17,7 @@ import (
 type configSearchable struct {
 	minCloudbotsPercentage     int32
 	minLowRiskModelsPercentage int32
-	excludeDUTs                map[string]struct{}
+	excludeDUTs                []*regexp.Regexp
 	excludePools               map[string]struct{}
 	overrideBoardModel         map[string]int32
 	overrideLowRisks           map[string]struct{}
@@ -44,12 +45,13 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 		}
 	}
 	// Exclude DUTs.
-	duts := make(map[string]struct{})
-	for _, dut := range config.ExcludeDuts {
-		if _, ok := duts[dut]; !ok {
-			duts[dut] = struct{}{}
+	var regs []*regexp.Regexp
+	for _, s := range config.ExcludeDuts {
+		reg, err := regexp.Compile(s)
+		if err != nil {
+			logging.Errorf(ctx, "%s is not a valid regular expression. Check for invalid in %s", s, migrationFile)
 		} else {
-			logging.Errorf(ctx, "exclude dut %s has already been processed. Check for duplicate in %s", dut, migrationFile)
+			regs = append(regs, reg)
 		}
 	}
 	// Exclude pools.
@@ -64,7 +66,7 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 	searchable := &configSearchable{
 		minCloudbotsPercentage:     config.MinCloudbotsPercentage,
 		minLowRiskModelsPercentage: config.MinLowRiskModelsPercentage,
-		excludeDUTs:                duts,
+		excludeDUTs:                regs,
 		excludePools:               pools,
 		overrideBoardModel:         obm,
 		overrideLowRisks:           lr,

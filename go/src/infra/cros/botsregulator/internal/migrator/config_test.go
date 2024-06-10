@@ -6,6 +6,7 @@ package migrator
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -20,7 +21,7 @@ func TestNewConfigSearchable(t *testing.T) {
 			MinCloudbotsPercentage:     30,
 			MinLowRiskModelsPercentage: 60,
 			LowRiskModels:              []string{"model-1", "model-2"},
-			ExcludeDuts:                []string{"dut-1", "dut-2"},
+			ExcludeDuts:                []string{"dut-1", "chromeos6-.*", "phone[0-9A-Za-z]*$"},
 			ExcludePools:               []string{"wifi", "chameleon_display"},
 			Overrides: []*protos.Override{
 				{
@@ -53,9 +54,10 @@ func TestNewConfigSearchable(t *testing.T) {
 				"model-1": {},
 				"model-2": {},
 			},
-			excludeDUTs: map[string]struct{}{
-				"dut-1": {},
-				"dut-2": {},
+			excludeDUTs: []*regexp.Regexp{
+				regexp.MustCompile("dut-1"),
+				regexp.MustCompile("chromeos6-.*"),
+				regexp.MustCompile("phone[0-9A-Za-z]*$"),
 			},
 			excludePools: map[string]struct{}{
 				"wifi":              {},
@@ -68,7 +70,7 @@ func TestNewConfigSearchable(t *testing.T) {
 				"*/model-3":       10,
 			},
 		}
-		if diff := cmp.Diff(want, got, cmp.AllowUnexported(configSearchable{})); diff != "" {
+		if diff := cmp.Diff(want, got, cmp.AllowUnexported(configSearchable{}, regexp.Regexp{})); diff != "" {
 			t.Errorf("mismatch (-want +got):\n%s", diff)
 		}
 	})
