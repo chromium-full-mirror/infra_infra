@@ -95,7 +95,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 	})
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(rackSetup),
-		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
 		Board:               "rack-setup",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,

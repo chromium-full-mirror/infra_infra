@@ -6,7 +6,6 @@ package commands
 
 import (
 	"context"
-	"math"
 	"net/http"
 	"time"
 
@@ -41,7 +40,7 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.StringVar(&c.sku, "sku", "", "sku")
 		c.Flags.Func("cost", "cost", makeMoneyRecorder(&c.cost))
 		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
-		c.Flags.Float64Var(&c.burnoutRate, "burnout", math.NaN(), "device burnout rate")
+		c.Flags.Float64Var(&c.burnoutRate, "burnout", 0, "device burnout rate")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		c.Flags.Float64Var(&c.amortizationInYears, "am", 0, "amortization time in years")
 		return c

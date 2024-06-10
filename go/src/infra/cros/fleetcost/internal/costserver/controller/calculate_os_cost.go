@@ -37,8 +37,9 @@ type indicatorAttribute struct {
 // newIndicatorAttribute creates a new indicator attribute.
 //
 // TODO(gregorynisbet): Rethink the API for this function, maybe move it to utils.
-func newIndicatorAttribute(typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *indicatorAttribute {
+func newIndicatorAttribute(errorHint string, typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *indicatorAttribute {
 	return &indicatorAttribute{
+		ErrorHint:     errorHint,
 		IndicatorType: typ,
 		Board:         board,
 		Model:         model,
@@ -154,12 +155,12 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 
 	sharedCost := 0.0
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "labstation cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
 		Board:         m.GetBuildTarget(),
 		Model:         m.GetModel(),
-
-		Sku:      m.GetSku(),
-		Location: location,
+		Sku:           m.GetSku(),
+		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
 		return 0, utils.MaybeErrorf(ctx, errors.Annotate(err, "get labstation cost").Err())
@@ -167,6 +168,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	sharedCost += v
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "usb hub cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_USBHUB,
 		Board:         "",
 		Model:         "",
@@ -194,6 +196,7 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	sharedCost := 0.0
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "rack networking",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-networking",
 		Model:         "",
@@ -201,7 +204,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return 0.0, errors.Annotate(err, "get shared cost: rack networking").Err()
 	}
 	sharedCost += v
 
@@ -214,20 +217,20 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return 0.0, errors.Annotate(err, "get shared cost: drone server costs").Err()
 	}
 	sharedCost += v
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "rack setup costs",
-		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
 		Board:         "rack-setup",
 		Model:         "",
 		Sku:           "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return 0.0, errors.Annotate(err, "get shared cost: rack setup").Err()
 	}
 	sharedCost += v
 
@@ -247,7 +250,7 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0, errors.Annotate(err, "dut hardware cost for %q %q %q %v", m.GetBuildTarget(), servo, location.String(), forgiveMissingEntries).Err()
+		return 0, errors.Annotate(err, "dut hardware cost for %q %q %v", m.GetBuildTarget(), location.String(), forgiveMissingEntries).Err()
 	}
 	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
 	if err != nil {
@@ -256,6 +259,7 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 	out += v
 	if servo != nil {
 		servoCost, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+			ErrorHint:     "servo cost",
 			IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
 			Board:         servo.GetServoType(),
 			Model:         "",
@@ -264,7 +268,7 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		}, true, forgiveMissingEntries)
 
 		if err != nil {
-			return 0, errors.Annotate(err, "dut hardware cost for %q %q %q %v", m.GetBuildTarget(), servo, location.String(), forgiveMissingEntries).Err()
+			return 0, errors.Annotate(err, "servo cost for %q %q %v", servo.GetServoType(), location.String(), forgiveMissingEntries).Err()
 		}
 
 		out += servoCost
