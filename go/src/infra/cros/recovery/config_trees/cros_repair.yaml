@@ -57424,6 +57424,12 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
+                - name: Servod has battery_tempc control
+                  exec_name: servod_has
+                  exec_args:
+                    - command:battery_tempc
+                  docs:
+                    - Read and print battery_tempc control value to logs.
         - name: Audit storage (SMART only) (Allow to fail)
           exec_name: cros_audit_storage_smart
           docs:

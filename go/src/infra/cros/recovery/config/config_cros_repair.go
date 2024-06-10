@@ -1361,6 +1361,7 @@ func crosRepairActions() map[string]*Action {
 				"Not Satlab device",
 				"Servo state is working",
 				"Is servod running",
+				"Servod has battery_tempc control",
 			},
 			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{
@@ -3116,6 +3117,15 @@ func crosRepairActions() map[string]*Action {
 				"command:gsc_reset",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Servod has battery_tempc control": {
+			Docs: []string{
+				"Read and print battery_tempc control value to logs.",
+			},
+			ExecName: "servod_has",
+			ExecExtraArgs: []string{
+				"command:battery_tempc",
+			},
 		},
 		"Deassert GSC_RST_L by servo": {
 			Docs: []string{
