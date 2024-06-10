@@ -19,13 +19,29 @@ message SIMInfo {
   repeated SIMProfileInfo profile_info = 5;
 }
 
-// Next Tag: 6
+// Next Tag: 7
 message SIMProfileInfo {
   string iccid = 1;
   string sim_pin = 2;
   string sim_puk = 3;
   NetworkProvider carrier_name = 4;
   string own_number = 5;
+  // The SIM state as reported by the cellular modem.
+  State state = 6;
+
+  // Possible states of the SIM profile.
+  enum State {
+    // State not set.
+    UNSPECIFIED = 0;
+    // The device is unusable.
+    BROKEN = 1;
+    // The device needs to be unlocked.
+    LOCKED = 2;
+    // No data connection available and not in a failed state.
+    NO_NETWORK = 3;
+    // The device is registered with a network provider, and data connections and messaging may be available for use.
+    WORKING = 4;
+  }
 }
 
 // Next Tag: 18
