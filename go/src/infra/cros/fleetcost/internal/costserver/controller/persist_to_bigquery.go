@@ -42,6 +42,7 @@ func PersistToBigquery(ctx context.Context, projectName string, bqClient bqwrapp
 			return nil
 		}
 		// TODO(gregorynisbet): Do not hardcode the table or dataset.
+		logging.Debugf(ctx, "writing record %q", entity.Hostname)
 		return bqClient.Put(ctx, projectName, "entities", "CachedCostResult", []bigquery.ValueSaver{resultSaver})
 	}); err != nil {
 		return errors.Annotate(err, "persisting to bigquery").Err()
