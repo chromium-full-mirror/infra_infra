@@ -16,23 +16,6 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
-      "[CACHE]/codesearch_update_submodules_mirror",
-      "src/"
-    ],
-    "infra_step": true,
-    "name": "Check for existing source checkout dir",
-    "~followup_annotations": [
-      "@@@STEP_LOG_END@glob@@@"
-    ]
-  },
-  {
-    "cmd": [
       "git",
       "clone",
       "https://chromium.googlesource.com/chromium/src",
