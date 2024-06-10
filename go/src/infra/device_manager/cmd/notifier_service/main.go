@@ -1,29 +1,24 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package main
 
 import (
-	"context"
 	"flag"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/openid"
-	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
+	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/frontend"
-	"infra/device_manager/internal/jobs"
 )
 
 func main() {
 	modules := []module.Module{
-		cron.NewModuleFromFlags(),
 		secrets.NewModuleFromFlags(),
 	}
 
@@ -58,23 +53,7 @@ func main() {
 	)
 
 	server.Main(nil, modules, func(srv *server.Server) error {
-		logging.Debugf(srv.Context, "main: initializing server")
-
-		// This allows auth to use Identity tokens.
-		srv.SetRPCAuthMethods([]auth.Method{
-			// The primary authentication method.
-			&openid.GoogleIDTokenAuthMethod{
-				AudienceCheck: openid.AudienceMatchesHost,
-				SkipNonJWT:    true, // pass OAuth2 access tokens through
-			},
-			// Backward compatibility for RPC Explorer and old clients.
-			&auth.GoogleOAuth2Method{
-				Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
-			},
-		})
-
-		logging.Debugf(srv.Context, "main: installing services")
-
+		logging.Debugf(srv.Context, "main: setting up clients")
 		deviceLeaseServer := frontend.NewServer()
 		dbConfig := database.DatabaseConfig{
 			DBHost:           *dbHost,
@@ -93,13 +72,14 @@ func main() {
 		if err != nil {
 			return err
 		}
+		logging.Debugf(srv.Context, "main: setup complete; now run sendNotification continuously")
 
-		frontend.InstallServices(deviceLeaseServer, srv)
-		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
-			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients)
-		})
-		logging.Debugf(srv.Context, "main: initialization finished")
-
-		return nil
+		for {
+			controller.SendNotifications(
+				srv.Context,
+				deviceLeaseServer.ServiceClients.DBClient.Conn,
+				deviceLeaseServer.ServiceClients.PubSubClient,
+			)
+		}
 	})
 }

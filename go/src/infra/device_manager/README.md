@@ -12,8 +12,9 @@ experience, the local development uses Docker containers.
 The stack contains three containers:
 
 1.  Postgres DB
-2.  Device Lease Service
-3.  PubSub Emulator
+2.  PubSub Emulator
+3.  Device Lease Service
+4.  Notifier Service
 
 ### Set Up
 
@@ -29,7 +30,7 @@ You must have the following installed:
 *   grpcurl - Should already be installed. A useful tool to send requests and
     test the gRPC service.
 
-#### 0. Bring Up the Containers
+#### 0. Set Up the DB Container
 
 Once everything is installed, in separate windows, run the following:
 
@@ -39,9 +40,6 @@ Once everything is installed, in separate windows, run the following:
 # If you already have Postgres running, you may have to modify the port in
 # docker-compose.dev.yml.
 make docker-db
-
-# This brings up the Device Lease service container.
-make docker-service
 ```
 
 Your containers should be producing Docker logs at this point.
@@ -54,9 +52,9 @@ first create a virtualenv and install Alembic database migration tool:
 ```bash
 python -m venv dev-env
 
-pip install -r requirements.txt
-
 source dev-env/bin/activate
+
+pip install -r requirements.txt
 ```
 
 The necessary tools to manage the Postgres or AlloyDB database are installed.
@@ -87,23 +85,7 @@ INFO  [alembic.runtime.migration] Running upgrade 3303697cfdfd -> 8b7c9cfc4c56, 
 ...
 ```
 
-#### 3. Connect to the Device Lease Service
-
-With the Postgres database set up, try making a request to the service via
-`grpcurl`:
-
-```bash
-grpcurl -plaintext -H "Authorization: Bearer $(gcloud auth print-identity-token)" localhost:50051 list chromiumos.test.api.DeviceLeaseService
-
-# Output should look like this
-chromiumos.test.api.DeviceLeaseService.ExtendLease
-chromiumos.test.api.DeviceLeaseService.GetDevice
-chromiumos.test.api.DeviceLeaseService.LeaseDevice
-chromiumos.test.api.DeviceLeaseService.ListDevices
-chromiumos.test.api.DeviceLeaseService.ReleaseDevice
-```
-
-#### 4. (Optional) Set Up PubSub Emulator
+#### 3. Set Up PubSub Emulator
 
 To develop with PubSub locally, we can use the Google Cloud PubSub Emulator.
 This provides a local server that our services can publish and subscribe to.
@@ -128,10 +110,15 @@ create topics. This is necessary to publish messages and subscribe to topics.
 In a separate window, run the following:
 
 ```bash
+# Set your GCloud project to Device Manager dev.
+gcloud config set project fleet-device-manager-dev
+
+# Set the emulator endpoints.
 export PUBSUB_EMULATOR_HOST=localhost:8085
 gcloud config set api_endpoint_overrides/pubsub http://$PUBSUB_EMULATOR_HOST/
 
-# Replace device-events-v1 to another topic name of your choice.
+# This topic is only created for the fleet-device-manager-dev project locally in
+# emulator mode.
 gcloud pubsub topics create device-events-v1
 ```
 
@@ -146,4 +133,33 @@ up by unsetting and resetting the environment variables we changed.
 ```bash
 unset PUBSUB_EMULATOR_HOST
 gcloud config set api_endpoint_overrides/pubsub https://pubsub.googleapis.com/
+```
+
+#### 4. Connect to the Device Lease Service
+
+In two separate windows, bring up the Docker container for the two services by
+running the following:
+
+```bash
+# This brings up the Device Lease Service
+make docker-service
+
+# This brings up the Notifier Service
+make docker-notifier
+```
+
+**Note:** The Notifier Service is optional if you do not wish to publish
+DeviceEvents. It runs perpetually, looking for Devices that have updates to be published to Pub/Sub.
+
+Try connecting to the Device Lease service via `grpcurl`:
+
+```bash
+grpcurl -plaintext -H "Authorization: Bearer $(gcloud auth print-identity-token)" localhost:50051 list chromiumos.test.api.DeviceLeaseService
+
+# Output should look like this
+chromiumos.test.api.DeviceLeaseService.ExtendLease
+chromiumos.test.api.DeviceLeaseService.GetDevice
+chromiumos.test.api.DeviceLeaseService.LeaseDevice
+chromiumos.test.api.DeviceLeaseService.ListDevices
+chromiumos.test.api.DeviceLeaseService.ReleaseDevice
 ```

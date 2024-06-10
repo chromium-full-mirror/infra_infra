@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/pubsub"
@@ -26,7 +28,16 @@ import (
 	"infra/libs/skylab/inventory/swarming"
 )
 
-// TODO: b/328662436 - Collect metrics
+// TODO: b/343293714 - Write unit tests and manually test this. Create a job that calls SendNotifications.
+// TODO: b/328662436 - Collect metrics.
+
+const (
+	publishWorkersN   = 50
+	updateBatchSize   = 1000
+	maxUpdateWaitTime = 500 * time.Millisecond
+)
+
+var notifierWg sync.WaitGroup
 
 // GetDevice gets a Device from the database based on a deviceID.
 func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
@@ -102,6 +113,139 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *mo
 	}
 	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", deviceEvent)
 	return nil
+}
+
+// SendNotifications selects Devices for which no notifications have been sent
+// since last_updated_time. It then sets up a worker pool to start publishing a
+// message per device to Pub/Sub. Successfully sending results in the Device row
+// updates to note the last notification time. The time used for notification is
+// when the function is first called. This avoids missing updates that happen as
+// we go this batch of updates. These final updates are done in batches with a
+// max wait time between updates.
+func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client) {
+	var (
+		// queryTime is what will be used as notification time. It is important
+		// to get this before sending the query to avoid missing notifications
+		// in case devices do get updated by while we are sending notifications.
+		queryTime = time.Now()
+		query     = `
+			SELECT
+				id,
+				device_address,
+				device_type,
+				device_state,
+				schedulable_labels,
+				is_active,
+				last_updated_time
+			FROM "Devices"
+			WHERE
+				is_active = true
+			  AND (
+					last_updated_time > last_notification_time
+					OR last_notification_time IS NULL
+				);`
+		lastUpdatedTime sql.NullTime
+	)
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(fmt.Errorf("notifier_service: failed to get devices to notify on: [%w]", err))
+	}
+	defer rows.Close()
+
+	var (
+		// Each worker gets a spot in input and output channels
+		publishDevice = make(chan *model.Device, publishWorkersN)
+		updateDevice  = make(chan *model.Device, publishWorkersN)
+	)
+
+	for range publishWorkersN {
+		go publishDeviceWorker(ctx, psClient, publishDevice, updateDevice)
+	}
+	go updateWorker(ctx, db, queryTime, updateDevice)
+
+	for rows.Next() {
+		var device model.Device
+		err = rows.Scan(
+			&device.ID,
+			&device.DeviceAddress,
+			&device.DeviceType,
+			&device.DeviceState,
+			&device.SchedulableLabels,
+			&device.IsActive,
+			&lastUpdatedTime,
+		)
+		if err != nil {
+			panic(fmt.Errorf("notifier_service: failed to get scan row of devices to notify on: [%w]", err))
+		}
+
+		if lastUpdatedTime.Valid {
+			device.LastUpdatedTime = lastUpdatedTime.Time
+		}
+
+		notifierWg.Add(1)
+		publishDevice <- &device
+		logging.Debugf(ctx, "Queued Device %s for publishing event to Pub/Sub", device.ID)
+	}
+
+	notifierWg.Wait()
+}
+
+func publishDeviceWorker(
+	ctx context.Context,
+	psClient *pubsub.Client,
+	devices <-chan *model.Device,
+	successes chan<- *model.Device,
+) {
+	for device := range devices {
+		err := PublishDeviceEvent(ctx, psClient, device)
+		if err == nil {
+			successes <- device
+			continue
+		}
+		// On success updateWorker will handle updating notifierWg.
+		notifierWg.Done()
+		logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
+	}
+}
+
+func updateWorker(ctx context.Context, db *sql.DB, updateTime time.Time, devices <-chan *model.Device) {
+	var (
+		// pendingUpdates is a quoted list of device IDs
+		pendingUpdates = make([]string, 0, updateBatchSize)
+		timer          = time.NewTicker(maxUpdateWaitTime)
+	)
+
+	updateDevices := func() {
+		if len(pendingUpdates) == 0 {
+			return
+		}
+		query := `
+			UPDATE "Devices"
+			SET
+				last_notification_time = $1
+			WHERE
+				id IN (%s);`
+		query = fmt.Sprintf(query, strings.Join(pendingUpdates, ", "))
+		_, err := db.QueryContext(ctx, query, updateTime)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to update notification time for devices with query %s: %v", query, err)
+		}
+		logging.Debugf(ctx, "Query ran with %d updates", len(pendingUpdates))
+		notifierWg.Add(-len(pendingUpdates))
+		pendingUpdates = pendingUpdates[:0]
+	}
+
+	for {
+		select {
+		case device := <-devices:
+			pendingUpdates = append(pendingUpdates, fmt.Sprintf("'%s'", device.ID))
+			if len(pendingUpdates) == updateBatchSize {
+				updateDevices()
+			}
+		case <-timer.C:
+			updateDevices()
+		}
+	}
 }
 
 // IsDeviceAvailable checks if a device state is available.

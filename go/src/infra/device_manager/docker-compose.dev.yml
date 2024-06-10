@@ -41,6 +41,33 @@ services:
       - device_manager_db
     stdin_open: true
     tty: true
+  notifier_service:
+    container_name: notifier_service
+    build:
+      context: .
+      dockerfile: ./cmd/notifier_service/docker/Dockerfile
+    command: ["-cloud-project", "fleet-device-manager-dev",
+      "-auth-service-host", "chrome-infra-auth-dev.appspot.com",
+      "-db-host", "device_manager_db",
+      "-db-port", "5432",
+      "-db-name", "device_manager_db",
+      "-db-user", "postgres",
+      "-db-password-secret", "devsecret://cGFzc3dvcmQ",
+      "-token-cache-dir", "/tokens"]
+    user: ${CURRENT_UID}
+    environment:
+      DB_USER: postgres
+      DB_HOST: device_manager_db
+      DB_PORT: 5432
+      DB_NAME: device_manager_db
+      DATABASE_URL: "host=device_manager_db user=postgres password=password dbname=device_manager_db sslmode=disable"
+      PUBSUB_EMULATOR_HOST: pubsub:8085 # uncomment to enable pubsub emulator
+    volumes:
+      - ~/.config/chrome_infra/auth:/tokens
+    depends_on:
+      - device_manager_db
+    stdin_open: true
+    tty: true
   device_manager_db:
     container_name: device_manager_db
     image: postgres:12
