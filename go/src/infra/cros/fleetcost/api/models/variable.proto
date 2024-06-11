@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package fleetcost.api.models;
+
+option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
+
+// Variable is a global variable stored in the cost database.
+message Variable {
+  string name = 1;
+  double value = 2;
+}

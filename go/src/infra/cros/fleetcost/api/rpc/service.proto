@@ -13,6 +13,7 @@ import "google/protobuf/field_mask.proto";
 import "infra/cros/fleetcost/api/models/indicator.proto";
 import "infra/cros/fleetcost/api/models/result.proto";
 import "infra/cros/fleetcost/api/models/cost_report.proto";
+import "infra/cros/fleetcost/api/models/variable.proto";
 
 option go_package = "infra/cros/fleetcost/api/rpc;fleetcostpb";
 
@@ -57,6 +58,13 @@ service FleetCost {
   rpc DeleteCostIndicator(DeleteCostIndicatorRequest) returns (DeleteCostIndicatorResponse) {
     option (google.api.http) = {
       post: "/v1/delete-cost-indicator"
+    };
+  }
+
+  // CreateVariable creates a variable for storing non-cost data.
+  rpc CreateVariable(CreateVariableRequest) returns (CreateVariableResponse) {
+    option (google.api.http) = {
+      post: "/v1/create-variable"
     };
   }
 
@@ -215,3 +223,14 @@ message RepopulateCacheResponse {
   // Succeeded is true if and only if no errors at all were encountered when repopulating the cache.
   bool succeeded = 2;
 };
+
+// CreateVariableRequest creates a new variable.
+message CreateVariableRequest {
+  models.Variable variable = 1;
+}
+
+// CreateVariableResponse contains only the newly created variable
+message CreateVariableResponse {
+  models.Variable variable = 1;
+}
+
