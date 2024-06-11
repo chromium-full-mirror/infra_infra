@@ -91,6 +91,7 @@ peripherals: {
   audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
+  working_sims: 2
   hmr_state: 1
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
@@ -338,6 +339,7 @@ var fullLabels = []string{
 	"wifi_state:NEED_REPLACEMENT",
 	"wificell",
 	"working_bluetooth_btpeer:3",
+	"working_sims:2",
 }
 
 var baseExpectedLabels = []string{"conductive:False"}
@@ -726,6 +728,7 @@ peripherals: {
   audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
+  working_sims: 2
   hmr_state: 1
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
@@ -962,6 +965,7 @@ var fullLabelsSpecial = []string{
 	"wifi_router_models:gale",
 	"wificell",
 	"working_bluetooth_btpeer:3",
+	"working_sims:2",
 }
 
 // Test the special cases in revert, including

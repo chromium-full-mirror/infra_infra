@@ -52,6 +52,8 @@ peripherals: {
   wifi_state: 2
   bluetooth_state: 3
   cellular_modem_state: 3
+  sim_state: 4
+  working_sims: 2
   starfish_state: 3
   smart_usbhub: false
   mimo: true
@@ -225,6 +227,8 @@ peripherals: {
   wifi_state: 2
   bluetooth_state: 3
   cellular_modem_state: 3
+  sim_state: 4
+  working_sims: 2
   starfish_state: 3
   smart_usbhub: false
   mimo: true
@@ -434,6 +438,8 @@ var fullDimensions = Dimensions{
 	"label-wifi_state":              {"ACCEPTABLE"},
 	"label-bluetooth_state":         {"NEED_REPLACEMENT"},
 	"label-cellular_modem_state":    {"NEED_REPLACEMENT"},
+	"label-sim_state":               {"WRONG_CONFIG"},
+	"label-working_sims":            {"1", "2"},
 	"label-starfish_state":          {"BROKEN"},
 	"label-servo_state":             {"WORKING"},
 	"label-servo_component":         {"servo_v4", "ccd_cr50"},

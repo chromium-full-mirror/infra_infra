@@ -75,6 +75,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			Wificell:                 new(bool),
 			Router_802_11Ax:          new(bool),
 			WorkingBluetoothBtpeer:   new(int32),
+			WorkingSims:              new(int32),
 		},
 		Platform:        new(string),
 		Phase:           new(SchedulableLabels_Phase),

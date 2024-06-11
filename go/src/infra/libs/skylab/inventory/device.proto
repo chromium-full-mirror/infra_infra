@@ -441,7 +441,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 48
+// NEXT TAG: 50
 message Peripherals {
   reserved 32;
 
@@ -553,6 +553,11 @@ message Peripherals {
   optional HardwareState bluetooth_state = 29;
   optional HardwareState cellular_modem_state = 34;
   optional PeripheralState starfish_state = 46;
+  // The overall state of the celular SIMs in the device.
+  optional PeripheralState sim_state = 48;
+  // The number of SIMs with connectable networks detected. This is only used in the converters
+  // and is not populated directly in UFS.
+  optional int32 working_sims = 49;
   optional PeripheralState rpm_state = 25;
 
   // The overall state of all btpeer peripherals in the testbed.

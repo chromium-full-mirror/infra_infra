@@ -195,6 +195,10 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, fmt.Sprintf("working_bluetooth_btpeer:%d", n))
 	}
 
+	if n := p.GetWorkingSims(); n > 0 {
+		labels = append(labels, fmt.Sprintf("working_sims:%d", n))
+	}
+
 	if facing := p.GetCameraboxFacing(); facing != inventory.Peripherals_CAMERABOX_FACING_UNKNOWN {
 		const plen = 17 // len("CAMERABOX_FACING_")
 		lv := "camerabox_facing:" + strings.ToLower(facing.String()[plen:])
@@ -396,6 +400,12 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 				*p.WorkingBluetoothBtpeer = 0
 			}
 			*p.WorkingBluetoothBtpeer = int32(i)
+		case "working_sims":
+			i, err := strconv.Atoi(v)
+			if err != nil {
+				*p.WorkingSims = 0
+			}
+			*p.WorkingSims = int32(i)
 		case "camerabox_facing":
 			vn := "CAMERABOX_FACING_" + strings.ToUpper(v)
 			if index, ok := inventory.Peripherals_CameraboxFacing_value[vn]; ok {

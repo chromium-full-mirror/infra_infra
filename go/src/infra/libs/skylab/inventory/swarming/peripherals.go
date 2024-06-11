@@ -137,6 +137,14 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		dims["label-working_bluetooth_btpeer"] = btpeers
 	}
 
+	sims := make([]string, p.GetWorkingSims())
+	for i := range p.GetWorkingSims() {
+		sims[i] = fmt.Sprint(i + 1)
+	}
+	if len(sims) > 0 {
+		dims["label-working_sims"] = sims
+	}
+
 	if facing := p.GetCameraboxFacing(); facing != inventory.Peripherals_CAMERABOX_FACING_UNKNOWN {
 		dims["label-camerabox_facing"] = []string{facing.String()}
 	}
@@ -170,6 +178,11 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 	if modemState := p.GetCellularModemState(); modemState != inventory.HardwareState_HARDWARE_UNKNOWN {
 		if state, ok := lab.HardwareState_name[int32(modemState)]; ok {
 			appendDim(dims, "label-cellular_modem_state", state[hardwareStatePrefixLength:])
+		}
+	}
+	if peripheralCellularState := p.GetSimState(); peripheralCellularState != inventory.PeripheralState_UNKNOWN {
+		if state, ok := lab.PeripheralState_name[int32(peripheralCellularState)]; ok {
+			dims["label-sim_state"] = []string{state}
 		}
 	}
 	if starfishState := p.GetStarfishState(); starfishState != inventory.PeripheralState_UNKNOWN {
@@ -284,6 +297,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 	*p.WorkingBluetoothBtpeer = int32(max)
 	delete(d, "label-working_bluetooth_btpeer")
 
+	max = 0
+	for _, v := range d["label-working_sims"] {
+		if i, err := strconv.Atoi(v); err == nil && i > max {
+			max = i
+		}
+	}
+	*p.WorkingSims = int32(max)
+	delete(d, "label-working_sims")
+
 	if facingName, ok := getLastStringValue(d, "label-camerabox_facing"); ok {
 		if index, ok := inventory.Peripherals_CameraboxFacing_value[strings.ToUpper(facingName)]; ok {
 			facing := inventory.Peripherals_CameraboxFacing(index)
@@ -350,7 +372,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		p.PeripheralBtpeerState = &pbsState
 		delete(d, "label-peripheral_btpeer_state")
 	}
-
+	if stateName, ok := getLastStringValue(d, "label-sim_state"); ok {
+		state := inventory.PeripheralState_UNKNOWN
+		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(stateName)]; ok {
+			state = inventory.PeripheralState(sIndex)
+		}
+		p.SimState = &state
+		delete(d, "label-sim_state")
+	}
 	if pwsStateName, ok := getLastStringValue(d, "label-peripheral_wifi_state"); ok {
 		pwsState := inventory.PeripheralState_UNKNOWN
 		if sIndex, ok := lab.PeripheralState_value[strings.ToUpper(pwsStateName)]; ok {
