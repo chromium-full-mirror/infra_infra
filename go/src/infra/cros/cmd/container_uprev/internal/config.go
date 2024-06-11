@@ -13,6 +13,8 @@ import (
 	"path"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 var (
@@ -26,7 +28,7 @@ func WriteDockerfile(dir string, name string) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to read Dockerfile_%s", name).Err()
 	}
-	return os.WriteFile(path.Join(dir, name), dockerfile, 0644)
+	return os.WriteFile(path.Join(dir, name), dockerfile, common.FilePermission)
 }
 
 // CIPDPackage contains relevant information about a CIPDPackage.
@@ -55,11 +57,17 @@ func NewCIPDPackage(name string) *CIPDPackage {
 type UprevConfig struct {
 	// Dockerfile found by: Dockerfile_<Name>
 	Name string
+	// Optional repository information.
+	// Defaults to
+	// 	host: us-docker.pkg.dev
+	// 	project: cros-registry/test-services
+	RepositoryHostname string
+	RepositoryProject  string
 	// Binaries used during docker image setup.
 	CIPDPackages []*CIPDPackage
-	// PopulateDirectory is a function signature representing
+	// Prepper is a function signature representing
 	// any custom work needed by the Dockerfile.
-	PopulateDirectory func(ctx context.Context, dir string) error
+	Prepper func(ctx context.Context, dir string) error
 }
 
 // GetConfigs returns the uprev configs.

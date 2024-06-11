@@ -64,7 +64,7 @@ func LocalBuildExecution(cipdLabel, imageTag string, runAsAdmin bool) {
 
 	if !runAsAdmin {
 		// Do not update the sha storage on local execution.
-		UpdateShaStorage = func(ctx context.Context, containerSHAs map[string]string, creds, label string) (err error) {
+		UpdateShaStorage = func(ctx context.Context, containerSHAs map[string]*internal.ContainerInfoItem, creds, label string) (err error) {
 			logging.Infof(ctx, "Local execution, skipping sha storage update")
 			return nil
 		}
@@ -84,23 +84,24 @@ func LocalBuildExecution(cipdLabel, imageTag string, runAsAdmin bool) {
 // executeContainerUprev steps through the uprev configs, creates a new container,
 // and uploads its sha to the storage.
 func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag string) (err error) {
-	if err = internal.GcloudAuth(ctx, dockerKeyFile); err != nil {
-		err = errors.Annotate(err, "failed to Gcloud auth").Err()
-		return
-	}
-
-	containerSHAs := map[string]string{}
+	containerInfos := map[string]*internal.ContainerInfoItem{}
 	configs := internal.GetConfigs()
 	for _, config := range configs {
+		if err = internal.GcloudAuth(ctx, config.RepositoryHostname, dockerKeyFile); err != nil {
+			err = errors.Annotate(err, "failed to Gcloud auth").Err()
+			return
+		}
+
 		sha, uprevErr := internal.UprevContainer(ctx, config, cipdLabel, imageTag)
 		if uprevErr != nil {
 			err = errors.Append(err, uprevErr)
 		} else {
-			containerSHAs[config.Name] = sha
+			containerInfo := internal.NewContainerInfoItem(config.RepositoryHostname, config.RepositoryProject, sha)
+			containerInfos[config.Name] = containerInfo
 		}
 	}
 
-	if shaErr := UpdateShaStorage(ctx, containerSHAs, dockerKeyFile, imageTag); shaErr != nil {
+	if shaErr := UpdateShaStorage(ctx, containerInfos, dockerKeyFile, imageTag); shaErr != nil {
 		shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()
 		err = errors.Append(err, shaErr)
 		return

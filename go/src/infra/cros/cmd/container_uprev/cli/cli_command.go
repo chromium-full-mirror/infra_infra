@@ -62,6 +62,6 @@ func (cc *CLICommand) Run() error {
 	if tag == "" {
 		tag = fmt.Sprintf("%s-test", os.Getenv("USER"))
 	}
-	executions.LocalBuildExecution(tag, cc.args.cipdLabel, cc.args.runAsAdmin)
+	executions.LocalBuildExecution(cc.args.cipdLabel, tag, cc.args.runAsAdmin)
 	return nil
 }

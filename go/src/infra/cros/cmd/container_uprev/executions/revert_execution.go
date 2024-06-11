@@ -26,6 +26,14 @@ func RevertExecution(containerNames []string, isProd bool) {
 		tag = common.LabelProd
 	}
 
+	if len(containerNames) == 1 && containerNames[0] == "all" {
+		containerNames = []string{}
+		configs := internal.GetConfigs()
+		for _, config := range configs {
+			containerNames = append(containerNames, config.Name)
+		}
+	}
+
 	err := internal.RevertShas(ctx, containerNames, "", tag)
 	if err != nil {
 		logging.Infof(ctx, "failed to revert some or all SHAs, %s", err)

@@ -48,12 +48,20 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 		return
 	}
 
-	if err = config.PopulateDirectory(ctx, dir); err != nil {
+	if err = config.Prepper(ctx, dir); err != nil {
 		err = errors.Annotate(err, "failed to populate directory").Err()
 		return
 	}
 
-	if sha, err = buildAndPush(ctx, dir, config.Name, config.Name, imageTag); err != nil {
+	host := config.RepositoryHostname
+	project := config.RepositoryProject
+	if host == "" {
+		host = common.DefaultDockerHost
+	}
+	if project == "" {
+		project = common.DefaultDockerProject
+	}
+	if sha, err = buildAndPush(ctx, dir, config.Name, host, project, config.Name, imageTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
 	}

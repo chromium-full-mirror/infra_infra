@@ -42,7 +42,7 @@ func (cc *RevertCommand) Name() string {
 func (cc *RevertCommand) Init(args []string) error {
 	a := revertArgs{}
 	cc.args = &a
-	cc.flagSet.StringVar(&a.containerNames, "containers", "", "the containers to be reverted")
+	cc.flagSet.StringVar(&a.containerNames, "containers", "all", "the containers to be reverted")
 	cc.flagSet.BoolVar(&a.isProd, "prod", false, "indicates to revert prod")
 
 	err := cc.flagSet.Parse(args)
