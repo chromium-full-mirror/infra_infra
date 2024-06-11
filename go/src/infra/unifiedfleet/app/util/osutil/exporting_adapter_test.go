@@ -221,6 +221,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk1",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 											OwnNumber:   "123456789",
+											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
 										},
 										{
 											Iccid:       "iccid2",
@@ -228,6 +229,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk2",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_TEST,
 											OwnNumber:   "234567890",
+											State:       chromeosLab.SIMProfileInfo_BROKEN,
 										},
 										{
 											Iccid:       "iccid3",
@@ -235,6 +237,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk3",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_SPRINT,
 											OwnNumber:   "345678912",
+											State:       chromeosLab.SIMProfileInfo_NO_NETWORK,
 										},
 										{
 											Iccid:       "iccid4",
@@ -242,6 +245,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk4",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_FI,
 											OwnNumber:   "456789123",
+											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
 										},
 									},
 								},
@@ -255,6 +259,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk1",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 											OwnNumber:   "123456789",
+											State:       chromeosLab.SIMProfileInfo_WORKING,
 										},
 									},
 								},
@@ -643,6 +648,8 @@ common {
 			wifi_state: HARDWARE_ACCEPTABLE,
 			bluetooth_state: HARDWARE_NORMAL,
 			cellular_modem_state: HARDWARE_NORMAL
+			working_sims: 1
+			sim_state: BROKEN
 			starfish_state: BROKEN
 			wificell: true
 			router_802_11ax: true

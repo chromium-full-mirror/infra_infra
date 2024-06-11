@@ -529,6 +529,30 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 		l.Siminfo[i] = s
 	}
 
+	// Process additional state information
+	p := l.GetPeripherals()
+	var count int32
+	simState := inventory.PeripheralState_UNKNOWN
+	for _, si := range sim {
+		for _, pi := range si.GetProfileInfo() {
+			state := pi.GetState()
+			if state == chromeosLab.SIMProfileInfo_UNSPECIFIED {
+				continue
+			}
+			if state != chromeosLab.SIMProfileInfo_WORKING {
+				simState = inventory.PeripheralState_BROKEN
+				continue
+			}
+			count++
+		}
+	}
+
+	// If we have at leasts one SIM and it is working then change from UNSPECIFIED to WORKING.
+	if count > 0 && simState != inventory.PeripheralState_BROKEN {
+		simState = inventory.PeripheralState_WORKING
+	}
+	p.WorkingSims = &count
+	p.SimState = &simState
 }
 
 func setDutStateHelper(s chromeosLab.PeripheralState) *bool {
