@@ -24,17 +24,11 @@ from PB.recipe_engine.recipes_cfg import AutorollRecipeOptions
 PROPERTIES = {
     'projects':
         recipe_api.Property(),
-    'db_gcs_bucket':
-        recipe_api.Property(
-            kind=str,
-            help=('GCS bucket in which to store metadata for historical roll '
-                  'attempts'),
-            default='recipe-mega-roller-crappy-db'),
 }
 
 
-def RunSteps(api, projects, db_gcs_bucket):
-  api.recipe_autoroller.roll_projects(projects, db_gcs_bucket)
+def RunSteps(api, projects):
+  api.recipe_autoroller.roll_projects(projects)
 
 
 def GenTests(api):
@@ -54,20 +48,17 @@ def GenTests(api):
 
   yield test(
       'basic',
-      api.properties(db_gcs_bucket='somebucket'),
       api.recipe_autoroller.roll_data('build'),
   )
 
   yield test(
       'basic with recipes_path',
-      api.properties(db_gcs_bucket='somebucket'),
       api.recipe_autoroller.roll_data('build', repo_spec(
           trivial_commit=False, recipes_path='some/path')),
   )
 
   yield test(
       'multiple_commits',
-      api.properties(db_gcs_bucket='somebucket'),
       api.recipe_autoroller.roll_data('build', num_commits=3),
   )
 

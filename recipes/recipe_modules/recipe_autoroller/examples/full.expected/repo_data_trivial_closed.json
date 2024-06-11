@@ -738,37 +738,6 @@
     ]
   },
   {
-    "cmd": [
-      "python3",
-      "-u",
-      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
-      "--",
-      "RECIPE_REPO[depot_tools]/gsutil.py",
-      "----",
-      "cp",
-      "{\"issue\": \"123456789\", \"issue_url\": \"https://code-review.googlesource.com/123456789\", \"last_roll_ts_utc\": \"2016-01-01T00:00:03\", \"trivial\": true}",
-      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
-    ],
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:cron"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build.gsutil upload",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
-    ]
-  },
-  {
     "name": "$result"
   }
 ]

@@ -37,23 +37,6 @@ class RepoData(object):
     self.trivial = trivial
     self.last_roll_ts_utc = last_roll_ts_utc
 
-  @classmethod
-  def from_json(cls, obj):  # pragma: no cover
-    return cls(
-      obj['issue'],
-      obj['issue_url'],
-      obj['trivial'],
-      datetime.datetime.strptime(obj['last_roll_ts_utc'], cls._TIME_FORMAT),
-    )
-
-  def to_json(self):
-    return {
-      'issue': self.issue,
-      'issue_url': self.issue_url,
-      'trivial': self.trivial,
-      'last_roll_ts_utc': self.last_roll_ts_utc.strftime(self._TIME_FORMAT),
-    }
-
 
 COMMIT_MESSAGE_HEADER = ("""
 This is an automated CL created by the recipe roller. This CL rolls
@@ -100,11 +83,6 @@ class _Status(object):
 
 
 _ROLL_STALE_THRESHOLD = datetime.timedelta(hours=2)
-
-
-def _gs_path(project_url):
-  return 'repo_metadata/%s' % base64.urlsafe_b64encode(
-      project_url.encode()).decode()
 
 
 def get_commit_message(roll_result, build_id):
@@ -171,7 +149,7 @@ def get_summary_markdown(roll_results):
 
 
 class RecipeAutorollerApi(recipe_api.RecipeApi):
-  def roll_projects(self, projects, db_gcs_bucket):
+  def roll_projects(self, projects):
     """Attempts to roll each project from the provided list.
 
     If rolling any of the projects leads to failures, other
@@ -181,13 +159,10 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       projects: list of tuples of
         project_id (string): id as found in recipes.cfg.
         project_url (string): Git repository URL of the project.
-        db_gcs_bucket (string): The GCS bucket used as a database for previous
-          roll attempts.
     """
     futures = []
     for project_id, project_url in projects:
-      future = self.m.futures.spawn(self._roll_project, project_id, project_url,
-                                    db_gcs_bucket)
+      future = self.m.futures.spawn(self._roll_project, project_id, project_url)
       futures.append((project_id, future))
 
     failed_rolls = []
@@ -284,16 +259,15 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
                         name='git cl set-close')
     return None
 
-  def _roll_project(self, project_id, project_url, db_gcs_bucket):
+  def _roll_project(self, project_id, project_url):
     with self.m.step.nest(str(project_id)) as presentation:
       try:
-        return self._roll_project_impl(
-            project_id, project_url, db_gcs_bucket)
+        return self._roll_project_impl(project_id, project_url)
       except Exception:
         presentation.logs['exception'] = traceback.format_exc()
         raise
 
-  def _roll_project_impl(self, project_id, project_url, db_gcs_bucket):
+  def _roll_project_impl(self, project_id, project_url):
     # Keep persistent checkout. Speeds up the roller for large repos
     # like chromium/src.
     workdir = self._prepare_checkout(project_id, project_url)
@@ -324,8 +298,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     if roll_result['success'] and roll_result['picked_roll_details']:
       issue_result = self._process_successful_roll(
-          project_url, roll_step, workdir, recipes_py, recipes_cfg_path,
-          db_gcs_bucket)
+          project_url, roll_step, workdir, recipes_py, recipes_cfg_path)
       return _Status(ROLL_SUCCESS, issue_result['issue_url'])
 
     num_rejected = roll_result['rejected_candidates_count']
@@ -340,7 +313,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
     return _Status(ROLL_FAILURE)
 
   def _process_successful_roll(self, project_url, roll_step, workdir,
-                               recipes_py, recipes_cfg_path, db_gcs_bucket):
+                               recipes_py, recipes_cfg_path):
     """
     Args:
       roll_step - The StepResult of the actual roll command. This is used to
@@ -466,11 +439,6 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     issue_step.presentation.links['Issue %s' % repo_data.issue] = (
         repo_data.issue_url)
-
-    # TODO: b/40275665 - Stop uploading to GCS.
-    self.m.gsutil.upload(
-        self.m.json.input(repo_data.to_json()), db_gcs_bucket,
-        _gs_path(project_url))
 
     return issue_result
 

@@ -20,17 +20,11 @@ from recipe_engine import recipe_api
 PROPERTIES = {
     'projects':
         recipe_api.Property(),
-    'db_gcs_bucket':
-        recipe_api.Property(
-            kind=str,
-            help=('GCS bucket in which to store metadata for historical roll '
-                  'attempts'),
-            default='recipe-mega-roller-crappy-db'),
 }
 
 
-def RunSteps(api, projects, db_gcs_bucket):
-  return api.recipe_autoroller.roll_projects(projects, db_gcs_bucket)
+def RunSteps(api, projects):
+  return api.recipe_autoroller.roll_projects(projects)
 
 
 def GenTests(api):
