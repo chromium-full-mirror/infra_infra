@@ -20,8 +20,8 @@ def BaseConfig(PROJECT,
   """Filter out duplicate compilation units.
 
   Args:
-    PROJECT: The project this config is for. Only 'chromium', 'chrome', and
-      'chromiumos' are supported currently.
+    PROJECT: The project this config is for. Only 'chromium', 'chrome',
+      'chromiumos' and 'chromeos' are supported currently.
     CHECKOUT_PATH: the source checkout path.
     PLATFORM: The platform or board for which the code is compiled.
     EXPERIMENTAL: If True, appends '_experimental' to the generated kzip file,
@@ -94,6 +94,17 @@ def chromium_gs(c):
 def chrome(c):
   c.generated_repo = (
       'https://chrome-internal.googlesource.com/chrome/src-internal/out')
+
+
+@config_ctx(includes=['chrome_gs'])
+def chromeos(c):
+  c.out_path = c.CHECKOUT_PATH.joinpath('out', c.PLATFORM)
+  c.generated_repo = (
+      'https://chrome-internal.googlesource.com/chromeos/codesearch/gen/' +
+      c.PLATFORM)
+  c.compile_commands_json_file = c.out_path / 'compile_commands.json'
+  c.gn_targets_json_file = c.out_path / 'gn_targets.json'
+  c.javac_extractor_output_dir = None
 
 
 @config_ctx()

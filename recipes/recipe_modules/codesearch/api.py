@@ -181,7 +181,7 @@ class CodesearchApi(recipe_api.RecipeApi):
     """
     if self.c.PROJECT in ('chromium', 'chrome'):
       return self._PROJECT_BROWSER
-    if self.c.PROJECT == 'chromiumos':
+    if self.c.PROJECT in ('chromiumos', 'chromeos'):
       return self._PROJECT_OS
     return self._PROJECT_UNSUPPORTED  # pragma: nocover
 

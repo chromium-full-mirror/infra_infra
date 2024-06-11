@@ -37,7 +37,19 @@ def GenTests(api):
   )
 
   yield api.test(
+      'chromiumos',
+      api.properties(codesearch_apply_config=['chromiumos']),
+      api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
       'chrome',
       api.properties(codesearch_apply_config=['chrome']),
+      api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+      'chromeos',
+      api.properties(codesearch_apply_config=['chromeos']),
       api.post_process(post_process.DropExpectation),
   )
