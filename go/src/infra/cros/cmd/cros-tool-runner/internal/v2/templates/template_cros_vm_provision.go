@@ -87,7 +87,7 @@ func generateAuthFile(dir string) error {
 	if err != nil {
 		return status.Error(codes.Internal, "unable to execute gcloud command for vm provision")
 	}
-	filepath := fmt.Sprintf("%s/%s", dir, "authToken.txt")
+	filepath := fmt.Sprintf("%s%s", dir, authTokenFile)
 
 	// Create the file
 	file, err := os.Create(filepath)
@@ -104,36 +104,56 @@ func generateAuthFile(dir string) error {
 	return nil
 }
 
-// generates auth and copies to vm-provision container
+// authCopier generates auth and copies to vm-provision container. If it finds remove signal present, then it removes auth file and skips generating one.
 func authCopier(name string, source string, destination string) {
-
 	// The first auth token is generated and mounted at the container startup. The goroutine only generates
-	// consequent tokens after 1 minute.
-	interval := 1 * time.Minute
+	// consequent tokens after 1 minute as long as remove signal doesn't exist.
+	startTime := time.Now()
+	authFilePath := fmt.Sprintf("%s%s", source, authTokenFile)
+	authFileRemoveSignalPath := fmt.Sprintf("%s/%s", source, "removeSignal.txt")
 
 	for {
-		time.Sleep(interval)
-		// Check if the auth file exists. If it doesn't exists, then it means it has been purged and it should no longer be updated with fresh token.
-		authFilePath := fmt.Sprintf("%s/%s", source, "authToken.txt")
-		_, err := os.Stat(authFilePath)
-		if os.IsNotExist(err) {
-			continue
+		// Check if the auth file remove signal exists.
+		if _, err := os.Stat(authFileRemoveSignalPath); err == nil {
+			// Remove the auth file
+			removeFile(authFilePath)
+			break
+		} else if time.Since(startTime) > 60*time.Second {
+			containerID := state.ServerState.Containers.GetIdForOwner(name)
+			if containerID == "" {
+				log.Printf("vm-provision container not started yet")
+			} else {
+				// Generate and copy to vm-provision docker container
+				if err := generateAuthFile(source); err != nil {
+					log.Printf("Error generating auth for vm-provision during goroutine")
+				}
+				mountDockerFile(source, destination, containerID, authTokenFile)
+			}
+			startTime = time.Now()
 		}
-		// Generate and copy to vm-provision docker container
-		err = generateAuthFile(source)
-		if err != nil {
-			log.Printf("Error generating auth for vm-provision during goroutine")
-		}
-		containerID := state.ServerState.Containers.GetIdForOwner(name)
-		if containerID == "" {
-			log.Printf("vm-provision container not started yet")
-		}
-		cmd := &commands.DockerCp{Source: source + authTokenFile, Destination: containerID + ":" + destination + authTokenFile}
-		_, _, err = cmd.Execute(context.Background())
-		if err != nil {
-			log.Printf("Failed to copy auth file for vm-provision during goroutine")
+	}
+}
+
+// removeFile removes the file at given filepath
+func removeFile(filePath string) {
+	// Check if the file exists before attempting to remove it
+	if _, err := os.Stat(filePath); err == nil {
+		// Attempt to remove the file
+		if err := os.Remove(filePath); err != nil {
+			log.Printf("Failed to remove auth file: %s", err)
 		} else {
-			log.Printf("Successfully copied auth file for vm-provision during goroutine")
+			log.Printf("Successfully removed auth file.")
 		}
+	}
+}
+
+// mountDockerFile mounts a file to a given destination dir for a container ID
+func mountDockerFile(source string, destination string, containerID string, file string) {
+	cmd := &commands.DockerCp{Source: source + file, Destination: containerID + ":" + destination + file}
+	_, _, err := cmd.Execute(context.Background())
+	if err != nil {
+		log.Printf("Failed to copy auth file for vm-provision during goroutine")
+	} else {
+		log.Printf("Successfully copied auth file for vm-provision during goroutine")
 	}
 }

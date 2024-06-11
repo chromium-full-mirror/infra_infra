@@ -211,9 +211,10 @@ func (ex *CrosVMProvisionExecutor) LeaseDutVM(
 	}
 	vmProvisionOp, err := ex.CrosVMProvisionServiceClient.Install(ctx, installReq, grpc.EmptyCallOption{})
 	if err != nil {
-		purgeErr := ex.purgeAuthToken()
+		logging.Infof(ctx, "purgeAuthToken called after lease failed")
+		purgeErr := ex.purgeAuthToken(ctx)
 		if purgeErr != nil {
-			logging.Infof(ctx, "auth token file purge error after lease fail: %s", purgeErr)
+			logging.Infof(ctx, "auth token file purge error after lease failed: %s", purgeErr)
 		}
 		return nil, errors.Annotate(err, "vm-provision lease failure: ").Err()
 	}
@@ -302,14 +303,15 @@ func (ex *CrosVMProvisionExecutor) ReleaseDutVM(
 
 	vmProvisionOp, err := ex.CrosVMProvisionServiceClient.Install(ctx, installReq, grpc.EmptyCallOption{})
 	if err != nil {
-		purgeErr := ex.purgeAuthToken()
+		logging.Infof(ctx, "purgeAuthToken called after release failed")
+		purgeErr := ex.purgeAuthToken(ctx)
 		if purgeErr != nil {
-			logging.Infof(ctx, "auth token file purge error after release fail: %s", purgeErr)
+			logging.Infof(ctx, "auth token file purge error after release failed: %s", purgeErr)
 		}
 		return nil, errors.Annotate(err, "vm-provision release failure: ").Err()
 	}
-
-	purgeErr := ex.purgeAuthToken()
+	logging.Infof(ctx, "purgeAuthToken called after release succeeded")
+	purgeErr := ex.purgeAuthToken(ctx)
 	if purgeErr != nil {
 		logging.Infof(ctx, "auth token file purge error after release succeeded: %s", purgeErr)
 	}
@@ -357,25 +359,35 @@ func getDiskSizeByBoard(image string) int64 {
 	}
 	return 13
 }
-func (ex *CrosVMProvisionExecutor) purgeAuthToken() error {
+
+// purgeAuthToken creates a file signalling ctr to stop generating authToken. It then waits to enure that the file has been removed.
+func (ex *CrosVMProvisionExecutor) purgeAuthToken(ctx context.Context) error {
 	tempDirLoc, err := ex.Container.GetLogsLocation()
 	if err != nil {
 		return err
 	}
-	// Construct the full path of the file to be deleted
-	filePath := filepath.Join(tempDirLoc, "authToken.txt")
+	// Construct the full path of the file to be added
+	filePath := filepath.Join(tempDirLoc, "removeSignal.txt")
+	authFilePath := filepath.Join(tempDirLoc, "authToken.txt")
+	logging.Infof(ctx, "Adding auth token remove signal file: %s", filePath)
 
-	// Check if the file exists
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil
-	} else if err != nil {
+	_, err = os.Create(filePath)
+	if err != nil {
+		logging.Infof(ctx, "Failed to create auth token remove signal file: %s", filePath)
 		return err
 	}
+	logging.Infof(ctx, "Auth token remove signal file added: %s", filePath)
 
-	// Attempt to remove the file
-	err = os.Remove(filePath)
-	if err != nil {
-		return err
+	logging.Infof(ctx, "Starting loop to check if auth token file is removed")
+	// Check if the file exists in 3 loops with an interval of 30 seconds
+	for i := 0; i < 5; i++ {
+		time.Sleep(100 * time.Millisecond)
+		if _, err := os.Stat(authFilePath); os.IsNotExist(err) {
+			logging.Infof(ctx, "Auth token file removed from temp dir: %s", authFilePath)
+			return nil
+		} else if err != nil {
+			return err
+		}
 	}
 
 	return nil
