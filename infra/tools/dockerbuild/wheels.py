@@ -1844,6 +1844,7 @@ SPECS.update({
         Universal('certifi', '2023.11.17', pyversions=['py3']),
         Universal('chardet', '3.0.4'),
         Universal('chardet', '4.0.0'),
+        Universal('chardet', '5.2.0', pyversions=['py3']),
         Universal('charset_normalizer', '2.0.4', pyversions=['py3']),
         Universal('charset_normalizer', '2.0.12', pyversions=['py3']),
         Universal('charset_normalizer', '3.1.0', pyversions=['py3']),

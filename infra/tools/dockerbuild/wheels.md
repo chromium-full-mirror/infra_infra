@@ -1703,6 +1703,20 @@ wheel: <
 
 * *universal*
 
+## **chardet-py3**
+
+### 5.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/chardet-py3"
+  version: "version:5.2.0"
+>
+```
+
+
+* *universal*
+
 ## **charset_normalizer-py3**
 
 ### 2.0.4
