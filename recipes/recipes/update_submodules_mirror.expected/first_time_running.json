@@ -18,6 +18,7 @@
     "cmd": [
       "git",
       "clone",
+      "--filter='blob:none'",
       "https://chromium.googlesource.com/chromium/src",
       "[CACHE]/codesearch_update_submodules_mirror/src"
     ],
