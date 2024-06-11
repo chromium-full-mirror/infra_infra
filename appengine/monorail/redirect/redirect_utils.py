@@ -21,10 +21,19 @@ PROJECT_REDIRECT_MAP = {
     'libyuv': 'https://libyuv.issues.chromium.org',
     'pdfium': 'https://issues.chromium.org',
     'pigweed': 'https://issues.pigweed.dev',
-    'skia': 'http://issues.skia.org',
+    'skia': 'https://issues.skia.org',
     'tint': 'https://issues.chromium.org',
-    'v8': 'http://issues.chromium.org',
-    'webrtc': 'http://issues.webrtc.org',
+    'v8': 'https://issues.chromium.org',
+    'webrtc': 'https://issues.webrtc.org',
+}
+
+# Only contain the project that is a subcomponent of the tracker.
+PROJECT_COMPONENT_ID_MAP = {
+    'boringssl': 1590116,
+    'dawn': 1570784,
+    'pdfium': 1586257,
+    'tint': 1571063,
+    'v8': 1456969,
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
@@ -79,10 +88,12 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
         has_append_component = True
       # TODO(b/283983843): set up the components customfiled while redirect.
 
-  # If no component exists, add the default component.
-  # It is required to append component before appending custom fields.
+  # Select the proper component id
+  # if the project is a subcomponent of the tracker.
   if not has_append_component:
-    new_issue_params.append(('component', DEFAULT_COMPONENT_ID))
+    project_component_id = PROJECT_COMPONENT_ID_MAP.get(project_name, '')
+    if project_component_id:
+      new_issue_params.append(('component', project_component_id))
 
   if params.get('summary', type=str):
     new_issue_params.append(('title', params.get('summary', type=str)))
@@ -113,7 +124,9 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
   return urllib.parse.urlencode(new_issue_params)
 
 def GetSearchQuery(project_name, params):
-  if not params:
+  component_id = PROJECT_COMPONENT_ID_MAP.get(project_name, '')
+
+  if not params and not component_id:
     return ''
 
   search_conds = []
@@ -137,6 +150,9 @@ def GetSearchQuery(project_name, params):
       search_conds.append(cond)
 
   query_string = ''
+  if component_id:
+    query_string += 'componentid:' + str(component_id) + '+'
+
   for cond in search_conds:
     condition_pair = _ConvertSearchCondition(project_name, cond)
     if condition_pair:
