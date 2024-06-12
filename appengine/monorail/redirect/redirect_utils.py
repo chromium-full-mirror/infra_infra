@@ -33,7 +33,7 @@ PROJECT_COMPONENT_ID_MAP = {
     'dawn': 1570784,
     'pdfium': 1586257,
     'tint': 1571063,
-    'v8': 1456969,
+    'v8': 1456824,
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
