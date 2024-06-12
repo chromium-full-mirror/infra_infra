@@ -37,8 +37,6 @@ const (
 	maxUpdateWaitTime = 500 * time.Millisecond
 )
 
-var notifierWg sync.WaitGroup
-
 // GetDevice gets a Device from the database based on a deviceID.
 func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
 	device, err := model.GetDeviceByID(ctx, db, idType, deviceID)
@@ -156,12 +154,17 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 		// Each worker gets a spot in input and output channels
 		publishDevice = make(chan *model.Device, publishWorkersN)
 		updateDevice  = make(chan *model.Device, publishWorkersN)
+
+		// Control pending updates.
+		wg sync.WaitGroup
 	)
+	defer close(publishDevice)
+	defer close(updateDevice)
 
 	for range publishWorkersN {
-		go publishDeviceWorker(ctx, psClient, publishDevice, updateDevice)
+		go publishDeviceWorker(ctx, &wg, psClient, publishDevice, updateDevice)
 	}
-	go updateWorker(ctx, db, queryTime, updateDevice)
+	go updateWorker(ctx, &wg, db, queryTime, updateDevice)
 
 	for rows.Next() {
 		var device model.Device
@@ -182,16 +185,17 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 			device.LastUpdatedTime = lastUpdatedTime.Time
 		}
 
-		notifierWg.Add(1)
+		wg.Add(1)
 		publishDevice <- &device
 		logging.Debugf(ctx, "Queued Device %s for publishing event to Pub/Sub", device.ID)
 	}
 
-	notifierWg.Wait()
+	wg.Wait()
 }
 
 func publishDeviceWorker(
 	ctx context.Context,
+	wg *sync.WaitGroup,
 	psClient *pubsub.Client,
 	devices <-chan *model.Device,
 	successes chan<- *model.Device,
@@ -202,13 +206,19 @@ func publishDeviceWorker(
 			successes <- device
 			continue
 		}
-		// On success updateWorker will handle updating notifierWg.
-		notifierWg.Done()
+		// On success updateWorker will handle updating wg.
+		wg.Done()
 		logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
 	}
 }
 
-func updateWorker(ctx context.Context, db *sql.DB, updateTime time.Time, devices <-chan *model.Device) {
+func updateWorker(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	db *sql.DB,
+	updateTime time.Time,
+	devices <-chan *model.Device,
+) {
 	var (
 		// pendingUpdates is a quoted list of device IDs
 		pendingUpdates = make([]string, 0, updateBatchSize)
@@ -231,13 +241,17 @@ func updateWorker(ctx context.Context, db *sql.DB, updateTime time.Time, devices
 			logging.Errorf(ctx, "Failed to update notification time for devices with query %s: %v", query, err)
 		}
 		logging.Debugf(ctx, "Query ran with %d updates", len(pendingUpdates))
-		notifierWg.Add(-len(pendingUpdates))
+		wg.Add(-len(pendingUpdates))
 		pendingUpdates = pendingUpdates[:0]
 	}
+	defer updateDevices()
 
 	for {
 		select {
-		case device := <-devices:
+		case device, ok := <-devices:
+			if !ok {
+				return
+			}
 			pendingUpdates = append(pendingUpdates, fmt.Sprintf("'%s'", device.ID))
 			if len(pendingUpdates) == updateBatchSize {
 				updateDevices()
