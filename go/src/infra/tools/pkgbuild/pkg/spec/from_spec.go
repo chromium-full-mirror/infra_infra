@@ -34,6 +34,7 @@ var fromSpecGen = generators.InitEmbeddedFS(
 type SpecLoader struct {
 	cipdPackagePrefix     string
 	cipdSourceCachePrefix string
+	cipdTargetPlatform    string
 	sourceResolver        SourceResolver
 
 	supportFiles generators.Generator
@@ -46,13 +47,15 @@ type SpecLoader struct {
 type SpecLoaderConfig struct {
 	CIPDPackagePrefix     string
 	CIPDSourceCachePrefix string
+	CIPDTargetPlatform    string
 	SourceResolver        SourceResolver
 }
 
-func DefaultSpecLoaderConfig(vpythonSpecPath string) *SpecLoaderConfig {
+func DefaultSpecLoaderConfig(vpythonSpecPath, target string) *SpecLoaderConfig {
 	return &SpecLoaderConfig{
 		CIPDPackagePrefix:     "",
 		CIPDSourceCachePrefix: "sources",
+		CIPDTargetPlatform:    target,
 		SourceResolver: &DefaultSourceResolver{
 			VPythonSpecPath: vpythonSpecPath,
 		},
@@ -73,6 +76,7 @@ func NewSpecLoader(root string, cfg *SpecLoaderConfig) (*SpecLoader, error) {
 	return &SpecLoader{
 		cipdPackagePrefix:     cfg.CIPDPackagePrefix,
 		cipdSourceCachePrefix: cfg.CIPDSourceCachePrefix,
+		cipdTargetPlatform:    cfg.CIPDTargetPlatform,
 		sourceResolver:        cfg.SourceResolver,
 
 		supportFiles: fromSpecGen,
@@ -191,8 +195,13 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 		Source:       create.Source,
 		Dependencies: append(baseDeps, create.Dependencies...),
 		Env:          env,
-		CIPDName:     def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
-		Version:      create.Version,
+		CIPD: &core.Action_Metadata_CIPD{
+			Name:    def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
+			Version: create.Version,
+
+			// Avoid uploading package for platform not matching the target.
+			DisableUpload: (hostCipdPlatform != l.cipdTargetPlatform),
+		},
 	}
 
 	switch hostCipdPlatform {
@@ -466,7 +475,7 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load dependency %s on %s: %w", name, hostCipdPlatform, err)
 		}
-		if ver != "" && ver != g.Version {
+		if ver != "" && ver != g.CIPD.Version {
 			return &generators.CIPDExport{
 				Name: g.Name,
 				Metadata: &core.Action_Metadata{
@@ -477,7 +486,7 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 				Ensure: ensure.File{
 					PackagesBySubdir: map[string]ensure.PackageSlice{
 						"": {
-							{PackageTemplate: g.CIPDName, UnresolvedVersion: fmt.Sprintf("version:%s", ver)},
+							{PackageTemplate: g.CIPD.Name, UnresolvedVersion: fmt.Sprintf("version:%s", ver)},
 						},
 					},
 				},

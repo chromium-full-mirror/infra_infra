@@ -448,7 +448,7 @@ func TestParseBuilder(t *testing.T) {
 
 func TestLoadDependencies(t *testing.T) {
 	Convey("loader", t, func() {
-		cfg := DefaultSpecLoaderConfig("")
+		cfg := DefaultSpecLoaderConfig("", "linux-amd64")
 		cfg.SourceResolver = &MockSourceResolver{}
 		root, err := filepath.Abs("testdata")
 		So(err, ShouldBeNil)
@@ -511,8 +511,11 @@ func TestLoadDependencies(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(a.Name, ShouldEqual, "ninja")
 			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Name:    "tools/ninja/linux-arm64",
+				Name: "tools/ninja/linux-arm64",
+				// Avoid uploading linux-arm64 package from linux-amd64 builder
 				Version: "git-tag.chromium.4",
+
+				DisableUpload: true,
 			})
 		})
 		Convey("pin", func() {

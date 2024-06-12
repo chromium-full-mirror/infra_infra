@@ -216,8 +216,7 @@ type Generator struct {
 	Env          environ.Env
 	Dependencies []generators.Dependency
 
-	CIPDName string
-	Version  string
+	CIPD *core.Action_Metadata_CIPD
 }
 
 func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*core.Action, error) {
@@ -246,12 +245,9 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 	tmpl := &workflow.Generator{
 		Name: g.Name,
 		Metadata: &core.Action_Metadata{
-			Cipd: &core.Action_Metadata_CIPD{
-				Name:    g.CIPDName,
-				Version: g.Version,
-			},
+			Cipd: g.CIPD,
 			Luciexe: &core.Action_Metadata_LUCIExe{
-				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.Version, plats.Host.String()),
+				StepName: fmt.Sprintf("%s@%s:%s", g.Name, g.CIPD.GetVersion(), plats.Host.String()),
 			},
 		},
 		Args:         []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", "-u", "-X", "utf8", filepath.Join("{{.stdenv}}", "setup", "main.py")},

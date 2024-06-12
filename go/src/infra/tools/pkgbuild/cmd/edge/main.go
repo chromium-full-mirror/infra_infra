@@ -106,8 +106,10 @@ func Main(ctx context.Context, app *Application, args []string) error {
 		errs = append(errs, errors.Annotate(err, "failed to build some packages").Err())
 	}
 
-	if err := app.TryUpload(ctx, pkgs); err != nil {
-		errs = append(errs, errors.Annotate(err, "failed to upload some packages").Err())
+	if app.Upload {
+		if err := app.UploadCIPDAll(ctx, pkgs); err != nil {
+			errs = append(errs, errors.Annotate(err, "failed to upload some packages").Err())
+		}
 	}
 
 	app.PackageManager.Prune(ctx, time.Hour*24, 256)

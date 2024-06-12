@@ -120,7 +120,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 	if _, err := os.Stat(vpythonSpecPath); err != nil {
 		return nil, errors.Annotate(err, "failed to find vpython3 specs").Err()
 	}
-	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath)
+	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath, a.TargetPlatform)
 	specLoaderCfg.CIPDPackagePrefix = a.CipdPackagePrefix
 	loader, err := spec.NewSpecLoader(a.SpecPool, specLoaderCfg)
 	if err != nil {
@@ -146,12 +146,8 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 	}, nil
 }
 
-// TryUpload build and register the cipd if Application.Upload set to true.
-func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) (err error) {
-	if !a.Upload {
-		return nil
-	}
-
+// UploadCIPDAll build and register the cipd if Application.Upload set to true.
+func (a *Application) UploadCIPDAll(ctx context.Context, pkgs []actions.Package) (err error) {
 	step, ctx := build.StartStep(ctx, "upload packages")
 	defer func() { step.End(err) }()
 
@@ -169,7 +165,7 @@ func (a *Application) TryUpload(ctx context.Context, pkgs []actions.Package) (er
 	defer filesystem.RemoveAll(tmp)
 
 	for _, pkg := range pkgs {
-		if err = a.tryUploadOne(ctx, clt, tmp, pkg); err != nil {
+		if err = a.uploadCIPD(ctx, clt, tmp, pkg); err != nil {
 			return
 		}
 	}
@@ -182,13 +178,29 @@ type provenanceClient interface {
 	ReportCipd(context.Context, *snooperpb.ReportCipdRequest, ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
-// tryUploadOne uploads the package provided. If reporter function is not nil,
+// uploadCIPD uploads the package provided. If reporter function is not nil,
 // it will be called after the cipd file generated in tmp, to report the
 // cipd package to snoopy service.
-func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tmp string, pkg actions.Package) (err error) {
+func (a *Application) uploadCIPD(ctx context.Context, clt provenanceClient, tmp string, pkg actions.Package) (err error) {
 	cipdPkg := toCIPDPackage(pkg)
 	if cipdPkg == nil {
 		return nil
+	}
+
+	// Recursively upload package's dependencies
+	var deps []actions.Package
+	deps = append(deps, cipdPkg.BuildDependencies...)
+	deps = append(deps, cipdPkg.RuntimeDependencies...)
+	for _, dep := range deps {
+		if err = a.uploadCIPD(ctx, clt, tmp, dep); err != nil {
+			return
+		}
+	}
+
+	// This helps avoiding attaching possible ambiguous tags from different
+	// builders to same native package during cross-compiling.
+	if pkg.Action.Metadata.Cipd.DisableUpload {
+		return
 	}
 
 	step, ctx := build.StartStep(ctx, pkg.Action.Metadata.Cipd.String())
@@ -226,16 +238,6 @@ func (a *Application) tryUploadOne(ctx context.Context, clt provenanceClient, tm
 	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, tags)
 	if err != nil {
 		return
-	}
-
-	// Recursively upload package's dependencies
-	var deps []actions.Package
-	deps = append(deps, cipdPkg.BuildDependencies...)
-	deps = append(deps, cipdPkg.RuntimeDependencies...)
-	for _, dep := range deps {
-		if err = a.tryUploadOne(ctx, clt, tmp, dep); err != nil {
-			return
-		}
 	}
 
 	if clt != nil && iid != "" {
