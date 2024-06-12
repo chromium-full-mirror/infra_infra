@@ -206,19 +206,25 @@ func (a *Application) uploadCIPD(ctx context.Context, clt provenanceClient, tmp 
 	step, ctx := build.StartStep(ctx, pkg.Action.Metadata.Cipd.String())
 	defer func() { step.End(err) }()
 
-	var tags []string
+	var tags, refs []string
 	versionTag := fmt.Sprintf("version:%s", pkg.Action.Metadata.Cipd.Version)
 	if cipdPkg.checkVersion(ctx, a.CipdService, versionTag) != nil {
-		// Only append version tag if it haven't been attached to another package.
+		// Only append version tag or refs if it haven't been attached to another
+		// package.
 		// We may have packages with different derivation ID representing same
 		// version. It's not ideal but it will persist until we move to a different
 		// version schema.
 		tags = append(tags, versionTag)
+		tags = append(tags, pkg.Action.Metadata.Cipd.Tags...)
+		refs = append(refs, pkg.Action.Metadata.Cipd.Refs...)
 	}
 
 	// Package is available in cipd
 	if err = cipdPkg.check(ctx, a.CipdService); err == nil {
-		err = cipdPkg.setTags(ctx, a.CipdService, tags)
+		err = errors.Join(
+			cipdPkg.setTags(ctx, a.CipdService, tags),
+			cipdPkg.setRefs(ctx, a.CipdService, refs),
+		)
 		return
 	} else if !errors.Is(err, errPackgeNotExist) {
 		return
@@ -235,7 +241,7 @@ func (a *Application) uploadCIPD(ctx context.Context, clt provenanceClient, tmp 
 	if a.BuildID != 0 {
 		tags = append(tags, fmt.Sprintf("build_id:%d", a.BuildID))
 	}
-	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, tags)
+	name, iid, err := cipdPkg.upload(ctx, tmp, a.CipdService, tags, refs)
 	if err != nil {
 		return
 	}

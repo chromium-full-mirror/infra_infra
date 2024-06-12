@@ -63,7 +63,7 @@ func (pkg *cipdPackage) checkVersion(ctx context.Context, cipdService, version s
 	return nil
 }
 
-func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string, tags []string) (name string, iid string, err error) {
+func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string, tags, refs []string) (name string, iid string, err error) {
 	cipd := pkg.Action.Metadata.GetCipd()
 	name = cipd.Name
 
@@ -83,7 +83,7 @@ func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string,
 		return
 	}
 
-	if err = registerCIPD(ctx, cipdService, out, append([]string{pkg.derivationTag()}, tags...)); err != nil {
+	if err = registerCIPD(ctx, cipdService, out, append([]string{pkg.derivationTag()}, tags...), refs); err != nil {
 		err = errors.Annotate(err, "failed to register cipd package").Err()
 		return
 	}
@@ -137,10 +137,31 @@ func (pkg *cipdPackage) setTags(ctx context.Context, cipdService string, tags []
 	return runStepCommand(ctx, cmd)
 }
 
+func (pkg *cipdPackage) setRefs(ctx context.Context, cipdService string, refs []string) error {
+	cipd := pkg.Action.Metadata.GetCipd()
+
+	if len(refs) == 0 {
+		return nil
+	}
+
+	cmd := cipdCommand("set-ref", cipd.Name,
+		"-service-url", cipdService,
+		"-version", pkg.derivationTag(),
+	)
+
+	for _, ref := range refs {
+		cmd.Args = append(cmd.Args, "-ref", ref)
+	}
+
+	return runStepCommand(ctx, cmd)
+}
+
 func (pkg *cipdPackage) derivationTag() string {
 	return "derivation:" + pkg.DerivationID
 }
 
+// TODO(fancl): to support version_file we need to generate package definition
+// instead of passing all arguments through cli.
 func buildCIPD(ctx context.Context, name, src, dst string) (Iid string, err error) {
 	resultFile := dst + ".json"
 	cmd := cipdCommand("pkg-build",
@@ -173,13 +194,16 @@ func buildCIPD(ctx context.Context, name, src, dst string) (Iid string, err erro
 	return result.Result.InstanceID, nil
 }
 
-func registerCIPD(ctx context.Context, cipdService, pkg string, tags []string) error {
+func registerCIPD(ctx context.Context, cipdService, pkg string, tags, refs []string) error {
 	cmd := cipdCommand("pkg-register", pkg,
 		"-service-url", cipdService,
 	)
 
 	for _, tag := range tags {
 		cmd.Args = append(cmd.Args, "-tag", tag)
+	}
+	for _, ref := range refs {
+		cmd.Args = append(cmd.Args, "-ref", ref)
 	}
 
 	return runStepCommand(ctx, cmd)

@@ -493,6 +493,7 @@ func TestLoadDependencies(t *testing.T) {
 			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
 				Name:    "tools/ninja/linux-amd64",
 				Version: "git-tag.chromium.4",
+				Refs:    []string{"latest"},
 			})
 		})
 		Convey("dep", func() {
@@ -511,10 +512,11 @@ func TestLoadDependencies(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(a.Name, ShouldEqual, "ninja")
 			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Name: "tools/ninja/linux-arm64",
-				// Avoid uploading linux-arm64 package from linux-amd64 builder
+				Name:    "tools/ninja/linux-arm64",
 				Version: "git-tag.chromium.4",
+				Refs:    []string{"latest"},
 
+				// Avoid uploading linux-arm64 package from linux-amd64 builder
 				DisableUpload: true,
 			})
 		})

@@ -152,6 +152,9 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	if err := create.ParseVerifier(); err != nil {
 		return nil, err
 	}
+	if err := create.ParsePackage(); err != nil {
+		return nil, err
+	}
 
 	plat := generators.PlatformFromCIPD(hostCipdPlatform)
 
@@ -196,13 +199,13 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 		Dependencies: append(baseDeps, create.Dependencies...),
 		Env:          env,
 		CIPD: &core.Action_Metadata_CIPD{
-			Name:    def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
-			Version: create.Version,
+			Name: def.CIPDPath(l.cipdPackagePrefix, hostCipdPlatform),
 
 			// Avoid uploading package for platform not matching the target.
 			DisableUpload: (hostCipdPlatform != l.cipdTargetPlatform),
 		},
 	}
+	protoMerge(g.CIPD, create.CIPD)
 
 	switch hostCipdPlatform {
 	case "mac-amd64":
@@ -225,6 +228,7 @@ type createParser struct {
 	Tester       string
 	Dependencies []generators.Dependency
 	Enviroments  environ.Env
+	CIPD         *core.Action_Metadata_CIPD
 
 	host   string
 	create *Spec_Create
@@ -452,6 +456,37 @@ func (p *createParser) ParseVerifier() error {
 		return err
 	}
 	p.Tester = string(tester)
+
+	return nil
+}
+
+func (p *createParser) ParsePackage() error {
+	pkgSpec := p.create.Package
+	if pkgSpec == nil {
+		// default package spec
+		pkgSpec = &Spec_Create_Package{
+			InstallMode:      Spec_Create_Package_copy,
+			DisableLatestRef: false,
+		}
+	}
+
+	p.CIPD = &core.Action_Metadata_CIPD{
+		Refs:    pkgSpec.AdditionalRef,
+		Version: p.Version,
+	}
+
+	if !pkgSpec.DisableLatestRef {
+		p.CIPD.Refs = append(p.CIPD.Refs, "latest")
+	}
+
+	switch pkgSpec.InstallMode {
+	case Spec_Create_Package_copy:
+		p.CIPD.InstallMode = core.Action_Metadata_CIPD_copy
+	case Spec_Create_Package_symlink:
+		p.CIPD.InstallMode = core.Action_Metadata_CIPD_symlink
+	default:
+		return fmt.Errorf("unknown install mode: %v", pkgSpec)
+	}
 
 	return nil
 }
