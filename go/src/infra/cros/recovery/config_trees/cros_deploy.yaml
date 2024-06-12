@@ -8458,30 +8458,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -8517,6 +8493,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -10412,30 +10412,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -10471,6 +10447,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -12939,30 +12939,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -12998,6 +12974,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -14678,30 +14678,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -14737,6 +14713,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -16752,30 +16752,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -16811,6 +16787,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -19346,30 +19346,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -19405,6 +19381,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -21111,30 +21111,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -21170,6 +21146,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -22928,30 +22928,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -22987,6 +22963,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -24623,30 +24623,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -24682,6 +24658,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -26720,30 +26720,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -26779,6 +26755,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -28526,30 +28526,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -28585,6 +28561,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -30274,30 +30274,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -30333,6 +30309,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -32497,30 +32497,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -32556,6 +32532,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -36098,30 +36098,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -36157,6 +36133,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -37922,30 +37922,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -37981,6 +37957,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -40131,30 +40131,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -40190,6 +40166,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -42284,30 +42284,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -42343,6 +42319,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -44047,30 +44047,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -44106,6 +44082,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -46276,30 +46276,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -46335,6 +46311,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -48903,30 +48903,6 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_power_off
-                      docs:
-                        - Power the DUT off using Intel AMT (vPro).
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
-                          docs:
-                            - Check if Intel AMT (vPro) is present.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -48962,6 +48938,30 @@ plans:
                             - background:false
                           docs:
                             - Check if the device has UEFI firmware.
+                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_power_off
+                      docs:
+                        - Power the DUT off using Intel AMT (vPro).
+                      conditions:
+                        - name: Is Flex device (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:false
+                          docs:
+                            - Check that DUT is a Flex board
+                        - name: Intel AMT is present (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_present
+                          docs:
+                            - Check if Intel AMT (vPro) is present.
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
@@ -50666,30 +50666,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -50725,6 +50701,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -52895,30 +52895,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -52954,6 +52930,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -56047,30 +56047,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -56106,6 +56082,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -59946,30 +59946,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -60005,6 +59981,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -62640,30 +62640,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -62699,6 +62675,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -65247,30 +65247,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -65306,6 +65282,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -68536,30 +68536,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -68595,6 +68571,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -70312,30 +70312,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -70371,6 +70347,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -72118,30 +72118,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -72177,6 +72153,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -73937,30 +73937,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -73996,6 +73972,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -75754,30 +75754,6 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_power_off
-                                      docs:
-                                        - Power the DUT off using Intel AMT (vPro).
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
-                                        - name: Intel AMT is present (ALWAYS_RUN)
-                                          exec_name: cros_flex_amt_present
-                                          docs:
-                                            - Check if Intel AMT (vPro) is present.
-                                          conditions:
-                                            - name: Is Flex device (RUN_ONCE)
-                                              exec_name: dut_check_board
-                                              exec_args:
-                                                - string_values:aurora,reven
-                                                - invert_result:false
-                                              docs:
-                                                - Check that DUT is a Flex board
                                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -75813,6 +75789,30 @@ plans:
                                             - background:false
                                           docs:
                                             - Check if the device has UEFI firmware.
+                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_power_off
+                                      docs:
+                                        - Power the DUT off using Intel AMT (vPro).
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
+                                        - name: Intel AMT is present (ALWAYS_RUN)
+                                          exec_name: cros_flex_amt_present
+                                          docs:
+                                            - Check if Intel AMT (vPro) is present.
+                                          conditions:
+                                            - name: Is Flex device (RUN_ONCE)
+                                              exec_name: dut_check_board
+                                              exec_args:
+                                                - string_values:aurora,reven
+                                                - invert_result:false
+                                              docs:
+                                                - Check that DUT is a Flex board
                                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
@@ -77560,30 +77560,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -77619,6 +77595,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -79362,30 +79362,6 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_power_off
-                                      docs:
-                                        - Power the DUT off using Intel AMT (vPro).
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
-                                        - name: Intel AMT is present (ALWAYS_RUN)
-                                          exec_name: cros_flex_amt_present
-                                          docs:
-                                            - Check if Intel AMT (vPro) is present.
-                                          conditions:
-                                            - name: Is Flex device (RUN_ONCE)
-                                              exec_name: dut_check_board
-                                              exec_args:
-                                                - string_values:aurora,reven
-                                                - invert_result:false
-                                              docs:
-                                                - Check that DUT is a Flex board
                                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -79421,6 +79397,30 @@ plans:
                                             - background:false
                                           docs:
                                             - Check if the device has UEFI firmware.
+                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_power_off
+                                      docs:
+                                        - Power the DUT off using Intel AMT (vPro).
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
+                                        - name: Intel AMT is present (ALWAYS_RUN)
+                                          exec_name: cros_flex_amt_present
+                                          docs:
+                                            - Check if Intel AMT (vPro) is present.
+                                          conditions:
+                                            - name: Is Flex device (RUN_ONCE)
+                                              exec_name: dut_check_board
+                                              exec_args:
+                                                - string_values:aurora,reven
+                                                - invert_result:false
+                                              docs:
+                                                - Check that DUT is a Flex board
                                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
@@ -81164,30 +81164,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -81223,6 +81199,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -82903,30 +82903,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -82962,6 +82938,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -84692,30 +84692,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -84751,6 +84727,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -86431,30 +86431,6 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_power_off
-                                      docs:
-                                        - Power the DUT off using Intel AMT (vPro).
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
-                                        - name: Intel AMT is present (ALWAYS_RUN)
-                                          exec_name: cros_flex_amt_present
-                                          docs:
-                                            - Check if Intel AMT (vPro) is present.
-                                          conditions:
-                                            - name: Is Flex device (RUN_ONCE)
-                                              exec_name: dut_check_board
-                                              exec_args:
-                                                - string_values:aurora,reven
-                                                - invert_result:false
-                                              docs:
-                                                - Check that DUT is a Flex board
                                     - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -86490,6 +86466,30 @@ plans:
                                             - background:false
                                           docs:
                                             - Check if the device has UEFI firmware.
+                                    - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_power_off
+                                      docs:
+                                        - Power the DUT off using Intel AMT (vPro).
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
+                                        - name: Intel AMT is present (ALWAYS_RUN)
+                                          exec_name: cros_flex_amt_present
+                                          docs:
+                                            - Check if Intel AMT (vPro) is present.
+                                          conditions:
+                                            - name: Is Flex device (RUN_ONCE)
+                                              exec_name: dut_check_board
+                                              exec_args:
+                                                - string_values:aurora,reven
+                                                - invert_result:false
+                                              docs:
+                                                - Check that DUT is a Flex board
                                     - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
@@ -88227,30 +88227,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -88286,6 +88262,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -89973,30 +89973,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -90032,6 +90008,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -91705,30 +91705,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -91764,6 +91740,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -93447,30 +93447,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -93506,6 +93482,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -95213,30 +95213,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -95272,6 +95248,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -97744,30 +97744,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -97803,6 +97779,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -100388,30 +100388,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -100447,6 +100423,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -102617,30 +102617,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -102676,6 +102652,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -106363,30 +106363,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -106422,6 +106398,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -108125,30 +108125,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -108184,6 +108160,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -110506,30 +110506,6 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_power_off
-                                  docs:
-                                    - Power the DUT off using Intel AMT (vPro).
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
-                                    - name: Intel AMT is present (ALWAYS_RUN)
-                                      exec_name: cros_flex_amt_present
-                                      docs:
-                                        - Check if Intel AMT (vPro) is present.
-                                      conditions:
-                                        - name: Is Flex device (RUN_ONCE)
-                                          exec_name: dut_check_board
-                                          exec_args:
-                                            - string_values:aurora,reven
-                                            - invert_result:false
-                                          docs:
-                                            - Check that DUT is a Flex board
                                 - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -110565,6 +110541,30 @@ plans:
                                         - background:false
                                       docs:
                                         - Check if the device has UEFI firmware.
+                                - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_power_off
+                                  docs:
+                                    - Power the DUT off using Intel AMT (vPro).
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Intel AMT is present (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_present
+                                      docs:
+                                        - Check if Intel AMT (vPro) is present.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                                 - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
@@ -113144,30 +113144,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -113203,6 +113179,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -115069,30 +115069,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -115128,6 +115104,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -117207,30 +117207,6 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_power_off
-                              docs:
-                                - Power the DUT off using Intel AMT (vPro).
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
-                                - name: Intel AMT is present (ALWAYS_RUN)
-                                  exec_name: cros_flex_amt_present
-                                  docs:
-                                    - Check if Intel AMT (vPro) is present.
-                                  conditions:
-                                    - name: Is Flex device (RUN_ONCE)
-                                      exec_name: dut_check_board
-                                      exec_args:
-                                        - string_values:aurora,reven
-                                        - invert_result:false
-                                      docs:
-                                        - Check that DUT is a Flex board
                             - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -117266,6 +117242,30 @@ plans:
                                     - background:false
                                   docs:
                                     - Check if the device has UEFI firmware.
+                            - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_power_off
+                              docs:
+                                - Power the DUT off using Intel AMT (vPro).
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
+                                - name: Intel AMT is present (ALWAYS_RUN)
+                                  exec_name: cros_flex_amt_present
+                                  docs:
+                                    - Check if Intel AMT (vPro) is present.
+                                  conditions:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
                             - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
@@ -119433,30 +119433,6 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_power_off
-                          docs:
-                            - Power the DUT off using Intel AMT (vPro).
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                            - name: Intel AMT is present (ALWAYS_RUN)
-                              exec_name: cros_flex_amt_present
-                              docs:
-                                - Check if Intel AMT (vPro) is present.
-                              conditions:
-                                - name: Is Flex device (RUN_ONCE)
-                                  exec_name: dut_check_board
-                                  exec_args:
-                                    - string_values:aurora,reven
-                                    - invert_result:false
-                                  docs:
-                                    - Check that DUT is a Flex board
                         - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -119492,6 +119468,30 @@ plans:
                                 - background:false
                               docs:
                                 - Check if the device has UEFI firmware.
+                        - name: Power-off the DUT using AMT (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_power_off
+                          docs:
+                            - Power the DUT off using Intel AMT (vPro).
+                          conditions:
+                            - name: Is Flex device (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:false
+                              docs:
+                                - Check that DUT is a Flex board
+                            - name: Intel AMT is present (ALWAYS_RUN)
+                              exec_name: cros_flex_amt_present
+                              docs:
+                                - Check if Intel AMT (vPro) is present.
+                              conditions:
+                                - name: Is Flex device (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:false
+                                  docs:
+                                    - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:

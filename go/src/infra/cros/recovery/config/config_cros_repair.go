@@ -2858,9 +2858,9 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
-				"Power-off the DUT using AMT",
 				"Direct USB-drive to DUT",
 				"Boot Flex from USB on next boot",
+				"Power-off the DUT using AMT",
 				"Sleep 10 seconds",
 				"Power-on the DUT using AMT",
 				"Sleep 10 seconds",
