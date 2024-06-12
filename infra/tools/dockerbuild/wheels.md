@@ -2053,6 +2053,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **db-dtypes**
+
+### 1.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/db-dtypes-py2_py3"
+  version: "version:1.2.0"
+>
+```
+
+
+* *universal*
+
 ## **debugpy**
 
 ### 1.5.1

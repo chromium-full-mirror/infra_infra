@@ -1855,6 +1855,7 @@ SPECS.update({
         Universal('colorama', '0.4.1'),
         Universal('colorama', '0.4.6'),
         Universal('contextlib2', '0.5.5'),
+        Universal('db-dtypes', '1.2.0'),
         Universal('decorator', '4.4.2', pyversions=['py3']),
         Universal('decorator', '5.0.7', pyversions=['py3']),
         Universal('decorator', '5.0.9', pyversions=['py3']),
