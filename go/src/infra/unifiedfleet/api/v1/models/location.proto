@@ -75,7 +75,7 @@ enum Lab {
 }
 
 // Zone refers to the different network zones under chrome org
-// Next tag: 62
+// Next tag: 78
 enum Zone {
   ZONE_UNSPECIFIED = 0;
   ZONE_ATLANTA = 1;             // "atl" Building ? Room ?
@@ -140,4 +140,20 @@ enum Zone {
   ZONE_SFP_42 = 59; // "sfp_42" // Zone for SfP assets for partner // Testhaus ID:42;
   ZONE_SFP_43 = 60; // "sfp_43" // Zone for SfP assets for partner // Testhaus ID:43;
   ZONE_SFP_44 = 61; // "sfp_44" // Zone for SfP assets for partner // Testhaus ID:44;
+  ZONE_SFP_45 = 62; // "sfp_45" // Zone for SfP assets for partner // Testhaus ID:45;
+  ZONE_SFP_46 = 63; // "sfp_46" // Zone for SfP assets for partner // Testhaus ID:46;
+  ZONE_SFP_47 = 64; // "sfp_47" // Zone for SfP assets for partner // Testhaus ID:47;
+  ZONE_SFP_48 = 65; // "sfp_48" // Zone for SfP assets for partner // Testhaus ID:48;
+  ZONE_SFP_49 = 66; // "sfp_49" // Zone for SfP assets for partner // Testhaus ID:49;
+  ZONE_SFP_50 = 67; // "sfp_50" // Zone for SfP assets for partner // Testhaus ID:50;
+  ZONE_SFP_51 = 68; // "sfp_51" // Zone for SfP assets for partner // Testhaus ID:51;
+  ZONE_SFP_52 = 69; // "sfp_52" // Zone for SfP assets for partner // Testhaus ID:52;
+  ZONE_SFP_53 = 70; // "sfp_53" // Zone for SfP assets for partner // Testhaus ID:53;
+  ZONE_SFP_54 = 71; // "sfp_54" // Zone for SfP assets for partner // Testhaus ID:54;
+  ZONE_SFP_55 = 72; // "sfp_55" // Zone for SfP assets for partner // Testhaus ID:55;
+  ZONE_SFP_56 = 73; // "sfp_56" // Zone for SfP assets for partner // Testhaus ID:56;
+  ZONE_SFP_57 = 74; // "sfp_57" // Zone for SfP assets for partner // Testhaus ID:57;
+  ZONE_SFP_58 = 75; // "sfp_58" // Zone for SfP assets for partner // Testhaus ID:58;
+  ZONE_SFP_59 = 76; // "sfp_59" // Zone for SfP assets for partner // Testhaus ID:59;
+  ZONE_SFP_60 = 77; // "sfp_60" // Zone for SfP assets for partner // Testhaus ID:60;
 }
