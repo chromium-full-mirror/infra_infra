@@ -53,6 +53,9 @@ services:
       "-db-name", "device_manager_db",
       "-db-user", "postgres",
       "-db-password-secret", "devsecret://cGFzc3dvcmQ",
+      "-publish-workers", "50",
+      "-update-batch-size", "1000",
+      "-max-update-wait", "100",
       "-token-cache-dir", "/tokens"]
     user: ${CURRENT_UID}
     environment:

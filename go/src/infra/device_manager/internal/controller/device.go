@@ -31,11 +31,12 @@ import (
 // TODO: b/343293714 - Write unit tests and manually test this. Create a job that calls SendNotifications.
 // TODO: b/328662436 - Collect metrics.
 
-const (
-	publishWorkersN   = 50
-	updateBatchSize   = 1000
-	maxUpdateWaitTime = 500 * time.Millisecond
-)
+// NotifierOpts struct holds configuration options for the Notifier service
+type NotifierOpts struct {
+	PublishWorkersN   *int
+	UpdateBatchSize   *int
+	MaxUpdateWaitTime time.Duration
+}
 
 // GetDevice gets a Device from the database based on a deviceID.
 func GetDevice(ctx context.Context, db *sql.DB, idType model.DeviceIDType, deviceID string) (*api.Device, error) {
@@ -120,11 +121,16 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *mo
 // when the function is first called. This avoids missing updates that happen as
 // we go this batch of updates. These final updates are done in batches with a
 // max wait time between updates.
-func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client) {
+func SendNotifications(
+	ctx context.Context,
+	db *sql.DB,
+	psClient *pubsub.Client,
+	opts *NotifierOpts,
+) {
 	var (
-		// queryTime is what will be used as notification time. It is important
-		// to get this before sending the query to avoid missing notifications
-		// in case devices do get updated by while we are sending notifications.
+		// queryTime is what will be used as notification time. It is important to
+		// get this before sending the query to avoid missing notifications in case
+		// devices do get updated by while we are sending notifications.
 		queryTime = time.Now()
 		query     = `
 			SELECT
@@ -152,8 +158,8 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 
 	var (
 		// Each worker gets a spot in input and output channels
-		publishDevice = make(chan *model.Device, publishWorkersN)
-		updateDevice  = make(chan *model.Device, publishWorkersN)
+		publishDevice = make(chan *model.Device, *opts.PublishWorkersN)
+		updateDevice  = make(chan *model.Device, *opts.PublishWorkersN)
 
 		// Control pending updates.
 		wg sync.WaitGroup
@@ -161,10 +167,10 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 	defer close(publishDevice)
 	defer close(updateDevice)
 
-	for range publishWorkersN {
+	for range *opts.PublishWorkersN {
 		go publishDeviceWorker(ctx, &wg, psClient, publishDevice, updateDevice)
 	}
-	go updateWorker(ctx, &wg, db, queryTime, updateDevice)
+	go updateWorker(ctx, &wg, db, queryTime, updateDevice, *opts)
 
 	for rows.Next() {
 		var device model.Device
@@ -193,6 +199,8 @@ func SendNotifications(ctx context.Context, db *sql.DB, psClient *pubsub.Client)
 	wg.Wait()
 }
 
+// publishDeviceWorker takes a queue of Devices and process them by publishing a
+// DeviceEvent when applicable. Devices are queued and dequeued continuously.
 func publishDeviceWorker(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -212,17 +220,21 @@ func publishDeviceWorker(
 	}
 }
 
+// updateWorker queues up Devices to be updated in batches. Once a batch is
+// filled or the ticker reaches the max wait time, the Devices will be
+// processed.
 func updateWorker(
 	ctx context.Context,
 	wg *sync.WaitGroup,
 	db *sql.DB,
 	updateTime time.Time,
 	devices <-chan *model.Device,
+	opts NotifierOpts,
 ) {
 	var (
 		// pendingUpdates is a quoted list of device IDs
-		pendingUpdates = make([]string, 0, updateBatchSize)
-		timer          = time.NewTicker(maxUpdateWaitTime)
+		pendingUpdates = make([]string, 0, *opts.UpdateBatchSize)
+		timer          = time.NewTicker(opts.MaxUpdateWaitTime)
 	)
 
 	updateDevices := func() {
@@ -253,7 +265,7 @@ func updateWorker(
 				return
 			}
 			pendingUpdates = append(pendingUpdates, fmt.Sprintf("'%s'", device.ID))
-			if len(pendingUpdates) == updateBatchSize {
+			if len(pendingUpdates) == *opts.UpdateBatchSize {
 				updateDevices()
 			}
 		case <-timer.C:

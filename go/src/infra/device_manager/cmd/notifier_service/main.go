@@ -6,6 +6,7 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
@@ -52,6 +53,24 @@ func main() {
 		"The DB password location for Secret Store to use.",
 	)
 
+	publishWorkersN := flag.Int(
+		"publish-workers",
+		50,
+		"The number of workers set up for publishing events.",
+	)
+
+	updateBatchSize := flag.Int(
+		"update-batch-size",
+		1000,
+		"The maximum batch size for each update.",
+	)
+
+	maxUpdateWaitTime := *flag.Int(
+		"max-update-wait",
+		100,
+		"The maximum wait time before launching an update DB command (in milliseconds).",
+	)
+
 	server.Main(nil, modules, func(srv *server.Server) error {
 		logging.Debugf(srv.Context, "main: setting up clients")
 		deviceLeaseServer := frontend.NewServer()
@@ -74,11 +93,18 @@ func main() {
 		}
 		logging.Debugf(srv.Context, "main: setup complete; now run sendNotification continuously")
 
+		notifierOpts := controller.NotifierOpts{
+			PublishWorkersN:   publishWorkersN,
+			UpdateBatchSize:   updateBatchSize,
+			MaxUpdateWaitTime: time.Duration(maxUpdateWaitTime) * time.Millisecond,
+		}
+
 		for {
 			controller.SendNotifications(
 				srv.Context,
 				deviceLeaseServer.ServiceClients.DBClient.Conn,
 				deviceLeaseServer.ServiceClients.PubSubClient,
+				&notifierOpts,
 			)
 		}
 	})
