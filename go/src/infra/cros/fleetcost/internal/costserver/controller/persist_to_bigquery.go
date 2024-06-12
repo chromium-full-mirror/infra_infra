@@ -38,12 +38,15 @@ func PersistToBigquery(ctx context.Context, projectName string, bqClient bqwrapp
 			},
 		}
 		if readonly {
-			logging.Debugf(ctx, "%s %s %s %v", projectName, "entities", "CachedCostResult", resultSaver)
+			logging.Debugf(ctx, "fake write: %s %s %s %v", projectName, "entities", "cost_result", resultSaver)
 			return nil
 		}
 		// TODO(gregorynisbet): Do not hardcode the table or dataset.
 		logging.Debugf(ctx, "writing record %q", entity.Hostname)
-		return bqClient.Put(ctx, projectName, "entities", "CachedCostResult", []bigquery.ValueSaver{resultSaver})
+		if err := bqClient.Put(ctx, projectName, "entities", "cost_result", []bigquery.ValueSaver{resultSaver}); err != nil {
+			logging.Errorf(ctx, "error writing record for hostname %q: %s", entity.Hostname, err)
+		}
+		return nil
 	}); err != nil {
 		return errors.Annotate(err, "persisting to bigquery").Err()
 	}

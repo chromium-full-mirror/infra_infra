@@ -1,0 +1,67 @@
+#!/usr/bin/python3 -IEuB
+
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file pushes the bigquery schema to supported Fleet Cost projects.
+#
+# This script uses bqschemaupdater to inspect a collection of protos and
+# impose the new schema on the bigquery tables associated with a given
+# Fleet Cost project.
+
+import argparse
+import os
+import sys
+import subprocess
+
+this_file = __file__
+
+# Parser parses the arguments to the Fleet Cost script, for example -p for project.
+# We only support updating one project at a time.
+parser = argparse.ArgumentParser(
+    description="update bq schema for Fleet Cost project")
+parser.add_argument("-p", dest="project", default="dev")
+
+# PROD is the cloud project ID of the prod project.
+PROD = "fleet-cost-prod"
+
+# DEV is the cloud project ID of the dev project.
+DEV = "fleet-cost-dev"
+
+
+def fleet_cost_project(project):
+  """Get the full name of the Fleet Cost cloud project."""
+  if not isinstance(project, str):
+    raise ValueError("project must be str not %s" % type(project))
+  if project in {"prod", PROD}:
+    return PROD
+  if project in {"dev", DEV}:
+    return DEV
+  raise ValueError("unrecognized project name %s" % project)
+
+
+def main(args):
+  """Update the tables for a single Fleet Cost cloud project"""
+  if not isinstance(args, argparse.Namespace):
+    raise ValueError("args must be bool not %s" % type(argparse.Namespace))
+  project = fleet_cost_project(args.project)
+
+  message_dir = os.path.realpath(
+      os.path.join(os.path.dirname(this_file), "..", "api", "bigquery"))
+
+  subprocess.check_call([
+      "bqschemaupdater",
+      "-table",
+      f"{project}.entities.cost_result",
+      "-message-dir",
+      message_dir,
+      "-message",
+      "fleetcost.api.bqpb.CostResult",
+      "-partitioning-expiration",
+      f"{24 * 365}h",
+  ])
+
+
+if __name__ == "__main__":
+  main(parser.parse_args())

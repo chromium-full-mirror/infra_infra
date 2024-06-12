@@ -31,6 +31,7 @@ var PersistToBigqueryCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
+		c.Flags.BoolVar(&c.readonly, "readonly", true, "use readonly")
 		return c
 	},
 }
@@ -39,6 +40,7 @@ type persistToBigqueryCommand struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
+	readonly    bool
 }
 
 // Run is the main entrypoint for calling the PersistToBigqueryCommand RPC.
@@ -72,9 +74,14 @@ func (c *persistToBigqueryCommand) innerRun(ctx context.Context, a subcommands.A
 			PerRPCTimeout: 10 * time.Minute,
 		},
 	}
+	// ONLY allow readonly=true in prod until I can figure out how to make it safe.
+	// An authorized user can always recompile their own client with this check taken out.
+	if c.commonFlags.Prod() && !c.readonly {
+		return errors.New(`I'm sorry, Dave. I'm afraid I can't do that.`)
+	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	request := &fleetcostAPI.PersistToBigqueryRequest{
-		Readonly: true,
+		Readonly: c.readonly,
 	}
 	resp, err := fleetCostClient.PersistToBigquery(ctx, request)
 	if err != nil {

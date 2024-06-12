@@ -33,6 +33,11 @@ func (fl *CommonFlags) HTTP() bool {
 	return fl.local
 }
 
+// Prod returns whether we are talking to prod or not.
+func (fl *CommonFlags) Prod() bool {
+	return !fl.local && !fl.dev
+}
+
 // Host returns the host to contact.
 func (fl *CommonFlags) Host() (string, error) {
 	switch {
