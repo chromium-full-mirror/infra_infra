@@ -680,18 +680,23 @@ SPECS.update({
             'google-crc32c',
             '1.5.0',
             packaged=[
+                'linux-arm64-py3.11',
+                'linux-arm64-py3.8',
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
                 'windows-x86-py3.11',
                 'windows-x64-py3.11',
             ],
             skip_plat=[
-                'linux-arm64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-armv6-py3.11',
                 'linux-armv6-py3.8',
             ],
+            arch_map={
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+            },
             pyversions=['py3'],
+            patch_version='chromium.1',
             skip_auditwheel=True,
         ),
         SourceOrPrebuilt(
