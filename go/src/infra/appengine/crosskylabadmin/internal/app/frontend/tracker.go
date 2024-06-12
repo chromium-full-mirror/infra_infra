@@ -283,7 +283,7 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (rep
 			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
 			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
 			if err != nil {
-				logging.Warningf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
+				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
 				continue
 			}
 			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
@@ -329,6 +329,17 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue
 		}
+		if strings.HasPrefix(id, "cloudbots-") {
+			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
+			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
+			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
+			if err != nil {
+				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
+				continue
+			}
+			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
+		}
+
 		switch auditTask {
 		case fleet.AuditTask_ServoUSBKey:
 			// Disable skip to verify flakiness. (b/229656121)
@@ -379,6 +390,16 @@ func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInf
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
 			continue
+		}
+		if strings.HasPrefix(id, "cloudbots-") {
+			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
+			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
+			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
+			if err != nil {
+				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
+				continue
+			}
+			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
 		}
 
 		state, err := util.ExtractSingleValuedDimension(dims, clients.DutStateDimensionKey)
