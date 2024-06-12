@@ -12,6 +12,7 @@ from redirect import redirect_custom_labels
 
 PROJECT_REDIRECT_MAP = {
     'angleproject': 'https://issues.angleproject.org',
+    'aomedia': 'https://aomedia.issues.chromium.org',
     'boringssl': 'https://issues.chromium.org',
     'chromium': 'https://issues.chromium.org',
     'dawn': 'https://issues.chromium.org',
