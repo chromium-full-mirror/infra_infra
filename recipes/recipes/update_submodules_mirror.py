@@ -111,7 +111,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
     with api.context(cwd=checkout_dir):
       # Don't use --no-tags even if with_tags is False here since clones may
       # time out.
-      api.git('clone', '--filter=blob:none', source_repo, source_checkout_dir)
+      api.git('clone', source_repo, source_checkout_dir)
 
   # This is implicitly used as the cwd by all the git steps below.
   api.m.path.checkout_dir = source_checkout_dir
