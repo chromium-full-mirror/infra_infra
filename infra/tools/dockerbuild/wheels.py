@@ -1145,6 +1145,38 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
         ),
+        SourceOrPrebuilt(
+            'pyarrow',
+            '16.1.0',
+            # Attempts to build from source complain about being unable to find
+            # CMake configuration files for Arrow, so use packaged versions for
+            # now.
+            packaged=[
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+            ],
+            skip_plat=[
+                'linux-armv6-py3.11',
+                'linux-armv6-py3.8',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
+                'mac-x64-py3.8': ['macosx_10_15_x86_64'],
+                'mac-x64-py3.11': ['macosx_10_15_x86_64'],
+            },
+            pyversions=['py3'],
+        ),
         # Prefer to use 'cryptography' instead of PyCrypto, if possible. We have
         # to use PyCrypto for GAE dev server (it's the only crypto package
         # available on GAE). Since we support it only on Linux and OSX, build
