@@ -9,6 +9,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"strings"
 
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
@@ -29,10 +30,20 @@ func handleIndex(c *router.Context) {
 		c.Request.Context(), c.Writer, "pages/index.html", templates.Args{})
 }
 
+// Assembles the URL to a CL on the Gerrit instance with given base URL. If no
+// CL is given in the path, returns the URL to the Gerrit instance's dashboard.
+func getGerritUrl(base string, path string) string {
+	path = strings.TrimLeft(path, "/")
+	if path == "" {
+		return base + "dashboard/self"
+	}
+	return base + "c/" + path
+}
+
 // handlePublicGerritRedirect redirects user to a CL on chromium-review
 func handlePublicGerritRedirect(c *router.Context) {
 	path := c.Params.ByName("path")
-	url := "https://chromium-review.googlesource.com/c" + path
+	url := getGerritUrl("https://chromium-review.googlesource.com/", path)
 	http.Redirect(
 		c.Writer, c.Request, url, http.StatusPermanentRedirect)
 }
@@ -41,7 +52,7 @@ func handlePublicGerritRedirect(c *router.Context) {
 // chrome-internal-review.
 func handleInternalGerritRedirect(c *router.Context) {
 	path := c.Params.ByName("path")
-	url := "https://chrome-internal-review.googlesource.com/c" + path
+	url := getGerritUrl("https://chrome-internal-review.googlesource.com/", path)
 	http.Redirect(
 		c.Writer, c.Request, url, http.StatusPermanentRedirect)
 }
