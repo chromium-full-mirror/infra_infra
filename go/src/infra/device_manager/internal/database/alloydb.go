@@ -18,9 +18,9 @@ import (
 )
 
 const (
-	connMaxLifetime time.Duration = 0
-	maxIdleConns    int           = 50
-	maxOpenConns    int           = 50
+	connMaxLifetime = time.Minute
+	maxIdleConns    = 50
+	maxOpenConns    = 50
 )
 
 type DatabaseConfig struct {

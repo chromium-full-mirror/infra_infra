@@ -248,7 +248,8 @@ func updateWorker(
 			WHERE
 				id IN (%s);`
 		query = fmt.Sprintf(query, strings.Join(pendingUpdates, ", "))
-		_, err := db.QueryContext(ctx, query, updateTime)
+		row, err := db.QueryContext(ctx, query, updateTime)
+		row.Close()
 		if err != nil {
 			logging.Errorf(ctx, "Failed to update notification time for devices with query %s: %v", query, err)
 		}
