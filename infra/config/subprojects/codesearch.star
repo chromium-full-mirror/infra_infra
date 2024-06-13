@@ -454,13 +454,11 @@ update_submodules_mirror(
     extra_submodules = ["src/out=https://chromium.googlesource.com/chromium/src/out"],
     ref_patterns = [
         "refs/heads/main",
-        "refs/branch-heads/4044",  # M81
-        "refs/branch-heads/4103",  # M83
     ],
     triggered_by = luci.gitiles_poller(
         name = "codesearch-src-trigger",
         bucket = "codesearch",
         repo = "https://chromium.googlesource.com/chromium/src",
     ),
-    execution_timeout = 2 * time.hour,
+    execution_timeout = 4 * time.hour,
 )
