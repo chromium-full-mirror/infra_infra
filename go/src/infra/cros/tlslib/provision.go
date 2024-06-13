@@ -584,14 +584,43 @@ func wait(ctx context.Context, c *ssh.Client) error {
 	}
 }
 
+func keepalive(ctx context.Context, c *ssh.Client) {
+	ticker := time.NewTicker(15 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+			_, _, err := c.SendRequest("keepalive@openssh.org", true, nil)
+			log.Printf("keepalive connection alive=%v", err == nil)
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
 func rebootDUT(ctx context.Context, c *ssh.Client) error {
 	// Reboot, ignoring the SSH disconnection.
+
+	// On cloudbots, reboot never returned even after the DUT has been rebooted.
+	// It does return by checking client connection periodically.
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+		log.Printf("Running hard reboot on cloudbots")
+		go keepalive(ctx, c)
+	}
 	_ = runCmd(c, "reboot")
 	return wait(ctx, c)
 }
 
 func hardRebootDUT(ctx context.Context, c *ssh.Client) error {
 	// Hard reboot, ignoring the SSH disconnection.
+
+	// On cloudbots, reboot never returned even after the DUT has been rebooted.
+	// It does return by checking client connection periodically.
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+		log.Printf("Running hard reboot on cloudbots")
+		go keepalive(ctx, c)
+	}
 	_ = runCmd(c, "/bin/echo \"b\" > /proc/sysrq-trigger")
 	return wait(ctx, c)
 }
