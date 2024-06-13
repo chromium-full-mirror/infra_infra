@@ -9,9 +9,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros/amt"
 	"infra/cros/recovery/internal/components/cros/uefi"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/cros/amt"
 )
 
 // flexAMTPresentExec returns true if Intel AMT (vPro) is present.
