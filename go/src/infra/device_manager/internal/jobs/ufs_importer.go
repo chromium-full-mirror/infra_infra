@@ -16,12 +16,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/tsmon/distribution"
 
 	shivasUtil "infra/cmd/shivas/utils"
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
+	"infra/device_manager/internal/metrics"
 	"infra/device_manager/internal/model"
 	"infra/libs/fleet/device"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -36,13 +38,18 @@ import (
 const maxUFSImportJobs = 100
 
 var (
-	updatedDevicesN        = 0
-	publishedDeviceEventsN = 0
+	updatedDevicesN         = 0
+	publishedDeviceEventsN  = 0
+	getDeviceErrN           = 0
+	upsertDeviceErrN        = 0
+	refetchDeviceErrN       = 0
+	publishDeviceUpdateErrN = 0
 )
 
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
-func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients) error {
+func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients, project string) error {
+	start := time.Now()
 	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
@@ -110,12 +117,48 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 	wg.Wait()
 	close(waitQueue)
 
-	// Publish some counters as logs for now.
-	logging.Debugf(ctx, "Processed %d LSEs from UFS", len(lses))
-	logging.Debugf(ctx, "Upserted %d Devices", updatedDevicesN)
-	logging.Debugf(ctx, "Published %d DeviceEvents", publishedDeviceEventsN)
+	// Publish metrics.
+	publishJobMetrics(ctx, start, len(lses), project)
 
 	return nil
+}
+
+// publishJobMetrics publishes metrics for this job.
+func publishJobMetrics(ctx context.Context, startTime time.Time, lseN int, project string) {
+	// Job actions.
+	pad := distribution.New(metrics.UFSActionsPerJob.Bucketer())
+	pad.Add(float64(publishedDeviceEventsN))
+	metrics.UFSActionsPerJob.Set(ctx, pad, project, "published_device_events")
+
+	uad := distribution.New(metrics.UFSActionsPerJob.Bucketer())
+	uad.Add(float64(updatedDevicesN))
+	metrics.UFSActionsPerJob.Set(ctx, uad, project, "updated_devices")
+
+	lad := distribution.New(metrics.UFSActionsPerJob.Bucketer())
+	lad.Add(float64(lseN))
+	metrics.UFSActionsPerJob.Set(ctx, lad, project, "lses_processed")
+
+	// Job errors.
+	ged := distribution.New(metrics.UFSJobErrorCount.Bucketer())
+	ged.Add(float64(getDeviceErrN))
+	metrics.UFSJobErrorCount.Set(ctx, ged, project, "get_device")
+
+	ued := distribution.New(metrics.UFSJobErrorCount.Bucketer())
+	ued.Add(float64(upsertDeviceErrN))
+	metrics.UFSJobErrorCount.Set(ctx, ued, project, "upsert_device")
+
+	red := distribution.New(metrics.UFSJobErrorCount.Bucketer())
+	red.Add(float64(refetchDeviceErrN))
+	metrics.UFSJobErrorCount.Set(ctx, red, project, "refetch_device")
+
+	ped := distribution.New(metrics.UFSJobErrorCount.Bucketer())
+	ped.Add(float64(publishDeviceUpdateErrN))
+	metrics.UFSJobErrorCount.Set(ctx, ped, project, "publish_device_update")
+
+	// Job runtime.
+	rd := distribution.New(metrics.UFSJobRuntime.Bucketer())
+	rd.Add(time.Since(startTime).Seconds())
+	metrics.UFSJobRuntime.Set(ctx, rd, project)
 }
 
 // getAllMachineLSEs gets all MachineLSEs
@@ -242,6 +285,7 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	// System error in looking up device
 	if err != nil && !errors.Is(err, model.ErrDeviceNotFound) {
 		logging.Errorf(ctx, "Failed to get Device %s: %s", deviceModel.ID, err)
+		getDeviceErrN++
 		return
 	}
 
@@ -256,6 +300,7 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	err = model.UpsertDevice(ctx, serviceClients.DBClient.Conn, deviceModel)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to upsert Device %s: %s", deviceModel.ID, err)
+		upsertDeviceErrN++
 		return
 	}
 	updatedDevicesN++
@@ -264,11 +309,13 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	dbDevice, err = model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to re-fetch Device %s: %s", deviceModel.ID, err)
+		refetchDeviceErrN++
 		return
 	}
 
 	if err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, &dbDevice); err != nil {
 		logging.Errorf(ctx, "Failed to publish Device update to PubSub %s", err)
+		publishDeviceUpdateErrN++
 		return
 	}
 	publishedDeviceEventsN++

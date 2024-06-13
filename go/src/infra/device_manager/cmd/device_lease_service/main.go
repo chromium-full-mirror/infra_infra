@@ -8,6 +8,9 @@ import (
 	"context"
 	"flag"
 
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/compute/v1"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -60,6 +63,12 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		logging.Debugf(srv.Context, "main: initializing server")
 
+		ctx := context.Background()
+		c, err := google.FindDefaultCredentials(ctx, compute.ComputeScope)
+		if err != nil {
+			return err
+		}
+
 		// This allows auth to use Identity tokens.
 		srv.SetRPCAuthMethods([]auth.Method{
 			// The primary authentication method.
@@ -84,7 +93,7 @@ func main() {
 			DBPasswordSecret: *dbPasswordSecret,
 		}
 
-		err := frontend.SetUpDBClient(srv.Context, deviceLeaseServer, dbConfig)
+		err = frontend.SetUpDBClient(srv.Context, deviceLeaseServer, dbConfig)
 		if err != nil {
 			return err
 		}
@@ -96,7 +105,7 @@ func main() {
 
 		frontend.InstallServices(deviceLeaseServer, srv)
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
-			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients)
+			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
 		})
 		logging.Debugf(srv.Context, "main: initialization finished")
 
