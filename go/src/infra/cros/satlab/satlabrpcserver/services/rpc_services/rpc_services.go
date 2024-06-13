@@ -785,6 +785,10 @@ func (s *SatlabRpcServiceServer) GetConnectedDuts(ctx context.Context, executor 
 				Key:   "drone",
 				Value: droneName,
 			},
+			{
+				Key:   "pool",
+				Value: site.GetTestRunnerSwarmingPool(),
+			},
 		},
 	}
 	botList, err := s.swarmingService.ListBots(ctx, req)

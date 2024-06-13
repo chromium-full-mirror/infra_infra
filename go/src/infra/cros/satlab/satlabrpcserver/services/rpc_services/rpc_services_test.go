@@ -2083,6 +2083,9 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 				Key:   "drone",
 				Value: "satlab-satlab-id",
 			},
+			{
+				Key: "pool",
+			},
 		},
 	}
 
