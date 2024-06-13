@@ -143,7 +143,14 @@ def _get_driver_version(soup: bs4.BeautifulSoup, url: str) -> str:
   # contains the actual revision number.
   labels = os_group.find_all('strong')
   for l in labels:
-    if 'revision' in l.string.lower():
+    if 'revision' not in l.string.lower():
+      continue
+    # Check to make sure that this is the correct driver type. Previously,
+    # simply looking for the revision was sufficient, but the auto-detecting
+    # installer added a revision field as well.
+    grandparent = l.parent.parent
+    adrenalin_label = grandparent.find(string=re.compile('Adrenalin Edition'))
+    if adrenalin_label is not None:
       revision_label = l
       break
   else:

@@ -52,6 +52,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -59,7 +62,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -83,6 +86,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -90,7 +96,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -150,6 +156,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -157,7 +166,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -214,6 +223,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -221,7 +233,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -245,6 +257,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -252,7 +267,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -309,6 +324,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -316,7 +334,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -340,6 +358,9 @@ class GetDownloadButtonUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -347,7 +368,7 @@ class GetDownloadButtonUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -417,6 +438,9 @@ class GetDriverVersionUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -424,7 +448,7 @@ class GetDriverVersionUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -448,6 +472,9 @@ class GetDriverVersionUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -455,7 +482,7 @@ class GetDriverVersionUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -490,6 +517,9 @@ class GetDriverVersionUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -497,7 +527,7 @@ class GetDriverVersionUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Version Number</strong>
@@ -534,6 +564,9 @@ class GetDriverVersionUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -541,7 +574,7 @@ class GetDriverVersionUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -582,6 +615,9 @@ class GetDriverBinaryUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -589,7 +625,7 @@ class GetDriverBinaryUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -613,6 +649,9 @@ class GetDriverBinaryUnittest(unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -620,7 +659,7 @@ class GetDriverBinaryUnittest(unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -686,6 +725,9 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -693,7 +735,7 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
@@ -717,6 +759,9 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
       <h4>Auto-Detect and Install</h4>
     </div>
     <div>
+      <strong>Revision Number</strong>
+    </div>
+    <div>
       <a href="foo.com/adrenalin-minimalsetup.exe">
         <span>Download</span>
       </a>
@@ -724,7 +769,7 @@ class CmdGetCheckoutUnittest(fake_filesystem_unittest.TestCase):
   </div>
   <div class="container">
     <div>
-      <h4>AMD Software: Arenalin Edition</h4>
+      <h4>AMD Software: Adrenalin Edition</h4>
     </div>
     <div>
       <strong>Revision Number</strong>
