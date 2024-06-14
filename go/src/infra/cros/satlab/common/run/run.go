@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -34,6 +35,7 @@ import (
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 const (
@@ -146,7 +148,10 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 	opt := site.GetAuthOption(ctx)
 
 	if tp.Cft != nil {
-		singleTestPlans := splitTestPlan(tp.Cft)
+		singleTestPlans, err := splitTestPlan(tp.Cft)
+		if err != nil {
+			return nil, err
+		}
 		for _, stp := range singleTestPlans {
 			// append the args to the first suite if a suite exists
 			if len(stp.Suite) > 0 {
@@ -196,7 +201,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 }
 
 // splitTestPlans splits the testplan with suites into those with single suite.
-func splitTestPlan(tp *test_platform.Request_TestPlan) []*test_platform.Request_TestPlan {
+func splitTestPlan(tp *test_platform.Request_TestPlan) ([]*test_platform.Request_TestPlan, error) {
 	suites := tp.GetSuite()
 	tests := tp.GetTest()
 	res := []*test_platform.Request_TestPlan{}
@@ -214,6 +219,9 @@ func splitTestPlan(tp *test_platform.Request_TestPlan) []*test_platform.Request_
 		res = append(res, singleTestPlan)
 	}
 	if len(tests) > 0 {
+		if err := adaptTestsToCftFormat(tests); err != nil {
+			return nil, err
+		}
 		res = append(res, &test_platform.Request_TestPlan{
 			Test:                   tests,
 			Enumeration:            tp.GetEnumeration(),
@@ -225,7 +233,35 @@ func splitTestPlan(tp *test_platform.Request_TestPlan) []*test_platform.Request_
 			EnableAutotestSharding: tp.GetEnableAutotestSharding(),
 		})
 	}
-	return res
+	return res, nil
+}
+
+// adaptTestsToCftFormat adjusts the old tests format to new CFT version.
+func adaptTestsToCftFormat(tests []*test_platform.Request_Test) error {
+	tastTautoNames := []string{"tast.generic-servo", "tast.generic"}
+	for _, test := range tests {
+		testName := test.GetAutotest().GetName()
+		testArgs := misc.StrTestArgsToMap(test.GetAutotest().GetTestArgs())
+
+		// Tast test run via test_that.
+		if slices.Contains(tastTautoNames, testName) {
+			if len(testArgs) == 0 || testArgs["tast_expr"] == "" {
+				return fmt.Errorf("empty testArgs field or no 'tast_expr' for %s test! You need to specify at least 'tast_expr'", testName)
+			}
+			test.GetAutotest().Name = "tast." + testArgs["tast_expr"]
+			delete(testArgs, "tast_expr")
+			tastTestArgs := misc.RemovePrefixFromTestArgs(testArgs, "tast.")
+			test.GetAutotest().TestArgs = misc.MapTestArgsToStr(tastTestArgs)
+			continue
+		}
+		// Already compatible tests.
+		if strings.HasPrefix(testName, "tast.") || strings.HasPrefix(testName, "tauto.") {
+			continue
+		}
+		// The rest tests need to be autotest.
+		test.GetAutotest().Name = "tauto." + testName
+	}
+	return nil
 }
 
 // userDefinedFilters configures the ctpv2 filters based on the parameters set

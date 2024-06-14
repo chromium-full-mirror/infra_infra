@@ -287,9 +287,9 @@ func TestCreateCTPBuilder(t *testing.T) {
 				Model:       "gumboz",
 				TestPlan: &test_platform.Request_TestPlan{
 					Test: []*test_platform.Request_Test{
-						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasGetNodes"}}},
-						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.input_only"}}},
-						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "audio_CrasStress.output_only"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "tauto.audio_CrasGetNodes"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "tauto.audio_CrasStress.input_only"}}},
+						{Harness: &test_platform.Request_Test_Autotest_{Autotest: &test_platform.Request_Test_Autotest{Name: "tauto.audio_CrasStress.output_only"}}},
 					},
 				},
 				CFT:                 true,

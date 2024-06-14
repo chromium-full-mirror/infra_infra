@@ -5,6 +5,7 @@ package misc
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -121,4 +122,42 @@ func GetEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+// StrTestArgsToMap converts a TestArgs string into map[string]string.
+func StrTestArgsToMap(str string) map[string]string {
+	res := make(map[string]string)
+	for _, s := range strings.Fields(str) {
+		keyVal := strings.Split(s, "=")
+		if len(keyVal) != 2 {
+			fmt.Printf("Warning! Not valid testArgs format. Got %s, want key=value\n", s)
+			continue
+		}
+		res[keyVal[0]] = keyVal[1]
+	}
+	return res
+}
+
+// MapTestArgsToStr converts a TestArgs map into string.
+func MapTestArgsToStr(m map[string]string) string {
+	res := new(bytes.Buffer)
+	for key, val := range m {
+		fmt.Fprintf(res, "%s=%s ", key, val)
+	}
+	return strings.TrimSpace(res.String())
+}
+
+// RemovePrefixFromTestArgs removes requested prefix from testArgs key.
+// It also removes args without requested prefix.
+func RemovePrefixFromTestArgs(m map[string]string, prefix string) map[string]string {
+	res := map[string]string{}
+	for key, val := range m {
+		newKey, found := strings.CutPrefix(key, prefix)
+		if !found {
+			fmt.Printf("Warning! Not valid testArgs prefix. Got %s, want %s%[1]s\n", key, prefix)
+			continue
+		}
+		res[newKey] = val
+	}
+	return res
 }
