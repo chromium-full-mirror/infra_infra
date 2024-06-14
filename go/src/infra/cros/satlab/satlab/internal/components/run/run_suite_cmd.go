@@ -99,6 +99,10 @@ func (c *run) validateArgs() error {
 	if c.cft && c.test != "" && c.harness == "" {
 		return errors.Reason("-harness is required for cft test runs").Err()
 	}
+	// TODO(filipek): remove this check when full support for the testplan will be confirmed.
+	if c.cft && (c.testplan != "" || c.testplanLocal != "") {
+		fmt.Print("\n-- Warning --\nFor now the CFT is enabled by default, but it may not work properly with the testplan (then use -cft=0).\n\n")
+	}
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()
 	}
