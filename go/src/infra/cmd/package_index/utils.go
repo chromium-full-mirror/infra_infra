@@ -1,9 +1,12 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -158,7 +161,7 @@ func findImports(ctx context.Context, regex *regexp.Regexp, fpath string, import
 		return imports
 	}
 
-	contents, err := ioutil.ReadFile(fpath)
+	contents, err := os.ReadFile(fpath)
 	if err != nil {
 		panic(fmt.Sprintf("Cannot read file %s: %v", fpath, err))
 	}
@@ -207,7 +210,7 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 	//   * gen/${board}/src/out/${board}/
 	//
 	// For references to work correctly, set vname to point to files in the repo.
-	if *projectFlag == "chromiumos" {
+	if isProjectCros(*projectFlag) {
 		chrootPathIndex := strings.Index(filepath, "cache/cros_chroot/")
 		if chrootPathIndex >= 0 {
 			// Strip everything up until and including "cache/cros_chroot/"
@@ -240,4 +243,9 @@ func isUnwantedWinArg(arg string) bool {
 		}
 	}
 	return false
+}
+
+// isProjectCros checks if the project string represents chromeos.
+func isProjectCros(proj string) bool {
+	return proj == "chromiumos" || proj == "chromeos"
 }

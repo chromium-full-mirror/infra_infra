@@ -1,8 +1,12 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package main
 
 import (
 	"context"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -19,38 +23,26 @@ func TestRemoveFilepathsFiles(t *testing.T) {
 	t.Parallel()
 	Convey("Remove filepaths files", t, func() {
 		ctx := context.Background()
-		tmpdir, err := ioutil.TempDir("", "")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer os.RemoveAll(tmpdir)
+		tmpdir := t.TempDir()
 
 		Convey("Remove filepaths with files", func() {
 			// File setup
 			f, err := os.Create(filepath.Join(tmpdir, "foo.filepaths"))
-			if err != nil {
-				t.Fatal(err)
-			}
+			So(err, ShouldBeNil)
 			f.Close()
 			fpath, err := filepath.Abs(f.Name())
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			nested, err := ioutil.TempDir(tmpdir, "")
-			if err != nil {
-				t.Fatal(err)
-			}
+			nested, err := os.MkdirTemp(tmpdir, "")
+			So(err, ShouldBeNil)
 
 			b, err := os.Create(filepath.Join(nested, "bar.filepaths"))
-			if err != nil {
-				t.Fatal(err)
-			}
+			So(err, ShouldBeNil)
 			b.Close()
 			bpath, err := filepath.Abs(b.Name())
-			if err != nil {
-				t.Fatal(err)
-			}
+			So(err, ShouldBeNil)
 
 			removeFilepathsFiles(ctx, tmpdir)
 
@@ -180,25 +172,16 @@ func TestFindImports(t *testing.T) {
 		re := regexp.MustCompile(`(?m)^\s*import\s*(?:weak|public)?\s*"([^"]*)\s*";`)
 
 		// File setup
-		tmpdir, err := ioutil.TempDir("", "")
-		if err != nil {
-			t.Fatal(err)
-		}
-		defer os.RemoveAll(tmpdir)
-
+		tmpdir := t.TempDir()
 		importPaths := []string{tmpdir}
 
 		f, err := os.Create(tmpdir + "/test.proto")
-		if err != nil {
-			t.Fatal(err)
-		}
+		So(err, ShouldBeNil)
 		defer f.Close()
 
 		f.WriteString("import \"foo.proto\";\nimport weak \"bar.proto\";\n")
 		fpath, err := filepath.Abs(f.Name())
-		if err != nil {
-			t.Fatal(err)
-		}
+		So(err, ShouldBeNil)
 
 		Convey("File doesn't exist", func() {
 			p := "/path/to/no/file"
@@ -332,49 +315,51 @@ func TestSetVname(t *testing.T) {
 			})
 		})
 
-		Convey("With ChromiumOS", func() {
-			*projectFlag = "chromiumos"
+		for _, proj := range []string{"chromiumos", "chromeos"} {
+			*projectFlag = proj
+			Convey(fmt.Sprintf("With %s", proj), func() {
+				Convey("Filepath has chroot prefix", func() {
+					p := "../../../../cache/cros_chroot/chroot/build/amd64-generic/rest/of/path"
+					setVnameForFile(&vnameProto, p, defaultCorpus)
 
-			Convey("Filepath has chroot prefix", func() {
-				p := "../../../../cache/cros_chroot/chroot/build/amd64-generic/rest/of/path"
-				setVnameForFile(&vnameProto, p, defaultCorpus)
+					Convey("Should prefix vnameProto with path to gen files", func() {
+						So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/chroot/build/amd64-generic/rest/of/path")
+					})
+				})
 
-				Convey("Should prefix vnameProto with path to gen files", func() {
-					So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/chroot/build/amd64-generic/rest/of/path")
+				Convey("Filepath has out dir prefix", func() {
+					p := "src/out/amd64-generic/rest/of/path"
+					setVnameForFile(&vnameProto, p, defaultCorpus)
+
+					Convey("Should prefix vnameProto with path to gen files", func() {
+						So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/src/out/amd64-generic/rest/of/path")
+					})
+				})
+
+				Convey("Filepath has no special corpus with src prefix", func() {
+					p := "src/build/rest/of/path"
+					setVnameForFile(&vnameProto, p, defaultCorpus)
+
+					Convey("Should not modify path", func() {
+						So(vnameProto.Path, ShouldEqual, p)
+						So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+						So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+					})
+				})
+
+				Convey("Filepath has no special corpus without src prefix", func() {
+					p := "foo/build/rest/of/path"
+					setVnameForFile(&vnameProto, p, defaultCorpus)
+
+					Convey("Should not modify path", func() {
+						So(vnameProto.Path, ShouldEqual, p)
+						So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+						So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+					})
 				})
 			})
 
-			Convey("Filepath has out dir prefix", func() {
-				p := "src/out/amd64-generic/rest/of/path"
-				setVnameForFile(&vnameProto, p, defaultCorpus)
-
-				Convey("Should prefix vnameProto with path to gen files", func() {
-					So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/src/out/amd64-generic/rest/of/path")
-				})
-			})
-
-			Convey("Filepath has no special corpus with src prefix", func() {
-				p := "src/build/rest/of/path"
-				setVnameForFile(&vnameProto, p, defaultCorpus)
-
-				Convey("Should not modify path", func() {
-					So(vnameProto.Path, ShouldEqual, p)
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
-				})
-			})
-
-			Convey("Filepath has no special corpus without src prefix", func() {
-				p := "foo/build/rest/of/path"
-				setVnameForFile(&vnameProto, p, defaultCorpus)
-
-				Convey("Should not modify path", func() {
-					So(vnameProto.Path, ShouldEqual, p)
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
-				})
-			})
-		})
+		}
 	})
 }
 

@@ -9,9 +9,11 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
@@ -37,14 +39,20 @@ var (
 	outDirFlag          = flag.String("out_dir", "src/out/Debug", "Output directory from which compilation is run.")
 	filepathsFlag       = flag.Bool("keep_filepaths_files", false, "Keep the .filepaths files used for index pack generation.")
 	verboseFlag         = flag.Bool("verbose", false, "Print the details of every file being written to the index pack.")
+
+	allowedProjects = stringset.NewFromSlice(
+		"chromium",
+		"chromiumos",
+		"chrome",
+		"chromeos")
 )
 
 // validateFlags checks that the required flags are present.
 func validateFlags(ctx context.Context) {
 	flagErr := false
 
-	if *projectFlag != "chromium" && *projectFlag != "chrome" && *projectFlag != "chromiumos" {
-		logging.Errorf(ctx, "project not supported. 'chromium', 'chrome', and 'chromiumos' are the only supported projects.")
+	if !allowedProjects.Has(*projectFlag) {
+		logging.Errorf(ctx, "project not supported. [%s] are the only supported projects.", strings.Join(allowedProjects.ToSortedSlice(), ", "))
 		flagErr = true
 	}
 
