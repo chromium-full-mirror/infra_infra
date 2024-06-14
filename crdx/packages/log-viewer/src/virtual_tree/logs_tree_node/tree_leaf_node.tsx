@@ -101,9 +101,11 @@ export function TreeLeafNode({
               labels={labels}
             />
           </span>
-          <span data-testid={`size-${treeNodeData.name}`}>
-            {` [${prettyBytes(treeNodeData.data.size!)}]`}
-          </span>
+          {treeNodeData.data.size !== undefined && (
+            <span data-testid={`size-${treeNodeData.name}`}>
+              {` [${prettyBytes(treeNodeData.data.size)}]`}
+            </span>
+          )}
         </span>
         {isSpecialNode && (
           <InfoOutlinedIcon
