@@ -25,7 +25,8 @@ if [[ $_3PP_TOOL_PLATFORM != $_3PP_PLATFORM ]]; then
   ninja -j $(nproc)
   # Can't run tests when cross-compiling.
 else
-  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" cmake -Bbuild-cmake
+  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" cmake -Bbuild-cmake \
+        -DCMAKE_BUILD_TYPE=Release
   cmake --build build-cmake
   cd build-cmake
 

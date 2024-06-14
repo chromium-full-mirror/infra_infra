@@ -9,6 +9,7 @@ create {
       repo: "https://chromium.googlesource.com/external/github.com/ninja-build/ninja"
       tag_pattern: "v%s"
     }
+    patch_version: "chromium.1"
   }
   build {
     tool: "tools/cpython38"
