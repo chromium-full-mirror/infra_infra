@@ -1637,19 +1637,6 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Boot Flex from USB on next boot (ALWAYS_RUN)
-                  exec_name: cros_flex_usb_nextboot
-                  docs:
-                    - Use efibootmgr to boot from USB on the next boot.
-                  conditions:
-                    - name: Device has UEFI firmware (ALWAYS_RUN)
-                      exec_name: cros_run_command
-                      exec_args:
-                        - host:dut
-                        - command:test -d /sys/firmware/efi
-                        - background:false
-                      docs:
-                        - Check if the device has UEFI firmware.
                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                   exec_name: cros_flex_amt_power_off
                   docs:
