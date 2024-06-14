@@ -147,61 +147,84 @@ func modemStateNotInExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// reportCellularObservations reports relevant observations for monitoring cellular DUT states during an action.
-func reportCellularObservations(ctx context.Context, info *execs.ExecInfo, timeout time.Duration) {
+// reportCellularConnectionInfo reports relevant connection info after an action.
+func reportCellularConnectionInfo(ctx context.Context, info *execs.ExecInfo, timeout time.Duration, pi *tlw.Cellular_SIMProfileInfo) error {
 	runner := info.DefaultRunner()
 	modemInfo, err := cellular.WaitForModemInfo(ctx, runner, timeout)
 	if err != nil {
-		// Execs that call this function should have a dependency on the modem being
-		// in a good state, if some how the modem crashed in the middle of an exec
-		// we should just report it and quit rather than erroring out.
-		info.AddObservation(metrics.NewStringObservation("cellularModemHWState", "MISSING"))
-		log.Errorf(ctx, err.Error())
-		return
+		info.AddObservation(metrics.NewStringObservation("cellularModemHWState_"+pi.GetIccid(), "MISSING"))
+		return err
 	}
 
+	pi.State = modemInfo.GetSIMState()
 	connectionState := "UNKNOWN"
 	if modemInfo.GetState() != "" {
 		connectionState = strings.ToUpper(modemInfo.GetState())
 	}
-	info.AddObservation(metrics.NewStringObservation("cellularModemHWState", "AVAILABLE"))
-	info.AddObservation(metrics.NewStringObservation("cellularConnectionState", connectionState))
+	info.AddObservation(metrics.NewStringObservation("cellularModemHWState_"+pi.GetIccid(), "AVAILABLE"))
+	info.AddObservation(metrics.NewStringObservation("cellularConnectionState_"+pi.GetIccid(), connectionState))
 
 	// Signal strength may not always be available by the modem so only report if there's no error.
 	if signalStrength, err := cellular.GetSignalStrength(ctx, runner, timeout); err == nil {
 		for _, strength := range signalStrength {
 			prefix := fmt.Sprintf("cellular%vSignal", strength.Technology)
 			if strength.RSRP != nil {
-				info.AddObservation(metrics.NewFloat64Observation(prefix+"RSRP", *strength.RSRP))
+				info.AddObservation(metrics.NewFloat64Observation(prefix+"RSRP+_"+pi.GetIccid(), *strength.RSRP))
 			}
 			if strength.RSSI != nil {
-				info.AddObservation(metrics.NewFloat64Observation(prefix+"RSSI", *strength.RSSI))
+				info.AddObservation(metrics.NewFloat64Observation(prefix+"RSSI_"+pi.GetIccid(), *strength.RSSI))
 			}
 			if strength.SNR != nil {
-				info.AddObservation(metrics.NewFloat64Observation(prefix+"SNR", *strength.SNR))
+				info.AddObservation(metrics.NewFloat64Observation(prefix+"SNR_"+pi.GetIccid(), *strength.SNR))
 			}
 		}
 	}
+	return nil
 }
 
 // auditCellularConnectionExec verifies that the device is able to connect to the provided cellular network.
 func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("imei empty: cellular data is not present in dut info").Err()
+	}
+
 	runner := info.DefaultRunner()
 	argsMap := info.GetActionArgs(ctx)
 	waitTimeout := argsMap.AsDuration(ctx, "wait_connected_timeout", 120, time.Second)
 
 	// Action requires at least 1 minute more than wait_connected_timeout to successfully complete the action.
-	if waitTimeout+time.Minute < info.GetExecTimeout() {
+	if waitTimeout+time.Minute > info.GetExecTimeout() {
 		return errors.Reason("audit cellular connection: exec timeout must be >= wait_connected_timeout + 60s").Err()
 	}
 
-	// Report cellular state observations after connection attempt, don't perform this as a dedicated
-	// action since we want the observations to be linked to the audit connection action.
-	defer reportCellularObservations(ctx, info, 15*time.Second)
+	for _, si := range c.GetSimInfos() {
+		if len(si.GetProfileInfos()) != 1 {
+			// Only support SIMs with 1 profile for now since we don't support profile activation.
+			log.Debugf(ctx, "Skipping slot: %d, more than 1 profile detected, only 1 supported", si.GetSlotId())
+			continue
+		}
 
-	if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err != nil {
-		return errors.Annotate(err, "audit cellular connection").Err()
+		pi := si.GetProfileInfos()[0]
+		if pi.GetIccid() == "" {
+			// Don't try to connect to any profiles with empty ICCIDs.
+			log.Debugf(ctx, "Skipping profile: empty ICCID")
+			continue
+		}
+
+		if err := cellular.SwitchSIMSlot(ctx, runner, si.GetSlotId()); err != nil {
+			return errors.Annotate(err, "audit cellular connection").Err()
+		}
+
+		if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err != nil {
+			log.Debugf(ctx, "Failed to connect to SIM profile", pi.GetIccid())
+		}
+
+		if err := reportCellularConnectionInfo(ctx, info, 15*time.Second, pi); err != nil {
+			return errors.Annotate(err, "audit cellular connection").Err()
+		}
 	}
+
 	return nil
 }
 

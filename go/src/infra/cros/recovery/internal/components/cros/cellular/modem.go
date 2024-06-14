@@ -18,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
+	"infra/cros/recovery/tlw"
 )
 
 const (
@@ -32,6 +33,15 @@ const (
 	getCellularServiceCmd     = "gdbus call --system --dest=org.chromium.flimflam" +
 		" -o / -m org.chromium.flimflam.Manager.FindMatchingService" +
 		" \"{'Type': 'cellular'}\" | cut -d\"'\" -f2"
+)
+
+// SIM state aliases.
+const (
+	SIMStateUnspecified = tlw.Cellular_SIMProfileInfo_UNSPECIFIED
+	SIMStateBroken      = tlw.Cellular_SIMProfileInfo_BROKEN
+	SIMStateLocked      = tlw.Cellular_SIMProfileInfo_LOCKED
+	SIMStateNoNetwork   = tlw.Cellular_SIMProfileInfo_NO_NETWORK
+	SIMStateWorking     = tlw.Cellular_SIMProfileInfo_WORKING
 )
 
 // HasModemManagerCLI returns true if mmcli is present on the DUT.
@@ -163,6 +173,14 @@ func (m *ModemInfo) ActiveSIMSlot() int32 {
 		return 0
 	}
 
+	// If the modem only has 1 SIM slot, then ActiveSIMSlot will be empty but SIM will not be.
+	// In this case we should return "1" since sim slots are 1 indexed.
+	//
+	// e.g. {.., "primary-sim-slot":"--", "sim":"/org/freedesktop/ModemManager1/SIM/0", ...}
+	if m.Modem.Generic.ActiveSIMSlot == "--" && m.Modem.Generic.SIM != "" {
+		return 1
+	}
+
 	if m.Modem.Generic.ActiveSIMSlot == "" || m.Modem.Generic.ActiveSIMSlot == "--" {
 		return 0
 	}
@@ -211,6 +229,13 @@ func (m *ModemInfo) SIMSlotCount() int32 {
 	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
 		return 0
 	}
+
+	// If the modem only has 1 SIM slot, then SIMSlots will ben an empty list but SIM will not
+	// be empty. In this case we should return 1.
+	if len(m.Modem.Generic.SIMSlots) == 0 && m.Modem.Generic.SIM != "" {
+		return 1
+	}
+
 	return int32(len(m.Modem.Generic.SIMSlots))
 }
 
@@ -220,6 +245,37 @@ func (m *ModemInfo) GetState() string {
 		return ""
 	}
 	return m.Modem.Generic.State
+}
+
+// GetSIMState returns the state of the SIM as reported by ModemManager.
+//
+// This is a wrapper for the ModemManagerState.
+func (m *ModemInfo) GetSIMState() tlw.Cellular_SIMProfileInfo_State {
+	if m == nil || m.Modem == nil || m.Modem.Generic == nil {
+		return SIMStateUnspecified
+	}
+
+	state := m.Modem.Generic.State
+	switch {
+	case strings.EqualFold(state, "LOCKED"):
+		return SIMStateLocked
+	// Non-failed states but not connected.
+	case strings.EqualFold(state, "INITIALIZING"),
+		strings.EqualFold(state, "DISABLED"),
+		strings.EqualFold(state, "DISABLING"),
+		strings.EqualFold(state, "ENABLING"),
+		strings.EqualFold(state, "ENABLED"),
+		strings.EqualFold(state, "SEARCHING"),
+		strings.EqualFold(state, "REGISTERED"),
+		strings.EqualFold(state, "DISCONNECTING"),
+		strings.EqualFold(state, "CONNECTING"):
+		return SIMStateNoNetwork
+	case strings.EqualFold(state, "CONNECTED"):
+		return SIMStateWorking
+	// Any other state is broken e.g. FAILED.
+	default:
+		return SIMStateBroken
+	}
 }
 
 func (m *ModemInfo) GetImei() string {

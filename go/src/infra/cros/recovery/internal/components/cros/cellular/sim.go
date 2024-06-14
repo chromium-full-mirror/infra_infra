@@ -174,8 +174,16 @@ func GetAllSIMInfo(ctx context.Context, runner components.Runner) ([]*tlw.Cellul
 
 // SwitchSIMSlot switches the active SIM slot to the requested index.
 func SwitchSIMSlot(ctx context.Context, runner components.Runner, slotNumber int32) error {
-	_, err := runner(ctx, 5*time.Second, fmt.Sprintf("mmcli -m a --set-primary-sim-slot=%d", slotNumber))
+	modemInfo, err := WaitForModemInfo(ctx, runner, 15*time.Second)
 	if err != nil {
+		return errors.Annotate(err, "switch sim slot: wait for ModemManager to export modem").Err()
+	}
+	if modemInfo.ActiveSIMSlot() == slotNumber {
+		log.Debugf(ctx, "sim slot already on %d", slotNumber)
+		return nil
+	}
+
+	if _, err := runner(ctx, 5*time.Second, fmt.Sprintf("mmcli -m a --set-primary-sim-slot=%d", slotNumber)); err != nil {
 		return errors.Annotate(err, "call mmcli").Err()
 	}
 
