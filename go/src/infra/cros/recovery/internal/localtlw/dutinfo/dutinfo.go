@@ -479,6 +479,7 @@ func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.Mod
 				SimPin:      pi.GetSimPin(),
 				SimPuk:      pi.GetSimPuk(),
 				CarrierName: convertSIMProviders(pi.GetCarrierName()),
+				State:       convertSIMState(pi.GetState()),
 			}
 		}
 		cellular.SimInfos[i] = simInfo
@@ -585,6 +586,7 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 							SimPin:      pi.GetSimPin(),
 							SimPuk:      pi.GetSimPuk(),
 							CarrierName: convertSIMProviderToUFS(pi.GetCarrierName()),
+							State:       convertSIMStateToUFS(pi.GetState()),
 						})
 				}
 				labData.SimInfos = append(labData.SimInfos, simInfo)

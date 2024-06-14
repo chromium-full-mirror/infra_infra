@@ -480,7 +480,7 @@ func convertSIMProviderToUFS(s tlw.Cellular_NetworkProvider) ufslab.NetworkProvi
 	return ufslab.NetworkProvider_NETWORK_OTHER
 }
 
-// starfishSTates maps the ufs peripheral states to tlw starfish states.
+// starfishStates maps the ufs peripheral states to tlw starfish states.
 var starfishStates = map[ufslab.PeripheralState]tlw.Cellular_StarfishState{
 	ufslab.PeripheralState_WORKING: tlw.Cellular_STARFISH_STATE_WORKING,
 	ufslab.PeripheralState_BROKEN:  tlw.Cellular_STARFISH_STATE_BROKEN,
@@ -502,6 +502,33 @@ func convertStarfishStateToUFS(s tlw.Cellular_StarfishState) ufslab.PeripheralSt
 		}
 	}
 	return ufslab.PeripheralState_UNKNOWN
+}
+
+// simonnectionStates maps the ufs connection states to tlw connection states.
+var simStates = map[ufslab.SIMProfileInfo_State]tlw.Cellular_SIMProfileInfo_State{
+	ufslab.SIMProfileInfo_BROKEN:     tlw.Cellular_SIMProfileInfo_BROKEN,
+	ufslab.SIMProfileInfo_LOCKED:     tlw.Cellular_SIMProfileInfo_LOCKED,
+	ufslab.SIMProfileInfo_NO_NETWORK: tlw.Cellular_SIMProfileInfo_NO_NETWORK,
+	ufslab.SIMProfileInfo_WORKING:    tlw.Cellular_SIMProfileInfo_WORKING,
+}
+
+// convertSIMState converts UFS connection states to TLW connection states.
+func convertSIMState(s ufslab.SIMProfileInfo_State) tlw.Cellular_SIMProfileInfo_State {
+	if ns, ok := simStates[s]; ok {
+		return ns
+	}
+	return tlw.Cellular_SIMProfileInfo_UNSPECIFIED
+
+}
+
+// convertSIMStateToUFS TLW connection states types to UFS connection states.
+func convertSIMStateToUFS(s tlw.Cellular_SIMProfileInfo_State) ufslab.SIMProfileInfo_State {
+	for us, ls := range simStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.SIMProfileInfo_UNSPECIFIED
 }
 
 var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{

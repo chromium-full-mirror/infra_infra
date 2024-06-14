@@ -617,6 +617,22 @@ message Cellular {
     NetworkProvider carrier_name = 4;
     // The phone number associated with the SIM.
     string own_number = 5;
+    // The state of the cellular network connection.
+    State state = 6;
+
+    // The allowed cellular connection states as reported by the modem.
+    enum State {
+      // Connection state not defined.
+      UNSPECIFIED = 0;
+      // The device is unusable.
+      BROKEN = 1;
+      // The device needs to be unlocked.
+      LOCKED = 2;
+      // No data connection available and not in a failed state.
+      NO_NETWORK = 3;
+      // The device is registered with a network provider, and data connections and messaging may be available for use.
+      WORKING = 4;
+    }
   }
 
   // Information on a single SIM card in a slot.
@@ -641,7 +657,7 @@ message Cellular {
   // State of the starfish connected to the device.
   StarfishState starfish_state = 7;
 
-  // PeripheralStarfishState describes the state of a starfish device in a testbed.
+  // StarfishState describes the state of a starfish device in a testbed.
   enum StarfishState {
     STARFISH_STATE_UNSPECIFIED = 0;
     // Starfish is working and SIMS detected as expected.
