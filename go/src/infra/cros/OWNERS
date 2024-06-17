@@ -1,4 +1,4 @@
-include chromiumos/chromite:/OWNERS.ci
+include chromiumos/owners:v1:/infra/OWNERS.ci
 
 ayatane@chromium.org
 guocb@chromium.org
