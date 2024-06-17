@@ -26,12 +26,15 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	lgs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/proto/structmask"
 	"go.chromium.org/luci/common/sync/parallel"
 
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/docker"
 	"infra/cros/internal/gerrit"
+	"infra/cros/internal/gs"
 	"infra/cros/internal/shared"
 	"infra/tools/dirmd"
 )
@@ -40,6 +43,7 @@ type validator struct {
 	gerritClient                    gerrit.Client
 	bbClient                        bbpb.BuildsClient
 	containerRunner                 *docker.ContainerRunner
+	gsClient                        gs.Client
 	ctfImage                        string
 	tmpdirFn                        func(string, string) (string, error)
 	checkTagCriteriaNonEmptyEnabled bool
@@ -48,10 +52,11 @@ type validator struct {
 
 // NewValidator returns a validator with default configuration, which can be
 // used to validate ChromeOS test configs in dirmd.Mappings.
-func NewValidator(gerritClient gerrit.Client, bbClient bbpb.BuildsClient, cmdRunner cmd.CommandRunner) *validator {
+func NewValidator(gerritClient gerrit.Client, bbClient bbpb.BuildsClient, gsClient gs.Client, cmdRunner cmd.CommandRunner) *validator {
 	return &validator{
 		gerritClient:                    gerritClient,
 		bbClient:                        bbClient,
+		gsClient:                        gsClient,
 		containerRunner:                 docker.NewContainerRunner(cmdRunner),
 		tmpdirFn:                        os.MkdirTemp,
 		checkTagCriteriaNonEmptyEnabled: false,
@@ -176,9 +181,14 @@ func (v *validator) validateStarlarkFileExists(ctx context.Context, _, _ string,
 }
 
 // ensureCTFImage sets v.ctfImage to the most recent cros-test-finder image
-// produced by dedede-snapshot. If this function has already been called
+// used by dedede-snapshot. If this function has already been called
 // and v.ctfImage is set, this function is a no-op (besides getting the
 // lock to check v.ctfImage).
+//
+// The found build must have the artifact_link and
+// $chromeos/build_menu.build_target.name properties set. The container
+// metadata is assumed to be at <artifact_link>/metadata/containers.jsonpb
+// and it is assumed there is info for cros-test-finder in the metadata.
 func (v *validator) ensureCTFImage(ctx context.Context) error {
 	v.bbMutex.Lock()
 	defer v.bbMutex.Unlock()
@@ -199,6 +209,18 @@ func (v *validator) ensureCTFImage(ctx context.Context) error {
 			Status: bbpb.Status_SUCCESS,
 			Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
 		},
+		Mask: &bbpb.BuildMask{
+			InputProperties: []*structmask.StructMask{
+				{
+					Path: []string{"$chromeos/build_menu", "build_target", "name"},
+				},
+			},
+			OutputProperties: []*structmask.StructMask{
+				{
+					Path: []string{"artifact_link"},
+				},
+			},
+		},
 		PageSize: 1,
 	})
 
@@ -210,7 +232,46 @@ func (v *validator) ensureCTFImage(ctx context.Context) error {
 		return fmt.Errorf("expected exactly one build from SearchBuilds, got %q", bbResp)
 	}
 
-	v.ctfImage = fmt.Sprintf("us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:%d", bbResp.Builds[0].Id)
+	build := bbResp.Builds[0]
+	logging.Debugf(ctx, "found build %q", build)
+
+	outputProps := build.GetOutput().GetProperties().GetFields()
+	artifactLink, ok := outputProps["artifact_link"]
+	if !ok {
+		return fmt.Errorf("artifact_link output property not found on build %d", build.Id)
+	}
+
+	inputProps := build.GetInput().GetProperties().GetFields()
+	buildTarget, ok := inputProps["$chromeos/build_menu"].GetStructValue().GetFields()["build_target"].GetStructValue().GetFields()["name"]
+	if !ok {
+		return fmt.Errorf("$chromeos/build_menu.build_target.name input property not found on build %d", build.Id)
+	}
+
+	metadataPath := artifactLink.GetStringValue() + "/metadata/containers.jsonpb"
+	metadataBytes, err := v.gsClient.Read(lgs.Path(metadataPath))
+	if err != nil {
+		return fmt.Errorf("failed to read %q: %w", metadataPath, err)
+	}
+
+	containerMetadata := &api.ContainerMetadata{}
+	if err := protojson.Unmarshal(metadataBytes, containerMetadata); err != nil {
+		return fmt.Errorf("failed to unmarshal %q: %w", metadataPath, err)
+	}
+	containerImageInfo, ok := containerMetadata.GetContainers()[buildTarget.GetStringValue()].GetImages()["cros-test-finder"]
+	if !ok {
+		return fmt.Errorf("cros-test-finder container not found in %q", containerMetadata)
+	}
+
+	v.ctfImage = fmt.Sprintf(
+		"%s/%s/%s@%s",
+		containerImageInfo.GetRepository().GetHostname(),
+		containerImageInfo.GetRepository().GetProject(),
+		containerImageInfo.GetName(),
+		containerImageInfo.GetDigest(),
+	)
+
+	logging.Infof(ctx, "found CTF image %q", v.ctfImage)
+
 	return nil
 }
 

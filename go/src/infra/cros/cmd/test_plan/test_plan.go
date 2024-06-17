@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
@@ -54,5 +55,6 @@ func main() {
 	opts := chromeinfra.DefaultAuthOptions()
 	opts.PopulateDefaults()
 	opts.Scopes = append(opts.Scopes, gerrit.OAuthScope, bigquery.Scope)
+	opts.Scopes = append(opts.Scopes, gs.ReadOnlyScopes...)
 	os.Exit(subcommands.Run(app(opts), nil))
 }

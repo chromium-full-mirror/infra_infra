@@ -21,6 +21,7 @@ import (
 
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
+	"infra/cros/internal/gs"
 	"infra/cros/internal/testplan"
 	"infra/cros/lib/buildbucket"
 	"infra/tools/dirmd"
@@ -112,6 +113,11 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		Options: buildbucket.DefaultPRPCOpts(),
 	})
 
+	gsClient, err := gs.NewProdClient(ctx, authedClient)
+	if err != nil {
+		return err
+	}
+
 	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, true, dir)
 	if err != nil {
 		return err
@@ -123,7 +129,7 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 	}
 
 	validator := testplan.NewValidator(
-		gerritClient, bbClient, cmd.RealCommandRunner{},
+		gerritClient, bbClient, gsClient, cmd.RealCommandRunner{},
 	).SetCheckTagCriteriaNonEmptyEnabled(r.checkTagCriteriaNonEmpty)
 	return validator.ValidateMapping(ctx, mapping, repoRoot)
 }

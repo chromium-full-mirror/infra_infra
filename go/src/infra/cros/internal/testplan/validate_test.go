@@ -16,18 +16,30 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 
+	bapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/proto/structmask"
 
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
+	"infra/cros/internal/gs"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
 )
+
+func newStructOrFatal(t *testing.T, v map[string]interface{}) *structpb.Struct {
+	s, err := structpb.NewStruct(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
+}
 
 func TestValidateMapping(t *testing.T) {
 	ctx := context.Background()
@@ -70,6 +82,28 @@ func TestValidateMapping(t *testing.T) {
 
 	bbClient := bbpb.NewMockBuildsClient(ctrl)
 
+	foundBuild := &bbpb.Build{
+		Id: 123,
+		Input: &bbpb.Build_Input{
+			Properties: newStructOrFatal(
+				t, map[string]interface{}{
+					"$chromeos/build_menu": map[string]interface{}{
+						"build_target": map[string]interface{}{
+							"name": "targetA",
+						},
+					},
+				},
+			),
+		},
+		Output: &bbpb.Build_Output{
+			Properties: newStructOrFatal(
+				t, map[string]interface{}{
+					"artifact_link": "gs://testbucket/artifacts",
+				},
+			),
+		},
+	}
+
 	// Not every test case will call SearchBuilds, because it is only called
 	// when there are TemplateParameters to check, but expect at least one call.
 	bbClient.EXPECT().
@@ -83,10 +117,22 @@ func TestValidateMapping(t *testing.T) {
 				Status: bbpb.Status_SUCCESS,
 				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
 			},
+			Mask: &bbpb.BuildMask{
+				InputProperties: []*structmask.StructMask{
+					{
+						Path: []string{"$chromeos/build_menu", "build_target", "name"},
+					},
+				},
+				OutputProperties: []*structmask.StructMask{
+					{
+						Path: []string{"artifact_link"},
+					},
+				},
+			},
 			PageSize: 1,
 		}).
 		Return(&bbpb.SearchBuildsResponse{
-			Builds: []*bbpb.Build{{Id: 123}},
+			Builds: []*bbpb.Build{foundBuild},
 		}, nil).
 		MinTimes(1)
 
@@ -106,14 +152,42 @@ func TestValidateMapping(t *testing.T) {
 				ExpectedCmd: []string{
 					"docker", "run",
 					fmt.Sprintf("--mount=source=%s,target=/tmp/test/cros-test-finder,type=bind", tmpDir),
-					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:123",
+					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder@sha256:abc",
 					"cros-test-finder",
 				},
 			},
 		},
 	}
 
-	validator := NewValidator(gerritClient, bbClient, cmdRunner).SetCheckTagCriteriaNonEmptyEnabled(true)
+	containerMetadata := bapi.ContainerMetadata{
+		Containers: map[string]*bapi.ContainerImageMap{
+			"targetA": {
+				Images: map[string]*bapi.ContainerImageInfo{
+					"cros-test-finder": {
+						Repository: &bapi.GcrRepository{
+							Hostname: "us-docker.pkg.dev",
+							Project:  "cros-registry/test-services",
+						},
+						Name:   "cros-test-finder",
+						Digest: "sha256:abc",
+					},
+				},
+			},
+		},
+	}
+	containerMetadataJSON, err := protojson.Marshal(&containerMetadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gsClient := &gs.FakeClient{
+		T: t,
+		ExpectedReads: map[string][]byte{
+			"gs://testbucket/artifacts/metadata/containers.jsonpb": containerMetadataJSON,
+		},
+	}
+
+	validator := NewValidator(gerritClient, bbClient, gsClient, cmdRunner).SetCheckTagCriteriaNonEmptyEnabled(true)
 
 	// Override the validator's default tmpdir fn, to return a dir with a
 	// request already written in it; this simulates what cros-test-finder would
@@ -439,6 +513,10 @@ func TestValidateMappingNoCheckTagCriteriaNonEmpty(t *testing.T) {
 		},
 	}
 
+	gsClient := &gs.FakeClient{
+		T: t,
+	}
+
 	mapping := &dirmd.Mapping{
 		Dirs: map[string]*dirmdpb.Metadata{
 			"a/b": {
@@ -468,7 +546,7 @@ func TestValidateMappingNoCheckTagCriteriaNonEmpty(t *testing.T) {
 		},
 	}
 
-	validator := NewValidator(gerritClient, bbpb.NewMockBuildsClient(ctrl), cmd.FakeCommandRunner{})
+	validator := NewValidator(gerritClient, bbpb.NewMockBuildsClient(ctrl), gsClient, cmd.FakeCommandRunner{})
 
 	assert.NilError(t, validator.ValidateMapping(ctx, mapping, "./testdata/good_dirmd"))
 }
@@ -515,6 +593,28 @@ func TestValidateMappingErrors(t *testing.T) {
 
 	bbClient := bbpb.NewMockBuildsClient(ctrl)
 
+	foundBuild := &bbpb.Build{
+		Id: 123,
+		Input: &bbpb.Build_Input{
+			Properties: newStructOrFatal(
+				t, map[string]interface{}{
+					"$chromeos/build_menu": map[string]interface{}{
+						"build_target": map[string]interface{}{
+							"name": "targetA",
+						},
+					},
+				},
+			),
+		},
+		Output: &bbpb.Build_Output{
+			Properties: newStructOrFatal(
+				t, map[string]interface{}{
+					"artifact_link": "gs://testbucket/artifacts",
+				},
+			),
+		},
+	}
+
 	bbClient.EXPECT().
 		SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
 			Predicate: &bbpb.BuildPredicate{
@@ -526,10 +626,22 @@ func TestValidateMappingErrors(t *testing.T) {
 				Status: bbpb.Status_SUCCESS,
 				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
 			},
+			Mask: &bbpb.BuildMask{
+				InputProperties: []*structmask.StructMask{
+					{
+						Path: []string{"$chromeos/build_menu", "build_target", "name"},
+					},
+				},
+				OutputProperties: []*structmask.StructMask{
+					{
+						Path: []string{"artifact_link"},
+					},
+				},
+			},
 			PageSize: 1,
 		}).
 		Return(&bbpb.SearchBuildsResponse{
-			Builds: []*bbpb.Build{{Id: 123}},
+			Builds: []*bbpb.Build{foundBuild},
 		}, nil).
 		MinTimes(1)
 
@@ -549,14 +661,42 @@ func TestValidateMappingErrors(t *testing.T) {
 				ExpectedCmd: []string{
 					"docker", "run",
 					fmt.Sprintf("--mount=source=%s,target=/tmp/test/cros-test-finder,type=bind", tmpDir),
-					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:123",
+					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder@sha256:abc",
 					"cros-test-finder",
 				},
 			},
 		},
 	}
 
-	validator := NewValidator(gerritClient, bbClient, cmdRunner).SetCheckTagCriteriaNonEmptyEnabled(true)
+	containerMetadata := bapi.ContainerMetadata{
+		Containers: map[string]*bapi.ContainerImageMap{
+			"targetA": {
+				Images: map[string]*bapi.ContainerImageInfo{
+					"cros-test-finder": {
+						Repository: &bapi.GcrRepository{
+							Hostname: "us-docker.pkg.dev",
+							Project:  "cros-registry/test-services",
+						},
+						Name:   "cros-test-finder",
+						Digest: "sha256:abc",
+					},
+				},
+			},
+		},
+	}
+	containerMetadataJSON, err := protojson.Marshal(&containerMetadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gsClient := &gs.FakeClient{
+		T: t,
+		ExpectedReads: map[string][]byte{
+			"gs://testbucket/artifacts/metadata/containers.jsonpb": containerMetadataJSON,
+		},
+	}
+
+	validator := NewValidator(gerritClient, bbClient, gsClient, cmdRunner).SetCheckTagCriteriaNonEmptyEnabled(true)
 
 	// Override the validator's default tmpdir fn, to return a dir with a
 	// request with no found test cases already written in it; this simulates
@@ -968,6 +1108,189 @@ func TestValidateMappingErrors(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			err := validator.ValidateMapping(ctx, test.mapping, test.repoRoot)
+			assert.ErrorContains(t, err, test.errorSubstring)
+		})
+	}
+}
+
+func TestValidateMappingCTFErrors(t *testing.T) {
+	ctx := context.Background()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	templatedStarlarkContent := `testplan.get_suite_name()`
+
+	gerritClient := &gerrit.MockClient{
+		T: t,
+		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo",
+				Ref:     "HEAD",
+				Path:    "templated.star",
+			}: &templatedStarlarkContent,
+		},
+	}
+
+	mapping := &dirmd.Mapping{
+		Dirs: map[string]*dirmdpb.Metadata{
+			"a/b": {
+				Chromeos: &chromeos.ChromeOS{
+					Cq: &chromeos.ChromeOS_CQ{
+						SourceTestPlans: []*plan.SourceTestPlan{
+							{
+								TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+									{
+										Host:    "chromium.googlesource.com",
+										Project: "test/repo",
+										Path:    "templated.star",
+										TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+											SuiteName: "mysuiteA",
+											TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+												Tags:        []string{"group:mygroupA"},
+												TagExcludes: []string{"informational"},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	tests := []struct {
+		name              string
+		inputProps        *structpb.Struct
+		outputProps       *structpb.Struct
+		containerMetadata *bapi.ContainerMetadata
+		errorSubstring    string
+	}{
+		{
+			name: "artifact link missing",
+			inputProps: newStructOrFatal(
+				t, map[string]interface{}{
+					"$chromeos/build_menu": map[string]interface{}{
+						"build_target": map[string]interface{}{
+							"name": "targetA",
+						},
+					},
+				},
+			),
+			outputProps: newStructOrFatal(
+				t, map[string]interface{}{"otheroutputprop": 1},
+			),
+			errorSubstring: "artifact_link output property not found on build 123",
+		},
+		{
+			name: "build target missing",
+			inputProps: newStructOrFatal(
+				t, map[string]interface{}{
+					"$chromeos/build_menu": map[string]interface{}{
+						"otherprop": 1,
+					},
+				},
+			),
+			outputProps: newStructOrFatal(
+				t, map[string]interface{}{"artifact_link": "gs://bucket/artifact"},
+			),
+			errorSubstring: "$chromeos/build_menu.build_target.name input property not found on build 123",
+		},
+		{
+			name: "cros test finder missing from metadata",
+			inputProps: newStructOrFatal(
+				t, map[string]interface{}{
+					"$chromeos/build_menu": map[string]interface{}{
+						"build_target": map[string]interface{}{
+							"name": "targetA",
+						},
+					},
+				},
+			),
+			outputProps: newStructOrFatal(
+				t, map[string]interface{}{"artifact_link": "gs://testbucket/artifacts"},
+			),
+			containerMetadata: &bapi.ContainerMetadata{
+				Containers: map[string]*bapi.ContainerImageMap{
+					"targetA": {
+						Images: map[string]*bapi.ContainerImageInfo{
+							"other-container": {
+								Repository: &bapi.GcrRepository{
+									Hostname: "us-docker.pkg.dev",
+									Project:  "cros-registry/test-services",
+								},
+								Name:   "other-container",
+								Digest: "sha256:abc",
+							},
+						},
+					},
+				},
+			},
+			errorSubstring: "cros-test-finder container not found",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bbClient := bbpb.NewMockBuildsClient(ctrl)
+			bbClient.EXPECT().
+				SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
+					Predicate: &bbpb.BuildPredicate{
+						Builder: &bbpb.BuilderID{
+							Project: "chromeos",
+							Bucket:  "postsubmit",
+							Builder: "dedede-snapshot",
+						},
+						Status: bbpb.Status_SUCCESS,
+						Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
+					},
+					Mask: &bbpb.BuildMask{
+						InputProperties: []*structmask.StructMask{
+							{
+								Path: []string{"$chromeos/build_menu", "build_target", "name"},
+							},
+						},
+						OutputProperties: []*structmask.StructMask{
+							{
+								Path: []string{"artifact_link"},
+							},
+						},
+					},
+					PageSize: 1,
+				}).Return(&bbpb.SearchBuildsResponse{
+				Builds: []*bbpb.Build{{
+					Id: 123,
+					Input: &bbpb.Build_Input{
+						Properties: test.inputProps,
+					},
+					Output: &bbpb.Build_Output{
+						Properties: test.outputProps,
+					},
+				},
+				}}, nil).MinTimes(1)
+
+			containerMetadataJSON, err := protojson.Marshal(test.containerMetadata)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			gsClient := &gs.FakeClient{
+				T: t,
+				ExpectedReads: map[string][]byte{
+					"gs://testbucket/artifacts/metadata/containers.jsonpb": containerMetadataJSON,
+				},
+			}
+
+			validator := NewValidator(
+				gerritClient,
+				bbClient,
+				gsClient,
+				cmd.FakeCommandRunner{},
+			).SetCheckTagCriteriaNonEmptyEnabled(true)
+			err = validator.ValidateMapping(ctx, mapping, "./testdata/good_dirmd")
 			assert.ErrorContains(t, err, test.errorSubstring)
 		})
 	}
