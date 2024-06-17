@@ -18,7 +18,7 @@ import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_ho
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 23
+// Peripherals of device. Next Tag: 26
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -62,6 +62,8 @@ message Peripherals {
   reserved "pasit_host";
   reserved 23;
   chromiumos.test.lab.api.PasitHost pasit_host2 = 24;
+  // Indicate if the DUT is equipped with Intel AMT.
+  AMTManager amt_manager = 25;
 }
 
 
@@ -235,4 +237,10 @@ message HumanMotionRobot {
 // Next Tag: 1
 message AudioLatencyToolkit {
   string version = 1; // default: "4.1"
+}
+
+// AMTManager enables remote, out-of-band management.
+message AMTManager {
+  // Hostname for the AMT management port.
+  string hostname = 1;
 }
