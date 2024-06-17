@@ -116,8 +116,8 @@ func login(ctx context.Context, registry, password string) (stdout string, stder
 }
 
 // buildImage runs the `docker build` command.
-func buildImage(ctx context.Context, dir, dockerfile, fullname string) (stdout string, stderr string, err error) {
-	args := []string{"build", "-f", dockerfile, "-t", fullname, "."}
+func buildImage(ctx context.Context, dir, fullname string) (stdout string, stderr string, err error) {
+	args := []string{"build", "-t", fullname, "."}
 	return execCommand(ctx, "Build Image", "docker", args, "", dir)
 }
 
@@ -129,12 +129,12 @@ func pushImage(ctx context.Context, fullname string) (stdout string, stderr stri
 
 // buildAndPush builds and pushes the docker image to the artifact
 // directory and returns the sha produced.
-func buildAndPush(ctx context.Context, dir, dockerfile, host, project, name, tag string) (sha string, err error) {
+func buildAndPush(ctx context.Context, dir, host, project, name, tag string) (sha string, err error) {
 	step, ctx := build.StartStep(ctx, "Build and Push")
 	defer func() { step.End(err) }()
 
 	fullname := fmt.Sprintf(ContainerFormat, host, project, name, tag)
-	_, _, err = buildImage(ctx, dir, dockerfile, fullname)
+	_, _, err = buildImage(ctx, dir, fullname)
 	if err != nil {
 		err = errors.Annotate(err, "failed to build image").Err()
 		return

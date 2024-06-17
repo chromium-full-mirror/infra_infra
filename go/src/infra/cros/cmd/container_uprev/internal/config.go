@@ -20,6 +20,8 @@ import (
 var (
 	//go:embed dockerfiles/*
 	Dockerfiles embed.FS
+	//go:embed resources/*
+	Resources embed.FS
 )
 
 // WriteDockerfile writes the embedded dockerfile to the temporary directory.
@@ -28,7 +30,16 @@ func WriteDockerfile(dir string, name string) error {
 	if err != nil {
 		return errors.Annotate(err, "failed to read Dockerfile_%s", name).Err()
 	}
-	return os.WriteFile(path.Join(dir, name), dockerfile, common.FilePermission)
+	return os.WriteFile(path.Join(dir, "Dockerfile"), dockerfile, common.FilePermission)
+}
+
+// WriteResource writes the embedded resource to the temporary directory.
+func WriteResource(dir string, name string) error {
+	resource, err := Resources.ReadFile(fmt.Sprintf("resources/%s", name))
+	if err != nil {
+		return errors.Annotate(err, "failed to read %s", name).Err()
+	}
+	return os.WriteFile(path.Join(dir, name), resource, common.FilePermission)
 }
 
 // CIPDPackage contains relevant information about a CIPDPackage.
@@ -67,10 +78,21 @@ type UprevConfig struct {
 	CIPDPackages []*CIPDPackage
 	// Prepper is a function signature representing
 	// any custom work needed by the Dockerfile.
-	Prepper func(ctx context.Context, dir string) error
+	Prepper   func(ctx context.Context, dir string) error
+	Resources []string
 }
 
 // GetConfigs returns the uprev configs.
 func GetConfigs() []*UprevConfig {
-	return []*UprevConfig{}
+	return []*UprevConfig{
+		{
+			Name: "provision-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/provision-filter/${platform}"),
+			},
+			Resources: []string{
+				"provision-filter-q.txt",
+			},
+		},
+	}
 }

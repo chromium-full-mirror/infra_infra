@@ -1,0 +1,8 @@
+WITH
+  all_builds AS (
+    SELECT board, cast(milestone as int64) as milestone, platform, CONCAT(board, '|', milestone, '|') AS magic
+    FROM `google.com:suite-scheduler.builds.passed_builds`
+    WHERE build_end_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 200 hour)
+    ORDER BY platform
+  )
+SELECT DISTINCT(magic) as m, board, milestone, platform,  FROM all_builds;

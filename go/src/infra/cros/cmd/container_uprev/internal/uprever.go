@@ -43,14 +43,23 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 		return
 	}
 
+	for _, resource := range config.Resources {
+		if err = WriteResource(dir, resource); err != nil {
+			err = errors.Annotate(err, "failed to write %s", resource).Err()
+			return
+		}
+	}
+
 	if err = ensureCipdPackages(ctx, dir, config, cipdLabel); err != nil {
 		err = errors.Annotate(err, "failed to ensure CIPD packages").Err()
 		return
 	}
 
-	if err = config.Prepper(ctx, dir); err != nil {
-		err = errors.Annotate(err, "failed to populate directory").Err()
-		return
+	if config.Prepper != nil {
+		if err = config.Prepper(ctx, dir); err != nil {
+			err = errors.Annotate(err, "failed to populate directory").Err()
+			return
+		}
 	}
 
 	host := config.RepositoryHostname
@@ -61,7 +70,7 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 	if project == "" {
 		project = common.DefaultDockerProject
 	}
-	if sha, err = buildAndPush(ctx, dir, config.Name, host, project, config.Name, imageTag); err != nil {
+	if sha, err = buildAndPush(ctx, dir, host, project, config.Name, imageTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
 	}
