@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"time"
 
@@ -91,7 +92,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		logging.Debugf(srv.Context, "main: setup complete; now run sendNotification continuously")
+		logging.Debugf(srv.Context, "main: setup complete; now run SendNotification continuously")
 
 		notifierOpts := controller.NotifierOpts{
 			PublishWorkersN:   publishWorkersN,
@@ -99,13 +100,16 @@ func main() {
 			MaxUpdateWaitTime: time.Duration(maxUpdateWaitTime) * time.Millisecond,
 		}
 
-		for {
-			controller.SendNotifications(
-				srv.Context,
-				deviceLeaseServer.ServiceClients.DBClient.Conn,
-				deviceLeaseServer.ServiceClients.PubSubClient,
-				&notifierOpts,
-			)
-		}
+		srv.RunInBackground("device_manager.notifier", func(ctx context.Context) {
+			for {
+				controller.SendNotifications(
+					ctx,
+					deviceLeaseServer.ServiceClients.DBClient.Conn,
+					deviceLeaseServer.ServiceClients.PubSubClient,
+					&notifierOpts,
+				)
+			}
+		})
+		return nil
 	})
 }
