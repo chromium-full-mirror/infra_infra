@@ -769,8 +769,25 @@ message FirmwareInfo {
   string ap_target = 2;
 }
 
+// AMTManager holds info about AMT management on the DUT.
+message AMTManager {
+  // Hostname for the AMT management port.
+  string hostname = 1;
+
+  // State describes the state of AMT on the device.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // The WS-Management endpoint is up.
+    WORKING = 1;
+    // Unable to connect to the WS-Management endpoint.
+    BROKEN = 2;
+  }
+
+  State state = 2;
+}
+
 // Chrome OS specific DUT details
-// NEXT TAG: 34
+// NEXT TAG: 35
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -893,6 +910,9 @@ message ChromeOS {
   Dolos dolos = 30;
 
   string gpu_id = 33;
+
+  // AMT management info.
+  AMTManager amt_manager = 34;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.
