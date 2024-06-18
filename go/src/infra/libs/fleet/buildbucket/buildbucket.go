@@ -184,7 +184,7 @@ func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, err
 
 func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error) {
 	// Create TestPlan for suite or test
-	tp := builder.TestPlanForTests("", c.Harness, c.Tests)
+	tp := builder.TestPlanForTests(c.TestArgs, c.Harness, c.Tests)
 	if tp == nil {
 		return nil, fmt.Errorf("failed to build test plan for tests")
 	}

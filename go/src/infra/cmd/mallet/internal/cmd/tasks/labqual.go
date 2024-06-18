@@ -5,26 +5,36 @@
 package tasks
 
 import (
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/grpc/prpc"
 
+	"infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/fleet/buildbucket"
+	"infra/libs/skylab/common/heuristics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 var Labqual = &subcommands.Command{
-	UsageLine: "labqual [FLAGS...] -board BOARD -pool POOL HOSTNAME [HOSTNAME...]",
+	UsageLine: "labqual [FLAGS...] -pool POOL HOSTNAME [HOSTNAME...]",
 	ShortDesc: "Run a lab qualification on given host(s) using the board's stable build",
 	CommandRun: func() subcommands.CommandRun {
 		c := &LabqualRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.stableConfigPath, "stable-config", "", "Path to stable firmware config JSON")
-		c.Flags.StringVar(&c.board, "board", "", "Board of device(s) (Required)")
 		c.Flags.StringVar(&c.pool, "pool", "", "Pool to schedule qualification jobs in (Required)")
+		c.Flags.StringVar(&c.imagePath, "image", "", "Image to use for qualification")
 		return c
 	},
 }
@@ -34,9 +44,8 @@ type LabqualRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	board            string
-	pool             string
-	stableConfigPath string
+	pool      string
+	imagePath string
 }
 
 func (c *LabqualRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -49,9 +58,9 @@ func (c *LabqualRun) Run(a subcommands.Application, args []string, env subcomman
 
 func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 
-	if c.board == "" {
-		return cmdlib.NewUsageError(c.Flags, "Flag '-board' is required")
-	}
+	ctx := cli.GetContext(a, c, env)
+
+	stdErrLog := log.New(a.GetErr(), "", 0)
 
 	if c.pool == "" {
 		return cmdlib.NewUsageError(c.Flags, "Flag '-pool' is required")
@@ -61,9 +70,120 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 		return cmdlib.NewUsageError(c.Flags, "Expected at least 1 hostname after flags")
 	}
 
-	for _, host := range args {
-		fmt.Printf("Starting labqual on host %q\n", host)
+	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return fmt.Errorf("failed to create HTTP client: %w", err)
 	}
 
-	return nil
+	md := metadata.Pairs(ufsUtil.Namespace, "os")
+	ctx = metadata.NewOutgoingContext(ctx, md)
+
+	invClient := fleet.NewInventoryPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    c.envFlags.Env().AdminService,
+		Options: site.DefaultPRPCOptions,
+	})
+
+	ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    c.envFlags.Env().UFSService,
+		Options: site.UFSPRPCOptions,
+	})
+
+	bbClient, err := buildbucket.NewBuildBucketClient(ctx, hc)
+	if err != nil {
+		return fmt.Errorf("failed to create BuildBucket client: %w", err)
+	}
+
+	runErrs := []error{}
+
+	for _, unit := range args {
+
+		host := heuristics.NormalizeBotNameToDeviceName(unit)
+
+		_, _ = fmt.Fprintf(a.GetOut(), "Requesting labqual run for host %q\n", host)
+
+		stableReq := &fleet.GetStableVersionRequest{
+			Hostname:                 host,
+			SatlabInformationalQuery: false,
+		}
+
+		out, err := protojson.Marshal(stableReq)
+		if err != nil {
+			err = fmt.Errorf("failed to marshal stable version request for host %q: %w", host, err)
+			runErrs = append(runErrs, err)
+			continue
+		}
+
+		stdErrLog.Printf("Stable version request: %s\n", out)
+
+		stableResp, err := invClient.GetStableVersion(ctx, stableReq)
+		if err != nil {
+			err = fmt.Errorf("failed to get stable version for host %q: %w", host, err)
+			runErrs = append(runErrs, err)
+			continue
+		}
+
+		stdErrLog.Printf("Stable version response: %+v", stableResp)
+
+		lseResponse, err := ufsClient.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, host),
+		})
+		if err != nil {
+			err = fmt.Errorf("failed to retrieve MachineLSE for host %q: %w", host, err)
+			runErrs = append(runErrs, err)
+			continue
+		}
+
+		if len(lseResponse.GetMachines()) < 1 {
+			runErrs = append(runErrs, fmt.Errorf("machineLSE of host %q has no assets associated", host))
+			continue
+		}
+		machine := lseResponse.GetMachines()[0]
+
+		assetResponse, err := ufsClient.GetAsset(ctx, &ufsAPI.GetAssetRequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, machine),
+		})
+		if err != nil {
+			err = fmt.Errorf("failed to retrieve asset %q for host %q: %w", machine, host, err)
+			runErrs = append(runErrs, err)
+			continue
+		}
+
+		board := assetResponse.GetInfo().GetBuildTarget()
+
+		var dims = make(map[string]string)
+
+		dims["dut_name"] = host
+
+		if c.imagePath == "" {
+			stdErrLog.Print("No image provided, using lab stable configuration image")
+			c.imagePath = board + "-release/" + stableResp.CrosVersion
+		}
+
+		cmd := buildbucket.Run{
+			Board:       board,
+			Pool:        c.pool,
+			Image:       c.imagePath,
+			Priority:    50,
+			TimeoutMins: 2330,
+			CFT:         true,
+			Harness:     "tauto",
+			Tests:       []string{"tast.generic"},
+			AddedDims:   dims,
+			// Expected string: tast_expr=\(\"group:labqual_stable\"\) tast.firmware.firmwarePath=firmware-dedede-13606.B-branch-firmware/R89-13606.597.0/dedede
+			TestArgs: fmt.Sprintf(`tast_expr=\(\"group:labqual_stable\"\) tast.firmware.firmwarePath=%s`, stableResp.FaftVersion),
+			BBClient: bbClient.BuildBucketClient,
+		}
+
+		url, err := cmd.TriggerRun(ctx)
+		if err != nil {
+			err = fmt.Errorf("failed to start labqual on host %q: %w", host, err)
+			runErrs = append(runErrs, err)
+			continue
+		}
+		_, _ = fmt.Fprintf(a.GetOut(), "Starting labqual on host %q: %s\n", host, url)
+	}
+
+	return errors.Join(runErrs...)
 }
