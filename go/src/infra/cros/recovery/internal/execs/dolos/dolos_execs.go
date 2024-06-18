@@ -6,7 +6,8 @@ package dolos
 
 import (
 	"context"
-	"strings"
+	"encoding/json"
+	"fmt"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -15,21 +16,41 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// setDolosStateExec sets the dolos state of the from the actionArgs argument.
-//
-// @actionArgs: the list of the string that contains the dolos state information.
-// It should only contain one string in the format of: "state:x"
-// x must be one of the keys from Dolos_State_value
+const (
+	// User the doloscmd to query the Dolos status.
+	dolosGetStatusCmdGlob = "/usr/bin/doloscmd get-status --serial %s"
+)
+
+// Eventually use the files generated from doloscmt.proto.
+type dolosStatusResponse struct {
+	Status string `json:"status"`
+}
+
+// setDolosStateExec calculate the current Dolos state and update UFS.
 func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
-	args := info.GetActionArgs(ctx)
-	newState := strings.ToUpper(args.AsString(ctx, "state", ""))
-	if newState == "" {
-		return errors.Reason("set dolos state: state is not provided").Err()
+
+	dolos := info.GetChromeos().GetDolos()
+	if dolos == nil {
+		return errors.Reason("set dolos state: not specified").Err()
 	}
-	if dolos := info.GetChromeos().GetDolos(); dolos == nil || dolos.GetHostname() == "" {
-		return errors.Reason("set dolos state: dolos is not supported").Err()
+	previousState := info.GetChromeos().GetDolos().GetState()
+	info.GetChromeos().GetDolos().State = tlw.Dolos_DOLOS_UNKNOWN
+
+	resource := dolos.GetHostname()
+	run := info.NewRunner(resource)
+	output, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf(dolosGetStatusCmdGlob, dolos.GetSerialCable()))
+	if err != nil {
+		return errors.Annotate(err, "set dolos state").Err()
 	}
-	log.Debugf(ctx, "Previous dolos state: %s", info.GetChromeos().GetDolos().GetState())
+
+	var decoded dolosStatusResponse
+	err = json.Unmarshal([]byte(output), &decoded)
+	if err != nil {
+		return errors.Annotate(err, "set dolos state").Err()
+	}
+
+	newState := decoded.Status
+	log.Debugf(ctx, "Previous dolos state: %s", previousState)
 	if v, ok := tlw.Dolos_State_value[newState]; ok {
 		info.GetChromeos().GetDolos().State = tlw.Dolos_State(v)
 		log.Infof(ctx, "Set dolos state to be: %s", newState)

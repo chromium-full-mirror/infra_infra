@@ -532,16 +532,22 @@ func convertSIMStateToUFS(s tlw.Cellular_SIMProfileInfo_State) ufslab.SIMProfile
 }
 
 var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{
-	ufslab.PeripheralState_WORKING:        tlw.Dolos_WORKING,
-	ufslab.PeripheralState_BROKEN:         tlw.Dolos_BROKEN,
-	ufslab.PeripheralState_NOT_APPLICABLE: tlw.Dolos_NOT_APPLICABLE,
+	ufslab.PeripheralState_BROKEN:                        tlw.Dolos_DOLOS_UNKNOWN,
+	ufslab.PeripheralState_DOLOS_NO_POWER_SUPPLIED:       tlw.Dolos_DOLOS_NO_POWER_SUPPLIED,
+	ufslab.PeripheralState_DOLOS_OUTPUT_POWER_FAILED:     tlw.Dolos_DOLOS_OUTPUT_POWER_FAILED,
+	ufslab.PeripheralState_DOLOS_BMS_STATE_INVALID:       tlw.Dolos_DOLOS_BMS_STATE_INVALID,
+	ufslab.PeripheralState_DOLOS_SMBUS_COMM_NOT_DETECTED: tlw.Dolos_DOLOS_SMBUS_COMM_NOT_DETECTED,
+	ufslab.PeripheralState_DOLOS_EEPROM_FAILURE:          tlw.Dolos_DOLOS_EEPROM_FAILURE,
+	ufslab.PeripheralState_WORKING:                       tlw.Dolos_DOLOS_OK,
+	ufslab.PeripheralState_DOLOS_NO_COMMUNICATION:        tlw.Dolos_DOLOS_NO_COMMUNICATION,
+	ufslab.PeripheralState_DOLOS_NOT_PRESENT:             tlw.Dolos_DOLOS_NOT_PRESENT,
 }
 
 func convertDolosState(s ufslab.PeripheralState) tlw.Dolos_State {
 	if ds, ok := dolosStates[s]; ok {
 		return ds
 	}
-	return tlw.Dolos_STATE_UNSPECIFIED
+	return tlw.Dolos_DOLOS_UNKNOWN
 }
 
 func convertDolosStateToUFS(ts tlw.Dolos_State) ufslab.PeripheralState {

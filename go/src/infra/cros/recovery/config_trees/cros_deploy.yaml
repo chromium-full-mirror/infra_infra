@@ -119739,18 +119739,12 @@ plans:
             - state:WORKING
     - name: dolos (Allow to fail)
       criticalactions:
-        - name: Set state:BROKEN
-          exec_name: set_dolos_state
-          exec_args:
-            - state:BROKEN
         - name: Device is pingable (time:'15s')
           exec_name: cros_ping
         - name: Device is sshable (time:'30s')
           exec_name: cros_ssh
-        - name: Set state:WORKING
+        - name: Update state (time:'30s')
           exec_name: set_dolos_state
-          exec_args:
-            - state:WORKING
     - name: close (Allow to fail)
       criticalactions:
         - name: Update peripheral wifi state (Allow to fail)

@@ -721,12 +721,18 @@ message Dolos {
   // State describes the state of Dolos.
   enum State {
     STATE_UNSPECIFIED = 0;
-    // Device and software on it is working as expected.
-    WORKING = 1;
-    // Device is broken or not working as expected.
-    BROKEN = 2;
-    // Device State is not applicable.
-    NOT_APPLICABLE = 3;
+    WORKING = 1 [deprecated=true];
+    BROKEN = 2 [deprecated=true];
+    NOT_APPLICABLE = 3 [deprecated=true];
+    DOLOS_UNKNOWN = 4;
+    DOLOS_NO_POWER_SUPPLIED = 5;
+    DOLOS_OUTPUT_POWER_FAILED = 6;
+    DOLOS_BMS_STATE_INVALID = 7;
+    DOLOS_SMBUS_COMM_NOT_DETECTED = 8;
+    DOLOS_EEPROM_FAILURE = 9;
+    DOLOS_OK = 10;
+    DOLOS_NO_COMMUNICATION = 11;
+    DOLOS_NOT_PRESENT = 12;
   }
 
   // State of the device.

@@ -34741,10 +34741,9 @@ plans:
         - name: Set state:WORKING ('set_hmr_state') (time:'15s')
     - name: dolos (Allow to fail)
       criticalactions:
-        - name: Set state:BROKEN ('set_dolos_state')
         - name: Device is pingable ('cros_ping') (time:'15s')
         - name: Device is sshable ('cros_ssh') (time:'30s')
-        - name: Set state:WORKING ('set_dolos_state')
+        - name: Update state ('set_dolos_state') (time:'30s')
     - name: close (Allow to fail)
       criticalactions:
         - name: Update peripheral wifi state (Allow to fail) ('update_peripheral_wifi_state')

@@ -8,14 +8,12 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// dolosRepairPlan describe the plan to repair Dolos device.
 func dolosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Set state:BROKEN",
 			"Device is pingable",
 			"Device is sshable",
-			"Set state:WORKING",
+			"Update state",
 		},
 		Actions: map[string]*Action{
 			"Device is pingable": {
@@ -26,19 +24,9 @@ func dolosRepairPlan() *Plan {
 				ExecName:    "cros_ssh",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
-			"Set state:BROKEN": {
-				ExecName: "set_dolos_state",
-				ExecExtraArgs: []string{
-					"state:BROKEN",
-				},
-				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			},
-			"Set state:WORKING": {
-				ExecName: "set_dolos_state",
-				ExecExtraArgs: []string{
-					"state:WORKING",
-				},
-				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			"Update state": {
+				ExecName:    "set_dolos_state",
+				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
 		},
 	}
