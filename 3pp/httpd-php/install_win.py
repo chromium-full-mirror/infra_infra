@@ -47,8 +47,8 @@ def nmake_windows_builder(init_directory):
     # as the host machine is x64.
     # The issue is that gen_test_char must be compiled for the host platform,
     # rather than the target platform. Target platform is arm64.
-    res = os.system(
-        "gcc -Wall -O2 -DCROSS_COMPILE gen_test_char.c -s -o gen_test_char")
+    res = subprocess.check_call([
+        "gcc", "-Wall", "-O2", "-DCROSS_COMPILE", "gen_test_char.c", "-s", "-o", "gen_test_char"])
     print("gcc res = ", res)
 
     os.chdir("..")

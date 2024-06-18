@@ -9,7 +9,7 @@ import os
 
 
 def do_latest():
-  print('11.2.0-6')
+  print('14.1.0-3')
 
 
 def get_download_url():
@@ -17,22 +17,24 @@ def get_download_url():
   # https://packages.msys2.org/package/mingw-w64-x86_64-gcc?repo=mingw64.
   # Similarly, these could be found by running pacman -S mingw-w64-x86_64-gcc
   # and reading the list of packages being installed.
+  # NOTE: these links will only be available until upstream package being
+  # updated to newer version.
   packages = [
-      "binutils-2.37-4-any.pkg.tar.zst",
-      "crt-git-9.0.0.6373.5be8fcd83-1-any.pkg.tar.zst",
-      "gcc-11.2.0-6-any.pkg.tar.zst",
-      "gcc-libs-11.2.0-6-any.pkg.tar.zst",
-      "gmp-6.2.1-3-any.pkg.tar.zst",
-      "headers-git-9.0.0.6373.5be8fcd83-1-any.pkg.tar.zst",
-      "isl-0.24-1-any.pkg.tar.zst",
-      "libwinpthread-git-9.0.0.6373.5be8fcd83-1-any.pkg.tar.zst",
-      "libiconv-1.16-2-any.pkg.tar.zst",
-      "mpc-1.2.1-1-any.pkg.tar.zst",
-      "mpfr-4.1.0.p13-1-any.pkg.tar.zst",
-      "zlib-1.2.11-9-any.pkg.tar.zst",
-      "zstd-1.5.1-1-any.pkg.tar.zst",
-      "windows-default-manifest-6.4-3-any.pkg.tar.xz",
-      "winpthreads-git-9.0.0.6373.5be8fcd83-1-any.pkg.tar.zst",
+      "binutils-2.42-2-any.pkg.tar.zst",
+      "crt-git-12.0.0.r32.gf977e1c38-1-any.pkg.tar.zst",
+      "gcc-14.1.0-3-any.pkg.tar.zst",
+      "gcc-libs-14.1.0-3-any.pkg.tar.zst",
+      "gmp-6.3.0-2-any.pkg.tar.zst",
+      "headers-git-12.0.0.r32.gf977e1c38-1-any.pkg.tar.zst",
+      "isl-0.26-1-any.pkg.tar.zst",
+      "libwinpthread-git-12.0.0.r32.gf977e1c38-1-any.pkg.tar.zst",
+      "libiconv-1.17-4-any.pkg.tar.zst",
+      "mpc-1.3.1-2-any.pkg.tar.zst",
+      "mpfr-4.2.1-2-any.pkg.tar.zst",
+      "zlib-1.3.1-1-any.pkg.tar.zst",
+      "zstd-1.5.6-2-any.pkg.tar.zst",
+      "windows-default-manifest-6.4-4-any.pkg.tar.zst",
+      "winpthreads-git-12.0.0.r32.gf977e1c38-1-any.pkg.tar.zst",
   ]
   # Note: windows-arm64 will package the windows-amd64 build.
   url_prefix = "https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-"

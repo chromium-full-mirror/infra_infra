@@ -22,7 +22,7 @@ create {
     tool: "tools/cmake"
     tool: "tools/perl"
     tool: "tools/nasm"
-    tool: "build_support/mingw"
+    tool: "build_support/mingw@2@11.2.0-6"
     install: "install_win.py"
   }
 }
