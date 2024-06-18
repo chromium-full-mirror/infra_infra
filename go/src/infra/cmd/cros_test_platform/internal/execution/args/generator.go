@@ -85,11 +85,6 @@ func (g *Generator) CheckConsistency() error {
 		return errors.Reason("incompatible model dependency: request (%s) vs. enumeration (%s)", rm, em).Err()
 	}
 
-	ud := g.getUnsupportedDependencies()
-	if len(ud) > 0 {
-		return errors.Reason("unsupported request dependencies: %s", strings.Join(ud, ", ")).Err()
-	}
-
 	return nil
 }
 
@@ -106,6 +101,7 @@ func (g *Generator) enumerationInventoryLabels() *inventory.SchedulableLabels {
 	return labels.Revert(flatDims)
 }
 
+// Not used right now. Keeping for history purposes.
 func (g *Generator) getUnsupportedDependencies() []string {
 	el := g.enumerationInventoryLabels()
 	unsupported := stringset.New(len(g.Invocation.Test.Dependencies))
@@ -180,7 +176,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		}
 	}
 
-	dims := g.Params.GetFreeformAttributes().GetSwarmingDimensions()
+	dims := g.DepsToSwarmngLabels(g.Params.GetFreeformAttributes().GetSwarmingDimensions())
 	dims = dimsWithDUTState(dims)
 
 	return request.Args{
@@ -204,6 +200,24 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		GerritChanges:                    g.GerritChanges,
 		ResultsConfig:                    g.Params.Results,
 	}, nil
+}
+
+// DepsToSwarmngLabels converts test deps to swarming dims.
+func (g *Generator) DepsToSwarmngLabels(dims []string) []string {
+	testDeps := g.Invocation.Test.Dependencies
+	for _, dep := range testDeps {
+		label := dep.Label
+		if strings.Contains(label, "label-") {
+			dims = append(dims, label)
+		} else if strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") || strings.HasPrefix(label, "bot") {
+			dims = append(dims, label)
+		} else if strings.Contains(label, ":") {
+			dims = append(dims, fmt.Sprintf("label-%s", label))
+		} else {
+			dims = append(dims, fmt.Sprintf("label-%s:True", label))
+		}
+	}
+	return dims
 }
 
 // dimsWithDUTState adds a dut_state:ready requirement to the given dims if no
@@ -251,7 +265,7 @@ var poolMap = map[test_platform.Request_Params_Scheduling_ManagedPool]inventory.
 }
 
 func (g *Generator) inventoryLabels() (*inventory.SchedulableLabels, error) {
-	inv := g.enumerationInventoryLabels()
+	inv := inventory.NewSchedulableLabels()
 	if g.Params.GetSoftwareAttributes().GetBuildTarget() != nil {
 		*inv.Board = g.Params.SoftwareAttributes.BuildTarget.Name
 	}

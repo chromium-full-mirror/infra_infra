@@ -815,7 +815,7 @@ func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) 
 	for _, label := range swarmingLabels {
 		if strings.Contains(label, "label-") {
 			dims = append(dims, label)
-		} else if strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") {
+		} else if strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") || strings.HasPrefix(label, "bot") {
 			dims = append(dims, label)
 		} else if strings.Contains(label, ":") {
 			dims = append(dims, fmt.Sprintf("label-%s", label))

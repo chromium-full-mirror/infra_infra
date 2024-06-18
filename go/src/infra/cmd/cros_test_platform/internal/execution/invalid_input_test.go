@@ -139,13 +139,6 @@ func TestIncompatibleDependencies(t *testing.T) {
 					testInvocationWithDependency("some_test", "model:enumerated"),
 				},
 			},
-			{
-				Tag:    "unsupported dependencies",
-				Params: basicParams(),
-				Invs: []*steps.EnumerationResponse_AutotestInvocation{
-					testInvocationWithDependency("some_test", "some_unsupported_dependency"),
-				},
-			},
 		}
 
 		for _, c := range cases {
