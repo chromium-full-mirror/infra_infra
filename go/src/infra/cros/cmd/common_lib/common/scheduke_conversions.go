@@ -118,9 +118,10 @@ func getParentBBIDstr(bbReq *buildbucketpb.ScheduleBuildRequest) (string, error)
 	return fields["parentBuildId"].GetStringValue(), nil
 }
 
-// getDeadlineStruct searches the bbReq for the deadline field.
-// Can be found in either the CrosTestRunnerDynamicRequest or the CftTestRequest.
-func getDeadlineStruct(bbReq *buildbucketpb.ScheduleBuildRequest) (*structpb.Value, error) {
+// getTRDeadlineStruct searches the given test_runner BB request for the
+// deadline field. Can be found in either the CrosTestRunnerDynamicRequest or
+// the CftTestRequest.
+func getTRDeadlineStruct(bbReq *buildbucketpb.ScheduleBuildRequest) (*structpb.Value, error) {
 	fields := bbReq.GetProperties().GetFields()
 	if dynReq, ok := fields["cros_test_runner_dynamic_request"]; ok {
 		params, ok := dynReq.GetStructValue().GetFields()["params"]
@@ -139,11 +140,11 @@ func getDeadlineStruct(bbReq *buildbucketpb.ScheduleBuildRequest) (*structpb.Val
 	return fields["deadline"], nil
 }
 
-// priority derives the approximate Scheduke priority from the given build's
-// Quota Scheduler account, returning a high value (i.e. low priority) if no
-// account was found.
-func priority(tags []*buildbucketpb.StringPair) int64 {
-	account := qsAccount(tags)
+// trPriority derives the approximate Scheduke priority from the given
+// test_runner build's Quota Scheduler account, returning a high value (i.e. low
+// priority) if no account was found.
+func trPriority(tags []*buildbucketpb.StringPair) int64 {
+	account := trQSAccount(tags)
 	priority, ok := quotaAccountPriorities[account]
 	if !ok {
 		priority = noAccountPriority
@@ -151,9 +152,9 @@ func priority(tags []*buildbucketpb.StringPair) int64 {
 	return priority
 }
 
-// qsAccount looks for the Quota Scheduler account on the given build's tags,
-// returning an empty string if no account was found.
-func qsAccount(tags []*buildbucketpb.StringPair) string {
+// trQSAccount looks for the Quota Scheduler account on the given test_runner
+// build's tags, returning an empty string if no account was found.
+func trQSAccount(tags []*buildbucketpb.StringPair) string {
 	for _, t := range tags {
 		if t.GetKey() == quotaAccountTagKey {
 			return t.GetValue()
@@ -162,9 +163,9 @@ func qsAccount(tags []*buildbucketpb.StringPair) string {
 	return ""
 }
 
-// periodic checks if the given build is periodic by seeing if it has
-// a specific tag only included on builds from Suite Scheduler.
-func periodic(tags []*buildbucketpb.StringPair) bool {
+// trBuildIsPeriodic checks if the given build is trBuildIsPeriodic by seeing if
+// it has a specific tag only included on builds from Suite Scheduler.
+func trBuildIsPeriodic(tags []*buildbucketpb.StringPair) bool {
 	for _, t := range tags {
 		if t.GetKey() == suiteSchedulerTagKey {
 			return true

@@ -45,7 +45,7 @@ func (s *SchedukeScheduler) Setup(pool string) error {
 }
 
 func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucketpb.ScheduleBuildRequest, step *build.Step) (*buildbucketpb.Build, string, error) {
-	schedukeReq, err := s.schedukeClient.ScheduleBuildReqToSchedukeReq(req)
+	schedukeReq, err := s.schedukeClient.TestRunnerBBReqToSchedukeReq(req)
 	if err != nil {
 		return nil, "", err
 	}

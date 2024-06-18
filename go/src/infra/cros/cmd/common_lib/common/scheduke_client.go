@@ -256,15 +256,15 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader, 
 	return r, nil
 }
 
-// ScheduleBuildReqToSchedukeReq converts a Buildbucket ScheduleBuildRequest to
-// a Scheduke request with the given event time.
-func (s *SchedukeClient) ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukeapi.KeyedTaskRequestEvents, error) {
+// TestRunnerBBReqToSchedukeReq converts a ScheduleBuildRequest for a
+// test_runner BB build to a Scheduke request.
+func (s *SchedukeClient) TestRunnerBBReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest) (*schedukeapi.KeyedTaskRequestEvents, error) {
 	bbReqBytes := []byte(protojson.Format(bbReq))
 	compressedReqJSON, err := compressAndEncodeBBReq(bbReqBytes)
 	if err != nil {
 		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
 	}
-	deadlineStruct, err := getDeadlineStruct(bbReq)
+	deadlineStruct, err := getTRDeadlineStruct(bbReq)
 	if err != nil {
 		return nil, err
 	}
@@ -286,13 +286,16 @@ func (s *SchedukeClient) ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.Sche
 		return nil, fmt.Errorf("error parsing deadline for ScheduleBuildRequest %v: %w", bbReq, err)
 	}
 	tags := bbReq.GetTags()
-	qsAccount := qsAccount(tags)
-	periodic := periodic(tags)
+	qsAccount := trQSAccount(tags)
+	periodic := trBuildIsPeriodic(tags)
 	asap := asap(qsAccount, periodic)
 	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
 
 	var experiments []string
-	useDM, err := s.shouldUseDM(pool)
+	useDM, err := s.ShouldUseDM(pool)
+	if err != nil {
+		return nil, fmt.Errorf("error checking whether to use DM for pool %s: %w", pool, err)
+	}
 	if useDM {
 		experiments = append(experiments, dmExperiment)
 	}
@@ -301,7 +304,7 @@ func (s *SchedukeClient) ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.Sche
 		EventTime:                time.Now().UnixMicro(),
 		Deadline:                 deadline.UnixMicro(),
 		Periodic:                 periodic,
-		Priority:                 priority(tags),
+		Priority:                 trPriority(tags),
 		RequestedDimensions:      dims,
 		RealExecutionMinutes:     0, // Unneeded outside of shadow mode.
 		MaxExecutionMinutes:      30,
@@ -321,11 +324,50 @@ func (s *SchedukeClient) ScheduleBuildReqToSchedukeReq(bbReq *buildbucketpb.Sche
 	}, nil
 }
 
+// AdminTaskReqToSchedukeReq converts a ScheduleBuildRequest for a lab admin
+// task BB build to a Scheduke request.
+func (s *SchedukeClient) AdminTaskReqToSchedukeReq(bbReq *buildbucketpb.ScheduleBuildRequest, deviceName, pool string) (*schedukeapi.KeyedTaskRequestEvents, error) {
+	bbReqBytes := []byte(protojson.Format(bbReq))
+	compressedReqJSON, err := compressAndEncodeBBReq(bbReqBytes)
+	if err != nil {
+		return nil, fmt.Errorf("error compressing and encoding ScheduleBuildRequest %v: %w", bbReq, err)
+	}
+
+	now := time.Now()
+	schedukeTask := &schedukeapi.TaskRequestEvent{
+		EventTime: now.UnixMicro(),
+		Deadline:  now.Add(40 * time.Hour).UnixMicro(),
+		Periodic:  false,
+		// Highest priority for admin tasks.
+		Priority: 0,
+		// No dimensions needed since all admin tasks specify device name directly.
+		RequestedDimensions: nil,
+		// Unneeded outside of shadow mode.
+		RealExecutionMinutes: 0,
+		MaxExecutionMinutes:  60,
+		QsAccount:            "admin-task",
+		Pool:                 pool,
+		Bbid:                 0,
+		// ASAP ensures these tasks cut the line and run first.
+		Asap:                     true,
+		ScheduleBuildRequestJson: compressedReqJSON,
+		DeviceName:               deviceName,
+		// If running through Scheduke, admin flow tasks always use DM.
+		Experiments: []string{dmExperiment},
+	}
+
+	return &schedukeapi.KeyedTaskRequestEvents{
+		Events: map[int64]*schedukeapi.TaskRequestEvent{
+			SchedukeTaskRequestKey: schedukeTask,
+		},
+	}, nil
+}
+
 // LeaseRequest constructs a keyed TaskRequestEvent to request a lease from
 // Scheduke with the given dimensions and lease length in minutes, for the given
 // user, at the given time.
 func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensions, pool, deviceName, user string, mins int64, t time.Time) (*schedukeapi.KeyedTaskRequestEvents, error) {
-	useDM, err := s.shouldUseDM(pool)
+	useDM, err := s.ShouldUseDM(pool)
 	if err != nil {
 		return nil, err
 	}
@@ -371,9 +413,9 @@ func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensio
 	}, nil
 }
 
-// shouldUseDM returns a bool indicating whether a task request with the given
+// ShouldUseDM returns a bool indicating whether a task request with the given
 // pool should enable the Device Manager experiment.
-func (s *SchedukeClient) shouldUseDM(pool string) (bool, error) {
+func (s *SchedukeClient) ShouldUseDM(pool string) (bool, error) {
 	return s.AnyStringInGerritList([]string{pool}, dmPoolsURL)
 }
 

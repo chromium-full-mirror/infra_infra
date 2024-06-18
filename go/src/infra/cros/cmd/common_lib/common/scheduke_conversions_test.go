@@ -39,7 +39,7 @@ func TestSchedukePriority(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
-			gotPriority := priority(tt.build.GetTags())
+			gotPriority := trPriority(tt.build.GetTags())
 			if gotPriority != tt.wantPriority {
 				t.Errorf("got %d, want %d", gotPriority, tt.wantPriority)
 			}
@@ -79,7 +79,7 @@ func TestQuotaAccount(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
-			gotAccount := qsAccount(tt.build.GetTags())
+			gotAccount := trQSAccount(tt.build.GetTags())
 			if gotAccount != tt.wantAccount {
 				t.Errorf("got %v, want %v", gotAccount, tt.wantAccount)
 			}
@@ -120,7 +120,7 @@ func TestPeriodic(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
-			gotPeriodicity := periodic(tt.build.GetTags())
+			gotPeriodicity := trBuildIsPeriodic(tt.build.GetTags())
 			if gotPeriodicity != tt.wantPeriodicity {
 				t.Errorf("got %v, want %v", gotPeriodicity, tt.wantPeriodicity)
 			}
