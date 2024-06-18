@@ -158,7 +158,6 @@ func cleanUpImages(imageApi api.ImageApi, rate int, dryRun bool) (cleanImagesRes
 				return
 			}
 			mu.Lock()
-			fmt.Fprintf(os.Stdout, "deleted image: %s\n", imageName)
 			result.Deleted = append(result.Deleted, imageName)
 			mu.Unlock()
 		}(gceImage.Name)
