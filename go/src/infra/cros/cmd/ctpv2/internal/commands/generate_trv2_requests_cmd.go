@@ -37,6 +37,7 @@ type GenerateTrv2RequestsCmd struct {
 	DynamicRun       bool
 	InternalTestPlan *api.InternalTestplan
 	Config           *config.Config
+	RequestKey       string
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -117,6 +118,11 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
+	if sk.RequestKey == "" {
+		logging.Warningf(ctx, "cmd %q missing optional dependency: RequestKey", cmd.GetCommandType())
+	}
+
+	cmd.RequestKey = sk.RequestKey
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
@@ -293,7 +299,7 @@ func (cmd *GenerateTrv2RequestsCmd) ProcessEnumError(ctx context.Context, step *
 	err := &data.EnumerationError{SuiteName: suiteName}
 
 	cmd.TestResults = map[string]*data.TestResults{}
-	cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: err}
+	cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: err, RequestKey: cmd.RequestKey, Name: suiteName}
 
 	cmd.ObserveEnumerationFailure(ctx)
 	return err

@@ -137,7 +137,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	common.WriteAnyObjectToStepLog(ctx, step, finalMap, "FinalMap")
 	cmd.RequestToTargetChainMap = finalMap
 	step.SetSummaryMarkdown("Translation succeeded")
-	common.WriteProtoToStepLog(ctx, step, cmd.CtpV2Request, "Translated CtpV2 Request")
+	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV2RequestMap, "Translated CtpV2 Request Map")
 
 	return err
 }

@@ -63,7 +63,10 @@ func GroupV2Requests(ctx context.Context, v2s []*V2WithKey, manifestFetcher Mani
 	groupedEligibleRequests, reqChainMap := GroupEligibleV2Requests(ctx, eligible)
 
 	// merge public group as is with groupedEligibleRequests
-	groupedEligibleRequests = append(groupedEligibleRequests, public...)
+	for _, eachPublic := range public {
+		groupedEligibleRequests = append(groupedEligibleRequests, eachPublic)
+		reqChainMap[eachPublic.Key] = []string{eachPublic.Key}
+	}
 
 	return groupedEligibleRequests, reqChainMap
 }

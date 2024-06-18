@@ -189,15 +189,27 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 			} else {
 				// Processing non-3d results
 				resultBMVkey := common.ExtractPrefixUntilDelimiter(result.Key, "-shard")
-				if _, ok := reqChain[resultBMVkey]; !ok {
+				if _, ok := reqChain[resultBMVkey]; !ok && resultBMVkey != common.EnumerationErrKey {
 					// should not happen
 					return nil, fmt.Errorf("result key %s not found in request chain!", resultBMVkey)
 				}
-				originalKey := reqChain[resultBMVkey]
-				if _, ok := ret[originalKey]; !ok {
-					ret[originalKey] = []*data.TestResults{}
+				if resultBMVkey == common.EnumerationErrKey {
+					// in this case there won't be any individual test results for each BMVs.
+					// so we need to copy the same result of each (similar to 3d procressing).
+					for _, chainedKey := range reqChain {
+						if _, ok := ret[chainedKey]; !ok {
+							ret[chainedKey] = []*data.TestResults{}
+						}
+						ret[chainedKey] = append(ret[chainedKey], result)
+					}
+				} else {
+					// if no enum error, let's try to match with each BMV.
+					originalKey := reqChain[resultBMVkey]
+					if _, ok := ret[originalKey]; !ok {
+						ret[originalKey] = []*data.TestResults{}
+					}
+					ret[originalKey] = append(ret[originalKey], result)
 				}
-				ret[originalKey] = append(ret[originalKey], result)
 			}
 		}
 	}
@@ -330,22 +342,32 @@ func ToExecuteResponses(testResultMap map[string][]*data.TestResults) *steps.Exe
 	for key, results := range testResultMap {
 		consolidatedResults := []*steps.ExecuteResponse_ConsolidatedResult{}
 		taskResults := []*steps.ExecuteResponse_TaskResult{}
+		enumerationErrorFound := false
 		verdict := test_platform.TaskState_VERDICT_NO_VERDICT
 		for _, testResult := range results {
 			taskResults = append(taskResults, TrResultToErTaskResult(testResult))
 			if testResult.GetFailureErr() != nil {
+				switch (testResult.GetFailureErr()).(type) {
+				case *data.EnumerationError:
+					enumerationErrorFound = true
+				}
 				verdict = test_platform.TaskState_VERDICT_FAILED
 			} else {
 				verdict = test_platform.TaskState_VERDICT_PASSED
 			}
 		}
-		// consolidated results
-		consolidatedResult := &steps.ExecuteResponse_ConsolidatedResult{
-			Attempts: taskResults,
-		}
-		consolidatedResults = append(consolidatedResults, consolidatedResult)
+		if enumerationErrorFound {
+			taggedRes[key] = &steps.ExecuteResponse{State: &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, Verdict: verdict}}
+		} else {
+			// consolidated results
+			consolidatedResult := &steps.ExecuteResponse_ConsolidatedResult{
+				Attempts: taskResults,
+			}
+			consolidatedResults = append(consolidatedResults, consolidatedResult)
 
-		taggedRes[key] = &steps.ExecuteResponse{TaskResults: taskResults, ConsolidatedResults: consolidatedResults, State: &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, Verdict: verdict}}
+			taggedRes[key] = &steps.ExecuteResponse{TaskResults: taskResults, ConsolidatedResults: consolidatedResults, State: &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, Verdict: verdict}}
+		}
+
 	}
 
 	return &steps.ExecuteResponses{TaggedResponses: taggedRes}
@@ -364,7 +386,7 @@ func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse
 				RejectedDimensions:     r2,
 			}
 			return r
-			// TODO: Consider adding enumeration error (v1 does not propagate enumeration error)
+			// TODO: Consider adding enumeration error (v1 does not propagate enumeration error on task level)
 		}
 		return nil
 	}
