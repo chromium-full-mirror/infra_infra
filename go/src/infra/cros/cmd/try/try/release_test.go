@@ -366,7 +366,7 @@ func TestRun_channelOverride(t *testing.T) {
 		buildTargets:            []string{"eve", "kevin-kernelnext"},
 		expectedOrch:            "release-R106.15054.B-orchestrator",
 		expectedChildren:        []string{"eve-release-R106.15054.B", "kevin-kernelnext-release-R106.15054.B"},
-		channelOverride:         "dev,beta",
-		expectedChannelOverride: []string{"dev", "beta"},
+		channelOverride:         "dev,beta,1",
+		expectedChannelOverride: []string{"3", "2", "1"},
 	})
 }

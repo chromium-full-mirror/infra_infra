@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/maruel/subcommands"
 
+	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 
@@ -40,8 +42,7 @@ func GetCmdRelease(authOpts auth.Options) *subcommands.Command {
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
 				"By default, HW tests are disabled in staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
-			// TODO(b/286279619): Support string channel names.
-			c.Flags.StringVar(&c.channelOverride, "channels", "", "Specify comma-separated channel(s) to sign on. E.g. --channels 3,4")
+			c.Flags.StringVar(&c.channelOverride, "channels", "", "Specify comma-separated channel(s) to sign on. E.g. --channels beta,dev,lts")
 			if flag.NArg() > 1 && flag.Args()[1] == "help" {
 				fmt.Printf("Run `cros try help` or `cros try help ${subcomand}` for help.")
 				os.Exit(0)
@@ -194,7 +195,11 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 
 	if r.channelOverride != "" {
 		r.LogOutIfVerbose("Setting channel override: %v", r.channelOverride)
-		channelList := strings.Split(r.channelOverride, ",")
+		channelList, err := parseChannelOverride(r.channelOverride)
+		if err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
 		if err := bb.SetProperty(propsStruct, "$chromeos/cros_infra_config.override_release_channels", channelList); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
@@ -302,4 +307,34 @@ func (r *releaseRun) runReleaseOrchestrator(ctx context.Context) error {
 	orchName := r.getReleaseOrchestratorName()
 	_, err := r.bbClient.BBAdd(ctx, r.dryrun, append([]string{orchName}, r.bbAddArgs...)...)
 	return err
+}
+
+// parseChannelOverride parses the channel override string and returns a list of channels by number.
+// The channel numbers come from chromiumos/common.proto.
+// For example, "2,stable,dev" -> [2,1,3] and "invalid_channel,2,4" -> error.
+func parseChannelOverride(channelOverride string) ([]string, error) {
+	var errs []error
+	channels := strings.Split(channelOverride, ",")
+	out := make([]string, 0, len(channels))
+	for _, channel := range channels {
+		channel = strings.TrimSpace(channel)
+		parsedChannelNumber, err := strconv.Atoi(channel)
+		if err == nil { // if NO error, i.e. we parsed an integer
+			if _, ok := chromiumos.Channel_name[int32(parsedChannelNumber)]; !ok {
+				errs = append(errs, fmt.Errorf("invalid channel number %d", parsedChannelNumber))
+				continue
+			}
+			out = append(out, strconv.Itoa(parsedChannelNumber))
+		} else { // user supplied a non-integer channel name
+			enumName := "CHANNEL_" + strings.ToUpper(channel)
+			val, ok := chromiumos.Channel_value[enumName]
+			if !ok {
+				errs = append(errs, fmt.Errorf("invalid channel name %q", channel))
+				continue
+			}
+			out = append(out, strconv.Itoa(int(val)))
+		}
+	}
+
+	return out, errors.Join(errs...)
 }
