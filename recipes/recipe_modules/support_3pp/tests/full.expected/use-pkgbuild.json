@@ -151,36 +151,11 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "experimental pkgbuild"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/_pkgbuild"
-    ],
-    "env": {
-      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
-    },
-    "infra_step": true,
-    "name": "experimental pkgbuild.mkdir -p [pkgbuild]",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
     "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/_pkgbuild",
+      "[CLEANUP]/pkgbuild",
       "-ensure-file",
       "infra/tools/luci/pkgbuild/linux-amd64 latest",
       "-max-threads",
@@ -191,9 +166,8 @@
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
-    "name": "experimental pkgbuild.ensure_installed",
+    "name": "ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
@@ -209,7 +183,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/_pkgbuild/edge",
+      "[CLEANUP]/pkgbuild/edge",
       "--output",
       "[CLEANUP]/tmp_tmp_2/sub_build.pb",
       "--",
@@ -218,12 +192,9 @@
       "-cipd-package-prefix",
       "3pp",
       "-storage-dir",
-      "[START_DIR]/_pkgbuild/store",
+      "[CACHE]/pkgbuild",
       "-target-platform",
       "linux-amd64",
-      "-upload",
-      "-cipd-service",
-      "https://chrome-infra-packages-dev.appspot.com/",
       "-spec-pool",
       "[CACHE]/builder/package_repo",
       "p_something/package_repo",
@@ -238,10 +209,9 @@
       "TMP": "[CLEANUP]/tmp_tmp_3",
       "TMPDIR": "[CLEANUP]/tmp_tmp_3"
     },
-    "name": "experimental pkgbuild.build packages",
+    "name": "build packages (pkgbuild)",
     "stdin": "\u0012\u00002\u0006\b\ufffd\u00af\ufffd\u0005:\u0006\b\ufffd\u00af\ufffd\u0005`\u0002",
     "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@step.sub_build@{@@@",
       "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
       "@@@STEP_LOG_LINE@step.sub_build@}@@@",

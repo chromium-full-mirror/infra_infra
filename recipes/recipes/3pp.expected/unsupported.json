@@ -339,6 +339,13 @@
     "name": "compute build plan"
   },
   {
+    "cmd": [],
+    "name": "2 packages unsupported for None",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@<br/>prefix/deps/pkg_a<br/>prefix/deps/pkg_b@@@"
+    ]
+  },
+  {
     "cmd": [
       "[START_DIR]/reporter/snoopy_broker",
       "-report-stage",
@@ -349,13 +356,6 @@
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
     "name": "snoop: report_stage (2)"
-  },
-  {
-    "cmd": [],
-    "name": "2 packages unsupported for None",
-    "~followup_annotations": [
-      "@@@STEP_TEXT@<br/>prefix/deps/pkg_a<br/>prefix/deps/pkg_b@@@"
-    ]
   },
   {
     "name": "$result"

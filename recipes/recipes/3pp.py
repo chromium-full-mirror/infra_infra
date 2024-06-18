@@ -177,13 +177,26 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
         api.file.rmtree('rm %s' % (hash_name,),
                         package_repos / hash_name)
 
-    _, unsupported = api.support_3pp.ensure_uploaded(
-        to_build,
-        platform,
-        force_build=force_build,
-        tryserver_affected_files=tryserver_affected_files,
-        use_pkgbuild=use_pkgbuild,
-    )
+    if use_pkgbuild:
+      api.support_3pp.pkgbuild(
+          to_build,
+          platform,
+          upload=not api.tryserver.is_tryserver,
+          cipd_service='https://chrome-infra-packages-dev.appspot.com/',
+      )
+    else:
+      _, unsupported = api.support_3pp.ensure_uploaded(
+          to_build,
+          platform,
+          force_build=force_build,
+          tryserver_affected_files=tryserver_affected_files,
+      )
+
+      if unsupported:
+        api.step.empty(
+            '%d packages unsupported for %r' % (len(unsupported), platform),
+            step_text='<br/>' + '<br/>'.join(sorted(unsupported)))
+
     # Report task stage to snoopy.
     if not api.tryserver.is_tryserver and not api.runtime.is_experimental:
       try:
@@ -191,10 +204,6 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
       except Exception:  # pragma: no cover
         api.step.active_result.presentation.status = api.step.FAILURE
 
-    if unsupported:
-      api.step.empty(
-          '%d packages unsupported for %r' % (len(unsupported), platform),
-          step_text='<br/>' + '<br/>'.join(sorted(unsupported)))
 
 
 def GenTests(api):
@@ -212,7 +221,7 @@ def GenTests(api):
 
   yield (api.test('pkgbuild') + defaults() + api.properties(use_pkgbuild=True) +
          api.step_data(
-             'experimental pkgbuild.build packages',
+             'build packages (pkgbuild)',
              api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))) +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
 

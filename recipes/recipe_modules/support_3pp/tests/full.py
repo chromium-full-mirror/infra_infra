@@ -77,13 +77,24 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
         checkout_path / f for f in tryserver_affected_files
     ]
     pkgs = to_build if to_build else pkgs
+
+    if use_pkgbuild:
+      kargs = {'upload': experimental}
+      if experimental:
+        kargs['cipd_service'] = 'https://chrome-infra-packages-dev.appspot.com/'
+      api.support_3pp.pkgbuild(
+          pkgs,
+          cipd_platform,
+          **kargs,
+      )
+      return
+
+    # Legacy 3pp recipe
     _, unsupported = api.support_3pp.ensure_uploaded(
         pkgs,
         cipd_platform,
         tryserver_affected_files=tryserver_affected_files,
-        use_pkgbuild=use_pkgbuild)
-    if use_pkgbuild:
-      return
+    )
 
     excluded = set()
     if 'unsupported' in pkgs:
@@ -581,11 +592,11 @@ def GenTests(api):
           mk_name("load package specs", "read '3pp.pb'"),
           api.file.read_text(load_spec))
       + api.step_data(
-          'experimental pkgbuild.build packages',
+          'build packages (pkgbuild)',
           api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
       + api.post_process(
           post_process.MustRun,
-          mk_name("experimental pkgbuild"))
+          mk_name("build packages (pkgbuild)"))
   )
 
   yield (api.test('use-pkgbuild-experimental')
@@ -600,11 +611,11 @@ def GenTests(api):
           mk_name("load package specs", "read '3pp.pb'"),
           api.file.read_text(load_spec))
       + api.step_data(
-          'experimental pkgbuild.build packages',
+          'build packages (pkgbuild)',
           api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
       + api.post_process(
           post_process.MustRun,
-          mk_name("experimental pkgbuild"))
+          mk_name("build packages (pkgbuild)"))
   )
 
   yield (api.test('empty-spec', status='FAILURE') +

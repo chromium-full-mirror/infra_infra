@@ -1062,7 +1062,7 @@ This module uses the following named caches:
 
 #### **class [Support3ppApi](/recipes/recipe_modules/support_3pp/api.py#387)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
-&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#798)(self, packages=(), platform='', force_build=False, tryserver_affected_files=(), use_pkgbuild=False):**
+&mdash; **def [ensure\_uploaded](/recipes/recipe_modules/support_3pp/api.py#798)(self, packages=(), platform='', force_build=False, tryserver_affected_files=()):**
 
 Executes entire {fetch,build,package,verify,upload} pipeline for all the
 packages listed, targeting the given platform.
@@ -1084,9 +1084,6 @@ Args:
     If any files are modified which cannot be mapped to a specific package,
     all packages are rebuilt. Overrides 'packages', and forces
     force_build=True (packages are never uploaded in this mode).
-  * use_pkgbuild (bool) - If True, use the experimental pkgbuild to build
-    3pp packages and skip the rest of the 3pp recipe. This will not upload
-    packages in any case.
 
 Returns (list[(cipd_pkg, cipd_version)], set[str]) of built CIPD packages
 and their tagged versions, as well as a list of unsupported packages.
@@ -1140,6 +1137,24 @@ Returns the CIPD package name prefix (str), if any is set.
 This will prepend 'experimental/' to the currently set prefix if:
   * The recipe is running in experimental mode; OR
   * You pass experimental=True
+
+&mdash; **def [pkgbuild](/recipes/recipe_modules/support_3pp/api.py#875)(self, packages=(), platform='', upload=False, cipd_service=None):**
+
+_pkgbuild downloads and executes the experimental pkgbuild implementation.
+It reads specs from _package_roots and builds all listed packages. If
+packages is an empty list, all packages will be built.
+No packages should be uploaded from the _pkgbuild.
+
+Args:
+* packages (seq[str]) - A sequence of packages to ensure are
+  uploaded. Packages must be listed as either 'pkgname' or
+  'pkgname@version'. If empty, builds all loaded packages.
+* platform (str) - If specified, the CIPD ${platform} to build for.
+  If unspecified, this will be the appropriate CIPD ${platform} for the
+  current host machine.
+* upload (bool) - If true, upload packages to CIPD services.
+* cipd_service (str|None) - If specified, use the cipd service provided
+  for both downloading and uploading packages.
 
 &mdash; **def [set\_experimental](/recipes/recipe_modules/support_3pp/api.py#454)(self, experimental):**
 

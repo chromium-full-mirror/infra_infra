@@ -799,8 +799,7 @@ class Support3ppApi(recipe_api.RecipeApi):
                       packages=(),
                       platform='',
                       force_build=False,
-                      tryserver_affected_files=(),
-                      use_pkgbuild=False):
+                      tryserver_affected_files=()):
     """Executes entire {fetch,build,package,verify,upload} pipeline for all the
     packages listed, targeting the given platform.
 
@@ -821,9 +820,6 @@ class Support3ppApi(recipe_api.RecipeApi):
         If any files are modified which cannot be mapped to a specific package,
         all packages are rebuilt. Overrides 'packages', and forces
         force_build=True (packages are never uploaded in this mode).
-      * use_pkgbuild (bool) - If True, use the experimental pkgbuild to build
-        3pp packages and skip the rest of the 3pp recipe. This will not upload
-        packages in any case.
 
     Returns (list[(cipd_pkg, cipd_version)], set[str]) of built CIPD packages
     and their tagged versions, as well as a list of unsupported packages.
@@ -836,13 +832,6 @@ class Support3ppApi(recipe_api.RecipeApi):
                                                  platform,
                                                  platform_for_host(self.m))
         p.step_text = ','.join(packages) if packages else 'all packages'
-
-    # If `packages` is an empty list, pkgbuild will build all packages under
-    # _packge_roots.
-    if use_pkgbuild:
-      with self.m.step.nest('experimental pkgbuild'):
-        self._pkgbuild(packages, platform)
-        return [], set()
 
     unsupported = set()
 
@@ -883,7 +872,7 @@ class Support3ppApi(recipe_api.RecipeApi):
               skip_upload))
     return self.m.defer.collect(deferred), unsupported
 
-  def _pkgbuild(self, packages=(), platform=''):
+  def pkgbuild(self, packages=(), platform='', upload=False, cipd_service=None):
     """_pkgbuild downloads and executes the experimental pkgbuild implementation.
     It reads specs from _package_roots and builds all listed packages. If
     packages is an empty list, all packages will be built.
@@ -896,41 +885,44 @@ class Support3ppApi(recipe_api.RecipeApi):
     * platform (str) - If specified, the CIPD ${platform} to build for.
       If unspecified, this will be the appropriate CIPD ${platform} for the
       current host machine.
+    * upload (bool) - If true, upload packages to CIPD services.
+    * cipd_service (str|None) - If specified, use the cipd service provided
+      for both downloading and uploading packages.
     """
-    base_dir = self.m.path.start_dir / '_pkgbuild'
+    # pkgbuild relies on a stable storage path for consistent derivation id.
+    # We expect cache dir should rarely change.
+    # Otherwise use a fixed absolute path instead.
+    store_path = self.m.path.cache_dir / 'pkgbuild'
+    bin_path = self.m.path.cleanup_dir / 'pkgbuild'
 
-    self.m.file.ensure_directory('mkdir -p [pkgbuild]', base_dir)
     self.m.cipd.ensure(
-      base_dir,
-      (self.m.cipd.EnsureFile().
-       add_package(
-         'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m), 'latest')
-       ))
-
-    storage_dir = base_dir / 'store'
+        bin_path,
+        (
+            self.m.cipd.EnsureFile().
+                add_package(
+                 'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m),
+                 'latest',
+                )
+        ),
+    )
 
     platform = platform or platform_for_host(self.m)
     args = [
         '-logging-level',
         'info',
         '-cipd-package-prefix',
-        # self.package_prefix() will prepend experimental/ while pkgbuild
-        # manages the experimental state by itself. Use raw prefix instead.
+        # Pass raw self._package_prefix instead because self.package_prefix()
+        # prepends experimental/ which isn't used by pkgbuild.
         self._package_prefix,
         '-storage-dir',
-        storage_dir,
+        store_path,
         '-target-platform',
         platform,
-        '-upload'
     ]
-
-    # FIXME(fancl): Temporary mitigation for not able to use
-    # runtime.is_experimental. We should only set cipd-service to dev when
-    # luci.non_production is set.
-    args.extend((
-        '-cipd-service',
-        'https://chrome-infra-packages-dev.appspot.com/',
-    ))
+    if cipd_service:
+      args.extend(('-cipd-service', cipd_service))
+    if upload:
+      args.append('-upload')
 
     # Sort the package roots and packages.
     # Set doesn't promise to be iterating in insertion order.
@@ -941,7 +933,7 @@ class Support3ppApi(recipe_api.RecipeApi):
     with run_script.get_sdk(self.m, platform):
       with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
         self.m.step.sub_build(
-            'build packages',
-            [base_dir / 'edge', '--'] + args,
+            'build packages (pkgbuild)',
+            [bin_path / 'edge', '--'] + args,
             self.m.buildbucket.build,
         )
