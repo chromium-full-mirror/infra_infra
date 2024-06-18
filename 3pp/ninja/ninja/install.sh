@@ -44,6 +44,6 @@ else
   cp ninja "$PREFIX"
 fi
 
-# Add README.chromium file to the package.
+# Add README.chromium file to the package after substituting the version with $_3PP_VERSION.
 THIS_DIR=$(dirname "$0")
-cp "$THIS_DIR/README.chromium" "$PREFIX/README.chromium"
+sed 's/$_3PP_VERSION/'"$_3PP_VERSION"'/' "$THIS_DIR/README.chromium" > "$PREFIX/README.chromium"
