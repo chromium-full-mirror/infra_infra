@@ -3762,8 +3762,6 @@ func crosRepairActions() map[string]*Action {
 				// If rpm info is not provided then we just want to set a state and skip verification.
 				"RPM set state: MISSING_CONFIG",
 				"RPM config present",
-				// TODO(b:318382426) temprarry disabled for Dolos testbeds.
-				"Not a Dolos pool",
 			},
 			Dependencies: []string{
 				"Audit RPM config (with battery)",
@@ -3932,16 +3930,6 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "dut_is_in_pool",
 			ExecExtraArgs: []string{
 				"camerabox_tablet",
-			},
-		},
-		"Not a Dolos pool": {
-			Docs: []string{
-				"Verify device is in pool related to Dolos testing.",
-				"That is NPI testing pool intdocued by b/318382426",
-			},
-			ExecName: "dut_not_in_pool",
-			ExecExtraArgs: []string{
-				"dolos-testing",
 			},
 		},
 		"Check audio latency toolkit state": {

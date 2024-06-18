@@ -5616,7 +5616,6 @@ plans:
               conditions:
                 - name: 'RPM set state: MISSING_CONFIG (''set_rpm_state'')'
                 - name: RPM config present ('device_has_rpm_info')
-                - name: Not a Dolos pool ('dut_not_in_pool')
               dependencies:
                 - name: Audit RPM config (with battery) ('rpm_audit_with_battery') (time:'10m0s')
                   conditions:

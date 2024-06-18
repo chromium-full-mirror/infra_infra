@@ -7812,13 +7812,6 @@ plans:
               docs:
                 - Verifies that the RPM configuration provides some data for the hostname and outlet.
                 - This action does not verify the correctness of the data.
-            - name: Not a Dolos pool
-              exec_name: dut_not_in_pool
-              exec_args:
-                - dolos-testing
-              docs:
-                - Verify device is in pool related to Dolos testing.
-                - That is NPI testing pool intdocued by b/318382426
           dependencies:
             - name: Audit RPM config (with battery) (time:'10m0s')
               exec_name: rpm_audit_with_battery
