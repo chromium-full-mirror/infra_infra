@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package scheduling.api;
+
+option go_package = "infra/libs/fleet/scheduling/api";
+
+// ProviderId is the ID of various tasking scheduling providers.
+enum ProviderId {
+  PROVIDER_ID_UNSPECIFIED = 0;
+  PROVIDER_ID_SCHEDUKE = 1;
+}
+
+// Config specifies which backend to call task scheduling and the parameters for
+// establishing the backend.
+message Config {
+  oneof backend {
+    SchedukeBackend scheduke_backend = 1;
+  }
+
+  // SchedukeBackend contains Scheduke params. The fields will be passed to
+  // Scheduke service for task scheduling. Required fields must be passed.
+  message SchedukeBackend {
+    // The Scheduke environment to connect to.
+    enum Environment {
+      ENV_UNSPECIFIED = 0;
+      ENV_LOCAL = 1;
+      ENV_STAGING = 2;
+      ENV_PRODUCTION = 3;
+    }
+    Environment env = 1;
+    string pool = 2;
+  }
+}
+
+// Task contains a task ID and url provided by the backend.
+message Task {
+  string id = 1;
+  string url = 2;
+}
+
+// ScheduleTaskRequest is the request for the TaskSchedulingAPI.ScheduleTask
+// endpoint.
+message ScheduleTaskRequest {
+  // Configuration of the backend to start the instance.
+  Config config = 1;
+}
+
+// CancelTasksRequest is the request for the TaskSchedulingAPI.CancelTasks
+// endpoint.
+message CancelTasksRequest {
+  // Configuration of the backend to start the instance.
+  Config config = 1;
+  repeated string task_ids = 2;
+}
