@@ -24,6 +24,7 @@ func servoRepairPlan() *Plan {
 			"Cache latest servod start time",
 			"Servo_v4(p1) main present",
 			"All servo's fw updated",
+			"Servo Poweron Default Set",
 			"Save UART capture",
 			"Start servod daemon",
 			"Start UART capture",
@@ -428,6 +429,18 @@ func servoRepairPlan() *Plan {
 					"Sleep 1s", //first try to re-read
 					"Update all servo's firmware",
 				},
+			},
+			"Servo Poweron Default Set": {
+				Docs: []string{
+					"Configure servo to have correct default config values on power on",
+					"Set direction to servo-host ( current and default ) if Dolos configured for testbed.",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"All servo's fw updated",
+				},
+				ExecName:    "servo_set_poweron_defaults",
+				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
 			"Read servo serial by servod harness": {
 				Docs: []string{
