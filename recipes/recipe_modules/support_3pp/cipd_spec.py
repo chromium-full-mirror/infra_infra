@@ -170,8 +170,11 @@ class CIPDSpec(object):
     disk, this returns None.
     """
     iid = self._resolved_instance_id
-    ret = self._local_pkg_path_dir / iid
-    return ret if iid and self._api.path.exists(ret) else None
+    if iid:
+      ret = self._local_pkg_path_dir / iid
+      if self._api.path.exists(ret):
+        return ret
+    return None
 
   def _ensure_fetched(self):
     """This ensures that this package is fetched locally into the cache.
