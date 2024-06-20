@@ -1,5 +1,7 @@
 set noparent
 
-bbrotherton@google.com
-jackgelinas@google.com
-dbeckett@google.com
+# PVS Team
+include chromiumos/owners:v1:/pvs/OWNERS.infra
+
+# TSE Team
+dbeckett@chromium.org
