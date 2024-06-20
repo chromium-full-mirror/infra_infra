@@ -15,6 +15,7 @@ PROJECT_REDIRECT_MAP = {
     'aomedia': 'https://aomedia.issues.chromium.org',
     'boringssl': 'https://issues.chromium.org',
     'chromium': 'https://issues.chromium.org',
+    'crashpad': 'https://issues.chromium.org',
     'dawn': 'https://issues.chromium.org',
     'fuchsia': 'https://issues.fuchsia.dev',
     'gerrit': 'https://issues.gerritcodereview.com',
@@ -31,6 +32,7 @@ PROJECT_REDIRECT_MAP = {
 # Only contain the project that is a subcomponent of the tracker.
 PROJECT_COMPONENT_ID_MAP = {
     'boringssl': 1590116,
+    'crashpad': 1605005,
     'dawn': 1570784,
     'pdfium': 1586257,
     'tint': 1571063,
