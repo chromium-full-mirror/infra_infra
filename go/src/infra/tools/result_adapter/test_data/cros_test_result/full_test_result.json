@@ -54,7 +54,8 @@
                         "name":"chromeos15-row4-rack5-host1",
                         "dut_model":{
                             "model_name":"nipperkin"
-                        }
+                        },
+                        "phase": 3
                     }
                 },
                 "cbx": true

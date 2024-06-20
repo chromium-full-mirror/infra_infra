@@ -231,6 +231,7 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 				chromeOSInfo := dut.GetChromeos()
 				if chromeOSInfo != nil {
 					tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
+					tags = AppendTags(tags, "phase", chromeOSInfo.GetPhase().String())
 					tags = AppendTags(tags, "hostname", dut.GetId().GetValue())
 				}
 
@@ -514,22 +515,26 @@ func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.Execu
 	newTags = AppendTags(newTags, "multiduts", "True")
 	newTags = AppendTags(newTags, "primary_board", primaryExecInfo.GetBuildInfo().GetBoard())
 	newTags = AppendTags(newTags, "primary_model", primaryExecInfo.GetDutInfo().GetDut().GetChromeos().GetDutModel().GetModelName())
+	newTags = AppendTags(newTags, "primary_phase", primaryExecInfo.GetDutInfo().GetDut().GetChromeos().GetPhase().String())
 
 	secordaryDUTSize := len(secondaryExecInfos)
 	secondaryBoards := make([]string, 0, secordaryDUTSize)
 	secondaryModels := make([]string, 0, secordaryDUTSize)
+	secondaryPhases := make([]string, 0, secordaryDUTSize)
 	for _, execInfo := range secondaryExecInfos {
 		buildInfo := execInfo.GetBuildInfo()
 		dutInfo := execInfo.GetDutInfo()
 		if buildInfo != nil && dutInfo != nil {
 			secondaryBoards = append(secondaryBoards, buildInfo.GetBoard())
 			secondaryModels = append(secondaryModels, dutInfo.GetDut().GetChromeos().GetDutModel().GetModelName())
+			secondaryPhases = append(secondaryPhases, dutInfo.GetDut().GetChromeos().GetPhase().String())
 		}
 	}
 
 	// Concatenates board names and model names separately.
 	newTags = AppendTags(newTags, "secondary_boards", strings.Join(secondaryBoards, " | "))
 	newTags = AppendTags(newTags, "secondary_models", strings.Join(secondaryModels, " | "))
+	newTags = AppendTags(newTags, "secondary_phases", strings.Join(secondaryPhases, " | "))
 	return newTags
 }
 

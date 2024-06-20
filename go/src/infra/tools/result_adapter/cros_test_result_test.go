@@ -85,6 +85,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 								DutModel: &labpb.DutModel{
 									ModelName: "nipperkin",
 								},
+								Phase: labpb.Phase_DVT_2,
 							},
 						},
 					},
@@ -181,6 +182,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "False"),
+						pbutil.StringPair("phase", "DVT_2"),
 					}),
 				},
 				{
@@ -206,6 +208,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "False"),
+						pbutil.StringPair("phase", "DVT_2"),
 					}),
 				},
 			}
@@ -472,6 +475,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("modem_type", "MODEM_TYPE_FIBOCOMM_L850GL"),
 						pbutil.StringPair("multiduts", "False"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
+						pbutil.StringPair("phase", "DVT_2_MPS_LTE"),
 						pbutil.StringPair("pool", "ChromeOSSkylab"),
 						pbutil.StringPair("qs_account", "unmanaged_p2"),
 						pbutil.StringPair("qual_bug_id", "1234"),
@@ -525,10 +529,13 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "True"),
+						pbutil.StringPair("phase", "DVT_2"),
 						pbutil.StringPair("primary_board", "hatch"),
 						pbutil.StringPair("primary_model", "nipperkin"),
+						pbutil.StringPair("primary_phase", "DVT_2"),
 						pbutil.StringPair("secondary_boards", "brya"),
 						pbutil.StringPair("secondary_models", "gimble"),
+						pbutil.StringPair("secondary_phases", "DVT_2"),
 					}),
 				},
 			}
