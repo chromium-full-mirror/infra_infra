@@ -733,6 +733,7 @@ message Dolos {
     DOLOS_OK = 10;
     DOLOS_NO_COMMUNICATION = 11;
     DOLOS_NOT_PRESENT = 12;
+    NO_SSH = 13;
   }
 
   // State of the device.

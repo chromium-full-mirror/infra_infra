@@ -11,7 +11,6 @@ import (
 func dolosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Device is pingable",
 			"Device is sshable",
 			"Update state",
 		},
@@ -21,12 +20,24 @@ func dolosRepairPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 			},
 			"Device is sshable": {
+				Dependencies: []string{
+					"Set dolos state:NO_SSH",
+					"Device is pingable",
+				},
 				ExecName:    "cros_ssh",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
 			"Update state": {
-				ExecName:    "set_dolos_state",
+				ExecName:    "dolos_determine_and_set_dolos_state",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
+			},
+			"Set dolos state:NO_SSH": {
+				ExecName: "dolos_set_dolos_state",
+				ExecExtraArgs: []string{
+					"state:NO_SSH",
+				},
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},
 	}

@@ -541,6 +541,7 @@ var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{
 	ufslab.PeripheralState_WORKING:                       tlw.Dolos_DOLOS_OK,
 	ufslab.PeripheralState_DOLOS_NO_COMMUNICATION:        tlw.Dolos_DOLOS_NO_COMMUNICATION,
 	ufslab.PeripheralState_DOLOS_NOT_PRESENT:             tlw.Dolos_DOLOS_NOT_PRESENT,
+	ufslab.PeripheralState_NO_SSH:                        tlw.Dolos_NO_SSH,
 }
 
 func convertDolosState(s ufslab.PeripheralState) tlw.Dolos_State {

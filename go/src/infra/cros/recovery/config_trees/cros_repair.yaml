@@ -116411,12 +116411,17 @@ plans:
             - state:WORKING
     - name: dolos (Allow to fail)
       criticalactions:
-        - name: Device is pingable (time:'15s')
-          exec_name: cros_ping
         - name: Device is sshable (time:'30s')
           exec_name: cros_ssh
+          dependencies:
+            - name: Set dolos state:NO_SSH (ALWAYS_RUN)
+              exec_name: dolos_set_dolos_state
+              exec_args:
+                - state:NO_SSH
+            - name: Device is pingable (time:'15s')
+              exec_name: cros_ping
         - name: Update state (time:'30s')
-          exec_name: set_dolos_state
+          exec_name: dolos_determine_and_set_dolos_state
     - name: close (Allow to fail)
       criticalactions:
         - name: Update peripheral wifi state (Allow to fail)

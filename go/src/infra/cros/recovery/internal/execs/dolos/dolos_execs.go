@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -26,12 +27,12 @@ type dolosStatusResponse struct {
 	Status string `json:"status"`
 }
 
-// setDolosStateExec calculate the current Dolos state and update UFS.
-func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
+// determineAndSetDolosStateExec calculate the current Dolos state and update UFS.
+func determineAndSetDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	dolos := info.GetChromeos().GetDolos()
 	if dolos == nil {
-		return errors.Reason("set dolos state: not specified").Err()
+		return errors.Reason("dolos not enabled for this testbed.").Err()
 	}
 	previousState := info.GetChromeos().GetDolos().GetState()
 	info.GetChromeos().GetDolos().State = tlw.Dolos_DOLOS_UNKNOWN
@@ -59,6 +60,28 @@ func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("set dolos state: state is %q not found", newState).Err()
 }
 
+// determineAndSetDolosStateExec calculate the current Dolos state and update UFS.
+func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	args := info.GetActionArgs(ctx)
+	newState := strings.ToUpper(args.AsString(ctx, "state", ""))
+	if newState == "" {
+		return errors.Reason("set dolos state: state is not provided").Err()
+	}
+	// Verify if dolos is supported.
+	// If dolos is not supported the report failure.
+	if info.GetChromeos().GetDolos() == nil {
+		return errors.Reason("set dolos state: Dolos is not supported").Err()
+	}
+	log.Debugf(ctx, "Previous dolos state: %s", info.GetChromeos().GetDolos().GetState())
+	if v, ok := tlw.Dolos_State_value[newState]; ok {
+		info.GetChromeos().GetDolos().State = tlw.Dolos_State(v)
+		log.Infof(ctx, "Set dolos state to be: %s", newState)
+		return nil
+	}
+	return errors.Reason("set dolos state: state is %q not found", newState).Err()
+}
+
 func init() {
-	execs.Register("set_dolos_state", setDolosStateExec)
+	execs.Register("dolos_determine_and_set_dolos_state", determineAndSetDolosStateExec)
+	execs.Register("dolos_set_dolos_state", setDolosStateExec)
 }
