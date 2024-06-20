@@ -6064,6 +6064,14 @@ plans:
                   exec_name: servo_check_servod_control
                   exec_args:
                     - command:battery_full_charge_mah
+        - name: Servo Poweron Default Set (Allow to fail)
+          exec_name: servo_set_poweron_defaults
+          docs:
+            - Configure servo to have correct default config values on power on
+            - Set direction to servo-host ( current and default ) if Dolos configured for testbed.
+          conditions:
+            - name: is_servo_v4p1
+              exec_name: is_servo_v4p1
         - name: Record good servo type
           exec_name: servo_update_servo_type_label
           docs:

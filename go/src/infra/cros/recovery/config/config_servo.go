@@ -44,6 +44,7 @@ func servoRepairPlan() *Plan {
 			"Verify cr50 console",
 			"Cr50 testlab is enabled",
 			"Verify EC",
+			"Servo Poweron Default Set",
 			"Record good servo type",
 			"Set state:WORKING",
 		},
@@ -428,6 +429,17 @@ func servoRepairPlan() *Plan {
 					"Sleep 1s", //first try to re-read
 					"Update all servo's firmware",
 				},
+			},
+			"Servo Poweron Default Set": {
+				Docs: []string{
+					"Configure servo to have correct default config values on power on",
+					"Set direction to servo-host ( current and default ) if Dolos configured for testbed.",
+				},
+				Conditions: []string{
+					"is_servo_v4p1",
+				},
+				ExecName:               "servo_set_poweron_defaults",
+				AllowFailAfterRecovery: true,
 			},
 			"Read servo serial by servod harness": {
 				Docs: []string{

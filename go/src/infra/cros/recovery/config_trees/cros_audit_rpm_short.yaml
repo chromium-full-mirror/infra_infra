@@ -2072,6 +2072,9 @@ plans:
               conditions:
                 - name: DUT has CrOS EC ('servo_check_servod_control')
                 - name: battery_last_charge_readable ('servo_check_servod_control')
+        - name: Servo Poweron Default Set (Allow to fail) ('servo_set_poweron_defaults')
+          conditions:
+            - name: is_servo_v4p1
         - name: Record good servo type ('servo_update_servo_type_label')
           dependencies:
             - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
