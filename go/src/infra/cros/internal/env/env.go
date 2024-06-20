@@ -49,10 +49,7 @@ func GetCloudbotsProxyAddress() string {
 
 // IsCloudBot returns whether the process is running on cloud bot VM.
 func IsCloudBot() bool {
-	if swarmingBotID := GetSwarmingBotID(); strings.HasPrefix(swarmingBotID, "cloudbots-") {
-		return true
-	}
-	return false
+	return GetCloudbotsLabDomain() != ""
 }
 
 // GetBuildBucketID retrieves the build bucket ID.

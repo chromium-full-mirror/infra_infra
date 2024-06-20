@@ -20,9 +20,8 @@ func TestRunningOnBot(t *testing.T) {
 }
 
 func TestIsCloudBot(t *testing.T) {
-	os.Setenv("SWARMING_BOT_ID", "chrome-bot")
 	assert.Assert(t, !IsCloudBot())
 
-	os.Setenv("SWARMING_BOT_ID", "cloudbots-12345")
+	os.Setenv("CLOUDBOTS_LAB_DOMAIN", "some lab domain")
 	assert.Assert(t, IsCloudBot())
 }
