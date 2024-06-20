@@ -118,26 +118,6 @@ plans:
             - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
               dependencies:
                 - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
-        - name: Servo Poweron Default Set ('servo_set_poweron_defaults') (time:'30s')
-          dependencies:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-              dependencies:
-                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
-              recoveries:
-                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
-            - name: All servo's fw updated ('servo_fw_need_update') (time:'5m0s')
-              dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                  dependencies:
-                    - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
-                  recoveries:
-                    - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
-                - name: Set state:SERVO_UPDATER_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
-              recoveries:
-                - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
-                  dependencies:
-                    - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
           dependencies:
             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
