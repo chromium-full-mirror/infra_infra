@@ -16,6 +16,7 @@ import (
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/internal/env"
 	"infra/libs/skylab/common/heuristics"
 )
 
@@ -57,7 +58,7 @@ func (cmd *ParseEnvInfoCmd) Execute(ctx context.Context) error {
 	summary := []string{}
 
 	botID := os.Getenv("SWARMING_BOT_ID")
-	if strings.HasPrefix(botID, "cloudbots-") {
+	if env.IsCloudBot() {
 		cmd.HostName = os.Getenv("CLOUDBOTS_DUT_HOSTNAME")
 	} else {
 		hostName := heuristics.NormalizeBotNameToDeviceName(botID)

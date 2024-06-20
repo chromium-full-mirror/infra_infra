@@ -30,6 +30,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/types"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"infra/cros/internal/env"
 )
 
 const (
@@ -230,7 +231,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 		args = append(args, v)
 	}
 	// Add cloudbots related args such as env var, volume.
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+	if env.IsCloudBot() {
 		args = append(args, cloudbotsDockerArgs()...)
 	}
 	// Add Satlab related args such as env var, volume.

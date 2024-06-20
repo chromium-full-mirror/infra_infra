@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/user"
 	"path"
-	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,6 +18,7 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/internal/env"
 )
 
 type crosTestProcessor struct {
@@ -74,7 +74,7 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		}
 	}
 	// Add cloudbots related options
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+	if env.IsCloudBot() {
 		cloudbotsOptions := cloudbotsAdditionalOptionsCrosTest()
 		volumes = append(volumes, cloudbotsOptions.Volume...)
 	}

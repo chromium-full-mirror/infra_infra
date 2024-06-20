@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/internal/env"
 )
 
 type crosDutProcessor struct {
@@ -51,7 +52,7 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		Env:     additionalEnvs(),
 	}
 	// Add cloudbots related options
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+	if env.IsCloudBot() {
 		cloudbotsOptions := cloudbotsAdditionalOptions()
 		additionalOptions.Volume = append(additionalOptions.Volume, cloudbotsOptions.Volume...)
 		additionalOptions.Env = append(additionalOptions.Env, cloudbotsOptions.Env...)

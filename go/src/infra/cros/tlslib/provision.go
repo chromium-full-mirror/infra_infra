@@ -21,6 +21,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+
+	"infra/cros/internal/env"
 )
 
 const (
@@ -604,7 +606,7 @@ func rebootDUT(ctx context.Context, c *ssh.Client) error {
 
 	// On cloudbots, reboot never returned even after the DUT has been rebooted.
 	// It does return by checking client connection periodically.
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+	if env.IsCloudBot() {
 		log.Printf("Running hard reboot on cloudbots")
 		go keepalive(ctx, c)
 	}
@@ -617,7 +619,7 @@ func hardRebootDUT(ctx context.Context, c *ssh.Client) error {
 
 	// On cloudbots, reboot never returned even after the DUT has been rebooted.
 	// It does return by checking client connection periodically.
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+	if env.IsCloudBot() {
 		log.Printf("Running hard reboot on cloudbots")
 		go keepalive(ctx, c)
 	}
