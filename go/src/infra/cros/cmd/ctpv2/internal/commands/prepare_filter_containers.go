@@ -29,7 +29,9 @@ type PrepareFilterContainersInfoCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpReq *testapi.CTPRequest
+	CtpReq     *testapi.CTPRequest
+	CredsFile  string
+	CTPversion string
 
 	// Updates
 	ContainerInfoQueue   *list.List
@@ -83,6 +85,8 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 		return fmt.Errorf("Cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
 	}
 
+	cmd.CTPversion = sk.CTPversion
+	cmd.CredsFile = sk.DockerKeyFile
 	cmd.CtpReq = sk.CtpReq
 	return nil
 }
@@ -138,7 +142,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "failed to fetch container image data: ").Err()
 	}
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
-	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata)
+	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion)
 	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
 
 	cmd.ContainerMetadataMap = finalMetadataMap
@@ -258,7 +262,7 @@ func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
 	}
 }
 
-func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, buildContMetadata map[string]*buildapi.ContainerImageInfo) map[string]*buildapi.ContainerImageInfo {
+func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, buildContMetadata map[string]*buildapi.ContainerImageInfo, creds, ctpVersion string) map[string]*buildapi.ContainerImageInfo {
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
 	bcm := make(map[string]*buildapi.ContainerImageInfo)
@@ -266,15 +270,37 @@ func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, 
 		bcm[k] = v
 	}
 
-	for _, filter := range req.GetKarbonFilters() {
+	// Add staging/prod containers from the firestore.
+	firestoreFilters, err := common.FetchFiltersFromFirestore(ctx, creds, ctpVersion)
+	if err != nil {
+		logging.Infof(ctx, "%w", err)
+	}
+	for _, filter := range firestoreFilters {
 		bcm[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
 	}
 
-	for _, filter := range req.GetKoffeeFilters() {
-		bcm[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
+	// Combine karbon and koffee filters.
+	// They use identical logic.
+	for _, filter := range append(req.GetKarbonFilters(), req.GetKoffeeFilters()...) {
+		container := filter.GetContainerInfo().GetContainer()
+		// Overwrite container image info if present within filter input.
+		// Else, check if map already contains image info for the filter.
+		if hasValidDigest(container.Digest) || len(container.Tags) > 0 {
+			bcm[container.GetName()] = container
+		} else {
+			if _, ok := bcm[container.GetName()]; !ok {
+				logging.Infof(ctx, "container %s missing container info", container.GetName())
+			}
+		}
 	}
 
 	return bcm
+}
+
+// hasValidDigest ensures the digest starts with `sha256:` and
+// the SHA value itself is 64 characters in length.
+func hasValidDigest(digest string) bool {
+	return strings.HasPrefix(digest, "sha256:") && len(digest) == len("sha256:")+64
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.

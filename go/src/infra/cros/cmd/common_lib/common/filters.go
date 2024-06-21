@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"cloud.google.com/go/firestore"
 	"golang.org/x/exp/slices"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
@@ -36,18 +35,15 @@ var (
 	// Default shas for backwards compatibility
 	defaultLegacyHWSha      = "0d2d1b14940de10b4e1985065876357bf5bfe9d04f103892265d17e0b0b86350"
 	defaultTTCPSha          = "71916beca11e2454f4b17bde85ec2e9d2b93b9dca6fec0f2fd1ce3bb1be5acfa"
-	defaultProvisionSha     = "e2265e32b9d42bda405212f35a2c318c9528174a67dcc629081017725e5d57a5"
 	defaultUseFlagFilterSha = "9e422219baadf129f1b30bc69b17c93577e6633d8688ceed6eb797ee6d9a3b03"
 	prodShas                = map[string]string{
 		TtcpContainerName:          defaultTTCPSha,
 		LegacyHWContainerName:      defaultLegacyHWSha,
-		ProvisionContainerName:     defaultProvisionSha,
 		UseFlagFilterContainerName: defaultUseFlagFilterSha}
 
 	binaryLookup = map[string]string{
 		LegacyHWContainerName:      "legacy_hw_filter",
 		TtcpContainerName:          "solver_service",
-		ProvisionContainerName:     "provision-filter",
 		TestFinderContainerName:    "test_finder_filter",
 		UseFlagFilterContainerName: "use_flag_filter",
 	}
@@ -80,6 +76,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 	defaultFilters := make([]*api.CTPFilter, 0)
 	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
 	for _, filterName := range defaultFilterNames {
+		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
 		// Attempt to map the filter from the known container metadata.
 		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
 		if err == nil {
@@ -170,12 +167,23 @@ func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contM
 
 	nonDefFilters := []*api.CTPFilter{}
 	for _, filter := range filtersToAdd {
-		filterContainerName := filter.GetContainerInfo().GetContainer().GetName()
+		filterName := filter.GetContainerInfo().GetContainer().GetName()
+		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
+		if err != nil {
+			logging.Infof(ctx, "failed to create ctp filter for %s", filterName)
+			continue
+		}
+		// BinaryName is assumed to be same as FilterName.
+		// If this is not the case, it can be resolved by the input.
+		if filter.GetContainerInfo().GetBinaryName() != "" {
+			ctpFilter.ContainerInfo.BinaryName = filter.GetContainerInfo().GetBinaryName()
+		}
+		ctpFilter.ContainerInfo.BinaryArgs = filter.GetContainerInfo().GetBinaryArgs()
 		// Overwrite the default filter with the user defined filter.
-		if slices.Contains(defaultFilterNames, filterContainerName) {
-			defFilters[defFiltersIndexMap[filterContainerName]] = filter
+		if slices.Contains(defaultFilterNames, filterName) {
+			defFilters[defFiltersIndexMap[filterName]] = ctpFilter
 		} else {
-			nonDefFilters = append(nonDefFilters, filter)
+			nonDefFilters = append(nonDefFilters, ctpFilter)
 		}
 	}
 
@@ -269,24 +277,4 @@ func ListToJson(list *list.List) []byte {
 	}
 
 	return retBytes
-}
-
-// FetchDigestFromFirestore grabs the digest and previous digest
-// from the collection based on the container name.
-func FetchDigestFromFirestore(ctx context.Context, collection *firestore.CollectionRef, containerName string) (digest string, prevDigest string) {
-	doc, err := collection.Doc(containerName).Get(ctx)
-	if err != nil {
-		return
-	}
-	data := doc.Data()
-	digest, ok := data["digest"].(string)
-	if !ok {
-		return "", ""
-	}
-	prevDigest, ok = data["prevDigest"].(string)
-	if !ok {
-		return digest, ""
-	}
-
-	return
 }

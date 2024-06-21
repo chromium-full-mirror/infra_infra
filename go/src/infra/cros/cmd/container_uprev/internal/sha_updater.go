@@ -12,15 +12,17 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // UpdateShaStorage connects the the firestore and uploads the SHAs produced
 // during the uprev service.
-func UpdateShaStorage(ctx context.Context, containerInfo map[string]*ContainerInfoItem, creds, tag string) (err error) {
+func UpdateShaStorage(ctx context.Context, containerInfo map[string]*common.ContainerInfoItem, creds, tag string) (err error) {
 	step, ctx := build.StartStep(ctx, "Update SHAs")
 	defer func() { step.End(err) }()
 
-	firestoreClient, err := establishFirestoreConnection(ctx, creds)
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -32,7 +34,7 @@ func UpdateShaStorage(ctx context.Context, containerInfo map[string]*ContainerIn
 		}
 	}()
 
-	collectionName := getFirestoreCollection(tag)
+	collectionName := common.GetFirestoreCollection(tag)
 	err = addContainerInfoToStorage(ctx, firestoreClient, collectionName, containerInfo)
 	if err != nil {
 		err = errors.Annotate(err, "failed to upload container info").Err()
@@ -45,7 +47,7 @@ func UpdateShaStorage(ctx context.Context, containerInfo map[string]*ContainerIn
 // RevertShas swaps the previous sha with the current sha
 // and updates the firestore.
 func RevertShas(ctx context.Context, containerNames []string, creds, tag string) (err error) {
-	firestoreClient, err := establishFirestoreConnection(ctx, creds)
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -57,12 +59,12 @@ func RevertShas(ctx context.Context, containerNames []string, creds, tag string)
 		}
 	}()
 
-	collectionName := getFirestoreCollection(tag)
+	collectionName := common.GetFirestoreCollection(tag)
 	containersCollection := firestoreClient.Collection(collectionName)
 
-	infosMap := map[string][]*ContainerInfoItem{}
+	infosMap := map[string][]*common.ContainerInfoItem{}
 	for _, containerName := range containerNames {
-		currentInfos := fetchContainerInfoFromFirestore(ctx, containersCollection, containerName)
+		currentInfos := common.FetchContainerInfoFromFirestoreDoc(ctx, containersCollection.Doc(containerName))
 		// Can't revert the only record.
 		if len(currentInfos) <= 1 {
 			continue
@@ -74,14 +76,14 @@ func RevertShas(ctx context.Context, containerNames []string, creds, tag string)
 	return
 }
 
-func addContainerInfoToStorage(ctx context.Context, firestoreClient *firestore.Client, collectionName string, containerInfos map[string]*ContainerInfoItem) (err error) {
+func addContainerInfoToStorage(ctx context.Context, firestoreClient *firestore.Client, collectionName string, containerInfos map[string]*common.ContainerInfoItem) (err error) {
 	containersCollection := firestoreClient.Collection(collectionName)
 
-	infosMap := map[string][]*ContainerInfoItem{}
+	infosMap := map[string][]*common.ContainerInfoItem{}
 	// Add new container info to storage record.
 	for containerName, containerInfo := range containerInfos {
-		currentInfos := fetchContainerInfoFromFirestore(ctx, containersCollection, containerName)
-		infos := append([]*ContainerInfoItem{containerInfo}, currentInfos...)
+		currentInfos := common.FetchContainerInfoFromFirestoreDoc(ctx, containersCollection.Doc(containerName))
+		infos := append([]*common.ContainerInfoItem{containerInfo}, currentInfos...)
 		infosMap[containerName] = infos
 	}
 

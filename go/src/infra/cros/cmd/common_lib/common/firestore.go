@@ -7,9 +7,13 @@ package common
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/cenkalti/backoff/v4"
 	"google.golang.org/api/option"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 // InitClient returns a firestore client set to access the given project and
@@ -22,6 +26,32 @@ func InitClient(ctx context.Context, projectID, databaseID string, opts ...optio
 	}
 
 	return client, nil
+}
+
+// EstablishFirestoreConnection uses provided credentials
+// to establish a connection to the test platform firestore database.
+func EstablishFirestoreConnection(ctx context.Context, creds string) (client *firestore.Client, err error) {
+	projectID := TestPlatformDataProjectID
+	firestoreDatabaseName := TestPlatformFireStore
+
+	clientOpts := []option.ClientOption{}
+
+	if creds != "" {
+		clientOpts = append(clientOpts, option.WithCredentialsFile(creds))
+	}
+
+	retryFunc := func() (*firestore.Client, error) {
+		return InitClient(ctx, projectID, firestoreDatabaseName, clientOpts...)
+	}
+	notifyFunc := func(e error, t time.Duration) {
+		logging.Infof(ctx, "failed to initialize client after %s with error: %s", t, e)
+	}
+	backer := backoff.NewExponentialBackOff(
+		backoff.WithInitialInterval(time.Second*2),
+		backoff.WithMaxInterval(time.Second*16),
+		backoff.WithMaxElapsedTime(time.Minute),
+	)
+	return backoff.RetryNotifyWithData(retryFunc, backer, notifyFunc)
 }
 
 // FirestoreItem wraps the interface item with it's intended document name.

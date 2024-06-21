@@ -38,7 +38,9 @@ import (
 func LuciBuildExecution() {
 	// Set input property reader functions
 	var ctrCipdInfoReader func(context.Context) *protos.CipdVersionInfo
+	var ctpv2CipdInfoReader func(context.Context) *protos.CipdVersionInfo
 	build.MakePropertyReader(common.HwTestCtrInputPropertyName, &ctrCipdInfoReader)
+	build.MakePropertyReader(common.HwTestCtpv2InputPropertyName, &ctpv2CipdInfoReader)
 	input := &steps.CTPv2BinaryBuildInput{}
 
 	// Set output props writer functions
@@ -52,13 +54,15 @@ func LuciBuildExecution() {
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
+			ctpv2CipdInfo := ctpv2CipdInfoReader(ctx)
+			logging.Infof(ctx, "ctpv2 label: %s", ctpv2CipdInfo.GetVersion().GetCipdLabel())
 			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {
 				defer bqClient.Close()
 			}
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient)
+			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel())
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -76,7 +80,8 @@ func executeRequests(
 	input *steps.CTPv2BinaryBuildInput,
 	ctrCipdVersion string,
 	buildState *build.State,
-	BQClient *bigquery.Client) (*steps.CTPv2BinaryBuildOutput, error) {
+	BQClient *bigquery.Client,
+	ctpv2CipdVersion string) (*steps.CTPv2BinaryBuildOutput, error) {
 	buildOutput := &steps.CTPv2BinaryBuildOutput{}
 
 	// Validation
@@ -139,7 +144,7 @@ func executeRequests(
 	} else {
 		keyReqMap = sk.V1KeyToCTPv2Req
 	}
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient)
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -162,7 +167,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -184,7 +189,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion)
 	}
 	go func() {
 		wg.Wait()
@@ -209,11 +214,17 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey string) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
 	defer func() { step.End(err) }()
+
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	if err != nil {
+		err = fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
+		return err
+	}
 
 	executorCfg := configs.NewExecutorConfig(ctr, nil)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
@@ -228,6 +239,8 @@ func executeFiltersInLuciBuild(
 		BQClient:           BQClient,
 		Config:             config,
 		RequestKey:         reqKey,
+		DockerKeyFile:      dockerKeyFile,
+		CTPversion:         ctpVersion,
 	}
 
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest()), common.DefaultKoffeeFilterNames)
