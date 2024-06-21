@@ -96,7 +96,6 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 	}
 
 	if err := c.validate(dhbSatlabID, args); err != nil {
-		cmdlib.PrintError(a, err)
 		return err
 	}
 

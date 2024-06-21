@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/docker"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/services/ufs"
@@ -70,7 +69,6 @@ func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env s
 		}
 	}
 	if err := c.validate(dhbSatlabID, args); err != nil {
-		cmdlib.PrintError(a, err)
 		return err
 	}
 
