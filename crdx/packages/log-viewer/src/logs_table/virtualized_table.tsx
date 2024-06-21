@@ -12,7 +12,7 @@ import {
   TableVirtuosoHandle,
 } from 'react-virtuoso';
 
-import { LogsTableEntry } from '@/types/table';
+import { LogsTableEntry } from '@/types';
 
 const zebraColor = (palette: Palette, index: number) => {
   // Zebra styling

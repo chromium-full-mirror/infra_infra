@@ -14,7 +14,7 @@ import { visuallyHidden } from '@mui/utils';
 import { ReactNode } from 'react';
 
 import { SortOrder } from '@/constants/table_constants';
-import { LogsTableEntry } from '@/types/table';
+import { LogsTableEntry } from '@/types';
 
 interface Props {
   title?: string;

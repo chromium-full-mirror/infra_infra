@@ -6,17 +6,17 @@ import { SummaryStyle } from '@/constants';
 
 export interface LogsTableEntry {
   entryId: string;
-  logFile: string;
+  logFile?: string;
   fileNumber?: number;
   timestamp?: string;
   severity?: string;
   summary: string;
-  fullName: string;
+  fullName?: string;
   line?: number;
-  summaryStyle: SummaryStyle;
+  summaryStyle?: SummaryStyle;
   normalizedSummary?: string;
   // Whether to enable the context action menu.
-  enableContextActionMenu: boolean;
+  enableContextActionMenu?: boolean;
   // Comparison mode controls
   chunkId?: number;
   enableExpansion?: boolean;

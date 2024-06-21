@@ -6,7 +6,7 @@ import { TableRow, Box } from '@mui/material';
 import { Meta, StoryObj } from '@storybook/react';
 
 import { SortOrder } from '@/constants/table_constants';
-import { LogsTableEntry } from '@/types/table';
+import { LogsTableEntry } from '@/types';
 
 import { LogsEntryTableCell } from './logs_cell';
 import { LogsHeaderCell } from './logs_header_cell';

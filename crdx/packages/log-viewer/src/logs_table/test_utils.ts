@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { SummaryStyle } from '@/constants/table_constants';
-import { LogsTableEntry } from '@/types/table';
+import { LogsTableEntry } from '@/types';
 
 export const createMockLogTableEntriesForScreenRecorder = (
   mockLogsPath: string,
