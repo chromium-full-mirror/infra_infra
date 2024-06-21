@@ -202,7 +202,7 @@ var lse = ufspb.MachineLSE{
 								},
 							},
 							Modeminfo: &chromeosLab.ModemInfo{
-								Type:           chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+								Type:           chromeosLab.ModemType_MODEM_TYPE_RW101,
 								Imei:           "imei",
 								SupportedBands: "bands",
 								SimCount:       1,
@@ -531,7 +531,7 @@ common {
 			identifier: "my-office-identifier-B002"
 		}
 		modeminfo {
-			type: MODEM_TYPE_QUALCOMM_SC7180
+			type: MODEM_TYPE_RW101
 			imei: "imei"
 			supported_bands: "bands"
 			sim_count: 1
