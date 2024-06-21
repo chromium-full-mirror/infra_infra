@@ -268,5 +268,7 @@ replace (
 // Update by replacing version with `latest` and calling `go mod tidy`.
 replace (
 	go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4
+	go.chromium.org/chromiumos/lro => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20240603175638-a3a60d9d4bb5
 	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240612102021-79605f69338e
+	go.chromium.org/tast => go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20240530193934-ca093604b833
 )
