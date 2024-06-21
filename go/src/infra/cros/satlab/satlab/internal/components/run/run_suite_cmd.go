@@ -70,6 +70,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		TestArgs:      c.testArgs,
 		SatlabId:      c.satlabId,
 		CFT:           c.cft,
+		TRV2:          c.trv2,
 		Local:         c.local,
 		TimeoutMins:   c.timeoutMins,
 		AddedDims:     c.addedDims,
