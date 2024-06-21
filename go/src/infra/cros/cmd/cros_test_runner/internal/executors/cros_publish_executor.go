@@ -163,7 +163,8 @@ func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(
 	defer func() { step.End(err) }()
 
 	rdbPublishTemplate := &testapi.CrosPublishTemplate{
-		PublishType: testapi.CrosPublishTemplate_PUBLISH_RDB}
+		PublishType:   testapi.CrosPublishTemplate_PUBLISH_RDB,
+		PublishSrcDir: cmd.RdbPublishSrcDir}
 	publishClient, err := ex.Start(
 		ctx,
 		&api.Template{

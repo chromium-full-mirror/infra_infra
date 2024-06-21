@@ -143,6 +143,7 @@ func executeHwTests(
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
+	sk.RdbPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap
@@ -226,6 +227,7 @@ func executeHwTestsV2(
 	sk.DockerKeyFileLocation = dockerKeyFile
 	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
+	sk.RdbPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsURL = gcsurl
 	sk.TesthausURL = common.GetTesthausURL(gcsurl)
 	sk.ContainerImages = containerImagesMap

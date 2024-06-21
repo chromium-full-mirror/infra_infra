@@ -80,6 +80,7 @@ type HwTestStateKeeper struct {
 	GcsURL              string
 	TesthausURL         string
 	GcsPublishSrcDir    string
+	RdbPublishSrcDir    string
 	CurrentInvocationId string
 	TkoPublishSrcDir    string
 	CpconPublishSrcDir  string

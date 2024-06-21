@@ -442,3 +442,26 @@ func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buil
 
 	return containerMetadata, nil
 }
+
+// FindDirWithPrefix walks the dirPath until it finds a dir with prefix.
+func FindDirWithPrefix(dirPath, prefix string) (string, error) {
+	var foundDir string
+	err := filepath.WalkDir(dirPath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() && strings.HasPrefix(d.Name(), prefix) {
+			foundDir = path
+			return filepath.SkipDir
+		}
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+	if foundDir == "" {
+		return "", fmt.Errorf("no directory with prefix '%s' found", prefix)
+	}
+	return foundDir, nil
+}

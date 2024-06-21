@@ -5,12 +5,47 @@
 package commands
 
 import (
+	"context"
+	"fmt"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 // RdbPublishServiceStartCmd represents rdb publish service start cmd.
 type RdbPublishServiceStartCmd struct {
 	*interfaces.SingleCmdByExecutor
+
+	// Deps
+	RdbPublishSrcDir string
+}
+
+// ExtractDependencies extracts all the command dependencies from state keeper.
+func (cmd *RdbPublishServiceStartCmd) ExtractDependencies(ctx context.Context, ski interfaces.StateKeeperInterface) error {
+	var err error
+	switch sk := ski.(type) {
+	case *data.HwTestStateKeeper:
+		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
+	default:
+		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+	}
+
+	if err != nil {
+		return errors.Annotate(err, "error during extracting dependencies for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	return nil
+}
+
+func (cmd *RdbPublishServiceStartCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
+	if sk.RdbPublishSrcDir == "" {
+		logging.Warningf(ctx, "Warning: Cmd %q missing dependency: RdbPublishSrcDir", cmd.GetCommandType())
+	}
+
+	cmd.RdbPublishSrcDir = sk.RdbPublishSrcDir
+	return nil
 }
 
 func NewRdbPublishServiceStartCmd(executor interfaces.ExecutorInterface) *RdbPublishServiceStartCmd {

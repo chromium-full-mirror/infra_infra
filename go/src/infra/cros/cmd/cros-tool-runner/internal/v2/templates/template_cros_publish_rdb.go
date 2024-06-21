@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
@@ -21,7 +22,9 @@ const DockerRdbPublishLogsDir = "/tmp/rdb-publish/"
 const DockerRdbPublishLuciContextDir = "/tmp/rdb-luci-context/"
 const DockerRdbPublishServiceAcctsCredsDir = "/tmp/rdb-publish-service-creds/"
 const DockerRdbLuciContextDir = "/tmp/rdb-luci-context/"
+const DockerRdbPublishTestResultsDir = "/tmp/test/results" // Follows how cros_testexec stores test artifacts
 const DockerRdbPublishPort = "43149"
+const crosTestDirPrefix = "cros-test-"
 
 const LuciContext = "LUCI_CONTEXT"
 
@@ -32,6 +35,7 @@ type crosRdbPublishProcessor struct {
 	dockerArtifactDirName         string // Path on the docker where service put the logs by default
 	dockerPublishLuciDirName      string // Path on the docker where publish src dir will be mounted to
 	dockerServiceAcctCredsDirName string // Path on the docker where service accts dir will be mounted to
+	dockerPublishSrcResultDirName string // Path on the docker where publish src result dir will be mounted to
 }
 
 func newCrosRdbPublishProcessor() *crosRdbPublishProcessor {
@@ -41,6 +45,7 @@ func newCrosRdbPublishProcessor() *crosRdbPublishProcessor {
 		dockerArtifactDirName:         DockerRdbPublishLogsDir,
 		dockerPublishLuciDirName:      DockerRdbLuciContextDir,
 		dockerServiceAcctCredsDirName: DockerRdbPublishServiceAcctsCredsDir,
+		dockerPublishSrcResultDirName: DockerRdbPublishTestResultsDir,
 	}
 }
 
@@ -63,6 +68,15 @@ func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRe
 	}
 	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, p.dockerServiceAcctCredsDirName))
+	}
+
+	crosTestDir, err := common.FindDirWithPrefix(t.GetPublishSrcDir(), crosTestDirPrefix)
+	if err != nil {
+		fmt.Printf("Error finding cros-test dir: %v", err)
+	} else {
+		// All test result artifacts will be in <src_artifact_dir>/cros-test/results.
+		resultDir := filepath.Join(crosTestDir, "cros-test", "results")
+		volumes = append(volumes, fmt.Sprintf("%s:%s", resultDir, p.dockerPublishSrcResultDirName))
 	}
 
 	// Add GCE Metadata Server env vars.
