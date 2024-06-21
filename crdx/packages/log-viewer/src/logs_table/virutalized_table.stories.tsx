@@ -60,7 +60,7 @@ const defaultArgs: Story['args'] = {
           sortId="logFile"
           sortOrder={SortOrder.ASC}
           onHeaderSort={() => {}}
-          sortable
+          sorted
         />
       </TableRow>
     );

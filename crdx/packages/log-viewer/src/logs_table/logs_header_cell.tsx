@@ -19,7 +19,7 @@ import { LogsTableEntry } from '@/types';
 interface Props {
   title?: string;
   label: string;
-  sortable?: boolean;
+  sorted?: boolean;
   sortOrder?: SortOrder;
   sortId?: keyof LogsTableEntry;
   onHeaderSort?: (
@@ -34,7 +34,7 @@ interface Props {
 export function LogsHeaderCell({
   title,
   label,
-  sortable,
+  sorted,
   sortOrder,
   sortId,
   onHeaderSort,
@@ -57,7 +57,7 @@ export function LogsHeaderCell({
       title={title}
       align="left"
       size="small"
-      sortDirection={sortable ? sortOrder : false}
+      sortDirection={sorted ? sortOrder : false}
       sx={{
         fontSize: '11px',
         height: '1rem',
@@ -71,16 +71,16 @@ export function LogsHeaderCell({
       <Grid container item direction="row" rowSpacing={2}>
         <TableSortLabel
           data-testid={`header-${sortId}`}
-          active={sortable}
-          direction={sortable ? sortOrder : 'asc'}
+          active={sorted}
+          direction={sorted ? sortOrder : 'asc'}
           onClick={createSortHandler(sortId)}
-          disabled={!sortable}
+          disabled={!sorted}
           sx={{
             width,
           }}
         >
           {label}
-          {sortable && (
+          {sorted && (
             <Box component="span" sx={visuallyHidden}>
               {sortOrder === 'desc' ? 'sorted descending' : 'sorted ascending'}
             </Box>
