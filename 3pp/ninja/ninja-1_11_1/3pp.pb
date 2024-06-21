@@ -10,7 +10,7 @@ create {
       tag_pattern: "v%s"
       version_restriction: { op: EQ val: "1.11.1" }
     }
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
   build {
     tool: "tools/cpython38"

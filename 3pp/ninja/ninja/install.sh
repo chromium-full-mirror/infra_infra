@@ -19,6 +19,8 @@ if [[ $_3PP_PLATFORM == mac* ]]; then
   LDFLAGS="${LDFLAGS} ${MACOSX_FLAGS}"
 fi
 
+SRC_DIR=$(pwd)
+
 if [[ $_3PP_TOOL_PLATFORM != $_3PP_PLATFORM ]]; then
   # Cross compiling; rely on `ninja` in $PATH.
   python3 ./configure.py
@@ -47,3 +49,6 @@ fi
 # Add README.chromium file to the package after substituting the version with $_3PP_VERSION.
 THIS_DIR=$(dirname "$0")
 sed 's/$_3PP_VERSION/'"$_3PP_VERSION"'/' "$THIS_DIR/README.chromium" > "$PREFIX/README.chromium"
+
+# Add license file to the package.
+cp "$SRC_DIR/COPYING" "$PREFIX"

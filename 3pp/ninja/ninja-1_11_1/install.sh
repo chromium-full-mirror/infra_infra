@@ -45,3 +45,6 @@ fi
 # Add README.chromium file to the package.
 THIS_DIR=$(dirname "$0")
 cp "$THIS_DIR/README.chromium" "$PREFIX/README.chromium"
+
+# Add license file to the package.
+cp COPYING "$PREFIX"
