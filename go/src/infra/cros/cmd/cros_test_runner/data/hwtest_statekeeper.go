@@ -71,6 +71,11 @@ type HwTestStateKeeper struct {
 	// Provision related
 	InstallMetadata    *anypb.Any
 	ProvisionResponses map[string][]*testapi.InstallResponse
+	// UpdateFirmwares maps each board to whether
+	// or not it should update firmware, parsed from
+	// the input's config and set while parsing
+	// the dut topology.
+	UpdateFirmwares map[string]bool
 
 	// Test related
 	TestArgs      *testapi.AutotestExecutionMetadata
@@ -114,5 +119,6 @@ func NewHwTestStateKeeper() *HwTestStateKeeper {
 		ProvisionResponses:       make(map[string][]*testapi.InstallResponse),
 		PrimaryDutModel:          &labapi.DutModel{},
 		CompanionDutModels:       []*labapi.DutModel{},
+		UpdateFirmwares:          map[string]bool{},
 	}
 }

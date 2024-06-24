@@ -87,15 +87,16 @@ const (
 	Companion = "companion"
 
 	// Commonly used Dynamic Dependecy keys.
-	ServiceAddress            = "serviceAddress"
-	CrosDutCacheServer        = "crosDut.cacheServer"
-	CrosDutDutAddress         = "crosDut.dutAddress"
-	ProvisionStartupDut       = "startupRequest.dut"
-	ProvisionStartupDutServer = "startupRequest.dutServer"
-	TestRequestTestSuites     = "testRequest.testSuites"
-	TestRequestPrimary        = "testRequest.primary"
-	TestRequestCompanions     = "testRequest.companions"
-	RequestTestSuites         = "req.params.testSuites"
+	ServiceAddress                      = "serviceAddress"
+	CrosDutCacheServer                  = "crosDut.cacheServer"
+	CrosDutDutAddress                   = "crosDut.dutAddress"
+	CrosProvisionMetadataUpdateFirmware = "installRequest.metadata.updateFirmware"
+	ProvisionStartupDut                 = "startupRequest.dut"
+	ProvisionStartupDutServer           = "startupRequest.dutServer"
+	TestRequestTestSuites               = "testRequest.testSuites"
+	TestRequestPrimary                  = "testRequest.primary"
+	TestRequestCompanions               = "testRequest.companions"
+	RequestTestSuites                   = "req.params.testSuites"
 )
 
 var (

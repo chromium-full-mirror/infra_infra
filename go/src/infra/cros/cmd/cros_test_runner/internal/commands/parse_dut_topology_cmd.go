@@ -16,6 +16,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -207,11 +208,21 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 			sk.CompanionDevicesMetadata = append(sk.CompanionDevicesMetadata, deviceMetadata)
 		}
 		sk.Devices[deviceIdentifier.Id] = device
+
+		// Need to grab botDims for label-pool.
+		build := sk.BuildState.Build()
+		botDims := protoutil.MustBotDimensions(build)
+		labelPools := getTagValues(botDims, "label-pool")
+		updateFirmware := shouldUpdateFirmware(sk.CommonConfig, labelPools, deviceMetadata.GetDutModel())
+		sk.UpdateFirmwares[deviceMetadata.GetDutModel().GetBuildTarget()] = updateFirmware
 		if err := sk.Injectables.Set(deviceIdentifier.GetDevice(), device); err != nil {
 			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.GetDevice(), err)
 		}
 		if err := sk.Injectables.Set(deviceIdentifier.GetDeviceMetadata(), deviceMetadata); err != nil {
 			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.GetDeviceMetadata(), err)
+		}
+		if err := sk.Injectables.Set(deviceIdentifier.GetUpdateFirmware(), updateFirmware); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.AddPostfix("updateFirmware").Id)
 		}
 	}
 
@@ -264,6 +275,33 @@ func parseDut(dut *labapi.Dut) (*testapi.CrosTestRequest_Device, *skylab_test_ru
 	}
 
 	return device, deviceMetadata
+}
+
+// shouldUpdateFirmware checks whether or not a dutModel
+// should update the firmware during cros-provision
+// using the cros firmware update config from the input.
+func shouldUpdateFirmware(commonConfig *skylab_test_runner.CommonConfig, labelPools []string, dutModel *labapi.DutModel) bool {
+	firmwareConfig := commonConfig.GetCrosFirmwareUpdateConfig()
+	if firmwareConfig == nil || !firmwareConfig.Enabled {
+		return false
+	}
+
+	if slices.Contains(labelPools, "mp_firmware_testing") {
+		return false
+	}
+
+	allowList := firmwareConfig.GetAllowList()
+	if allowList != nil {
+		return (slices.Contains(allowList.GetBoards(), dutModel.GetBuildTarget()) ||
+			slices.Contains(allowList.GetModels(), dutModel.GetModelName()))
+	}
+	blockList := firmwareConfig.GetBlockList()
+	if blockList != nil {
+		return !(slices.Contains(blockList.GetBoards(), dutModel.GetBuildTarget()) ||
+			slices.Contains(blockList.GetModels(), dutModel.GetModelName()))
+	}
+
+	return false
 }
 
 func NewParseDutTopologyCmd() *ParseDutTopologyCmd {

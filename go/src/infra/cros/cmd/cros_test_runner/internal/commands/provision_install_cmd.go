@@ -86,9 +86,18 @@ func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(
 	cmd.OsImagePath = sk.CftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath()
 
 	cmd.PreventReboot = false
+	updateFirmware := false
+	if sk.UpdateFirmwares != nil {
+		board := sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget()
+		if shouldUpdate, ok := sk.UpdateFirmwares[board]; ok {
+			updateFirmware = shouldUpdate
+		}
+	}
 
 	if sk.InstallMetadata == nil {
-		cmd.InstallMetadata, err = anypb.New(&testapi.CrOSProvisionMetadata{})
+		cmd.InstallMetadata, err = anypb.New(&testapi.CrOSProvisionMetadata{
+			UpdateFirmware: updateFirmware,
+		})
 		if err != nil {
 			return errors.Annotate(err, "error during creating provision metadata: ").Err()
 		}
@@ -115,8 +124,6 @@ func (cmd *ProvisionInstallCmd) extractDepsFromLocalTestStateKeeper(
 			Path:     sk.ImagePath,
 		}
 	}
-
-	cmd.PreventReboot = false
 
 	if sk.InstallMetadata == nil {
 		cmd.InstallMetadata, err = anypb.New(&testapi.CrOSProvisionMetadata{})

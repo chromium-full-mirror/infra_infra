@@ -188,6 +188,12 @@ func BuildProvisionRequest(deviceId *common.DeviceIdentifier, device *skylab_tes
 			Metadata:      crosProvisionMetadata,
 		}
 		dynamicIdentifier = common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(deviceId).Id
+		if !ContainsFwProvisionState(device.GetProvisionState()) {
+			deps = append(deps, &api.DynamicDep{
+				Key:   common.CrosProvisionMetadataUpdateFirmware,
+				Value: deviceId.GetUpdateFirmware(),
+			})
+		}
 	}
 	return &api.ProvisionTask{
 		ServiceAddress: &labapi.IpEndpoint{},

@@ -58,6 +58,10 @@ func (id *DeviceIdentifier) GetCrosDutServer() string {
 	return fmt.Sprintf("crosDutServer_%s", id.Id)
 }
 
+func (id *DeviceIdentifier) GetUpdateFirmware() string {
+	return fmt.Sprintf("updateFirmware_%s", id.Id)
+}
+
 type TaskIdentifier struct {
 	Id string
 }
