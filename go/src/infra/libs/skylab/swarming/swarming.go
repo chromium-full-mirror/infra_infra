@@ -24,22 +24,13 @@ import (
 	"go.chromium.org/luci/common/retry/transient"
 )
 
-// SkylabPool is the swarming pool for all skylab bots.
-const SkylabPool = "ChromeOSSkylab"
+// skylabPool is the swarming pool for all skylab bots.
+const skylabPool = "ChromeOSSkylab"
 
 // Client is a swarming client for creating tasks and waiting for their results.
 type Client struct {
 	SwarmingService *swarming_api.Service
 	server          string
-}
-
-// ListedHost is a collection of information about the DUT managed by a particular bot.
-type ListedHost struct {
-	Hostname string
-}
-
-func (l *ListedHost) String() string {
-	return l.Hostname
 }
 
 // [DEPRECATED] NewClient creates a new Client.
@@ -89,22 +80,6 @@ func newSwarmingServiceUpdated(ctx context.Context, h *http.Client, server strin
 
 	s.BasePath = server + swarmingAPISuffix
 	return s, nil
-}
-
-// CreateTask creates a swarming task based on the given request,
-// retrying transient errors.
-func (c *Client) CreateTask(ctx context.Context, req *swarming_api.SwarmingRpcsNewTaskRequest) (*swarming_api.SwarmingRpcsTaskRequestMetadata, error) {
-	var resp *swarming_api.SwarmingRpcsTaskRequestMetadata
-	createTask := func() error {
-		var err error
-		resp, err = c.SwarmingService.Tasks.New(req).Context(ctx).Do()
-		return err
-	}
-
-	if err := callWithRetries(ctx, "create task", createTask); err != nil {
-		return nil, err
-	}
-	return resp, nil
 }
 
 func getFullTaskList(ctx context.Context, call *swarming_api.TasksListCall) ([]*swarming_api.SwarmingRpcsTaskResult, error) {
@@ -198,94 +173,6 @@ func (c *Client) CancelTask(ctx context.Context, taskID string) error {
 	return nil
 }
 
-// GetResults gets results for the tasks with given IDs,
-// retrying transient errors.
-func (c *Client) GetResults(ctx context.Context, IDs []string) ([]*swarming_api.SwarmingRpcsTaskResult, error) {
-	results := make([]*swarming_api.SwarmingRpcsTaskResult, len(IDs))
-	for i, ID := range IDs {
-		var r *swarming_api.SwarmingRpcsTaskResult
-		getResult := func() error {
-			var err error
-			r, err = c.SwarmingService.Task.Result(ID).Context(ctx).Do()
-			return err
-		}
-		if err := callWithRetries(ctx, "get result", getResult); err != nil {
-			return nil, errors.Annotate(err, fmt.Sprintf("get swarming result for task %s", ID)).Err()
-		}
-		results[i] = r
-	}
-	return results, nil
-}
-
-// GetResultsForTags gets results for tasks that match all the given tags,
-// retrying transient errors.
-func (c *Client) GetResultsForTags(ctx context.Context, tags []string) ([]*swarming_api.SwarmingRpcsTaskResult, error) {
-	var results *swarming_api.SwarmingRpcsTaskList
-	getResults := func() error {
-		var err error
-		results, err = c.SwarmingService.Tasks.List().Tags(tags...).Context(ctx).Do()
-		return err
-	}
-	if err := callWithRetries(ctx, "get result", getResults); err != nil {
-		return nil, errors.Annotate(err, fmt.Sprintf("get swarming result for tags %s", tags)).Err()
-	}
-
-	return results.Items, nil
-}
-
-// GetRequests gets the task requests for the given task IDs,
-// retrying transient errors.
-func (c *Client) GetRequests(ctx context.Context, IDs []string) ([]*swarming_api.SwarmingRpcsTaskRequest, error) {
-	requests := make([]*swarming_api.SwarmingRpcsTaskRequest, len(IDs))
-	for i, ID := range IDs {
-		var request *swarming_api.SwarmingRpcsTaskRequest
-		getRequest := func() error {
-			var err error
-			request, err = c.SwarmingService.Task.Request(ID).Context(ctx).Do()
-			return err
-		}
-		if err := callWithRetries(ctx, "get request", getRequest); err != nil {
-			return nil, errors.Annotate(err, fmt.Sprintf("rerun task %s", ID)).Err()
-		}
-		requests[i] = request
-	}
-	return requests, nil
-}
-
-// GetTaskState gets the state of the given task,
-// retrying transient errors.
-func (c *Client) GetTaskState(ctx context.Context, ID string) (*swarming_api.SwarmingRpcsTaskStates, error) {
-	var result *swarming_api.SwarmingRpcsTaskStates
-	getState := func() error {
-		var err error
-		result, err = c.SwarmingService.Tasks.GetStates().TaskId(ID).Context(ctx).Do()
-		return err
-	}
-	if err := callWithRetries(ctx, "get state", getState); err != nil {
-		return nil, errors.Annotate(err, fmt.Sprintf("get task state for task ID %s", ID)).Err()
-	}
-	return result, nil
-}
-
-// GetTaskOutputs gets the task outputs for the given IDs,
-// retrying transient errors.
-func (c *Client) GetTaskOutputs(ctx context.Context, IDs []string) ([]*swarming_api.SwarmingRpcsTaskOutput, error) {
-	results := make([]*swarming_api.SwarmingRpcsTaskOutput, len(IDs))
-	for i, ID := range IDs {
-		var result *swarming_api.SwarmingRpcsTaskOutput
-		getResult := func() error {
-			var err error
-			result, err = c.SwarmingService.Task.Stdout(ID).Context(ctx).Do()
-			return err
-		}
-		if err := callWithRetries(ctx, "get result", getResult); err != nil {
-			return nil, errors.Annotate(err, fmt.Sprintf("get swarming stdout for task %s", ID)).Err()
-		}
-		results[i] = result
-	}
-	return results, nil
-}
-
 // BotExists checks if an bot exists with the given dimensions.
 func (c *Client) BotExists(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) (bool, error) {
 	var resp *swarming_api.SwarmingRpcsBotList
@@ -308,15 +195,15 @@ func (c *Client) BotExists(ctx context.Context, dims []*swarming_api.SwarmingRpc
 	return len(resp.Items) > 0, nil
 }
 
-// GetBotIDs returns slice of bot IDs by given dimensions.
-func (c *Client) GetBotIDs(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]string, error) {
+// getBotIDs returns slice of bot IDs by given dimensions.
+func (c *Client) getBotIDs(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]string, error) {
 	bots, err := c.GetBots(ctx, dims)
 	if err != nil {
 		return nil, err
 	}
 	var ids []string
 	for _, bot := range bots {
-		id, err := LookupDimension(bot.Dimensions, "id")
+		id, err := lookupDimension(bot.Dimensions, "id")
 		if err != nil {
 			return nil, errors.Annotate(err, "error with bot id").Err()
 		}
@@ -360,55 +247,13 @@ func (c *Client) GetBots(ctx context.Context, dims []*swarming_api.SwarmingRpcsS
 	}
 }
 
-// GetListedBots returns information about the DUTs managed by bots satisfying particular dimensions.
-func (c *Client) GetListedBots(ctx context.Context, dims []*swarming_api.SwarmingRpcsStringPair) ([]*ListedHost, error) {
-	var out []*ListedHost
-
-	bots, err := c.GetBots(ctx, dims)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, bot := range bots {
-		var err error
-		newEntry := &ListedHost{}
-		newEntry.Hostname, err = LookupDimension(bot.Dimensions, "dut_name")
-		if err != nil {
-			continue
-		}
-		out = append(out, newEntry)
-	}
-
-	return out, nil
-}
-
-// GetFlatBotDimensionsForTask takes a task id and returns the dimensions of the bot that is currently running the task.
-// The output map has exactly one value per dimension. Dimensions where a key k maps to multiple values v1, v2, v3 ... correspond to
-// the pair (k, v1) in the output map.
-// Keys that are present but have no values associated with them get the magical sentinel value "".
-// If the bot does not exist, then an error is returned instead.
-func (c *Client) GetFlatBotDimensionsForTask(ctx context.Context, taskID string) (map[string]string, error) {
-	out := make(map[string]string)
-	call := c.SwarmingService.Task.Result(taskID)
-	results, err := call.Context(ctx).Do()
-	if err != nil {
-		return nil, errors.Annotate(err, "get task for taskID").Err()
-	}
-	for _, dim := range results.BotDimensions {
-		if len(dim.Value) > 0 {
-			out[dim.Key] = dim.Value[0]
-		}
-	}
-	return out, nil
-}
-
 // DutNameToBotID gets the bot id associated with a particular dut by its hostname.
 func (c *Client) DutNameToBotID(ctx context.Context, host string) (string, error) {
 	dims := []*swarming_api.SwarmingRpcsStringPair{
-		{Key: "pool", Value: SkylabPool},
+		{Key: "pool", Value: skylabPool},
 		{Key: "dut_name", Value: host},
 	}
-	ids, err := c.GetBotIDs(ctx, dims)
+	ids, err := c.getBotIDs(ctx, dims)
 	switch {
 	case err != nil:
 		return "", errors.Annotate(err, "failed to find bot").Err()
@@ -420,8 +265,8 @@ func (c *Client) DutNameToBotID(ctx context.Context, host string) (string, error
 	return ids[0], nil
 }
 
-// LookupDimension gets a single string value associated with a dimension
-func LookupDimension(dims []*swarming_api.SwarmingRpcsStringListPair, key string) (string, error) {
+// lookupDimension gets a single string value associated with a dimension
+func lookupDimension(dims []*swarming_api.SwarmingRpcsStringListPair, key string) (string, error) {
 	for _, pair := range dims {
 		if pair.Key == key {
 			if len(pair.Value) == 0 {
@@ -453,11 +298,6 @@ func dimsToTags(m map[string]string) []string {
 		out = append(out, fmt.Sprintf("%s:%s", k, v))
 	}
 	return out
-}
-
-// GetTaskURL gets a URL for the task with the given ID.
-func (c *Client) GetTaskURL(taskID string) string {
-	return TaskURL(c.server, taskID)
 }
 
 var retryableCodes = map[int]bool{
@@ -525,11 +365,6 @@ func errIsTransient(err error) bool {
 // errors, with swarming-appropriate backoff and delay.
 func callWithRetries(ctx context.Context, opname string, f func() error) error {
 	return retry.Retry(ctx, transient.Only(retryParams), tagErrIfTransient(f), retry.LogCallback(ctx, opname))
-}
-
-// TaskURL returns a URL to inspect a task with the given ID.
-func TaskURL(swarmingService string, taskID string) string {
-	return fmt.Sprintf("%stask?id=%s", swarmingService, taskID)
 }
 
 // TaskListURLForTags returns a tasklist URL filtered by the given tags.
