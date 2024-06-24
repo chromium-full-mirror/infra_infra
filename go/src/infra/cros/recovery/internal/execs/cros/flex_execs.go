@@ -10,7 +10,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros/amt"
-	"infra/cros/recovery/internal/components/cros/uefi"
 	"infra/cros/recovery/internal/execs"
 )
 
@@ -44,15 +43,8 @@ func getFlexAMTClient() amt.AMTClient {
 	//TODO(josephsussman): Get these from somewhere else.
 	return amt.NewAMTClient("192.168.231.218", "admin", "P@ssword1")
 }
-
-// setUSBForNextFlexBootExec sets USB-drive as next boot device for the DUT.
-func setUSBForNextFlexBootExec(ctx context.Context, info *execs.ExecInfo) error {
-	return uefi.SetUSBForNextBoot(ctx, info.DefaultRunner())
-}
-
 func init() {
 	execs.Register("cros_flex_amt_present", flexAMTPresentExec)
 	execs.Register("cros_flex_amt_power_off", flexAMTPowerOffExec)
 	execs.Register("cros_flex_amt_power_on", flexAMTPowerOnExec)
-	execs.Register("cros_flex_usb_nextboot", setUSBForNextFlexBootExec)
 }

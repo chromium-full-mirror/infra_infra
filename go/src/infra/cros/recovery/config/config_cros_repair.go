@@ -211,7 +211,6 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
@@ -238,7 +237,6 @@ func crosRepairActions() map[string]*Action {
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
@@ -402,7 +400,6 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
@@ -440,7 +437,6 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
@@ -469,7 +465,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
@@ -2807,41 +2802,6 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Install OS in recovery mode by booting from servo USB-drive (Flex)": {
-			Docs: []string{
-				"The action design only for Flex devices.",
-				"This action installs the test image on DUT utilizing the features of servo.",
-				"When DUT sees USB-key it will always try to boot from it.",
-			},
-			Conditions: []string{
-				"Is Flex device",
-				"Is servod running",
-				"Is servo USB key detected",
-				"Device does not have Intel AMT",
-			},
-			Dependencies: []string{
-				"Servo USB-Key needs to be reflashed",
-				"Download stable version OS image to servo usbkey if necessary (allow fail)",
-				"Direct USB-drive to DUT",
-				"Boot Flex from USB on next boot",
-				"Power OFF DUT by servo",
-				"Sleep 10 seconds",
-				"Power ON DUT by servo",
-				"Sleep 10 seconds",
-				"Wait to be SSHable (normal boot)",
-				"Print active devices",
-				"Is Flex booted from USB-drive",
-				"Run chromeos-install for Flex",
-				"Sleep 10 seconds",
-				"Power-off the DUT using AMT",
-				"Direct USB-drive to servo host",
-				"Power-on the DUT using AMT",
-				"Wait to be SSHable (normal boot)",
-				"Remove REIMAGE_BY_USBKEY repair-request",
-			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
 		"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)": {
 			Docs: []string{
 				"The action design only for Flex devices.",
@@ -4602,7 +4562,6 @@ func crosRepairActions() map[string]*Action {
 				"Is Flex device",
 			},
 			Dependencies: []string{
-				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 			},
 			ExecName: "sample_pass",
@@ -4733,30 +4692,6 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
-		},
-		"Boot Flex from USB on next boot": {
-			Docs: []string{
-				"Use efibootmgr to boot from USB on the next boot.",
-			},
-			Conditions: []string{
-				"Device has UEFI firmware",
-			},
-			ExecName:      "cros_flex_usb_nextboot",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_ALWAYS_RUN,
-		},
-		"Device has UEFI firmware": {
-			Docs: []string{
-				"Check if the device has UEFI firmware.",
-			},
-			ExecName: "cros_run_command",
-			ExecExtraArgs: []string{
-				"host:dut",
-				"command:test -d /sys/firmware/efi",
-				"background:false",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Power-off the DUT using AMT": {
 			Docs: []string{
