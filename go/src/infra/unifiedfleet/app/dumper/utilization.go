@@ -41,8 +41,12 @@ var suMetric = metric.NewInt(
 	field.String("pool"),
 	field.String("environment"),
 	field.String("zone"),
+	field.String("swarming_instance"),
 	field.String("status"),
 )
+
+// Only MachineLSEs for chromeOS and browser
+var utilizationExportNamespaces = []string{util.OSNamespace, util.BrowserNamespace}
 
 var suMetricState *tsmon.State
 
@@ -74,16 +78,30 @@ func initializeUFSInventoryTsmonState(srv *server.Server) error {
 	return nil
 }
 
-// reportUFSInventoryCronHandler push the ufs duts metrics to tsmon
+// reportUFSInventoryCronHandler runs the ufs dut metric collection
+// for each namespace in `utilizationExportNamespaces`
 func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
-	logging.Infof(ctx, "Reporting UFS inventory DUT metrics")
+	var errs []error
+	for _, ns := range utilizationExportNamespaces {
+		datastoreNamespace := util.ClientToDatastoreNamespace[ns]
+		ctx, err = util.SetupDatastoreNamespace(ctx, datastoreNamespace)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		if err := reportUFSInventoryForNamespace(ctx, ns); err != nil {
+			errs = append(errs, err)
+			continue
+		}
+	}
+	return errors.Append(errs...)
+}
+
+// reportUFSInventoryForNamespace push the ufs duts metrics to tsmon
+func reportUFSInventoryForNamespace(ctx context.Context, ns string) (err error) {
+	logging.Infof(ctx, "Reporting UFS inventory DUT metrics for namespace %s", ns)
 
 	env := config.Get(ctx).SelfStorageBucket
-	// Set namespace to OS to get only MachineLSEs for chromeOS.
-	ctx, err = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
-	if err != nil {
-		return err
-	}
 	// Get all the MachineLSEs
 	lses, err := getAllMachineLSEs(ctx, false)
 	if err != nil {
@@ -102,34 +120,40 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	for _, machine := range machines {
 		idTomachineMap[machine.GetName()] = machine
 	}
-	sUnits, err := getAllSchedulingUnits(ctx, false)
-	if err != nil {
-		return err
-	}
-	c := make(inventoryCounter)
-	// Map for MachineLSEs associated with SchedulingUnit for easy search.
-	lseInSUnitMap := make(map[string]bool)
-	for _, su := range sUnits {
-		if len(su.GetMachineLSEs()) > 0 {
-			suLses := make([]*ufspb.MachineLSE, len(su.GetMachineLSEs()))
-			for i, lseID := range su.GetMachineLSEs() {
-				suLses[i] = idTolseMap[lseID]
-			}
+	logging.Infof(ctx, "Found %d LSEs and %d machines", len(lses), len(machines))
 
-			b, err := getBucketForSchedulingUnit(su, suLses, idTomachineMap, env)
-			if err != nil {
-				logging.Warningf(ctx, err.Error())
-				continue
-			}
-			c[*b]++
-			for _, lseName := range su.GetMachineLSEs() {
-				lseInSUnitMap[lseName] = true
+	// Scheduling Units are OS namespace only
+	var lseInSUnitMap map[string]bool
+	c := make(inventoryCounter)
+	if ns == util.OSNamespace {
+		sUnits, err := getAllSchedulingUnits(ctx, false)
+		if err != nil {
+			return err
+		}
+		// Map for MachineLSEs associated with SchedulingUnit for easy search.
+		lseInSUnitMap = make(map[string]bool)
+		for _, su := range sUnits {
+			if len(su.GetMachineLSEs()) > 0 {
+				suLses := make([]*ufspb.MachineLSE, len(su.GetMachineLSEs()))
+				for i, lseID := range su.GetMachineLSEs() {
+					suLses[i] = idTolseMap[lseID]
+				}
+
+				b, err := getBucketForSchedulingUnit(su, suLses, idTomachineMap, env)
+				if err != nil {
+					logging.Warningf(ctx, err.Error())
+					continue
+				}
+				c[*b]++
+				for _, lseName := range su.GetMachineLSEs() {
+					lseInSUnitMap[lseName] = true
+				}
 			}
 		}
 	}
 	for _, lse := range lses {
 		name := lse.GetName()
-		if lseInSUnitMap[name] {
+		if ns == util.OSNamespace && lseInSUnitMap[name] {
 			continue
 		}
 		machine, err := getMachineForLse(lse, idTomachineMap)
@@ -137,7 +161,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 			logging.Warningf(ctx, err.Error())
 			continue
 		}
-		b := getBucketForDevice(lse, machine, env)
+		b := getBucketForDevice(lse, machine, env, ns)
 		c[*b]++
 	}
 	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
@@ -149,7 +173,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	// Report the metrics and flush
 	for b, count := range c {
 		logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
-		suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.status)
+		suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
 	}
 	if err := suMetricState.ParallelFlush(ctx, nil, 32); err != nil {
 		return errors.Annotate(err, "failed to flush values to monitoring").Err()
@@ -173,20 +197,27 @@ func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Ma
 
 // getBucketForDevice instantiates a *bucket for a given MachineLSE and
 // corresponding Machine
-func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string) *bucket {
+func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string, ns string) *bucket {
 	b := &bucket{
-		board:       machine.GetChromeosMachine().GetBuildTarget(),
-		model:       machine.GetChromeosMachine().GetModel(),
-		pool:        "[None]",
-		environment: env,
-		zone:        lse.GetZone(),
-		status:      dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
+		board:            machine.GetChromeosMachine().GetBuildTarget(),
+		model:            machine.GetChromeosMachine().GetModel(),
+		pool:             "[None]",
+		environment:      env,
+		zone:             lse.GetZone(),
+		swarmingInstance: "[None]",
+		status:           dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
 	}
 	if dut := lse.GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
 		b.pool = getReportPool(dut.GetPools())
 	}
 	if labstation := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation(); labstation != nil {
 		b.pool = getReportPool(labstation.GetPools())
+	}
+	switch ns {
+	case util.OSNamespace:
+		b.swarmingInstance = "chromeos-swarming"
+	case util.BrowserNamespace:
+		b.swarmingInstance = lse.GetOwnership().GetSwarmingInstance()
 	}
 	return b
 }
@@ -206,12 +237,13 @@ var (
 // of the primary DUT values and an aggregate on all DUTs
 func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (*bucket, error) {
 	b := &bucket{
-		board:       "[None]",
-		model:       "[None]",
-		pool:        getReportPool(su.GetPools()),
-		environment: env,
-		zone:        "[None]",
-		status:      schedulingUnitStatusFromLses(lses),
+		board:            "[None]",
+		model:            "[None]",
+		pool:             getReportPool(su.GetPools()),
+		environment:      env,
+		zone:             "[None]",
+		swarmingInstance: "chromeos-swarming",
+		status:           schedulingUnitStatusFromLses(lses),
 	}
 	// fields from all DUTs
 	switch su.GetExposeType() {
@@ -242,13 +274,6 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		}
 	}
 	switch su.GetExposeType() {
-	case ufspb.SchedulingUnit_DEFAULT:
-		// nothing from the primary DUT
-	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
-		if primaryLse == nil {
-			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
-		}
-		b.zone = primaryLse.GetZone()
 	case ufspb.SchedulingUnit_STRICTLY_PRIMARY_ONLY:
 		if primaryLse == nil {
 			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
@@ -259,7 +284,14 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		}
 		b.board = machine.GetChromeosMachine().GetBuildTarget()
 		b.model = machine.GetChromeosMachine().GetModel()
+		fallthrough
+	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
+		if primaryLse == nil {
+			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
+		}
 		b.zone = primaryLse.GetZone()
+	case ufspb.SchedulingUnit_DEFAULT:
+		// nothing from the primary DUT
 	default:
 		return nil, errors.Reason("Unknown SchedulingUnit Expose Type for %s", su.GetName()).Err()
 	}
@@ -308,16 +340,17 @@ func schedulingUnitStatusFromLses(lses []*ufspb.MachineLSE) string {
 // dimensions are removed, the related metric is not automatically reset. The
 // metric will get reset eventually.
 type bucket struct {
-	board       string
-	model       string
-	pool        string
-	environment string
-	zone        string
-	status      string
+	board            string
+	model            string
+	pool             string
+	environment      string
+	zone             string
+	swarmingInstance string
+	status           string
 }
 
 func (b *bucket) String() string {
-	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, status: %s", b.board, b.model, b.pool, b.environment, b.zone, b.status)
+	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, swarmingInstance: %s, status: %s", b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
 }
 
 func summarizeValues(vs []string) string {
