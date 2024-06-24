@@ -60,7 +60,6 @@ func initializeUFSInventoryTsmonState(srv *server.Server) error {
 		HostName:    srv.Options.Hostname,
 	}))
 	suMetricState.InhibitGlobalCallbacksOnFlush()
-
 	var mon monitor.Monitor
 	switch {
 	case srv.Options.Prod && srv.Options.TsMonAccount != "":
@@ -82,6 +81,10 @@ func initializeUFSInventoryTsmonState(srv *server.Server) error {
 // for each namespace in `utilizationExportNamespaces`
 func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	var errs []error
+	// Add metric state to context
+	mctx := tsmon.WithState(ctx, suMetricState)
+	// Reset the metric to stop reporting no-longer-existing devices and states.
+	defer suMetricState.Store().Reset(mctx, suMetric)
 	for _, ns := range utilizationExportNamespaces {
 		datastoreNamespace := util.ClientToDatastoreNamespace[ns]
 		ctx, err = util.SetupDatastoreNamespace(ctx, datastoreNamespace)
@@ -89,23 +92,33 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 			errs = append(errs, err)
 			continue
 		}
-		if err := reportUFSInventoryForNamespace(ctx, ns); err != nil {
+		var c inventoryCounter
+		if c, err = reportUFSInventoryForNamespace(ctx, ns); err != nil {
 			errs = append(errs, err)
 			continue
 		}
+		// Report the metrics
+		for b, count := range c {
+			suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
+		}
+	}
+	// Flush the metrics
+	if err := suMetricState.ParallelFlush(ctx, nil, 32); err != nil {
+		err = errors.Annotate(err, "failed to flush values to monitoring").Err()
+		errs = append(errs, err)
 	}
 	return errors.Append(errs...)
 }
 
 // reportUFSInventoryForNamespace push the ufs duts metrics to tsmon
-func reportUFSInventoryForNamespace(ctx context.Context, ns string) (err error) {
+func reportUFSInventoryForNamespace(ctx context.Context, ns string) (c inventoryCounter, err error) {
 	logging.Infof(ctx, "Reporting UFS inventory DUT metrics for namespace %s", ns)
 
 	env := config.Get(ctx).SelfStorageBucket
 	// Get all the MachineLSEs
 	lses, err := getAllMachineLSEs(ctx, false)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	idTolseMap := make(map[string]*ufspb.MachineLSE, 0)
 	for _, lse := range lses {
@@ -114,21 +127,20 @@ func reportUFSInventoryForNamespace(ctx context.Context, ns string) (err error) 
 	// Get all Machines
 	machines, err := getAllMachines(ctx, false)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	idTomachineMap := make(map[string]*ufspb.Machine, 0)
 	for _, machine := range machines {
 		idTomachineMap[machine.GetName()] = machine
 	}
-	logging.Infof(ctx, "Found %d LSEs and %d machines", len(lses), len(machines))
 
 	// Scheduling Units are OS namespace only
 	var lseInSUnitMap map[string]bool
-	c := make(inventoryCounter)
+	c = make(inventoryCounter)
 	if ns == util.OSNamespace {
 		sUnits, err := getAllSchedulingUnits(ctx, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		// Map for MachineLSEs associated with SchedulingUnit for easy search.
 		lseInSUnitMap = make(map[string]bool)
@@ -164,21 +176,8 @@ func reportUFSInventoryForNamespace(ctx context.Context, ns string) (err error) 
 		b := getBucketForDevice(lse, machine, env, ns)
 		c[*b]++
 	}
-	logging.Infof(ctx, "report UFS inventory metrics for %d devices", len(c))
-
-	// Add metric state to context
-	mctx := tsmon.WithState(ctx, suMetricState)
-	// Reset the metric to stop reporting no-longer-existing devices and states.
-	defer suMetricState.Store().Reset(mctx, suMetric)
-	// Report the metrics and flush
-	for b, count := range c {
-		logging.Infof(ctx, "bucket: %s, number: %d", b.String(), count)
-		suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
-	}
-	if err := suMetricState.ParallelFlush(ctx, nil, 32); err != nil {
-		return errors.Annotate(err, "failed to flush values to monitoring").Err()
-	}
-	return nil
+	logging.Infof(ctx, "report UFS inventory metrics for %d device buckets", len(c))
+	return c, nil
 }
 
 // getMachineForLse returns the Machine that's attached to the MachineLSE
