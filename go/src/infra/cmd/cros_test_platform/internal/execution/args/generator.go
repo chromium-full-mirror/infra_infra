@@ -34,6 +34,7 @@ import (
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/inventory/autotest/labels"
+	swarming "infra/libs/skylab/inventory/swarming"
 	"infra/libs/skylab/request"
 	"infra/libs/skylab/worker"
 )
@@ -114,6 +115,7 @@ func (g *Generator) getUnsupportedDependencies() []string {
 	for _, label := range labels.IgnoredLabels() {
 		unsupported.Del(label)
 	}
+
 	return unsupported.ToSlice()
 }
 
@@ -207,17 +209,42 @@ func (g *Generator) DepsToSwarmngLabels(dims []string) []string {
 	testDeps := g.Invocation.Test.Dependencies
 	for _, dep := range testDeps {
 		label := dep.Label
-		if strings.Contains(label, "label-") {
-			dims = append(dims, label)
-		} else if strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") || strings.HasPrefix(label, "bot") {
-			dims = append(dims, label)
-		} else if strings.Contains(label, ":") {
-			dims = append(dims, fmt.Sprintf("label-%s", label))
+		// Try to convert using autotest-label library first
+		converted := convertDep(label)
+		if len(converted) == 0 {
+			// If the dep can't be converted, let it flow through naturally with some formatting done.
+			dims = append(dims, formatLabel(label))
 		} else {
-			dims = append(dims, fmt.Sprintf("label-%s:True", label))
+			dims = append(dims, converted...)
 		}
 	}
 	return dims
+}
+
+func formatLabel(label string) string {
+	if strings.Contains(label, "label-") {
+		return label
+	} else if strings.HasPrefix(label, "dut_name") || strings.HasPrefix(label, "drone") || strings.HasPrefix(label, "bot") {
+		return label
+	} else if strings.Contains(label, ":") {
+		return fmt.Sprintf("label-%s", label)
+	} else {
+		return fmt.Sprintf("label-%s:True", label)
+	}
+}
+
+func convertDep(dep string) []string {
+	deps := []string{dep}
+	parsedDeps := labels.Revert(deps)
+
+	depsf := []string{}
+	for k, v := range swarming.Convert(parsedDeps) {
+		for _, innerv := range v {
+			depsf = append(depsf, fmt.Sprintf("%s:%s", k, innerv))
+
+		}
+	}
+	return depsf
 }
 
 // dimsWithDUTState adds a dut_state:ready requirement to the given dims if no
