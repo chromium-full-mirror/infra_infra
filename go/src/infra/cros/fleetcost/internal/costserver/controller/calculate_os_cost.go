@@ -21,8 +21,6 @@ import (
 )
 
 // indicatorAttribute is the information that's necessary to look up a datastore record.
-//
-// TODO(gregorynisbet): Remove this type. It duplicates the functionality of the datastore entity and protos.
 type indicatorAttribute struct {
 	// ErrorHint is a description of what you were looking for.
 	// It gets inserted into the error message.
