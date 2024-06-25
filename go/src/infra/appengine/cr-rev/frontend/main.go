@@ -93,8 +93,10 @@ func main() {
 		srv.Routes.Handle("GET", "/c/*path", mw, handlePublicGerritRedirect)
 		srv.Routes.GET("/", mw, handleIndex)
 
+		server := api.NewServer(redirect)
+		api.RegisterCrrevServer(srv, server)
 		apiV1 := srv.Routes.Subrouter("/_ah/api/crrev/v1")
-		api.NewRESTServer(apiV1, api.NewServer(redirect))
+		api.NewRESTServer(apiV1, server)
 
 		// NotFound is used as catch-all.
 		srv.Routes.NotFound(mw, func(c *router.Context) {
