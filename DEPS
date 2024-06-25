@@ -97,10 +97,6 @@ deps = {
      "{chromium_git}/external/code.google.com/p/gae-pytz/@" +
      "4d72fd095c91f874aaafb892859acbe3f927b3cd",
 
-  "appengine/third_party/dateutil":
-     "{chromium_git}/external/code.launchpad.net/dateutil/@" +
-     "8c6026ba09716a4e164f5420120bfe2ebb2d9d82",
-
   "appengine/third_party/npm_modules": {
      "url":
         "{chromium_git}/infra/third_party/npm_modules.git@" +

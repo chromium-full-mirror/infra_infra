@@ -46,9 +46,6 @@
 [submodule "appengine/third_party/gae-pytz"]
 	path = appengine/third_party/gae-pytz
 	url = https://chromium.googlesource.com/external/code.google.com/p/gae-pytz
-[submodule "appengine/third_party/dateutil"]
-	path = appengine/third_party/dateutil
-	url = https://chromium.googlesource.com/external/code.launchpad.net/dateutil
 [submodule "appengine/third_party/npm_modules"]
 	path = appengine/third_party/npm_modules
 	url = https://chromium.googlesource.com/infra/third_party/npm_modules
