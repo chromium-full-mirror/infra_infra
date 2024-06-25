@@ -129,18 +129,19 @@ func isOnExpectedVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
-		return errors.Annotate(err, "match os version").Err()
+		return errors.Annotate(err, "not os stable version").Err()
 	}
-	expected := sv.OSImage
-	log.Debugf(ctx, "Expected version: %s", expected)
+	stableVersion := sv.OSImage
+	log.Debugf(ctx, "Stable version: %s", stableVersion)
 	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
-		return errors.Annotate(err, "match os version").Err()
+		return errors.Annotate(err, "not os stable version").Err()
 	}
 	log.Debugf(ctx, "Version on device: %s", fromDevice)
-	if fromDevice == expected {
-		return errors.Reason("match os version: matched, expected %q, found %q", expected, fromDevice).Err()
+	if fromDevice == stableVersion {
+		return errors.Reason("not os stable version: versions are matched, not expected %q, but found %q", stableVersion, fromDevice).Err()
 	}
+	log.Debugf(ctx, "Stable version does not match as expected: stable-version: %q, found: %q", stableVersion, fromDevice)
 	return nil
 }
 
