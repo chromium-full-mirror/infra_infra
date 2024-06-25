@@ -1867,6 +1867,8 @@ SPECS.update({
         Universal('blessings', '1.7', pyversions=['py3']),
         Universal('boto', '2.48.0'),
         Universal('boto3', '1.18.56', pyversions=['py3']),
+        Universal('boto3', '1.34.131', pyversions=['py3']),
+        Universal('botocore', '1.34.131', pyversions=['py3']),
         Universal('cachetools', '2.0.1'),
         Universal('cachetools', '4.2.1', pyversions=['py3']),
         Universal('cachetools', '4.2.2', pyversions=['py3']),

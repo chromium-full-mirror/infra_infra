@@ -1421,6 +1421,32 @@ wheel: <
 
 * *universal*
 
+### 1.34.131
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/boto3-py3"
+  version: "version:1.34.131"
+>
+```
+
+
+* *universal*
+
+## **botocore-py3**
+
+### 1.34.131
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/botocore-py3"
+  version: "version:1.34.131"
+>
+```
+
+
+* *universal*
+
 ## **cachetools**
 
 ### 2.0.1
