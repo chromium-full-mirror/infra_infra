@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // RunStorageQual run a storage qualification suite
@@ -35,7 +36,12 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 	// test run ID is generated at time of the test request and used to group all trv2 executions within a request
 	testRunId := time.Now().UTC().UnixMilli()
 
-	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-release/R%s-%s/ bug_id=%s qual_run_id=%d", site.GetGCSPartnerBucket(), in.GetBoard(), in.GetMilestone(), in.GetBuild(), bugId, testRunId)
+	p := "release"
+	if misc.IsCustomBuild(in.GetBuild()) {
+		p = "local"
+	}
+
+	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-%s/R%s-%s/ bug_id=%s qual_run_id=%d", site.GetGCSPartnerBucket(), in.GetBoard(), p, in.GetMilestone(), in.GetBuild(), bugId, testRunId)
 	r := &run.Run{
 		Suite:     in.GetSuite(),
 		TestArgs:  testArgs,

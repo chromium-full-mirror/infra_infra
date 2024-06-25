@@ -12,6 +12,7 @@ import (
 
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 const dlmSkuIDDim = "label-dlm_sku_id"
@@ -57,10 +58,17 @@ func (s *SatlabRpcServiceServer) RunQualification(
 	if req.GetDlmSkuId() != "" {
 		dims[dlmSkuIDDim] = req.GetDlmSkuId()
 	}
+
+	p := "release"
+	if misc.IsCustomBuild(req.GetVersion()) {
+		p = "local"
+	}
+
 	buildArtifactsURL := fmt.Sprintf(
-		"gs://%s/%s-release/R%s-%s/",
+		"gs://%s/%s-%s/R%s-%s/",
 		site.GetGCSPartnerBucket(),
 		req.GetBoard(),
+		p,
 		req.GetMilestone(),
 		req.GetVersion(),
 	)

@@ -161,3 +161,7 @@ func RemovePrefixFromTestArgs(m map[string]string, prefix string) map[string]str
 	}
 	return res
 }
+
+func IsCustomBuild(build string) bool {
+	return strings.ContainsAny(build, "-_")
+}

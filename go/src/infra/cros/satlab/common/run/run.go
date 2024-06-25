@@ -143,7 +143,11 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 	}
 
 	if c.Image == "" {
-		c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
+		if misc.IsCustomBuild(c.Build) {
+			c.Image = fmt.Sprintf("%s-local/R%s-%s", c.Board, c.Milestone, c.Build)
+		} else {
+			c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
+		}
 	}
 	opt := site.GetAuthOption(ctx)
 
