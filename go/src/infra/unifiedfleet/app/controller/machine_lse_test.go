@@ -2377,6 +2377,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							SimPuk:      "2222",
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+							State:       chromeosLab.SIMProfileInfo_WORKING,
 						},
 					},
 				},
@@ -2405,6 +2406,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
 			So(pi[0].GetOwnNumber(), ShouldEqual, "3333")
 			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+			So(pi[0].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_WORKING)
 		})
 		Convey("Update a OS machine LSE - missing SIM info in machine lse", func() {
 			const machineName = "machine-labdata-13"
@@ -2422,6 +2424,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								SimPuk:      "2222",
 								OwnNumber:   "3333",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+								State:       chromeosLab.SIMProfileInfo_BROKEN,
 							},
 						},
 					},
@@ -2453,6 +2456,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
 			So(pi[0].GetOwnNumber(), ShouldEqual, "3333")
 			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+			So(pi[0].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_BROKEN)
 		})
 		Convey("Update a OS machine LSE - missing SIM slot", func() {
 			const machineName = "machine-labdata-14"
@@ -2469,6 +2473,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								SimPuk:      "2222",
 								OwnNumber:   "1111",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
+								State:       chromeosLab.SIMProfileInfo_NO_NETWORK,
 							},
 						},
 					},
@@ -2488,6 +2493,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							SimPuk:      "2222",
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+							State:       chromeosLab.SIMProfileInfo_BROKEN,
 						},
 						{
 							Iccid:       "123456",
@@ -2495,6 +2501,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							SimPuk:      "2222",
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+							State:       chromeosLab.SIMProfileInfo_BROKEN,
 						},
 					},
 				},
@@ -2523,6 +2530,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi[0].GetSimPuk(), ShouldEqual, "2222")
 			So(pi[0].GetOwnNumber(), ShouldEqual, "1111")
 			So(pi[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_TMOBILE)
+			So(pi[0].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_NO_NETWORK)
 		})
 		Convey("Update a OS machine LSE - Add one profile and skip one", func() {
 			const machineName = "machine-labdata-15"
@@ -2539,6 +2547,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								SimPuk:      "3333",
 								OwnNumber:   "4444",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
+								State:       chromeosLab.SIMProfileInfo_BROKEN,
 							},
 						},
 					},
@@ -2558,6 +2567,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							SimPuk:      "2222",
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
+							State:       chromeosLab.SIMProfileInfo_WORKING,
 						},
 						{
 							Iccid:       "123456",
@@ -2565,6 +2575,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							SimPuk:      "1111",
 							OwnNumber:   "0000",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_VERIZON,
+							State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
 						},
 					},
 				},
@@ -2594,11 +2605,13 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi1[0].GetSimPuk(), ShouldEqual, "2222")
 			So(pi1[0].GetOwnNumber(), ShouldEqual, "3333")
 			So(pi1[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_ATT)
+			So(pi1[0].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_WORKING)
 			So(pi1[1].GetIccid(), ShouldEqual, "123456")
 			So(pi1[1].GetSimPin(), ShouldEqual, "2222")
 			So(pi1[1].GetSimPuk(), ShouldEqual, "1111")
 			So(pi1[1].GetOwnNumber(), ShouldEqual, "0000")
 			So(pi1[1].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_VERIZON)
+			So(pi1[1].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_UNSPECIFIED)
 
 			// Check profiles on SIM slot 2
 			So(si[1].GetSlotId(), ShouldEqual, 2)
@@ -2613,6 +2626,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(pi2[0].GetSimPuk(), ShouldEqual, "3333")
 			So(pi2[0].GetOwnNumber(), ShouldEqual, "4444")
 			So(pi2[0].GetCarrierName(), ShouldEqual, chromeosLab.NetworkProvider_NETWORK_TMOBILE)
+			So(pi2[0].GetState(), ShouldEqual, chromeosLab.SIMProfileInfo_BROKEN)
 		})
 		Convey("Update a OS machine LSE - missing modem lab data", func() {
 			const machineName = "machine-labdata-16"
