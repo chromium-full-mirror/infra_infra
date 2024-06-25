@@ -40,6 +40,7 @@ func getApplication() *cli.Application {
 			subcommands.Section("Debugging"),
 			commands.PingCommand,
 			commands.PingUFSCommand,
+			commands.BatchCreateCICommand,
 			subcommands.Section("Authentication"),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
