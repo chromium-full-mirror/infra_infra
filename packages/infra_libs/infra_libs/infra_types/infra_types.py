@@ -6,6 +6,14 @@ import collections
 import functools
 import operator
 
+import six
+
+# py2 is on too old of a version of six to have this rename.
+if six.PY2:  # pragma: no cover
+  import collections as collections_abc
+else:  # pragma: no cover
+  import collections.abc as collections_abc
+
 
 def freeze(obj):
   """Takes a generic object ``obj``, and returns an immutable version of it.
@@ -42,7 +50,7 @@ def thaw(obj):
     return obj
 
 
-class FrozenDict(collections.Mapping):
+class FrozenDict(collections_abc.Mapping):
   """An immutable OrderedDict.
 
   Modified From: http://stackoverflow.com/a/2704866
@@ -57,7 +65,7 @@ class FrozenDict(collections.Mapping):
                                   0)
 
   def __eq__(self, other):
-    if not isinstance(other, collections.Mapping):
+    if not isinstance(other, collections_abc.Mapping):
       return NotImplemented
     if self is other:
       return True
