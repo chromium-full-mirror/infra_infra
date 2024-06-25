@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package device contains helper functions for fleet devices.
 package device
 
 import (
 	"context"
 	"fmt"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/dutstate"
 	"infra/libs/fleet/device/attacheddevice"
@@ -15,6 +21,7 @@ import (
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // GetOSResourceDims gets the dimensions of a fleet resource to present to the
@@ -71,4 +78,52 @@ func getBaseResourceDims(ctx context.Context, client ufsAPI.FleetClient, r swarm
 		return attacheddevice.GetAttachedDeviceBotDims(ctx, r, dutState, deviceData.GetAttachedDeviceData()), nil
 	}
 	return nil, fmt.Errorf("getBaseResourceDims: invalid device type (%s)", deviceData.GetResourceType())
+}
+
+// GetPoolsClient exposes the subset of the UFS client API for GetPools.
+type GetPoolsClient interface {
+	GetMachineLSE(ctx context.Context, in *ufsAPI.GetMachineLSERequest, opts ...grpc.CallOption) (*ufspb.MachineLSE, error)
+	GetDeviceData(ctx context.Context, in *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error)
+}
+
+// GetPools gets the pools associated with a particular bot or dut.
+func GetPools(ctx context.Context, client GetPoolsClient, hostname string) ([]string, error) {
+	if client == nil {
+		return nil, fmt.Errorf("GetPools: client cannot be nil")
+	}
+	pools, err := getPoolsForGenericDevice(ctx, client, hostname, ufsutil.OSNamespace)
+	if err != nil {
+		return nil, errors.Annotate(err, "getting pool(s) for device").Err()
+	}
+	return pools, nil
+}
+
+// getPoolsForGenericDevice gets the pools for the generic device.
+func getPoolsForGenericDevice(ctx context.Context, client GetPoolsClient, hostname string, namespace string) ([]string, error) {
+	if namespace == "" {
+		return nil, fmt.Errorf("getPoolsForGenericDevice: namespace cannot be empty")
+	}
+	md := metadata.Pairs(ufsutil.Namespace, namespace)
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	res, err := client.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
+		Hostname: hostname,
+	})
+	if err != nil {
+		return nil, errors.Annotate(err, "getting device data for device %s", hostname).Err()
+	}
+	switch res.GetResourceType() {
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
+		dRes, _ := res.GetResource().(*ufsAPI.GetDeviceDataResponse_SchedulingUnit)
+		return dRes.SchedulingUnit.GetPools(), nil
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		dRes, _ := res.GetResource().(*ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData)
+		d := dRes.ChromeOsDeviceData
+		if d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
+			// We have a non-labstation DUT.
+			return d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), nil
+		}
+		// We have a labstation DUT.
+		return d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
+	}
+	return nil, fmt.Errorf("getPoolsForGenericDevice %q: unsupported device type %q", hostname, res.GetResourceType().String())
 }
