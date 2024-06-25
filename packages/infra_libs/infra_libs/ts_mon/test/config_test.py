@@ -135,7 +135,7 @@ class GlobalsTest(unittest.TestCase):
     config.process_argparse_options(args)
     self.assertIsNone(interface.state.flush_thread)
 
-  @mock.patch('infra_libs.ts_mon.common.monitors.DebugMonitor', auto_spec=True)
+  @mock.patch('infra_libs.ts_mon.common.monitors.DebugMonitor', autospec=True)
   def test_dryrun_args(self, fake_monitor):
     singleton = mock.Mock()
     fake_monitor.return_value = singleton
