@@ -84,7 +84,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 	// Add metric state to context
 	mctx := tsmon.WithState(ctx, suMetricState)
 	// Reset the metric to stop reporting no-longer-existing devices and states.
-	defer suMetricState.Store().Reset(mctx, suMetric)
+	suMetricState.Store().Reset(mctx, suMetric)
 	for _, ns := range utilizationExportNamespaces {
 		datastoreNamespace := util.ClientToDatastoreNamespace[ns]
 		ctx, err = util.SetupDatastoreNamespace(ctx, datastoreNamespace)
