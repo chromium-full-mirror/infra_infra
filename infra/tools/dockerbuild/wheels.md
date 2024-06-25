@@ -810,6 +810,20 @@ wheel: <
 
 * *universal*
 
+## **argcomplete-py3**
+
+### 3.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/argcomplete-py3"
+  version: "version:3.4.0"
+>
+```
+
+
+* *universal*
+
 ## **argh**
 
 ### 0.26.2

@@ -1825,6 +1825,7 @@ SPECS.update({
         Universal('appengine-python-standard', '1.1.1', pyversions=['py3']),
         Universal('appengine-python-standard', '1.1.5', pyversions=['py3']),
         Universal('argcomplete', '1.12.2'),
+        Universal('argcomplete', '3.4.0', pyversions=['py3']),
         Universal('argh', '0.26.2'),
         Universal('argparse',
                   '1.4.0'),  # Includes fixes missing from stdlib 2.7.6
