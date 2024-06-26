@@ -158,7 +158,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 		}
 		for _, stp := range singleTestPlans {
 			// append the args to the first suite if a suite exists
-			if len(stp.Suite) > 0 {
+			if len(stp.Suite) > 0 && c.TestArgs != "" {
 				stp.Suite[0].TestArgs = c.TestArgs
 			}
 			res = append(res, &builder.CTPBuilder{
