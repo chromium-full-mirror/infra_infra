@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/auth"
 
 	apibq "infra/tricium/api/bigquery"
 	tricium "infra/tricium/api/v1"
@@ -24,17 +25,17 @@ import (
 )
 
 // ReportNotUseful processes one report not useful request to Tricium.
-func (r *TriciumServer) ReportNotUseful(c context.Context, req *tricium.ReportNotUsefulRequest) (res *tricium.ReportNotUsefulResponse, err error) {
+func (r *TriciumServer) ReportNotUseful(ctx context.Context, req *tricium.ReportNotUsefulRequest) (res *tricium.ReportNotUsefulResponse, err error) {
 	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(c, err)
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
 	logging.Fields{
 		"commentID": req.CommentId,
-	}.Infof(c, "Request received.")
-	if err = validateReportRequest(c, req); err != nil {
+	}.Infof(ctx, "Request received from %s.", auth.CurrentUser(ctx))
+	if err = validateReportRequest(req); err != nil {
 		return nil, err
 	}
-	response, err := reportNotUseful(c, req.CommentId)
+	response, err := reportNotUseful(ctx, req.CommentId)
 	if err != nil {
 		return nil, errors.Annotate(err, "report not useful request failed").
 			Tag(grpcutil.InternalTag).Err()
@@ -42,7 +43,7 @@ func (r *TriciumServer) ReportNotUseful(c context.Context, req *tricium.ReportNo
 	return response, nil
 }
 
-func validateReportRequest(c context.Context, req *tricium.ReportNotUsefulRequest) error {
+func validateReportRequest(req *tricium.ReportNotUsefulRequest) error {
 	if req.CommentId == "" {
 		return errors.New("missing comment_id", grpcutil.InvalidArgumentTag)
 	}
