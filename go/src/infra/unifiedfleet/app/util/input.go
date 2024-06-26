@@ -1060,26 +1060,15 @@ func IsDevboardType(deviceType string) bool {
 	return ok
 }
 
-// StrToModemType refers a map between modem type and and enum value.
-var StrToModemType = map[string]int32{
-	"MODEM_TYPE_UNSPECIFIED":     0,
-	"MODEM_TYPE_QUALCOMM_SC7180": 1,
-	"MODEM_TYPE_FIBOCOMM_L850GL": 2,
-	"MODEM_TYPE_NL668":           3,
-	"MODEM_TYPE_FM350":           4,
-	"MODEM_TYPE_FM101":           5,
-	"MODEM_TYPE_QUALCOMM_SC7280": 6,
-}
-
 // IsModemType checks if a string refers to a valid ModemType.
 func IsModemType(modemType string) bool {
-	_, ok := StrToModemType[modemType]
+	_, ok := chromeosLab.ModemType_value[modemType]
 	return ok
 }
 
 // ToModemType converts modemType string to a Modem type enum.
 func ToModemType(modemType string) chromeosLab.ModemType {
-	v, ok := StrToModemType[modemType]
+	v, ok := chromeosLab.ModemType_value[modemType]
 	if !ok {
 		return chromeosLab.ModemType_MODEM_TYPE_UNSPECIFIED
 	}
@@ -1134,8 +1123,8 @@ func ToNetworkType(networkType string) chromeosLab.NetworkProvider {
 
 // ValidModemTypeStr returns a valid str list for ModemType strings.
 func ValidModemTypeStr() []string {
-	ks := make([]string, 0, len(StrToModemType))
-	for k := range StrToModemType {
+	ks := make([]string, 0, len(chromeosLab.ModemType_value))
+	for k := range chromeosLab.ModemType_value {
 		ks = append(ks, k)
 	}
 	return ks
