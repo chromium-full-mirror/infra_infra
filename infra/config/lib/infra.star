@@ -40,13 +40,13 @@ def console_view(name, title, repo = None):
         refs = ["refs/heads/main"],
     )
 
-def cq_group(name, repo = None, tree_status_host = None):
+def cq_group(name, repo = None, tree_status_name = None):
     """Defines a CQ group watching refs/heads/main.
 
     Args:
       name: The human- and machine-readable name of the CQ group.
       repo: https URL of the git repo for this CQ group to monitor.
-      tree_status_host: Hostname of the tree_status_host for this CQ group.
+      tree_status_name: tree name in the tree status app for this CQ group.
     """
     luci.cq_group(
         name = name,
@@ -54,7 +54,7 @@ def cq_group(name, repo = None, tree_status_host = None):
             repo = repo or infra.REPO_URL,
             refs = ["refs/heads/main"],
         ),
-        tree_status_host = tree_status_host,
+        tree_status_name = tree_status_name,
         retry_config = cq.RETRY_NONE,
         user_limits = [
             cq.user_limit(

@@ -9,7 +9,7 @@ load("//lib/infra.star", "infra")
 load("//lib/recipes.star", "recipes")
 
 infra.console_view(name = "infra", title = "infra/infra repository console")
-infra.cq_group(name = "infra", tree_status_host = "infra-status.appspot.com")
+infra.cq_group(name = "infra", tree_status_name = "infra")
 
 def ci_builder(
         name,
