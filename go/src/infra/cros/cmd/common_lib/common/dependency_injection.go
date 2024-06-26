@@ -61,6 +61,10 @@ func (storage *InjectableStorage) Get(key string) (interface{}, error) {
 	// OS Environment variables aren't stored directly in the injectables dictionary.
 	case strings.HasPrefix(key, "env-"):
 		return os.Getenv(strings.TrimPrefix(key, "env-")), nil
+	case strings.HasPrefix(key, "BOOL="):
+		return boolHandler(strings.TrimPrefix(key, "BOOL=")), nil
+	case strings.HasPrefix(key, "FMT="):
+		return fmtHandler(storage, strings.TrimPrefix(key, "FMT=")), nil
 	default:
 		return stepThroughInterface(storage.Injectables, split_key)
 	}
@@ -201,7 +205,7 @@ func setValue(obj interface{}, key string, value interface{}) error {
 		if isSlice(obj) {
 			slice := TranslateSliceToInterface(obj)
 			if int(key_num) < len(slice) {
-				slice[key_num] = value
+				obj.([]interface{})[key_num] = value
 			} else {
 				return fmt.Errorf("Key %s not found in slice of length %d", key, len(slice))
 			}

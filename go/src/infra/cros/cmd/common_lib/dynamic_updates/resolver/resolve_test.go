@@ -13,10 +13,11 @@ import (
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/cros/cmd/common_lib/common"
 	. "infra/cros/cmd/common_lib/dynamic_updates/resolver"
 )
 
-var lookupTable map[string]string = map[string]string{
+var lookupTable DynamicPlaceholderLookup = DynamicPlaceholderLookup{
 	"board":                "dedede",
 	"model":                "helion",
 	"dedede_helion_dut_id": "chromeos8-row5",
@@ -27,37 +28,37 @@ var lookupTable map[string]string = map[string]string{
 func TestPlaceholderResolution(t *testing.T) {
 	Convey("no placeholders", t, func() {
 		simpleStr := "Hello, world!"
-		resolvedStr := ResolvePlaceholders(simpleStr, lookupTable)
+		resolvedStr := common.ResolvePlaceholders(simpleStr, lookupTable)
 
 		So(resolvedStr, ShouldEqual, simpleStr)
 	})
 
 	Convey("empty", t, func() {
 		empty := ""
-		resolvedStr := ResolvePlaceholders(empty, lookupTable)
+		resolvedStr := common.ResolvePlaceholders(empty, lookupTable)
 
 		So(resolvedStr, ShouldEqual, "")
 	})
 
 	Convey("one placeholder", t, func() {
 		simplePlaceholder := "This is board: ${board}"
-		resolvedStr := ResolvePlaceholders(simplePlaceholder, lookupTable)
+		resolvedStr := common.ResolvePlaceholders(simplePlaceholder, lookupTable)
 
 		So(resolvedStr, ShouldEqual, fmt.Sprintf("This is board: %s", lookupTable["board"]))
 	})
 
 	Convey("two placeholders", t, func() {
 		twoPlaceholders := "This is board/model: ${board}/${model}"
-		resolvedStr := ResolvePlaceholders(twoPlaceholders, lookupTable)
+		resolvedStr := common.ResolvePlaceholders(twoPlaceholders, lookupTable)
 
 		So(resolvedStr, ShouldEqual, fmt.Sprintf("This is board/model: %s/%s", lookupTable["board"], lookupTable["model"]))
 	})
 
 	Convey("embedded placeholder", t, func() {
 		embeddedPlaceholder := "${${board}_${model}_dut_id}"
-		resolvedStr := ResolvePlaceholders(embeddedPlaceholder, lookupTable)
+		resolvedStr := common.ResolvePlaceholders(embeddedPlaceholder, lookupTable)
 		// Extra resolution to support one layer of embedded placeholders.
-		resolvedStr = ResolvePlaceholders(resolvedStr, lookupTable)
+		resolvedStr = common.ResolvePlaceholders(resolvedStr, lookupTable)
 
 		So(resolvedStr, ShouldEqual, lookupTable["dedede_helion_dut_id"])
 	})

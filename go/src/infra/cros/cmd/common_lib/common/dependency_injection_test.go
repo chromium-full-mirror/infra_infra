@@ -399,3 +399,96 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 		So(testRequest.TestRequest.Primary.DevboardServer.Port, ShouldEqual, 12345)
 	})
 }
+
+func TestHandlers(t *testing.T) {
+	storage := common.NewInjectableStorage()
+
+	Convey("bool handler", t, func() {
+		valUntyped, err := storage.Get("BOOL=true")
+		val, ok := valUntyped.(bool)
+
+		So(err, ShouldBeNil)
+		So(ok, ShouldBeTrue)
+		So(val, ShouldBeTrue)
+
+		valUntyped, err = storage.Get("BOOL=false")
+		val, ok = valUntyped.(bool)
+
+		So(err, ShouldBeNil)
+		So(ok, ShouldBeTrue)
+		So(val, ShouldBeFalse)
+	})
+
+	Convey("fmt handler", t, func() {
+		endpoint := &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    1234,
+		}
+		So(storage.Set("endpoint", endpoint), ShouldBeNil)
+		So(storage.LoadInjectables(), ShouldBeNil)
+
+		valUntyped, err := storage.Get("FMT=${endpoint.address}:${endpoint.port}")
+		val, ok := valUntyped.(string)
+
+		So(err, ShouldBeNil)
+		So(ok, ShouldBeTrue)
+		So(val, ShouldEqual, "localhost:1234")
+	})
+}
+
+func TestHandlersWithinDynamicDeps(t *testing.T) {
+	storage := common.NewInjectableStorage()
+
+	Convey("init", t, func() {
+		endpoint := &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    1234,
+		}
+		So(storage.Set("endpoint", endpoint), ShouldBeNil)
+	})
+
+	Convey("bool handler", t, func() {
+		crosProvisionMetadata, err := anypb.New(&api.CrOSProvisionMetadata{})
+		So(err, ShouldBeNil)
+		provisionTaskRequest := &api.ProvisionTask{
+			InstallRequest: &api.InstallRequest{
+				Metadata: crosProvisionMetadata,
+			},
+			DynamicDeps: []*api.DynamicDep{
+				{
+					Key:   "installRequest.metadata.updateFirmware",
+					Value: "BOOL=true",
+				},
+			},
+		}
+
+		So(common.InjectDependencies(provisionTaskRequest, storage, provisionTaskRequest.DynamicDeps), ShouldBeNil)
+		metadata := &api.CrOSProvisionMetadata{}
+		So(provisionTaskRequest.GetInstallRequest().GetMetadata().UnmarshalTo(metadata), ShouldBeNil)
+		So(metadata.UpdateFirmware, ShouldBeTrue)
+	})
+
+	Convey("fmt handler", t, func() {
+		containerRequest := &api.ContainerRequest{
+			Container: &api.Template{
+				Container: &api.Template_Generic{
+					Generic: &api.GenericTemplate{
+						BinaryName: "example container",
+						BinaryArgs: []string{
+							"server", "-dutEndpoint", "", "-log", "/tmp/example",
+						},
+					},
+				},
+			},
+			DynamicDeps: []*api.DynamicDep{
+				{
+					Key:   "generic.binaryArgs.2",
+					Value: "FMT=${endpoint.address}:${endpoint.port}",
+				},
+			},
+		}
+
+		So(common.InjectDependencies(containerRequest.Container, storage, containerRequest.DynamicDeps), ShouldBeNil)
+		So(containerRequest.GetContainer().GetGeneric().GetBinaryArgs()[2], ShouldEqual, "localhost:1234")
+	})
+}
