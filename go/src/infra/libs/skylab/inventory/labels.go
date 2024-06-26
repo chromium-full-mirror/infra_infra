@@ -49,6 +49,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 		Stability:     new(bool),
 		OsType:        new(SchedulableLabels_OSType),
 		Peripherals: &Peripherals{
+			AmtManagerState:          new(PeripheralState),
 			AudioBoard:               new(bool),
 			AudioBox:                 new(bool),
 			AudioCable:               new(bool),

@@ -212,6 +212,11 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			appendDim(dims, "label-pasit_components", v)
 		}
 	}
+	if amtManagerState := p.GetAmtManagerState(); amtManagerState != inventory.PeripheralState_UNKNOWN {
+		if state, ok := lab.PeripheralState_name[int32(amtManagerState)]; ok {
+			dims["label-amt_manager_state"] = []string{state}
+		}
+	}
 }
 
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -285,6 +290,16 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 		p.ServoState = &servoState
 		delete(d, "label-servo_state")
+	}
+
+	if amtManagerStateName, ok := getLastStringValue(d, "label-amt_manager_state"); ok {
+		amtState := inventory.PeripheralState_UNKNOWN
+		if amtIndex, ok := lab.PeripheralState_value[strings.ToUpper(amtManagerStateName)]; ok {
+			amtState = inventory.PeripheralState(amtIndex)
+		}
+		p.AmtManagerState = &amtState
+		delete(d, "label-amt_manager_state")
+
 	}
 
 	btpeers := d["label-working_bluetooth_btpeer"]

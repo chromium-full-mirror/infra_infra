@@ -97,6 +97,7 @@ peripherals: {
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]
   wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]","gale"]
+  amt_manager_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -197,6 +198,7 @@ siminfo: [{
 `
 
 var fullLabels = []string{
+	"amt_manager_state:WORKING",
 	"arc",
 	"atrus",
 	"audio_board",
@@ -734,6 +736,7 @@ peripherals: {
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]
   wifi_router_models: ["OPENWRT[Ubiquiti_Unifi_6_Lite]", "gale"]
+  amt_manager_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -834,6 +837,7 @@ siminfo: [{
 `
 
 var fullLabelsSpecial = []string{
+	"amt_manager_state:WORKING",
 	"arc",
 	"atrus",
 	"audio_board",

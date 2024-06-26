@@ -441,7 +441,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 50
+// NEXT TAG: 51
 message Peripherals {
   reserved 32;
 
@@ -647,6 +647,10 @@ message Peripherals {
   // The components supported by the PASIT testbed. This is a list of all of the
   // components in the testbed and their count e.g. "DOCK-1, MONITOR-1, MONITOR-2..."
   repeated string pasit_components = 47;
+
+  // The state of Intel AMT management.
+  // See UFS peripherals.proto or go/flex-amt-enabled-repair for more context.
+  optional PeripheralState amt_manager_state = 50;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.

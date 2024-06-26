@@ -223,6 +223,13 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		}
 	}
 
+	if amtManagerState := p.GetAmtManagerState(); amtManagerState != inventory.PeripheralState_UNKNOWN {
+		if amtState, ok := lab.PeripheralState_name[int32(amtManagerState)]; ok {
+			lv := "amt_manager_state:" + amtState
+			labels = append(labels, lv)
+		}
+	}
+
 	for _, v := range p.GetWifiRouterFeatures() {
 		labels = append(labels, "wifi_router_features:"+v.String())
 	}
@@ -434,6 +441,11 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			}
 		case "wifi_router_models":
 			p.WifiRouterModels = append(p.WifiRouterModels, v)
+		case "amt_manager_state":
+			if stateValue, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
+				state := inventory.PeripheralState(stateValue)
+				p.AmtManagerState = &state
+			}
 		default:
 			continue
 		}
