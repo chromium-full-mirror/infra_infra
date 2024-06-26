@@ -32,6 +32,7 @@ var GetCostResultCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "hostname of a DUT")
+		c.Flags.BoolVar(&c.lax, "lax", false, "whether to forgive missing cost entries")
 		return c
 	},
 }
@@ -42,6 +43,7 @@ type getCostResultCommand struct {
 	commonFlags site.CommonFlags
 
 	name string
+	lax  bool
 }
 
 // Run is the main entrypoint to the ping.
@@ -77,7 +79,10 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
-	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{Hostname: c.name})
+	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{
+		Hostname:              c.name,
+		ForgiveMissingEntries: c.lax,
+	})
 	if err != nil {
 		c.commonFlags.VerboseLog(a, "RPC call failed.")
 		return errors.Annotate(err, "get cost result").Err()
