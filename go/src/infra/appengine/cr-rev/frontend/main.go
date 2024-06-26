@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
@@ -94,7 +95,20 @@ func main() {
 		srv.Routes.GET("/", mw, handleIndex)
 
 		server := api.NewServer(redirect)
+
+		// Host pRPC servers.
+		srv.ConfigurePRPC(func(s *prpc.Server) {
+			// CORS requests are fine because
+			// 1. we don't use any cookie/TLS based authentication for pRPC endpoints,
+			//    and
+			// 2. none of the pRPC endpoints trigger mutation anyway.
+			s.AccessControl = prpc.AllowOriginAll
+			// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
+			s.HackFixFieldMasksForJSON = true
+		})
 		api.RegisterCrrevServer(srv, server)
+
+		// Host HTTP servers.
 		apiV1 := srv.Routes.Subrouter("/_ah/api/crrev/v1")
 		api.NewRESTServer(apiV1, server)
 
