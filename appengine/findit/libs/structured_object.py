@@ -94,8 +94,8 @@ Examples:
   assert isinstance(obj_c.v2, Future2), 'this should pass'
 """
 
-from collections import MutableMapping
-from collections import MutableSequence
+from collections.abc import MutableMapping
+from collections.abc import MutableSequence
 import logging
 import types
 
