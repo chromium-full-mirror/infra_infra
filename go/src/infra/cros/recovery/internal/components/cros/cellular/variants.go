@@ -24,6 +24,9 @@ const (
 	ModemTypeSC7180  = tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7180
 	ModemTypeSC7280  = tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7280
 	ModemTypeEM060   = tlw.Cellular_MODEM_TYPE_EM060
+	ModemTypeRW101   = tlw.Cellular_MODEM_TYPE_RW101
+	ModemTypeRW135   = tlw.Cellular_MODEM_TYPE_RW135
+	ModemTypeLCUK54  = tlw.Cellular_MODEM_TYPE_LCUK54
 )
 
 // DeviceInfo provides a mapping between variant and modem type.
@@ -36,14 +39,17 @@ type DeviceInfo struct {
 // Maps modem type enums in: go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto
 // to tlw.Cellular_ModemType.
 var modemTypeMap = map[string]tlw.Cellular_ModemType{
-	"0": ModemTypeUnknown,
-	"1": ModemTypeL850,
-	"2": ModemTypeNL668,
-	"3": ModemTypeFM101,
-	"4": ModemTypeFM350,
-	"5": ModemTypeSC7180,
-	"6": ModemTypeSC7280,
-	"7": ModemTypeEM060,
+	"0":  ModemTypeUnknown,
+	"1":  ModemTypeL850,
+	"2":  ModemTypeNL668,
+	"3":  ModemTypeFM101,
+	"4":  ModemTypeFM350,
+	"5":  ModemTypeSC7180,
+	"6":  ModemTypeSC7280,
+	"7":  ModemTypeEM060,
+	"8":  ModemTypeRW101,
+	"9":  ModemTypeRW135,
+	"10": ModemTypeLCUK54,
 }
 
 // This list is left as a fallback for older devices and images that do not contain
