@@ -397,6 +397,9 @@ var modemTypes = map[ufslab.ModemType]tlw.Cellular_ModemType{
 	ufslab.ModemType_MODEM_TYPE_FM101:           tlw.Cellular_MODEM_TYPE_FM101,
 	ufslab.ModemType_MODEM_TYPE_QUALCOMM_SC7280: tlw.Cellular_MODEM_TYPE_QUALCOMM_SC7280,
 	ufslab.ModemType_MODEM_TYPE_EM060:           tlw.Cellular_MODEM_TYPE_EM060,
+	ufslab.ModemType_MODEM_TYPE_RW101:           tlw.Cellular_MODEM_TYPE_RW101,
+	ufslab.ModemType_MODEM_TYPE_RW135:           tlw.Cellular_MODEM_TYPE_RW135,
+	ufslab.ModemType_MODEM_TYPE_LCUK54:          tlw.Cellular_MODEM_TYPE_LCUK54,
 }
 
 // convertModemTypes converts UFS state to TLW modem types
