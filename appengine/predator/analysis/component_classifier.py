@@ -5,21 +5,23 @@
 from collections import namedtuple
 from collections import defaultdict
 import functools
+import json
+import importlib.resources as res
+
 import os
 import re
 
 from analysis.component import Component
 from analysis.occurrence import RankByOccurrence
-from libs.gitiles.diff import ChangeType
-
 
 def MergeComponents(components):
   """Given a list of components, merges components with the same hierarchy.
 
-  For components with same hierarchy, return the most fine-grained component.
-  For example, if components are ['Blink', 'Blink>Editing'], we should only
-  return ['Blink>Editing'].
-  """
+    For components with same hierarchy, return the most fine-grained component.
+    For example, if components are ['Blink', 'Blink>Editing'], we should only
+    return ['Blink>Editing'].
+    """
+
   if not components or len(components) == 1:
     return components
 
@@ -42,18 +44,21 @@ class ComponentClassifier(object):
   For example: ['Blink>DOM', 'Blink>HTML'].
   """
 
-  def __init__(self, components, top_n_frames, repo_to_dep_path):
+  def __init__(self, components, top_n_frames, repo_to_dep_path,
+               buganzier_component_dict):
     """Build a classifier for components.
 
     Args:
       components (list of crash.component.Component): the components to
         check for.
       top_n_frames (int): how many frames of the callstack to look at.
+      buganzier_component_dict (dict): buganzier component and dir map
     """
     super(ComponentClassifier, self).__init__()
     self.components = components or []
     self.top_n_frames = top_n_frames
     self.repo_to_dep_path = repo_to_dep_path
+    self.buganzier_component_dict = buganzier_component_dict
 
   def _RepoUrlToDepPath(self, repo_url):
     repo_url_without_git = (repo_url[:-len('.git')] if repo_url.endswith('.git')
@@ -74,6 +79,7 @@ class ComponentClassifier(object):
     return (max(component_to_dir_level,
                 key=lambda component: component_to_dir_level[component])
             if component_to_dir_level else None)
+
   def ClassifyStackFrame(self, frame):
     """Determines which component is responsible for this frame."""
     if not frame.dep_path or not frame.file_path:
@@ -119,3 +125,41 @@ class ComponentClassifier(object):
         dep_path = self._RepoUrlToDepPath(frame.repo_url) or frame.dep_path
         file_paths.append(os.path.join(dep_path, frame.file_path))
     return file_paths
+
+  def GetBuganizerComponentIDFromSuspectedFilePaths(self, suspected_file_paths):
+    """
+    Return buganizer componentID with the highest occurrence for the given
+    suspected file paths.
+    """
+    if not suspected_file_paths:
+      return None
+    counter = defaultdict(int)
+    for file_path in suspected_file_paths:
+      component_id = self._GetBuganizerComponentIDFromSuspectedFilePath(
+          file_path.split('/')[1:])
+      if component_id:
+        counter[component_id] += 1
+    return self._SortByOccurrence(counter)
+
+  def _GetBuganizerComponentIDFromSuspectedFilePath(self, tokens):
+    if not tokens:
+      return None
+    file_path = '/'.join(tokens)
+    if file_path not in self.buganzier_component_dict:
+      tokens.pop()
+      return self._GetBuganizerComponentIDFromSuspectedFilePath(tokens)
+    if 'buganizerPublic' not in self.buganzier_component_dict[file_path] or \
+        'componentId' not in \
+        self.buganzier_component_dict[file_path]['buganizerPublic']:
+      return None
+    return self.buganzier_component_dict[file_path]['buganizerPublic'][
+        'componentId']
+
+  def _SortByOccurrence(self, counter):
+    key = None
+    for k in counter:
+      if not key:
+        key = k
+      elif counter[k] > counter[key]:
+        key = k
+    return key

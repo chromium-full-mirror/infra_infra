@@ -15,6 +15,36 @@ from common.base_handler import BaseHandler, Permission
 from common.model.crash_config import CrashConfig
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 
+_BUGANIZER_COMPONENT_META_URL = \
+  'https://storage.googleapis.com/chrome-metadata/metadata_reduced.json'
+
+
+def _getMetaDataDict(client, url):
+  code, meta_dict, _ = client.Get(url)
+  if code != 200:
+    return None
+  try:
+    meta_dict = json.loads(meta_dict)
+  except Exception:  # pragma: no cover
+    logging.error(traceback.format_exc())
+    return None
+  return meta_dict
+
+
+def _getComponentInfo(owner_mappings):
+  if not owner_mappings:
+    return []
+  component_dict = defaultdict(dict)
+  for dir_name, component in list(owner_mappings['dir-to-component'].items()):
+    if component_dict.get(component) == None:
+      component_dict[component]['component'] = component
+      component_dict[component]['dirs'] = []
+      if owner_mappings['component-to-team'].get(component):
+        component_dict[component]['team'] = (
+            owner_mappings['component-to-team'].get(component))
+    component_dict[component]['dirs'].append('src/' + dir_name)
+  return list(component_dict.values())
+
 
 def GetComponentClassifierConfig(config, http_client=HttpClientAppengine()):
   """Get component mapping information from owners files and convert in
@@ -32,37 +62,19 @@ def GetComponentClassifierConfig(config, http_client=HttpClientAppengine()):
           'dirs': a list of directories maps to this component.
           'team': the team owns this component.}.
     """
-  component_dict = defaultdict(dict)
-  # Mappings from OWNERS files.
-  status_code, owner_mappings, _ = http_client.Get(config['owner_mapping_url'])
-  if status_code != 200:
-    return None
-
-  try:
-    owner_mappings = json.loads(owner_mappings)
-  except Exception:  # pragma: no cover
-    logging.error(traceback.format_exc())
-    return None
-
-  for dir_name, component in list(owner_mappings['dir-to-component'].items()):
-    if component_dict.get(component) == None:
-      component_dict[component]['component'] = component
-      component_dict[component]['dirs'] = []
-      if owner_mappings['component-to-team'].get(component):
-        component_dict[component]['team'] = (
-            owner_mappings['component-to-team'].get(component))
-
-    component_dict[component]['dirs'].append('src/' + dir_name)
-
-  components = list(component_dict.values())
-
+  owner_mappings = _getMetaDataDict(http_client, config['owner_mapping_url'])
+  buganizer_meta = _getMetaDataDict(http_client, _BUGANIZER_COMPONENT_META_URL)
   component_classifier_config = {
-      'component_info': components,
-      'top_n': config['top_n'],
-      'owner_mapping_url': config['owner_mapping_url']
+      'component_info':
+          _getComponentInfo(owner_mappings),
+      'top_n':
+          config['top_n'],
+      'owner_mapping_url':
+          config['owner_mapping_url'],
+      'buganzier_component_dict':
+          buganizer_meta.get('dirs', {}) if buganizer_meta else {}
   }
   return component_classifier_config
-
 
 class UpdateComponentConfig(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF

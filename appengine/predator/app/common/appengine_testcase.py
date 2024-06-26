@@ -29,7 +29,9 @@ DEFAULT_CONFIG_DATA = {
             'canary': ['win', 'mac', 'linux'],
             'supported_channel': ['supported_platform'],
         },
-        'platform_rename': {'linux': 'unix'},
+        'platform_rename': {
+            'linux': 'unix'
+        },
         'signature_blacklist_markers': ['Blacklist marker'],
         'top_n': 7
     },
@@ -39,43 +41,79 @@ DEFAULT_CONFIG_DATA = {
             'canary': ['win', 'mac', 'linux'],
             'supported_channel': ['supported_platform'],
         },
-        'platform_rename': {'linux': 'unix'},
+        'platform_rename': {
+            'linux': 'unix'
+        },
         'signature_blacklist_markers': ['Blacklist marker'],
         'top_n': 7
     },
     'clusterfuzz': {
-      'analysis_result_pubsub_topic': 'projects/project-name/topics/name',
-      'blacklist_crash_type': [
-        'out-of-memory'
-      ],
-      'signature_blacklist_markers': [],
-      'top_n': 7,
-      'try_bot_supported_platforms': [
-        'linux'
-      ],
-      'try_bot_topic': 'projects/project-name/topics/try-bot-message'
+        'analysis_result_pubsub_topic': 'projects/project-name/topics/name',
+        'blacklist_crash_type': ['out-of-memory'],
+        'signature_blacklist_markers': [],
+        'top_n': 7,
+        'try_bot_supported_platforms': ['linux'],
+        'try_bot_topic': 'projects/project-name/topics/try-bot-message'
     },
     'component_classifier': {
-        'component_info': [
-            {
-                'dirs': ['src/comp1'],
-                'component': 'Comp1>Dummy'
-            },
-            {
-                'dirs': ['src/comp2'],
-                'function': 'func2.*',
-                'component': 'Comp2>Dummy',
-                'team': 'comp2-team'
-            }
-        ],
+        'component_info': [{
+            'dirs': ['src/comp1'],
+            'component': 'Comp1>Dummy'
+        }, {
+            'dirs': ['src/comp2'],
+            'function': 'func2.*',
+            'component': 'Comp2>Dummy',
+            'team': 'comp2-team'
+        }],
         'owner_mapping_url': 'https://owner_mapping_url',
-        'top_n': 4
+        'top_n': 4,
+        'buganzier_component_dict': {
+            ".": {
+                "monorail": {
+                    "project": "chromium"
+                }
+            },
+            "android_webview": {
+                "monorail": {
+                    "component": "Mobile>WebView"
+                },
+                "teamEmail": "android-webview-dev@chromium.org",
+                "os": "ANDROID",
+                "buganizerPublic": {
+                    "componentId": "1456456"
+                }
+            },
+            "android_webview/test/components": {
+                "monorail": {
+                    "component": "Test>WebView"
+                },
+                "buganizerPublic": {
+                    "componentId": "1457060"
+                }
+            },
+            "apps": {
+                "monorail": {
+                    "component": "Platform>Apps"
+                },
+                "teamEmail": "apps-dev@chromium.org",
+                "buganizerPublic": {
+                    "componentId": "1456886"
+                }
+            },
+            "ash": {
+                "monorail": {
+                    "component": "UI>Shell"
+                },
+                "buganizerPublic": {
+                    "componentId": "1456399"
+                }
+            }
+        }
     },
     'project_classifier': {
-        'project_path_function_hosts': [
-            ['android_os', ['googleplex-android/'], ['android.'], None],
-            ['chromium', None, ['org.chromium'], ['src/']]
-        ],
+        'project_path_function_hosts': [[
+            'android_os', ['googleplex-android/'], ['android.'], None
+        ], ['chromium', None, ['org.chromium'], ['src/']]],
         'non_chromium_project_rank_priority': {
             'android_os': '-1',
             'others': '-2',

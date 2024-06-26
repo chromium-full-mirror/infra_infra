@@ -47,8 +47,11 @@ class Predator(object): # pragma: no cover
     suspected_file_paths = self.component_classifier.GetFilePathsFromCallStack(
         report.stacktrace.crash_stack) if report.stacktrace else []
 
+    suspected_buganizer_component_id = self.component_classifier.\
+      GetBuganizerComponentIDFromSuspectedFilePaths(suspected_file_paths)
+
     return suspected_project, suspected_components, \
-      suspected_cls, suspected_file_paths
+      suspected_cls, suspected_file_paths, suspected_buganizer_component_id
 
   def FindCulprit(self, report):
     """Finds the culprit causing the CrashReport.
@@ -63,23 +66,27 @@ class Predator(object): # pragma: no cover
     """
     try:
       suspected_project, suspected_components, \
-        suspected_cls, suspected_file_paths = (
-          self._FindCulprit(report))
-      return Culprit(project=suspected_project,
-                     file_paths=suspected_file_paths,
-                     components=suspected_components,
-                     suspected_cls=suspected_cls,
-                     regression_range=report.regression_range,
-                     algorithm='core_algorithm',
-                     success=True)
+        suspected_cls, suspected_file_paths, \
+        suspected_buganizer_component_id = (self._FindCulprit(report))
+      return Culprit(
+          project=suspected_project,
+          file_paths=suspected_file_paths,
+          components=suspected_components,
+          buganizer_component_id=suspected_buganizer_component_id,
+          suspected_cls=suspected_cls,
+          regression_range=report.regression_range,
+          algorithm='core_algorithm',
+          success=True)
     except Exception as error:
       log_util.Log(self._log, error.__class__.__name__,
                    traceback.format_exc(), LogLevel.ERROR)
 
-    return Culprit(project='',
-                   file_paths=[],
-                   components=[],
-                   suspected_cls=[],
-                   regression_range=report.regression_range,
-                   algorithm='core_algorithm',
-                   success=False)
+    return Culprit(
+        project='',
+        file_paths=[],
+        components=[],
+        buganizer_component_id=None,
+        suspected_cls=[],
+        regression_range=report.regression_range,
+        algorithm='core_algorithm',
+        success=False)

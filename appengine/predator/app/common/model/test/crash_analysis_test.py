@@ -105,6 +105,8 @@ class CrashAnalysisTest(AppengineTestCase):
                      triage_status.UNTRIAGED)
     self.assertEqual(analysis.suspected_components_triage_status,
                      triage_status.UNTRIAGED)
+    self.assertEqual(analysis.suspected_buganizer_component_triage_status,
+                     triage_status.UNTRIAGED)
 
   def testUpdateCrashAnalysis(self):
     update = {'note': 'dummy'}

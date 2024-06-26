@@ -78,15 +78,16 @@ class CrashAnalysisPipelineTest(AppengineTestCase):
     dummy_project_path = 'PROJECT_PATH'
     dummy_suspect = Suspect(dummy_cl, dummy_project_path)
     dummy_culprit = Culprit(
-        project = 'PROJECT',
+        project='PROJECT',
         file_paths=['path_1', 'path_2'],
-        components = ['COMPONENT_1', 'CPOMPONENT_2'],
-        suspected_cls = [dummy_suspect],
+        components=['COMPONENT_1', 'CPOMPONENT_2'],
+        buganizer_component_id='123456',
+        suspected_cls=[dummy_suspect],
         # N.B., we must use a list here for the assertion to work
         # TODO(wrengr): fix that.
-        regression_range = ['VERSION_0', 'VERSION_1'],
-        algorithm = 'ALGORITHM',
-        success = True,
+        regression_range=['VERSION_0', 'VERSION_1'],
+        algorithm='ALGORITHM',
+        success=True,
     )
     mock_find_culprit.return_value = dummy_culprit
     pipeline = crash_pipeline.CrashAnalysisPipeline(CrashClient.FRACAS,
@@ -101,6 +102,7 @@ class CrashAnalysisPipelineTest(AppengineTestCase):
     self.assertTrue(analysis.found_project)
     self.assertTrue(analysis.found_file_paths)
     self.assertTrue(analysis.found_components)
+    self.assertTrue(analysis.found_buganizer_component)
     dummy_suspect, dummy_tags = dummy_culprit.ToDicts()
     self.assertDictEqual(analysis.result, dummy_suspect)
 

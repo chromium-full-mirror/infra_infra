@@ -69,6 +69,48 @@ _MOCK_REPO_TO_DEP_PATH = {
     'https://chromium.v8.git': 'src/v8',
 }
 
+_MOCK_BUGANIZER_COMPONENT_DICT = {
+    ".": {
+        "monorail": {
+            "project": "chromium"
+        }
+    },
+    "android_webview": {
+        "monorail": {
+            "component": "Mobile>WebView"
+        },
+        "teamEmail": "android-webview-dev@chromium.org",
+        "os": "ANDROID",
+        "buganizerPublic": {
+            "componentId": "1456456"
+        }
+    },
+    "android_webview/test/components": {
+        "monorail": {
+            "component": "Test>WebView"
+        },
+        "buganizerPublic": {
+            "componentId": "1457060"
+        }
+    },
+    "apps": {
+        "monorail": {
+            "component": "Platform>Apps"
+        },
+        "teamEmail": "apps-dev@chromium.org",
+        "buganizerPublic": {
+            "componentId": "1456886"
+        }
+    },
+    "ash": {
+        "monorail": {
+            "component": "UI>Shell"
+        },
+        "buganizerPublic": {
+            "componentId": "1456399"
+        }
+    }
+}
 
 class TouchCrashedComponentFeatureTest(AnalysisTestCase):
   """Tests ``TouchCrashedComponentFeature``."""
@@ -81,7 +123,8 @@ class TouchCrashedComponentFeatureTest(AnalysisTestCase):
     # Only construct the classifier once, rather than making a new one every
     # time we call a method on it.
     self.classifier = ComponentClassifier(components, COMPONENT_CONFIG['top_n'],
-                                          _MOCK_REPO_TO_DEP_PATH)
+                                          _MOCK_REPO_TO_DEP_PATH,
+                                          _MOCK_BUGANIZER_COMPONENT_DICT)
     self.feature = TouchCrashedComponentFeature(self.classifier)
 
   def testFeatureValueIsOneWhenThereIsMatchedComponent(self):
@@ -118,9 +161,10 @@ class TouchCrashedComponentFeatureTest(AnalysisTestCase):
     components = [Component('bad_comp', 'bad_dir', '', 'team')]
     # Only construct the classifier once, rather than making a new one every
     # time we call a method on it.
-    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH)
-    feature = TouchCrashedComponentFeature(classifier,
-                                           options={'blacklist': ['bad_comp']})
+    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH,
+                                     _MOCK_BUGANIZER_COMPONENT_DICT)
+    feature = TouchCrashedComponentFeature(
+        classifier, options={'blacklist': ['bad_comp']})
     frame = StackFrame(0, 'src/', 'func', 'bad_dir/f.cc',
                        'src/bad_dir/f.cc', [2, 3], 'h://repo')
     self.assertIsNone(feature.CrashedGroupFactory(frame))
@@ -130,13 +174,15 @@ class TouchCrashedComponentFeatureTest(AnalysisTestCase):
     components = [Component('new_comp', ['src/dep/b/new_dir'], '', 'team')]
     # Only construct the classifier once, rather than making a new one every
     # time we call a method on it.
-    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH)
+    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH,
+                                     _MOCK_BUGANIZER_COMPONENT_DICT)
     feature = TouchCrashedComponentFeature(
-        classifier, options={'replace_path': {'a/old_dir': 'b/new_dir'}})
+        classifier, options={'replace_path': {
+            'a/old_dir': 'b/new_dir'
+        }})
 
     match_func = feature.GetMatchFunction('src/dep')
     self.assertTrue(
         match_func(CrashedComponent('new_comp'),
                    FileChangeInfo(ChangeType.MODIFY, 'a/old_dir/f.cc',
                                   'a/old_dir/f.cc')))
-

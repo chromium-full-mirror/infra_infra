@@ -35,6 +35,49 @@ _MOCK_REPO_TO_DEP_PATH = {
     'https://chromium.v8.git': 'src/v8',
 }
 
+_MOCK_BUGANIZER_COMPONENT_DICT = {
+    ".": {
+        "monorail": {
+            "project": "chromium"
+        }
+    },
+    "android_webview": {
+        "monorail": {
+            "component": "Mobile>WebView"
+        },
+        "teamEmail": "android-webview-dev@chromium.org",
+        "os": "ANDROID",
+        "buganizerPublic": {
+            "componentId": "1456456"
+        }
+    },
+    "android_webview/test/components": {
+        "monorail": {
+            "component": "Test>WebView"
+        },
+        "buganizerPublic": {
+            "componentId": "1457060"
+        }
+    },
+    "apps": {
+        "monorail": {
+            "component": "Platform>Apps"
+        },
+        "teamEmail": "apps-dev@chromium.org",
+        "buganizerPublic": {
+            "componentId": "1456886"
+        }
+    },
+    "ash": {
+        "monorail": {
+            "component": "UI>Shell"
+        },
+        "buganizerPublic": {
+            "componentId": "1456399"
+        }
+    }
+}
+
 
 class ComponentClassifierTest(AnalysisTestCase):
   """Tests ``ComponentClassifier`` class."""
@@ -46,8 +89,9 @@ class ComponentClassifierTest(AnalysisTestCase):
                   for info in COMPONENT_CONFIG['component_info']]
     # Only construct the classifier once, rather than making a new one every
     # time we call a method on it.
-    self.classifier = ComponentClassifier(
-        components, COMPONENT_CONFIG['top_n'], _MOCK_REPO_TO_DEP_PATH)
+    self.classifier = ComponentClassifier(components, COMPONENT_CONFIG['top_n'],
+                                          _MOCK_REPO_TO_DEP_PATH,
+                                          _MOCK_BUGANIZER_COMPONENT_DICT)
 
   def testClassifyStackFrameEmptyFrame(self):
     """Tests that ``ClassifyStackFrame`` returns None for empty frame."""
@@ -105,9 +149,11 @@ class ComponentClassifierTest(AnalysisTestCase):
                   None, None),
         Component('Blink>JavaScript>GC', ['src/v8/src/heap'], None, None)]
 
-    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH)
-    self.assertEqual(classifier.ClassifyFilePath('src/v8/src/heap/a.cc'),
-                     'Blink>JavaScript>GC')
+    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH,
+                                     _MOCK_BUGANIZER_COMPONENT_DICT)
+    self.assertEqual(
+        classifier.ClassifyFilePath('src/v8/src/heap/a.cc'),
+        'Blink>JavaScript>GC')
 
   def testClassifyTouchedFile(self):
     """Tests ``ClassifyTouchedFile`` method."""
@@ -121,6 +167,23 @@ class ComponentClassifierTest(AnalysisTestCase):
         Component('Blink>JavaScript', ['src/v8', 'src/v8/src/base/blabla...'],
                   None, None)]
 
-    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH)
+    classifier = ComponentClassifier(components, 3, _MOCK_REPO_TO_DEP_PATH,
+                                     _MOCK_BUGANIZER_COMPONENT_DICT)
     self.assertEqual(['Blink>JavaScript'],
                      classifier.ClassifyRepoUrl('https://chromium.v8.git'))
+
+  def testGetBuganizerComponentIDFromSuspectedFilePaths(self):
+    """Tests ``GetBuganizerComponentIDFromSuspectedFilePaths`` method."""
+    suspected_file_paths = [
+        "src/ash/components/arc/bluetooth/os/detect.cc",
+        "src/ash/components/arc/camera/refresh.cc",
+        "src/extensions/browser/app_window/display.cc"
+    ]
+    self.assertEqual(
+        '1456399',
+        self.classifier.GetBuganizerComponentIDFromSuspectedFilePaths(
+            suspected_file_paths))
+    self.assertEqual(
+        None,
+        self.classifier.GetBuganizerComponentIDFromSuspectedFilePaths(
+            'src/../mock'))

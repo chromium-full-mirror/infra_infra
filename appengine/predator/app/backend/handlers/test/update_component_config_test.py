@@ -2,23 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import copy
 from flask import Flask
 import json
 import mock
-import re
-import webtest
-
-from google.appengine.api import users
 
 from backend.handlers.update_component_config import (
     GetComponentClassifierConfig)
 from backend.handlers.update_component_config import UpdateComponentConfig
 from common.model.crash_config import CrashConfig
-from frontend.handlers import crash_config
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 from gae_libs.testcase import TestCase
-from libs.http.retry_http_client import RetryHttpClient
 
 
 _MOCK_OWNERS_MAPPINGS = json.dumps({
@@ -55,28 +48,130 @@ _MOCK_CONFIG = {
     ],
     'owner_mapping_url': 'url',
     'top_n': 4,
+    'buganzier_component_dict': {
+        ".": {
+            "monorail": {
+                "project": "chromium"
+            }
+        },
+        "android_webview": {
+            "monorail": {
+                "component": "Mobile>WebView"
+            },
+            "teamEmail": "android-webview-dev@chromium.org",
+            "os": "ANDROID",
+            "buganizerPublic": {
+                "componentId": "1456456"
+            }
+        },
+        "android_webview/test/components": {
+            "monorail": {
+                "component": "Test>WebView"
+            },
+            "buganizerPublic": {
+                "componentId": "1457060"
+            }
+        },
+        "apps": {
+            "monorail": {
+                "component": "Platform>Apps"
+            },
+            "teamEmail": "apps-dev@chromium.org",
+            "buganizerPublic": {
+                "componentId": "1456886"
+            }
+        },
+        "ash": {
+            "monorail": {
+                "component": "UI>Shell"
+            },
+            "buganizerPublic": {
+                "componentId": "1456399"
+            }
+        }
+    },
 }
-
 
 _MOCK_CURRENT_CONFIG = {
-    'component_info': [
-        {'dirs': ['src/dirA'], 'component': 'compoA',
-         'team': 'team1@chromium.org'},
-    ],
-
+    'component_info': [{
+        'dirs': ['src/dirA'],
+        'component': 'compoA',
+        'team': 'team1@chromium.org'
+    },],
     'owner_mapping_url': 'url',
     'top_n': 4,
+    'buganzier_component_dict': {
+        ".": {
+            "monorail": {
+                "project": "chromium"
+            }
+        },
+        "android_webview": {
+            "monorail": {
+                "component": "Mobile>WebView"
+            },
+            "teamEmail": "android-webview-dev@chromium.org",
+            "os": "ANDROID",
+            "buganizerPublic": {
+                "componentId": "1456456"
+            }
+        },
+        "android_webview/test/components": {
+            "monorail": {
+                "component": "Test>WebView"
+            },
+            "buganizerPublic": {
+                "componentId": "1457060"
+            }
+        },
+        "apps": {
+            "monorail": {
+                "component": "Platform>Apps"
+            },
+            "teamEmail": "apps-dev@chromium.org",
+            "buganizerPublic": {
+                "componentId": "1456886"
+            }
+        },
+        "ash": {
+            "monorail": {
+                "component": "UI>Shell"
+            },
+            "buganizerPublic": {
+                "componentId": "1456399"
+            }
+        }
+    },
 }
+
+_MOCK_BUGANIZER_COMPONENT_METADATA = """{"dirs":
+       {".":
+          {"monorail":{"project":"chromium"}},
+        "android_webview":
+          {"monorail":{"component":"Mobile>WebView"},
+           "teamEmail":"android-webview-dev@chromium.org",
+           "os":"ANDROID",
+           "buganizerPublic":{"componentId":"1456456"}
+           },
+        "android_webview/test/components":
+          {"monorail":{"component":"Test>WebView"},
+           "buganizerPublic":{"componentId":"1457060"}
+           }
+        }
+     }
+"""
 
 
 class DummyHttpClient(HttpClientAppengine):  # pragma: no cover.
   def __init__(self, config=None, response=None):
     super(DummyHttpClient, self).__init__()
-    self.mock_owners_mappings = config or CrashConfig.Get().component_classifier
+    self.config = config or CrashConfig.Get().component_classifier
     self.response = response or _MOCK_OWNERS_MAPPINGS
 
-  def Get(self, *_):  # pylint: disable=W
-    if 'owner_mapping_url' in self.mock_owners_mappings:
+  def Get(self, url):  # pylint: disable=W
+    if 'metadata_reduced.json' in url:
+      return 200, _MOCK_BUGANIZER_COMPONENT_METADATA, {}
+    if 'owner_mapping_url' in self.config:
       return 200, self.response, {}
     else:
       return 500, {}, {}
@@ -104,7 +199,7 @@ class UpdateComponentConfigTest(TestCase):
   def testGetComponentClassifierConfigNoOWNERS(self):
     component_classifier_config = GetComponentClassifierConfig(
         _MOCK_CURRENT_CONFIG, DummyHttpClient(config={'top_n': 3}))
-    self.assertIsNone(component_classifier_config)
+    self.assertEqual(0, len(component_classifier_config['component_info']))
 
   @mock.patch(
       'backend.handlers.update_component_config.GetComponentClassifierConfig')

@@ -5,9 +5,11 @@
 from collections import namedtuple
 
 
-class Culprit(namedtuple('Culprit',
-    ['project', 'file_paths', 'components', 'suspected_cls',
-     'regression_range', 'algorithm', 'success'])):
+class Culprit(
+    namedtuple('Culprit', [
+        'project', 'file_paths', 'components', 'buganizer_component_id',
+        'suspected_cls', 'regression_range', 'algorithm', 'success'
+    ])):
   """The result of successfully identifying the culprit of a crash report.
 
   That is, this is what ``Predator.FindCultprit`` returns. It encapsulates
@@ -17,6 +19,7 @@ class Culprit(namedtuple('Culprit',
     project (str): the most-suspected project
     file_paths (list of str): the suspected file paths.
     components (list of str): the suspected crbug components.
+    buganizer_component_id (str): the suspected buganizer componentID.
     suspected_cls (list of Suspects): the suspected suspected_cls.
     regression_range (tuple): a pair of the last-good and first-bad versions.
     algorithm (str): What algorithm was used to produce this object.
@@ -73,6 +76,8 @@ class Culprit(namedtuple('Culprit',
           "suspected_components": [  # A list of crbug components to file bugs.
               "Blink>JavaScript"
           ]
+          "suspected_buganizer_component_id": 1456190
+           # suspected buganizer componentID
       }
 
       The code review url might not always be available, because not all
@@ -98,10 +103,8 @@ class Culprit(namedtuple('Culprit',
     """
     result = {}
     result['found'] = (
-        bool(self.project) or
-        bool(self.file_paths) or
-        bool(self.components) or
-        bool(self.suspected_cls) or
+        bool(self.project) or bool(self.file_paths) or bool(self.components) or
+        bool(self.buganizer_component_id) or bool(self.suspected_cls) or
         bool(self.regression_range))
     if self.regression_range:
       result['regression_range'] = self.regression_range
@@ -111,6 +114,8 @@ class Culprit(namedtuple('Culprit',
       result['suspected_file_paths'] = self.file_paths
     if self.components:
       result['suspected_components'] = self.components
+    if self.buganizer_component_id:
+      result['suspected_buganizer_component_id'] = self.buganizer_component_id
     if self.suspected_cls:
       result['suspected_cls'] = [cl.ToDict() for cl in self.suspected_cls]
 
@@ -121,6 +126,7 @@ class Culprit(namedtuple('Culprit',
         'found_project': bool(self.project),
         'found_file_paths': len(self.file_paths) != 0,
         'found_components': bool(self.components),
+        'found_buganizer_component': bool(self.buganizer_component_id),
         'solution': self.algorithm,
         'success': self.success,
     }

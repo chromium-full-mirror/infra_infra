@@ -97,12 +97,14 @@ class CrashAnalysis(ndb.Model):
   found_project = ndb.BooleanProperty(indexed=True)
   found_file_paths = ndb.BooleanProperty(indexed=True)
   found_components = ndb.BooleanProperty(indexed=True)
+  found_buganizer_component = ndb.BooleanProperty(indexed=True)
 
   # Correct results.
   suspect_count = ndb.IntegerProperty(indexed=True)
   culprit_regression_range = ndb.JsonProperty(indexed=False)
   culprit_cls = ndb.JsonProperty(indexed=False)
   culprit_components = ndb.JsonProperty(indexed=False)
+  culprit_buganizer_component = ndb.StringProperty(indexed=False)
   culprit_project = ndb.StringProperty(indexed=False)
   culprit_file_paths = ndb.StringProperty(indexed=False)
 
@@ -112,6 +114,8 @@ class CrashAnalysis(ndb.Model):
   suspected_cls_triage_status = ndb.IntegerProperty(
       indexed=True, default=triage_status.UNTRIAGED)
   suspected_components_triage_status = ndb.IntegerProperty(
+      indexed=True, default=triage_status.UNTRIAGED)
+  suspected_buganizer_component_triage_status = ndb.IntegerProperty(
       indexed=True, default=triage_status.UNTRIAGED)
   suspected_project_triage_status = ndb.IntegerProperty(
       indexed=True, default=triage_status.UNTRIAGED)
@@ -138,6 +142,7 @@ class CrashAnalysis(ndb.Model):
     self.suspected_project_triage_status = triage_status.UNTRIAGED
     self.suspected_file_paths_triage_status = triage_status.UNTRIAGED
     self.suspected_components_triage_status = triage_status.UNTRIAGED
+    self.suspected_buganizer_component_triage_status = triage_status.UNTRIAGED
 
   def Update(self, update):
     updated = False
