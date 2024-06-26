@@ -14,7 +14,8 @@ USING
   WITH builds AS (
     SELECT
       b.builder.builder,
-      COUNT(*) num_builds
+      COUNT(*) num_builds,
+      LOGICAL_OR(EXISTS(SELECT 0 FROM b.tags t WHERE t.key = 'cq_experimental' AND t.value = 'true')) as is_experimental,
     FROM
       `cr-buildbucket.chromium.builds` b
     WHERE
@@ -24,7 +25,8 @@ USING
     GROUP BY b.builder.builder
   )
   SELECT
-    builder
+    builder,
+    is_experimental
   FROM
     builds
   WHERE
@@ -37,7 +39,8 @@ USING
   ) AS S
 ON
   T.builder = S.builder
+  AND T.is_experimental = S.is_experimental
 WHEN NOT MATCHED THEN
-  INSERT (builder) VALUES (builder)
+  INSERT (builder, is_experimental) VALUES (builder, is_experimental)
 WHEN NOT MATCHED BY SOURCE THEN
   DELETE
