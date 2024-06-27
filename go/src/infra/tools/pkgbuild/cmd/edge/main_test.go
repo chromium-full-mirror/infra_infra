@@ -64,13 +64,13 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
+		buildPlatform := generators.CurrentPlatform()
+		cipdPlatform := platform.CurrentPlatform()
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		if err != nil {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
-
-		buildPlatform := generators.CurrentPlatform()
-		cipdPlatform := platform.CurrentPlatform()
 
 		initStdenv(buildPlatform)
 
@@ -119,6 +119,25 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
 			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdPlatform)
 		})
+
+		Convey("Build virtualenv (universal)", func() {
+			err := b.Load(ctx, "tools/virtualenv")
+			So(err, ShouldBeNil)
+			pkgs, err := b.BuildAll(ctx, false)
+			So(err, ShouldBeNil)
+
+			pkg := pkgs[len(pkgs)-1]
+			env := environ.New(pkg.Derivation.Env)
+			So(pkg.Derivation.Name, ShouldEqual, "virtualenv")
+			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
+			So(pkg.Action.Metadata.Cipd.Name, ShouldEqual, "mock/tools/virtualenv")
+			ver := "3@git-tag.chromium.8"
+			if cipdPlatform != "linux-amd64" {
+				ver += "-" + cipdPlatform
+			}
+			So(pkg.Action.Metadata.Cipd.Version, ShouldEqual, ver)
+			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdPlatform)
+		})
 	})
 
 	Convey("cross-compile platform", t, func() {
@@ -127,15 +146,15 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
-
 		buildPlatform := generators.NewPlatform("linux", "amd64")
 		hostPlatform := generators.NewPlatform("linux", "arm64")
 		cipdHost := "linux-amd64"
 		cipdTarget := "linux-arm64"
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
+		if err != nil {
+			t.Fatalf("failed to init spec loader: %v", err)
+		}
 
 		initStdenv(buildPlatform)
 
@@ -172,6 +191,21 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdTarget)
 		})
 
+		Convey("Build virtualenv (universal)", func() {
+			err := b.Load(ctx, "tools/virtualenv")
+			So(err, ShouldBeNil)
+			pkgs, err := b.BuildAll(ctx, false)
+			So(err, ShouldBeNil)
+
+			pkg := pkgs[len(pkgs)-1]
+			env := environ.New(pkg.Derivation.Env)
+			So(pkg.Derivation.Name, ShouldEqual, "virtualenv")
+			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
+			So(pkg.Action.Metadata.Cipd.Name, ShouldEqual, "mock/tools/virtualenv")
+			So(pkg.Action.Metadata.Cipd.Version, ShouldEqual, "3@git-tag.chromium.8-linux-arm64")
+			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdTarget)
+		})
+
 		// If a dependency is not available, ErrPackageNotAvailable should be the
 		// inner error.
 		Convey("unavailable dependency", func() {
@@ -204,13 +238,13 @@ func TestRootPackges(t *testing.T) {
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
+		buildPlatform := generators.NewPlatform("linux", "amd64")
+		cipdPlatform := "linux-amd64"
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		if err != nil {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
-
-		buildPlatform := generators.NewPlatform("linux", "amd64")
-		cipdPlatform := "linux-amd64"
 
 		initStdenv(buildPlatform)
 
@@ -271,15 +305,15 @@ func TestRootPackges(t *testing.T) {
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
-
 		buildPlatform := generators.NewPlatform("linux", "amd64")
 		hostPlatform := generators.NewPlatform("linux", "arm64")
 		cipdHost := "linux-amd64"
 		cipdTarget := "linux-arm64"
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
+		if err != nil {
+			t.Fatalf("failed to init spec loader: %v", err)
+		}
 
 		initStdenv(buildPlatform)
 
@@ -348,13 +382,13 @@ func TestPackageSources(t *testing.T) {
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig())
+		buildPlatform := generators.NewPlatform("linux", "amd64")
+		cipdPlatform := "linux-amd64"
+
+		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		if err != nil {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
-
-		buildPlatform := generators.NewPlatform("linux", "amd64")
-		cipdPlatform := "linux-amd64"
 
 		initStdenv(buildPlatform)
 
@@ -454,10 +488,11 @@ func (*MockSourceResolver) ResolveScriptSource(cipdHostPlatform, dir string, scr
 	}, nil
 }
 
-func MockSpecLoaderConfig() *spec.SpecLoaderConfig {
+func MockSpecLoaderConfig(targetPlatform string) *spec.SpecLoaderConfig {
 	return &spec.SpecLoaderConfig{
 		CIPDPackagePrefix:     "mock",
 		CIPDSourceCachePrefix: "sources",
+		CIPDTargetPlatform:    targetPlatform,
 		SourceResolver:        &MockSourceResolver{},
 	}
 }

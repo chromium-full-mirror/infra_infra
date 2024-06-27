@@ -211,6 +211,19 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	}
 	protoMerge(g.CIPD, create.CIPD)
 
+	if def.Spec.Upload.GetUniversal() && l.cipdTargetPlatform != "linux-amd64" {
+		// 3pp recipe claims universal package will always come from linux-amd64
+		// for consistency.
+		// Append target platform to cipd version if this is a universal package
+		// but not targeting linux-amd64. This ensures that the behaviour is same
+		// from the user's perspective. Package with "correct" version tag (without
+		// platform) is always from linux-amd64.
+		// Also clear all extra refs & tags for same reason.
+		g.CIPD.Version += "-" + l.cipdTargetPlatform
+		g.CIPD.Tags = nil
+		g.CIPD.Refs = nil
+	}
+
 	switch hostCipdPlatform {
 	case "mac-amd64":
 		g.Env.Set("MACOSX_DEPLOYMENT_TARGET", "10.10")
