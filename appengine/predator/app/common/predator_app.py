@@ -62,12 +62,12 @@ class PredatorApp(object):
     self._component_classifier = ComponentClassifier(
         components, config.component_classifier['top_n'],
         config.repo_to_dep_path,
-        config.component_classifier['buganzier_component_dict'] or
-        self._LoadBuganzierComponentDict())
+        config.component_classifier.get('buganizer_component_dict', {}) or
+        self._LoadBuganizerComponentDict())
     self._config = config
     self._log = None
 
-  def _LoadBuganzierComponentDict(self):
+  def _LoadBuganizerComponentDict(self):
     """
     TODO(349621569): Load the metadata from the local folder temporarily.
     Will overwrite the "Settings for component classifier section" in
@@ -75,8 +75,8 @@ class PredatorApp(object):
     the change and clean Monorail component related code.
     """
     with open('common/metadata_reduced.json', 'r') as fr:
-      buganzier_component_dict = json.load(fr)
-    return buganzier_component_dict['dirs']
+      buganizer_component_dict = json.load(fr)
+    return buganizer_component_dict['dirs']
 
   def SetLog(self, log):
     """Sets log instance to store useful logs to datastore for users."""

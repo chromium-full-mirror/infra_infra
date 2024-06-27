@@ -71,7 +71,7 @@ def GetComponentClassifierConfig(config, http_client=HttpClientAppengine()):
           config['top_n'],
       'owner_mapping_url':
           config['owner_mapping_url'],
-      'buganzier_component_dict':
+      'buganizer_component_dict':
           buganizer_meta.get('dirs', {}) if buganizer_meta else {}
   }
   return component_classifier_config

@@ -48,7 +48,7 @@ _MOCK_CONFIG = {
     ],
     'owner_mapping_url': 'url',
     'top_n': 4,
-    'buganzier_component_dict': {
+    'buganizer_component_dict': {
         ".": {
             "monorail": {
                 "project": "chromium"
@@ -100,7 +100,7 @@ _MOCK_CURRENT_CONFIG = {
     },],
     'owner_mapping_url': 'url',
     'top_n': 4,
-    'buganzier_component_dict': {
+    'buganizer_component_dict': {
         ".": {
             "monorail": {
                 "project": "chromium"

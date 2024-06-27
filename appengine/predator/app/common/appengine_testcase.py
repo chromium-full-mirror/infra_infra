@@ -67,7 +67,7 @@ DEFAULT_CONFIG_DATA = {
         }],
         'owner_mapping_url': 'https://owner_mapping_url',
         'top_n': 4,
-        'buganzier_component_dict': {
+        'buganizer_component_dict': {
             ".": {
                 "monorail": {
                     "project": "chromium"

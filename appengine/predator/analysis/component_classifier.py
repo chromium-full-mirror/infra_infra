@@ -45,20 +45,20 @@ class ComponentClassifier(object):
   """
 
   def __init__(self, components, top_n_frames, repo_to_dep_path,
-               buganzier_component_dict):
+               buganizer_component_dict):
     """Build a classifier for components.
 
     Args:
       components (list of crash.component.Component): the components to
         check for.
       top_n_frames (int): how many frames of the callstack to look at.
-      buganzier_component_dict (dict): buganzier component and dir map
+      buganizer_component_dict (dict): buganizer component and dir map
     """
     super(ComponentClassifier, self).__init__()
     self.components = components or []
     self.top_n_frames = top_n_frames
     self.repo_to_dep_path = repo_to_dep_path
-    self.buganzier_component_dict = buganzier_component_dict
+    self.buganizer_component_dict = buganizer_component_dict
 
   def _RepoUrlToDepPath(self, repo_url):
     repo_url_without_git = (repo_url[:-len('.git')] if repo_url.endswith('.git')
@@ -145,14 +145,14 @@ class ComponentClassifier(object):
     if not tokens:
       return None
     file_path = '/'.join(tokens)
-    if file_path not in self.buganzier_component_dict:
+    if file_path not in self.buganizer_component_dict:
       tokens.pop()
       return self._GetBuganizerComponentIDFromSuspectedFilePath(tokens)
-    if 'buganizerPublic' not in self.buganzier_component_dict[file_path] or \
+    if 'buganizerPublic' not in self.buganizer_component_dict[file_path] or \
         'componentId' not in \
-        self.buganzier_component_dict[file_path]['buganizerPublic']:
+        self.buganizer_component_dict[file_path]['buganizerPublic']:
       return None
-    return self.buganzier_component_dict[file_path]['buganizerPublic'][
+    return self.buganizer_component_dict[file_path]['buganizerPublic'][
         'componentId']
 
   def _SortByOccurrence(self, counter):
