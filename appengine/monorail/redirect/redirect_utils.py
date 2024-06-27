@@ -14,6 +14,7 @@ PROJECT_REDIRECT_MAP = {
     'angleproject': 'https://issues.angleproject.org',
     'aomedia': 'https://aomedia.issues.chromium.org',
     'boringssl': 'https://issues.chromium.org',
+    'chromedriver': 'https://issues.chromium.org',
     'chromium': 'https://issues.chromium.org',
     'crashpad': 'https://issues.chromium.org',
     'dawn': 'https://issues.chromium.org',
@@ -32,6 +33,7 @@ PROJECT_REDIRECT_MAP = {
 # Only contain the project that is a subcomponent of the tracker.
 PROJECT_COMPONENT_ID_MAP = {
     'boringssl': 1590116,
+    'chromedriver': 1608258,
     'crashpad': 1605005,
     'dawn': 1570784,
     'pdfium': 1586257,
