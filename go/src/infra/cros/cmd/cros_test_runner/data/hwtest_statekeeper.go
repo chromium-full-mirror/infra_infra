@@ -63,6 +63,7 @@ type HwTestStateKeeper struct {
 	CurrentDutState          dutstate.State
 	PrimaryDutModel          *labapi.DutModel
 	CompanionDutModels       []*labapi.DutModel
+	CacheServer              *labapi.IpEndpoint
 	// Only when DUT is a VM
 	DutVmGceImage   *vmlabapi.GceImage
 	DutVm           *vmlabapi.VmInstance

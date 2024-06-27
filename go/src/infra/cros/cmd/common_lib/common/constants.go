@@ -97,6 +97,7 @@ const (
 	TestRequestPrimary                  = "testRequest.primary"
 	TestRequestCompanions               = "testRequest.companions"
 	RequestTestSuites                   = "req.params.testSuites"
+	CacheServer                         = "cache-server"
 )
 
 var (

@@ -39,6 +39,7 @@ type ParseDutTopologyCmd struct {
 	Devices           map[string]*testapi.CrosTestRequest_Device
 	DevicesMetadata   map[string]*skylab_test_runner.CFTTestRequest_Device
 	DeviceIdentifiers []string
+	CacheServer       *labapi.IpEndpoint
 }
 
 type DeviceInfo struct {
@@ -99,6 +100,9 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 	cmd.Devices = make(map[string]*testapi.CrosTestRequest_Device)
 	cmd.DevicesMetadata = make(map[string]*skylab_test_runner.CFTTestRequest_Device)
 	cmd.DeviceIdentifiers = []string{}
+
+	// Find cache server.
+	cmd.CacheServer = findCacheServer(cmd.DutTopology)
 
 	devicePool := []*DeviceInfo{}
 	for _, dut := range cmd.DutTopology.GetDuts() {
@@ -233,6 +237,12 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 	if err := sk.Injectables.Set(common.CompanionDevicesMetadata, sk.CompanionDevicesMetadata); err != nil {
 		logging.Infof(ctx, "Warning: cmd %s failed to set companionDevicesMetadata in the injectable storage, %s", cmd.GetCommandType(), err)
 	}
+	sk.CacheServer = cmd.CacheServer
+	if sk.CacheServer != nil {
+		if err := sk.Injectables.Set(common.CacheServer, sk.CacheServer); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), common.CacheServer, err)
+		}
+	}
 
 	return nil
 }
@@ -302,6 +312,17 @@ func shouldUpdateFirmware(commonConfig *skylab_test_runner.CommonConfig, labelPo
 	}
 
 	return false
+}
+
+// findCacheServer returns the first cache server found within the
+// dut topology. This server can essentially be used for each device.
+func findCacheServer(dutTopology *labapi.DutTopology) *labapi.IpEndpoint {
+	for _, dut := range dutTopology.GetDuts() {
+		if dut.CacheServer != nil && dut.CacheServer.Address != nil {
+			return dut.GetCacheServer().GetAddress()
+		}
+	}
+	return nil
 }
 
 func NewParseDutTopologyCmd() *ParseDutTopologyCmd {
