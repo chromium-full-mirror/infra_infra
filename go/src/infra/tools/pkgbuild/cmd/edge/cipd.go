@@ -15,7 +15,12 @@ import (
 	"path/filepath"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
+	"go.chromium.org/luci/cipd/client/cipd/builder"
+	"go.chromium.org/luci/cipd/client/cipd/pkg"
 	"go.chromium.org/luci/cipkg/base/actions"
+	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/luciexe/build"
@@ -76,7 +81,7 @@ func (pkg *cipdPackage) upload(ctx context.Context, workdir, cipdService string,
 		return
 	}
 
-	iid, err = buildCIPD(ctx, name, pkg.Handler.OutputDirectory(), out)
+	iid, err = buildCIPD(ctx, cipd, pkg.Handler.OutputDirectory(), out)
 	if err != nil {
 		_ = filesystem.RemoveAll(out)
 		err = errors.Annotate(err, "failed to build cipd package").Err()
@@ -160,13 +165,38 @@ func (pkg *cipdPackage) derivationTag() string {
 	return "derivation:" + pkg.DerivationID
 }
 
-// TODO(fancl): to support version_file we need to generate package definition
-// instead of passing all arguments through cli.
-func buildCIPD(ctx context.Context, name, src, dst string) (Iid string, err error) {
+func buildCIPD(ctx context.Context, cipd *core.Action_Metadata_CIPD, src, dst string) (Iid string, err error) {
+	packageDef := dst + ".yaml"
 	resultFile := dst + ".json"
+
+	def := builder.PackageDef{
+		Package: cipd.Name,
+		Root:    src,
+		Data:    []builder.PackageChunkDef{{Dir: "."}},
+	}
+	switch cipd.InstallMode {
+	case core.Action_Metadata_CIPD_copy:
+		def.InstallMode = pkg.InstallModeCopy
+	case core.Action_Metadata_CIPD_symlink:
+		def.InstallMode = pkg.InstallModeSymlink
+	}
+	if cipd.VersionFile != "" {
+		def.Data = append(def.Data, builder.PackageChunkDef{VersionFile: cipd.VersionFile})
+	}
+
+	if err = func() error {
+		fdef, err := os.Create(packageDef)
+		if err != nil {
+			return err
+		}
+		defer fdef.Close()
+		return yaml.NewEncoder(fdef).Encode(&def)
+	}(); err != nil {
+		return
+	}
+
 	cmd := cipdCommand("pkg-build",
-		"-name", name,
-		"-in", src,
+		"-pkg-def", packageDef,
 		"-out", dst,
 		"-json-output", resultFile,
 	)

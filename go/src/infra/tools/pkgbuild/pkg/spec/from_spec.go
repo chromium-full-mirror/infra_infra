@@ -165,6 +165,8 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 	env.Set("_3PP_DEF", fmt.Sprintf("{{.%s}}", defDerivation.Name))
 	env.Set("_3PP_PLATFORM", hostCipdPlatform)
 	env.Set("_3PP_TOOL_PLATFORM", buildCipdPlatform)
+	env.Set("_3PP_VERSION", create.SourceVersion)
+	env.Set("_3PP_PATCH_VERSION", create.PatchVersion)
 
 	// TODO(fancl): These should be moved to go package
 	env.Set("GOOS", plat.OS())
@@ -221,14 +223,15 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 // A parser for Spec_Create spec. It converts the merged create section in the
 // spec to information we need for constructing a stdenv generator.
 type createParser struct {
-	Source       stdenv.Source
-	Version      string
-	Patches      []string
-	Installer    string
-	Tester       string
-	Dependencies []generators.Dependency
-	Enviroments  environ.Env
-	CIPD         *core.Action_Metadata_CIPD
+	Source        stdenv.Source
+	SourceVersion string
+	PatchVersion  string
+	Patches       []string
+	Installer     string
+	Tester        string
+	Dependencies  []generators.Dependency
+	Enviroments   environ.Env
+	CIPD          *core.Action_Metadata_CIPD
 
 	host   string
 	create *Spec_Create
@@ -393,15 +396,18 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 		return err
 	}
 
-	p.Enviroments.Set("_3PP_VERSION", v)
-	if pv := p.create.GetSource().GetPatchVersion(); pv != "" {
-		p.Enviroments.Set("_3PP_PATCH_VERSION", pv)
-		v = v + "." + pv
-	}
-	p.Version = v
-	p.Source = s
+	p.SourceVersion = v
+	p.PatchVersion = source.PatchVersion
 
+	p.Source = s
 	return nil
+}
+
+func (p *createParser) Version() string {
+	if p.PatchVersion == "" {
+		return p.SourceVersion
+	}
+	return p.SourceVersion + "." + p.PatchVersion
 }
 
 func (p *createParser) FindPatches(name, dir string) error {
@@ -470,9 +476,26 @@ func (p *createParser) ParsePackage() error {
 		}
 	}
 
+	var tags []string
+	if pkgSpec.AlterVersionRe != "" {
+		tags = append(tags, "real_version:"+p.SourceVersion)
+
+		re, err := regexp.Compile(pkgSpec.AlterVersionRe)
+		if err != nil {
+			return err
+		}
+		// Note: Python re package uses "\" as group quote while golang uses "$".
+		// We don't expect "\" appearing in the altered version anyway so replacing
+		// all "\" with "$" should be safe.
+		repl := strings.ReplaceAll(pkgSpec.AlterVersionReplace, "\\", "$")
+		p.SourceVersion = re.ReplaceAllString(p.SourceVersion, repl)
+	}
+
 	p.CIPD = &core.Action_Metadata_CIPD{
-		Refs:    pkgSpec.AdditionalRef,
-		Version: p.Version,
+		Refs:        pkgSpec.AdditionalRef,
+		Tags:        tags,
+		Version:     p.Version(),
+		VersionFile: pkgSpec.VersionFile,
 	}
 
 	if !pkgSpec.DisableLatestRef {

@@ -313,7 +313,7 @@ func TestParseSource(t *testing.T) {
 			Version:  "3@script-version",
 		})
 	})
-	Convey("version envs", t, func() {
+	Convey("version", t, func() {
 		def := &PackageDef{
 			packageName: "pkg_name",
 			Spec: &Spec{
@@ -337,8 +337,9 @@ func TestParseSource(t *testing.T) {
 		So(err, ShouldBeNil)
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
 		So(err, ShouldBeNil)
-		So(p.Enviroments.Get("_3PP_VERSION"), ShouldEqual, "1.2.12")
-		So(p.Enviroments.Get("_3PP_PATCH_VERSION"), ShouldEqual, "chromium.1")
+		So(p.SourceVersion, ShouldEqual, "1.2.12")
+		So(p.PatchVersion, ShouldEqual, "chromium.1")
+		So(p.Version(), ShouldEqual, "1.2.12.chromium.1")
 	})
 }
 
@@ -443,6 +444,122 @@ func TestParseBuilder(t *testing.T) {
 		err = p.ParseBuilder()
 		So(err, ShouldBeNil)
 		So(p.Installer, ShouldEqual, `["install.py"]`)
+	})
+}
+
+func TestParsePackage(t *testing.T) {
+	Convey("package", t, func() {
+		create := &Spec_Create{
+			Source: &Spec_Create_Source{
+				Method: &Spec_Create_Source_Url{
+					Url: &UrlSource{Version: "1.2.12.xxx.1-rc1"},
+				},
+			},
+		}
+
+		def := &PackageDef{packageName: "pkg_name", Spec: &Spec{Create: []*Spec_Create{create}}}
+
+		Convey("ok", func() {
+			create.Package = &Spec_Create_Package{}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version: "1.2.12.xxx.1-rc1",
+				Refs:    []string{"latest"},
+			})
+		})
+
+		Convey("install mode", func() {
+			create.Package = &Spec_Create_Package{InstallMode: Spec_Create_Package_symlink}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version:     "1.2.12.xxx.1-rc1",
+				InstallMode: core.Action_Metadata_CIPD_symlink,
+				Refs:        []string{"latest"},
+			})
+		})
+
+		Convey("version file", func() {
+			create.Package = &Spec_Create_Package{VersionFile: "something.version"}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version:     "1.2.12.xxx.1-rc1",
+				Refs:        []string{"latest"},
+				VersionFile: "something.version",
+			})
+		})
+
+		Convey("alternative version", func() {
+			create.Source.PatchVersion = "chromium.1"
+			create.Package = &Spec_Create_Package{AlterVersionRe: "(.*)\\.xxx\\.\\d*(.*)", AlterVersionReplace: "\\1\\2"}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.SourceVersion, ShouldEqual, "1.2.12-rc1")
+			So(p.PatchVersion, ShouldEqual, "chromium.1")
+			So(p.Version(), ShouldEqual, "1.2.12-rc1.chromium.1")
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version: "1.2.12-rc1.chromium.1",
+				Refs:    []string{"latest"},
+				Tags:    []string{"real_version:1.2.12.xxx.1-rc1"},
+			})
+		})
+
+		Convey("disable latest", func() {
+			create.Package = &Spec_Create_Package{DisableLatestRef: true}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version: "1.2.12.xxx.1-rc1",
+			})
+		})
+
+		Convey("additional ref", func() {
+			create.Package = &Spec_Create_Package{AdditionalRef: []string{"ref1"}}
+
+			p, err := newCreateParser("linux-amd64", def.Spec.Create)
+			So(err, ShouldBeNil)
+			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
+			So(err, ShouldBeNil)
+			err = p.ParsePackage()
+			So(err, ShouldBeNil)
+
+			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+				Version: "1.2.12.xxx.1-rc1",
+				Refs:    []string{"ref1", "latest"},
+			})
+		})
 	})
 }
 
