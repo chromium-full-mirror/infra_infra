@@ -339,7 +339,7 @@ func TestParseSource(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(p.SourceVersion, ShouldEqual, "1.2.12")
 		So(p.PatchVersion, ShouldEqual, "chromium.1")
-		So(p.Version(), ShouldEqual, "1.2.12.chromium.1")
+		So(p.CIPDVersion(), ShouldEqual, "3@1.2.12.chromium.1")
 	})
 }
 
@@ -470,7 +470,7 @@ func TestParsePackage(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version: "1.2.12.xxx.1-rc1",
+				Version: "3@1.2.12.xxx.1-rc1",
 				Refs:    []string{"latest"},
 			})
 		})
@@ -486,7 +486,7 @@ func TestParsePackage(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version:     "1.2.12.xxx.1-rc1",
+				Version:     "3@1.2.12.xxx.1-rc1",
 				InstallMode: core.Action_Metadata_CIPD_symlink,
 				Refs:        []string{"latest"},
 			})
@@ -503,7 +503,7 @@ func TestParsePackage(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version:     "1.2.12.xxx.1-rc1",
+				Version:     "3@1.2.12.xxx.1-rc1",
 				Refs:        []string{"latest"},
 				VersionFile: "something.version",
 			})
@@ -522,9 +522,9 @@ func TestParsePackage(t *testing.T) {
 
 			So(p.SourceVersion, ShouldEqual, "1.2.12-rc1")
 			So(p.PatchVersion, ShouldEqual, "chromium.1")
-			So(p.Version(), ShouldEqual, "1.2.12-rc1.chromium.1")
+			So(p.CIPDVersion(), ShouldEqual, "3@1.2.12-rc1.chromium.1")
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version: "1.2.12-rc1.chromium.1",
+				Version: "3@1.2.12-rc1.chromium.1",
 				Refs:    []string{"latest"},
 				Tags:    []string{"real_version:1.2.12.xxx.1-rc1"},
 			})
@@ -541,7 +541,7 @@ func TestParsePackage(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version: "1.2.12.xxx.1-rc1",
+				Version: "3@1.2.12.xxx.1-rc1",
 			})
 		})
 
@@ -556,7 +556,7 @@ func TestParsePackage(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
-				Version: "1.2.12.xxx.1-rc1",
+				Version: "3@1.2.12.xxx.1-rc1",
 				Refs:    []string{"ref1", "latest"},
 			})
 		})
@@ -609,7 +609,7 @@ func TestLoadDependencies(t *testing.T) {
 			So(a.Name, ShouldEqual, "ninja")
 			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
 				Name:    "tools/ninja/linux-amd64",
-				Version: "git-tag.chromium.4",
+				Version: "3@git-tag.chromium.4",
 				Refs:    []string{"latest"},
 			})
 		})
@@ -630,7 +630,7 @@ func TestLoadDependencies(t *testing.T) {
 			So(a.Name, ShouldEqual, "ninja")
 			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
 				Name:    "tools/ninja/linux-arm64",
-				Version: "git-tag.chromium.4",
+				Version: "3@git-tag.chromium.4",
 				Refs:    []string{"latest"},
 
 				// Avoid uploading linux-arm64 package from linux-amd64 builder

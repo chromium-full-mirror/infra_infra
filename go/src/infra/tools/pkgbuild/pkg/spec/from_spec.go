@@ -24,6 +24,8 @@ import (
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
+const cipdVersionEpoch = "3@"
+
 //go:embed all:from_spec/build-support
 var fromSpecEmbed embed.FS
 var fromSpecGen = generators.InitEmbeddedFS(
@@ -326,7 +328,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				Ref: info.Commit,
 
 				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "git", gitCachePath(s.Repo)),
-				Version:  fmt.Sprintf("3@%s", info.Tag),
+				Version:  cipdVersionEpoch + info.Tag,
 			}, info.Tag, nil
 		case *Spec_Create_Source_Url:
 			s := source.GetUrl()
@@ -340,7 +342,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				},
 
 				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "url", def.FullNameWithOverride(), p.host),
-				Version:  fmt.Sprintf("3@%s", s.Version),
+				Version:  cipdVersionEpoch + s.Version,
 			}, s.Version, nil
 		case *Spec_Create_Source_Cipd:
 			// source.GetCipd()
@@ -387,7 +389,7 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 				URLs: urls,
 
 				CIPDName: path.Join(packagePrefix, sourceCachePrefix, "script", def.FullNameWithOverride(), p.host),
-				Version:  fmt.Sprintf("3@%s", info.Version),
+				Version:  cipdVersionEpoch + info.Version,
 			}, info.Version, nil
 		}
 		return nil, "", fmt.Errorf("unknown source type from spec")
@@ -403,11 +405,11 @@ func (p *createParser) ParseSource(def *PackageDef, packagePrefix, sourceCachePr
 	return nil
 }
 
-func (p *createParser) Version() string {
+func (p *createParser) CIPDVersion() string {
 	if p.PatchVersion == "" {
-		return p.SourceVersion
+		return cipdVersionEpoch + p.SourceVersion
 	}
-	return p.SourceVersion + "." + p.PatchVersion
+	return cipdVersionEpoch + p.SourceVersion + "." + p.PatchVersion
 }
 
 func (p *createParser) FindPatches(name, dir string) error {
@@ -494,7 +496,7 @@ func (p *createParser) ParsePackage() error {
 	p.CIPD = &core.Action_Metadata_CIPD{
 		Refs:        pkgSpec.AdditionalRef,
 		Tags:        tags,
-		Version:     p.Version(),
+		Version:     p.CIPDVersion(),
 		VersionFile: pkgSpec.VersionFile,
 	}
 
