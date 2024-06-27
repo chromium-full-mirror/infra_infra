@@ -124,12 +124,8 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 		return errors.Annotate(err, "copy to helper").Err()
 	}
 	defer func() {
-		if err := client.Close(); err != nil {
-			// TODO(b:270462604): Delete the log after finish migration.
+		if err := provider.CloseClient(ctx, client); err != nil {
 			log.Debugf(ctx, "SSH client closed with error: %s", err)
-		} else {
-			// TODO(b:270462604): Delete the log after finish migration.
-			log.Debugf(ctx, "SSH client closed!")
 		}
 	}()
 	session, err := client.NewSession()

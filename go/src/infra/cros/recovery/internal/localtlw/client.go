@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/luci/common/errors"
@@ -43,8 +42,6 @@ type CSAClient interface {
 
 type hostType int64
 
-const connectionRateLimit = 2000 * time.Millisecond
-
 const (
 	hostTypeChromeOs hostType = iota
 	hostTypeAndroid
@@ -74,7 +71,6 @@ type tlwClient struct {
 
 // New build new local TLW Access instance.
 func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
-	var limiter *rate.Limiter
 	config, err := ssh.NewDefaultConfig(nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "new tlw client").Err()
@@ -84,12 +80,11 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 		if err = config.Load(env.DefaultSSHConfigPathOnCloudBot); err != nil {
 			return nil, errors.Annotate(err, "new tlw client").Err()
 		}
-		limiter = rate.NewLimiter(rate.Every(connectionRateLimit), 1)
 	}
 	c := &tlwClient{
 		ufsClient:     ufs,
 		csaClient:     csac,
-		sshProvider:   ssh.NewProvider(config, limiter),
+		sshProvider:   ssh.NewProvider(config),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),

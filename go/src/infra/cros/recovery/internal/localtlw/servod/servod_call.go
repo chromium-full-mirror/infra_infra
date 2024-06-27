@@ -88,12 +88,8 @@ func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_
 		return nil, errors.Annotate(err, "call servod labstation").Err()
 	}
 	defer func() {
-		if err := sc.Close(); err != nil {
-			// TODO(b:270462604): Delete the log after finish migration.
+		if err := req.SSHProvider.CloseClient(ctx, sc); err != nil {
 			log.Debugf(ctx, "SSH client closed with error: %s", err)
-		} else {
-			// TODO(b:270462604): Delete the log after finish migration.
-			log.Debugf(ctx, "SSH client closed!")
 		}
 	}()
 

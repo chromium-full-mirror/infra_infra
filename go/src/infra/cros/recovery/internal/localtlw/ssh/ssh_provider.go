@@ -6,9 +6,11 @@ package ssh
 
 import (
 	"context"
+	"fmt"
 
-	"golang.org/x/time/rate"
+	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/internal/env"
 	"infra/cros/recovery/internal/log"
 )
 
@@ -17,43 +19,90 @@ import (
 // Provider gives option to use pool or create new client always.
 type SSHProvider interface {
 	Get(ctx context.Context, addr string) (SSHClient, error)
+	CloseClient(ctx context.Context, c SSHClient) error
 	Close() error
 	Config() Config
 	SetUser(username string)
+	UseClientPool() bool
 	Clone() SSHProvider
 }
 
 // Implementation of SSHProvider.
 type sshProviderImpl struct {
-	username string // overrides SSH config username
-	config   Config
-	limiter  *rate.Limiter
+	username   string // overrides SSH config username
+	config     Config
+	clientPool map[string]SSHClient
 }
 
 // NewProvider creates new provider for use.
 //
 //	clientConfig: SSH configuration to configure the new clients.
 //	tlsConfig: Optional TLS configuration to establish SSH connections over TLS channel.
-func NewProvider(config Config, limiter *rate.Limiter) SSHProvider {
-	return &sshProviderImpl{
-		config:  config,
-		limiter: limiter,
+func NewProvider(config Config) SSHProvider {
+	p := &sshProviderImpl{
+		config: config,
 	}
+	if env.IsCloudBot() {
+		p.clientPool = make(map[string]SSHClient)
+	}
+	return p
+}
+
+// UseClientPool return bool for reuse client or not.
+func (c *sshProviderImpl) UseClientPool() bool {
+	return c.clientPool != nil
 }
 
 // Get provides SSH client for requested host.
 func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, error) {
-	if c.limiter != nil && !c.limiter.Allow() {
-		log.Debugf(ctx, "Connection rate is limited to 1 connection per %v ms", 1000/c.limiter.Limit())
-		if err := c.limiter.Wait(ctx); err != nil {
-			return nil, err
+	if !c.UseClientPool() {
+		return NewClient(ctx, addr, c.username, c.config)
+	}
+	var err error
+	if cl, ok := c.clientPool[addr]; !ok {
+		log.Debugf(ctx, "client not found, creating %q client...", addr)
+		cl, err = NewClient(ctx, addr, c.username, c.config)
+		if err == nil {
+			c.clientPool[addr] = cl
+		}
+	} else {
+		if !cl.IsAlive() {
+			log.Debugf(ctx, "client %q not alive, creating a new one", addr)
+			delete(c.clientPool, addr)
+			if err = cl.Close(); err != nil {
+				log.Debugf(ctx, "error closing dead %q client error: %v", addr, err)
+			}
+			cl, err = NewClient(ctx, addr, c.username, c.config)
+			if err == nil {
+				c.clientPool[addr] = cl
+			}
 		}
 	}
-	return NewClient(ctx, addr, c.username, c.config)
+	return c.clientPool[addr], errors.Annotate(err, "provider get client error:").Err()
+}
+
+// CloseClient closes SSH client if it is not using client pool.
+func (c *sshProviderImpl) CloseClient(ctx context.Context, cl SSHClient) error {
+	if c.UseClientPool() {
+		log.Debugf(ctx, "provider uses client pool: connection remains open")
+		return nil
+	}
+	log.Debugf(ctx, "provider closing SSH client connection")
+	err := cl.Close()
+	if err == nil {
+		log.Debugf(ctx, "provider client SSH connection closed")
+	}
+	return err
 }
 
 // Close closing used resource of the provider.
 func (c *sshProviderImpl) Close() error {
+	for k, v := range c.clientPool {
+		if err := v.Close(); err != nil {
+			fmt.Printf("provider error closing %q client: %v\n", k, err)
+		}
+	}
+	c.clientPool = nil
 	return nil
 }
 
@@ -70,9 +119,12 @@ func (c *sshProviderImpl) SetUser(username string) {
 // Clone creates a new SSH provider with its own username property.
 // Changes to the username in the clone won't affect the original provider.
 func (c *sshProviderImpl) Clone() SSHProvider {
-	return &sshProviderImpl{
+	p := &sshProviderImpl{
 		username: c.username,
 		config:   c.config,
-		limiter:  c.limiter,
 	}
+	if c.clientPool != nil {
+		p.clientPool = make(map[string]SSHClient)
+	}
+	return p
 }

@@ -61,15 +61,9 @@ func run(ctx context.Context, provider SSHProvider, addr string, cmd string, bac
 		return
 	}
 	defer func() {
-		log.Debugf(ctx, "Starting finishing SSH execution: %q", sessionLogsKey)
-		if err := sc.Close(); err != nil {
-			// TODO(b:270462604): Delete the log after finish migration.
+		if err := provider.CloseClient(ctx, sc); err != nil {
 			log.Debugf(ctx, "SSH client closed %q with error: %s", sessionLogsKey, err)
-		} else {
-			// TODO(b:270462604): Delete the log after finish migration.
-			log.Debugf(ctx, "SSH client closed %q!", sessionLogsKey)
 		}
-		log.Debugf(ctx, "Finished SSH execution: %q", sessionLogsKey)
 	}()
 	log.Debugf(ctx, "SSH client received: %q", sessionLogsKey)
 	result = createSessionAndExecute(ctx, cmd, sc, background, sessionLogsKey)
