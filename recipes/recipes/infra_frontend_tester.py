@@ -16,6 +16,7 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
+    'recipe_engine/resultdb',
     'recipe_engine/step',
     'depot_tools/bot_update',
     'depot_tools/gclient',
@@ -107,8 +108,7 @@ def RunLuciGoTests(api, root_path):
 def RunFrontendTests(api, cwd, app_name):
   with api.context(cwd=cwd):
     api.step(('%s npm install' % app_name), ['npm', 'ci'])
-    api.step(('%s test' % app_name), ['npm', 'run', 'test'])
-
+    api.step(('%s test' % app_name), api.resultdb.wrap(['npm', 'run', 'test']))
 
 def GenTests(api):
   yield (

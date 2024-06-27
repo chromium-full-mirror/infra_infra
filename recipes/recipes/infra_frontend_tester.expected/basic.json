@@ -311,6 +311,9 @@
   },
   {
     "cmd": [
+      "rdb",
+      "stream",
+      "--",
       "npm",
       "run",
       "test"
@@ -372,6 +375,9 @@
   },
   {
     "cmd": [
+      "rdb",
+      "stream",
+      "--",
       "npm",
       "run",
       "test"
@@ -433,6 +439,9 @@
   },
   {
     "cmd": [
+      "rdb",
+      "stream",
+      "--",
       "npm",
       "run",
       "test"
