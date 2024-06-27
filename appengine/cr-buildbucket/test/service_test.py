@@ -100,15 +100,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     for perms in self.perms.values():
       perms.remove(perm)
 
-  def put_many_builds(self, count=100, **build_proto_fields):
-    builds = []
-    build_ids = model.create_build_ids(utils.utcnow(), count)
-    for build_id in build_ids:
-      builds.append(self.classic_build(id=build_id, **build_proto_fields))
-      self.now += datetime.timedelta(seconds=1)
-    ndb.put_multi(builds)
-    return builds
-
   @staticmethod
   def classic_build(**build_proto_fields):
     build = test_util.build(**build_proto_fields)
@@ -185,102 +176,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     result_details = {'message': 'bye bye build'}
     build = service.cancel_async(1, result_details=result_details).get_result()
     self.assertEqual(build.result_details, result_details)
-
-  def test_peek(self):
-    build = self.classic_build()
-    build.put()
-    builds, _ = service.peek(bucket_ids=[build.bucket_id])
-    self.assertEqual(builds, [build])
-
-  def test_peek_multi(self):
-    build1 = self.classic_build(
-        id=1,
-        builder=dict(project='chromium', bucket='try'),
-    )
-    build2 = self.classic_build(
-        id=2,
-        builder=dict(project='chromium', bucket='try'),
-    )
-    assert build1.bucket_id == build2.bucket_id
-    ndb.put_multi([build1, build2])
-    builds, _ = service.peek(bucket_ids=['chromium/try'])
-    self.assertEqual(builds, [build2, build1])
-
-  def test_peek_with_paging(self):
-    self.put_many_builds(builder=dict(project='chromium', bucket='try'))
-    first_page, next_cursor = service.peek(
-        bucket_ids=['chromium/try'], max_builds=10
-    )
-    self.assertTrue(first_page)
-    self.assertTrue(next_cursor)
-
-    second_page, _ = service.peek(
-        bucket_ids=['chromium/try'], start_cursor=next_cursor
-    )
-
-    self.assertTrue(all(b not in second_page for b in first_page))
-
-  def test_peek_with_bad_cursor(self):
-    self.put_many_builds(builder=dict(project='chromium', bucket='try'))
-    with self.assertRaises(errors.InvalidInputError):
-      service.peek(bucket_ids=['chromium/try'], start_cursor='abc')
-
-  def test_peek_without_buckets(self):
-    with self.assertRaises(errors.InvalidInputError):
-      service.peek(bucket_ids=[])
-
-  def test_peek_with_auth_error(self):
-    self.mock_no_perm(user.PERM_BUILDS_LIST)
-    build = self.classic_build(builder=dict(project='chromium', bucket='try'))
-    build.put()
-    with self.assertRaises(auth.AuthorizationError):
-      service.peek(bucket_ids=['chromium/try'])
-
-  def test_peek_does_not_return_leased_builds(self):
-    self.new_leased_build(builder=dict(project='chromium', bucket='try'))
-    builds, _ = service.peek(['chromium/try'])
-    self.assertFalse(builds)
-
-  def test_peek_stale_and_lease(self):
-    # This is a regression test for crbug.com/1191014
-    #
-    # The Go version of buildbucket didn't update the legacy status field, which
-    # resulted in peek returning builds which weren't actually eligible for
-    # leasing.
-    build = self.classic_build(status=common_pb2.CANCELED)
-    build.put()
-    build_id = build.key.id()
-
-    # start with a fresh Build
-    build = model.Build.get_by_id(build_id)
-
-    # apply ndb black magicks
-    build._clone_properties()  # decouples Build instance from Build._properties
-    build._properties['status'] = msgprop.EnumProperty(
-        model.BuildStatus, 'status'
-    )
-    build._properties['status']._code_name = 'status'
-    build._properties['status']._set_value(build, model.BuildStatus.SCHEDULED)
-
-    # disable pre_put_hook for this put()
-    normalPrePut = model.Build._pre_put_hook
-    try:
-      model.Build._pre_put_hook = lambda self: None
-      build.put()
-    finally:
-      model.Build._pre_put_hook = normalPrePut
-
-    # Now the build should show up in peek, even though it's canceled.
-    builds, _ = service.peek(bucket_ids=[build.bucket_id])
-    self.assertEqual(builds, [build])
-
-    # Lease will fix the build status as a side effect
-    success, build = service.lease(build_id)
-    self.assertFalse(success)
-
-    # So it no longer shows up in peek.
-    builds, _ = service.peek(bucket_ids=[build.bucket_id])
-    self.assertEqual(builds, [])
 
   #################################### LEASE ###################################
 

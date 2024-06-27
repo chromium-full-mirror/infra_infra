@@ -29,14 +29,6 @@ import user
 MAX_RETURN_BUILDS = 100
 DEFAULT_LEASE_DURATION = datetime.timedelta(minutes=1)
 
-# A cumlative counter of access denied errors in peek() method.
-# This metric exists because defining it on the buildbucket server is easier
-# than modifying Buildbot. It is very specific intentionally.
-PEEK_ACCESS_DENIED_ERROR_COUNTER = gae_ts_mon.CounterMetric(
-    'buildbucket/peek_access_denied_errors', 'Number of errors in peek API',
-    [gae_ts_mon.StringField('bucket')]
-)
-
 
 def validate_lease_key(lease_key):
   if lease_key is None:
@@ -79,66 +71,6 @@ def get_async(build_id):
   if not (yield user.has_perm_async(user.PERM_BUILDS_GET, build.bucket_id)):
     raise user.current_identity_cannot('view build %s', build.key.id())
   raise ndb.Return(build)
-
-
-def peek(bucket_ids, max_builds=None, start_cursor=None):
-  """Returns builds available for leasing in the specified |bucket_ids|.
-
-  Builds are sorted by creation time, oldest first.
-
-  Args:
-    bucket_ids (list of string): fetch only builds in any of |bucket_ids|.
-    max_builds (int): maximum number of builds to return. Defaults to 10.
-    start_cursor (string): a value of "next" cursor returned by previous
-      peek call. If not None, return next builds in the query.
-
-  Returns:
-    A tuple:
-      builds (list of Builds): available builds.
-      next_cursor (str): cursor for the next page.
-        None if there are no more builds.
-  """
-  if not bucket_ids:
-    raise errors.InvalidInputError('No buckets specified')
-  bucket_ids = sorted(set(bucket_ids))
-  search.check_acls_async(
-      bucket_ids, inc_metric=PEEK_ACCESS_DENIED_ERROR_COUNTER
-  ).get_result()
-  for bid in bucket_ids:
-    _reject_swarming_bucket(bid)
-  max_builds = search.fix_max_builds(max_builds)
-
-  # Prune any buckets that are paused.
-  bucket_states = _get_bucket_states(bucket_ids)
-  active_buckets = []
-  for b in bucket_ids:
-    if bucket_states[b].is_paused:  # pragma: no cover
-      logging.warning('Ignoring paused bucket: %s.', b)
-      continue
-    active_buckets.append(b)
-
-  # Short-circuit: if there are no remaining buckets to query, then we're done.
-  if not active_buckets:  # pragma: no cover
-    return ([], None)
-
-  q = model.Build.query(
-      model.Build.status_legacy == model.BuildStatus.SCHEDULED,
-      model.Build.is_leased == False,
-      model.Build.bucket_id.IN(active_buckets),
-  )
-  q = q.order(-model.Build.key)  # oldest first.
-
-  # Check once again locally because an ndb query may return an entity not
-  # satisfying the query.
-  def local_predicate(b):
-    return (
-        b.status_legacy == model.BuildStatus.SCHEDULED and not b.is_leased and
-        b.bucket_id in active_buckets
-    )
-
-  return search.fetch_page_async(
-      q, max_builds, start_cursor, predicate=local_predicate
-  ).get_result()
 
 
 def _get_leasable_build(build_id, perm):
@@ -250,25 +182,6 @@ def start(build_id, lease_key, url):
   if updated:
     events.on_build_started(build)
   return build
-
-
-def _get_bucket_states(bucket_ids):
-  """Returns the list of bucket states for all named buckets.
-
-  Args:
-    bucket_ids (list): A list of bucket id strings.
-      Assumed to have already been validated.
-
-  Returns (dict):
-    A map of bucket id to BucketState for that bucket.
-  """
-  # Get bucket keys and deduplicate.
-  default_states = [model.BucketState(id=b) for b in bucket_ids]
-  states = ndb.get_multi(state.key for state in default_states)
-  for i, state in enumerate(states):  # pragma: no cover
-    if not state:
-      states[i] = default_states[i]
-  return dict(zip(bucket_ids, states))
 
 
 @ndb.tasklet
@@ -530,14 +443,6 @@ def cancel_async(build_id, summary_markdown='', result_details=None):
     if updated:  # pragma: no branch
       events.on_build_completed(bundle.build)
   raise ndb.Return(bundle.build)
-
-
-def _reject_swarming_bucket(bucket_id):
-  config.validate_bucket_id(bucket_id)
-  _, cfg = config.get_bucket(bucket_id)
-  assert cfg, 'permission check should have failed'
-  if config.is_swarming_config(cfg):  # pragma: no cover
-    raise errors.InvalidInputError('Invalid operation on a Swarming bucket')
 
 
 def _fut_results(*futures):

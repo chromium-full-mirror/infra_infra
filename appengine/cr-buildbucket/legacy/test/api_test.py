@@ -428,24 +428,6 @@ class V1ApiTest(testing.EndpointsTestCase):
     self.assertEqual(res['builds'][0]['id'], '1')
     self.assertEqual(res['next_cursor'], 'the cursor')
 
-  ####### PEEK #################################################################
-
-  @mock.patch('service.peek', autospec=True)
-  def test_peek(self, peek):
-    build = test_util.build(id=1)
-    peek.return_value = ([build], 'the cursor')
-    req = {'bucket': ['luci.chromium.try']}
-    res = self.call_api('peek', req).json_body
-    peek.assert_called_once_with(
-        ['chromium/try'],
-        max_builds=None,
-        start_cursor=None,
-    )
-    self.assertEqual(len(res['builds']), 1)
-    peeked_build = res['builds'][0]
-    self.assertEqual(peeked_build['id'], '1')
-    self.assertEqual(res['next_cursor'], 'the cursor')
-
   ####### LEASE ################################################################
 
   @mock.patch('service.lease', autospec=True)

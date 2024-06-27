@@ -539,35 +539,6 @@ class BuildBucketApi(remote.Service):
         next_cursor=next_cursor,
     )
 
-  ####### PEEK #################################################################
-
-  PEEK_REQUEST_RESOURCE_CONTAINER = endpoints.ResourceContainer(
-      message_types.VoidMessage,
-      bucket=messages.StringField(1, repeated=True),
-      max_builds=messages.IntegerField(2, variant=messages.Variant.INT32),
-      start_cursor=messages.StringField(3),
-  )
-
-  @buildbucket_api_method(
-      PEEK_REQUEST_RESOURCE_CONTAINER,
-      SearchResponseMessage,
-      path='peek',
-      http_method='GET'
-  )
-  @auth.public
-  def peek(self, request):
-    """Returns available builds."""
-    assert isinstance(request.bucket, list)
-    builds, next_cursor = service.peek(
-        convert_bucket_list(request.bucket),
-        max_builds=request.max_builds,
-        start_cursor=request.start_cursor,
-    )
-    return self.SearchResponseMessage(
-        builds=builds_to_messages(builds),
-        next_cursor=next_cursor,
-    )
-
   ####### LEASE ################################################################
 
   class LeaseRequestBodyMessage(messages.Message):
