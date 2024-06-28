@@ -1,23 +1,23 @@
-python_version: "3.8"
+python_version: "3.11"
 
 # The default set of platforms vpython checks for does not yet include mac-arm64.
 # Setting `verify_pep425_tag` to the list of platforms we explicitly must support
 # allows us to ensure that vpython specs stay mac-arm64-friendly
 verify_pep425_tag: [
-    {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
-    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+    {python: "cp311", abi: "cp311", platform: "manylinux1_x86_64"},
+    {python: "cp311", abi: "cp311", platform: "linux_arm64"},
 
-    {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
-    {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
+    {python: "cp311", abi: "cp311", platform: "macosx_10_10_intel"},
+    {python: "cp311", abi: "cp311", platform: "macosx_11_0_arm64"},
 
-    {python: "cp38", abi: "cp38", platform: "win32"},
-    {python: "cp38", abi: "cp38", platform: "win_amd64"}
+    {python: "cp311", abi: "cp311", platform: "win32"},
+    {python: "cp311", abi: "cp311", platform: "win_amd64"}
 ]
 
 # Standalone wheels
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.52.0"
+  version: "version:1.61.0"
 >
 
 wheel: <
@@ -27,22 +27,22 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/httplib2-py3"
-  version: "version:0.19.1"
+  version: "version:0.22.0"
 >
 
 wheel: <
   name: "infra/python/wheels/mock-py3"
-  version: "version:4.0.3"
+  version: "version:5.1.0"
 >
 
 wheel: <
   name: "infra/python/wheels/pytz-py2_py3"
-  version: "version:2018.4"
+  version: "version:2024.1"
 >
 
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.8.0.chromium.3"
+  version: "version:5.9.8"
 >
 
 wheel: <
@@ -56,11 +56,15 @@ wheel: <
   version: "version:2.4.0"
 >
 
+# TODO: update this very old version to something recent.
+# However, it is a breaking change.
 wheel: <
   name: "infra/python/wheels/google-api-python-client-py3"
   version: "version:1.6.2"
 >
 
+# TODO: this library is deprecated and should be replaced
+# with google-auth and oauthlib.
 wheel: <
   name: "infra/python/wheels/oauth2client-py2_py3"
   version: "version:3.0.0"
@@ -81,6 +85,7 @@ wheel: <
   version: "version:2.16.2"
 >
 
+# TODO: update this to version 4.x, which is a breaking change
 wheel: <
   name: "infra/python/wheels/rsa-py2_py3"
   version: "version:3.4.2"
@@ -88,14 +93,15 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/pyasn1-py2_py3"
-  version: "version:0.4.8"
+  version: "version:0.5.1"
 >
 
 wheel: <
   name: "infra/python/wheels/pyasn1_modules-py2_py3"
-  version: "version:0.2.8"
+  version: "version:0.3.0"
 >
 
+# TODO: update to version 5.x, which is a breaking change
 wheel: <
   name: "infra/python/wheels/cachetools-py3"
   version: "version:4.2.2"
@@ -103,7 +109,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/pyparsing-py3"
-  version: "version:2.4.7"
+  version: "version:3.1.1"
 >
 
 # requests and its transitive dependencies
@@ -114,30 +120,33 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/charset_normalizer-py3"
-  version: "version:2.0.4"
+  version: "version:2.0.12"
 >
 
 wheel: <
-  name: "infra/python/wheels/chardet-py2_py3"
-  version: "version:4.0.0"
+  name: "infra/python/wheels/chardet-py3"
+  version: "version:5.2.0"
 >
 
 wheel: <
-  name: "infra/python/wheels/idna-py2_py3"
-  version: "version:2.10"
+  name: "infra/python/wheels/idna-py3"
+  version: "version:3.4"
 >
 
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
-  version: "version:1.26.6"
+  version: "version:1.26.16"
 >
 
 wheel: <
-  name: "infra/python/wheels/certifi-py2_py3"
-  version: "version:2021.5.30"
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2023.11.17"
 >
 
 # docker and its transitive dependencies
+# TODO: this is an extremely old version of docker which is not
+# tested upstream for compatibility with modern Python versions.
+# It should be updated, but there are breaking API changes.
 wheel: <
   name: "infra/python/wheels/docker-py2_py3"
   version: "version:2.7.0"
@@ -153,6 +162,10 @@ wheel: <
   version: "version:3.5.0.1"
 >
 
+# TODO: this is an extremely old version of websocket_client
+# which is not tested upstream for compatibility with modern
+# Python versions. It should be updated, but there are breaking
+# API changes.
 wheel: <
   name: "infra/python/wheels/websocket_client-py2_py3"
   version: "version:0.40.0"
@@ -160,7 +173,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/six-py2_py3"
-  version: "version:1.15.0"
+  version: "version:1.16.0"
 >
 
 # testing libraries
@@ -173,6 +186,6 @@ wheel: <
   version: "version:7.3.1"
 >
 wheel: <
-  name: "infra/python/wheels/argcomplete-py2_py3"
-  version: "version:1.12.2"
+  name: "infra/python/wheels/argcomplete-py3"
+  version: "version:3.4.0"
 >
