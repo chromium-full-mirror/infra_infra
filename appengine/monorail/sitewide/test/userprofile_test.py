@@ -108,6 +108,7 @@ class UserProfileTest(unittest.TestCase):
                             for project_view in value_to_test]
     six.assertCountEqual(self, expected_project_names, actual_project_names)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGatherPageData_RegularUserViewingOtherUserProjects(self):
     """A user can see the other users' live projects, but not archived ones."""
     mr = MakeReqInfo(

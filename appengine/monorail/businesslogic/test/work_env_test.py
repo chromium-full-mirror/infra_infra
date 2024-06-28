@@ -1053,6 +1053,7 @@ class WorkEnvTest(unittest.TestCase):
             project.project_id, 'mowgli>beef>rice', 'more favorite things', [],
             [], [])
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testDeleteComponentDef(self):
     project = self.services.project.TestAddProject(
         'Achilles', owner_ids=[self.user_1.user_id])
@@ -1088,6 +1089,7 @@ class WorkEnvTest(unittest.TestCase):
       with self.work_env as we:
         we.DeleteComponentDef(project.project_id, 404)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testDeleteComponentDef_SubcomponentFound(self):
     project = self.services.project.TestAddProject(
         'Achilles', owner_ids=[self.user_1.user_id])
@@ -1104,6 +1106,7 @@ class WorkEnvTest(unittest.TestCase):
       with self.work_env as we:
         we.DeleteComponentDef(project.project_id, chickens_comp.component_id)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testDeleteComponentDef_NonComponentAdminsCannotDelete(self):
     admin = self.services.user.TestAddUser('circe@test.com', 888)
     user = self.services.user.TestAddUser('patroclus@test.com', 999)
