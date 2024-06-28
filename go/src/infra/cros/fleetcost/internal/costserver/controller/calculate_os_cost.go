@@ -191,44 +191,154 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 }
 
 // getSharedCost gets the shared costs except for labstation costs.
+//
+// "-" indicates that the name is unchanged.
+// If two columns from a spreadsheet name map to the same thing, then they
+// should be summed when read into the cost service.
+//
+// Model V2 spreadsheet                 Cost indicator name
+// - server-acquisition                    -
+// - server-maintenance                    -
+// - network-infra-acquisition             -
+// - network-infra-maintenance             -
+// - quota-faft-opex                       -
+// - connectivity-and-misc-testbeds        -
+// - control-network-racks                 -
+// - connectivity-rack-setup               rack-setup
+// - connectivity-phase-deployments        phase-deployments
+// - connectivity-annual-maintenance       annual-maintenance
+// - quota-faft-rack-setup                 rack-setup
+// - quota-faft-phase-deployments          phase-deployments
+// - quota-faft-annual-maintenance         annual-maintenance
 func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
 	sharedCost := 0.0
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
-		ErrorHint:     "rack networking",
+		ErrorHint:     "server acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "rack-networking",
+		Board:         "server-acquisition",
 		Model:         "",
 		Sku:           "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost: rack networking").Err()
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
-		ErrorHint:     "drone server costs",
+		ErrorHint:     "server maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "drone-server",
+		Board:         "server-maintenance",
 		Model:         "",
 		Sku:           "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost: drone server costs").Err()
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
-		ErrorHint:     "rack setup costs",
+		ErrorHint:     "network infra acquisition",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "network-infra-acquisition",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "network infra maintenance",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "network-infra-maintenance",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "quota faft opex",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
+		Board:         "quota-faft-opex",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "connectivity and misc testbeds",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "connectivity-and-misc-testbeds",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "control network racks",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "control-network-racks",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "rack setup",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:         "rack-setup",
 		Model:         "",
 		Sku:           "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost: rack setup").Err()
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "phase deployments",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "phase-deployments",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
+	}
+	sharedCost += v
+
+	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "annual maintenance",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
+		Board:         "annual-maintenance",
+		Model:         "",
+		Sku:           "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return 0.0, errors.Annotate(err, "get shared cost").Err()
 	}
 	sharedCost += v
 

@@ -80,7 +80,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(rackNetworking),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:               "rack-networking",
+		Board:               "control-network-racks",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,
@@ -88,14 +88,14 @@ func TestTotalCostOfDUT(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(droneServer),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:               "drone-server",
+		Board:               "server-acquisition",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,
 	})
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(rackSetup),
-		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
+		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Board:               "rack-setup",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
@@ -137,7 +137,8 @@ func TestTotalCostOfDUT(t *testing.T) {
 	})
 
 	resp, err := tf.Frontend.GetCostResult(tf.Ctx, &fleetcostAPI.GetCostResultRequest{
-		Hostname: fakeufsdata.FakeOctopusDUTHostname,
+		Hostname:              fakeufsdata.FakeOctopusDUTHostname,
+		ForgiveMissingEntries: true,
 	})
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
