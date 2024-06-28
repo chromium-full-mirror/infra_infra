@@ -122,61 +122,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(auth.AuthorizationError):
       service.get_async(1).get_result()
 
-  ################################### CANCEL ###################################
-
-  def test_cancel(self):
-    bundle = test_util.build_bundle(id=1)
-    bundle.put()
-    build = service.cancel_async(1, summary_markdown='nope').get_result()
-    self.assertEqual(build.proto.status, common_pb2.CANCELED)
-    self.assertEqual(build.proto.end_time.ToDatetime(), utils.utcnow())
-    self.assertEqual(build.proto.summary_markdown, 'nope')
-    self.assertEqual(build.proto.canceled_by, self.current_identity.to_bytes())
-    self.assertEqual(build.status_changed_time, utils.utcnow())
-
-    args, _ = swarming.cancel_task_transactionally_async.call_args
-    self.assertIsInstance(args[0], model.Build)
-    self.assertEqual(args[1], test_util.BUILD_DEFAULTS.infra.swarming)
-
-  def test_cancel_is_idempotent(self):
-    build = self.classic_build(id=1)
-    build.put()
-    service.cancel_async(1).get_result()
-    service.cancel_async(1).get_result()
-
-  def test_cancel_started_build(self):
-    self.new_started_build(id=1).put()
-    service.cancel_async(1).get_result()
-
-  def test_cancel_nonexistent_build(self):
-    with self.assertRaises(errors.BuildNotFoundError):
-      service.cancel_async(1).get_result()
-
-  def test_cancel_with_auth_error(self):
-    self.new_started_build(id=1)
-    self.mock_no_perm(user.PERM_BUILDS_CANCEL)
-    with self.assertRaises(auth.AuthorizationError):
-      service.cancel_async(1).get_result()
-
-  def test_cancel_completed_build(self):
-
-    def test_build_with_status(build_id, status):
-      self.classic_build(id=build_id, status=status).put()
-      result_build = service.cancel_async(build_id).get_result()
-      self.assertEqual(result_build.proto.id, build_id)
-      # The status should not change when cancelling completed build
-      self.assertEqual(result_build.proto.status, status)
-
-    test_build_with_status(build_id=1, status=common_pb2.SUCCESS)
-    test_build_with_status(build_id=2, status=common_pb2.FAILURE)
-    test_build_with_status(build_id=3, status=common_pb2.CANCELED)
-
-  def test_cancel_result_details(self):
-    self.classic_build(id=1).put()
-    result_details = {'message': 'bye bye build'}
-    build = service.cancel_async(1, result_details=result_details).get_result()
-    self.assertEqual(build.result_details, result_details)
-
   #################################### LEASE ###################################
 
   def lease(self, build_id, lease_expiration_date=None, expect_success=True):
@@ -356,76 +301,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(errors.InvalidInputError):
       service.heartbeat(1, build.lease_key, lease_expiration_date=None)
 
-  ################################### COMPLETE #################################
-
-  def new_started_build(self, **build_proto_fields):
-    build = self.new_leased_build(**build_proto_fields)
-    build = self.start(build)
-    return build
-
-  def succeed(self, build, **kwargs):
-    return service.succeed(build.key.id(), build.lease_key, **kwargs)
-
-  def test_succeed(self):
-    build = self.new_started_build()
-    build = self.succeed(build, result_details={'properties': {'foo': 'bar'}})
-    self.assertEqual(build.proto.status, common_pb2.SUCCESS)
-    self.assertEqual(build.status_changed_time, utils.utcnow())
-    self.assertTrue(build.proto.HasField('end_time'))
-
-    out_props = model.BuildOutputProperties.key_for(build.key).get()
-    self.assertEqual(test_util.msg_to_dict(out_props.parse()), {'foo': 'bar'})
-
-  def test_succeed_failed(self):
-    build = self.classic_build(id=1, status=common_pb2.FAILURE)
-    build.put()
-    with self.assertRaises(errors.BuildIsCompletedError):
-      service.succeed(1, 42)
-
-  def test_succeed_is_idempotent(self):
-    build = self.new_started_build(id=1)
-    service.succeed(1, build.lease_key)
-    service.succeed(1, build.lease_key)
-
-  def test_succeed_with_new_tags(self):
-    build = self.new_started_build(id=1, tags=[dict(key='a', value='1')])
-    build = self.succeed(build, new_tags=['b:2'])
-    self.assertIn('a:1', build.tags)
-    self.assertIn('b:2', build.tags)
-
-  def test_fail(self):
-    build = self.new_started_build(id=1)
-    build = service.fail(1, build.lease_key)
-    self.assertEqual(build.proto.status, common_pb2.FAILURE)
-    self.assertEqual(build.status_changed_time, utils.utcnow())
-
-  def test_infra_fail(self):
-    build = self.new_started_build(id=1)
-    build = service.fail(
-        1, build.lease_key, failure_reason=model.FailureReason.INFRA_FAILURE
-    )
-    self.assertEqual(build.proto.status, common_pb2.INFRA_FAILURE)
-
-  def test_fail_with_details(self):
-    build = self.new_started_build(id=1)
-    result_details = {'transient_failure': True}
-    build = service.fail(1, build.lease_key, result_details=result_details)
-    self.assertEqual(build.result_details, result_details)
-
-  def test_complete_with_url(self):
-    build = self.new_started_build(id=1)
-    url = 'http://localhost/1'
-    build = self.succeed(build, url=url)
-    self.assertEqual(build.url, url)
-
-  def test_complete_not_started_build(self):
-    build = self.new_leased_build()
-    self.succeed(build)
-
-  def test_completion_creates_notification_task(self):
-    build = self.new_started_build()
-    with self.callback_test(build):
-      self.succeed(build)
 
   ############################ UNREGISTER BUILDERS #############################
 

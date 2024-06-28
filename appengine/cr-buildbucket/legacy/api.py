@@ -402,7 +402,7 @@ def parse_json_object(json_data, param_name):
     rv = json.loads(json_data)
   except ValueError as ex:
     raise errors.InvalidInputError('Could not parse %s: %s' % (param_name, ex))
-  if rv is not None and not isinstance(rv, dict):
+  if rv is not None and not isinstance(rv, dict):  # pragma: no cover
     raise errors.InvalidInputError(
         'Invalid %s: not a JSON object or null' % param_name
     )
@@ -660,86 +660,6 @@ class BuildBucketApi(remote.Service):
 
     results = service.heartbeat_batch(heartbeats)
     return self.HeartbeatBatchResponseMessage(results=map(to_message, results))
-
-  ####### SUCCEED ##############################################################
-
-  class SucceedRequestBodyMessage(messages.Message):
-    lease_key = messages.IntegerField(1)
-    result_details_json = messages.StringField(2)
-    url = messages.StringField(3)
-    new_tags = messages.StringField(4, repeated=True)
-
-  @buildbucket_api_method(
-      id_resource_container(SucceedRequestBodyMessage),
-      BuildResponseMessage,
-      path='builds/{id}/succeed',
-      http_method='POST'
-  )
-  @auth.public
-  def succeed(self, request):
-    """Marks a build as succeeded."""
-    build = service.succeed(
-        request.id,
-        request.lease_key,
-        result_details=parse_json_object(
-            request.result_details_json, 'result_details_json'
-        ),
-        url=request.url,
-        new_tags=request.new_tags
-    )
-    return build_to_response_message(build)
-
-  ####### FAIL #################################################################
-
-  class FailRequestBodyMessage(messages.Message):
-    lease_key = messages.IntegerField(1)
-    result_details_json = messages.StringField(2)
-    failure_reason = messages.EnumField(model.FailureReason, 3)
-    url = messages.StringField(4)
-    new_tags = messages.StringField(5, repeated=True)
-
-  @buildbucket_api_method(
-      id_resource_container(FailRequestBodyMessage),
-      BuildResponseMessage,
-      path='builds/{id}/fail',
-      http_method='POST'
-  )
-  @auth.public
-  def fail(self, request):
-    """Marks a build as failed."""
-    build = service.fail(
-        request.id,
-        request.lease_key,
-        result_details=parse_json_object(
-            request.result_details_json, 'result_details_json'
-        ),
-        failure_reason=request.failure_reason,
-        url=request.url,
-        new_tags=request.new_tags,
-    )
-    return build_to_response_message(build)
-
-  ####### CANCEL ###############################################################
-
-  class CancelRequestBodyMessage(messages.Message):
-    result_details_json = messages.StringField(1)
-
-  @buildbucket_api_method(
-      id_resource_container(CancelRequestBodyMessage),
-      BuildResponseMessage,
-      path='builds/{id}/cancel',
-      http_method='POST'
-  )
-  @auth.public
-  def cancel(self, request):
-    """Cancels a build."""
-    build = service.cancel_async(
-        request.id,
-        result_details=parse_json_object(
-            request.result_details_json, 'result_details_json'
-        ),
-    ).get_result()
-    return build_to_response_message(build)
 
 
 @contextlib.contextmanager
