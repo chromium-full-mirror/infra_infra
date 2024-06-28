@@ -6,7 +6,6 @@ package cron
 
 import (
 	"context"
-	"fmt"
 
 	"go.chromium.org/luci/common/logging"
 
@@ -33,7 +32,7 @@ func Cleanup(ctx context.Context, r *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("lses: %v\n", len(lses))
+	logging.Infof(ctx, "lses: %v\n", len(lses))
 	duts := m.GetExcludedDUTs(ctx, lses, cs)
 	logging.Infof(ctx, "length: %v, excluded DUTs: %v \n", len(duts), duts)
 	err = m.RunBatchRollback(ctx, duts)
