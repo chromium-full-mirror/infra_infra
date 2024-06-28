@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/cfgclient"
 
 	"infra/cros/botsregulator/internal/clients"
@@ -34,6 +35,7 @@ type migrationState struct {
 }
 
 type migrator struct {
+	cfgClient config.Interface
 	ufsClient clients.UFSClient
 }
 
@@ -43,7 +45,9 @@ func NewMigrator(ctx context.Context, r *regulator.RegulatorOptions) (*migrator,
 	if err != nil {
 		return nil, err
 	}
+	cc := clients.NewConfigClient(ctx)
 	return &migrator{
+		cfgClient: cc,
 		ufsClient: uc,
 	}, nil
 }
@@ -52,9 +56,13 @@ func NewMigrator(ctx context.Context, r *regulator.RegulatorOptions) (*migrator,
 func (m *migrator) GetMigrationConfig(ctx context.Context) (*protos.Migration, error) {
 	logging.Infof(ctx, "fetching migration file: %s \n", migrationFile)
 	out := &protos.Migration{}
-	err := cfgclient.Get(ctx, "services/${appid}", migrationFile, cfgclient.ProtoText(out), nil)
+	cfg, err := m.cfgClient.GetConfig(ctx, "services/${appid}", migrationFile, false)
 	if err != nil {
 		return nil, errors.Annotate(err, "could not fetch migration file").Err()
+	}
+	dest := cfgclient.ProtoText(out)
+	if err := dest(cfg.Content); err != nil {
+		return nil, errors.Annotate(err, "could not parse migration file").Err()
 	}
 	return out, nil
 }
