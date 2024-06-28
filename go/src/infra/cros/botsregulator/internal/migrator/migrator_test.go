@@ -278,7 +278,7 @@ func TestComputeBoardModelToState(t *testing.T) {
 	})
 }
 
-func TestComputeModelState(t *testing.T) {
+func TestComputeNextModelState(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
@@ -475,6 +475,17 @@ func TestComputeNextMigrationSate(t *testing.T) {
 					"dut-90",
 				},
 			},
+			"board-3/model-7": {
+				Cloudbots: []string{
+					"dut-91",
+					"dut-92",
+				},
+				Drone: []string{
+					"dut-93",
+					"dut-94",
+					"dut-95",
+				},
+			},
 		}
 		cs := &configSearchable{
 			minCloudbotsPercentage:     1,
@@ -496,6 +507,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				"board-2/*":       90,
 				"board-1/model-1": 0,
 				"board-3/model-3": 58,
+				"*/model-7":       100,
 			},
 		}
 		got := m.ComputeNextMigrationState(context.Background(), bms, cs)
@@ -510,6 +522,9 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				"dut-76",
 				"dut-77",
 				"dut-78",
+				"dut-93",
+				"dut-94",
+				"dut-95",
 			},
 			Drone: []string{
 				"dut-1",
@@ -529,6 +544,23 @@ func TestComputeNextMigrationSate(t *testing.T) {
 		if diff := cmp.Diff(want, got, trans); diff != "" {
 			t.Errorf("mismatch (-want +got):\n%s", diff)
 		}
+	})
+
+	t.Run("Should panic if migrationState keys does no contain ONE '/'", func(t *testing.T) {
+		bms := map[string]*migrationState{
+			"board-1model-1": {
+				Cloudbots: []string{
+					"dut-1",
+				},
+				Drone: []string{
+					"dut-3",
+				},
+			},
+		}
+		defer func() { _ = recover() }()
+		m.ComputeNextMigrationState(context.Background(), bms, &configSearchable{})
+		// Never reaches if computeNextMigrationState panics.
+		t.Errorf("migrationState keys should always contain 1 '/'")
 	})
 }
 
@@ -584,7 +616,6 @@ func TestGetExcludedDUTs(t *testing.T) {
 		excludeDUTs: []*regexp.Regexp{
 			regexp.MustCompile("dut-1"),
 			regexp.MustCompile("dut-2"),
-			regexp.MustCompile("dut-4"),
 		},
 		excludePools: map[string]struct{}{
 			"pool-1": {},
