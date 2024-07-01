@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ func init() {
 		Prod = Dev
 		DefaultPRPCOptions = &prpc.Options{
 			Insecure:  true,
-			UserAgent: fmt.Sprintf("mallet/%s", VersionNumber),
+			UserAgent: fmt.Sprintf("paris/%s", VersionNumber),
 		}
 	}
 }

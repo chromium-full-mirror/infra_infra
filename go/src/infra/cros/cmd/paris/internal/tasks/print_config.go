@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/cmd/paris/internal/site"
 	"infra/cros/recovery"
 	"infra/cros/recovery/config/tree"
 	"infra/cros/recovery/tlw"

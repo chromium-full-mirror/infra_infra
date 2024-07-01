@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,15 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/mallet/internal/cmd/meta"
-	"infra/cmd/mallet/internal/cmd/tasks"
-	"infra/cmd/mallet/internal/site"
+	"infra/cros/cmd/paris/internal/meta"
+	"infra/cros/cmd/paris/internal/site"
+	"infra/cros/cmd/paris/internal/tasks"
 )
 
-func getApplication() *cli.Application {
+func application() *cli.Application {
 	return &cli.Application{
-		Name:  "mallet",
-		Title: `mallet command line tool`,
+		Name:  "paris",
+		Title: `paris command line tool`,
 		Context: func(ctx context.Context) context.Context {
 			return gologger.StdConfig.Use(ctx)
 		},
@@ -36,24 +36,12 @@ func getApplication() *cli.Application {
 			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			subcommands.Section("Experiments"),
-			tasks.Recovery,
-			tasks.CustomProvision,
-			tasks.DownloadToUsbDrive,
-			tasks.DeepRepair,
-			tasks.EthernetHook,
-			tasks.RecoveryHWID,
-			tasks.RepairCBI,
-			tasks.ParseStableVersion,
-			tasks.BatteryCutOff,
-			tasks.SerialConsole,
-			tasks.TestStateChange,
-			tasks.ProvisionBtpeers,
-			tasks.Labqual,
-			tasks.SetFwTarget,
+			tasks.LocalRecovery,
+			tasks.RecoveryConfig,
 		},
 	}
 }
 
 func main() {
-	os.Exit(subcommands.Run(getApplication(), nil))
+	os.Exit(subcommands.Run(application(), nil))
 }

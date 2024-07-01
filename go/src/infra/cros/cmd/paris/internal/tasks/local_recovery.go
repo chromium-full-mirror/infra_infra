@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,10 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	commonFlags "infra/cmd/mallet/internal/cmd/cmdlib"
-	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/cmd/labpack/logger"
+	commonFlags "infra/cros/cmd/paris/internal/cmdlib"
+	"infra/cros/cmd/paris/internal/site"
 	kclient "infra/cros/karte/client"
 	"infra/cros/recovery"
 	"infra/cros/recovery/dev"
@@ -40,7 +40,7 @@ import (
 
 // defaultDUTSSHKeyPathLocal returns the recommended local DUT ssh keyfile path.
 //
-// It's the default DUT ssh key path that mallet will use.
+// It's the default DUT ssh key path that paris will use.
 // It's in ChromiumOS internal manifest, running `repo sync` will automatically get this partner key downloaded.
 func defaultDUTSSHKeyPathLocal() string {
 	home, err := os.UserHomeDir()
