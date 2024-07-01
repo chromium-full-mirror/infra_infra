@@ -466,31 +466,6 @@ class V1ApiTest(testing.EndpointsTestCase):
     }
     self.expect_error('lease', req, 'CANNOT_LEASE_BUILD')
 
-  ####### START ################################################################
-
-  @mock.patch('service.start', autospec=True)
-  def test_start(self, start):
-    build = test_util.build(id=1)
-    start.return_value = build
-    req = {
-        'id': '1',
-        'lease_key': 42,
-        'url': build.url,
-    }
-    res = self.call_api('start', req).json_body
-    start.assert_called_once_with(1, req['lease_key'], req['url'])
-    self.assertEqual(res['build']['id'], '1')
-    self.assertEqual(res['build']['url'], req['url'])
-
-  @mock.patch('service.start', autospec=True)
-  def test_start_completed_build(self, start):
-    start.side_effect = errors.BuildIsCompletedError
-    req = {
-        'id': '1',
-        'lease_key': 42,
-    }
-    res = self.call_api('start', req).json_body
-    self.assertEqual(res['error']['reason'], 'BUILD_IS_COMPLETED')
 
   ####### ERRORS ###############################################################
 

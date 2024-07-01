@@ -6,47 +6,19 @@ import datetime
 import logging
 import urlparse
 
-from google.appengine.api import taskqueue
-from google.appengine.api import modules
-from google.appengine.ext import deferred
 from google.appengine.ext import ndb
-from google.protobuf import struct_pb2
 
 from components import auth
 from components import utils
-import gae_ts_mon
 
 from go.chromium.org.luci.buildbucket.proto import common_pb2
-import buildtags
-import config
 import errors
 import events
 import model
-import search
-import swarming
 import user
 
 MAX_RETURN_BUILDS = 100
 DEFAULT_LEASE_DURATION = datetime.timedelta(minutes=1)
-
-
-def validate_lease_key(lease_key):
-  if lease_key is None:
-    raise errors.InvalidInputError('Lease key is not provided')
-
-
-def validate_url(url):
-  if url is None:
-    return
-  if not isinstance(url, basestring):
-    raise errors.InvalidInputError('url must be string')
-  parsed = urlparse.urlparse(url)
-  if not parsed.netloc:
-    raise errors.InvalidInputError('url must be absolute')
-  if parsed.scheme.lower() not in ('http', 'https'):
-    raise errors.InvalidInputError(
-        'Unexpected url scheme: "%s"' % parsed.scheme
-    )
 
 
 def unregister_builders():
@@ -128,61 +100,3 @@ def lease(build_id, lease_expiration_date=None):
   if updated:
     events.on_build_leased(build)
   return updated, build
-
-
-def _check_lease(build, lease_key):
-  if lease_key != build.lease_key:
-    raise errors.LeaseExpiredError(
-        'lease_key for build %s is incorrect. Your lease might be expired.' %
-        build.key.id()
-    )
-
-
-def start(build_id, lease_key, url):
-  """Marks build as STARTED. Idempotent.
-
-  Args:
-    build_id: id of the started build.
-    lease_key: current lease key.
-    url (str): a URL to a build-system-specific build, viewable by a human.
-
-  Returns:
-    The updated Build.
-  """
-  validate_lease_key(lease_key)
-  validate_url(url)
-
-  @ndb.transactional
-  def txn():
-    build = _get_leasable_build(build_id, user.PERM_BUILDS_LEASE)
-
-    if build.proto.status == common_pb2.STARTED:
-      if build.url == url:
-        return False, build
-      build.url = url
-      build.put()
-      return True, build
-
-    if build.is_ended:
-      raise errors.BuildIsCompletedError('Cannot start a completed build')
-
-    assert build.proto.status == common_pb2.SCHEDULED
-
-    _check_lease(build, lease_key)
-
-    now = utils.utcnow()
-    build.proto.start_time.FromDatetime(now)
-    build.proto.status = common_pb2.STARTED
-    build.status_changed_time = now
-    build.url = url
-    _fut_results(build.put_async(), events.on_build_starting_async(build))
-    return True, build
-
-  updated, build = txn()
-  if updated:
-    events.on_build_started(build)
-  return build
-
-
-def _fut_results(*futures):
-  return [f.get_result() for f in futures]

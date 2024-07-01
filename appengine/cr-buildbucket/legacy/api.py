@@ -571,24 +571,6 @@ class BuildBucketApi(remote.Service):
     assert build.lease_key is not None
     return build_to_response_message(build, include_lease_key=True)
 
-  ####### START ################################################################
-
-  class StartRequestBodyMessage(messages.Message):
-    lease_key = messages.IntegerField(1)
-    url = messages.StringField(2)
-
-  @buildbucket_api_method(
-      id_resource_container(StartRequestBodyMessage),
-      BuildResponseMessage,
-      path='builds/{id}/start',
-      http_method='POST'
-  )
-  @auth.public
-  def start(self, request):
-    """Marks a build as started."""
-    build = service.start(request.id, request.lease_key, request.url)
-    return build_to_response_message(build)
-
 @contextlib.contextmanager
 def _wrap_validation_error():
   """Converts validation.Error to errors.InvalidInputError."""
