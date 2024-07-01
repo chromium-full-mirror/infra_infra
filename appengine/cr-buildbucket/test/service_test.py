@@ -240,67 +240,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.callback_test(build):
       self.start(build)
 
-  ################################## HEARTBEAT #################################
-
-  def test_heartbeat(self):
-    build = self.new_leased_build(id=1)
-    new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
-    build = service.heartbeat(
-        1, build.lease_key, lease_expiration_date=new_expiration_date
-    )
-    self.assertEqual(build.lease_expiration_date, new_expiration_date)
-
-  def test_heartbeat_completed(self):
-    self.classic_build(id=1, status=common_pb2.CANCELED).put()
-    new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
-    with self.assertRaises(errors.BuildIsCompletedError):
-      service.heartbeat(1, 0, lease_expiration_date=new_expiration_date)
-
-  def test_heartbeat_timeout(self):
-    build = self.classic_build(
-        id=1,
-        status=common_pb2.INFRA_FAILURE,
-        status_details=dict(timeout=dict()),
-    )
-    build.put()
-
-    new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
-    exc_regex = (
-        'Build was marked as timed out '
-        'because it did not complete for 5 days'
-    )
-    with self.assertRaisesRegexp(errors.BuildIsCompletedError, exc_regex):
-      service.heartbeat(1, 0, lease_expiration_date=new_expiration_date)
-
-  def test_heartbeat_batch(self):
-    build = self.new_leased_build(id=1)
-    new_expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
-    results = service.heartbeat_batch([
-        {
-            'build_id': 1,
-            'lease_key': build.lease_key,
-            'lease_expiration_date': new_expiration_date,
-        },
-        {
-            'build_id': 2,
-            'lease_key': 42,
-            'lease_expiration_date': new_expiration_date,
-        },
-    ])
-
-    self.assertEqual(len(results), 2)
-
-    build = build.key.get()
-    self.assertEqual(results[0], (1, build, None))
-
-    self.assertIsNone(results[1][1])
-    self.assertTrue(isinstance(results[1][2], errors.BuildNotFoundError))
-
-  def test_heartbeat_without_expiration_date(self):
-    build = self.new_leased_build(id=1)
-    with self.assertRaises(errors.InvalidInputError):
-      service.heartbeat(1, build.lease_key, lease_expiration_date=None)
-
 
   ############################ UNREGISTER BUILDERS #############################
 
