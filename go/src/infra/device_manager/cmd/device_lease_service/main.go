@@ -107,6 +107,10 @@ func main() {
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
 			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
 		})
+		cron.RegisterHandler("expire-leases", func(ctx context.Context) error {
+			return jobs.ExpireLeases(ctx, deviceLeaseServer.ServiceClients)
+		})
+
 		logging.Debugf(srv.Context, "main: initialization finished")
 
 		return nil
