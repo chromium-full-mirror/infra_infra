@@ -13,7 +13,9 @@ import (
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
@@ -61,7 +63,16 @@ func (c *changelogRun) innerRun(a subcommands.Application, args []string, env su
 		return fmt.Errorf("Must specify a key for listing")
 	}
 
-	client, err := bigquery.NewClient(ctx, "unified-fleet-system")
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return err
+	}
+
+	cl, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
+	if err != nil {
+		return err
+	}
+	client, err := bigquery.NewClient(ctx, "unified-fleet-system", option.WithHTTPClient(cl))
 	if err != nil {
 		return err
 	}
@@ -89,7 +100,7 @@ func queryChangelog(ctx context.Context, client *bigquery.Client, key string, li
 	it, err := q.Read(ctx)
 	if err != nil {
 		fmt.Println(q)
-		return nil, err
+		return nil, fmt.Errorf("Failed to query BQ. %w", err)
 	}
 	log := make([]*changelog, 0, limit)
 	for {

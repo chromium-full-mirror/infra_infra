@@ -182,7 +182,7 @@ func Contains(arr []string, str string) bool {
 }
 
 // DefaultAuthScopes is the default scopes for shivas login
-var DefaultAuthScopes = []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets"}
+var DefaultAuthScopes = []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/cloud-platform"}
 
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
