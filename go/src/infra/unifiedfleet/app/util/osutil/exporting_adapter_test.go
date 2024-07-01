@@ -661,6 +661,7 @@ common {
 			pasit_components: "MONITOR-1"
 			pasit_components: "MONITOR-2"
 			pasit_components: "DOCKING_STATION-1"
+			amt_manager_state: UNKNOWN
 		}
 		phase: PHASE_DVT
 		platform: "coral"
@@ -770,6 +771,7 @@ common {
 			chameleon_state: WORKING
 			hmr_state: UNKNOWN
 			audio_latency_toolkit_state: WORKING
+			amt_manager_state: UNKNOWN
 		}
 		platform:""
 		test_coverage_hints {

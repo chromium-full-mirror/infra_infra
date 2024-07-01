@@ -633,6 +633,7 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	p.PeripheralBtpeerState = setPeripheralState(s.GetPeripheralBtpeerState())
 	p.HmrState = setPeripheralState(s.GetHmrState())
 	p.AudioLatencyToolkitState = setPeripheralState(s.GetAudioLatencyToolkitState())
+	p.AmtManagerState = setPeripheralState(s.GetAmtManagerState())
 
 	if n := s.GetWorkingBluetoothBtpeer(); n > 0 {
 		p.WorkingBluetoothBtpeer = &n
