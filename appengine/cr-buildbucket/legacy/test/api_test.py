@@ -428,44 +428,6 @@ class V1ApiTest(testing.EndpointsTestCase):
     self.assertEqual(res['builds'][0]['id'], '1')
     self.assertEqual(res['next_cursor'], 'the cursor')
 
-  ####### LEASE ################################################################
-
-  @mock.patch('service.lease', autospec=True)
-  def test_lease(self, lease):
-    build = test_util.build(id=1)
-    build.lease_expiration_date = self.future_date
-    build.lease_key = 42
-    lease.return_value = (True, build)
-
-    req = {
-        'id': '1',
-        'lease_expiration_ts': self.future_ts,
-    }
-    res = self.call_api('lease', req).json_body
-    lease.assert_called_once_with(1, lease_expiration_date=self.future_date)
-    self.assertIsNone(res.get('error'))
-    self.assertEqual(res['build']['id'], '1')
-    self.assertEqual(res['build']['lease_key'], str(build.lease_key))
-    self.assertEqual(
-        res['build']['lease_expiration_ts'], req['lease_expiration_ts']
-    )
-
-  def test_lease_with_negative_expiration_date(self):
-    req = {
-        'id': '1',
-        'lease_expiration_ts': 242894728472423847289472398,
-    }
-    self.expect_error('lease', req, 'INVALID_INPUT')
-
-  @mock.patch('service.lease', autospec=True)
-  def test_lease_unsuccessful(self, lease):
-    lease.return_value = (False, test_util.build(id=1))
-    req = {
-        'id': '1',
-        'lease_expiration_ts': self.future_ts,
-    }
-    self.expect_error('lease', req, 'CANNOT_LEASE_BUILD')
-
 
   ####### ERRORS ###############################################################
 

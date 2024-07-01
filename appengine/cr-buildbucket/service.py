@@ -8,12 +8,8 @@ import urlparse
 
 from google.appengine.ext import ndb
 
-from components import auth
 from components import utils
 
-from go.chromium.org.luci.buildbucket.proto import common_pb2
-import errors
-import events
 import model
 import user
 
@@ -43,60 +39,3 @@ def get_async(build_id):
   if not (yield user.has_perm_async(user.PERM_BUILDS_GET, build.bucket_id)):
     raise user.current_identity_cannot('view build %s', build.key.id())
   raise ndb.Return(build)
-
-
-def _get_leasable_build(build_id, perm):
-  assert perm in (user.PERM_BUILDS_LEASE, user.PERM_BUILDS_RESET), perm
-  build = model.Build.get_by_id(build_id)
-  if build is None:
-    raise errors.BuildNotFoundError()
-  if not user.has_perm(perm, build.bucket_id):
-    action = 'reset' if perm == user.PERM_BUILDS_RESET else 'lease'
-    raise user.current_identity_cannot('%s build %s', action, build.key.id())
-  if build.is_luci:
-    raise errors.InvalidInputError('cannot lease a swarmbucket build')
-  return build
-
-
-def lease(build_id, lease_expiration_date=None):
-  """Leases the build, makes it unavailable for the leasing.
-
-  Changes lease_key to a different value.
-
-  After the lease expires, a cron task will make the build leasable again.
-
-  Args:
-    build_id (int): build id.
-    lease_expiration_date (datetime.datetime): lease expiration date.
-      Defaults to 10 seconds from now.
-
-  Returns:
-    Tuple:
-      success (bool): True if the build was leased
-      build (ndb.Build)
-  """
-  errors.validate_lease_expiration_date(lease_expiration_date)
-  if lease_expiration_date is None:
-    lease_expiration_date = utils.utcnow() + DEFAULT_LEASE_DURATION
-
-  @ndb.transactional
-  def try_lease():
-    build = _get_leasable_build(build_id, user.PERM_BUILDS_LEASE)
-
-    ok = False
-    if not (build.proto.status != common_pb2.SCHEDULED or build.is_leased):
-      ok = True
-      build.lease_expiration_date = lease_expiration_date
-      build.regenerate_lease_key()
-      build.leasee = auth.get_current_identity()
-      build.never_leased = False
-
-    # we do a put() unconditionally so that the legacy status fields can
-    # be updated in the pre-put hooks.
-    build.put()
-    return ok, build
-
-  updated, build = try_lease()
-  if updated:
-    events.on_build_leased(build)
-  return updated, build

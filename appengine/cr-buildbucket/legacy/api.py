@@ -414,7 +414,7 @@ def parse_datetime(timestamp):
     return None
   try:
     return utils.timestamp_to_datetime(timestamp)
-  except OverflowError:
+  except OverflowError:  # pragma: no cover
     raise errors.InvalidInputError('Could not parse timestamp: %s' % timestamp)
 
 
@@ -538,38 +538,6 @@ class BuildBucketApi(remote.Service):
         builds=builds_to_messages(builds),
         next_cursor=next_cursor,
     )
-
-  ####### LEASE ################################################################
-
-  class LeaseRequestBodyMessage(messages.Message):
-    lease_expiration_ts = messages.IntegerField(1)
-
-  @buildbucket_api_method(
-      id_resource_container(LeaseRequestBodyMessage),
-      BuildResponseMessage,
-      path='builds/{id}/lease',
-      http_method='POST'
-  )
-  @auth.public
-  def lease(self, request):
-    """Leases a build.
-
-    Response may contain an error.
-    """
-    success, build = service.lease(
-        request.id,
-        lease_expiration_date=parse_datetime(request.lease_expiration_ts),
-    )
-    if not success:
-      return BuildResponseMessage(
-          error=ErrorMessage(
-              message='Could not lease build',
-              reason=errors.LegacyReason.CANNOT_LEASE_BUILD,
-          )
-      )
-
-    assert build.lease_key is not None
-    return build_to_response_message(build, include_lease_key=True)
 
 @contextlib.contextmanager
 def _wrap_validation_error():

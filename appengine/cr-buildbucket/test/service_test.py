@@ -122,58 +122,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     with self.assertRaises(auth.AuthorizationError):
       service.get_async(1).get_result()
 
-  #################################### LEASE ###################################
-
-  def lease(self, build_id, lease_expiration_date=None, expect_success=True):
-    success, build = service.lease(
-        build_id,
-        lease_expiration_date=lease_expiration_date,
-    )
-    self.assertEqual(success, expect_success)
-    return build
-
-  def new_leased_build(self, **build_proto_fields):
-    build = self.classic_build(**build_proto_fields)
-    build.put()
-    return self.lease(build.key.id())
-
-  def test_lease(self):
-    expiration_date = utils.utcnow() + datetime.timedelta(minutes=1)
-    self.classic_build(id=1).put()
-    build = self.lease(1, lease_expiration_date=expiration_date)
-    self.assertTrue(build.is_leased)
-    self.assertGreater(build.lease_expiration_date, utils.utcnow())
-    self.assertEqual(build.leasee, self.current_identity)
-
-  def test_lease_build_with_auth_error(self):
-    self.mock_no_perm(user.PERM_BUILDS_LEASE)
-    self.classic_build(id=1).put()
-    with self.assertRaises(auth.AuthorizationError):
-      self.lease(1)
-
-  def test_cannot_lease_a_leased_build(self):
-    self.new_leased_build(id=1)
-    build = ndb.Key('Build', 1).get()
-    self.lease(1, expect_success=False)
-    after_build = ndb.Key('Build', 1).get()
-    # make sure the NACK lease didn't change the build.
-    self.assertEqual(build, after_build)
-
-  def test_cannot_lease_a_nonexistent_build(self):
-    with self.assertRaises(errors.BuildNotFoundError):
-      service.lease(build_id=42)
-
-  def test_cannot_lease_completed_build(self):
-    build = self.classic_build(id=1, status=common_pb2.SUCCESS)
-    build.put()
-    self.lease(1, expect_success=False)
-
-  def test_cannot_lease_luci_build(self):
-    build = test_util.build(id=1)
-    build.put()
-    with self.assertRaises(errors.InvalidInputError):
-      self.lease(1)
-
 
   ############################ UNREGISTER BUILDERS #############################
 
