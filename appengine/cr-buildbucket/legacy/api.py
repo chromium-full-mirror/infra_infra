@@ -17,7 +17,6 @@ import endpoints
 
 from components import auth
 from components.config import validation as config_validation
-from components import protoutil
 from components import utils
 import gae_ts_mon
 
@@ -59,7 +58,9 @@ class PubSubCallbackMessage(messages.Message):
   auth_token = messages.StringField(3)
 
 
-def pubsub_callback_to_notification_config(pubsub_callback, notify):
+def pubsub_callback_to_notification_config(
+    pubsub_callback, notify
+):  # pragma: no cover
   """Converts PubSubCallbackMessage to NotificationConfig.
 
   Ignores auth_token.
@@ -84,7 +85,7 @@ class BuildResponseMessage(messages.Message):
   error = messages.MessageField(ErrorMessage, 2)
 
 
-def parse_v1_tags(v1_tags):
+def parse_v1_tags(v1_tags):  # pragma: no cover
   """Parses V1 tags.
 
   Returns a tuple of:
@@ -107,7 +108,7 @@ def parse_v1_tags(v1_tags):
     if key == buildtags.BUILDSET_KEY:
       commit = buildtags.parse_gitiles_commit_buildset(value)
       if commit:
-        if gitiles_commit:  # pragma: no cover
+        if gitiles_commit:
           raise errors.InvalidInputError('multiple gitiles commit')
         gitiles_commit = commit
         continue
@@ -168,7 +169,7 @@ def validate_known_build_parameters(params):
       bad('unrecognized keys in swarming param: %r', swarming.keys())
 
   properties = params.get('properties')
-  if properties:
+  if properties:  # pragma: no cover
     for k, v in sorted(properties.iteritems()):
       with ctx.prefix('property %r:', k):
         swarmingcfg.validate_recipe_property(k, v, ctx)
@@ -194,7 +195,7 @@ def put_request_message_to_build_request(put_request, well_known_experiments):
 
   # Read properties. Remove them from parameters.
   props = parameters.pop(api_common.PROPERTIES_PARAMETER, None)
-  if props is not None and not isinstance(props, dict):
+  if props is not None and not isinstance(props, dict):  # pragma: no cover
     raise errors.InvalidInputError(
         '"properties" parameter must be a JSON object or null'
     )
@@ -236,13 +237,13 @@ def put_request_message_to_build_request(put_request, well_known_experiments):
   # Parse tags. Extract gitiles commit and gerrit changes.
   tags, gitiles_commit, gerrit_changes = parse_v1_tags(put_request.tags)
   sbr.tags.extend(tags)
-  if gitiles_commit:
+  if gitiles_commit:  # pragma: no cover
     sbr.gitiles_commit.CopyFrom(gitiles_commit)
 
   # Gerrit changes explicitly passed via "gerrit_changes" parameter win.
   gerrit_change_list = parameters.pop('gerrit_changes', None)
-  if gerrit_change_list is not None:
-    if not isinstance(gerrit_change_list, list):  # pragma: no cover
+  if gerrit_change_list is not None:  # pragma: no cover
+    if not isinstance(gerrit_change_list, list):
       raise errors.InvalidInputError('gerrit_changes must be a list')
     try:
       gerrit_changes = [
@@ -267,12 +268,13 @@ def put_request_message_to_build_request(put_request, well_known_experiments):
   # Populate Gerrit project from patch_project property.
   # V2 API users will have to provide this.
   patch_project = props.get('patch_project')
-  if len(sbr.gerrit_changes) == 1 and isinstance(patch_project, basestring):
+  if len(sbr.gerrit_changes) == 1 and isinstance(
+      patch_project, basestring):  # pragma: no cover
     sbr.gerrit_changes[0].project = patch_project
 
   # Read PubSub callback.
   pubsub_callback_auth_token = None
-  if put_request.pubsub_callback:
+  if put_request.pubsub_callback:  # pragma: no cover
     pubsub_callback_auth_token = put_request.pubsub_callback.auth_token
     pubsub_callback_to_notification_config(
         put_request.pubsub_callback, sbr.notify
@@ -396,11 +398,11 @@ def buildbucket_api_method(
 
 
 def parse_json_object(json_data, param_name):
-  if not json_data:
+  if not json_data:  # pragma: no cover
     return None
   try:
     rv = json.loads(json_data)
-  except ValueError as ex:
+  except ValueError as ex:  # pragma: no cover
     raise errors.InvalidInputError('Could not parse %s: %s' % (param_name, ex))
   if rv is not None and not isinstance(rv, dict):  # pragma: no cover
     raise errors.InvalidInputError(
@@ -416,18 +418,6 @@ def parse_datetime(timestamp):
     return utils.timestamp_to_datetime(timestamp)
   except OverflowError:  # pragma: no cover
     raise errors.InvalidInputError('Could not parse timestamp: %s' % timestamp)
-
-
-def check_scheduling_permissions(bucket_ids):
-  """Checks if the requester can schedule builds in any of the buckets.
-
-  Raises auth.AuthorizationError on insufficient permissions.
-  """
-  bucket_ids = set(bucket_ids)
-  can_add = user.filter_buckets_by_perm(user.PERM_BUILDS_ADD, bucket_ids)
-  forbidden = sorted(bucket_ids - can_add)
-  if forbidden:  # pragma: no cover
-    raise user.current_identity_cannot('add builds to buckets %s', forbidden)
 
 
 @auth.endpoints_api(
@@ -454,23 +444,6 @@ class BuildBucketApi(remote.Service):
     if build is None:
       raise errors.BuildNotFoundError()
     return build_to_response_message(build)
-
-  ####### PUT ##################################################################
-
-  @buildbucket_api_method(
-      PutRequestMessage, BuildResponseMessage, path='builds', http_method='PUT'
-  )
-  @auth.public
-  def put(self, request):
-    """Creates a new build."""
-    request.bucket = convert_bucket(request.bucket)
-    check_scheduling_permissions([request.bucket])
-    settings = config.get_settings_async().get_result()
-    build_req = put_request_message_to_build_request(
-        request, set(exp.name for exp in settings.experiment.experiments)
-    )
-    build = creation.add_async(build_req).get_result()
-    return build_to_response_message(build, include_lease_key=True)
 
   ####### SEARCH ###############################################################
 
@@ -540,7 +513,7 @@ class BuildBucketApi(remote.Service):
     )
 
 @contextlib.contextmanager
-def _wrap_validation_error():
+def _wrap_validation_error():  # pragma: no cover
   """Converts validation.Error to errors.InvalidInputError."""
   try:
     yield
