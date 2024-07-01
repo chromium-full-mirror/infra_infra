@@ -5,30 +5,24 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 )
 
 // Validate validates inputs of ScheduleTaskRequest.
 func (r *ScheduleTaskRequest) Validate() error {
-	if r.GetConfig() == nil {
-		return errors.New("invalid argument: no config found")
+	if r.GetBuildbucketRequest().GetBuilder().GetBuilder() == "" {
+		return fmt.Errorf("invalid argument: no builder specified in BB request")
 	}
-	schedukeBackend := r.GetConfig().GetSchedukeBackend()
-	if schedukeBackend == nil {
-		return fmt.Errorf("invalid argument: bad backend: want scheduke backend, got %v", r.GetConfig())
+	if r.GetDeviceName() == "" {
+		return fmt.Errorf("invalid format: no device name")
 	}
 	return nil
 }
 
 // Validate validates inputs of CancelTasksRequest.
 func (r *CancelTasksRequest) Validate() error {
-	if r.GetConfig() == nil {
-		return errors.New("invalid argument: no config found")
-	}
-	schedukeBackend := r.GetConfig().GetSchedukeBackend()
-	if schedukeBackend == nil {
-		return fmt.Errorf("invalid argument: bad backend: want scheduke backend, got %v", r.GetConfig())
+	if len(r.GetTaskIds()) == 0 {
+		return fmt.Errorf("invalid argument: no task IDs")
 	}
 	return nil
 }

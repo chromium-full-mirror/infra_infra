@@ -48,7 +48,7 @@ func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims ma
 	}
 
 	schedukeDims, pool, deviceName := schedukeDimsPoolAndDeviceNameForLease(dims)
-	dev := pool == schedukeDevPool
+	dev := pool == SchedukeDevPool
 
 	sc, err := NewSchedukeClientForEnv(ctx, dev, authOpts)
 	if err != nil {
@@ -64,7 +64,7 @@ func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims ma
 	if err != nil {
 		return "", err
 	}
-	leaseID, ok := scheduleResp.GetIds()[schedukeTaskKey]
+	leaseID, ok := scheduleResp.GetIds()[SchedukeTaskKey]
 	if !ok {
 		return "", fmt.Errorf("respose %v from Scheduke did not include an ID for the requested lease", scheduleResp)
 	}

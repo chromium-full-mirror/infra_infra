@@ -10,8 +10,9 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	schedulingapi "infra/libs/fleet/scheduling/api"
 )
 
 // TestAsMap tests structbuilder-compatibility.
@@ -50,6 +51,12 @@ type FakeClient struct {
 }
 
 func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, _ string) (string, int64, error) {
+	id := c.startID
+	c.startID++
+	return "", id, nil
+}
+
+func (c *FakeClient) CreateLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, _ schedulingapi.TaskSchedulingAPI) (string, int64, error) {
 	id := c.startID
 	c.startID++
 	return "", id, nil

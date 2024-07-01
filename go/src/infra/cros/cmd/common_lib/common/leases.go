@@ -20,7 +20,9 @@ const (
 	leasesSchedulingAccount = "leases"
 	leaseSchedulingWindow   = 2 * time.Hour
 	pollingInterval         = 30 * time.Second
-	schedukeTaskKey         = 1
+	// SchedukeTaskKey is the key used for a singleton Scheduke task request in
+	// request/response protos.
+	SchedukeTaskKey = 1
 )
 
 // DeviceInfo contains details about the physical lab setup and machine of a

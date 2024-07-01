@@ -18,6 +18,8 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+
+	schedulingapi "infra/libs/fleet/scheduling/api"
 )
 
 // Set higher priority for admin task to compite with tests.
@@ -41,7 +43,10 @@ type ScheduleLabpackTaskParams struct {
 type Client interface {
 	// ScheduleLabpackTask schedules a labpack task.
 	// TODO(gregorynisbet): refactor this method to return a structured result.
+	// Method is deprecated and will removed in favor of CreateLabpackTask.
 	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, clientName string) (string, int64, error)
+	// CreateLabpackTask create a labpack task.
+	CreateLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, sc schedulingapi.TaskSchedulingAPI) (string, int64, error)
 }
 
 // ClientImpl is the implementation of the Client interface.
@@ -80,9 +85,15 @@ func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) 
 }
 
 // ScheduleLabpackTask creates new task in build bucket with labpack.
+// Method is deprecated and will removed in favor of CreateLabpackTask.
 func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, clientName string) (string, int64, error) {
+	return c.CreateLabpackTask(ctx, params, nil)
+}
+
+// CreateLabpackTask creates new task in build bucket with labpack.
+func (c *clientImpl) CreateLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, sc schedulingapi.TaskSchedulingAPI) (string, int64, error) {
 	if params == nil {
-		return "", 0, errors.Reason("ScheduleLabpackTask: params cannot be nil").Err()
+		return "", 0, errors.Reason("create labpack task: params cannot be nil").Err()
 	}
 	dims := make(map[string]string)
 	dims["dut_name"] = params.UnitName
@@ -124,6 +135,21 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 		Tags:       tagPairs,
 		Dimensions: bbDimensions(dims),
 		Priority:   defaultTaskPriority,
+	}
+
+	if sc != nil {
+		if shouldUseDM, err := sc.ShouldUseDM(); err != nil {
+			return "", -1, errors.Annotate(err, "create labpack task").Err()
+		} else if shouldUseDM {
+			t, err := sc.ScheduleTask(ctx, &schedulingapi.ScheduleTaskRequest{
+				DeviceName:         params.UnitName,
+				BuildbucketRequest: bbReq,
+			})
+			if err != nil {
+				return "", -1, errors.Annotate(err, "create labpack task: scheduling task by scheduke").Err()
+			}
+			return t.GetUrl(), 0, nil
+		}
 	}
 
 	build, err := c.client.ScheduleBuild(ctx, bbReq)

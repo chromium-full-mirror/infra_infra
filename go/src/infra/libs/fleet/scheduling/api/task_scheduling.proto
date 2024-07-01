@@ -6,53 +6,27 @@ syntax = "proto3";
 
 package scheduling.api;
 
+import "go.chromium.org/luci/buildbucket/proto/builds_service.proto";
+
 option go_package = "infra/libs/fleet/scheduling/api";
-
-// ProviderId is the ID of various tasking scheduling providers.
-enum ProviderId {
-  PROVIDER_ID_UNSPECIFIED = 0;
-  PROVIDER_ID_SCHEDUKE = 1;
-}
-
-// Config specifies which backend to call task scheduling and the parameters for
-// establishing the backend.
-message Config {
-  oneof backend {
-    SchedukeBackend scheduke_backend = 1;
-  }
-
-  // SchedukeBackend contains Scheduke params. The fields will be passed to
-  // Scheduke service for task scheduling. Required fields must be passed.
-  message SchedukeBackend {
-    // The Scheduke environment to connect to.
-    enum Environment {
-      ENV_UNSPECIFIED = 0;
-      ENV_LOCAL = 1;
-      ENV_STAGING = 2;
-      ENV_PRODUCTION = 3;
-    }
-    Environment env = 1;
-    string pool = 2;
-  }
-}
 
 // Task contains a task ID and url provided by the backend.
 message Task {
-  string id = 1;
+  int64 id = 1;
   string url = 2;
 }
 
 // ScheduleTaskRequest is the request for the TaskSchedulingAPI.ScheduleTask
 // endpoint.
 message ScheduleTaskRequest {
-  // Configuration of the backend to start the instance.
-  Config config = 1;
+  // BuildBucket request to instantiate task.
+  buildbucket.v2.ScheduleBuildRequest buildbucket_request = 2;
+  // Device name. Refers to the Swarming dut_name or hostname.
+  string device_name = 3;
 }
 
 // CancelTasksRequest is the request for the TaskSchedulingAPI.CancelTasks
 // endpoint.
 message CancelTasksRequest {
-  // Configuration of the backend to start the instance.
-  Config config = 1;
-  repeated string task_ids = 2;
+  repeated int64 task_ids = 2;
 }

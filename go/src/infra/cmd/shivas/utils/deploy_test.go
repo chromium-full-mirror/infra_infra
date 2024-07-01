@@ -12,7 +12,10 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/types/known/structpb"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cmd/shivas/site"
+	schedulingapi "infra/libs/fleet/scheduling/api"
 	"infra/libs/skylab/buildbucket"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -34,6 +37,11 @@ func (c stubClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket
 	// address of the pointer (since the address remains constant b/t calls).
 	*c.LastCall = *params
 	return "fake", 0, nil
+}
+
+func (c stubClient) CreateLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams, _ schedulingapi.TaskSchedulingAPI) (string, int64, error) {
+	// TODO copy logic from ScheduleLabpackTask during migration.
+	return "fake", 0, errors.Reason("Not expected to be called").Err()
 }
 
 // TestScheduleDeployTask tests params propagates appropriately

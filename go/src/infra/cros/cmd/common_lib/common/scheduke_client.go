@@ -32,7 +32,8 @@ import (
 const (
 	dmExperiment      = "dm"
 	poolConfigsDirURL = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
-	schedukeDevPool   = "schedukeTest"
+	// SchedukeDevPool is the pool that the Scheduke dev instance schedules on.
+	SchedukeDevPool = "schedukeTest"
 )
 
 var (
@@ -78,7 +79,7 @@ func NewSchedukeClientForEnv(ctx context.Context, dev bool, authOpts auth.Option
 
 func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeClient, error) {
 	baseURL := schedukeProdURL
-	if pool == schedukeDevPool {
+	if pool == SchedukeDevPool {
 		baseURL = schedukeDevURL
 	}
 
@@ -391,7 +392,7 @@ func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensio
 
 	return &schedukeapi.KeyedTaskRequestEvents{
 		Events: map[int64]*schedukeapi.TaskRequestEvent{
-			schedukeTaskKey: {
+			SchedukeTaskKey: {
 				EventTime:                t.UnixMicro(),
 				Deadline:                 t.Add(leaseSchedulingWindow).UnixMicro(),
 				Periodic:                 false,

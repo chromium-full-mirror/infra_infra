@@ -31,7 +31,7 @@ type DeviceManagerClient struct {
 
 func NewDeviceManagerClient(ctx context.Context, pool string) (*DeviceManagerClient, error) {
 	baseURL := DMProdURL
-	if pool == schedukeDevPool {
+	if pool == SchedukeDevPool {
 		baseURL = DMDevURL
 	}
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
