@@ -261,6 +261,29 @@ func convertAudioLatencyToolkitStatesToUFS(s tlw.AudioLatencyToolkit_State) ufsl
 	return ufslab.PeripheralState_UNKNOWN
 }
 
+var amtManagerStates = map[ufslab.PeripheralState]tlw.AMTManager_State{
+	ufslab.PeripheralState_WORKING: tlw.AMTManager_WORKING,
+	ufslab.PeripheralState_BROKEN:  tlw.AMTManager_BROKEN,
+}
+
+// converts AMTManager UFS state to TLW state
+func convertAMTManagerStateToTLW(s ufslab.PeripheralState) tlw.AMTManager_State {
+	if ns, ok := amtManagerStates[s]; ok {
+		return ns
+	}
+	return tlw.AMTManager_STATE_UNSPECIFIED
+}
+
+// converts AMTManager TLW state to UFS state
+func convertAMTManagerStateToUFS(ts tlw.AMTManager_State) ufslab.PeripheralState {
+	for ufsState, tlwState := range amtManagerStates {
+		if ts == tlwState {
+			return ufsState
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
+
 var rpmStates = map[ufslab.PeripheralState]tlw.RPMOutlet_State{
 	ufslab.PeripheralState_WORKING:        tlw.RPMOutlet_WORKING,
 	ufslab.PeripheralState_MISSING_CONFIG: tlw.RPMOutlet_MISSING_CONFIG,

@@ -204,6 +204,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Dolos:               createDUTDolos(p, ds),
 			FirmwareInfo:        createFirmwareInfo(ds),
 			GpuId:               ds.GetGpuId(),
+			AmtManager:          createDUTAMTManager(p, ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -509,6 +510,14 @@ func createDUTDolos(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Dolos {
 	}
 }
 
+func createDUTAMTManager(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.AMTManager {
+	pAMTManager := p.GetAmtManager()
+	return &tlw.AMTManager{
+		Hostname: pAMTManager.GetHostname(),
+		State:    convertAMTManagerStateToTLW(ds.GetAmtManagerState()),
+	}
+}
+
 func createFirmwareInfo(ds *ufslab.DutState) *tlw.FirmwareInfo {
 	return &tlw.FirmwareInfo{
 		EcTarget: ds.GetFwEcTarget(),
@@ -633,6 +642,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.FwApTarget = ""
 	state.FwEcTarget = ""
 	state.GpuId = ""
+	state.AmtManagerState = ufslab.PeripheralState_UNKNOWN
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
@@ -722,6 +732,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 			state.FwEcTarget = fi.GetEcTarget()
 		}
 		state.GpuId = chromeos.GetGpuId()
+		if amt := chromeos.GetAmtManager(); amt != nil {
+			state.AmtManagerState = convertAMTManagerStateToUFS(amt.GetState())
+		}
 
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {
