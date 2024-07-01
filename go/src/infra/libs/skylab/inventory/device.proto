@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 42
+// NEXT TAG: 43
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -307,6 +307,17 @@ message SchedulableLabels {
 
   // Indicates whether we have wifi network setup on the hosting location.
   optional bool wifi_on_site = 41;
+
+  // TODO(b/350065958): Remove when bot/dut is decoupled from device manager.
+  // bot_size is used for test scheduler and device manager to assign tests to
+  // bots with enough RAM size.
+  optional BotSize bot_size = 42;
+
+  // NEXT TAG: 2
+  enum BotSize {
+    BOT_SIZE_INVALID = 0;
+    BOT_SIZE_LARGE = 1;
+  }
 
   // NEXT TAG: 4
   enum DevboardType {

@@ -806,6 +806,12 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	// Bluetooth config will be overwritten here by DLM configs
 	setConfigsFromMachine(labels, machine)
 
+	if dut.GetHive() != "cloudbots" {
+		// All non cloudbots are running on drone which is large by default.
+		large := inventory.SchedulableLabels_BOT_SIZE_LARGE
+		labels.BotSize = &large
+	}
+
 	id := machine.GetName()
 	hostname := lse.GetName()
 	hwid := machine.GetChromeosMachine().GetHwid()

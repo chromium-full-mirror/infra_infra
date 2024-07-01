@@ -9,6 +9,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 	return &SchedulableLabels{
 		Arc:     new(bool),
 		Board:   new(string),
+		BotSize: new(SchedulableLabels_BotSize),
 		Brand:   new(string),
 		Callbox: new(bool),
 		Capabilities: &HardwareCapabilities{

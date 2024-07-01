@@ -491,6 +491,7 @@ common {
 	labels {
 		arc: true
 		board: "coral"
+		bot_size: BOT_SIZE_LARGE
 		brand: ""
 		capabilities {
 			atrus: true

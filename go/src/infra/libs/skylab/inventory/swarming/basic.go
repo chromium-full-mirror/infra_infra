@@ -54,6 +54,9 @@ func basicConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	if v := ls.GetPhase(); v != inventory.SchedulableLabels_PHASE_INVALID {
 		dims["label-phase"] = []string{v.String()}
 	}
+	if v := ls.GetBotSize(); v != inventory.SchedulableLabels_BOT_SIZE_INVALID {
+		dims["label-bot_size"] = []string{v.String()}
+	}
 	for _, v := range ls.GetVariant() {
 		if v != "" {
 			appendDim(dims, "label-variant", v)
@@ -106,6 +109,12 @@ func basicReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 			*ls.Phase = inventory.SchedulableLabels_Phase(p)
 		}
 		delete(d, "label-phase")
+	}
+	if v, ok := getLastStringValue(d, "label-bot_size"); ok {
+		if bs, ok := inventory.SchedulableLabels_BotSize_value[v]; ok {
+			*ls.BotSize = inventory.SchedulableLabels_BotSize(bs)
+		}
+		delete(d, "label-bot_size")
 	}
 	ls.Variant = append(ls.Variant, d["label-variant"]...)
 	delete(d, "label-variant")

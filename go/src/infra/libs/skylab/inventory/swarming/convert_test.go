@@ -136,6 +136,7 @@ capabilities {
   form_factor: 1
 }
 board: "boardval"
+bot_size: 1
 arc: true
 callbox: true
 licenses: {
@@ -312,6 +313,7 @@ capabilities {
   form_factor: 1
 }
 board: "boardval"
+bot_size: 1
 arc: true
 callbox: true
 licenses: {
@@ -375,6 +377,7 @@ var fullDimensions = Dimensions{
 	"label-audiobox_jackplugger_state":  {"WORKING"},
 	"label-bluetooth":                   {"True"},
 	"label-board":                       {"boardval"},
+	"label-bot_size":                    {"BOT_SIZE_LARGE"},
 	"label-callbox":                     {"True"},
 	"label-camerabox":                   {"True"},
 	"label-camerabox_facing":            {"CAMERABOX_FACING_BACK"},

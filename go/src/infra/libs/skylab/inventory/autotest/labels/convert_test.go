@@ -145,6 +145,7 @@ capabilities {
   form_factor: 0
 }
 board: "boardval"
+bot_size: 0
 arc: true
 callbox: true
 licenses: {
@@ -784,6 +785,7 @@ capabilities {
   form_factor: 0
 }
 board: "boardval"
+bot_size: 0
 arc: true
 callbox: true
 licenses: {
