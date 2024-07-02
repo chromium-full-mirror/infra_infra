@@ -16,6 +16,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
@@ -175,6 +176,11 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 		}
 	}
 
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
+
 	// Check and start deploy tasks for required Labstations.
 	if len(deployTasks) > 0 {
 		bbClient, err := createBBClient(ctx, c.authFlags)
@@ -185,10 +191,16 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 		for _, req := range deployTasks {
 			// Check if deploy task is required or force deploy is set.
 			if c.forceDeploy || c.isDeployTaskRequired(req) {
+				host := req.MachineLSE.GetHostname()
+				sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+				if err != nil {
+					return errors.Annotate(err, "creating Scheduke client").Err()
+				}
 				deployParams := utils.DeployTaskParams{
 					Client:           bbClient,
+					SchedulingClient: sc,
 					Env:              e,
-					Unit:             req.MachineLSE.GetHostname(),
+					Unit:             host,
 					SessionTag:       sessionTag,
 					UseLatestVersion: c.latestVersion,
 					BBProject:        c.deployBBProject,

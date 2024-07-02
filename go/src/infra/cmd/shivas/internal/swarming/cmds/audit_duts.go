@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package tasks contains commands for tasks to perform on DUTs.
 package tasks
 
 import (
@@ -11,14 +12,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
 
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
+	"infra/libs/fleet/device"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 type auditRun struct {
@@ -81,11 +86,20 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
 	}
+	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions,
+	})
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, host := range args {
 		host = heuristics.NormalizeBotNameToDeviceName(host)
 		for _, taskName := range taskNames {
-			taskURL, err := scheduleAuditBuilder(ctx, bc, e, taskName, host, c.latestVersion, sessionTag)
+			taskURL, err := scheduleAuditBuilder(ctx, bc, uc, authOpts, e, taskName, host, c.latestVersion, sessionTag)
 			if err != nil {
 				fmt.Fprintf(a.GetErr(), "Skipping %q for %q because %s\n", taskName, host, err.Error())
 			} else {
@@ -117,7 +131,7 @@ func (c *auditRun) getTaskNames() ([]string, error) {
 }
 
 // scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, taskName string, host string, latestVersion bool, adminSession string) (string, error) {
+func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device.GetPoolsClient, authOpts auth.Options, e site.Environment, taskName string, host string, latestVersion bool, adminSession string) (string, error) {
 	tn, err := buildbucket.NormalizeTaskName(taskName)
 	if err != nil {
 		return "", errors.Annotate(err, "schedule audit builder").Err()
@@ -145,6 +159,10 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 			"qs_account:unmanaged_p0",
 		},
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
+	sc, err := utils.SchedukeClient(ctx, gpc, authOpts, host)
+	if err != nil {
+		return "", errors.Annotate(err, "creating Scheduke client").Err()
+	}
+	url, _, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
 	return url, errors.Annotate(err, "schedule audit builder").Err()
 }

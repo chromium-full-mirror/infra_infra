@@ -176,6 +176,10 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 	if cErr != nil {
 		return cErr
 	}
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	for _, params := range deployParams {
@@ -185,11 +189,17 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		}
 		err := c.addLabstationToUFS(ctx, ic, params)
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
+		host := params.Labstation.GetHostname()
+		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
 		if err == nil {
 			scheduleDeployParams := utils.DeployTaskParams{
 				Client:           bbClient,
+				SchedulingClient: sc,
 				Env:              e,
-				Unit:             params.Labstation.GetHostname(),
+				Unit:             host,
 				SessionTag:       sessionTag,
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,

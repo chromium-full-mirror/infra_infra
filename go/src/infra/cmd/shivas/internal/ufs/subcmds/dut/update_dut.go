@@ -317,6 +317,10 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	if bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions); err != nil {
 		return err
 	}
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, req := range requests {
 		// Check if the deployment is needed.
@@ -325,12 +329,18 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			// Deploy Task not required.
 			continue
 		}
+		host := req.GetMachineLSE().GetHostname()
+		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
 		// Swarm a deploy task if required or enforced.
 		if needRunDeploy || c.forceDeploy {
 			deployParams := utils.DeployTaskParams{
 				Client:           bc,
+				SchedulingClient: sc,
 				Env:              e,
-				Unit:             req.GetMachineLSE().GetHostname(),
+				Unit:             host,
 				SessionTag:       sessionTag,
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,

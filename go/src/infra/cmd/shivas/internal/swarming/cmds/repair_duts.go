@@ -14,11 +14,13 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
+	schedulingapi "infra/libs/fleet/scheduling/api"
 	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/common/heuristics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 type repairDuts struct {
@@ -79,14 +81,26 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
+	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions,
+	})
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	ns, err := c.envFlags.Namespace(nil, "")
 	if err != nil {
 		return err
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, host := range args {
-		host = heuristics.NormalizeBotNameToDeviceName(host)
-		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, c.bbBuilder, c.bbBucket, ns, sessionTag)
+		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
+		taskURL, err := scheduleRepairBuilder(ctx, bc, sc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, c.bbBuilder, c.bbBucket, ns, sessionTag)
 		if err != nil {
 			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, err.Error())
 		} else {
@@ -98,7 +112,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 }
 
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair, latestVersion, deepRepair bool, builder string, bucket string, namespace string, adminSession string) (string, error) {
+func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host string, runRepair, latestVersion, deepRepair bool, builder string, bucket string, namespace string, adminSession string) (string, error) {
 	v := buildbucket.CIPDProd
 	if latestVersion {
 		v = buildbucket.CIPDLatest
@@ -131,6 +145,6 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			"qs_account:unmanaged_p0",
 		},
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
+	url, _, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
 	return url, err
 }

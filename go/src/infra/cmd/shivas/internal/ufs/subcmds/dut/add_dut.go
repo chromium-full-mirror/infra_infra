@@ -17,6 +17,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
@@ -267,6 +268,10 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	if err != nil {
 		return err
 	}
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	// Created client to update UFS when required.
@@ -294,10 +299,16 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
+		host := param.DUT.GetName()
+		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
 		deployParams := utils.DeployTaskParams{
 			Client:           bc,
+			SchedulingClient: sc,
 			Env:              e,
-			Unit:             param.DUT.GetName(),
+			Unit:             host,
 			SessionTag:       sessionTag,
 			UseLatestVersion: c.latestVersion,
 			BBProject:        c.deployBBProject,

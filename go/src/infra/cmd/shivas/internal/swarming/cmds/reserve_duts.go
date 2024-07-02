@@ -17,11 +17,14 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cros/recovery/config"
+	schedulingapi "infra/libs/fleet/scheduling/api"
 	"infra/libs/skylab/buildbucket"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 type reserveDuts struct {
@@ -84,12 +87,25 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return err
 	}
+	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions,
+	})
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	if c.session == "" {
 		c.session = uuid.New().String()
 	}
 	c.session = fmt.Sprintf("admin-session:%s", c.session)
 	for _, host := range args {
-		if url, _, err := c.scheduleReserveBuilder(ctx, bc, e, host); err != nil {
+		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduke client").Err()
+		}
+		if url, _, err := c.scheduleReserveBuilder(ctx, bc, sc, e, host); err != nil {
 			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
 		} else {
 			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, url)
@@ -100,7 +116,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 }
 
 // scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
-func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string) (string, int64, error) {
+func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host string) (string, int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
 	v := buildbucket.CIPDProd
 	tags := []string{
@@ -127,7 +143,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 		Configuration:    c.config,
 		ExtraTags:        tags,
 	}
-	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
+	url, taskID, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
 	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 

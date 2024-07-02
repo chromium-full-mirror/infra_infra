@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/site"
+	schedulingapi "infra/libs/fleet/scheduling/api"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/swarming"
 	ufsUtil "infra/unifiedfleet/app/util"
@@ -24,6 +25,8 @@ import (
 type DeployTaskParams struct {
 	// Client interfaces with Buildbucket.
 	Client buildbucket.Client
+	// SchedulingClient interfaces with a scheduling API wrapper.
+	SchedulingClient schedulingapi.TaskSchedulingAPI
 	// Env contains env specific configs.
 	Env site.Environment
 	// Unit is the name of the DUT within Inventory database.
@@ -77,7 +80,7 @@ func ScheduleDeployTask(ctx context.Context, params DeployTaskParams) error {
 			fmt.Sprintf("version:%s", v),
 		},
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, params.Client, v, p, "shivas")
+	url, _, err := buildbucket.CreateTask(ctx, params.Client, params.SchedulingClient, v, p, "shivas")
 	if err != nil {
 		return errors.Annotate(err, "schedule deploy task").Err()
 	}
