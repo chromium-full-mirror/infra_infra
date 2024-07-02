@@ -15,12 +15,16 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/fleet/device"
+	"infra/libs/fleet/scheduling/schedulers"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/swarming"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // Recovery subcommand: recover the devices.
@@ -77,6 +81,15 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return err
 	}
+	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    c.envFlags.Env().UFSService,
+		Options: site.UFSPRPCOptions,
+	})
+	authOpts, err := c.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 	if len(args) == 0 {
 		return errors.Reason("create recovery task: unit is not specified").Err()
 	}
@@ -109,9 +122,21 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		if c.useCsa {
 			csaAddr = e.AdminService
 		}
-		url, _, err := buildbucket.ScheduleTask(
+		pools, err := device.GetPools(ctx, uc, unit)
+		if err != nil {
+			return errors.Annotate(err, "getting pools for device %s", unit).Err()
+		}
+		if len(pools) == 0 {
+			return fmt.Errorf("found no pool for device %s", unit)
+		}
+		sc, err := schedulers.NewSchedukeClientForCLI(ctx, pools[0], authOpts)
+		if err != nil {
+			return errors.Annotate(err, "initializing Scheduke client").Err()
+		}
+		url, _, err := buildbucket.CreateTask(
 			ctx,
 			bc,
+			sc,
 			v,
 			&buildbucket.Params{
 				UnitName:         unit,

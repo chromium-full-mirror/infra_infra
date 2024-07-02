@@ -15,12 +15,16 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/config"
+	"infra/libs/fleet/device"
+	"infra/libs/fleet/scheduling/schedulers"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // ProvisionBtpeers provisions a DUTs btpeers.
@@ -81,13 +85,34 @@ func (command *provisionBtpeerCommand) innerRun(app subcommands.Application, arg
 	if err != nil {
 		return errors.Annotate(err, "provision btpeer").Err()
 	}
+	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       httpClient,
+		Host:    command.envFlags.Env().UFSService,
+		Options: site.UFSPRPCOptions,
+	})
+	authOpts, err := command.authFlags.Options()
+	if err != nil {
+		return errors.Annotate(err, "getting auth opts").Err()
+	}
 
 	for _, hostName := range args {
 		hostName = heuristics.NormalizeBotNameToDeviceName(hostName)
 		commandEnv := command.envFlags.Env()
-		url, _, err := buildbucket.ScheduleTask(
+		pools, err := device.GetPools(ctx, uc, hostName)
+		if err != nil {
+			return errors.Annotate(err, "getting pools for device %s", hostName).Err()
+		}
+		if len(pools) == 0 {
+			return fmt.Errorf("found no pool for device %s", hostName)
+		}
+		sc, err := schedulers.NewSchedukeClientForCLI(ctx, pools[0], authOpts)
+		if err != nil {
+			return errors.Annotate(err, "initializing Scheduke client").Err()
+		}
+		url, _, err := buildbucket.CreateTask(
 			ctx,
 			buildBucketClient,
+			sc,
 			buildbucket.CIPDLatest,
 			&buildbucket.Params{
 				UnitName:         hostName,

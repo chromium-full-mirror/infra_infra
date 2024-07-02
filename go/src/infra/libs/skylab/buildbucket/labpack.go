@@ -13,6 +13,8 @@ import (
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 
 	"go.chromium.org/luci/common/errors"
+
+	schedulingapi "infra/libs/fleet/scheduling/api"
 )
 
 // Params are the parameters to the labpack job.
@@ -95,6 +97,11 @@ func (v CIPDVersion) Validate() error {
 
 // ScheduleTask schedules a buildbucket task.
 func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Params, serviceName string) (string, int64, error) {
+	return CreateTask(ctx, client, nil, v, params, serviceName)
+}
+
+// CreateTask creates a task in scheduling service.
+func CreateTask(ctx context.Context, client Client, sc schedulingapi.TaskSchedulingAPI, v CIPDVersion, params *Params, serviceName string) (url string, taskID int64, err error) {
 	if client == nil {
 		return "", 0, errors.Reason("schedule task: client cannot be nil").Err()
 	}
@@ -141,7 +148,12 @@ func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Par
 	default:
 		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
-	url, taskID, err := client.ScheduleLabpackTask(ctx, p, serviceName)
+	if sc == nil {
+		// TODO(b:347729967): remove when rollout finished.
+		url, taskID, err = client.ScheduleLabpackTask(ctx, p, serviceName)
+	} else {
+		url, taskID, err = client.CreateLabpackTask(ctx, p, sc)
+	}
 	if err != nil {
 		return "", 0, errors.Annotate(err, "scheduling task").Err()
 	}

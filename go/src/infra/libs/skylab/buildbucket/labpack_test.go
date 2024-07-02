@@ -6,11 +6,13 @@ package buildbucket
 
 import (
 	"context"
+	"net/http"
 	"sort"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/grpc/prpc"
 
 	schedulingapi "infra/libs/fleet/scheduling/api"
 )
@@ -66,21 +68,60 @@ func (c *FakeClient) BuildURL(buildID int64) string {
 	panic("BuildURL should not be called!")
 }
 
+type FakeSchedulingAPI struct {
+	shouldUseDM bool
+}
+
+func (s *FakeSchedulingAPI) ScheduleTask(_ context.Context, _ *schedulingapi.ScheduleTaskRequest) (*schedulingapi.Task, error) {
+	return &schedulingapi.Task{Id: 42, Url: "test-url-from-scheduke"}, nil
+}
+
+func (s *FakeSchedulingAPI) CancelTasks(_ context.Context, _ *schedulingapi.CancelTasksRequest) error {
+	return nil
+}
+
+func (s *FakeSchedulingAPI) ShouldUseDM() (bool, error) {
+	return s.shouldUseDM, nil
+}
+
 // TestScheduleTask tests whether schedule task accepts or rejects its arguments, basically.
 func TestScheduleTask(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
-	Convey("test schedule task", t, func() {
+	Convey("test schedule task with stubbed BB wrapper and stubbed inactive scheduling API", t, func() {
+		ctx := context.Background()
 		Convey("nil params", func() {
 			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil, "fake service")
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "schedule task")
 		})
 		Convey("audit-rpm", func() {
-			_, bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
+			_, bbid, err := ScheduleTask(ctx, &FakeClient{startID: 3}, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
 			}, "fake service")
 			So(err, ShouldBeNil)
+			So(bbid, ShouldEqual, 3)
+		})
+	})
+}
+
+// CreateTask tests whether schedule task accepts or rejects its arguments, basically.
+func TestCreateTask(t *testing.T) {
+	t.Parallel()
+	Convey("test schedule task with real BB wrapper and stubbed active scheduling API", t, func() {
+		ctx := context.Background()
+		hc := &http.Client{}
+		bc, err := NewClient(ctx, hc, prpc.DefaultOptions())
+		So(err, ShouldBeNil)
+		sc := &FakeSchedulingAPI{
+			shouldUseDM: true,
+		}
+		Convey("audit-rpm", func() {
+			url, bbid, err := CreateTask(ctx, bc, sc, CIPDProd, &Params{
+				BuilderName: "audit-rpm",
+			}, "fake service")
+			So(err, ShouldBeNil)
+			So(url, ShouldEqual, "test-url-from-scheduke")
+			// No BBID returned since Scheduke doesn't generate them immediately.
 			So(bbid, ShouldEqual, 0)
 		})
 	})
