@@ -47,7 +47,6 @@ var ubuntuModelToFeatures = map[string][]labapi.WifiRouterFeature{
 		labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_BE,
 		labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_DOUBLE_BRIDGE_OVER_VETH,
 		labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_GCMP,
-		labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_SAE_EXT_KEY,
 	},
 }
 
