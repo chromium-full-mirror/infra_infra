@@ -29,12 +29,7 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/schedulers"
 	"infra/cros/cmd/ctpv2/data"
-)
-
-const (
-	leaseExtensionAmount   = 7 * time.Minute
-	leaseExtensionInterval = 5 * time.Minute
-	TestStepNameTemplate   = "request %s-%s.hw.%s-shard-%v"
+	dm "infra/device_manager/client"
 )
 
 // getBuildFieldMask is the list of buildbucket fields that are needed.
@@ -192,7 +187,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		logging.Infof(ctx, "%s: %s", errmsg, err)
 		return errors.Annotate(err, errmsg).Err()
 	}
-	dmc, err := common.NewDeviceManagerClient(ctx, pool)
+	dmc, err := dm.NewClient(ctx, pool)
 	if err != nil {
 		return errors.Annotate(err, "error while connecting to Device Manager").Err()
 	}
@@ -226,7 +221,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 
 }
 
-func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *common.DeviceManagerClient) error {
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client) error {
 	defer wg.Done()
 	var err error
 
@@ -317,8 +312,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				return nil
 			}
 
-			if leaseID != "" && time.Since(lastLeaseExtensionTime) >= leaseExtensionInterval {
-				_, err = dmc.Extend(ctx, leaseID, leaseExtensionAmount)
+			if leaseID != "" && time.Since(lastLeaseExtensionTime) >= dm.LeaseExtensionInterval {
+				_, err = dmc.Extend(ctx, leaseID, dm.LeaseExtensionAmount)
 				if err != nil {
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
 					return setTopLevelError(ctx, step, result, resultsChan, err)

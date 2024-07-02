@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
@@ -35,6 +36,7 @@ import (
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/upload"
+	dm "infra/device_manager/client"
 	"infra/libs/skylab/buildbucket"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -78,7 +80,26 @@ func main() {
 			}.Format(input)
 			log.Printf("%s\n", string(b))
 
-			err := mainRunInternal(ctx, input, state, writeOutputProps)
+			// Set up logger.
+			logRoot, err := getTaskDir()
+			if err != nil {
+				return errors.Annotate(err, "main run").Err()
+			}
+			// TODO: Change level to Info when all logging files will be upload to GC.
+			ctx, lg, err := createLogger(ctx, logRoot, logging.Debug)
+			if err != nil {
+				return errors.Annotate(err, "main run").Err()
+			}
+			defer func() { lg.Close() }()
+
+			eg, ctx := errgroup.WithContext(ctx)
+			eg.Go(func() error {
+				return mainRunInternal(ctx, logRoot, lg, input, state, writeOutputProps)
+			})
+			eg.Go(func() error {
+				return watchDMLease(ctx, lg, state)
+			})
+			err = eg.Wait()
 			return errors.Annotate(err, "main").Err()
 		},
 	)
@@ -86,20 +107,9 @@ func main() {
 }
 
 // mainRun runs function for BB and provide result.
-func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.State, writeOutputProps ResponseUpdater) error {
+func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, input *lab.LabpackInput, state *build.State, writeOutputProps ResponseUpdater) error {
 	// Result errors which specify the result of main run.
 	var resultErrors []error
-
-	logRoot, err := getTaskDir()
-	if err != nil {
-		return errors.Annotate(err, "main run internal").Err()
-	}
-	// TODO: Change level to Info when all logging files will be upload to GC.
-	ctx, lg, err := createLogger(ctx, logRoot, logging.Debug)
-	if err != nil {
-		return errors.Annotate(err, "main run internal").Err()
-	}
-	defer func() { lg.Close() }()
 
 	// Run recovery lib and get response.
 	// Set result as fail by default in case it fail to finish by some reason.
@@ -112,7 +122,7 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		writeOutputProps(res)
 	}()
 	lg.Infof("Prepare print input params...")
-	if err = printInputs(ctx, input); err != nil {
+	if err := printInputs(ctx, input); err != nil {
 		lg.Debugf("main run internal: failed to marshal proto. Error: %s", err)
 		return err
 	}
@@ -179,6 +189,99 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 	}
 	return errors.Annotate(errors.MultiError(resultErrors), "run recovery").Err()
 }
+
+// watchDMLease watches the Device Manager lease associated with this build for
+// the duration of the build (if a lease exists), and cancels it when the given
+// context is cancelled or an error is encountered.
+func watchDMLease(ctx context.Context, lg logger.Logger, state *build.State) error {
+	// Only watch the DM lease if one has been created for this build.
+	leaseIDStructVal, ok := state.Build().GetInput().GetProperties().GetFields()["device_manager_lease_id"]
+	if !ok {
+		return nil
+	}
+	leaseID := leaseIDStructVal.String()
+
+	// Initialize the DM client with the device's label-pool dimension.
+	pool, ok := getPool(state)
+	if !ok {
+		return errors.New("watching DM lease: couldn't find the device's label-pool dimension")
+	}
+	dmc, err := dm.NewClient(ctx, pool)
+	if err != nil {
+		err = errors.Annotate(err, "watching DM lease: connecting to Device Manager").Err()
+		lg.Infof(err.Error())
+		return err
+	}
+
+	// Only cancel the lease with a fresh context in case the existing context has
+	// been cancelled.
+	defer func() {
+		err := releaseDMLease(context.Background(), lg, leaseID, pool)
+		if err != nil {
+			err = errors.Annotate(err, "attempting to release DM lease").Err()
+			lg.Errorf(err.Error())
+		}
+	}()
+
+	// Renew the lease every few minutes on a loop.
+	lastLeaseExtensionTime := time.Now()
+	loopSleepInterval := 5 * time.Second
+	for {
+		if ctx.Err() != nil {
+			break
+		}
+
+		if time.Since(lastLeaseExtensionTime) >= dm.LeaseExtensionInterval {
+			_, err = dmc.Extend(ctx, leaseID, dm.LeaseExtensionAmount)
+			if err != nil {
+				err = errors.Annotate(err, "watching DM lease: sending lease extension request to DM").Err()
+				lg.Infof(err.Error())
+				return err
+			}
+			lastLeaseExtensionTime = time.Now()
+		}
+
+		time.Sleep(loopSleepInterval)
+	}
+
+	return nil
+}
+
+// releaseDMLease releases the given Device Manager lease.
+func releaseDMLease(ctx context.Context, lg logger.Logger, leaseID, pool string) error {
+	dmc, err := dm.NewClient(ctx, pool)
+	if err != nil {
+		err = errors.Annotate(err, "releasing DM lease: connecting to Device Manager").Err()
+		lg.Infof(err.Error())
+		return err
+	}
+	err = dmc.Release(ctx, leaseID)
+	if err != nil {
+		err = errors.Annotate(err, "releasing DM lease: sending lease cancellation request to DM").Err()
+		lg.Infof(err.Error())
+		return err
+	}
+
+	lg.Infof("released DM lease %s", leaseID)
+	return nil
+}
+
+// getPool returns the pool for the DUT that the given build state is running
+// on, or returns false if it was not found.
+func getPool(s *build.State) (string, bool) {
+	for _, d := range s.Build().GetInfra().GetSwarming().GetBotDimensions() {
+		if d.GetKey() == "label-pool" {
+			v := d.GetValue()
+			if v == "" {
+				return "", false
+			}
+			return v, true
+		}
+	}
+	return "", false
+}
+
+// getTag gets the value for the given Swarming tag
 
 // Upload logs to google cloud.
 func uploadLogs(ctx context.Context, input *lab.LabpackInput, lg logger.Logger) (rErr error) {
