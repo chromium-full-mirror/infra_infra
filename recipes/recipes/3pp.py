@@ -182,7 +182,6 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
           to_build,
           platform,
           upload=not api.tryserver.is_tryserver,
-          cipd_service='https://chrome-infra-packages-dev.appspot.com/',
       )
     else:
       _, unsupported = api.support_3pp.ensure_uploaded(
