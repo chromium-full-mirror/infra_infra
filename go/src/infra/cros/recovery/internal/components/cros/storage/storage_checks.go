@@ -254,7 +254,7 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 		return StorageStateUndefined, errors.Annotate(err, "detect "+ifaceName+" state").Err()
 	}
 	eolValue := 0
-	lifeValue := -1
+	lifeValue := 0
 	for _, line := range storageInfoSlice {
 		mLife, err := regexpSubmatchToMap(jedecFailLiveRegexp, line)
 		if err == nil {
@@ -286,9 +286,9 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 				log.Errorf(ctx, parseIntErr.Error())
 			}
 			eolValue = int(parsedVal)
-			break
 		}
 	}
+	log.Debugf(ctx, "lifeValue: %d, eolValue: %d", lifeValue, eolValue)
 	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("storage_type", ifaceName))
 	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("storage_end_of_life_signal", int64(eolValue)))
 	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(lifeValue)))
