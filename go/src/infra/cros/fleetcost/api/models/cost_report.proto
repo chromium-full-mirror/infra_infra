@@ -10,10 +10,77 @@ option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
 
 // CostReport is a breakdown of the subtotals of cost.
 message CostReport {
-    repeated CostReportItem item = 1;
+    // A CostReport previously contained a list of items that were summed.
+    // Now we only have a total and an expression tree.
+    reserved "item";
+    reserved 1;
+    // Total is the total value of the report.
+    double total = 2;
+    // Expression the expression that evaluates to the total.
+    CostReportExpr expr = 3;
 }
 
-// CostReportItem is a subtotal within the ultimate CostResult.
+// CostReportLabel is semantic information about an intermediate expression,
+// so far just a name.
+message CostReportLabel {
+    string name = 1;
+}
+
+// CostReportExpr is an expression that could be a sum, a product or an identity.
+//
+// The order of the repeated fields is semantically relevant, so use a multiple
+// of 1000 if you can, and adjust it otherwise. This should be future-proof
+// enough.
+message CostReportExpr {
+    CostReportLabel label = 1000;
+    enum Operation {
+        UNKNOWN = 0;
+        // IDENTITY returns the leftmost value.
+        // It is an error to have multiple arguments within an identity expression.
+        IDENTITY = 1;
+        // SUM returns the sum of all the arguments
+        SUM = 2;
+        // PRODUCT returns the product of all the argument.
+        PRODUCT = 3;
+    }
+    // Operation must be populated with a value other than UNKNOWN to be valid.
+    Operation operation = 2000;
+    // These are all the arguments to the expression, in order.
+    // In order to put a "lighter" argument after a "heavier" one,
+    // You must quote the argument using the IDENTITY operation and
+    // put it in its own expression.
+    //
+    // This is defined in order to support operations in the future like
+    // Divide.
+    // In such a scenario, to express `(Item * Item) / 20.1` the expression
+    // would be:
+    //
+    //   expr {
+    //     operation: DIVIDE
+    //     expr {
+    //       operation: PRODUCT
+    //       item { ... }
+    //       item { ... }
+    //     }
+    //     number { value: 20.1 }
+    //   }
+    repeated CostReportScalar number = 3000;
+    repeated CostReportItem item = 4000;
+    repeated CostReportExpr expr = 5000;
+}
+
+// CostReportScalar a scalar is just a number.
+//
+// It is a double. Nothing fancy like a matrix or a quaternion.
+message CostReportScalar {
+    CostReportScalar label = 1;
+    double value = 2;
+}
+
+// CostReportItem is a line item within the ultimate CostResult.
+//
+// An item is always a unit of currency and the prototypical item
+// is the result of a database lookup within the cost service.
 message CostReportItem {
     string subtotal_name = 1;
     double raw_figure = 2;
