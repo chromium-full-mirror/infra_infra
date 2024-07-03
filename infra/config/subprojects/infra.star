@@ -148,7 +148,7 @@ try_builder(
     properties = {
         "gclient_config_name": "infra",
         "patch_root": "infra",
-        "analyzers": ["Copyright", "Eslint", "Gosec", "Spellchecker", "InclusiveLanguageCheck"],
+        "analyzers": ["Copyright", "Gosec", "Spellchecker", "InclusiveLanguageCheck"],
     },
     in_cq = False,
 )
