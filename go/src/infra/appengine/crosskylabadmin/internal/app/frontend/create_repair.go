@@ -22,6 +22,8 @@ import (
 	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
+	schedulingapi "infra/libs/fleet/scheduling/api"
+	"infra/libs/fleet/scheduling/schedulers"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -180,7 +182,11 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	} else {
 		r.taskName = findProperRecoveryTask(ctx, expectedState, heuristics.NormalizeBotNameToDeviceName(r.botID), karteC)
 	}
-	url, err := createBuildbucketTask(ctx, r)
+	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pools[0])
+	if err != nil {
+		return "", errors.Annotate(err, "CreateRepairTask: initializing Scheduke client").Err()
+	}
+	url, err := createBuildbucketTask(ctx, sc, r)
 	if err != nil {
 		return "", errors.Annotate(err, "create repair task").Err()
 	}
@@ -265,7 +271,7 @@ type createBuildbucketTaskRequest struct {
 // CreateBuildbucketTask creates a new task (repair by default) for the provided DUT.
 // Err should be non-nil if and only if a task was created.
 // We rely on this signal to decide whether to fall back to the legacy flow.
-func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequest) (string, error) {
+func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingAPI, params createBuildbucketTaskRequest) (string, error) {
 	if params.taskName == "" {
 		params.taskName = buildbucket.Recovery
 	}
@@ -308,7 +314,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, bc, params.taskType, p, "crosskylabadmin")
+	url, _, err := buildbucket.CreateTask(ctx, bc, sc, params.taskType, p, "crosskylabadmin")
 	if err != nil {
 		// CrOSSkylabAdmin is getting an error periodically where we fail to create a buildbucket task as of 2023-11-16.
 		logging.Errorf(ctx, "error scheduling task %q on builder %q for device %q with expected state %q: %s", p.TaskName, p.BuilderName, p.UnitName, p.ExpectedState, err)

@@ -527,7 +527,7 @@ func TestCreateBuildbucketTask(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	Convey("test create buildbucket task", t, func() {
-		_, err := createBuildbucketTask(ctx, createBuildbucketTaskRequest{taskName: "e"})
+		_, err := createBuildbucketTask(ctx, nil, createBuildbucketTaskRequest{taskName: "e"})
 		So(err, ShouldErrLike, "unsupported")
 	})
 }

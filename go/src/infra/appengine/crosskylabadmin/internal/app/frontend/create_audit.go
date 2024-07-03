@@ -13,12 +13,13 @@ import (
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"infra/libs/fleet/scheduling/schedulers"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
 
 // CreateAuditTask kicks off an audit job.
-func CreateAuditTask(ctx context.Context, botID string, taskname string, actions string, randFloat float64) (string, error) {
+func CreateAuditTask(ctx context.Context, botID, pool, taskname, actions string, randFloat float64) (string, error) {
 	// The actions field is a little bit tricky and consists of a comma-delimited list of actions.
 	// We're also using Paris in a slightly different way than legacy.
 	// Each audit action will correspond to one paris job, always.
@@ -28,7 +29,11 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 		logging.Errorf(ctx, "error when normalizing task name: %q", err)
 	}
 
-	bbURL, cErr := createBuildbucketTask(ctx, createBuildbucketTaskRequest{
+	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pool)
+	if err != nil {
+		return "", errors.Annotate(err, "CreateAuditTask: initializing Scheduke client").Err()
+	}
+	bbURL, cErr := createBuildbucketTask(ctx, sc, createBuildbucketTaskRequest{
 		taskName: tn,
 		taskType: buildbucket.CIPDProd,
 		botID:    botID,
