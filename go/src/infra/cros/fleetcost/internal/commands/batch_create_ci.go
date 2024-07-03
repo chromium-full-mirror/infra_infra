@@ -137,6 +137,9 @@ func uploadRow(ctx context.Context, fleetCostClient fleetcostAPI.FleetCostClient
 		return err
 	}
 	board := m["board"]
+	if replacement := site.ReservedCostIndicatorNames[board]; replacement != "" {
+		return fmt.Errorf("board %q cannot be used in an indicator, use %q instead", board, replacement)
+	}
 	model := m["model"]
 	var cost *money.Money
 	if err := makeMoneyRecorder(&cost)(m["cost"]); err != nil {
