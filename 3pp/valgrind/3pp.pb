@@ -15,8 +15,4 @@ create {
   }
 }
 
-create {
-  platform_re: "linux-.*"
-}
-
 upload { pkg_prefix: "tools" }
