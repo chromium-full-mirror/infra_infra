@@ -103,12 +103,17 @@ func UpdateBQTable(ctx context.Context, projectID, table string) error {
 	return updateBQTable(ctx, projectID, table, false)
 }
 
-func updateBQTable(ctx context.Context, projectID, table string, initializeTable bool) error {
+func updateBQTable(ctx context.Context, projectID, table string, initializeTable bool) (err error) {
 	client, err := bigquery.NewClient(ctx, projectID)
 	if err != nil {
 		return err
 	}
-	defer client.Close()
+	defer func() {
+		cerr := client.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	d := client.Dataset("ninjalog")
 	t := d.Table(table)
@@ -167,12 +172,17 @@ func updateBQTable(ctx context.Context, projectID, table string, initializeTable
 
 // CreateTransferConfig crates BigQuery transfer config that loads avro files
 // from GCS to BigQuery table periodically.
-func CreateTransferConfig(ctx context.Context, project, table string) (*datatransferpb.TransferConfig, error) {
+func CreateTransferConfig(ctx context.Context, project, table string) (tc *datatransferpb.TransferConfig, err error) {
 	client, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer client.Close()
+	defer func() {
+		cerr := client.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	displayName := table + " ninjalog transfer config"
 
@@ -184,7 +194,7 @@ func CreateTransferConfig(ctx context.Context, project, table string) (*datatran
 
 	for {
 		transferConfig, err := iter.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

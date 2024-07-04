@@ -60,7 +60,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		// This is mainly for ninjalog from chromium developer.
 		err := binary.Read(rand.Reader, binary.BigEndian, &buildID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get random build id: %v", err)
+			return nil, fmt.Errorf("failed to get random build id: %w", err)
 		}
 	}
 

@@ -538,12 +538,12 @@ func TestWeightedTime(t *testing.T) {
 
 func TestParseMetadata(t *testing.T) {
 	var m Metadata
-	mJson := `{"jobs": 1000, "platform": "Linux", "cpu_core": 48, "targets": ["chrome"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}}`
+	mJSON := `{"jobs": 1000, "platform": "Linux", "cpu_core": 48, "targets": ["chrome"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}}`
 
-	err := json.Unmarshal([]byte(mJson), &m)
+	err := json.Unmarshal([]byte(mJSON), &m)
 
 	if err != nil {
-		t.Errorf("failed to parse medatadata %q: %v", mJson, err)
+		t.Errorf("failed to parse medatadata %q: %v", mJSON, err)
 	}
 
 	want := Metadata{
@@ -565,7 +565,7 @@ func TestParseMetadata(t *testing.T) {
 	}
 
 	if diff := cmp.Diff(m, want); diff != "" {
-		t.Errorf("json.Unmarshal(%q, ...) mismatch (-want, +got):\n%s", mJson, diff)
+		t.Errorf("json.Unmarshal(%q, ...) mismatch (-want, +got):\n%s", mJSON, diff)
 	}
 }
 
