@@ -8,6 +8,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -15,6 +16,8 @@ import (
 	trace "cloud.google.com/go/trace/apiv2"
 	"cloud.google.com/go/trace/apiv2/tracepb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 // Trace is an entry of trace format.
@@ -80,7 +83,12 @@ func mustHexID(size int) string {
 // UploadTraceOnCriticalPath uploads build actions included in critical path of build in ninja log to Cloud Trace.
 func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string, nlog *NinjaLog) (rerr error) {
 	nlog.Steps = Dedup(nlog.Steps)
-	criticalPath := Flow(nlog.Steps, true)[0]
+	flow := Flow(nlog.Steps, true)
+	if len(flow) == 0 {
+		logging.Errorf(ctx, "no steps after calling Dedup() and Flow()")
+		return errors.New("no steps")
+	}
+	criticalPath := flow[0]
 
 	c, err := trace.NewClient(ctx)
 	if err != nil {

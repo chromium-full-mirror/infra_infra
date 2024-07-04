@@ -5,6 +5,7 @@
 package ninjalog
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -160,5 +161,13 @@ func TestTrace(t *testing.T) {
 
 	if !reflect.DeepEqual(traces, want) {
 		t.Errorf("ToTrace()=%v; want=%v", traces, want)
+	}
+}
+
+func TestUploadTraceOnCriticalPathWithEmptySteps(t *testing.T) {
+	ctx := context.Background()
+	err := UploadTraceOnCriticalPath(ctx, "testProj", "testTrace", &NinjaLog{})
+	if err == nil {
+		t.Errorf("UploadTraceOnCriticalPath() returns nil. expected an error")
 	}
 }

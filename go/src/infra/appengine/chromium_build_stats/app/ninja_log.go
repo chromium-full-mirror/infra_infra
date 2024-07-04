@@ -284,6 +284,12 @@ func uploadNinjaLogHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof(ctx, "ninjalog metadata: %v", info.Metadata)
 
+	if len(info.Steps) == 0 {
+		http.Error(w, "empty steps", http.StatusBadRequest)
+		log.Warningf(ctx, "empty steps")
+		return
+	}
+
 	if err := ninjalog.WriteNinjaLogToGCS(ctx, info, appengine.AppID(ctx)+".appspot.com", "ninjalog_users_avro/"+uuid.NewString()); err != nil {
 		http.Error(w, "failed to write to GCS", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to write to GCS: %v", err)
