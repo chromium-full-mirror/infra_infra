@@ -1,4 +1,9 @@
 create {
+  platform_re: "windows-386"
+  unsupported: true
+}
+
+create {
   source {
     patch_version: "chromium.3"
   }
