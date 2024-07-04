@@ -17,9 +17,10 @@ var (
 	containerRegistry = "gcr.io/chromium-container-registry/infra-dockerbuild/"
 	containerVersion  = ":v1.4.21"
 	containers        = map[string]string{
-		"amd64": containerRegistry + "manylinux-x64-py3" + containerVersion,
-		"arm64": containerRegistry + "linux-arm64-py3" + containerVersion,
-		"arm":   containerRegistry + "linux-armv6-py3" + containerVersion,
+		"amd64":   containerRegistry + "manylinux-x64-py3" + containerVersion,
+		"arm64":   containerRegistry + "linux-arm64-py3" + containerVersion,
+		"arm":     containerRegistry + "linux-armv6-py3" + containerVersion,
+		"riscv64": containerRegistry + "linux-riscv64-py3" + containerVersion,
 	}
 )
 
