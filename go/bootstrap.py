@@ -54,9 +54,9 @@ TOOLS_SPEC_FILE = '.tools_spec.json'
 #
 # Some builders use "legacy" and "bleeding_edge" variants.
 TOOLSET_VERSIONS = {
-    'default': '1.22.4',
-    'legacy': '1.22.4',
-    'bleeding_edge': '1.22.4',
+    'default': '1.22.5',
+    'legacy': '1.22.5',
+    'bleeding_edge': '1.22.5',
 }
 
 # Layout is the layout of the bootstrap installation.
@@ -192,11 +192,9 @@ def install_toolset(toolset_root, version):
   ],
                          stdin=subprocess.PIPE,
                          universal_newlines=True)
-  cmd.communicate(
-    '$ParanoidMode CheckIntegrity\n'
-    '@Subdir go\n'
-    'infra/3pp/tools/go/${platform} version:2@%s\n' % version
-  )
+  cmd.communicate('$ParanoidMode CheckIntegrity\n'
+                  '@Subdir go\n'
+                  'infra/3pp/tools/go/${platform} version:3@%s\n' % version)
   if cmd.returncode:
     raise Failure('CIPD call failed, exit code %d' % cmd.returncode)
   LOGGER.info('Validating...')
