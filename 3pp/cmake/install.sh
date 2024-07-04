@@ -62,6 +62,9 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
   # extra PaxHeader in the unittest.
   #
   # curl test hits the internet and is flaky.
+  #
+  # SwiftOnly test doesn't seem to work with our mac version after
+  # https://gitlab.kitware.com/cmake/cmake/-/merge_requests/9379/.
 
   # Tests which are flaky when run in parallel.
   SERIAL_TESTS="CTestLimitDashJ|FileDownload|CTestTimeoutAfterMatch|kwsys.testProcess-1|TryCompile|RunCMake.ctest_test"
@@ -78,7 +81,7 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --exclude-regex "(CMake.CheckSourceTree|RunCMake.CPack_STGZ|curl|BootstrapTest|${SERIAL_TESTS})"
+    --exclude-regex "(CMake.CheckSourceTree|RunCMake.CPack_STGZ|curl|BootstrapTest|SwiftOnly|${SERIAL_TESTS})"
 
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest \
