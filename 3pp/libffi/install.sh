@@ -25,5 +25,5 @@ make install -j $(nproc)
 if [[ $_3PP_PLATFORM != "linux-riscv64" ]]; then
   mkdir $PREFIX/include
   (cd $PREFIX/include && ln -s ../lib/libffi*/include/*.h ./)
-  (cd $PREFIX/lib && ln -s ../lib64/* ./)
+  (cd $PREFIX/lib && [ -z "$(ls ../lib64/* 2>/dev/null)" ] || ln -s ../lib64/* ./)
 fi
