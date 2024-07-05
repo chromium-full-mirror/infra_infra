@@ -51,8 +51,9 @@ def setup(exe) -> None:
         # PATH is special-cased because we don't want to overwrite other things
         # like C:\Windows\System32. Others are replacements because prepending
         # doesn't necessarily makes sense, like VSINSTALLDIR.
+        # Iterate reversely to keep the order since we are prepending the path.
         if k == Execution.ENV_PATH:
-          for v in normalized:
+          for v in reversed(normalized):
             exe.prepend_to_search_path(k, v)
         else:
           exe.env[k] = os.path.pathsep.join(map(str, normalized))
