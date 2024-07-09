@@ -62,7 +62,7 @@ then
 fi
 
 # Determine the oldest commit between dumper and service
-OLD_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_OLD_GIT".."$DUMPER_OLD_GIT" -- . ../cmd/shivas)
+OLD_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_OLD_GIT".."$DUMPER_OLD_GIT" -- .)
 OLD_COMMIT=$DUMPER_OLD_GIT
 if [[ ${#OLD_COMMIT_LOG} -gt 0 ]]
 then
@@ -70,7 +70,7 @@ then
 fi
 
 # Determine the newest commit between dumper and service
-NEW_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_NEW_GIT".."$DUMPER_NEW_GIT" -- . ../cmd/shivas)
+NEW_COMMIT_LOG=$(git log refs/remotes/origin/main --oneline "$SERVICE_NEW_GIT".."$DUMPER_NEW_GIT" -- .)
 NEW_COMMIT=$SERVICE_NEW_GIT
 if [[ ${#NEW_COMMIT_LOG} -gt 0 ]]
 then
@@ -78,7 +78,7 @@ then
 fi
 
 # Get the changelog content
-CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- . ../cmd/shivas)
+CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- .)
 
 # Change back to workdir to create the CL
 pushd "$WORKDIR" >/dev/null || (
@@ -138,7 +138,7 @@ cat - <<EOF
 ufs-announce@google.com
 
 == Title:
-UFS & shivas push ($VER_CHANGE)
+UFS push ($VER_CHANGE)
 
 == Content:
 
