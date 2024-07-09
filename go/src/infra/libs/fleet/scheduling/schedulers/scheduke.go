@@ -8,6 +8,7 @@ package schedulers
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"go.chromium.org/luci/auth"
@@ -22,36 +23,42 @@ const schedukeTaskSwarmingTagKey = "scheduke-admin-task"
 
 // schedukeAPI implements api.TaskSchedulingAPI.
 type schedukeAPI struct {
-	client *common.SchedukeClient
+	schedukeClient *common.SchedukeClient
+	gerritClient   *http.Client
 	// The Swarming "label-pool" value of the DUT for which an admin task is being
 	// scheduled. (Not a Swarming pool.)
 	pool string
+	// Whether this API is being used in a CLI (instead of other automation).
+	usedByCLI bool
+	authOpts  auth.Options
 }
 
 // NewSchedukeClientForCLI constructs a new Scheduke TaskSchedulingAPI for use
 // in a CLI.
 func NewSchedukeClientForCLI(ctx context.Context, pool string, authOpts auth.Options) (api.TaskSchedulingAPI, error) {
-	dev := pool == common.SchedukeDevPool
-	c, err := common.NewSchedukeClientForEnv(ctx, dev, authOpts)
+	gc, err := common.GerritClient(ctx, authOpts)
 	if err != nil {
-		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Scheduke client").Err()
+		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client to read Device Manager allowlist").Err()
 	}
 	return &schedukeAPI{
-		client: c,
-		pool:   pool,
+		gerritClient: gc,
+		pool:         pool,
+		usedByCLI:    true,
+		authOpts:     authOpts,
 	}, nil
 }
 
 // NewSchedukeClientForAutomation constructs a new Scheduke TaskSchedulingAPI
 // for use from automation.
 func NewSchedukeClientForAutomation(ctx context.Context, pool string) (api.TaskSchedulingAPI, error) {
-	c, err := common.NewSchedukeClient(ctx, pool, false)
+	gc, err := common.GerritClient(ctx, common.GerritAuthOptsOnBot)
 	if err != nil {
-		return nil, errors.Annotate(err, "creating Scheduke client for automation: initializing Scheduke client").Err()
+		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client to read Device Manager allowlist").Err()
 	}
 	return &schedukeAPI{
-		client: c,
-		pool:   pool,
+		gerritClient: gc,
+		pool:         pool,
+		usedByCLI:    false,
 	}, nil
 }
 
@@ -59,7 +66,11 @@ func NewSchedukeClientForAutomation(ctx context.Context, pool string) (api.TaskS
 //
 // ScheduleTask parses the ScheduleTaskRequest into a BuildBucket request and
 // sends it to Scheduke for task scheduling.
-func (s *schedukeAPI) ScheduleTask(_ context.Context, req *api.ScheduleTaskRequest) (*api.Task, error) {
+func (s *schedukeAPI) ScheduleTask(ctx context.Context, req *api.ScheduleTaskRequest) (*api.Task, error) {
+	// Initialize the Scheduke client if it has not already been initialized.
+	if err := s.setupSchedukeClient(ctx); err != nil {
+		return nil, errors.Annotate(err, "scheduling task via Scheduke").Err()
+	}
 	if err := req.Validate(); err != nil {
 		return nil, errors.Annotate(err, "scheduling task via Scheduke: validating request").Err()
 	}
@@ -71,11 +82,11 @@ func (s *schedukeAPI) ScheduleTask(_ context.Context, req *api.ScheduleTaskReque
 		Key:   schedukeTaskSwarmingTagKey,
 		Value: schedukeTagVal,
 	})
-	schedukeReq, err := s.client.AdminTaskReqToSchedukeReq(bbReq, name, s.pool)
+	schedukeReq, err := s.schedukeClient.AdminTaskReqToSchedukeReq(bbReq, name, s.pool)
 	if err != nil {
 		return nil, errors.Annotate(err, "scheduling task via Scheduke: generating Scheduke request for %s", builderName).Err()
 	}
-	resp, err := s.client.ScheduleExecution(schedukeReq)
+	resp, err := s.schedukeClient.ScheduleExecution(schedukeReq)
 	if err != nil {
 		return nil, errors.Annotate(err, "scheduling task via Scheduke: scheduling execution request on Scheduke").Err()
 	}
@@ -90,11 +101,15 @@ func (s *schedukeAPI) ScheduleTask(_ context.Context, req *api.ScheduleTaskReque
 }
 
 // CancelTasks takes a CancelTasksRequest and returns error if encountered.
-func (s *schedukeAPI) CancelTasks(_ context.Context, req *api.CancelTasksRequest) error {
+func (s *schedukeAPI) CancelTasks(ctx context.Context, req *api.CancelTasksRequest) error {
+	// Initialize the Scheduke client if it has not already been initialized.
+	if err := s.setupSchedukeClient(ctx); err != nil {
+		return errors.Annotate(err, "canceling Scheduke task").Err()
+	}
 	if err := req.Validate(); err != nil {
 		return errors.Annotate(err, "canceling Scheduke task: validating request").Err()
 	}
-	err := s.client.CancelTasks(req.GetTaskIds(), nil, nil)
+	err := s.schedukeClient.CancelTasks(req.GetTaskIds(), nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "canceling Scheduke task: sending task cancellation request to Scheduke").Err()
 	}
@@ -103,9 +118,39 @@ func (s *schedukeAPI) CancelTasks(_ context.Context, req *api.CancelTasksRequest
 
 // ShouldUseDM determines if the caller should use Device Manager or not.
 func (s *schedukeAPI) ShouldUseDM() (bool, error) {
-	useDM, err := s.client.ShouldUseDM(s.pool)
+	useDM, err := common.ShouldUseDM(s.gerritClient, s.pool)
 	if err != nil {
-		return false, errors.Annotate(err, "should use DM: calling Scjedile").Err()
+		return false, errors.Annotate(err, "should use DM: calling Scheduke").Err()
 	}
 	return useDM, nil
+}
+
+// setupSchedukeClient initializes the underlying Scheduke client for this API if
+// it has not already been initialized.
+func (s *schedukeAPI) setupSchedukeClient(ctx context.Context) error {
+	// Return early if client has already been initialized.
+	if s.schedukeClient != nil {
+		return nil
+	}
+
+	var (
+		c   *common.SchedukeClient
+		err error
+	)
+
+	if s.usedByCLI {
+		dev := s.pool == common.SchedukeDevPool
+		c, err = common.NewSchedukeClientForEnv(ctx, dev, s.authOpts)
+		if err != nil {
+			return errors.Annotate(err, "initializing Scheduke client for CLI").Err()
+		}
+	} else {
+		c, err = common.NewSchedukeClient(ctx, s.pool, false)
+		if err != nil {
+			return errors.Annotate(err, "initializing Scheduke client for automation").Err()
+		}
+	}
+
+	s.schedukeClient = c
+	return nil
 }

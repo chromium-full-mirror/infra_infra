@@ -7,7 +7,6 @@ package common
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,7 +23,6 @@ import (
 	schedukeapi "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
@@ -46,10 +44,6 @@ var (
 	blockedPoolsURL                 = poolConfigsDirURL + "blocked_pools.txt?format=text"
 	dmPoolsURL                      = poolConfigsDirURL + "dm_pools.txt?format=text"
 	schedukePoolsURL                = poolConfigsDirURL + "ctp2_pools.txt?format=text"
-	gerritAuthOptsOnBot             = chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Method: auth.AutoSelectMethod,
-		Scopes: []string{auth.OAuthScopeEmail, gitiles.OAuthScope},
-	})
 )
 
 type SchedukeClient struct {
@@ -84,7 +78,7 @@ func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeC
 	}
 
 	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
-	err := client.setUpHTTPClients(gerritAuthOptsOnBot)
+	err := client.setUpHTTPClients(GerritAuthOptsOnBot)
 	return &client, err
 }
 
@@ -92,8 +86,7 @@ func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeC
 // authentication set up.
 func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
 	// Gerrit requires auth options whether running locally or on a bot.
-	ga := auth.NewAuthenticator(s.ctx, auth.SilentLogin, gerritAuthOpts)
-	gc, err := ga.Client()
+	gc, err := GerritClient(s.ctx, gerritAuthOpts)
 	if err != nil {
 		return errors.Annotate(err, "create Gerrit http client").Err()
 	}
@@ -200,7 +193,7 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 		resolvePool(e)
 		pools = append(pools, e.Pool)
 	}
-	poolsBlocked, err := s.AnyStringInGerritList(pools, blockedPoolsURL)
+	poolsBlocked, err := AnyStringInGerritList(s.gerritClient, pools, blockedPoolsURL)
 	if err != nil {
 		return nil, err
 	}
@@ -293,7 +286,7 @@ func (s *SchedukeClient) TestRunnerBBReqToSchedukeReq(bbReq *buildbucketpb.Sched
 	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
 
 	var experiments []string
-	useDM, err := s.ShouldUseDM(pool)
+	useDM, err := ShouldUseDM(s.gerritClient, pool)
 	if err != nil {
 		return nil, fmt.Errorf("error checking whether to use DM for pool %s: %w", pool, err)
 	}
@@ -368,7 +361,7 @@ func (s *SchedukeClient) AdminTaskReqToSchedukeReq(bbReq *buildbucketpb.Schedule
 // Scheduke with the given dimensions and lease length in minutes, for the given
 // user, at the given time.
 func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensions, pool, deviceName, user string, mins int64, t time.Time) (*schedukeapi.KeyedTaskRequestEvents, error) {
-	useDM, err := s.ShouldUseDM(pool)
+	useDM, err := ShouldUseDM(s.gerritClient, pool)
 	if err != nil {
 		return nil, err
 	}
@@ -414,54 +407,6 @@ func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensio
 	}, nil
 }
 
-// ShouldUseDM returns a bool indicating whether a task request with the given
-// pool should enable the Device Manager experiment.
-func (s *SchedukeClient) ShouldUseDM(pool string) (bool, error) {
-	return s.AnyStringInGerritList([]string{pool}, dmPoolsURL)
-}
-
-// AnyStringInGerritList checks for any overlap between the given list of
-// strings, adn the list at the given Gerrit URL.
-func (s *SchedukeClient) AnyStringInGerritList(list []string, listURL string) (bool, error) {
-	fileText, err := s.fetchFileFromURL(listURL)
-	if err != nil {
-		return false, err
-	}
-	listFromURL := strings.Split(string(fileText), ",")
-	mapFromURL := map[string]bool{}
-	for _, str := range listFromURL {
-		mapFromURL[str] = true
-	}
-	for _, str := range list {
-		if mapFromURL[str] {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-// fetchFileFromURL retrieves text from the given URL, using LUCI auth.
-func (s *SchedukeClient) fetchFileFromURL(url string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return []byte{}, fmt.Errorf("error constructing GET request to %s: %w", url, err)
-	}
-	resp, err := sendHTTPRequestWithRetries(s.gerritClient, req, true)
-	if err != nil {
-		return []byte{}, fmt.Errorf("error fetching file from %s: %w", url, err)
-	}
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return []byte{}, fmt.Errorf("error reading file body from %s: %w", url, err)
-	}
-	bs, err := base64.StdEncoding.DecodeString(string(data))
-	if err != nil {
-		return []byte{}, fmt.Errorf("error decoding data from %s: %w", url, err)
-	}
-	return bs, nil
-}
-
 // ReadTaskStates calls Scheduke to read task states for the given task state
 // IDs, users, and/or device names.
 func (s *SchedukeClient) ReadTaskStates(taskStateIDs []int64, users, deviceNames []string) (*schedukeapi.ReadTaskStatesResponse, error) {
@@ -492,6 +437,12 @@ func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []
 		return errors.Annotate(err, "executing HTTP request").Err()
 	}
 	return nil
+}
+
+// ShouldUseDM returns a bool indicating whether a task request with the given
+// pool should enable the Device Manager experiment.
+func ShouldUseDM(c clientThatSendsRequests, pool string) (bool, error) {
+	return AnyStringInGerritList(c, []string{pool}, dmPoolsURL)
 }
 
 // schedukeParams converts a list of task state IDs, users, and device names to

@@ -11,6 +11,7 @@ import (
 	schedukepb "go.chromium.org/chromiumos/config/go/test/scheduling"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/errors"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 )
@@ -111,9 +112,9 @@ func Leases(ctx context.Context, authOpts auth.Options, dev bool) ([]*LeaseInfo,
 // ShouldUseScheduke returns a bool indicating whether a lease request in the
 // pool should use this Scheduke API.
 func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) (bool, error) {
-	sc, err := NewSchedukeClientForEnv(ctx, false, authOpts)
+	gc, err := GerritClient(ctx, authOpts)
 	if err != nil {
-		return false, err
+		return false, errors.Annotate(err, "initializing Gerrit client to read Scheduke pools allowlist").Err()
 	}
-	return sc.AnyStringInGerritList([]string{pool}, schedukePoolsURL)
+	return AnyStringInGerritList(gc, []string{pool}, schedukePoolsURL)
 }
