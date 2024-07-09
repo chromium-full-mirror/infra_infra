@@ -39,6 +39,6 @@ cmake .. \
 
 make -j $(nproc)
 if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then
-  make test -j $(nproc)
+  make test -j $(nproc) || (status=$?; cat Testing/Temporary/LastTest.log; exit $status)
 fi
 make install -j $(nproc)
