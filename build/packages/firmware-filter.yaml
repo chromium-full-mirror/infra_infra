@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2-filters/firmware-filter/${platform}
+description: CTPv2 filter responsible for defining firmware
+ provision states for each scheduling unit.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/firmware-filter
+root: ../../go/bin
+data:
+  - file: firmware-filter${exe_suffix}
+  - version_file: .versions/firmware-filter${exe_suffix}.cipd_version
