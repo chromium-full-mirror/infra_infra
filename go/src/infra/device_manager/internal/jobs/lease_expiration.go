@@ -45,7 +45,6 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 		logging.Errorf(ctx, err.Error())
 		return err
 	}
-	logging.Debugf(ctx, "released %d leases: %v", len(leaseIDs), leaseIDs)
 
 	// Try to pull updated dimensions for devices; mark as inactive if not found.
 	// NOTE: this is not a batch operation as we serialize the requests to UFS, so
@@ -64,6 +63,9 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 		logging.Errorf(ctx, err.Error())
 		return err
 	}
+
+	// Log updates once we're ready to commit the transaction.
+	logging.Debugf(ctx, "released %d leases: %v", len(leaseIDs), leaseIDs)
 	logging.Debugf(ctx, "released %d devices: %v", len(deviceIDs), deviceIDs)
 
 	// Commit transaction.
@@ -127,7 +129,7 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 				last_updated_time TIMESTAMP WITHOUT TIME ZONE
 			) ON COMMIT DROP;`
 		insertStmt = `
-			INSERT INTO temp_device (
+			INSERT INTO temp_devices (
 				id,
 				device_state,
 				is_active,
