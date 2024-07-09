@@ -1,0 +1,21 @@
+# Automatically builds the container for the Device Manager Notifier service
+# that will be deployed to Cloud Run.
+#
+# To test this config run:
+#    cloudbuildhelper build notifier-service.yaml
+#
+# For more information see:
+#    https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/#testing-changes-locally
+
+name: device-manager/notifier-service
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/device_manager/cmd/notifier_service/docker/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/device_manager
+
+build:
+  - go_binary: infra/device_manager/cmd/notifier_service
+    dest: ${contextdir}/notifier-service
