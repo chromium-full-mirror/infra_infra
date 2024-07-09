@@ -74,7 +74,7 @@ func (c *Client) bumpVersionIfNeeded(
 
 	errs := []error{
 		err,
-		git.PushRef(versionProjectCheckout, "HEAD", remoteRef, git.DryRunIf(dryRun)),
+		git.PushRef(versionProjectCheckout, "HEAD", remoteRef, git.DryRunIf(dryRun), git.PushOption("push-justification=b/329668450")),
 	}
 	for _, err := range errs {
 		if err != nil {
