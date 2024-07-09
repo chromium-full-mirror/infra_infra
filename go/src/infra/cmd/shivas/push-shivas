@@ -1,0 +1,57 @@
+#!/bin/bash -e
+
+instance=infra/shivas/linux-amd64
+
+function get_instance_id() {
+	echo $(cipd describe -version $1 $instance | awk -F ': +' '/Instance ID:/{print $2}')
+}
+function get_git_revision() {
+	echo $(cipd describe -version $1 $instance | awk -F ':' '/git_revision/{print $2; exit}')
+}
+function get_data() {
+	echo $(get_instance_id $1) $(get_git_revision $1)
+}
+
+echo "Get the latest CIPD and git information..."
+read latest_id latest_git < <(get_data "latest")
+read prod_id prod_git < <(get_data "prod")
+echo "Latest ID: $latest_id"
+echo "Prod ID: $prod_id"
+
+git fetch origin main
+changelist=$(git log refs/remotes/origin/main --oneline ${prod_git}..${latest_git} -- .)
+
+cat <<EOF
+The push will includes below changes:
+
+$changelist
+
+Are they good? [y/n]
+EOF
+
+read confirm
+
+if [[ "${confirm}" != "y" ]]; then
+	echo "Aborting the push"
+	exit 1
+fi
+
+cipd set-ref infra/shivas/ -ref last-prod -version prod
+cipd set-ref infra/shivas/ -ref prod -version latest
+
+cat <<EOF
+Don't forget to send out an announcement!
+To:
+ufs-announce@google.com
+
+Title:
+Shivas push to prod(${latest_git})
+
+Content:
+Previous CIPD instance id: ${prod_id}
+
+New CIPD instance id: ${latest_id}
+
+Change-list:
+${changelist}
+EOF
