@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	models "infra/cros/fleetcost/api/models"
@@ -29,20 +30,20 @@ func StoreCachedCostResult(ctx context.Context, hostname string, result *models.
 
 // ReadCachedCostResult reads a cached cost result if it's before the deadline.
 func ReadCachedCostResult(ctx context.Context, hostname string) (*models.CostResult, error) {
-	deadline := time.Now().UTC()
-	query := datastore.NewQuery(entities.CachedCostResultKind).Eq("hostname", hostname)
-	var ents []*entities.CachedCostResultEntity
-	if err := datastore.GetAll(ctx, query, &ents); err != nil {
-		return nil, err
+	now := time.Now().UTC()
+	entity := &entities.CachedCostResultEntity{
+		Hostname: hostname,
 	}
-	if len(ents) == 0 {
-		return nil, datastore.ErrNoSuchEntity
+	// Funny story, this used to be a datastore.NewQuery, but that failed when I was testing it
+	// because no cache entities existed. That gave us the cool error shown below:
+	//
+	// > fleet cost: get cost result: rpc error: code = FailedPrecondition desc = The query requires an ASC or DESC index for kind CachedCostResultKind and property hostname.
+	//
+	if err := datastore.Get(ctx, entity); err != nil {
+		return nil, errors.Annotate(err, "error looking up cached cost result").Err()
 	}
-	if len(ents) != 1 {
-		return nil, fmt.Errorf("cache inconsitency: found %d records for hostname %q", len(ents), hostname)
+	if entity.ExpirationTime.After(now) {
+		return entity.CostResult, nil
 	}
-	if ents[0].ExpirationTime.After(deadline) {
-		return ents[0].CostResult, nil
-	}
-	return nil, fmt.Errorf("expiration time is too early: %s is after %s", ents[0].ExpirationTime.String(), deadline.String())
+	return nil, fmt.Errorf("expiration time is too early: %s is after %s", entity.ExpirationTime.String(), now.String())
 }
