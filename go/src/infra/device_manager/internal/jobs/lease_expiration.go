@@ -80,6 +80,11 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 
 // constructUpdatedDevices constructs Devices using updated information.
 func constructUpdatedDevices(ctx context.Context, deviceIDs []string, updateTime time.Time) ([]model.Device, error) {
+	// Skip if no devices to update.
+	if len(deviceIDs) == 0 {
+		return nil, nil
+	}
+
 	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	client, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
@@ -119,6 +124,11 @@ func constructUpdatedDevices(ctx context.Context, deviceIDs []string, updateTime
 
 // bulkReleaseDevices releases a list of Devices in bulk
 func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.Device) error {
+	// Skip if no devices to release.
+	if len(updatedDevices) == 0 {
+		return nil
+	}
+
 	var (
 		createQuery = `
 			CREATE TEMPORARY TABLE temp_devices (
