@@ -94,5 +94,11 @@ func GetConfigs() []*UprevConfig {
 				"provision-filter-q.txt",
 			},
 		},
+		{
+			Name: "firmware-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/firmware-filter/${platform}"),
+			},
+		},
 	}
 }
