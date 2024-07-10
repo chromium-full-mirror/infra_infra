@@ -7,7 +7,6 @@ package common
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"math"
 	"net/http"
@@ -54,22 +53,21 @@ func AnyStringInGerritList(c clientThatSendsRequests, list []string, listURL str
 func fetchFileFromURL(c clientThatSendsRequests, url string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error constructing GET request to %s: %w", url, err)
+		return nil, errors.Annotate(err, "fetch file %q: create request", url).Err()
 	}
 	resp, err := sendHTTPRequestWithRetries(c, req, true)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching file from %s: %w", url, err)
+		return nil, errors.Annotate(err, "fetch file %q", url).Err()
 	}
-
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.Reason("fetch file %q: response code: %d", url, resp.StatusCode).Err()
+	}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("error reading file body from %s: %w", url, err)
+		return nil, errors.Annotate(err, "fetch file %q: read body", url).Err()
 	}
 	bs, err := base64.StdEncoding.DecodeString(string(data))
-	if err != nil {
-		return nil, fmt.Errorf("error decoding data from %s: %w", url, err)
-	}
-	return bs, nil
+	return bs, errors.Annotate(err, "fetch file %q: decode data", url).Err()
 }
 
 // sendHTTPRequestWithRetries sends the given request with the given HTTP
