@@ -184,13 +184,13 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	}
 	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pools[0])
 	if err != nil {
-		return "", errors.Annotate(err, "CreateRepairTask: initializing Scheduke client").Err()
+		logging.Errorf(ctx, "Create Repair task. Fail to create Scheduke client! %w", err)
+		// That is ok to do nothing if we fail as then we will not use Scheduke and fall to BB.
+		sc = nil
+		// return "", errors.Annotate(err, "create repair task").Err()
 	}
 	url, err := createBuildbucketTask(ctx, sc, r)
-	if err != nil {
-		return "", errors.Annotate(err, "create repair task").Err()
-	}
-	return url, err
+	return url, errors.Annotate(err, "create repair task").Err()
 }
 
 // DUTRoutingInfo is all the deterministic information about a DUT that is necessary to decide

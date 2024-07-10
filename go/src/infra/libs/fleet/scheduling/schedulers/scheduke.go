@@ -13,7 +13,9 @@ import (
 
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	gitilesApi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
+	luciauth "go.chromium.org/luci/server/auth"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/libs/fleet/scheduling/api"
@@ -38,27 +40,29 @@ type schedukeAPI struct {
 func NewSchedukeClientForCLI(ctx context.Context, pool string, authOpts auth.Options) (api.TaskSchedulingAPI, error) {
 	gc, err := common.GerritClient(ctx, authOpts)
 	if err != nil {
-		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client to read Device Manager allowlist").Err()
+		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client").Err()
 	}
 	return &schedukeAPI{
-		gerritClient: gc,
-		pool:         pool,
-		usedByCLI:    true,
-		authOpts:     authOpts,
+		usedByCLI:      true,
+		gerritClient:   gc,
+		pool:           pool,
+		authOpts:       authOpts,
+		schedukeClient: nil,
 	}, nil
 }
 
 // NewSchedukeClientForAutomation constructs a new Scheduke TaskSchedulingAPI
-// for use from automation.
+// for use from services.
 func NewSchedukeClientForAutomation(ctx context.Context, pool string) (api.TaskSchedulingAPI, error) {
-	gc, err := common.GerritClient(ctx, common.GerritAuthOptsOnBot)
+	transport, err := luciauth.GetRPCTransport(ctx, luciauth.AsSelf, luciauth.WithScopes(auth.OAuthScopeEmail, gitilesApi.OAuthScope))
 	if err != nil {
-		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client to read Device Manager allowlist").Err()
+		return nil, errors.Annotate(err, "creating Scheduke client for automation: initializing Gerrit client").Err()
 	}
 	return &schedukeAPI{
-		gerritClient: gc,
-		pool:         pool,
-		usedByCLI:    false,
+		usedByCLI:      false,
+		gerritClient:   &http.Client{Transport: transport},
+		pool:           pool,
+		schedukeClient: nil,
 	}, nil
 }
 
@@ -145,7 +149,8 @@ func (s *schedukeAPI) setupSchedukeClient(ctx context.Context) error {
 			return errors.Annotate(err, "initializing Scheduke client for CLI").Err()
 		}
 	} else {
-		c, err = common.NewSchedukeClient(ctx, s.pool, false)
+		isLocalService := false
+		c, err = common.NewSchedukeClient(ctx, s.pool, isLocalService)
 		if err != nil {
 			return errors.Annotate(err, "initializing Scheduke client for automation").Err()
 		}

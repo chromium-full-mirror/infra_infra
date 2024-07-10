@@ -31,7 +31,10 @@ func CreateAuditTask(ctx context.Context, botID, pool, taskname, actions string,
 
 	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pool)
 	if err != nil {
-		return "", errors.Annotate(err, "CreateAuditTask: initializing Scheduke client").Err()
+		logging.Errorf(ctx, "Create Audit task. Fail to create Scheduke client! %w", err)
+		// That is ok to do nothing if we fail as then we will not use Scheduke and fall to BB.
+		sc = nil
+		// return "", errors.Annotate(cErr, "create audit task").Err()
 	}
 	bbURL, cErr := createBuildbucketTask(ctx, sc, createBuildbucketTaskRequest{
 		taskName: tn,
