@@ -269,14 +269,20 @@ func releaseDMLease(ctx context.Context, lg logger.Logger, leaseID, pool string)
 // getPool returns the pool for the DUT that the given build state is running
 // on, or returns false if it was not found.
 func getPool(s *build.State) (string, bool) {
-	for _, d := range s.Build().GetInfra().GetSwarming().GetBotDimensions() {
-		if d.GetKey() == "label-pool" {
-			v := d.GetValue()
-			if v == "" {
-				return "", false
-			}
-			return v, true
+	details := s.Build().GetInfra().GetBackend().GetTask().GetDetails()
+	dims, ok := details.GetFields()["bot_dimensions"]
+	if !ok {
+		return "", false
+	}
+	poolsStruct, ok := dims.GetStructValue().GetFields()["label-pool"]
+	if !ok {
+		return "", false
+	}
+	for _, p := range poolsStruct.GetListValue().GetValues() {
+		if p.GetStringValue() == "" {
+			continue
 		}
+		return p.GetStringValue(), true
 	}
 	return "", false
 }
