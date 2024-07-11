@@ -13,7 +13,7 @@ func TestExtractBoardAndVariant(t *testing.T) {
 	expectedBoard := amdTest
 	expectedVariant := ""
 
-	board, variant, err := extractBoardAndVariant(amdTest)
+	board, variant, err := ExtractBoardAndVariant(amdTest)
 	if err != nil {
 		t.Error(err)
 		return
@@ -29,7 +29,7 @@ func TestExtractBoardAndVariant(t *testing.T) {
 	expectedBoard = fizzLabstationTest
 	expectedVariant = ""
 
-	board, variant, err = extractBoardAndVariant(fizzLabstationTest)
+	board, variant, err = ExtractBoardAndVariant(fizzLabstationTest)
 	if err != nil {
 		t.Error(err)
 		return
@@ -45,7 +45,7 @@ func TestExtractBoardAndVariant(t *testing.T) {
 	expectedBoard = "kevin"
 	expectedVariant = "64"
 
-	board, variant, err = extractBoardAndVariant(test64)
+	board, variant, err = ExtractBoardAndVariant(test64)
 	if err != nil {
 		t.Error(err)
 		return
@@ -61,7 +61,7 @@ func TestExtractBoardAndVariant(t *testing.T) {
 	expectedBoard = "kevin"
 	expectedVariant = "arc64"
 
-	board, variant, err = extractBoardAndVariant(test64Proper)
+	board, variant, err = ExtractBoardAndVariant(test64Proper)
 	if err != nil {
 		t.Error(err)
 		return
@@ -77,7 +77,7 @@ func TestExtractBoardAndVariant(t *testing.T) {
 	expectedBoard = "test64"
 	expectedVariant = "kernelnext"
 
-	board, variant, err = extractBoardAndVariant(testNormal)
+	board, variant, err = ExtractBoardAndVariant(testNormal)
 	if err != nil {
 		t.Error(err)
 		return

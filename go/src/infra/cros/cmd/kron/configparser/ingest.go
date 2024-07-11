@@ -37,35 +37,44 @@ func IsMultiDut(config *suschpb.SchedulerConfig) bool {
 // them into a more usage structure.
 func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerConfigs, error) {
 	configDS := &SuiteSchedulerConfigs{
-		configList:     ConfigList{},
-		newBuildList:   []*suschpb.SchedulerConfig{},
-		newBuildMap:    map[BuildTarget]ConfigList{},
-		newBuild3dList: ConfigList{},
-		configTargets:  map[string]TargetOptions{},
-		configMap:      map[TestPlanName]*suschpb.SchedulerConfig{},
-		dailyMap:       map[int]ConfigList{},
-		weeklyMap:      map[int]HourMap{},
-		fortnightlyMap: map[int]HourMap{},
+		configList:            ConfigList{},
+		newBuildList:          []*suschpb.SchedulerConfig{},
+		multiDUTList:          []*suschpb.SchedulerConfig{},
+		newBuild3dList:        ConfigList{},
+		newBuildMap:           map[BuildTarget]ConfigList{},
+		multiDUTMap:           map[BuildTarget]ConfigList{},
+		configTargets:         map[string]TargetOptions{},
+		multiDUTConfigTargets: map[string]map[string][]*MultiDutTargetOptions{},
+		configMap:             map[TestPlanName]*suschpb.SchedulerConfig{},
+		dailyMap:              map[int]ConfigList{},
+		weeklyMap:             map[int]HourMap{},
+		fortnightlyMap:        map[int]HourMap{},
 	}
 
 	for _, config := range configs {
-		targetOptions, err := GetTargetOptions(config, lab)
-		if err != nil {
-			return nil, err
+		var multiDUTTargets map[string][]*MultiDutTargetOptions
+		var targetOptions TargetOptions
+		var err error
+
+		if IsMultiDut(config) {
+			multiDUTTargets, err = GetMultiDutTargets(config, lab)
+			if err != nil {
+				return nil, err
+			}
+			configDS.multiDUTConfigTargets[config.Name] = multiDUTTargets
+		} else {
+			targetOptions, err = GetTargetOptions(config, lab)
+			if err != nil {
+				return nil, err
+			}
+			// Cache the calculated target options.
+			configDS.configTargets[config.Name] = targetOptions
 		}
 
 		// If the config targets firmware suites then skip ingesting the config.
 		if IsFirmware(config) {
 			continue
 		}
-
-		// If the config targets multi-dut suites then skip ingesting the config.
-		if IsMultiDut(config) {
-			continue
-		}
-
-		// Cache the calculated target options.
-		configDS.configTargets[config.Name] = targetOptions
 
 		// Add the configuration to the map which holds stores information on
 		// its LaunchProfile type
@@ -89,6 +98,8 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 			}
 		case suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD_3D:
 			configDS.addConfigToNewBuild3dList(config)
+		case suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT:
+			configDS.addConfigToMultiDUTMap(config, multiDUTTargets)
 		default:
 			return nil, fmt.Errorf("unsupported or unknown launch profile encountered in config %s", config.Name)
 		}
@@ -101,14 +112,15 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 // them into a more usage structure.
 func IngestLabConfigs(labConfig *suschpb.LabConfig) *LabConfigs {
 	tempConfig := &LabConfigs{
-		Models: map[Model]*BoardEntry{},
-		Boards: map[Board]*BoardEntry{},
+		Boards:        map[Board]*BoardEntry{},
+		Models:        map[Model]*BoardEntry{},
+		AndroidBoards: map[Board]*BoardEntry{},
+		AndroidModels: map[Model]*BoardEntry{},
 	}
 
 	for _, board := range labConfig.Boards {
 		entry := &BoardEntry{
-			isAndroid: false,
-			board:     board,
+			board: board,
 		}
 		tempConfig.Boards[Board(board.Name)] = entry
 
@@ -117,19 +129,19 @@ func IngestLabConfigs(labConfig *suschpb.LabConfig) *LabConfigs {
 		}
 	}
 
-	// TODO: When Multi-dut testing is supported we can uncomment this. We are
-	// removing it so that it does not get mixed in with regular boards for now.
-	// for _, board := range labConfig.AndroidBoards {
-	// 	entry := &BoardEntry{
-	// 		isAndroid: true,
-	// 		board:     board,
-	// 	}
-	// 	tempConfig.Boards[Board(board.Name)] = entry
+	// Android hardware is used in multi-DUT testing only and should be
+	// separated so that it does not get indirectly included in normal CrOS
+	// configs.
+	for _, board := range labConfig.AndroidBoards {
+		entry := &BoardEntry{
+			board: board,
+		}
+		tempConfig.AndroidBoards[Board(board.Name)] = entry
 
-	// 	for _, model := range board.Models {
-	// 		tempConfig.Models[Model(model)] = entry
-	// 	}
-	// }
+		for _, model := range board.Models {
+			tempConfig.AndroidModels[Model(model)] = entry
+		}
+	}
 
 	return tempConfig
 }

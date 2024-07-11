@@ -10,8 +10,6 @@ import (
 	"context"
 	"fmt"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -21,12 +19,12 @@ import (
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/pubsub"
-	"infra/cros/cmd/kron/totmanager"
 )
 
 const (
 	disallowPublishErrors = false
 	publishEventsToPubSub = true
+	isWriter              = true
 )
 
 // CrOSNewBuildCommand implements NewBuildCommand.
@@ -66,42 +64,6 @@ func (c *CrOSNewBuildCommand) Name() string {
 	return "CrOSNewBuilds"
 }
 
-// publishBuild uploads each build information proto to our long term storage
-// PSQL database and our Pub/Sub metrics pipeline.
-//
-// NOTE: We will attempt to write the build message to the PSQL DB before we try
-// uploading to pubsub. Since the BuildUUID is a hash, we will not be able to
-// upload the build twice.
-func publishBuild(ctx context.Context, kronBuild *kronpb.Build, psClient pubsub.PublishClient, sqlClient cloudsql.Client) error {
-	common.Stdout.Printf("Publishing build %s for build target %s and milestone %d to long term storage", kronBuild.BuildUuid, kronBuild.BuildTarget, kronBuild.Milestone)
-
-	// Convert the build to a PSQL compatible type.
-	psqlBuild, err := cloudsql.ConvertBuildToPSQLRow(kronBuild)
-	if err != nil {
-		return err
-	}
-
-	// Insert the row into Cloud SQL PSQL.
-	_, err = sqlClient.Exec(ctx, cloudsql.InsertBuildsTemplate, cloudsql.RowToSlice(psqlBuild)...)
-	if err != nil {
-		return err
-	}
-	common.Stdout.Printf("Published build %s for build target %s and milestone %d to PSQL", kronBuild.BuildUuid, kronBuild.BuildTarget, kronBuild.Milestone)
-
-	// Publish the build to Pub/Sub.
-	data, err := protojson.Marshal(kronBuild)
-	if err != nil {
-		return err
-	}
-	err = psClient.PublishMessage(ctx, data)
-	if err != nil {
-		return err
-	}
-	common.Stdout.Printf("Published build %s for build target %s and milestone %d to pub sub", kronBuild.BuildUuid, kronBuild.BuildTarget, kronBuild.Milestone)
-
-	return nil
-}
-
 // publishBuildReports generates and publishes a Kron Build message to Pub/Sub
 // for each of the successful release builds ingested.
 //
@@ -126,7 +88,7 @@ func (c *CrOSNewBuildCommand) publishBuildReports(buildReports *[]*builds.BuildR
 	}
 
 	// Initialize PSQL client for long term storage insertion.
-	sqlClient, err := cloudsql.InitBuildsClient(ctx, c.isProd, true)
+	sqlClient, err := cloudsql.InitBuildsClient(ctx, c.isProd, isWriter)
 	if err != nil {
 		return err
 	}
@@ -150,6 +112,9 @@ func (c *CrOSNewBuildCommand) publishBuildReports(buildReports *[]*builds.BuildR
 			// at the end. This is because this functions is supposed to change the
 			// values of the slice in-place rather than via return.
 			publishedReports = append(publishedReports, report)
+
+			// Continue so that we do not proceed to the publishing and acking
+			// step.
 			continue
 		}
 
@@ -245,53 +210,7 @@ func filterUnmigratedConfigs(buildToConfigsMap map[*kronpb.Build][]*suschpb.Sche
 // SuiteScheduler Configs they trigger. This is then organized into a map to be
 // used by the next stage in the pipeline.
 func (c *CrOSNewBuildCommand) FetchTriggeredConfigs(kronBuilds []*kronpb.Build) (map[*kronpb.Build][]*suschpb.SchedulerConfig, error) {
-	// Build the list of all configs triggered by the ingested build images.
-	common.Stdout.Println("Gathering all configs triggered from retrieved build images.")
-
-	// Group the list of configs by the kron build which triggered them. This
-	// will save us time later on recomputing which config needs what builds.
-	//
-	// NOTE: While the build is unique as it is the map key, the configs may be
-	// found in multiple map buckets. This is because each config likely targets
-	// multiple build targets.
-	buildToConfigsMap := map[*kronpb.Build][]*suschpb.SchedulerConfig{}
-	for _, build := range kronBuilds {
-		// Gather all configs which are triggered by the current builds
-		// buildTarget.
-		//
-		// NOTE: This cache is formed at the beginning of the run when we ingest
-		// the ToT SuiteScheduler configs.
-		configs := c.suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget(configparser.BuildTarget(build.BuildTarget))
-
-		// Iterate through the triggered configs and verify that they should be
-		// triggered in this run.
-		for _, config := range configs {
-			// If the build's milestone did not match the config's targeted
-			// branches then do not add this config to the build's to run list.
-			targeted, _, err := totmanager.IsTargetedBranch(int(build.Milestone), config.Branches)
-			if err != nil {
-				return nil, err
-			}
-			if !targeted {
-				common.Stdout.Printf("Config %s did not match milestone %d for buildTarget %s on build %s\n", config.Name, build.Milestone, build.BuildTarget, build.BuildUuid)
-				continue
-			}
-			common.Stdout.Printf("Config %s matched with build %s for buildTarget %s and milestone %d", config.Name, build.BuildUuid, build.BuildTarget, build.Milestone)
-
-			// If this is the first entry to the map create a list that we can
-			// append to.
-			if _, ok := buildToConfigsMap[build]; !ok {
-				buildToConfigsMap[build] = []*suschpb.SchedulerConfig{}
-			}
-
-			buildToConfigsMap[build] = append(buildToConfigsMap[build], config)
-		}
-	}
-
-	buildToConfigsMap = filterUnmigratedConfigs(buildToConfigsMap)
-
-	common.Stdout.Printf("%d builds being sent", len(buildToConfigsMap))
-	return buildToConfigsMap, nil
+	return fetchTriggeredConfigs(kronBuilds, c.suiteSchedulerConfigs.FetchNewBuildConfigsByBuildTarget)
 }
 
 // ScheduleRequests generates CTP Requests, batches them into BuildBucket

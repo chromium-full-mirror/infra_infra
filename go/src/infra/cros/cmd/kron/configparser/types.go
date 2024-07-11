@@ -48,20 +48,37 @@ type TargetOption struct {
 	VariantsOnly bool
 }
 
+// MultiDUTTarget contains the target definitions required by MULTI_DUT targets.
+type MultiDUTTarget struct {
+	BuildTarget string
+	Board       string
+	Model       string
+
+	// NOTE: The following fields are exclusive to Android devices.
+	IsAndroid           bool
+	AndroidImageVersion string
+	GMSCorePackage      string
+}
+
+// MultiDutTargetOptions defines a 1-to-N pairing set defined in a MULTI_DUT
+// config.
+type MultiDutTargetOptions struct {
+	Primary *MultiDUTTarget
+
+	Secondaries []*MultiDUTTarget
+}
+
 // LabConfigs is a wrapper to provide quick access to boards and models in the lab.
 type LabConfigs struct {
-	Models map[Model]*BoardEntry
-	Boards map[Board]*BoardEntry
+	Models        map[Model]*BoardEntry
+	Boards        map[Board]*BoardEntry
+	AndroidBoards map[Board]*BoardEntry
+	AndroidModels map[Model]*BoardEntry
 }
 
 // BoardEntry is a wrapper on the infrapb Board type.
 type BoardEntry struct {
-	isAndroid bool
-	board     *suschpb.Board
-}
-
-func (b *BoardEntry) isAndroidBoard() bool {
-	return b.isAndroid
+	board *suschpb.Board
 }
 
 func (b *BoardEntry) GetBoard() *suschpb.Board {
@@ -69,7 +86,7 @@ func (b *BoardEntry) GetBoard() *suschpb.Board {
 }
 
 func (b *BoardEntry) GetName() string {
-	return b.board.Name
+	return b.board.GetName()
 }
 
 // SuiteSchedulerConfigs represents the ADS which will be used for accessing
@@ -78,19 +95,32 @@ type SuiteSchedulerConfigs struct {
 	// Array of all configs. Allows quick access to all configurations.
 	configList ConfigList
 
-	// Array of all configs. Allows quick access to all new build configurations.
+	// Array of all NEW_BUILD configs. Allows quick access to all new build configurations.
 	newBuildList ConfigList
 
-	// Array of all 3d configs. Allows quick access to all 3d configurations.
+	// Array of multiDUT configs. Allows quick access to all multiDUT configurations.
+	multiDUTList ConfigList
+
+	// Array of all NEW_BUILD 3d configs. Allows quick access to all NEW_BUILD 3d configurations.
 	newBuild3dList ConfigList
 
 	// newBuildMap stores a mapping of build target to relevant NEW_BUILD
 	// configs. Allows for retrieval of configs when searching by build target.
 	newBuildMap map[BuildTarget]ConfigList
 
+	// multiDUTMap stores a mapping of build target to relevant MULTI_DUT
+	// configs. Allows for retrieval of configs when searching by build target.
+	multiDUTMap map[BuildTarget]ConfigList
+
 	// configTargets will provided a cached version of the, computationally
 	// expensive to build, target options per config.
 	configTargets map[string]TargetOptions
+
+	// multiDUTConfigTargets will provided a cached version of the, computationally
+	// expensive to build, target options per config. This map is specific to
+	// MULTI_DUT configs as they calculate target options differently than
+	// "normal" CrOS configs.
+	multiDUTConfigTargets map[string]map[string][]*MultiDutTargetOptions
 
 	// This map provides a quick direct access option for fetching configs by name.
 	configMap map[TestPlanName]*suschpb.SchedulerConfig
@@ -125,6 +155,25 @@ func (s *SuiteSchedulerConfigs) addConfigToNewBuildMap(config *suschpb.Scheduler
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config
+}
+
+// addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
+// appropriate tracking lists.
+func (s *SuiteSchedulerConfigs) addConfigToMultiDUTMap(config *suschpb.SchedulerConfig, targetOptions map[string][]*MultiDutTargetOptions) {
+	for buildTargetName := range targetOptions {
+		if _, ok := s.multiDUTMap[BuildTarget(buildTargetName)]; !ok {
+			s.multiDUTMap[BuildTarget(buildTargetName)] = ConfigList{}
+		}
+
+		s.multiDUTMap[BuildTarget(buildTargetName)] = append(s.multiDUTMap[BuildTarget(buildTargetName)], config)
+	}
+
+	// Add to the array tracking all SuSch configs.
+	s.configList = append(s.configList, config)
+	s.multiDUTList = append(s.multiDUTList, config)
+
+	// Add to the direct access map.
+	s.configMap[TestPlanName(config.GetName())] = config
 }
 
 // addConfigToDailyMap takes a daily configuration and inserts it into the

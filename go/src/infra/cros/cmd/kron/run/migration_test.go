@@ -10,8 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
-
-	"infra/cros/cmd/kron/common"
 )
 
 func TestIsAllowedNewBuildAllow(t *testing.T) {
@@ -119,18 +117,27 @@ func TestIsAllowedMultidutSkip(t *testing.T) {
 
 	configs := []*suschpb.SchedulerConfig{
 		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_DAILY,
+			},
 			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
 				MultiDutsBoardsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByBoard{},
 				MultiDutsModelsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByModel{},
 			},
 		},
 		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD,
+			},
 			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
 				MultiDutsBoardsList: nil,
 				MultiDutsModelsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByModel{},
 			},
 		},
 		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_WEEKLY,
+			},
 			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
 				MultiDutsBoardsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByBoard{},
 				MultiDutsModelsList: nil,
@@ -146,6 +153,55 @@ func TestIsAllowedMultidutSkip(t *testing.T) {
 
 		if allowed {
 			t.Errorf("Config was accepted incorrectly.")
+		}
+
+	}
+}
+
+func TestIsAllowedMultidutAllowed(t *testing.T) {
+	t.Parallel()
+
+	configs := []*suschpb.SchedulerConfig{
+		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT,
+			},
+			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
+				MultiDutsBoardsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByBoard{},
+				MultiDutsModelsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByModel{},
+			},
+		},
+		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT,
+			},
+			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
+				MultiDutsBoardsList: nil,
+				MultiDutsModelsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByModel{},
+			},
+		},
+		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT,
+			},
+			TargetOptions: &suschpb.SchedulerConfig_TargetOptions{
+				MultiDutsBoardsList: []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByBoard{},
+				MultiDutsModelsList: nil,
+			},
+		},
+		{
+			LaunchCriteria: &suschpb.SchedulerConfig_LaunchCriteria{
+				LaunchProfile: suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT,
+			},
+			Name: "",
+		},
+	}
+
+	for _, config := range configs {
+		allowed := isAllowed(config)
+
+		if !allowed {
+			t.Errorf("Config was skipped incorrectly.")
 		}
 
 	}
@@ -171,34 +227,6 @@ func TestIsAllowedNotOnListSkip(t *testing.T) {
 	allowed := isAllowed(&config)
 
 	if allowed {
-		t.Errorf("Config was accepted incorrectly.")
-	}
-}
-
-func TestIsAllowedSkipPartnersConfigs(t *testing.T) {
-	config := `{
-		"name": "Partner",
-		"suite": "rlz",
-		"runOptions": {
-			"timeoutMins": 2340,
-			"tagCriteria": {},
-			"builderId": {
-				"project": "test",
-				"bucket": "test",
-				"builder": "test"
-			},
-			"crosImageBucket": "test"
-		},
-		"analyticsName": "Partner"
-	}`
-
-	configObject := &suschpb.SchedulerConfig{}
-	err := common.ProtoJSONUnmarshaller.Unmarshal([]byte(config), configObject)
-	if err != nil {
-		t.Error(err)
-	}
-
-	if isAllowed(configObject) {
 		t.Errorf("Config was accepted incorrectly.")
 	}
 }

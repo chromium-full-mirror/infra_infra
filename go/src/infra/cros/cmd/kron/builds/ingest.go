@@ -63,9 +63,9 @@ func extractImagePath(artifacts []*buildpb.BuildReport_BuildArtifact) (string, e
 	return "", fmt.Errorf("no imagePath found in artifacts")
 }
 
-// extractBoardAndVariant will extract the board and potential variant from the
+// ExtractBoardAndVariant will extract the board and potential variant from the
 // build target.
-func extractBoardAndVariant(buildTarget string) (string, string, error) {
+func ExtractBoardAndVariant(buildTarget string) (string, string, error) {
 	board := ""
 	variant := ""
 	// amd64-generic is a unique board which has a hyphen in its board name. If
@@ -119,7 +119,7 @@ func TransformReportToKronBuild(report *buildpb.BuildReport) (*kronpb.Build, err
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
 
-	board, variant, err := extractBoardAndVariant(report.Config.Target.Name)
+	board, variant, err := ExtractBoardAndVariant(report.Config.Target.Name)
 	if err != nil {
 		return nil, fmt.Errorf("%d: %w", report.GetBuildbucketId(), err)
 	}
@@ -317,9 +317,9 @@ func formatQuery(requiredBuilds []*RequiredBuild) (string, error) {
 	return fmt.Sprintf(cloudsql.SelectBuildsTemplate, "%s", whereClauseItems), nil
 }
 
-// IngestBuildsFromPSQL fetches the requested builds from long term PSQL
+// FetchBuildsFromPSQL retrieves the requested builds from long term PSQL
 // storage.
-func IngestBuildsFromPSQL(ctx context.Context, requiredBuilds []*RequiredBuild, isProd bool) ([]*kronpb.Build, error) {
+func FetchBuildsFromPSQL(ctx context.Context, requiredBuilds []*RequiredBuild, isProd bool) ([]*kronpb.Build, error) {
 	client, err := cloudsql.InitBuildsClient(ctx, isProd, false)
 	if err != nil {
 		return nil, err

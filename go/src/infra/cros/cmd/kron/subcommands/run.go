@@ -37,6 +37,7 @@ type runCommand struct {
 	newBuilds          bool
 	timedEvents        bool
 	newBuilds3d        bool
+	multiDUT           bool
 }
 
 // setFlags adds also CLI flags to the subcommand.
@@ -58,13 +59,14 @@ func (c *runCommand) setFlags() {
 	c.Flags.BoolVar(&c.newBuilds, "new-builds", false, "Check for new build images and launch NEW_BUILD type suites.")
 	c.Flags.BoolVar(&c.timedEvents, "timed-events", false, "Launch TIMED_EVENT suites which are eligible to be triggered.")
 	c.Flags.BoolVar(&c.newBuilds3d, "new-builds-3d", false, "Check for all new builds completion and launch 3d suites")
+	c.Flags.BoolVar(&c.multiDUT, "multidut", false, "Launch MULTI_DUT configs.")
 }
 
 // validate ensures that the provided flags are being used in an expected
 // manner.
 func (c *runCommand) validate() error {
-	if !c.newBuilds && !c.timedEvents && !c.newBuilds3d {
-		return fmt.Errorf("-new-builds or -timed-events or -new-builds-3d must be specified")
+	if !c.newBuilds && !c.timedEvents && !c.newBuilds3d && !c.multiDUT {
+		return fmt.Errorf("-new-builds, -timed-events, -new-builds-3d, or -multidut must be specified")
 	}
 
 	if totmanager.GetTot() == 0 {
@@ -192,6 +194,10 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	// Launch execution path for NEW_BUILD type configs
 	if c.newBuilds {
 		nbCommands = append(nbCommands, run.InitCrOSNewBuildCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
+	}
+
+	if c.multiDUT {
+		nbCommands = append(nbCommands, run.InitCrOSMultiDUTCommand(&c.authFlags, c.isProd, c.dryRun, c.isTest, labConfigs, suiteSchedulerConfigs, projectID))
 	}
 
 	// Launch execution path for all TIMED_EVENT configs

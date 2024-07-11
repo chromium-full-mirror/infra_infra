@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Package metrics holds all the schemas and utilities to handle metrics for
-// SuSch v1.5.
+// Kron.
 package metrics
 
 import (

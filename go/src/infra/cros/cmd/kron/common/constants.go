@@ -50,6 +50,7 @@ const (
 	ProdProjectNumber    = 542690066668
 
 	BuildsSubscription          = "chromeos-builds-all"
+	BuildsSubscriptionMultiDUT  = "chromeos-builds-all-multidut"
 	BuildsSubscriptionTesting   = "chromeos-builds-all-testing"
 	BuildsSubscription3d        = "chromeos-builds-all-3d"
 	BuildsSubscription3dTesting = "chromeos-builds-all-3d-testing"

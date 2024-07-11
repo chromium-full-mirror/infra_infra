@@ -32,9 +32,34 @@ func (s *SuiteSchedulerConfigs) FetchConfigTargetOptionsForBoard(configName stri
 	}
 }
 
+// FetchMultiDUTConfigTargetOptionsForBoard returns the target options for the specified
+// board for the specified MULTI_DUT config.
+func (s *SuiteSchedulerConfigs) FetchMultiDUTConfigTargetOptionsForBoard(configName string, primaryBoard string) ([]*MultiDutTargetOptions, error) {
+	targetOptions, ok := s.multiDUTConfigTargets[configName]
+	if !ok {
+		return nil, fmt.Errorf("target options for config %s not found", configName)
+	}
+
+	if targetOption, ok := targetOptions[primaryBoard]; !ok {
+		return nil, fmt.Errorf("board %s not found in %s's target options", primaryBoard, configName)
+	} else {
+		return targetOption, nil
+	}
+}
+
 // FetchConfigTargetOptions returns all target options.
 func (s *SuiteSchedulerConfigs) FetchConfigTargetOptions(configName string) (TargetOptions, error) {
 	targetOptions, ok := s.configTargets[configName]
+	if !ok {
+		return nil, fmt.Errorf("target options for config %s not found", configName)
+	}
+	return targetOptions, nil
+}
+
+// FetchMultiDUTConfigTargetOptions returns all target options for the given
+// MULTI_DUT config.
+func (s *SuiteSchedulerConfigs) FetchMultiDUTConfigTargetOptions(configName string) (map[string][]*MultiDutTargetOptions, error) {
+	targetOptions, ok := s.multiDUTConfigTargets[configName]
 	if !ok {
 		return nil, fmt.Errorf("target options for config %s not found", configName)
 	}
@@ -46,6 +71,11 @@ func (s *SuiteSchedulerConfigs) FetchAllNewBuildConfigs() ConfigList {
 	return s.newBuildList
 }
 
+// FetchAllMultiDUTConfigs returns all MULTI_DUT type configs.
+func (s *SuiteSchedulerConfigs) FetchAllMultiDUTConfigs() ConfigList {
+	return s.multiDUTList
+}
+
 // FetchAllNewBuild3dConfigs returns all NEW_BUILD_3D type configs.
 func (s *SuiteSchedulerConfigs) FetchAllNewBuild3dConfigs() ConfigList {
 	return s.newBuild3dList
@@ -55,6 +85,15 @@ func (s *SuiteSchedulerConfigs) FetchAllNewBuild3dConfigs() ConfigList {
 // to be triggered by a new image of the given build target.
 func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) ConfigList {
 	if obj, ok := s.newBuildMap[target]; ok {
+		return obj
+	}
+	return nil
+}
+
+// FetchMultiDUTConfigsByBuildTarget returns all MULTI_DUT configs that are
+// to be triggered by a new image of the given build target.
+func (s *SuiteSchedulerConfigs) FetchMultiDUTConfigsByBuildTarget(target BuildTarget) ConfigList {
+	if obj, ok := s.multiDUTMap[target]; ok {
 		return obj
 	}
 	return nil

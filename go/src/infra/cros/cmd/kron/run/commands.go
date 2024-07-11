@@ -9,11 +9,9 @@ package run
 import (
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
-	"go.chromium.org/luci/auth/client/authcli"
 
 	"infra/cros/cmd/kron/builds"
 	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
 )
 
 // DDDCommand defines the schema that any 3D type command will need
@@ -97,39 +95,4 @@ func RunTimedEventsCommand(command TimedEventCommand, runTime common.KronTime) e
 	}
 
 	return command.ScheduleRequests(kronBuildMap)
-}
-
-// scheduleRequests generates CTP Requests, batches them into BuildBucket
-// requests, and Schedules them via the BuildBucket API.
-//
-// NOTE: This is a generic version of the ScheduleRequests command used by
-// NEW_BUILD and TIMED_EVENT command types.
-func scheduleRequests(kronBuildMap map[*kronpb.Build][]*suschpb.SchedulerConfig, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs, authOpts *authcli.Flags, projectID string, isProd, dryRun bool) error {
-	// Build CTP Requests for all triggered configs.
-	ctpRequests, err := buildCTPRequests(kronBuildMap, suiteSchedulerConfigs)
-	if err != nil {
-		return err
-	}
-
-	// Limit the number of requests we launch if running in the staging
-	// environment.
-	if !isProd {
-		ctpRequests = limitStagingRequests(ctpRequests)
-	}
-
-	if len(ctpRequests) == 0 {
-		common.Stdout.Println("No CTP requests to schedule")
-		return nil
-	}
-
-	// Map the ctpEvents by the shared SuiteScheduler Config.
-	ctpMapByConfig := mapEventsByConfig(ctpRequests)
-
-	// Pre-batch the requests according to the max batch size.
-	batches, err := batchCTPRequests(ctpMapByConfig, isProd, dryRun)
-	if err != nil {
-		return err
-	}
-
-	return scheduleBatches(batches, isProd, dryRun, projectID, authOpts)
 }

@@ -9,6 +9,8 @@ import (
 	"fmt"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/kron/builds"
 )
 
 // isDayCompliant checks the day int type to ensure that it is within the
@@ -22,7 +24,7 @@ func isDayCompliant(day int, isFortnightly bool) error {
 	}
 
 	if day < 0 || day > highBound {
-		return fmt.Errorf("hay %d is not within the supported range [0,%d]", day, highBound)
+		return fmt.Errorf("day %d is not within the supported range [0,%d]", day, highBound)
 	}
 
 	return nil
@@ -210,6 +212,222 @@ func getVariantsList(targets TargetOptions, labBoards map[Board]*BoardEntry, var
 				}
 			}
 		}
+	}
+
+	return targets, nil
+}
+
+// generateMultiDUTTargetsFromBoardsList generates MultiDutTargets based only on
+// the boards specified. In this mode, we will not consider models and will let
+// swarming decide that at request runtime.
+//
+// NOTE: The boards specified in this list are actually BuildTargets and
+// will be in the form of board(?-)(?<variant>). Because of this we will not
+// do any variant calculation like "normal" CrOS configs.
+func generateMultiDUTTargetsFromBoardsList(boardsList []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByBoard, lab *LabConfigs, androidImageVersion, gmsCorePackage string) (map[string][]*MultiDutTargetOptions, error) {
+	targets := map[string][]*MultiDutTargetOptions{}
+
+	for _, boardPair := range boardsList {
+		primaryBuildTarget := boardPair.GetPrimaryBoard()
+
+		// Extract the pure board name in the case where the defined target
+		// includes a variant definition.
+		primaryBoard, _, err := builds.ExtractBoardAndVariant(primaryBuildTarget)
+		if err != nil {
+			return nil, err
+		}
+
+		// Generate the primary target definition.
+		primaryTarget := &MultiDUTTarget{
+			BuildTarget: primaryBuildTarget,
+			Board:       primaryBoard,
+
+			// NOTE: Android boards as a primary device are not currently
+			// supported in the TSE stack. Until that changes these
+			// variables must stay as the default "nil" value.
+			AndroidImageVersion: "",
+			GMSCorePackage:      "",
+			IsAndroid:           false,
+		}
+
+		targetOptions := &MultiDutTargetOptions{
+			Primary: primaryTarget,
+		}
+
+		// Generate all secondary target definitions that are associated the
+		// current primary board.
+		for _, secondaryBuildTarget := range boardPair.GetSecondaryBoards() {
+			// Extract the pure board name in the case where the defined target
+			// includes a variant definition
+			secondaryBoard, _, err := builds.ExtractBoardAndVariant(secondaryBuildTarget)
+			if err != nil {
+				return nil, err
+			}
+
+			secondaryTarget := &MultiDUTTarget{
+				BuildTarget: secondaryBuildTarget,
+				Board:       secondaryBoard,
+			}
+
+			// Check to see if the board is defined in the Android board list.
+			// Android targets require different handling than CrOS boards.
+			//
+			// NOTE: This will break in the case where a CrOS and Android share
+			// the same name.
+			if _, isSecondaryAndroid := lab.AndroidBoards[Board(secondaryBuildTarget)]; isSecondaryAndroid {
+				secondaryTarget.IsAndroid = true
+				secondaryTarget.AndroidImageVersion = androidImageVersion
+				secondaryTarget.GMSCorePackage = gmsCorePackage
+			}
+
+			targetOptions.Secondaries = append(targetOptions.Secondaries, secondaryTarget)
+		}
+		targets[primaryBuildTarget] = append(targets[primaryBuildTarget], targetOptions)
+	}
+
+	return targets, nil
+}
+
+// generateMultiDUTTargetsFromModelsList generates MultiDutTargets based on the
+// models list provided. Because no boards are provided we will need to reach
+// into the lab config to  determine each model's associated board.
+//
+// NOTE: Variants are not considered in this mode. The board name we fetch
+// from the lab will be used as the BuildTarget in the image request.
+func generateMultiDUTTargetsFromModelsList(modelsList []*suschpb.SchedulerConfig_TargetOptions_MultiDutsByModel, lab *LabConfigs, androidImageVersion, gmsCorePackage string) (map[string][]*MultiDutTargetOptions, error) {
+	targets := map[string][]*MultiDutTargetOptions{}
+
+	for _, modelsPair := range modelsList {
+		// Extract the modelName for easier use later on.
+		primaryModel := modelsPair.GetPrimaryModel()
+
+		// Extract the buildTarget of the models so that we know what
+		// images to attach to the request.
+		var primaryBuildTarget string
+		if buildTarget, ok := lab.Models[Model(primaryModel)]; !ok {
+			primaryBuildTarget = lab.AndroidModels[Model(primaryModel)].GetName()
+		} else {
+			primaryBuildTarget = buildTarget.GetName()
+		}
+
+		// Extract the pure board name in the case where the defined target
+		// includes a variant definition.
+		primaryBoard, _, err := builds.ExtractBoardAndVariant(primaryBuildTarget)
+		if err != nil {
+			return nil, err
+		}
+
+		// Generate the primary target definition.
+		primaryTarget := &MultiDUTTarget{
+			BuildTarget: primaryBuildTarget,
+			Board:       primaryBoard,
+			Model:       primaryModel,
+
+			// NOTE: Android boards as a primary device are not currently
+			// supported in the TSE stack. Until that changes these
+			// variables must stay as the default "nil" value.
+			AndroidImageVersion: "",
+			GMSCorePackage:      "",
+			IsAndroid:           false,
+		}
+
+		targetOptions := &MultiDutTargetOptions{
+			Primary: primaryTarget,
+		}
+
+		for _, secondaryModel := range modelsPair.GetSecondaryModels() {
+			// Extract the buildTarget of the models so that we know what
+			// images to attach to the request.
+			var secondaryBuildTarget string
+			if buildTarget, ok := lab.Models[Model(secondaryModel)]; !ok {
+				if androidBoard, ok := lab.AndroidModels[Model(secondaryModel)]; ok {
+					secondaryBuildTarget = androidBoard.GetName()
+				} else {
+					return nil, fmt.Errorf("model %s not found in either the CrOS nor Android boards list", secondaryModel)
+				}
+			} else {
+				secondaryBuildTarget = buildTarget.GetName()
+			}
+
+			// Extract the pure board name in the case where the defined target
+			// includes a variant definition
+			secondaryBoard, _, err := builds.ExtractBoardAndVariant(secondaryBuildTarget)
+			if err != nil {
+				return nil, err
+			}
+
+			secondaryTarget := &MultiDUTTarget{
+				BuildTarget: secondaryBuildTarget,
+				Board:       secondaryBoard,
+				Model:       secondaryModel,
+			}
+
+			// Check to see if the board is defined in the Android board list.
+			// Android targets require different handling than CrOS boards.
+			//
+			// NOTE: This will break in the case where a CrOS and Android share
+			// the same name.
+			if _, isSecondaryAndroid := lab.AndroidBoards[Board(secondaryBuildTarget)]; isSecondaryAndroid {
+				secondaryTarget.IsAndroid = true
+				secondaryTarget.AndroidImageVersion = androidImageVersion
+				secondaryTarget.GMSCorePackage = gmsCorePackage
+			}
+
+			targetOptions.Secondaries = append(targetOptions.Secondaries, secondaryTarget)
+		}
+
+		targets[primaryBuildTarget] = append(targets[primaryBuildTarget], targetOptions)
+	}
+
+	return targets, nil
+}
+
+// GetMultiDutTargets transforms the configs target specifications into a
+// usable target pairing for image fetching and request building.
+func GetMultiDutTargets(config *suschpb.SchedulerConfig, lab *LabConfigs) (map[string][]*MultiDutTargetOptions, error) {
+	// If none of the required config specifications are present then return
+	// with an error.
+	if len(config.GetTargetOptions().GetMultiDutsBoardsList()) == 0 && len(config.GetTargetOptions().GetMultiDutsModelsList()) == 0 {
+		return nil, fmt.Errorf("neither a MultiDutsBoardsList nor a MultiDutsModelsList was specified")
+	}
+
+	targets := map[string][]*MultiDutTargetOptions{}
+
+	boardsList := config.GetTargetOptions().GetMultiDutsBoardsList()
+	modelsList := config.GetTargetOptions().GetMultiDutsModelsList()
+
+	// Generate MultiDutTargets based only on the boards specified. In this
+	// mode, we will not consider models and will let swarming decide that at
+	// request runtime.
+	//
+	// NOTE: The boards specified in this list are actually BuildTargets and
+	// will be in the form of board(?-)(?<variant>). Because of this we will not
+	// do any variant calculation like "normal" CrOS configs.
+	var err error
+	if len(boardsList) > 0 {
+		targets, err = generateMultiDUTTargetsFromBoardsList(config.GetTargetOptions().GetMultiDutsBoardsList(), lab, config.GetAndroidImageVersion(), config.GetAndroidImageVersion())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Generate MultiDutTargets based on the models list provided. Because no
+	// boards are provided we will need to reach into the lab config to
+	// determine each model's associated board.
+	//
+	// NOTE: Variants are not considered in this mode. The foundational board
+	// name we fetch from the lab object will be used as the BuildTarget.
+	if len(modelsList) > 0 {
+		targets, err = generateMultiDUTTargetsFromModelsList(modelsList, lab, config.GetAndroidImageVersion(), config.GetAndroidImageVersion())
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// To avoid unexpected results later on, return with an error if no targets
+	// were generated in this function.
+	if len(targets) == 0 {
+		return nil, fmt.Errorf("no targets were generated for an unknown reason")
 	}
 
 	return targets, nil

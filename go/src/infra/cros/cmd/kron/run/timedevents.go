@@ -377,36 +377,12 @@ func (c *CrOSTimedEventCommand) FetchBuilds(requiredBuildsMap map[builds.Require
 		requiredBuildsList = append(requiredBuildsList, &key)
 	}
 
-	// Generate a human readable string for logging requiredBuildsList.
-	buildsList, err := json.MarshalIndent(requiredBuildsList, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-
-	common.Stdout.Printf("The following %d builds are being requested from long term storage", len(requiredBuildsList))
-	common.Stdout.Printf("************************************************")
-	common.Stdout.Printf(string(buildsList))
-	common.Stdout.Printf("************************************************")
-
-	// TODO(b/315340446): Fetch the newest build image for each target option
-	// from long term storage.
 	common.Stdout.Println("Fetching Builds from PSQL long term storage")
-	fetchedBuilds, err := builds.IngestBuildsFromPSQL(ctx, requiredBuildsList, c.isProd)
+	fetchedBuilds, err := fetchRequiredBuildsFromLTS(ctx, requiredBuildsList, c.isProd)
 	if err != nil {
 		return nil, err
 	}
 	fetchedBuildsPrefilterLength := len(fetchedBuilds)
-
-	// Generate a human readable string for logging fetchedBuilds.
-	fetchedBuildsList, err := json.MarshalIndent(fetchedBuilds, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-
-	common.Stdout.Printf("The following %d builds were fetched from long term storage", fetchedBuildsPrefilterLength)
-	common.Stdout.Printf("************************************************")
-	common.Stdout.Printf(string(fetchedBuildsList))
-	common.Stdout.Printf("************************************************")
 
 	common.Stdout.Printf("Initializing client for pub sub topic %s", common.EventsPubSubTopic)
 	eventPublishClient, err := pubsub.InitPublishClient(ctx, c.projectID, common.EventsPubSubTopic)
@@ -431,12 +407,12 @@ func (c *CrOSTimedEventCommand) FetchBuilds(requiredBuildsMap map[builds.Require
 	common.Stdout.Printf("%d removed to staleness", fetchedBuildsPrefilterLength-len(fetchedBuilds))
 
 	// Generate a human readable string for logging fetchedBuilds.
-	fetchedBuildsList, err = json.MarshalIndent(fetchedBuilds, "", "  ")
+	fetchedBuildsList, err := json.MarshalIndent(fetchedBuilds, "", "  ")
 	if err != nil {
 		return nil, err
 	}
 
-	common.Stdout.Printf("The following %d builds were fetched from long term storage", fetchedBuildsPrefilterLength)
+	common.Stdout.Printf("The following %d builds were fetched from long term storage and remain after filtering", fetchedBuildsPrefilterLength)
 	common.Stdout.Printf("************************************************")
 	common.Stdout.Printf(string(fetchedBuildsList))
 	common.Stdout.Printf("************************************************")
