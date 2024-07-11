@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
+	"infra/cros/cmd/kron/buildbucket"
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/metrics"
@@ -29,6 +30,7 @@ type runCommand struct {
 	subcommands.CommandRunBase
 	authFlags          authcli.Flags
 	runID              string
+	buildBucketID      string
 	configCFGInputPath string
 	labCFGInputPath    string
 	isProd             bool
@@ -47,6 +49,7 @@ func (c *runCommand) setFlags() {
 	// E.g. (DAILY | WEEKLY), (DAILY), (FORTNIGHTLY | WEEKLY), etc.
 
 	c.Flags.StringVar(&c.runID, "run-id", common.DefaultString, "Used to manually set the runID. Should only be used by the recipe builder.")
+	c.Flags.StringVar(&c.buildBucketID, "bbid", common.DefaultString, "Used to pass in the BBID of the current kron builder running for use as a parentBBID in the build tree. Should only be used by the recipe builder.")
 	c.Flags.StringVar(&c.configCFGInputPath, "config-input-path", common.DefaultString, "Provide if a local version of the config .cfg is planned on being used. If omitted, the program will fetch the ToT config .cfg from gerrit.")
 	c.Flags.StringVar(&c.labCFGInputPath, "lab-input-path", common.DefaultString, "Provide if a local version of the lab .cfg is planned on being used. If omitted, the program will fetch the ToT lab .cfg from gerrit.")
 
@@ -75,6 +78,12 @@ func (c *runCommand) validate() error {
 
 	if c.isTest && c.isProd {
 		return fmt.Errorf("-test can only be run in the staging environment")
+	}
+
+	if c.buildBucketID != common.DefaultString {
+		if buildbucket.GetSwarmingParentTaskID() == common.DefaultString {
+			return fmt.Errorf("-bbid can only be used within a BuildBucket builder")
+		}
 	}
 
 	return nil
@@ -151,6 +160,15 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
+	}
+
+	if c.buildBucketID != common.DefaultString {
+		common.Stdout.Printf("Setting the parentBBID value as %s", c.buildBucketID)
+		err := buildbucket.SetParentBuildBucketID(c.buildBucketID)
+		if err != nil {
+			common.Stderr.Println(err)
+			return 1
+		}
 	}
 
 	common.Stdout.Printf("Running Kron... ")

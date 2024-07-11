@@ -9,11 +9,16 @@ package buildbucket
 import (
 	"context"
 	"fmt"
+	"os"
+
+	"google.golang.org/grpc/metadata"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/buildbucket"
 	bb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/lucictx"
 
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/cmd/kron/common"
@@ -33,30 +38,20 @@ var (
 		Bucket:  "testplatform",
 		Builder: "cros_test_platform-dev",
 	}
+
+	parentBuildBucketID = common.DefaultString
 )
 
-// GenerateBuilderID returns a BuildBucket BuilderID definition for based on the
-// provided arguments. This is aimed to be used only for partner builder
-// generation.
-func GenerateBuilderID(customBuilder *suschpb.SchedulerConfig_RunOptions_BuilderID, isProd bool) *bb.BuilderID {
-	// If the config is a partner config then return the request dimensions as a
-	// BuilderId type.
-	//
-	// NOTE: There will be no differentiation between prod/staging for partner
-	// builds.
-	if customBuilder.GetProject() != "" && customBuilder.GetBucket() != "" && customBuilder.GetBuilder() != "" {
-		return &bb.BuilderID{
-			Project: customBuilder.GetProject(),
-			Bucket:  customBuilder.GetBucket(),
-			Builder: customBuilder.GetBuilder(),
-		}
+// SetParentBuildBucketID sets the parentBuildBucketID value for use when
+// building BuildBucket requests.
+func SetParentBuildBucketID(bbid string) error {
+	if parentBuildBucketID != common.DefaultString {
+		return fmt.Errorf("parentBuildBucketID can only be set once")
 	}
 
-	if isProd {
-		return &defaultProdCTPBuilderID
-	} else {
-		return &defaultStagingCTPBuilderID
-	}
+	parentBuildBucketID = bbid
+
+	return nil
 }
 
 // Scheduler interface type describes the BB API functionality connection.
@@ -105,6 +100,16 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 // Schedule takes in a ScheduleBuildRequest and schedules it via the BuildBucket
 // API.
 func (c *client) Schedule(request *bb.ScheduleBuildRequest) (*bb.Build, error) {
+	bbCtx := lucictx.GetBuildbucket(c.ctx)
+
+	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
+		c.ctx = metadata.NewOutgoingContext(c.ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+
+		if request.GetCanOutliveParent() != bb.Trinary_UNSET {
+			request.CanOutliveParent = bb.Trinary_YES
+		}
+	}
+
 	build, err := c.buildBucketClient.ScheduleBuild(c.ctx, request)
 	if err != nil {
 		return nil, err
@@ -125,4 +130,42 @@ func (c *client) GetBuildStatus(buildID int64) (*bb.Build, error) {
 		return nil, err
 	}
 	return build, nil
+}
+
+// GenerateBuilderID returns a BuildBucket BuilderID definition for based on the
+// provided arguments. This is aimed to be used only for partner builder
+// generation.
+func GenerateBuilderID(customBuilder *suschpb.SchedulerConfig_RunOptions_BuilderID, isProd bool) *bb.BuilderID {
+	// If the config is a partner config then return the request dimensions as a
+	// BuilderId type.
+	//
+	// NOTE: There will be no differentiation between prod/staging for partner
+	// builds.
+	if customBuilder.GetProject() != "" && customBuilder.GetBucket() != "" && customBuilder.GetBuilder() != "" {
+		return &bb.BuilderID{
+			Project: customBuilder.GetProject(),
+			Bucket:  customBuilder.GetBucket(),
+			Builder: customBuilder.GetBuilder(),
+		}
+	}
+
+	if isProd {
+		return &defaultProdCTPBuilderID
+	} else {
+		return &defaultStagingCTPBuilderID
+	}
+}
+
+// GetSwarmingParentTaskID reaches into the env variables for the current swarming
+// task ID.
+//
+// NOTE: This will only be set to a meaningful value if the binary is run from
+// within a BuildBucket builder.
+func GetSwarmingParentTaskID() string {
+	return os.Getenv("SWARMING_TASK_ID")
+}
+
+// GetParentBBID return the private parentBuildBucketID value.
+func GetParentBBID() string {
+	return parentBuildBucketID
 }

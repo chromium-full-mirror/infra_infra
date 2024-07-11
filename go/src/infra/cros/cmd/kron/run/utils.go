@@ -257,6 +257,20 @@ func generateBuilderTags(suiteName, configName string, requests []*ctpEvent, ski
 		},
 	}
 
+	if parentTaskID := buildbucket.GetSwarmingParentTaskID(); parentTaskID != common.DefaultString {
+		tags = append(tags, &buildbucketpb.StringPair{
+			Key:   "parent_task_id",
+			Value: parentTaskID,
+		})
+	}
+
+	if parentBBID := buildbucket.GetParentBBID(); parentBBID != common.DefaultString {
+		tags = append(tags, &buildbucketpb.StringPair{
+			Key:   "parent_buildbucket_id",
+			Value: parentBBID,
+		})
+	}
+
 	// Add all image, buildUuid, and eventUuid fields per test request.
 	for _, request := range requests {
 		image := ""
