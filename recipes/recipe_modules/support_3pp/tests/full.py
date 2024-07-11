@@ -61,6 +61,26 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
     # some code still references api.path.checkout_dir so assign it to be
     # consistent.
     api.path.checkout_dir = checkout_path
+
+    cipd_platform = '%s-%s' % (GOOS, GOARCH)
+
+    if use_pkgbuild:
+      kargs = {
+        'upload': not api.tryserver.is_tryserver,
+        'rebuild_pkgbuild': not api.tryserver.is_tryserver,
+      }
+      if experimental:
+        kargs['cipd_service'] = 'https://chrome-infra-packages-dev.appspot.com/'
+
+      api.support_3pp.pkgbuild(
+          [checkout_path],
+          to_build,
+          cipd_platform,
+          **kargs,
+      )
+      return
+
+    # Legacy 3pp recipe
     pkgs = api.support_3pp.load_packages_from_path(checkout_path)
 
     if 'build_tools/tool' in pkgs:
@@ -72,24 +92,11 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
     if load_dupe:
       api.support_3pp.load_packages_from_path(builder / 'dup_repo')
 
-    cipd_platform = '%s-%s' % (GOOS, GOARCH)
     tryserver_affected_files = [
         checkout_path / f for f in tryserver_affected_files
     ]
     pkgs = to_build if to_build else pkgs
 
-    if use_pkgbuild:
-      kargs = {'upload': experimental}
-      if experimental:
-        kargs['cipd_service'] = 'https://chrome-infra-packages-dev.appspot.com/'
-      api.support_3pp.pkgbuild(
-          pkgs,
-          cipd_platform,
-          **kargs,
-      )
-      return
-
-    # Legacy 3pp recipe
     _, unsupported = api.support_3pp.ensure_uploaded(
         pkgs,
         cipd_platform,
@@ -583,15 +590,6 @@ def GenTests(api):
   yield (api.test('use-pkgbuild')
       + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
       + api.step_data(
-          'find package specs',
-          api.file.glob_paths(['something/3pp.pb', '3pp.pb']))
-      + api.step_data(
-          mk_name("load package specs", "read 'something/3pp.pb'"),
-          api.file.read_text(load_spec))
-      + api.step_data(
-          mk_name("load package specs", "read '3pp.pb'"),
-          api.file.read_text(load_spec))
-      + api.step_data(
           'build packages (pkgbuild)',
           api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
       + api.post_process(
@@ -602,14 +600,16 @@ def GenTests(api):
   yield (api.test('use-pkgbuild-experimental')
       + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True, experimental=True)
       + api.step_data(
-          'find package specs',
-          api.file.glob_paths(['something/3pp.pb', '3pp.pb']))
-      + api.step_data(
-          mk_name("load package specs", "read 'something/3pp.pb'"),
-          api.file.read_text(load_spec))
-      + api.step_data(
-          mk_name("load package specs", "read '3pp.pb'"),
-          api.file.read_text(load_spec))
+          'build packages (pkgbuild)',
+          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
+      + api.post_process(
+          post_process.MustRun,
+          mk_name("build packages (pkgbuild)"))
+  )
+
+  yield (api.test('use-pkgbuild-tryjob')
+      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
+      + api.buildbucket.try_build('infra')
       + api.step_data(
           'build packages (pkgbuild)',
           api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))

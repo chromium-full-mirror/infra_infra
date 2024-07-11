@@ -872,13 +872,44 @@ class Support3ppApi(recipe_api.RecipeApi):
               skip_upload))
     return self.m.defer.collect(deferred), unsupported
 
-  def pkgbuild(self, packages=(), platform='', upload=False, cipd_service=None):
-    """_pkgbuild downloads and executes the experimental pkgbuild implementation.
-    It reads specs from _package_roots and builds all listed packages. If
-    packages is an empty list, all packages will be built.
-    No packages should be uploaded from the _pkgbuild.
+  def _EnsurePkgbuild(self, rebuild=False):
+    bin_path = self.m.path.cleanup_dir / 'pkgbuild'
+
+    if not rebuild:
+      self.m.cipd.ensure(
+          bin_path,
+          (
+              self.m.cipd.EnsureFile().
+                  add_package(
+                   'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m),
+                   'latest',
+                  )
+          ),
+      )
+      return bin_path / 'edge'
+
+    co = self.m.infra_checkout.checkout(
+        gclient_config_name='infra',
+        go_version_variant='bleeding_edge')
+    co.gclient_runhooks()
+
+    with co.go_env():
+      with self.m.context(cwd=co.path / 'infra/go/src/infra'):
+        self.m.step('build pkgbuild', [
+            'go', 'build',
+            '-o', str(bin_path / 'edge'),
+            './tools/pkgbuild/cmd/edge',
+        ])
+    return bin_path / 'edge'
+
+
+  def pkgbuild(self, pools, packages=(), platform='', upload=False, rebuild_pkgbuild=False, cipd_service=None):
+    """pkgbuild downloads and executes the pkgbuild implementation. It reads
+    specs from roots and builds all listed packages. If packages is an empty
+    list, all packages will be built.
 
     Args:
+    * pools (seq[str]) - A sequence of paths contains specs
     * packages (seq[str]) - A sequence of packages to ensure are
       uploaded. Packages must be listed as either 'pkgname' or
       'pkgname@version'. If empty, builds all loaded packages.
@@ -893,21 +924,11 @@ class Support3ppApi(recipe_api.RecipeApi):
     # We expect cache dir should rarely change.
     # Otherwise use a fixed absolute path instead.
     store_path = self.m.path.cache_dir / 'pkgbuild'
-    bin_path = self.m.path.cleanup_dir / 'pkgbuild'
-
-    self.m.cipd.ensure(
-        bin_path,
-        (
-            self.m.cipd.EnsureFile().
-                add_package(
-                 'infra/tools/luci/pkgbuild/%s' % platform_for_host(self.m),
-                 'latest',
-                )
-        ),
-    )
 
     platform = platform or platform_for_host(self.m)
     args = [
+        self._EnsurePkgbuild(rebuild=rebuild_pkgbuild),
+        '--',
         '-logging-level',
         'info',
         '-cipd-package-prefix',
@@ -924,9 +945,9 @@ class Support3ppApi(recipe_api.RecipeApi):
     if upload:
       args.append('-upload')
 
-    # Sort the package roots and packages.
+    # Sort the spec pools and packages.
     # Set doesn't promise to be iterating in insertion order.
-    for d in sorted(self._package_roots):
+    for d in sorted(pools):
       args.extend(('-spec-pool', d))
     args.extend(sorted(packages))
 
@@ -934,6 +955,6 @@ class Support3ppApi(recipe_api.RecipeApi):
       with self.m.context(env={'PKGBUILD_ENABLE_LUCIEXE': '1'}):
         self.m.step.sub_build(
             'build packages (pkgbuild)',
-            [bin_path / 'edge', '--'] + args,
+            args,
             self.m.buildbucket.build,
         )

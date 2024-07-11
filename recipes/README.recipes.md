@@ -763,7 +763,7 @@ Args:
     project_url (string): Git repository URL of the project.
 ### *recipe_modules* / [support\_3pp](/recipes/recipe_modules/support_3pp)
 
-[DEPS](/recipes/recipe_modules/support_3pp/__init__.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [depot\_tools/windows\_sdk][depot_tools/recipe_modules/windows_sdk], [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/bcid\_reporter][recipe_engine/recipe_modules/bcid_reporter], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
+[DEPS](/recipes/recipe_modules/support_3pp/__init__.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [depot\_tools/windows\_sdk][depot_tools/recipe_modules/windows_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/bcid\_reporter][recipe_engine/recipe_modules/bcid_reporter], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
 
 
 Allows uniform cross-compiliation, version tracking and archival for
@@ -1138,14 +1138,14 @@ This will prepend 'experimental/' to the currently set prefix if:
   * The recipe is running in experimental mode; OR
   * You pass experimental=True
 
-&mdash; **def [pkgbuild](/recipes/recipe_modules/support_3pp/api.py#875)(self, packages=(), platform='', upload=False, cipd_service=None):**
+&mdash; **def [pkgbuild](/recipes/recipe_modules/support_3pp/api.py#906)(self, pools, packages=(), platform='', upload=False, rebuild_pkgbuild=False, cipd_service=None):**
 
-_pkgbuild downloads and executes the experimental pkgbuild implementation.
-It reads specs from _package_roots and builds all listed packages. If
-packages is an empty list, all packages will be built.
-No packages should be uploaded from the _pkgbuild.
+pkgbuild downloads and executes the pkgbuild implementation. It reads
+specs from roots and builds all listed packages. If packages is an empty
+list, all packages will be built.
 
 Args:
+* pools (seq[str]) - A sequence of paths contains specs
 * packages (seq[str]) - A sequence of packages to ensure are
   uploaded. Packages must be listed as either 'pkgname' or
   'pkgname@version'. If empty, builds all loaded packages.

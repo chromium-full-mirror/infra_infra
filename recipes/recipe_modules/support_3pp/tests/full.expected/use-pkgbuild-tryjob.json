@@ -1,0 +1,148 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "RECIPE_REPO[infra]",
+      "recipes/recipe_modules/support_3pp",
+      "recipes/recipes/3pp.py",
+      "infra/tools/dockerbuild"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "compute recipe file hash",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "echo",
+      "3pp"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "echo package_prefix"
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/pkgbuild",
+      "-ensure-file",
+      "infra/tools/luci/pkgbuild/linux-amd64 latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/pkgbuild/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CLEANUP]/pkgbuild/edge",
+      "--output",
+      "[CLEANUP]/tmp_tmp_2/sub_build.pb",
+      "--",
+      "-logging-level",
+      "info",
+      "-cipd-package-prefix",
+      "3pp",
+      "-storage-dir",
+      "[CACHE]/pkgbuild",
+      "-target-platform",
+      "linux-amd64",
+      "-spec-pool",
+      "[CACHE]/builder/package_repo"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "MAC_CHROMIUM_TMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "PKGBUILD_ENABLE_LUCIEXE": "1",
+      "TEMP": "[CLEANUP]/tmp_tmp_3",
+      "TEMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "TMP": "[CLEANUP]/tmp_tmp_3",
+      "TMPDIR": "[CLEANUP]/tmp_tmp_3"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build packages (pkgbuild)",
+    "stdin": "\b\ufffd\ufffd\u066e\ufffd|\u0012\u0015\n\u0005infra\u0012\u0003try\u001a\u0007builder\"\rproject:infra2\u0006\b\ufffd\u00af\ufffd\u0005:\u0006\b\ufffd\u00af\ufffd\u0005`\u0002z1\u001a/\n chromium-review.googlesource.com\u0012\u0005infra\u0018\ufffd\ufffd\u0007 \u0007\ufffd\u0001-\u0012\u0002 \u001e*'\u0012%invocations/build:8945511751514863184\ufffd\u0001\u0018\n\u000fcq_experimental\u0012\u0005false",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@step.sub_build@{@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@}@@@",
+      "@@@STEP_LOG_END@step.sub_build@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

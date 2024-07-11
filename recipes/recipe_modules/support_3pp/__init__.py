@@ -24,4 +24,5 @@ DEPS = [
     'depot_tools/osx_sdk',
     'depot_tools/tryserver',
     'depot_tools/windows_sdk',
+    'infra_checkout',
 ]

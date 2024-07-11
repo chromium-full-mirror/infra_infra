@@ -131,7 +131,7 @@
   },
   {
     "cmd": [],
-    "name": "load packages from desired repos"
+    "name": "checkout repos containing package specs"
   },
   {
     "cmd": [
@@ -158,7 +158,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git setup",
+    "name": "checkout repos containing package specs.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -189,7 +189,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git fetch",
+    "name": "checkout repos containing package specs.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -218,7 +218,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git checkout",
+    "name": "checkout repos containing package specs.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -246,7 +246,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.read revision",
+    "name": "checkout repos containing package specs.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
@@ -277,43 +277,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git clean",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "-C",
-      "[CACHE]/builder/4fe007e88bd1d4a88e88cc231ab4045dbeee1088/support_3pp",
-      "ls-files",
-      "**/3pp.pb"
-    ],
-    "env": {
-      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "load packages from desired repos.find package specs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@glob_from_git@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "load packages from desired repos.load package specs",
+    "name": "checkout repos containing package specs.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

@@ -136,54 +136,90 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
     api.support_3pp.set_package_prefix(package_prefix)
     api.support_3pp.set_source_cache_prefix(source_cache_prefix)
 
-    actual_repos = set()
-    tryserver_affected_files = []
-    with api.step.nest('load packages from desired repos'):
-      for pl in package_locations:
-        repo = pl['repo']
-        ref = pl.get('ref', revision)
-        subdir = pl.get('subdir', '')
-
-        hash_name = hashlib.sha1(str("%s:%s" %
-                                     (repo, ref)).encode('utf-8')).hexdigest()
-        actual_repos.add(hash_name)
-
-        checkout_path = package_repos / hash_name
-        api.git.checkout(repo, ref, checkout_path, submodules=False)
-
-        package_path = checkout_path
-        if subdir:
-          package_path = package_path / subdir
-        api.support_3pp.load_packages_from_path(package_path)
-
-        if api.tryserver.is_tryserver:
-          repo_tryserver_affected_files = api.git(
-              '-c',
-              'core.quotePath=false',
-              'diff',
-              '--name-only',
-              'HEAD~',
-              name='git diff to find changed files',
-              stdout=api.raw_io.output_text()).stdout.split()
-          tryserver_affected_files += [
-              checkout_path / f for f in repo_tryserver_affected_files
-          ]
-    if api.tryserver.is_tryserver:
-      assert (tryserver_affected_files != [])
-
-    with api.step.nest('remove unused repos'):
-      leftovers = current_repos - actual_repos
-      for hash_name in sorted(leftovers):
-        api.file.rmtree('rm %s' % (hash_name,),
-                        package_repos / hash_name)
-
     if use_pkgbuild:
+      spec_pools =  []
+      actual_repos = set()
+      rebuild_pkgbuild = False
+      with api.step.nest('checkout repos containing package specs'):
+        for pl in package_locations:
+          repo = pl['repo']
+          ref = pl.get('ref', revision)
+          subdir = pl.get('subdir', '')
+
+          hash_name = hashlib.sha1(str("%s:%s" %
+                                       (repo, ref)).encode('utf-8')).hexdigest()
+          actual_repos.add(hash_name)
+
+          checkout_path = package_repos / hash_name
+          api.git.checkout(repo, ref, checkout_path, submodules=False)
+
+          spec_pools.append(checkout_path / subdir)
+
+          if api.tryserver.is_tryserver:
+            pkgbuild_changed_files = api.git(
+              '-c', 'core.quotePath=false',
+              'diff', '--name-only', 'HEAD~',
+              '--', 'go/src/infra/tools/pkgbuild',
+              name='git diff to find changed files',
+              stdout=api.raw_io.output_text()).stdout.strip()
+            if pkgbuild_changed_files:
+              rebuild_pkgbuild = True
+
+      with api.step.nest('remove unused repos'):
+        leftovers = current_repos - actual_repos
+        for hash_name in sorted(leftovers):
+          api.file.rmtree('rm %s' % (hash_name,),
+                          package_repos / hash_name)
+
       api.support_3pp.pkgbuild(
+          spec_pools,
           to_build,
           platform,
           upload=not api.tryserver.is_tryserver,
+          rebuild_pkgbuild=rebuild_pkgbuild,
       )
     else:
+      actual_repos = set()
+      tryserver_affected_files = []
+      with api.step.nest('load packages from desired repos'):
+        for pl in package_locations:
+          repo = pl['repo']
+          ref = pl.get('ref', revision)
+          subdir = pl.get('subdir', '')
+
+          hash_name = hashlib.sha1(str("%s:%s" %
+                                       (repo, ref)).encode('utf-8')).hexdigest()
+          actual_repos.add(hash_name)
+
+          checkout_path = package_repos / hash_name
+          api.git.checkout(repo, ref, checkout_path, submodules=False)
+
+          package_path = checkout_path
+          if subdir:
+            package_path = package_path / subdir
+          api.support_3pp.load_packages_from_path(package_path)
+
+          if api.tryserver.is_tryserver:
+            repo_tryserver_affected_files = api.git(
+                '-c',
+                'core.quotePath=false',
+                'diff',
+                '--name-only',
+                'HEAD~',
+                name='git diff to find changed files',
+                stdout=api.raw_io.output_text()).stdout.split()
+            tryserver_affected_files += [
+                checkout_path / f for f in repo_tryserver_affected_files
+            ]
+      if api.tryserver.is_tryserver:
+        assert (tryserver_affected_files != [])
+
+      with api.step.nest('remove unused repos'):
+        leftovers = current_repos - actual_repos
+        for hash_name in sorted(leftovers):
+          api.file.rmtree('rm %s' % (hash_name,),
+                          package_repos / hash_name)
+
       _, unsupported = api.support_3pp.ensure_uploaded(
           to_build,
           platform,
@@ -218,11 +254,22 @@ def GenTests(api):
   yield (api.test('basic') + defaults() +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
 
-  yield (api.test('pkgbuild') + defaults() + api.properties(use_pkgbuild=True) +
+  yield (api.test('pkgbuild') + defaults() +
+         api.properties(use_pkgbuild=True) +
          api.step_data(
              'build packages (pkgbuild)',
              api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))) +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
+
+  yield (api.test('pkgbuild-tryjob') + defaults() +
+         api.buildbucket.try_build('infra') +
+         api.properties(use_pkgbuild=True) +
+         api.override_step_data(
+             'checkout repos containing package specs.git diff to find changed files',
+             stdout=api.raw_io.output_text('go/src/infra/tools/pkgbuild/something.go')) +
+         api.step_data(
+             'build packages (pkgbuild)',
+             api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))))
 
   pkgs = sorted(dict(
     pkg_a='''
