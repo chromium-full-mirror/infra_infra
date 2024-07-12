@@ -186,22 +186,17 @@ func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 }
 
 func dumpStableVersionToDatastoreHandler(c *router.Context) error {
-	logging.Infof(c.Request.Context(), "begin dumpStableVersionToDatastoreHandler")
 	cfg := config.Get(c.Request.Context())
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisableDumpStableVersionToDatastore() {
-		if cfg.RpcControl == nil {
-			logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler immediately because RpcControl is nil")
-		} else {
-			logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler immediately because task is disabled")
-		}
+		logging.Infof(c.Request.Context(), "Dump StableVersion aborted as it is disabled!")
 		return nil
 	}
 	inv := &frontend.ServerImpl{}
-	_, err := inv.DumpStableVersionToDatastore(c.Request.Context(), &fleet.DumpStableVersionToDatastoreRequest{})
-	if err != nil {
-		logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler with err (%s)", err)
-	} else {
-		logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler successfully")
+	req := &fleet.DumpStableVersionToDatastoreRequest{}
+	if _, err := inv.DumpStableVersionToDatastore(c.Request.Context(), req); err != nil {
+		logging.Infof(c.Request.Context(), "Dump StableVersion failed with error: %w", err)
+		return err
 	}
-	return err
+	logging.Infof(c.Request.Context(), "Dump StableVersion finished successfully!")
+	return nil
 }

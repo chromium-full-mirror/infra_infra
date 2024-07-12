@@ -35,7 +35,7 @@ const (
                     "name":"auron_paine"
                 },
                 "modelId":{
-                    "value":""
+                    "value":"auron_paine"
                 }
             },
             "version":"R78-12499.40.0"
@@ -77,7 +77,7 @@ const (
                     "name":"auron_paine"
                 },
                 "modelId":{
-                    "value":""
+                    "value":"auron_paine"
                 }
             },
             "version":""
@@ -143,58 +143,6 @@ func TestGetStableVersion(t *testing.T) {
 		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
 		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
 		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
-	})
-
-	Convey("Test GetStableVersion RPC -- look up by hostname beaglebone", t, func() {
-		ctx := testingContext()
-		datastore.GetTestable(ctx)
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-
-		oldGetDUTOverrideForTests := getDUTOverrideForTests
-		getDUTOverrideForTests = func(_ context.Context, _ string) (*inventory.DeviceUnderTest, error) {
-			return &inventory.DeviceUnderTest{
-				Common: &inventory.CommonDeviceSpecs{
-					Attributes: []*inventory.KeyValue{
-						{
-							Key:   strptr("servo_host"),
-							Value: strptr("xxx-beaglebone-servo"),
-						},
-					},
-					Id:       strptr("xxx-id"),
-					Hostname: strptr("xxx-hostname"),
-					Labels: &inventory.SchedulableLabels{
-						Model: strptr("xxx-model"),
-						Board: strptr("xxx-build-target"),
-					},
-				},
-			}, nil
-		}
-		defer func() {
-			getDUTOverrideForTests = oldGetDUTOverrideForTests
-		}()
-
-		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
-		So(err, ShouldBeNil)
-		err = dssv.PutSingleCrosStableVersion(ctx, beagleboneServo, beagleboneServo, "xxx-beaglebone-cros-version")
-		So(err, ShouldBeNil)
-		err = dssv.PutSingleFaftStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-faft-version")
-		So(err, ShouldBeNil)
-		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-firmware-version")
-		So(err, ShouldBeNil)
-
-		resp, err := tf.Inventory.GetStableVersion(
-			ctx,
-			&fleet.GetStableVersionRequest{
-				Hostname: "xxx-hostname",
-			},
-		)
-
-		So(err, ShouldBeNil)
-		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
-		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
-		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
-		So(resp.ServoCrosVersion, ShouldEqual, "")
 	})
 
 	Convey("Test GetStableVersion RPC -- look up by hostname labstation", t, func() {
@@ -329,7 +277,7 @@ func TestGetStableVersion(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(resp.CrosVersion, ShouldEqual, "xxx-labstation-cros-version")
 		So(resp.FaftVersion, ShouldEqual, "")
-		So(resp.FirmwareVersion, ShouldEqual, "xxx-labstation-firmware-version")
+		So(resp.FirmwareVersion, ShouldEqual, "") // not expected as faft version is empty.
 		So(resp.ServoCrosVersion, ShouldEqual, "")
 		So(resp.Reason, ShouldContainSubstring, "looked up non-satlab device hostname")
 	})

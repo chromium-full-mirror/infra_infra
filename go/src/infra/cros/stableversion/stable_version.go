@@ -96,8 +96,8 @@ const separator = ";"
 
 // JoinBuildTargetModel -- join a buildTarget string and a model string to produce a combined key
 func JoinBuildTargetModel(buildTarget string, model string) (string, error) {
-	b := strings.ToLower(buildTarget)
-	m := strings.ToLower(model)
+	b := strings.TrimSpace(strings.ToLower(buildTarget))
+	m := strings.TrimSpace(strings.ToLower(model))
 	if err := ValidateJoinBuildTargetModel(b, m); err != nil {
 		return "", err
 	}
@@ -114,13 +114,16 @@ func FallbackBuildTargetKey(buildTarget string) string {
 // The model is explicitly allowed to be empty.
 func ValidateJoinBuildTargetModel(buildTarget string, model string) error {
 	if buildTarget == "" {
-		return fmt.Errorf("ValidateJoinBuildTargetModel: buildTarget cannot be \"\"")
+		return fmt.Errorf("ValidateJoinBuildTargetModel: buildTarget cannot be empty")
+	}
+	if model == "" {
+		return fmt.Errorf("ValidateJoinBuildTargetModel: model cannot be empty")
 	}
 	if strings.Contains(buildTarget, separator) {
-		return fmt.Errorf("ValidateJoinBuildTargetModel: buildTarget cannot contain separator")
+		return fmt.Errorf("ValidateJoinBuildTargetModel: buildTarget cannot contain separator(%s)", separator)
 	}
 	if strings.Contains(model, separator) {
-		return fmt.Errorf("ValidateJoinBuildTargetModel: model cannot contain separator")
+		return fmt.Errorf("ValidateJoinBuildTargetModel: model cannot contain separator(%s)", separator)
 	}
 	return nil
 }

@@ -50,8 +50,6 @@ type getStableVersionRecordsResult struct {
 	firmware map[string]string
 }
 
-const beagleboneServo = "beaglebone_servo"
-
 // DumpStableVersionToDatastore takes stable version info from the git repo where it lives
 // and dumps it to datastore
 func (is *ServerImpl) DumpStableVersionToDatastore(ctx context.Context, in *fleet.DumpStableVersionToDatastoreRequest) (*fleet.DumpStableVersionToDatastoreResponse, error) {
@@ -192,27 +190,29 @@ func getStableVersionImpl(ctx context.Context, buildTarget string, model string,
 // is non-fatal.
 func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, model string) (*fleet.GetStableVersionResponse, error) {
 	logging.Infof(ctx, "getting stable version for buildTarget: (%s) and model: (%s)", buildTarget, model)
+
+	buildTarget = strings.TrimSpace(buildTarget)
+	model = strings.TrimSpace(model)
+	if buildTarget == "" || model == "" {
+		return nil, errors.Reason("get stable version: board and/or model is empty").Err()
+	}
 	var err error
 	out := &fleet.GetStableVersionResponse{}
-
 	out.CrosVersion, err = dssv.GetCrosStableVersion(ctx, buildTarget, model)
 	if err != nil {
-		return nil, errors.Annotate(err, "getStableVersionImplNoHostname").Err()
+		return nil, errors.Annotate(err, "get stable version by board/model").Err()
 	}
+	logging.Infof(ctx, "Got cros version %q from datastore", out.CrosVersion)
 	out.FaftVersion, err = dssv.GetFaftStableVersion(ctx, buildTarget, model)
 	if err != nil {
-		logging.Infof(ctx, "faft stable version does not exist: %#v", err)
+		logging.Infof(ctx, "faft version not found: %w", err)
 	} else {
-		logging.Infof(ctx, "Got faft stable version %s from datastore", out.FaftVersion)
-	}
-	// successful early exit if we have a beaglebone servo
-	if buildTarget == beagleboneServo || model == beagleboneServo {
-		maybeSetReason(out, "looks like beaglebone")
-		return out, nil
-	}
-	out.FirmwareVersion, err = dssv.GetFirmwareStableVersion(ctx, buildTarget, model)
-	if err != nil {
-		logging.Infof(ctx, "firmware version does not exist: %#v", err)
+		// Fw image path expected only if evrsion is present.
+		logging.Infof(ctx, "Got faft version %q from datastore", out.FaftVersion)
+		out.FirmwareVersion, err = dssv.GetFirmwareStableVersion(ctx, buildTarget, model)
+		if err != nil {
+			logging.Infof(ctx, "firmware version does not exist: %w", err)
+		}
 	}
 	return out, nil
 }
@@ -221,21 +221,14 @@ func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, mod
 // TODO(gregorynisbet): Consider under what circumstances an error leaving this function
 // should be considered transient or non-transient.
 func getStableVersionImplWithHostname(ctx context.Context, hostname string) (*fleet.GetStableVersionResponse, error) {
-	var err error
-
 	dut, err := getDUT(ctx, hostname)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get DUT %q", dut).Err()
+		return nil, errors.Annotate(err, "get stable version per hostname").Err()
 	}
-
 	buildTarget := dut.GetCommon().GetLabels().GetBoard()
 	model := dut.GetCommon().GetLabels().GetModel()
-
 	out, err := getStableVersionImplNoHostname(ctx, buildTarget, model)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get stable version info").Err()
-	}
-	return out, nil
+	return out, errors.Annotate(err, "get stable version per hostname").Err()
 }
 
 // getDUTOverrideForTests is an override for tests only.
@@ -248,45 +241,10 @@ func getDUT(ctx context.Context, hostname string) (*inventory.DeviceUnderTest, e
 	if getDUTOverrideForTests != nil {
 		return getDUTOverrideForTests(ctx, hostname)
 	}
-
 	// Call UFS directly to get DUT info, if fails, falling back to use the old workflow
 	dutV1, err := ufs.GetDutV1(ctx, hostname)
-	if err != nil {
-		logging.Infof(ctx, "getDUT: fail to get DUT info from UFS for host %s: %s", hostname, err)
-		return nil, err
-	}
-	return dutV1, err
+	return dutV1, errors.Annotate(err, "get DUT from inventory by hostname: %q", hostname).Err()
 }
-
-// looksLikeServod is a heuristic to detect whether a servod entry.
-// Historically, these used "localhost" as a hostname.
-// Currently, they look like satlab-0⬛⬛⬛⬛⬛⬛⬛⬛⬛-host1-docker_servod.
-//
-// The suffix can only be "docker_servod".
-// I am intentionally keeping the number of supported suffixes small so that misnamed devices are surfaced in a reasonably
-// intuitive way.
-// See b/187895178 comment #13 for details.
-func validateServod(hostname string) error {
-	if hostname == "localhost" {
-		return nil
-	}
-	if strings.Contains(hostname, "docker_servod") {
-		return nil
-	}
-	// TODO(gregorynisbet): Consider removing this special case. Formerly, there was a `hostname == ""` check at the sole call site.
-	if hostname == "" {
-		return nil
-	}
-	// Detect common errors and give a helpful error message to our users.
-	// Any error that isn't validateServodFallbackError indicates that we should not fall back.
-	if strings.Contains(hostname, "docker-servod") {
-		return errors.New(`validate servod: use "docker_servod" with an underscore, not "docker-servod" with a hyphen`)
-	}
-	return validateServodFallbackError
-}
-
-// validateServodFallbackError indicates that we should fallback.
-var validateServodFallbackError = errors.New("validate servod: should fall back")
 
 // maybeSetReason sets the reason on a stable version response if the response is non-nil and the reason is "".
 func maybeSetReason(resp *fleet.GetStableVersionResponse, msg string) {
@@ -308,14 +266,13 @@ func (is *ServerImpl) newStableVersionGitClient(ctx context.Context) (git.Client
 
 // dumpStableVersionToDatastoreImpl takes some way of getting a file and a context and writes to datastore
 func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.Context, string) (string, error)) (*fleet.DumpStableVersionToDatastoreResponse, error) {
-	contents, err := getFile(ctx, config.Get(ctx).StableVersionConfig.StableVersionDataPath)
+	dataPath := config.Get(ctx).StableVersionConfig.StableVersionDataPath
+	contents, err := getFile(ctx, dataPath)
 	if err != nil {
-		logging.Errorf(ctx, "fetch file: %s", err)
 		return nil, errors.Annotate(err, "fetch file").Err()
 	}
 	stableVersions, err := parseStableVersions(contents)
 	if err != nil {
-		logging.Errorf(ctx, "parse json: %s", err)
 		return nil, errors.Annotate(err, "parse json").Err()
 	}
 	m := getStableVersionRecords(ctx, stableVersions)
@@ -397,7 +354,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		version := item.GetVersion()
 		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
-			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
+			logging.Debugf(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
 		}
 		cros[key] = version
@@ -408,7 +365,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		version := item.GetVersion()
 		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
-			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
+			logging.Debugf(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
 		}
 		firmware[key] = version
@@ -419,7 +376,7 @@ func getStableVersionRecords(ctx context.Context, stableVersions *lab_platform.S
 		version := item.GetVersion()
 		key, err := stableversion.JoinBuildTargetModel(buildTarget, model)
 		if err != nil {
-			logging.Infof(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
+			logging.Debugf(ctx, "buildTarget and/or model contains invalid sequence: %s", err)
 			continue
 		}
 		faft[key] = version
