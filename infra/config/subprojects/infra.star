@@ -52,7 +52,8 @@ def try_builder(
         properties = None,
         caches = None,
         in_cq = True,
-        use_python3 = True):
+        use_python3 = True,
+        location_filters = None):
     infra.builder(
         name = name,
         bucket = "try",
@@ -67,6 +68,7 @@ def try_builder(
             builder = name,
             cq_group = "infra",
             experiment_percentage = experiment_percentage,
+            location_filters = location_filters,
         )
 
 # Linux as the main platform to test with the most recent Go version (aka
@@ -138,6 +140,12 @@ try_builder(
     caches = [
         swarming.cache("nodejs"),
         swarming.cache("npmcache"),
+    ],
+    location_filters = [
+        # see infra/recipes/recipes/infra_frontend_tester.py
+        cq.location_filter(path_regexp = "appengine/monorail/.+"),
+        cq.location_filter(path_regexp = "go/src/infra/appengine/dashboard/frontend/.+"),
+        cq.location_filter(path_regexp = "go/src/infra/appengine/chrome-test-health/frontend/.+"),
     ],
 )
 
