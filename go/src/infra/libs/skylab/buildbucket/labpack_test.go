@@ -80,7 +80,7 @@ func (s *FakeSchedulingAPI) CancelTasks(_ context.Context, _ *schedulingapi.Canc
 	return nil
 }
 
-func (s *FakeSchedulingAPI) ShouldUseDM() (bool, error) {
+func (s *FakeSchedulingAPI) ShouldUseDM(_ context.Context) (bool, error) {
 	return s.shouldUseDM, nil
 }
 

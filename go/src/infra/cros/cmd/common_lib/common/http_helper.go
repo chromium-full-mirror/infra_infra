@@ -31,8 +31,8 @@ type clientThatSendsRequests interface {
 
 // AnyStringInGerritList checks for any overlap between the given list of
 // strings, and the list at the given Gerrit URL.
-func AnyStringInGerritList(c clientThatSendsRequests, list []string, listURL string) (bool, error) {
-	fileText, err := fetchFileFromURL(c, listURL)
+func AnyStringInGerritList(ctx context.Context, c clientThatSendsRequests, list []string, listURL string) (bool, error) {
+	fileText, err := fetchFileFromURL(ctx, c, listURL)
 	if err != nil {
 		return false, err
 	}
@@ -50,8 +50,8 @@ func AnyStringInGerritList(c clientThatSendsRequests, list []string, listURL str
 }
 
 // fetchFileFromURL retrieves text from the given URL, using LUCI auth.
-func fetchFileFromURL(c clientThatSendsRequests, url string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func fetchFileFromURL(ctx context.Context, c clientThatSendsRequests, url string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "fetch file %q: create request", url).Err()
 	}

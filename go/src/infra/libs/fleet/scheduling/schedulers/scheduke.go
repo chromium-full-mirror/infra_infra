@@ -121,8 +121,8 @@ func (s *schedukeAPI) CancelTasks(ctx context.Context, req *api.CancelTasksReque
 }
 
 // ShouldUseDM determines if the caller should use Device Manager or not.
-func (s *schedukeAPI) ShouldUseDM() (bool, error) {
-	useDM, err := common.ShouldUseDM(s.gerritClient, s.pool)
+func (s *schedukeAPI) ShouldUseDM(ctx context.Context) (bool, error) {
+	useDM, err := common.ShouldUseDM(ctx, s.gerritClient, s.pool)
 	if err != nil {
 		return false, errors.Annotate(err, "should use DM: calling Scheduke").Err()
 	}

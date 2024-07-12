@@ -13,5 +13,5 @@ type TaskSchedulingAPI interface {
 	// CancelTasks cancels specified tasks.
 	CancelTasks(context.Context, *CancelTasksRequest) error
 	// ShouldUseDM determines if the caller should use Device Manager or not.
-	ShouldUseDM() (bool, error)
+	ShouldUseDM(context.Context) (bool, error)
 }

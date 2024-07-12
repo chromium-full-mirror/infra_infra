@@ -138,7 +138,7 @@ func (c *clientImpl) CreateLabpackTask(ctx context.Context, params *ScheduleLabp
 	}
 
 	if sc != nil {
-		if shouldUseDM, err := sc.ShouldUseDM(); err != nil {
+		if shouldUseDM, err := sc.ShouldUseDM(ctx); err != nil {
 			fmt.Println("Unable to check whether Scheduke should be used. Falling back to BB scheduler.", err)
 			// return "", -1, errors.Annotate(err, "create labpack task").Err()
 		} else if shouldUseDM {
