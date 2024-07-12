@@ -16,7 +16,6 @@ import webapp2
 
 from legacy import api as legacy_api
 from legacy import api_common
-from legacy import swarmbucket_api
 import bq
 import bulkproc
 import config
@@ -140,7 +139,6 @@ def get_frontend_routes():  # pragma: no cover
   endpoints_services = [
       legacy_api.BuildBucketApi,
       config_api.ConfigApi,
-      swarmbucket_api.SwarmbucketApi,
   ]
   routes = [
       webapp2.Route(r'/_ah/start', DummyStartHandler),
