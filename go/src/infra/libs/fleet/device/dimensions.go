@@ -91,7 +91,15 @@ func GetPools(ctx context.Context, client GetPoolsClient, hostname string) ([]st
 	if client == nil {
 		return nil, fmt.Errorf("GetPools: client cannot be nil")
 	}
-	pools, err := getPoolsForGenericDevice(ctx, client, hostname, ufsutil.OSNamespace)
+	// Namespace Anyone who call it need to set namespase, if not then we will use default os.
+	namespace := ufsutil.OSNamespace
+	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
+		// we found a namespace already set in the context, so should just use that
+		if ns, ok := existingMetadata[ufsutil.Namespace]; ok && len(ns) != 0 {
+			namespace = ns[0]
+		}
+	}
+	pools, err := getPoolsForGenericDevice(ctx, client, hostname, namespace)
 	if err != nil {
 		return nil, errors.Annotate(err, "getting pool(s) for device").Err()
 	}
