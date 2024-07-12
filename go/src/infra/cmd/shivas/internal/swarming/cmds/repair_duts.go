@@ -21,6 +21,7 @@ import (
 	schedulingapi "infra/libs/fleet/scheduling/api"
 	"infra/libs/skylab/buildbucket"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 type repairDuts struct {
@@ -72,6 +73,11 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		return errors.Reason("at least one hostname has to be provided").Err()
 	}
 	ctx := cli.GetContext(a, c, env)
+	ns, err := getNamespace(&c.envFlags)
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	e := c.envFlags.Env()
 	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
@@ -90,10 +96,6 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return errors.Annotate(err, "getting auth opts").Err()
 	}
-	ns, err := c.envFlags.Namespace(nil, "")
-	if err != nil {
-		return err
-	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, host := range args {
 		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
@@ -109,6 +111,16 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	}
 	utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
 	return nil
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func getNamespace(c *site.EnvFlags) (string, error) {
+	if c == nil {
+		return ufsUtil.OSNamespace, nil
+	}
+	return c.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.

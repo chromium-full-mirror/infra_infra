@@ -21,7 +21,7 @@ func TestScheduleReserveBuilder(t *testing.T) {
 		session: "admin-session:bla bla",
 		config:  "task-config",
 	}
-	_, taskID, err := r.scheduleReserveBuilder(ctx, client, nil, site.Environment{}, "fake-labstation1")
+	_, taskID, err := r.scheduleReserveBuilder(ctx, client, nil, site.Environment{}, "namespase", "fake-labstation1")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}

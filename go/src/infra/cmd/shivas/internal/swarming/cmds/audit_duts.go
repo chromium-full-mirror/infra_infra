@@ -73,6 +73,11 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	if len(args) == 0 {
 		return errors.Reason("audit dut: at least one host has to provided").Err()
 	}
+	ns, err := getNamespace(&c.envFlags)
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	taskNames, err := c.getTaskNames()
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
@@ -99,7 +104,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	for _, host := range args {
 		host = heuristics.NormalizeBotNameToDeviceName(host)
 		for _, taskName := range taskNames {
-			taskURL, err := scheduleAuditBuilder(ctx, bc, uc, authOpts, e, taskName, host, c.latestVersion, sessionTag)
+			taskURL, err := scheduleAuditBuilder(ctx, bc, uc, authOpts, e, taskName, host, c.latestVersion, ns, sessionTag)
 			if err != nil {
 				fmt.Fprintf(a.GetErr(), "Skipping %q for %q because %s\n", taskName, host, err.Error())
 			} else {
@@ -131,7 +136,7 @@ func (c *auditRun) getTaskNames() ([]string, error) {
 }
 
 // scheduleAuditBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device.GetPoolsClient, authOpts auth.Options, e site.Environment, taskName string, host string, latestVersion bool, adminSession string) (string, error) {
+func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device.GetPoolsClient, authOpts auth.Options, e site.Environment, taskName string, host string, latestVersion bool, namespace, adminSession string) (string, error) {
 	tn, err := buildbucket.NormalizeTaskName(taskName)
 	if err != nil {
 		return "", errors.Annotate(err, "schedule audit builder").Err()
@@ -147,8 +152,9 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device
 		EnableRecovery: true,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
-		InventoryService: e.UnifiedFleetService,
-		UpdateInventory:  true,
+		InventoryService:   e.UnifiedFleetService,
+		UpdateInventory:    true,
+		InventoryNamespace: namespace,
 		// Note: Scheduled tasks are not expected custom configuration.
 		Configuration: "",
 		ExtraTags: []string{

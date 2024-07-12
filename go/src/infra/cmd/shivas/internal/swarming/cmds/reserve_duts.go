@@ -78,6 +78,11 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
+	ns, err := getNamespace(&c.envFlags)
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	e := c.envFlags.Env()
 	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
@@ -105,7 +110,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduke client").Err()
 		}
-		if url, _, err := c.scheduleReserveBuilder(ctx, bc, sc, e, host); err != nil {
+		if url, _, err := c.scheduleReserveBuilder(ctx, bc, sc, e, host, ns); err != nil {
 			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
 		} else {
 			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, url)
@@ -116,7 +121,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 }
 
 // scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
-func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host string) (string, int64, error) {
+func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host, namespace string) (string, int64, error) {
 	// TODO(b/229896419): refactor to hide labpack.Params struct.
 	v := buildbucket.CIPDProd
 	tags := []string{
@@ -136,12 +141,13 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 		BuilderName:  "reserve",
 		AdminService: e.AdminService,
 		// NOTE: We use the UFS service, not the Inventory service here.
-		InventoryService: e.UnifiedFleetService,
-		NoStepper:        false,
-		NoMetrics:        false,
-		UpdateInventory:  true,
-		Configuration:    c.config,
-		ExtraTags:        tags,
+		InventoryService:   e.UnifiedFleetService,
+		InventoryNamespace: namespace,
+		NoStepper:          false,
+		NoMetrics:          false,
+		UpdateInventory:    true,
+		Configuration:      c.config,
+		ExtraTags:          tags,
 	}
 	url, taskID, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
 	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
