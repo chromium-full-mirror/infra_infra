@@ -8,6 +8,8 @@ package unifiedfleet.api.v1.models.chromeos.lab;
 
 option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+
 // Major hardware revision for Dolos
 // Next Tag: 2
 enum DolosHWMajorRevision {
@@ -16,7 +18,7 @@ enum DolosHWMajorRevision {
   DOLOS_V1 = 1;
 }
 
-// Next Tag: 6
+// Next Tag: 7
 message Dolos {
   // Serial used to identify device over USB
   string serial_cable = 1;
@@ -28,4 +30,6 @@ message Dolos {
   string fw_version = 4;
   // Hostname of the host machine the dolos connected to via USB cable.
   string hostname = 5;
+  // RPM that controls the power source for Dolos.
+  OSRPM rpm = 6;
 }
