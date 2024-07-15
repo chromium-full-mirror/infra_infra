@@ -7475,6 +7475,27 @@ wheel: <
 
 ## **pyarrow**
 
+### 16.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyarrow/${vpython_platform}"
+  version: "version:16.0.0"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+
 ### 16.1.0
 
 ```protobuf
