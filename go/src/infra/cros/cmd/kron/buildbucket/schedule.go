@@ -89,6 +89,14 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 		return nil, err
 	}
 
+	// Add luci context to the stored client context so that we can attach child
+	// builders to the main Kron run.
+	bbCtx := lucictx.GetBuildbucket(ctx)
+	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
+		ctx = metadata.NewOutgoingContext(ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
+
+	}
+
 	return &client{
 		ctx:               ctx,
 		buildBucketClient: bbClient,
@@ -100,14 +108,9 @@ func InitScheduler(ctx context.Context, authOpts *authcli.Flags, isProd, dryRun 
 // Schedule takes in a ScheduleBuildRequest and schedules it via the BuildBucket
 // API.
 func (c *client) Schedule(request *bb.ScheduleBuildRequest) (*bb.Build, error) {
-	bbCtx := lucictx.GetBuildbucket(c.ctx)
-
-	if bbCtx != nil && bbCtx.GetScheduleBuildToken() != "" {
-		c.ctx = metadata.NewOutgoingContext(c.ctx, metadata.Pairs(buildbucket.BuildbucketTokenHeader, bbCtx.ScheduleBuildToken))
-
-		if request.GetCanOutliveParent() != bb.Trinary_UNSET {
-			request.CanOutliveParent = bb.Trinary_YES
-		}
+	// Ensure that the request can outlive the parent builder.
+	if request.GetCanOutliveParent() != bb.Trinary_UNSET {
+		request.CanOutliveParent = bb.Trinary_YES
 	}
 
 	build, err := c.buildBucketClient.ScheduleBuild(c.ctx, request)
