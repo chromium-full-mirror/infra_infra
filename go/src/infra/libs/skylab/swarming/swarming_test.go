@@ -7,6 +7,7 @@ package swarming
 import (
 	"context"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -121,17 +122,18 @@ func TestTaskListURL(t *testing.T) {
 	testCases := []testTaskListURLForTagsData{
 		{
 			tags:        []string{"attemptID:123"},
-			tasklistURL: "https://swarming.appspot.com/tasklist?f=attemptID%3A123",
+			tasklistURL: "https://swarming.appspot.com/tasklist?f=attemptID%3A123&st=",
 		},
 		{
 			tags:        []string{"attemptID:123", "multipleTags:True"},
-			tasklistURL: "https://swarming.appspot.com/tasklist?f=attemptID%3A123&f=multipleTags%3ATrue",
+			tasklistURL: "https://swarming.appspot.com/tasklist?f=attemptID%3A123&f=multipleTags%3ATrue&st=",
 		},
 	}
 
 	for _, c := range testCases {
 		got := TaskListURLForTags(swarmingService, c.tags)
-		if c.tasklistURL != got {
+		// Cannot use string comparasing as time is changing always.
+		if !strings.HasPrefix(got, c.tasklistURL) {
 			t.Fatalf("Non-matched tasklist URL:\nExpected: %s\nActual %s", c.tasklistURL, got)
 		}
 	}

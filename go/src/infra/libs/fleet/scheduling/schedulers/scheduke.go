@@ -78,6 +78,7 @@ func (s *schedukeAPI) ScheduleTask(ctx context.Context, req *api.ScheduleTaskReq
 	if err := req.Validate(); err != nil {
 		return nil, errors.Annotate(err, "scheduling task via Scheduke: validating request").Err()
 	}
+	now := time.Now()
 	bbReq := req.GetBuildbucketRequest()
 	builderName := bbReq.GetBuilder().GetBuilder()
 	name := req.GetDeviceName()
@@ -100,7 +101,7 @@ func (s *schedukeAPI) ScheduleTask(ctx context.Context, req *api.ScheduleTaskReq
 	}
 	return &api.Task{
 		Id:  taskID,
-		Url: fmt.Sprintf("https://chromeos-swarming.appspot.com/tasklist?f=%s:%s", schedukeTaskSwarmingTagKey, schedukeTagVal),
+		Url: fmt.Sprintf("https://chromeos-swarming.appspot.com/tasklist?f=%s:%s&st=%d", schedukeTaskSwarmingTagKey, schedukeTagVal, now.UnixMilli()),
 	}, nil
 }
 

@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -379,6 +380,7 @@ func TaskListURLForTags(swarmingService string, tags []string) string {
 	for _, t := range tags {
 		q.Add("f", t)
 	}
+	q.Add("st", strconv.FormatInt(time.Now().UnixMilli(), 10))
 	u.RawQuery = q.Encode()
 	return u.String()
 }
