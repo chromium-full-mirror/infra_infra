@@ -76,6 +76,17 @@ func (builder *DynamicTrv2FromCft) tryAppendTestTask(dynamic *DynamicTrv2Builder
 		DefaultDynamicTestTaskWrapper(testKey))
 }
 
+// tryAppendPostProcessTask enforces the SkipPostProcess field and attempts
+// to add the post process to the ordered task list.
+func (builder *DynamicTrv2FromCft) tryAppendPostProcessTask(dynamic *DynamicTrv2Builder) {
+	if builder.Cft.GetStepsConfig().GetHwTestConfig().GetSkipPostProcess() {
+		return
+	}
+
+	dynamic.OrderedTaskBuilders = append(dynamic.OrderedTaskBuilders,
+		DefaultDynamicPostProcessTaskWrapper())
+}
+
 // tryAppendPublishTasks enforces the SkipAllResultPublish field and attempts
 // to add the various publish steps to the ordered task list.
 func (builder *DynamicTrv2FromCft) tryAppendPublishTasks(dynamic *DynamicTrv2Builder) {
@@ -337,6 +348,59 @@ func ContainsFwProvisionState(state *api.ProvisionState) bool {
 	return state != nil && state.Firmware != nil
 }
 
+// BuildPostProcessContainerRequest constructs a ContainerRequest for
+// post-process.
+func BuildPostProcessContainerRequest(identifier string, deps []*api.DynamicDep) *api.ContainerRequest {
+	return &api.ContainerRequest{
+		DynamicIdentifier: identifier,
+		Container: &api.Template{
+			Container: &api.Template_PostProcess{
+				PostProcess: &api.PostProcessTemplate{},
+			},
+		},
+		ContainerImageKey: common.PostProcess,
+		DynamicDeps:       deps,
+	}
+}
+
+// BuildPostProcessRequest constructs a PostProcessRequest with provided dependencies.
+func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
+	dutServer := common.NewPrimaryDeviceIdentifier().GetCrosDutServer()
+	return &api.PostTestTask{
+		ServiceAddress: &labapi.IpEndpoint{},
+		StartUpRequest: &api.PostTestStartUpRequest{},
+		RunActivitiesRequest: &api.RunActivitiesRequest{
+			Requests: []*api.Request{
+				{
+					Request: &api.Request_GetFwInfoRequest{
+						GetFwInfoRequest: &api.GetFWInfoRequest{},
+					},
+				},
+				{
+					Request: &api.Request_GetGfxInfoRequest{
+						GetGfxInfoRequest: &api.GetGfxInfoRequest{},
+					},
+				},
+			},
+		},
+		DynamicIdentifier: dynamicID,
+		DynamicDeps: []*api.DynamicDep{
+			{
+				Key:   common.ServiceAddress,
+				Value: common.PostProcess,
+			},
+			{
+				Key:   "startUpRequest.dutServer",
+				Value: dutServer,
+			},
+			{
+				Key:   "runActivitiesRequest.dutServer",
+				Value: dutServer,
+			},
+		},
+	}
+}
+
 // BuildPublishContainerRequest constructs a ContainerRequest for cros-publish
 // using parameters marking the publish type.
 func BuildPublishContainerRequest(identifier string, publishType api.CrosPublishTemplate_PublishType, deps []*api.DynamicDep) *api.ContainerRequest {
@@ -592,6 +656,23 @@ func DefaultDynamicTestTaskWrapper(containerImageKey string) DynamicTaskBuilder 
 	}
 }
 
+// DefaultDynamicPostProcessTaskWrapper creates the default post-process task.
+func DefaultDynamicPostProcessTaskWrapper() DynamicTaskBuilder {
+	return func(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
+		return []*api.CrosTestRunnerDynamicRequest_Task{
+			{
+				OrderedContainerRequests: []*api.ContainerRequest{
+					BuildPostProcessContainerRequest(common.PostProcess, nil),
+				},
+				Task: &api.CrosTestRunnerDynamicRequest_Task_PostTest{
+					PostTest: BuildPostProcessRequest(common.PostProcess),
+				},
+				Required: true,
+			},
+		}
+	}
+}
+
 // DefaultDynamicRdbPublishTaskWrapper creates the default rdb publish task.
 func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) DynamicTaskBuilder {
 	return func(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
@@ -606,6 +687,7 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) 
 				builder.PrimaryDut.GetModelName(),
 				builder.ContainerMetadataKey,
 			),
+			PostProcessResponses: &api.RunActivitiesResponse{},
 		})
 		return []*api.CrosTestRunnerDynamicRequest_Task{
 			{
@@ -629,6 +711,10 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) 
 						{
 							Key:   "publishRequest.metadata.testResult",
 							Value: common.NewTaskIdentifier(common.CrosTest).GetRpcResponse("rdbTestResult"),
+						},
+						{
+							Key:   "publishRequest.metadata.postProcessResponses",
+							Value: common.NewTaskIdentifier(common.PostProcess).GetRpcResponse("runActivities"),
 						},
 					}),
 				},

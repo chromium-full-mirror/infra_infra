@@ -81,6 +81,7 @@ const (
 	RdbPublish       = "rdb-publish"
 	GcsPublish       = "gcs-publish"
 	CpconPublish     = "cpcon-publish"
+	PostProcess      = "post-process"
 
 	// Device base identifiers.
 	Primary   = "primary"

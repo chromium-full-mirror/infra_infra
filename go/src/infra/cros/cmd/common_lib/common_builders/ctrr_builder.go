@@ -39,6 +39,7 @@ func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context) (*api.CrosT
 
 	builder.tryAppendProvisionTask(dynamic)
 	builder.tryAppendTestTask(dynamic)
+	builder.tryAppendPostProcessTask(dynamic)
 	builder.tryAppendPublishTasks(dynamic)
 
 	for _, companionDut := range builder.Cft.GetCompanionDuts() {

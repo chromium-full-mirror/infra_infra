@@ -69,6 +69,17 @@ func NewCrosPublishTemplatedContainer(
 	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
 }
 
+// NewPostProcessTemplatedContainer creates a new templated post-process container.
+func NewPostProcessTemplatedContainer(
+	contType interfaces.ContainerType,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+	if contType != PostProcessTemplatedContainerType {
+		return nil
+	}
+	return NewContainer(contType, "post-process", containerImage, ctr, true)
+}
+
 func NewGenericTemplatedContainer(
 	contType interfaces.ContainerType,
 	containerImage string,

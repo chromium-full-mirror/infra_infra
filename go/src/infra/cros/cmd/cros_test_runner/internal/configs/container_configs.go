@@ -107,6 +107,13 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 		}
 		cont = containers.NewCrosPublishTemplatedContainer(contType, containerImage, cfg.Ctr)
 
+	case containers.PostProcessTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewPostProcessTemplatedContainer(contType, containerImage, cfg.Ctr)
+
 	case containers.CacheServerTemplatedContainerType:
 		containerImage := common.DockerImageCacheServer
 		cont = containers.NewCacheServerTemplatedContainer(containerImage, cfg.Ctr)

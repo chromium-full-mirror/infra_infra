@@ -64,6 +64,10 @@ func (cont *TemplatedContainer) Initialize(
 		if err = cont.initializeCrosTestFinderTemplate(ctx, t.CrosTestFinder); err != nil {
 			return errors.Annotate(err, "initialization failed for cros-test-finder template: ").Err()
 		}
+	case *api.Template_PostProcess:
+		if err = cont.initializePostProcessTemplate(ctx, t.PostProcess); err != nil {
+			return errors.Annotate(err, "initialization failed for post-process template").Err()
+		}
 	case *api.Template_CrosPublish:
 		if err = cont.initializeCrosPublishTemplate(ctx, t.CrosPublish); err != nil {
 			return errors.Annotate(err, "initialization failed for cros-publish template: ").Err()
@@ -198,6 +202,18 @@ func (cont *TemplatedContainer) initializeCrosPublishTemplate(
 		if publishTemplate.PublishSrcDir == "" {
 			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO publish types!")
 		}
+	}
+
+	return nil
+}
+
+// initializePostProcessTemplate initializes post process template.
+func (cont *TemplatedContainer) initializePostProcessTemplate(
+	ctx context.Context,
+	postProcessTemplate *api.PostProcessTemplate) error {
+
+	if postProcessTemplate == nil {
+		return fmt.Errorf("provided PostProcessTemplate is nil")
 	}
 
 	return nil

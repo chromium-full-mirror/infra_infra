@@ -31,6 +31,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 						SkipProvision:          true,
 						SkipTestExecution:      true,
 						SkipAllResultPublish:   true,
+						SkipPostProcess:        true,
 					},
 				},
 			},
@@ -82,6 +83,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 						SkipProvision:          true,
 						SkipTestExecution:      true,
 						SkipAllResultPublish:   true,
+						SkipPostProcess:        true,
 					},
 				},
 			},
@@ -168,7 +170,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 
 		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 5)
+		So(request.GetOrderedTasks(), ShouldHaveLength, 6)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
 	})
@@ -261,7 +263,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 		}
 
 		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 11)
+		So(request.GetOrderedTasks(), ShouldHaveLength, 12)
 		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
 		So(request.GetParams(), ShouldResemble, expected.GetParams())
 		So(request.GetParams().GetContainerMetadata().GetContainers()["default"].GetImages()["cros-fw-provision"].GetDigest(), ShouldEqual, fmt.Sprintf("sha256:%s", common.DefaultCrosFwProvisionSha))

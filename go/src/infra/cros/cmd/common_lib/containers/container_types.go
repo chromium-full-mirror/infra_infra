@@ -23,6 +23,7 @@ const (
 	CrosRdbPublishTemplatedContainerType   interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
 	CrosPublishTemplatedContainerType      interfaces.ContainerType = "CrosPublishTemplatedContainer"
 	GenericProvisionTemplatedContainerType interfaces.ContainerType = "GenericProvisionTemplatedContainer"
+	PostProcessTemplatedContainerType      interfaces.ContainerType = "PostProcessTemplatedContainer"
 )
 
 // GetContainerImageKeyFromContainerType converts a ContainerType to its commonly known string representation.
@@ -48,6 +49,8 @@ func GetContainerImageKeyFromContainerType(containerType interfaces.ContainerTyp
 		return "cros-publish"
 	case CrosVMProvisionTemplatedContainerType:
 		return "vm-provision"
+	case PostProcessTemplatedContainerType:
+		return "post-process"
 	default:
 		return ""
 	}

@@ -38,6 +38,7 @@ var aCacheServerProcessor = newCacheServerProcessor()
 var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
 var aCrosVMProvisionProcessor = newCrosVMProvisionProcessor()
 var aGenericProcessor = newGenericProcessor()
+var aPostProcessProcessor = newPostProcessProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
 // StartContainerRequest. Besides request conversions, a TemplateProcessor is
@@ -103,6 +104,8 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 		return aCrosFwProvisionProcessor, nil
 	case *api.Template_CrosVmProvision:
 		return aCrosVMProvisionProcessor, nil
+	case *api.Template_PostProcess:
+		return aPostProcessProcessor, nil
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", t))
 	}

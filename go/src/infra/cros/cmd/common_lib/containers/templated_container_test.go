@@ -155,6 +155,31 @@ func TestCrosTestTemplate(t *testing.T) {
 	})
 }
 
+func TestPostProcessTemplate(t *testing.T) {
+	t.Parallel()
+
+	Convey("Initialize_empty_template", t, func() {
+		ctx := context.Background()
+		wantContType := PostProcessTemplatedContainerType
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		err := cont.initializeCrosTestTemplate(ctx, nil)
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Initialize_success", t, func() {
+		ctx := context.Background()
+		wantContType := PostProcessTemplatedContainerType
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		postProcessTemplate := &api.PostProcessTemplate{}
+		err := cont.initializePostProcessTemplate(ctx, postProcessTemplate)
+		So(err, ShouldBeNil)
+	})
+}
+
 func TestCrosPublishTemplate(t *testing.T) {
 	t.Parallel()
 
@@ -223,6 +248,17 @@ func TestTemplatedInitialize(t *testing.T) {
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosTest{}}
+		err := cont.Initialize(ctx, template)
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Initialize_post_process", t, func() {
+		ctx := context.Background()
+		wantContType := PostProcessTemplatedContainerType
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		template := &api.Template{Container: &api.Template_PostProcess{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
 	})
