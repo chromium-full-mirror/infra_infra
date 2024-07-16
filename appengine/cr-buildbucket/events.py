@@ -25,16 +25,6 @@ import resultdb
 # they are called from other modules.
 
 
-def on_build_created(build):  # pragma: no cover
-  assert not ndb.in_transaction()
-  logging.info(
-      'Build %s for bucket %s was created by %s', build.key.id(),
-      build.bucket_id,
-      auth.get_current_identity().to_bytes()
-  )
-  metrics.inc_created_builds(build)
-
-
 def on_build_starting_async(build):  # pragma: no cover
   return notifications.enqueue_notifications_async(build)
 
@@ -68,14 +58,3 @@ def on_build_completed(build):  # pragma: no cover
   metrics.add_build_cycle_duration(build)
   if build.proto.HasField('start_time'):
     metrics.add_build_run_duration(build)
-
-
-def on_heartbeat_failure(build_id, ex):  # pragma: no cover
-  assert not ndb.in_transaction()
-  logging.warning('Heartbeat for build %s failed: %s', build_id, ex)
-  metrics.inc_heartbeat_failures()
-
-
-def on_build_leased(build):  # pragma: no cover
-  assert not ndb.in_transaction()
-  metrics.inc_leases(build)
