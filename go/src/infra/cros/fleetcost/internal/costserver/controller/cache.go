@@ -6,10 +6,11 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	models "infra/cros/fleetcost/api/models"
@@ -24,13 +25,13 @@ func StoreCachedCostResult(ctx context.Context, hostname string, result *models.
 	return datastore.Put(ctx, &entities.CachedCostResultEntity{
 		Hostname:       hostname,
 		CostResult:     result,
-		ExpirationTime: time.Now().UTC().Add(cacheTTL),
+		ExpirationTime: clock.Get(ctx).Now().UTC().Add(cacheTTL),
 	})
 }
 
-// ReadCachedCostResult reads a cached cost result if it's before the deadline.
-func ReadCachedCostResult(ctx context.Context, hostname string) (*models.CostResult, error) {
-	now := time.Now().UTC()
+// ReadValidCachedCostResult reads a cached cost result if it's before the deadline.
+func ReadValidCachedCostResult(ctx context.Context, hostname string) (*models.CostResult, error) {
+	now := clock.Get(ctx).Now().UTC()
 	entity := &entities.CachedCostResultEntity{
 		Hostname: hostname,
 	}
@@ -45,5 +46,8 @@ func ReadCachedCostResult(ctx context.Context, hostname string) (*models.CostRes
 	if entity.ExpirationTime.After(now) {
 		return entity.CostResult, nil
 	}
-	return nil, fmt.Errorf("expiration time is too early: %s is after %s", entity.ExpirationTime.String(), now.String())
+	// In cases where the entry is too old, just successfully return nothing, but log that we found an entry
+	// that is indeed too old.
+	logging.Infof(ctx, "expiration time is too early: %s is after %s", entity.ExpirationTime.String(), now.String())
+	return nil, nil
 }

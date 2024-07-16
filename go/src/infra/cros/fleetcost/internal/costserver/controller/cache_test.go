@@ -7,6 +7,7 @@ package controller_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -26,7 +27,7 @@ func TestStoreCachedCostResult(t *testing.T) {
 
 	tf := testsupport.NewFixture(context.Background(), t)
 
-	_, readErr := controller.ReadCachedCostResult(tf.Ctx, "fake-hostname")
+	_, readErr := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
 	if !datastore.IsErrNoSuchEntity(readErr) {
 		t.Errorf("unexpected error in empty db: %s", readErr)
 	}
@@ -37,11 +38,33 @@ func TestStoreCachedCostResult(t *testing.T) {
 		t.Errorf("unexpected error when filling cache: %s", err)
 	}
 
-	result, readErr := controller.ReadCachedCostResult(tf.Ctx, "fake-hostname")
+	result, readErr := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
 	if readErr != nil {
 		t.Errorf("error writing cache record: %s", readErr)
 	}
 	if cost := result.GetDedicatedCost(); cost != 30 {
 		t.Errorf("unexpected dedicated cost %f != 30", cost)
+	}
+}
+
+// TestReadOldCachedResultIsNotFailure tests that reading an old cached time that is beyond
+// its time horizon is still semantically successful, but produces nil.
+//
+// See b:353538757 for more information.
+func TestReadOldCachedResultIsNotFailure(t *testing.T) {
+	t.Parallel()
+	tf := testsupport.NewFixture(context.Background(), t)
+	if err := controller.StoreCachedCostResult(tf.Ctx, "fake-hostname", &models.CostResult{
+		DedicatedCost: 30,
+	}); err != nil {
+		t.Errorf("unexpected error when filling cache: %s", err)
+	}
+	tf.AdvanceClock(5 * time.Hour)
+	result, err := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
+	if result != nil {
+		t.Errorf("expected result to be nil not %v", result)
+	}
+	if err != nil {
+		t.Errorf("expected error to be nil not %v", err)
 	}
 }

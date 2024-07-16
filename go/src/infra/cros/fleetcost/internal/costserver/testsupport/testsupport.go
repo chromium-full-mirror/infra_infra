@@ -9,9 +9,12 @@ package testsupport
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 
+	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -64,12 +67,23 @@ func (tf *Fixture) RegisterListMachineLSEs(reqMatcher gomock.Matcher, resp *ufsA
 	tf.MockUFS.EXPECT().ListMachineLSEs(gomock.Any(), reqMatcher).Return(resp, nil)
 }
 
+// Clock extracts the test clock from the context.
+func (tf *Fixture) Clock() testclock.TestClock {
+	return clock.Get(tf.Ctx).(testclock.TestClock)
+}
+
+// AdvanceClock advances the clock by a duration.
+func (tf *Fixture) AdvanceClock(d time.Duration) {
+	tf.Clock().Add(d)
+}
+
 // NewFixture creates a basic fixture with fake versions of datastore and UFS with properties
 // that are convenient for unit tests.
 func NewFixture(ctx context.Context, t *testing.T) *Fixture {
 	mc := gomock.NewController(t)
 	var out Fixture
 	out.Ctx = memory.Use(ctx)
+	out.Ctx = clock.Set(out.Ctx, testclock.New(time.Now()))
 	datastore.GetTestable(out.Ctx).Consistent(true)
 	out.Frontend = costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
 	out.MockUFS = mockufs.NewMockFleetClient(mc)

@@ -31,7 +31,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 	if req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
 	}
-	readResult, readErr := controller.ReadCachedCostResult(ctx, req.GetHostname())
+	readResult, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
 	if readErr == nil {
 		return &fleetcostAPI.GetCostResultResponse{Result: readResult}, nil
 	}

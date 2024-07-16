@@ -30,7 +30,8 @@ lecture-user:
 .PHONY: binaries
 binaries:
 	if which staticcheck; then staticcheck ./...; else true; fi
-	if which golangci-lint; then golangci-lint run --fix ./...; else true; fi
+	# TODO(gregorynisbet): golangci-lint is currently too oldand doesn't understand generics.
+	# if which golangci-lint; then golangci-lint run --fix ./...; else true; fi
 	go vet ./...
 	go test -coverprofile=coverage.out -fullpath ./...
 	$(RM) $(GARBAGE)
