@@ -265,14 +265,6 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (rep
 		if err == nil && os == "OS_TYPE_LABSTATION" {
 			continue
 		}
-		pool, err := util.ExtractSingleValuedDimension(dims, clients.DutPoolDimensionKey)
-		// Temporary solution to skip admin tasks for schedukeTest as the pool is used for scheduke
-		// and device manager integration, no prod test traffic running on this pool.
-		// Note this won't work for DUT has more than one label-pool dimension where ExtractSingleValuedDimension
-		// will return an error.
-		if err == nil && pool == "schedukeTest" {
-			continue
-		}
 		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
@@ -309,14 +301,7 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 		if err == nil && os == "OS_TYPE_LABSTATION" {
 			continue
 		}
-		pool, err := util.ExtractSingleValuedDimension(dims, clients.DutPoolDimensionKey)
-		// Temporary solution to skip admin tasks for schedukeTest as the pool is used for scheduke
-		// and device manager integration, no prod test traffic running on this pool.
-		// Note this won't work for DUT has more than one label-pool dimension where ExtractSingleValuedDimension
-		// will return an error.
-		if err == nil && pool == "schedukeTest" {
-			continue
-		}
+
 		// TODO(xixuan): b/243448732, remove this check after VM prototype
 		model, err := util.ExtractSingleValuedDimension(dims, clients.DutModelDimensionKey)
 		// Exclude betty bots for audit
