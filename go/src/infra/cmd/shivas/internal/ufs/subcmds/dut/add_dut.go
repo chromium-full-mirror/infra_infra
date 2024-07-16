@@ -83,6 +83,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT.")
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
+		c.Flags.StringVar(&c.rpmType, "rpm-type", "", "rpm type for the DUT."+cmdhelp.RPMTypeHelpText)
 		c.Flags.BoolVar(&c.ignoreUFS, "ignore-ufs", false, "skip updating UFS create a deploy task.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma separated tags for deployment task.")
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
@@ -148,6 +149,7 @@ type addDUT struct {
 	pools                    []string
 	rpm                      string
 	rpmOutlet                string
+	rpmType                  string
 	hive                     string
 
 	ignoreUFS        bool
@@ -210,6 +212,7 @@ var mcsvFields = []string{
 	"servo_setup",
 	"rpm_host",
 	"rpm_outlet",
+	"rpm_type",
 	"pools",
 }
 
@@ -357,8 +360,8 @@ func (c addDUT) validateArgs() error {
 				return cmdlib.NewQuietUsageError(c.Flags, "Invalid servo setup %s", c.servoSetupType)
 			}
 		}
-		if (c.rpm != "" && c.rpmOutlet == "") || (c.rpm == "" && c.rpmOutlet != "") {
-			return cmdlib.NewQuietUsageError(c.Flags, "Need both rpm and its outlet. %s:%s is invalid", c.rpm, c.rpmOutlet)
+		if err := validateRPM(c.rpm, c.rpmOutlet, c.rpmType); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, err.Error())
 		}
 		if c.zone != "" && !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zone)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid zone %s", c.zone)
@@ -568,7 +571,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 			},
 		},
 	}
-	var name, servoHost, servoSerial, rpmHost, rpmOutlet, model, board string
+	var name, servoHost, servoSerial, rpmHost, rpmOutlet, rpmType, model, board string
 	var pools, machines []string
 	var servoPort int32
 	var servoSetup chromeosLab.ServoSetupType
@@ -595,6 +598,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		servoSetup = chromeosLab.ServoSetupType(sst) // Default value is REGULAR(0).
 		rpmHost = recMap["rpm_host"]
 		rpmOutlet = recMap["rpm_outlet"]
+		rpmType = recMap["rpm_type"]
 		machines = []string{recMap["asset"]}
 		pools = strings.Fields(recMap["pools"])
 		model = recMap["model"]
@@ -613,6 +617,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		}
 		rpmHost = c.rpm
 		rpmOutlet = c.rpmOutlet
+		rpmType = c.rpmType
 		machines = []string{c.asset}
 		pools = c.pools
 		model = c.model
@@ -650,6 +655,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	}
 	peripherals.GetRpm().PowerunitName = rpmHost
 	peripherals.GetRpm().PowerunitOutlet = rpmOutlet
+	peripherals.GetRpm().PowerunitType = ufsUtil.ToRPMType(rpmType)
 	if len(pools) > 0 && pools[0] != "" {
 		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = pools
 	} else {
@@ -776,6 +782,20 @@ func validateChromium(hostname, zone string, pools []string) error {
 	}
 	if ufsUtil.IsChromiumLegacyHost(hostname) && !ufsUtil.IsInChromiumPool(pools) {
 		return fmt.Errorf("chromium host %s has to be in pool %q", hostname, ufsUtil.ChromiumPool)
+	}
+	return nil
+}
+
+func validateRPM(host, outlet, rpmType string) error {
+	hasHost := (host != "")
+	hasOutlet := (outlet != "")
+	if (hasHost && !hasOutlet) || (!hasHost && hasOutlet) {
+		return fmt.Errorf("Need both rpm and its outlet. %s:%s is invalid", host, outlet)
+	}
+	if hasHost && hasOutlet {
+		if ufsUtil.ToRPMType(rpmType) == chromeosLab.OSRPM_TYPE_UNKNOWN {
+			return fmt.Errorf("Must provide RPM type. %s is invalid", rpmType)
+		}
 	}
 	return nil
 }

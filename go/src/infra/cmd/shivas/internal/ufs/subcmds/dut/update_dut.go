@@ -57,6 +57,7 @@ const (
 	// RPM related UpdateMask paths.
 	rpmHostPath   = "dut.rpm.host"
 	rpmOutletPath = "dut.rpm.outlet"
+	rpmTypePath   = "dut.rpm.type"
 
 	// DUT related UpdateMask paths.
 	poolsPath   = "dut.pools"
@@ -95,7 +96,7 @@ const (
 )
 
 // partialUpdateDeployPaths is a collection of paths for which there is a partial update on servo/rpm.
-var partialUpdateDeployPaths = []string{servoHostPath, servoPortPath, servoSerialPath, servoSetupPath, rpmHostPath, rpmOutletPath}
+var partialUpdateDeployPaths = []string{servoHostPath, servoPortPath, servoSerialPath, servoSetupPath, rpmHostPath, rpmOutletPath, rpmTypePath}
 
 // UpdateDUTCmd update dut by given hostname and start a swarming job to delpoy.
 var UpdateDUTCmd = &subcommands.Command{
@@ -126,6 +127,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the DUT. Clearing this field will delete rpm. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the DUT.")
+		c.Flags.StringVar(&c.rpmType, "rpm-type", "", "rpm type for the DUT."+cmdhelp.RPMTypeHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(luciFlag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
@@ -187,6 +189,7 @@ type updateDUT struct {
 	licenseIds               []string
 	rpm                      string
 	rpmOutlet                string
+	rpmType                  string
 	deploymentTicket         string
 	tags                     []string
 	description              string
@@ -587,7 +590,7 @@ func (c *updateDUT) parseMCSV() ([]*ufsAPI.UpdateMachineLSERequest, error) {
 }
 
 func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.MachineLSE, *field_mask.FieldMask, error) {
-	var name, servo, servoSerial, servoSetup, rpmHost, rpmOutlet string
+	var name, servo, servoSerial, servoSetup, rpmHost, rpmOutlet, rpmType string
 	var pools, machines []string
 	if recMap != nil {
 		// CSV map. Assign all the params to the variables.
@@ -602,6 +605,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		}
 		rpmHost = recMap["rpm_host"]
 		rpmOutlet = recMap["rpm_outlet"]
+		rpmType = recMap["rpm_type"]
 		machines = []string{recMap["asset"]}
 		pools = strings.Fields(recMap["pools"])
 	} else {
@@ -614,6 +618,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		}
 		rpmHost = c.rpm
 		rpmOutlet = c.rpmOutlet
+		rpmType = c.rpmType
 		machines = []string{c.machine}
 		pools = c.pools
 	}
@@ -703,7 +708,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	mask.Paths = append(mask.Paths, paths...)
 
 	// Create and assign rpm and corresponding masks.
-	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet)
+	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet, rpmType)
 	peripherals.Rpm = rpm
 	mask.Paths = append(mask.Paths, paths...)
 
@@ -1028,7 +1033,7 @@ func generateServoWithMask(servo, servoSetup, servoSerial, servoFwChannel, servo
 }
 
 // generateRPMWithMask generates a rpm object from the given inputs and corresponding mask.
-func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []string) {
+func generateRPMWithMask(rpmHost, rpmOutlet, rpmType string) (*chromeosLab.OSRPM, []string) {
 	// Check if rpm is being deleted.
 	if rpmHost == utils.ClearFieldValue {
 		// Generate mask and empty rpm.
@@ -1045,6 +1050,10 @@ func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []strin
 	if rpmOutlet != "" {
 		rpm.PowerunitOutlet = rpmOutlet
 		paths = append(paths, rpmOutletPath)
+	}
+	if rpmType != "" {
+		rpm.PowerunitType = ufsUtil.ToRPMType(rpmType)
+		paths = append(paths, rpmTypePath)
 	}
 	return rpm, paths
 }

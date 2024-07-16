@@ -1627,6 +1627,10 @@ Operation will be faster as only name/id will be retrieved from the service.`
 	LicenseTypeHelpText string = fmt.Sprintf("the name of the license type. Can specify multiple comma separated values. "+
 		"Valid LicenseType strings: [%s]", strings.Join(ufsUtil.ValidLicenseTypeStr(), ", "))
 
+	//RPMTypeHelpText
+	RPMTypeHelpText string = fmt.Sprintf("the RPM type. "+
+		"Valid RPMType strings: [%s]", strings.Join(ufsUtil.ValidRPMTypeStr(), ", "))
+
 	//ChameleonTypeHelpText help text for chameleontype command line options
 	ChameleonTypeHelpText string = fmt.Sprintf("the name of the chameleontype. Can specify multiple comma separated values. "+
 		"Valid ChameleonType strings: [%s]", strings.Join(ufsUtil.ValidChameleonTypeStr(), ", "))

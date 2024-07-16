@@ -573,6 +573,38 @@ func ToUFSDeviceType(devicetype string) ufspb.ChromeOSDeviceType {
 	return ufspb.ChromeOSDeviceType(ufspb.ChromeOSDeviceType_value[v])
 }
 
+// StrToRPMType refers a map between a string to a OSRPM_Type map.
+var StrToRPMType = map[string]string{
+	"unknown": "TYPE_UNKNOWN",
+	"sentry":  "TYPE_SENTRY",
+	"ip9850":  "TYPE_IP9850",
+}
+
+// IsRPMType checks if a string refers to a valid OSRPM_Type.
+func IsRPMType(rpmType string) bool {
+	_, ok := StrToRPMType[rpmType]
+	return ok
+}
+
+// ValidRPMTypeStr returns a valid str list for OSRPM_Type strings.
+func ValidRPMTypeStr() []string {
+	ks := make([]string, 0, len(StrToRPMType))
+	for k := range StrToRPMType {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// ToRPMType converts rpmType string to a OSRPM_Type enum.
+func ToRPMType(rpmType string) chromeosLab.OSRPM_Type {
+	rpmType = RemoveGivenPrefix(rpmType, "type_")
+	v, ok := StrToRPMType[rpmType]
+	if !ok {
+		return chromeosLab.OSRPM_TYPE_UNKNOWN
+	}
+	return chromeosLab.OSRPM_Type(chromeosLab.OSRPM_Type_value[v])
+}
+
 // StrToChameleonType refers a map between a string to a ChameleonType map.
 var StrToChameleonType = map[string]string{
 	"invalid": "CHAMELEON_TYPE_INVALID",
@@ -595,7 +627,7 @@ func ValidChameleonTypeStr() []string {
 	return ks
 }
 
-// ToChameleonType converts devicetype string to a Chameleon type enum.
+// ToChameleonType converts chameleonType string to a Chameleon type enum.
 func ToChameleonType(chameleonType string) chromeosLab.ChameleonType {
 	chameleonType = RemoveGivenPrefix(chameleonType, "chameleon_type_")
 	v, ok := StrToChameleonType[chameleonType]
