@@ -39,6 +39,7 @@ type MachineLSEEntity struct {
 	SwitchID              string                `gae:"switch_id"`
 	RPMID                 string                `gae:"rpm_id"`
 	RPMPort               string                `gae:"rpm_port"`
+	RPMType               string                `gae:"rpm_type"`
 	VlanID                string                `gae:"vlan_id"`
 	ServoID               string                `gae:"servo_id"`
 	ServoType             string                `gae:"servo_type"`
@@ -106,16 +107,19 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 	servoID := ufsds.GetServoID(servo.GetServoHostname(), servo.GetServoPort())
 	var rpmID string
 	var rpmPort string
+	var rpmType chromeosLab.OSRPM_Type
 	var pools []string
 	var hive string
 	if p.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitName()
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitOutlet()
+		rpmType = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitType()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
 		hive = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
 	} else if p.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
 		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
+		rpmType = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitType()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools()
 	}
 
@@ -145,6 +149,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		SwitchID:              p.GetChromeosMachineLse().GetDeviceLse().GetNetworkDeviceInterface().GetSwitch(),
 		RPMID:                 rpmID,
 		RPMPort:               rpmPort,
+		RPMType:               rpmType.String(),
 		VlanID:                p.GetVlan(),
 		ServoID:               servoID,
 		ServoType:             servo.GetServoType(),
@@ -692,6 +697,8 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 		field = "rpm_id"
 	case util.RPMPortFilterName:
 		field = "rpm_port"
+	case util.RPMTypeFilterName:
+		field = "rpm_type"
 	case util.VlanFilterName:
 		field = "vlan_id"
 	case util.ServoFilterName:
@@ -727,7 +734,7 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 	case util.HiveFilterName:
 		field = "hive"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone/hive", input)
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/rpmtype/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone/hive", input)
 	}
 	return field, nil
 }
@@ -741,6 +748,7 @@ func validateListMachineLSEFilters(filterMap map[string][]interface{}) error {
 		case "switch_id":
 		case "rpm_id":
 		case "rpm_port":
+		case "rpm_type":
 		case "vlan_id":
 		case "servo_id":
 		case "servo_type":

@@ -773,6 +773,7 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 		append("HWID", machine.GetChromeosMachine().GetHwid()).
 		append("powerunit_hostname", p.GetRpm().GetPowerunitName()).
 		append("powerunit_outlet", p.GetRpm().GetPowerunitOutlet()).
+		append("powerunit_type", p.GetRpm().GetPowerunitType().String()[len("TYPE_"):]).
 		append("serial_number", sn).
 		append("servo_host", p.GetServo().GetServoHostname()).
 		append("servod_docker", p.GetServo().GetDockerContainerName()).
@@ -841,6 +842,7 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.De
 		append("HWID", machine.GetChromeosMachine().GetHwid()).
 		append("powerunit_hostname", l.GetRpm().GetPowerunitName()).
 		append("powerunit_outlet", l.GetRpm().GetPowerunitOutlet()).
+		append("powerunit_type", l.GetRpm().GetPowerunitType().String()[len("TYPE_"):]).
 		append("serial_number", sn)
 	osType := inventory.SchedulableLabels_OS_TYPE_LABSTATION
 	labels := createDutLabels(machine, devConfig, &osType)

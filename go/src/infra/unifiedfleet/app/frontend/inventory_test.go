@@ -1922,7 +1922,8 @@ func TestGetDUTsForLabstation(t *testing.T) {
                                 ],
                                 "rpm": {
                                         "powerunitName": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-                                        "powerunitOutlet": "XXX"
+                                        "powerunitOutlet": "XXX",
+                                        "powerunitType": "TYPE_UNKNOWN"
                                 },
                                 "pools": [
                                         "labstation_main"

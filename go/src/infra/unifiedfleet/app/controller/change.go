@@ -861,6 +861,7 @@ func logRPM(resourceName, labelPrefix string, oldRpm, newRpm *chromeosLab.OSRPM)
 	}
 	changes = append(changes, logCommon(resourceName, fmt.Sprintf("%s.name", labelPrefix), oldRpm.GetPowerunitName(), newRpm.GetPowerunitName())...)
 	changes = append(changes, logCommon(resourceName, fmt.Sprintf("%s.outlet", labelPrefix), oldRpm.GetPowerunitOutlet(), newRpm.GetPowerunitOutlet())...)
+	changes = append(changes, logCommon(resourceName, fmt.Sprintf("%s.type", labelPrefix), oldRpm.GetPowerunitType(), newRpm.GetPowerunitType())...)
 	return changes
 }
 

@@ -179,7 +179,7 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 			if err != nil {
 				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
 			}
-			if err := validateUpdateMachineLSEDUTMask(mask, machinelse, machine); err != nil {
+			if err := validateUpdateMachineLSEDUTMask(ctx, mask, machinelse, machine); err != nil {
 				return err
 			}
 			machinelse, err = processUpdateMachineLSEUpdateMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask)
@@ -473,7 +473,7 @@ func cleanPreDeployFields(servo *chromeosLab.Servo) {
 // validateUpdateMachineLSEDUTMask validates the input mask for the given machineLSE.
 //
 // Assumes that dut and mask aren't empty. This is because this function is not called otherwise.
-func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
+func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	var servo *chromeosLab.Servo
 	var rpm *chromeosLab.OSRPM
 	var dolos *chromeosLab.Dolos
@@ -525,6 +525,12 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 			// Check for deletion of rpm outlet. This should not be possible without deleting the host.
 			if _, ok := maskSet["dut.rpm.host"]; rpm.GetPowerunitOutlet() == "" && (!ok || (ok && rpm.GetPowerunitName() != "")) {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
+			}
+		case "dut.rpm.type":
+			// Check for a non-default RPM type. For now, log a warning.
+			// We don't return an error to avoid breaking any existing workflows.
+			if rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN {
+				logging.Infof(ctx, "Updating OSRPM Type with default/unknown value for DUT %s", dut.GetHostname())
 			}
 		case "logicalZone":
 			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
@@ -895,6 +901,8 @@ func processUpdateMachineLSERPMMask(oldRPM, newRPM *chromeosLab.OSRPM, path stri
 		oldRPM.PowerunitName = newRPM.GetPowerunitName()
 	case "dut.rpm.outlet":
 		oldRPM.PowerunitOutlet = newRPM.GetPowerunitOutlet()
+	case "dut.rpm.type":
+		oldRPM.PowerunitType = newRPM.GetPowerunitType()
 	}
 }
 

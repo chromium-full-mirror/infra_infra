@@ -55,6 +55,7 @@ func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, s
 									Rpm: &chromeosLab.OSRPM{
 										PowerunitName:   rpm,
 										PowerunitOutlet: rpmOutlet,
+										PowerunitType:   chromeosLab.OSRPM_TYPE_UNKNOWN,
 									},
 								},
 								Pools: pools,

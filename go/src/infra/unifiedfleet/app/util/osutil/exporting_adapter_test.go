@@ -98,6 +98,7 @@ var lse = ufspb.MachineLSE{
 								Rpm: &chromeosLab.OSRPM{
 									PowerunitName:   "test_power_unit_name",
 									PowerunitOutlet: "test_power_unit_outlet",
+									PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 								},
 								ConnectedCamera: []*chromeosLab.Camera{
 									{
@@ -325,6 +326,7 @@ var labstationLSE = ufspb.MachineLSE{
 							Rpm: &chromeosLab.OSRPM{
 								PowerunitName:   "test_power_unit_name",
 								PowerunitOutlet: "test_power_unit_outlet2",
+								PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 							},
 						},
 					},
@@ -451,6 +453,10 @@ common {
 	attributes {
 		key: "powerunit_outlet",
 		value: "test_power_unit_outlet",
+	}
+	attributes {
+		key: "powerunit_type",
+		value: "SENTRY",
 	}
 	attributes {
 		key: "serial_number"
@@ -697,6 +703,10 @@ common {
 	attributes {
 		key: "powerunit_outlet",
 		value: "test_power_unit_outlet2",
+	}
+	attributes {
+		key: "powerunit_type",
+		value: "SENTRY",
 	}
 	attributes {
 		key: "serial_number"

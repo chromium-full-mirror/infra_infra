@@ -98,6 +98,7 @@ var (
 	MacAddressFilterName           string = "mac"
 	RPMFilterName                  string = "rpm"
 	RPMPortFilterName              string = "rpmport"
+	RPMTypeFilterName              string = "rpmtype"
 	SwitchFilterName               string = "switch"
 	SwitchPortFilterName           string = "switchport"
 	ServoFilterName                string = "servo"

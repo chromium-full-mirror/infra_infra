@@ -125,6 +125,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-4",
 				PowerunitOutlet: ".A4",
+				PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 			}
 			res, err := CreateLabstation(ctx, labstation1)
 			So(err, ShouldBeNil)
@@ -137,12 +138,14 @@ func TestUpdateLabstation(t *testing.T) {
 			So(res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(), ShouldBeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-4")
 			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 3)
+			So(changes, ShouldHaveLength, 4)
 			So(changes[0].NewValue, ShouldEqual, "REGISTRATION")
 			So(changes[1].OldValue, ShouldEqual, "rpm-4")
 			So(changes[1].NewValue, ShouldEqual, "")
 			So(changes[2].OldValue, ShouldEqual, ".A4")
 			So(changes[2].NewValue, ShouldEqual, "")
+			So(changes[3].OldValue, ShouldEqual, "TYPE_SENTRY")
+			So(changes[3].NewValue, ShouldEqual, "TYPE_UNKNOWN")
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-4")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 2)
@@ -169,6 +172,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-5",
 				PowerunitOutlet: ".A5",
+				PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 			}
 			res, err := CreateLabstation(ctx, labstation1)
 			So(err, ShouldBeNil)
@@ -206,6 +210,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-6",
 				PowerunitOutlet: "",
+				PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 			}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.outlet", "labstation.rpm.name"))
 			So(res, ShouldBeNil)
@@ -223,6 +228,7 @@ func TestUpdateLabstation(t *testing.T) {
 			So(labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(), ShouldResemble, &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-5",
 				PowerunitOutlet: ".A5",
+				PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
 			})
 			s, err := state.GetStateRecord(ctx, "hosts/labstation-5")
 			So(err, ShouldBeNil)

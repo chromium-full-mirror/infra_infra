@@ -115,7 +115,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			if err != nil {
 				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
 			}
-			if err := validateUpdateLabstationMask(mask, machinelse, machine); err != nil {
+			if err := validateUpdateLabstationMask(ctx, mask, machinelse, machine); err != nil {
 				return errors.Annotate(err, "UpdateLabstation - Failed update mask validation").Err()
 			}
 			if machinelse, err = processUpdateLabstationMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask); err != nil {
@@ -173,7 +173,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 }
 
 // validateUpdateLabstationMask validates the labstation update mask.
-func validateUpdateLabstationMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
+func validateUpdateLabstationMask(ctx context.Context, mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	// GetLabstation should return an object. Otherwise UpdateLabstation isn't called
 	labstation := machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation()
 	rpm := labstation.GetRpm()
@@ -208,6 +208,12 @@ func validateUpdateLabstationMask(mask *field_mask.FieldMask, machinelse *ufspb.
 			// Check for deletion of rpm outlet. This should not be possible without deleting the host.
 			if _, ok := maskSet["labstation.rpm.host"]; rpm.GetPowerunitOutlet() == "" && (!ok || (ok && rpm.GetPowerunitName() != "")) {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSELabstationUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
+			}
+		case "labstation.rpm.type":
+			// Check for a non-default RPM type. For now, log a warning.
+			// We don't return an error to avoid breaking any existing workflows.
+			if rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN {
+				logging.Infof(ctx, "Updating OSRPM Type with default/unknown value for labstation %s", labstation.GetHostname())
 			}
 		case "logicalZone":
 			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
@@ -300,6 +306,8 @@ func processUpdateLabstationMask(ctx context.Context, oldMachineLSE, newMachineL
 				// Copy the outlet for update
 				oldLabstation.GetRpm().PowerunitOutlet = newLabstation.GetRpm().GetPowerunitOutlet()
 			}
+		case "labstation.rpm.type":
+			oldLabstation.GetRpm().PowerunitType = newLabstation.GetRpm().GetPowerunitType()
 		case "logicalZone":
 			oldMachineLSE.LogicalZone = newMachineLSE.GetLogicalZone()
 		default:
