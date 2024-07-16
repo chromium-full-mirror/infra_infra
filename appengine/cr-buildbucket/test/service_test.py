@@ -121,15 +121,3 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
     self.classic_build(id=1).put()
     with self.assertRaises(auth.AuthorizationError):
       service.get_async(1).get_result()
-
-
-  ############################ UNREGISTER BUILDERS #############################
-
-  def test_unregister_builders(self):
-    model.Builder(
-        id='chromium:try:linux_rel',
-        last_scheduled=self.now - datetime.timedelta(weeks=8),
-    ).put()
-    service.unregister_builders()
-    builders = model.Builder.query().fetch()
-    self.assertFalse(builders)

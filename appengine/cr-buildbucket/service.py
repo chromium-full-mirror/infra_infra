@@ -17,16 +17,6 @@ MAX_RETURN_BUILDS = 100
 DEFAULT_LEASE_DURATION = datetime.timedelta(minutes=1)
 
 
-def unregister_builders():
-  """Unregisters builders that didn't have builds for 4 weeks."""
-  threshold = utils.utcnow() - model.BUILDER_EXPIRATION_DURATION
-  q = model.Builder.query(model.Builder.last_scheduled < threshold)
-  keys = q.fetch(keys_only=True)
-  if keys:  # pragma: no branch
-    logging.warning('unregistered builders: %s', [k.id() for k in keys])
-    ndb.delete_multi(keys)
-
-
 @ndb.tasklet
 def get_async(build_id):
   """Gets a build by |build_id|.

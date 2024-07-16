@@ -15,7 +15,6 @@ from components import prpc
 import webapp2
 
 import bq
-import bulkproc
 import model
 import notifications
 import resultdb
@@ -56,14 +55,6 @@ class MainHandler(webapp2.RequestHandler):  # pragma: no cover
     )
 
 
-
-class UnregisterBuilders(webapp2.RequestHandler):  # pragma: no cover
-  """Unregisters builders that didn't have builds for a long time."""
-
-  @decorators.require_cronjob
-  def get(self):
-    service.unregister_builders()
-
 def get_frontend_routes():  # pragma: no cover
   endpoints_services = [
       config_api.ConfigApi,
@@ -92,12 +83,10 @@ def get_backend_routes():  # pragma: no cover
   return [  # pragma: no branch
       webapp2.Route(r'/internal/cron/buildbucket/bq-export',
                     bq.CronExportBuilds),
-      webapp2.Route(r'/internal/cron/buildbucket/unregister-builders',
-                    UnregisterBuilders),
       webapp2.Route(r'/internal/task/buildbucket/notify/<build_id:\d+>',
                     notifications.TaskPublishNotification),
       webapp2.Route(r'/internal/task/bq/export/<build_id:\d+>',
                     bq.TaskExport),
       webapp2.Route(r'/internal/task/resultdb/finalize/<build_id:\d+>',
                     resultdb.FinalizeInvocation),
-  ] + (bulkproc.get_routes() + prpc_server.get_routes())
+  ] + (prpc_server.get_routes())
