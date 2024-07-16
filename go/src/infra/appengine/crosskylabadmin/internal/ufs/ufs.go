@@ -117,13 +117,21 @@ func GetPools(ctx context.Context, client Client, botID string) ([]string, error
 	if client == nil {
 		return nil, errors.Reason("get pools: client cannot be nil").Err()
 	}
-
-	pools, err := getPoolsForGenericDevice(ctx, client, botID, ufsUtil.OSNamespace)
+	// Namespace Anyone who call it need to set namespase, if not then we will use default os.
+	namespace := ufsUtil.OSNamespace
+	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
+		// we found a namespace already set in the context, so should just use that
+		if ns, ok := existingMetadata[ufsUtil.Namespace]; ok && len(ns) != 0 {
+			namespace = ns[0]
+		}
+	}
+	logging.Infof(ctx, "Using namespace %q for %q", namespace, botID)
+	pools, err := getPoolsForGenericDevice(ctx, client, botID, namespace)
 	if err != nil {
-		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, ufsUtil.OSNamespace, err)
+		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, namespace, err)
 		return nil, err
 	}
-	logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, ufsUtil.OSNamespace)
+	logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, namespace)
 	return pools, err
 }
 
