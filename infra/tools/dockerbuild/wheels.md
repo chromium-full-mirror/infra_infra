@@ -312,6 +312,31 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 2.1.5
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/markupsafe/${vpython_platform}"
+  version: "version:2.1.5"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
+* *windows-x86-py3.8*
+
 ## **Paste-py3**
 
 ### 2.0.2
@@ -568,6 +593,18 @@ wheel: <
 
 * *universal*
 
+### 3.0.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/werkzeug-py3"
+  version: "version:3.0.3"
+>
+```
+
+
+* *universal*
+
 ## **absl-py**
 
 ### 0.7.1
@@ -590,6 +627,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/absl-py-py3"
   version: "version:0.11.0"
+>
+```
+
+
+* *universal*
+
+### 2.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/absl-py-py3"
+  version: "version:2.1.0"
 >
 ```
 
@@ -1499,6 +1548,18 @@ wheel: <
 
 * *universal*
 
+### 5.3.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cachetools-py3"
+  version: "version:5.3.3"
+>
+```
+
+
+* *universal*
+
 ## **cbor2**
 
 ### 5.4.3
@@ -1632,6 +1693,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/certifi-py3"
   version: "version:2023.11.17"
+>
+```
+
+
+* *universal*
+
+### 2024.7.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2024.7.4"
 >
 ```
 
@@ -2614,6 +2687,18 @@ wheel: <
 
 * *universal*
 
+### 24.3.25
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/flatbuffers-py3"
+  version: "version:24.3.25"
+>
+```
+
+
+* *universal*
+
 ## **freetype-py**
 
 ### 2.1.0.post1
@@ -3114,6 +3199,18 @@ wheel: <
 
 * *universal*
 
+### 2.32.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:2.32.0"
+>
+```
+
+
+* *universal*
+
 ## **google-auth-py3**
 
 ### 2.6.0
@@ -3200,6 +3297,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-auth-oauthlib-py3"
   version: "version:0.4.5"
+>
+```
+
+
+* *universal*
+
+### 1.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-auth-oauthlib-py3"
+  version: "version:1.0.0"
 >
 ```
 
@@ -4277,6 +4386,18 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 1.64.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.64.1"
+>
+```
+
+
+* *manylinux-x64-py3.8*
+
 ## **grpcio-status-py3**
 
 ### 1.44.0
@@ -4480,6 +4601,18 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+
+### 3.11.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/h5py/${vpython_platform}"
+  version: "version:3.11.0"
+>
+```
+
+
+* *manylinux-x64-py3.8*
 
 ## **hjson**
 
@@ -4811,6 +4944,18 @@ wheel: <
 
 * *universal*
 
+### 8.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/importlib-metadata-py3"
+  version: "version:8.0.0"
+>
+```
+
+
+* *universal*
+
 ## **infra_libs**
 
 ### 2.4.0
@@ -4961,6 +5106,20 @@ wheel: <
 
 * *universal*
 
+## **jax-py3**
+
+### 0.4.13
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/jax-py3"
+  version: "version:0.4.13"
+>
+```
+
+
+* *universal*
+
 ## **jinxed**
 
 ### 1.2.0
@@ -5051,6 +5210,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/keras-py3"
   version: "version:2.7.0"
+>
+```
+
+
+* *universal*
+
+### 2.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/keras-py3"
+  version: "version:2.12.0"
 >
 ```
 
@@ -5163,6 +5334,18 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+
+### 18.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/libclang/${vpython_platform}"
+  version: "version:18.1.1"
+>
+```
+
+
+* *manylinux-x64-py3.8*
 
 ## **libcst**
 
@@ -5396,6 +5579,20 @@ wheel: <
 
 
 * *universal*
+
+## **ml_dtypes**
+
+### 0.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ml_dtypes/${vpython_platform}"
+  version: "version:0.2.0"
+>
+```
+
+
+* *manylinux-x64-py3.8*
 
 ## **mock**
 
@@ -6114,6 +6311,18 @@ wheel: <
 
 * *universal*
 
+### 3.2.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/oauthlib-py2_py3"
+  version: "version:3.2.2"
+>
+```
+
+
+* *universal*
+
 ## **odictliteral**
 
 ### 1.0.0
@@ -6430,6 +6639,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/packaging-py3"
   version: "version:23.0"
+>
+```
+
+
+* *universal*
+
+### 24.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:24.1"
 >
 ```
 
@@ -7256,6 +7477,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
   version: "version:4.25.1"
+>
+```
+
+
+* *universal*
+
+### 4.25.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.25.3"
 >
 ```
 
@@ -9084,6 +9317,18 @@ wheel: <
 
 * *universal*
 
+### 2.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/requests-oauthlib-py2_py3"
+  version: "version:2.0.0"
+>
+```
+
+
+* *universal*
+
 ## **requests-unixsocket**
 
 ### 0.1.5
@@ -9455,6 +9700,18 @@ wheel: <
 
 * *universal*
 
+### 70.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/setuptools-py3"
+  version: "version:70.3.0"
+>
+```
+
+
+* *universal*
+
 ## **singledispatch**
 
 ### 3.4.0.3
@@ -9745,6 +10002,18 @@ wheel: <
 
 * *universal*
 
+### 2.12.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tensorboard-py3"
+  version: "version:2.12.3"
+>
+```
+
+
+* *universal*
+
 ## **tensorboard-data-server-py3**
 
 ### 0.6.0
@@ -9765,6 +10034,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/tensorboard-data-server-py3"
   version: "version:0.6.1"
+>
+```
+
+
+* *universal*
+
+### 0.7.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tensorboard-data-server-py3"
+  version: "version:0.7.2"
 >
 ```
 
@@ -9843,6 +10124,18 @@ wheel: <
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 
+### 2.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tensorflow/${vpython_platform}"
+  version: "version:2.12.0"
+>
+```
+
+
+* *manylinux-x64-py3.8*
+
 ## **tensorflow-decision-forests**
 
 ### 0.2.4
@@ -9909,6 +10202,18 @@ wheel: <
 
 * *universal*
 
+### 2.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tensorflow-estimator-py3"
+  version: "version:2.12.0"
+>
+```
+
+
+* *universal*
+
 ## **tensorflow-io-gcs-filesystem**
 
 ### 0.23.1
@@ -9924,6 +10229,18 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+
+### 0.34.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tensorflow-io-gcs-filesystem/${vpython_platform}"
+  version: "version:0.34.0"
+>
+```
+
+
+* *manylinux-x64-py3.8*
 
 ## **tensorflow-probability**
 
@@ -9971,6 +10288,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/termcolor-py2_py3"
   version: "version:1.1.0"
+>
+```
+
+
+* *universal*
+
+### 2.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/termcolor-py2_py3"
+  version: "version:2.4.0"
 >
 ```
 
@@ -10887,6 +11216,18 @@ wheel: <
 
 * *universal*
 
+### 0.37.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/wheel-py2_py3"
+  version: "version:0.37.1"
+>
+```
+
+
+* *universal*
+
 ## **wrapt**
 
 ### 1.10.11
@@ -10932,6 +11273,18 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+
+### 1.14.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/wrapt/${vpython_platform}"
+  version: "version:1.14.1"
+>
+```
+
+
+* *manylinux-x64-py3.8*
 
 ## **wrapt-py3**
 
