@@ -68,6 +68,9 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 	case executors.GenericTestsExecutorType:
 		exec = executors.NewGenericTestsExecutor()
 
+	case executors.GenericPostProcessExecutorType:
+		exec = executors.NewGenericPostProcessExecutor()
+
 	case executors.GenericPublishExecutorType:
 		exec = executors.NewGenericPublishExecutor()
 

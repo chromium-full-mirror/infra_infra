@@ -69,6 +69,9 @@ const (
 	// Generic Service related commands
 	GenericServiceCmdType interfaces.CommandType = "GenericService"
 
+	// Post process service related commands
+	GenericPostProcessCmdType interfaces.CommandType = "GenericPostProcess"
+
 	// Publish service related commands
 	GenericPublishCmdType interfaces.CommandType = "GenericPublish"
 

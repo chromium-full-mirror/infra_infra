@@ -68,6 +68,7 @@ var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPaired
 var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 var GenericProvision_GenericProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
 var GenericTests_GenericTestsExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
+var GenericPostProcess_GenericPostProcessExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPostProcessCmdType, ExecutorType: executors.GenericPostProcessExecutorType}
 var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
 var GenericService_GenericServiceExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericServiceCmdType, ExecutorType: executors.GenericServiceExecutorType}
 var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
@@ -348,6 +349,9 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest) *common_conf
 			mainConfigs = append(mainConfigs,
 				GenericTests_GenericTestsExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
+			mainConfigs = append(mainConfigs,
+				GcloudAuth_CtrExecutor.WithRequired(task.Required),
+				GenericPostProcess_GenericPostProcessExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 			mainConfigs = append(mainConfigs,
 				GcloudAuth_CtrExecutor.WithRequired(task.Required),
