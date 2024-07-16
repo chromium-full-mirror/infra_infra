@@ -259,6 +259,10 @@ def tpp_tryjob(builder, experiment_percentage = None):
         experiment_percentage = experiment_percentage,
         location_filters = [
             cq.location_filter(path_regexp = "3pp/.+"),
+            cq.location_filter(
+                gerrit_project_regexp = "infra/infra",
+                path_regexp = "go/src/infra/tools/pkgbuild/.+",
+            ),
         ],
     )
 
