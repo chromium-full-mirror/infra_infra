@@ -37,7 +37,7 @@ var _ datastore.MetaGetterSetter = &CachedCostResultEntity{}
 // Silence staticcheck warning about unused field.
 var _ = CachedCostResultEntity{}._kind
 
-// GetAllMeta returns all the mtea keys. Just use the default implementation, it's fine.
+// GetAllMeta returns all the meta keys. Just use the default implementation, it's fine.
 func (entity *CachedCostResultEntity) GetAllMeta() datastore.PropertyMap {
 	return datastore.GetPLS(entity).GetAllMeta()
 }
