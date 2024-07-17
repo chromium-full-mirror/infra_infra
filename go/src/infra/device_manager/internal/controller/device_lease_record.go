@@ -30,7 +30,7 @@ import (
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, device *api.Device) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, device *model.Device) (*api.LeaseDeviceResponse, error) {
 	// TODO (b/328662436): Collect metrics
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -41,9 +41,9 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 	newRecord := model.DeviceLeaseRecord{
 		ID:              uuid.New().String(),
 		IdempotencyKey:  r.GetIdempotencyKey(),
-		DeviceID:        device.GetId(),
-		DeviceAddress:   deviceAddressToString(ctx, device.GetAddress()),
-		DeviceType:      device.GetType().String(),
+		DeviceID:        device.ID,
+		DeviceAddress:   device.DeviceAddress,
+		DeviceType:      device.DeviceType,
 		LeasedTime:      timeNow,
 		ExpirationTime:  timeNow.Add(r.GetLeaseDuration().AsDuration()),
 		LastUpdatedTime: timeNow,
@@ -56,13 +56,14 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 	}
 
 	updatedDevice := model.Device{
-		ID:              device.GetId(),
-		DeviceAddress:   deviceAddressToString(ctx, device.GetAddress()),
-		DeviceType:      device.GetType().String(),
+		ID:              device.ID,
+		DeviceAddress:   device.DeviceAddress,
+		DeviceType:      device.DeviceType,
 		DeviceState:     api.DeviceState_DEVICE_STATE_LEASED.String(),
+		IsActive:        device.IsActive,
 		LastUpdatedTime: timeNow,
 	}
-	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
+	err = UpdateDevice(ctx, tx, updatedDevice)
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to update device state %s", err)
 		return nil, err
@@ -226,7 +227,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 		updatedDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
 	}
 
-	err = UpdateDevice(ctx, tx, psClient, updatedDevice)
+	err = UpdateDevice(ctx, tx, updatedDevice)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s: %s", record.DeviceID, err)
 		return nil, err

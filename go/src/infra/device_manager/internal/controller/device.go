@@ -66,12 +66,9 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 }
 
 // UpdateDevice updates a Device in a transaction.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, psClient *pubsub.Client, device model.Device) error {
-	updatedDevice, err := model.UpdateDevice(ctx, tx, device)
-	if err != nil {
-		return err
-	}
-	return PublishDeviceEvent(ctx, psClient, &updatedDevice)
+func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
+	_, err := model.UpdateDevice(ctx, tx, device)
+	return err
 }
 
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
@@ -90,7 +87,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *mo
 	deviceEvent := &schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
 		DeviceId:         dutID,
-		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, stringToDeviceState(ctx, device.DeviceState)),
+		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, device.DeviceState),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 		DeviceName:       device.ID,
 	}
@@ -276,8 +273,8 @@ func updateWorker(
 }
 
 // IsDeviceAvailable checks if a device state is available.
-func IsDeviceAvailable(ctx context.Context, state api.DeviceState) bool {
-	return state == api.DeviceState_DEVICE_STATE_AVAILABLE
+func IsDeviceAvailable(ctx context.Context, state string) bool {
+	return state == "DEVICE_STATE_AVAILABLE"
 }
 
 // stringToDeviceAddress takes a net address string and converts to the

@@ -127,16 +127,16 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 		return nil, status.Errorf(codes.NotFound, "LeaseDevice: dut_id and device_id labels have no values")
 	}
 
-	device, err := controller.GetDevice(ctx, s.ServiceClients.DBClient.Conn, idType, val)
+	device, err := model.GetDeviceByID(ctx, s.ServiceClients.DBClient.Conn, idType, val)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", val, err)
 	}
 	logging.Debugf(ctx, "LeaseDevice: found Device %s: %v", val, device)
 
-	if !controller.IsDeviceAvailable(ctx, device.GetState()) {
+	if !controller.IsDeviceAvailable(ctx, device.DeviceState) {
 		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", val)
 	}
-	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, device)
+	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, &device)
 }
 
 // ReleaseDevice releases the leased device.

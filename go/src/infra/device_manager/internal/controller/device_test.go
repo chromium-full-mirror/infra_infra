@@ -654,7 +654,7 @@ func TestUpdateDevice(t *testing.T) {
 					false).
 				WillReturnRows(rows)
 
-			err = UpdateDevice(ctx, tx, psClient, model.Device{
+			err = UpdateDevice(ctx, tx, model.Device{
 				ID:            "test-device-1",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
@@ -678,11 +678,11 @@ func TestIsDeviceAvailable(t *testing.T) {
 
 	Convey("IsDeviceAvailable", t, func() {
 		Convey("IsDeviceAvailable: device is available", func() {
-			rsp := IsDeviceAvailable(ctx, api.DeviceState_DEVICE_STATE_AVAILABLE)
+			rsp := IsDeviceAvailable(ctx, "DEVICE_STATE_AVAILABLE")
 			So(rsp, ShouldEqual, true)
 		})
 		Convey("IsDeviceAvailable: device is not available", func() {
-			rsp := IsDeviceAvailable(ctx, api.DeviceState_DEVICE_STATE_LEASED)
+			rsp := IsDeviceAvailable(ctx, "DEVICE_STATE_LEASED")
 			So(rsp, ShouldEqual, false)
 		})
 	})
