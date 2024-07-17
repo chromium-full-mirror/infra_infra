@@ -362,6 +362,7 @@ class ServeCodeCoverageData(BaseHandler):
                                            'False').lower() == 'true'
     path = self.request.values.get('path')
     test_suite_type = self.request.values.get('test_suite_type', 'any')
+    raw_json = self.request.values.get('raw', 'False').lower() == 'true'
     try:
       modifier_id = int(self.request.values.get('modifier_id', '0'))
     except ValueError as e:
@@ -571,7 +572,7 @@ class ServeCodeCoverageData(BaseHandler):
       # default post submit report
       metrics = [x for x in metrics if x['name'] == 'line']
 
-    return {
+    res = {
         'data': {
             'luci_project':
                 luci_project,
@@ -612,3 +613,6 @@ class ServeCodeCoverageData(BaseHandler):
         },
         'template': template,
     }
+    if raw_json:
+      del res['template']
+    return res
