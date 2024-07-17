@@ -42,6 +42,7 @@ const (
 	// RPM related UpdateMask paths.
 	rpmHostPath   = "labstation.rpm.host"
 	rpmOutletPath = "labstation.rpm.outlet"
+	rpmTypePath   = "labstation.rpm.type"
 
 	// Labstation related UpdateMask paths.
 	poolsPath = "labstation.pools"
@@ -69,6 +70,7 @@ var UpdateLabstationCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma seperated pools. These will be appended to existing pools. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the Labstation. Clearing this field will delete rpm. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the Labstation.")
+		c.Flags.StringVar(&c.rpmType, "rpm-type", "", "rpm type for the labstation."+cmdhelp.RPMTypeHelpText)
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
@@ -97,6 +99,7 @@ type updateLabstation struct {
 	pools            []string
 	rpm              string
 	rpmOutlet        string
+	rpmType          string
 	deploymentTicket string
 	tags             []string
 	description      string
@@ -248,13 +251,16 @@ func (c *updateLabstation) validateArgs() error {
 		if c.rpmOutlet != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-rpm-outlet' cannot be specified at the same time.")
 		}
+		if c.rpmType != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-rpm-type' cannot be specified at the same time.")
+		}
 		if len(c.pools) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-pools' cannot be specified at the same time.")
 		}
 	}
 	// If hostname is given and it's not forceDeploy. Check if no other input is given.
 	if c.hostname != "" && !c.forceDeploy {
-		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 {
+		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.rpmType == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update")
 		}
 	}
@@ -364,13 +370,14 @@ func (c *updateLabstation) parseMCSV() ([]*ufsAPI.UpdateMachineLSERequest, error
 }
 
 func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufspb.MachineLSE, *field_mask.FieldMask, error) {
-	var name, rpmHost, rpmOutlet string
+	var name, rpmHost, rpmOutlet, rpmType string
 	var pools, machines []string
 	if recMap != nil {
 		// CSV map. Assign all the params to the variables.
 		name = recMap["name"]
 		rpmHost = recMap["rpm_host"]
 		rpmOutlet = recMap["rpm_outlet"]
+		rpmType = recMap["rpm_type"]
 		machines = []string{recMap["asset"]}
 		pools = strings.Fields(recMap["pools"])
 	} else {
@@ -378,6 +385,7 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 		name = c.hostname
 		rpmHost = c.rpm
 		rpmOutlet = c.rpmOutlet
+		rpmType = c.rpmType
 		machines = []string{c.machine}
 		pools = c.pools
 	}
@@ -421,7 +429,7 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 	}
 
 	// Create and assign rpm and corresponding masks.
-	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet)
+	rpm, paths := generateRPMWithMask(rpmHost, rpmOutlet, rpmType)
 	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = rpm
 	mask.Paths = append(mask.Paths, paths...)
 
@@ -463,7 +471,7 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 }
 
 // generateRPMWithMask generates a rpm object from the given inputs and corresponding mask.
-func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []string) {
+func generateRPMWithMask(rpmHost, rpmOutlet, rpmType string) (*chromeosLab.OSRPM, []string) {
 	// Check if rpm is being deleted.
 	if rpmHost == utils.ClearFieldValue {
 		// Generate mask and empty rpm.
@@ -480,6 +488,10 @@ func generateRPMWithMask(rpmHost, rpmOutlet string) (*chromeosLab.OSRPM, []strin
 	if rpmOutlet != "" {
 		rpm.PowerunitOutlet = rpmOutlet
 		paths = append(paths, rpmOutletPath)
+	}
+	if rpmType != "" {
+		rpm.PowerunitType = ufsUtil.ToRPMType(rpmType)
+		paths = append(paths, rpmTypePath)
 	}
 	return rpm, paths
 }

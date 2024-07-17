@@ -67,6 +67,7 @@ var AddLabstationCmd = &subcommands.Command{
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma seperated pools assigned to the Labstation. 'labstation_main' assigned on no input.")
 		c.Flags.StringVar(&c.rpm, "rpm", "", "rpm assigned to the Labstation.")
 		c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "rpm outlet used for the Labstation.")
+		c.Flags.StringVar(&c.rpmType, "rpm-type", "", "rpm type for the labstation."+cmdhelp.RPMTypeHelpText)
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine.")
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
@@ -96,6 +97,7 @@ type addLabstation struct {
 	pools        []string
 	rpm          string
 	rpmOutlet    string
+	rpmType      string
 
 	deployTags       []string
 	deploymentTicket string
@@ -122,6 +124,7 @@ var mcsvFields = []string{
 	"board",
 	"rpm_host",
 	"rpm_outlet",
+	"rpm_type",
 	"pools",
 }
 
@@ -248,6 +251,9 @@ func (c addLabstation) validateArgs() error {
 		if c.rpmOutlet != "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-rpm-outlet' cannot be specified at the same time.")
 		}
+		if c.rpmType != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-rpm-type' cannot be specified at the same time.")
+		}
 		if len(c.pools) > 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-pools' cannot be specified at the same time.")
 		}
@@ -268,8 +274,9 @@ func (c addLabstation) validateArgs() error {
 		if c.machine == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Need machine ID to create a Labstation")
 		}
-		if (c.rpm != "" && c.rpmOutlet == "") || (c.rpm == "" && c.rpmOutlet != "") {
-			return cmdlib.NewQuietUsageError(c.Flags, "Need both rpm and its outlet. [%s]-[%s] is invalid", c.rpm, c.rpmOutlet)
+
+		if err := validateRPM(c.rpm, c.rpmOutlet, c.rpmType); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, err.Error())
 		}
 	}
 	return nil
@@ -382,7 +389,7 @@ func (c *addLabstation) initializeLSEAndAsset(recMap map[string]string) (*labsta
 			},
 		},
 	}
-	var name, rpmHost, rpmOutlet, model, board string
+	var name, rpmHost, rpmOutlet, rpmType, model, board string
 	var asset *ufspb.Asset
 	var pools, machines, paths []string
 	if recMap != nil {
@@ -390,6 +397,7 @@ func (c *addLabstation) initializeLSEAndAsset(recMap map[string]string) (*labsta
 		name = recMap["name"]
 		rpmHost = recMap["rpm_host"]
 		rpmOutlet = recMap["rpm_outlet"]
+		rpmType = recMap["rpm_type"]
 		model = recMap["model"]
 		board = recMap["board"]
 		machines = []string{recMap["asset"]}
@@ -399,6 +407,7 @@ func (c *addLabstation) initializeLSEAndAsset(recMap map[string]string) (*labsta
 		name = c.hostname
 		rpmHost = c.rpm
 		rpmOutlet = c.rpmOutlet
+		rpmType = c.rpmType
 		model = c.model
 		board = c.board
 		machines = []string{c.machine}
@@ -426,6 +435,7 @@ func (c *addLabstation) initializeLSEAndAsset(recMap map[string]string) (*labsta
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().PowerunitName = rpmHost
 	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().PowerunitOutlet = rpmOutlet
+	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().PowerunitType = ufsUtil.ToRPMType(rpmType)
 	if len(pools) == 0 || pools[0] == "" {
 		lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = defaultPools
 	} else {
@@ -455,4 +465,18 @@ func (c *addLabstation) updateAssetToUFS(ctx context.Context, ic ufsAPI.FleetCli
 		UpdateMask: mask,
 	})
 	return err
+}
+
+func validateRPM(host, outlet, rpmType string) error {
+	hasHost := (host != "")
+	hasOutlet := (outlet != "")
+	if (hasHost && !hasOutlet) || (!hasHost && hasOutlet) {
+		return fmt.Errorf("Need both rpm and its outlet. %s:%s is invalid", host, outlet)
+	}
+	if hasHost && hasOutlet {
+		if ufsUtil.ToRPMType(rpmType) == chromeosLab.OSRPM_TYPE_UNKNOWN {
+			return fmt.Errorf("Must provide RPM type. %s is invalid", rpmType)
+		}
+	}
+	return nil
 }
