@@ -38,12 +38,10 @@ import (
 const maxUFSImportJobs = 100
 
 var (
-	updatedDevicesN         = 0
-	publishedDeviceEventsN  = 0
-	getDeviceErrN           = 0
-	upsertDeviceErrN        = 0
-	refetchDeviceErrN       = 0
-	publishDeviceUpdateErrN = 0
+	updatedDevicesN   = 0
+	getDeviceErrN     = 0
+	upsertDeviceErrN  = 0
+	refetchDeviceErrN = 0
 )
 
 // ImportUFSDevices registers the cron to trigger import for all Device
@@ -126,10 +124,6 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 // publishJobMetrics publishes metrics for this job.
 func publishJobMetrics(ctx context.Context, startTime time.Time, lseN int, project string) {
 	// Job actions.
-	pad := distribution.New(metrics.UFSActionsPerJob.Bucketer())
-	pad.Add(float64(publishedDeviceEventsN))
-	metrics.UFSActionsPerJob.Set(ctx, pad, project, "published_device_events")
-
 	uad := distribution.New(metrics.UFSActionsPerJob.Bucketer())
 	uad.Add(float64(updatedDevicesN))
 	metrics.UFSActionsPerJob.Set(ctx, uad, project, "updated_devices")
@@ -150,10 +144,6 @@ func publishJobMetrics(ctx context.Context, startTime time.Time, lseN int, proje
 	red := distribution.New(metrics.UFSJobErrorCount.Bucketer())
 	red.Add(float64(refetchDeviceErrN))
 	metrics.UFSJobErrorCount.Set(ctx, red, project, "refetch_device")
-
-	ped := distribution.New(metrics.UFSJobErrorCount.Bucketer())
-	ped.Add(float64(publishDeviceUpdateErrN))
-	metrics.UFSJobErrorCount.Set(ctx, ped, project, "publish_device_update")
 
 	// Job runtime.
 	rd := distribution.New(metrics.UFSJobRuntime.Bucketer())
@@ -312,13 +302,6 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		refetchDeviceErrN++
 		return
 	}
-
-	if err = controller.PublishDeviceEvent(ctx, serviceClients.PubSubClient, &dbDevice); err != nil {
-		logging.Errorf(ctx, "Failed to publish Device update to PubSub %s", err)
-		publishDeviceUpdateErrN++
-		return
-	}
-	publishedDeviceEventsN++
 }
 
 // getInactiveDevices marks inactive Devices as inactive and returns the list.
