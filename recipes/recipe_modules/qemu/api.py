@@ -243,8 +243,12 @@ class QEMUAPI(recipe_api.RecipeApi):
         step_test_data=lambda: self.m.raw_io.test_api.stream_output(
             'Mapped file {} to /dev/loop6'.format(disk)))
     loop_file = res.stdout.split()[-1].decode('UTF-8').strip('.')
+    res.presentation.logs['stdout'] = res.stdout
     mounted_partitions = []
     mount_loc = []
+    cmd = ['python3', self.resource('wait_for_file.py'), loop_file]
+    res = self.m.step(name='Wait for mount to complete', cmd=cmd)
+    res.presentation.logs['reason'] = 'Wait for loop to mount'
     try:
       if partitions:
         for partition in partitions:
@@ -256,6 +260,7 @@ class QEMUAPI(recipe_api.RecipeApi):
               ],
               stdout=self.m.raw_io.output())
           mount_loc.append(res.stdout.split()[-1].decode('UTF-8').rstrip('.'))
+          res.presentation.logs['stdout'] = res.stdout
           mounted_partitions.append(partition)
       else:
         # Might be a iso image. Mount the loop itself
@@ -263,6 +268,7 @@ class QEMUAPI(recipe_api.RecipeApi):
             name='Mount loop',
             cmd=['udisksctl', 'mount', '-b', loop_file],
             stdout=self.m.raw_io.output())
+        res.presentation.logs['stdout'] = res.stdout
         mount_loc.append(res.stdout.split()[-1].decode('UTF-8').strip('.'))
 
     except Exception as e:
