@@ -48,6 +48,15 @@ func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Machin
 			return errors.Annotate(err, "Validation error - Failed to create labstation").Err()
 		}
 
+		// Verify RPM fields
+		if rpm := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(); rpm != nil {
+			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "" && rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN)
+			rpmFieldsAllFull := (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() != "")
+			if !(rpmFieldsAllEmpty || rpmFieldsAllFull) {
+				return errors.Annotate(err, "Validation error - Must specify RPM host and outlet").Err()
+			}
+		}
+
 		//Copy for logging
 		oldMachine := proto.Clone(machine).(*ufspb.Machine)
 
@@ -115,7 +124,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			if err != nil {
 				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
 			}
-			if err := validateUpdateLabstationMask(ctx, mask, machinelse, machine); err != nil {
+			if err := validateUpdateLabstationMask(ctx, mask, oldMachinelse, machinelse, machine); err != nil {
 				return errors.Annotate(err, "UpdateLabstation - Failed update mask validation").Err()
 			}
 			if machinelse, err = processUpdateLabstationMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask); err != nil {
@@ -173,7 +182,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 }
 
 // validateUpdateLabstationMask validates the labstation update mask.
-func validateUpdateLabstationMask(ctx context.Context, mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
+func validateUpdateLabstationMask(ctx context.Context, mask *field_mask.FieldMask, oldMachinelse, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	// GetLabstation should return an object. Otherwise UpdateLabstation isn't called
 	labstation := machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation()
 	rpm := labstation.GetRpm()
@@ -210,6 +219,10 @@ func validateUpdateLabstationMask(ctx context.Context, mask *field_mask.FieldMas
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSELabstationUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
 			}
 		case "labstation.rpm.type":
+			// Check that an RPM exists for this device
+			if _, ok := maskSet["labstation.rpm.host"]; (ok && rpm.GetPowerunitName() == "") || (!ok && oldMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitName() == "") {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSELabstationUpdateMask - Cannot update rpm type. Existing rpm not found or will be deleted.")
+			}
 			// Check for a non-default RPM type. For now, log a warning.
 			// We don't return an error to avoid breaking any existing workflows.
 			if rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN {

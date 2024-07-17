@@ -68,6 +68,15 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 			return errors.Annotate(err, "Validation error - Failed to Create ChromeOSMachineLSEDUT").Err()
 		}
 
+		// Verify RPM fields
+		if rpm := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm(); rpm != nil {
+			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "" && rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN)
+			rpmFieldsAllFull := (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() != "")
+			if !(rpmFieldsAllEmpty || rpmFieldsAllFull) {
+				return errors.Annotate(err, "Validation error - Must specify RPM host and outlet").Err()
+			}
+		}
+
 		oldMachine := proto.Clone(machine).(*ufspb.Machine)
 		machine.ResourceState = ufspb.State_STATE_SERVING
 		setOutputField(ctx, machine, machinelse)
@@ -179,7 +188,7 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 			if err != nil {
 				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
 			}
-			if err := validateUpdateMachineLSEDUTMask(ctx, mask, machinelse, machine); err != nil {
+			if err := validateUpdateMachineLSEDUTMask(ctx, mask, oldMachinelse, machinelse, machine); err != nil {
 				return err
 			}
 			machinelse, err = processUpdateMachineLSEUpdateMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask)
@@ -473,7 +482,7 @@ func cleanPreDeployFields(servo *chromeosLab.Servo) {
 // validateUpdateMachineLSEDUTMask validates the input mask for the given machineLSE.
 //
 // Assumes that dut and mask aren't empty. This is because this function is not called otherwise.
-func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
+func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.FieldMask, oldMachinelse, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	var servo *chromeosLab.Servo
 	var rpm *chromeosLab.OSRPM
 	var dolos *chromeosLab.Dolos
@@ -527,6 +536,10 @@ func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.Field
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
 			}
 		case "dut.rpm.type":
+			// Check that an RPM exists for this device
+			if _, ok := maskSet["dut.rpm.host"]; (ok && rpm.GetPowerunitName() == "") || (!ok && oldMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitName() == "") {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update rpm type. Existing rpm not found or will be deleted.")
+			}
 			// Check for a non-default RPM type. For now, log a warning.
 			// We don't return an error to avoid breaking any existing workflows.
 			if rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN {
