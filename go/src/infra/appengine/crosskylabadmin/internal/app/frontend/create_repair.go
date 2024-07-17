@@ -113,8 +113,8 @@ func findProperRecoveryTask(ctx context.Context, expectedState, dutName string, 
 	return buildbucket.Recovery
 }
 
-// Gets the PoolCfg for a given swarming pool if available, otherwise returns nil
-func getPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
+// GetPoolCfg finds a PoolCfg for a given swarming pool if available, otherwise returns nil.
+func GetPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
 	cfg := config.Get(ctx)
 	for _, c := range cfg.Swarming.PoolCfgs {
 		if c.PoolName == poolName {
@@ -129,7 +129,7 @@ func getPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
-func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, swarmingPool string) (string, error) {
+func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
 	taskType, err := RouteTask(
@@ -152,28 +152,14 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	}
 
 	r := createBuildbucketTaskRequest{
-		taskName:      buildbucket.Recovery,
-		taskType:      cipdVersion,
-		botID:         botID,
-		expectedState: expectedState,
-		builderBucket: "",
-		botPrefix:     "",
-		ufsNamespace:  "",
-	}
-
-	// Read the builder bucket, bot prefix and UFS namespace info from the PoolCfg.
-	// Builder bucket, Bot prefix varies for each Partner and stored in a different UFS namespace.
-	if p := getPoolCfg(ctx, swarmingPool); p != nil {
-		r.builderBucket = p.BuilderBucket
-		r.botPrefix = p.BotPrefix
-		r.ufsNamespace = p.UfsNamespace
+		taskName: buildbucket.Recovery,
+		taskType: cipdVersion,
 		// Trim the bot prefix when it is set in the PoolCfg for a given swarming pool.
-		if r.botPrefix != "" {
-			if strings.HasPrefix(botID, r.botPrefix) {
-				r.botID = strings.TrimPrefix(botID, r.botPrefix)
-
-			}
-		}
+		botID:         strings.TrimPrefix(botID, poolCfg.GetBotPrefix()),
+		expectedState: expectedState,
+		builderBucket: poolCfg.GetBuilderBucket(),
+		botPrefix:     poolCfg.GetBotPrefix(),
+		ufsNamespace:  poolCfg.GetUfsNamespace(),
 	}
 
 	karteC, err := createKarteClient(ctx)

@@ -38,10 +38,14 @@ func NewHTTPClient(ctx context.Context) (*http.Client, error) {
 	}, nil
 }
 
-// setupContext set up the outgoing context for API calls.
-func setupContext(ctx context.Context, namespace string) context.Context {
-	md := metadata.Pairs(ufsUtil.Namespace, namespace)
-	return metadata.NewOutgoingContext(ctx, md)
+// ContextWithNamespace sets namespace to the context.
+// If namespace is empty, it will use the default namespace.
+func ContextWithNamespace(ctx context.Context, namespace string) context.Context {
+	if namespace == "" {
+		namespace = ufsUtil.OSNamespace
+	}
+	logging.Infof(ctx, "Set namespace %q to context", namespace)
+	return shivasUtils.SetupContext(ctx, namespace)
 }
 
 // Client exposes a deliberately chosen subset of the UFS functionality.
@@ -145,8 +149,17 @@ func GetDutV1(ctx context.Context, hostname string) (*inventory.DeviceUnderTest,
 	if err != nil {
 		return nil, err
 	}
-	osCtx := setupContext(ctx, ufsUtil.OSNamespace)
-	res, err := client.GetDeviceData(osCtx, &ufsAPI.GetDeviceDataRequest{
+	// Namespace Anyone who call it need to set namespase, if not then we will use default os.
+	namespace := ufsUtil.OSNamespace
+	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
+		// we found a namespace already set in the context, so should just use that
+		if ns, ok := existingMetadata[ufsUtil.Namespace]; ok && len(ns) != 0 {
+			namespace = ns[0]
+		}
+	}
+	ufsCtx := ContextWithNamespace(ctx, namespace)
+	logging.Infof(ctx, "Using namespace %q for %q", namespace, hostname)
+	res, err := client.GetDeviceData(ufsCtx, &ufsAPI.GetDeviceDataRequest{
 		Hostname: hostname,
 	})
 	if err != nil {

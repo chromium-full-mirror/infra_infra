@@ -1,16 +1,6 @@
-// Copyright 2019 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // Package queue implements handlers for taskqueue jobs in this app.
 //
@@ -31,6 +21,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/frontend"
 	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/libs/skylab/common/heuristics"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // InstallHandlers installs handlers for queue jobs that are part of this app.
@@ -66,28 +57,31 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	// We are going to use the pools associated with a device as an input to decide which implementation
 	// of repair to use.
 	cfg := config.Get(ctx)
+	botID := c.Request.FormValue("botID")
 	ufsClient, err := createUFSClient(ctx, cfg.GetUFS().GetHost())
 	if err != nil {
+		logging.Errorf(ctx, "Fail to create UFS client for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run repair queue handler").Err()
 	}
 	logging.Infof(ctx, "run repair queue handler: UFS client created successfully")
-	botID := c.Request.FormValue("botID")
 	expectedState := c.Request.FormValue("expectedState")
 	swarmingPool := c.Request.FormValue("swarmingPool")
-	// RandFloat is guaranteed to be in the half-open interval [0,1).
-	randFloat := rand.Float64()
-	pools, err := GetPoolsForHostname(ctx, ufsClient, botID)
+	poolCfg := frontend.GetPoolCfg(ctx, swarmingPool)
+	ufsCtx := ufs.ContextWithNamespace(ctx, poolCfg.GetUfsNamespace())
+	pools, err := GetPoolsForHostname(ufsCtx, ufsClient, botID)
 	if err != nil {
+		logging.Errorf(ufsCtx, "Fail to get pools for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run repair queue handler").Err()
 	}
-	logging.Infof(ctx, "run repair queue handler: found pools for bot %s: %s", botID, pools)
-	taskURL, err := frontend.CreateRepairTask(ctx, botID, expectedState, pools, randFloat, swarmingPool)
+	logging.Infof(ufsCtx, "run repair queue handler: found pools for bot %s: %s", botID, pools)
+	// RandFloat is guaranteed to be in the half-open interval [0,1).
+	randFloat := rand.Float64()
+	taskURL, err := frontend.CreateRepairTask(ufsCtx, botID, expectedState, pools, randFloat, poolCfg)
 	if err != nil {
-		logging.Infof(ctx, "fail to run repair job in queue for %s in swarming pool %q: %s", swarmingPool, err.Error())
+		logging.Errorf(ufsCtx, "Fail to create repair task for %s in swarming pool %q: %s", swarmingPool, err.Error())
 		return err
 	}
-
-	logging.Infof(ctx, "Successfully run repair job for %s: %s", botID, taskURL)
+	logging.Infof(ufsCtx, "Successfully run repair job for %q: %s", botID, taskURL)
 	return nil
 }
 
@@ -100,23 +94,28 @@ func runAuditQueueHandler(c *router.Context) (err error) {
 
 	botID := c.Request.FormValue("botID")
 	cfg := config.Get(ctx)
-	ufsClient, err := createUFSClient(ctx, cfg.GetUFS().GetHost())
+	// Set default namespace as no audit tasks for partners.
+	ufsCtx := ufs.ContextWithNamespace(ctx, ufsUtil.OSNamespace)
+	ufsClient, err := createUFSClient(ufsCtx, cfg.GetUFS().GetHost())
 	if err != nil {
+		logging.Errorf(ufsCtx, "Fail to create UFS client for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run audit queue handler").Err()
 	}
-	pools, err := GetPoolsForHostname(ctx, ufsClient, botID)
+	pools, err := GetPoolsForHostname(ufsCtx, ufsClient, botID)
 	if err != nil {
+		logging.Errorf(ufsCtx, "Fail to get pools for bot %q: %w", botID, err)
 		return errors.Annotate(err, "run audit queue handler").Err()
 	}
-	logging.Infof(ctx, "run audit queue handler: found pools for bot %s: %s", botID, pools)
+	logging.Infof(ufsCtx, "run audit queue handler: found pools for bot %s: %s", botID, pools)
 	actions := c.Request.FormValue("actions")
 	taskname := c.Request.FormValue("taskname")
 	randFloat := rand.Float64()
-	taskURL, err := frontend.CreateAuditTask(ctx, botID, pools[0], taskname, actions, randFloat)
+	taskURL, err := frontend.CreateAuditTask(ufsCtx, botID, pools[0], taskname, actions, randFloat)
 	if err != nil {
+		logging.Errorf(ufsCtx, "Fail to create repair task for %q: %w", botID, err)
 		return err
 	}
-	logging.Infof(ctx, "Successfully run audit job for %s: %s", botID, taskURL)
+	logging.Infof(ufsCtx, "Successfully run audit job for %s: %s", botID, taskURL)
 	return nil
 }
 
