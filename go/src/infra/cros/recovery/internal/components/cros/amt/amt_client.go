@@ -120,34 +120,30 @@ func (c AMTClient) GetPowerState(ctx context.Context) (int, error) {
 	return state, nil
 }
 
-// PowerOn powers on the DUT using Intel AMT (vPro).
-func (c AMTClient) PowerOn(ctx context.Context) error {
-	resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, powerStateMap["on"]))
-	if err != nil {
-		return err
+// SetPowerState attempts to set the specified power state: possible values are "on" or "off".
+func (c AMTClient) SetPowerState(ctx context.Context, state string) error {
+	if newState, exists := powerStateMap[state]; exists {
+		currentState, err := c.GetPowerState(ctx)
+		if err != nil {
+			return err
+		}
+		if newState == currentState {
+			log.Debugf(ctx, "AMT power state is already: %s", state)
+			return nil
+		}
+		resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, newState))
+		if err != nil {
+			return err
+		}
+		rvalue, err := findReturnValue(resp)
+		if err != nil {
+			return err
+		}
+		if rvalue != 0 {
+			return errors.Reason("set power state failed with: %d", rvalue).Err()
+		}
+		return nil
+	} else {
+		return errors.Reason("power state is missing from powerStateMap").Err()
 	}
-	rvalue, err := findReturnValue(resp)
-	if err != nil {
-		return err
-	}
-	if rvalue != 0 {
-		return errors.Reason("power on failed with: %d", rvalue).Err()
-	}
-	return nil
-}
-
-// PowerOff powers off the DUT using Intel AMT (vPro).
-func (c AMTClient) PowerOff(ctx context.Context) error {
-	resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, powerStateMap["off"]))
-	if err != nil {
-		return err
-	}
-	rvalue, err := findReturnValue(resp)
-	if err != nil {
-		return err
-	}
-	if rvalue != 0 {
-		return errors.Reason("power off failed with: %d", rvalue).Err()
-	}
-	return nil
 }

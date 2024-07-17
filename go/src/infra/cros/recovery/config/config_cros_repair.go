@@ -4695,25 +4695,29 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Power-off the DUT using AMT": {
 			Docs: []string{
-				"Power the DUT off using Intel AMT (vPro).",
+				"Ensure the DUT is powered-off using Intel AMT.",
 			},
 			Conditions: []string{
-				"Is Flex device",
-				"Intel AMT is present",
+				"Device has Intel AMT",
 			},
-			ExecName:      "cros_flex_amt_power_off",
+			ExecName: "cros_flex_set_amt_power_state",
+			ExecExtraArgs: []string{
+				"state:off",
+			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Power-on the DUT using AMT": {
 			Docs: []string{
-				"Power the DUT on using Intel AMT (vPro).",
+				"Ensure the DUT is powered-on using Intel AMT.",
 			},
 			Conditions: []string{
-				"Is Flex device",
-				"Intel AMT is present",
+				"Device has Intel AMT",
 			},
-			ExecName:      "cros_flex_amt_power_on",
+			ExecName: "cros_flex_set_amt_power_state",
+			ExecExtraArgs: []string{
+				"state:on",
+			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},

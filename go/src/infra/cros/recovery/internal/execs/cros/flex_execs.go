@@ -6,6 +6,7 @@ package cros
 
 import (
 	"context"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -26,16 +27,15 @@ func flexAMTPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// flexAMTPowerOffExec powers the DUT off using Intel AMT (vPro).
-func flexAMTPowerOffExec(ctx context.Context, info *execs.ExecInfo) error {
+// flexSetAMTPowerStateExec sets the specified power state.
+func flexSetAMTPowerStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	args := info.GetActionArgs(ctx)
+	newState := strings.ToLower(args.AsString(ctx, "state", ""))
+	if newState == "" {
+		return errors.Reason("flex set AMT power state: state is not provided").Err()
+	}
 	client := getFlexAMTClient()
-	return errors.Annotate(client.PowerOff(ctx), "flex AMT power-off").Err()
-}
-
-// flexAMTPowerOnExec powers the DUT on using Intel AMT (vPro).
-func flexAMTPowerOnExec(ctx context.Context, info *execs.ExecInfo) error {
-	client := getFlexAMTClient()
-	return errors.Annotate(client.PowerOn(ctx), "flex AMT power-off").Err()
+	return errors.Annotate(client.SetPowerState(ctx, newState), "flex set AMT power state").Err()
 }
 
 // Configure and return an AMTClient.
@@ -45,6 +45,5 @@ func getFlexAMTClient() amt.AMTClient {
 }
 func init() {
 	execs.Register("cros_flex_amt_present", flexAMTPresentExec)
-	execs.Register("cros_flex_amt_power_off", flexAMTPowerOffExec)
-	execs.Register("cros_flex_amt_power_on", flexAMTPowerOnExec)
+	execs.Register("cros_flex_set_amt_power_state", flexSetAMTPowerStateExec)
 }
