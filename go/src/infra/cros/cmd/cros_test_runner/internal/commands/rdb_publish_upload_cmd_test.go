@@ -404,6 +404,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		defer func() { buildState.End(err) }()
 
 		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
 			CurrentInvocationId: "Inv-1234",
 			TesthausURL:         "www.testhaus.com",
 			BaseVariant: map[string]string{
@@ -799,6 +800,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			},
 		}
 		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
 			CurrentInvocationId: "Inv-1234",
 			TesthausURL:         "www.testhaus.com",
 			BaseVariant: map[string]string{
@@ -976,6 +978,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		defer func() { buildState.End(err) }()
 
 		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
 			CurrentInvocationId: "Inv-1234",
 			TesthausURL:         "www.testhaus.com",
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
@@ -1026,6 +1029,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			"build_target": "asurada",
 		}
 		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
 			CurrentInvocationId: wantInvId,
 			TesthausURL:         wantTesthausURL,
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
@@ -1066,6 +1070,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			"build_target": "asurada",
 		}
 		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
 			CurrentInvocationId: wantInvId,
 			TesthausURL:         wantTesthausURL,
 			BaseVariant:         wantBaseVariant,

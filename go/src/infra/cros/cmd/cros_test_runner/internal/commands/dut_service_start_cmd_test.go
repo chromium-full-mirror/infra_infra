@@ -102,7 +102,8 @@ func TestDutServiceStartCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
 	Convey("DutServiceStartCmd update SK", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{HostName: "DUT-1234"}
+		sk := data.NewHwTestStateKeeper()
+		sk.HostName = "DUT-1234"
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)

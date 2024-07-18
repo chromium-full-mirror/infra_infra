@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
@@ -31,10 +32,11 @@ type RdbPublishUploadCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	CurrentInvocationId string
-	TesthausURL         string
-	Sources             *testapi_metadata.PublishRdbMetadata_Sources
-	BaseVariant         map[string]string
+	CurrentInvocationId  string
+	TesthausURL          string
+	Sources              *testapi_metadata.PublishRdbMetadata_Sources
+	BaseVariant          map[string]string
+	PostProcessResponses *testapi.RunActivitiesResponse
 
 	// Either constructed TestResultForRdb is required,
 	TestResultForRdb *artifactpb.TestResult
@@ -67,6 +69,7 @@ func (cmd *RdbPublishUploadCmd) ExtractDependencies(
 func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
+	var err error
 
 	if sk.CurrentInvocationId == "" {
 		return fmt.Errorf("Cmd %q missing dependency: CurrentInvocationId", cmd.GetCommandType())
@@ -105,12 +108,17 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		sk.BaseVariant = constructBaseVariantFromStateKeeper(ctx, sk)
 	}
 
+	cmd.PostProcessResponses = &testapipb.RunActivitiesResponse{}
+	sk.Injectables.LoadInjectables()
+	if err = common.Inject(cmd.PostProcessResponses, "", sk.Injectables, common.NewTaskIdentifier(common.PostProcess).GetRpcResponse("runActivities")); err != nil {
+		logging.Infof(ctx, "Failed to inject into PostProcessResponses, %s", err)
+	}
+
 	cmd.CurrentInvocationId = sk.CurrentInvocationId
 	cmd.TestResultForRdb = sk.TestResultForRdb
 	cmd.TesthausURL = sk.TesthausURL
 	cmd.BaseVariant = sk.BaseVariant
 
-	var err error
 	if sk.CrosTestRunnerRequest != nil {
 		cmd.Sources, err = SourcesFromPrimaryDevice(sk)
 		if err != nil {

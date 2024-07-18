@@ -10,7 +10,9 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -98,6 +100,10 @@ func (cmd *DutServiceStartCmd) updateHwTestStateKeeper(
 
 	if cmd.DutServerAddress != nil {
 		sk.DutServerAddress = cmd.DutServerAddress
+		crosDutTaskId := common.NewPrimaryDeviceIdentifier().GetCrosDutServer()
+		if err := sk.Injectables.Set(crosDutTaskId, sk.DutServerAddress); err != nil {
+			logging.Infof(ctx, "Cmd %q failed to upload %s", string(cmd.GetCommandType()), crosDutTaskId)
+		}
 	}
 
 	return nil

@@ -158,6 +158,13 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 			TestsExecution_CrosTestExecutor)
 	}
 
+	// Add support for dynamic command/executor for post-process.
+	if !cftHwStepsConfig.GetSkipPostProcess() {
+		mainConfigs = append(mainConfigs,
+			ContainerStart_ContainerExecutor.WithRequired(true),
+			GenericPostProcess_GenericPostProcessExecutor.WithRequired(true))
+	}
+
 	// If VM run, release VM before publish
 	if platform == common.BotProviderGce {
 		mainConfigs = append(mainConfigs,
