@@ -40,7 +40,7 @@ func FlossEnabled(ctx context.Context, r components.Runner, timeout time.Duratio
 // HasAdapterBlueZ checks if a bluetooth adapter is detected using the BlueZ DBus service.
 func HasAdapterBlueZ(ctx context.Context, r components.Runner, timeout time.Duration) (bool, error) {
 	// cmd will either exit with nonzero code if bluetooth is not detected or will return
-	// a single DBus value similar to: '\s*variant\s+boolean\s+true'
+	// a single DBus value similar to: '\s*variant\s+boolean'
 	// Note: --print-reply=literal only returns the body of the reply so no need to strip header.
 	// e.x.
 	//     variant       boolean true
@@ -54,7 +54,7 @@ func HasAdapterBlueZ(ctx context.Context, r components.Runner, timeout time.Dura
 	}
 
 	// check that returned DBus value is true
-	enabledValue := []string{"variant", "boolean", "true"}
+	enabledValue := []string{"variant", "boolean"}
 	lines := strings.Split(output, "\n")
 	if len(lines) == 1 {
 		return splitEquals(lines[0], enabledValue), nil
@@ -65,6 +65,7 @@ func HasAdapterBlueZ(ctx context.Context, r components.Runner, timeout time.Dura
 // HasAdapterFloss checks if a bluetooth adapter is detected using the Floss DBus service.
 func HasAdapterFloss(ctx context.Context, r components.Runner, timeout time.Duration) (bool, error) {
 	// cmd returns an array of DBus properties for the detected bluetooth adapters
+	// The boolean reflects the power state of the adapter and can be ignored
 	// e.x.
 	// array [
 	//  array [
@@ -83,7 +84,7 @@ func HasAdapterFloss(ctx context.Context, r components.Runner, timeout time.Dura
 	}
 
 	// check that a single enabled adapter is found
-	enabledValue := []string{"enabled", "variant", "boolean", "true"}
+	enabledValue := []string{"enabled", "variant", "boolean"}
 	lines := strings.Split(output, "\n")
 	for _, line := range lines {
 		if splitEquals(line, enabledValue) {
@@ -101,8 +102,13 @@ func flossDBusCmd(method string) string {
 	return fmt.Sprintf("dbus-send --print-reply=literal --system --dest=%s %s %s.%s", service, path, iface, method)
 }
 
-// splitEquals returns true if the split text matches the provided string array.
+// splitEquals returns true if the split text matches the provided string array
+// up to the length of the provided string array.
 func splitEquals(line string, match []string) bool {
 	fields := strings.Fields(line)
+	length := len(match)
+	if len(fields) > length {
+		fields = fields[0:length]
+	}
 	return reflect.DeepEqual(fields, match)
 }
