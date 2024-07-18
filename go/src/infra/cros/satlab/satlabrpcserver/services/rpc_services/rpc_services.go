@@ -501,6 +501,7 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 		TimeoutMins: site.MaxIshCTPTimeoutMins,
 		Local:       true,
 		CFT:         in.GetCft(),
+		TRV2:        in.GetTrv2(),
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -529,6 +530,7 @@ func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequ
 		TimeoutMins: site.MaxIshCTPTimeoutMins,
 		Local:       true,
 		CFT:         in.GetCft(),
+		TRV2:        in.GetTrv2(),
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
@@ -1143,6 +1145,7 @@ func (s *SatlabRpcServiceServer) RunTestPlan(ctx context.Context, in *pb.RunTest
 		TimeoutMins: site.MaxIshCTPTimeoutMins,
 		Local:       true,
 		CFT:         in.GetCft(),
+		TRV2:        in.GetTrv2(),
 	}
 
 	buildLink, err := r.TriggerRun(ctx)
