@@ -68,3 +68,9 @@ int: integration
 .PHONY: gen
 gen:
 	go generate ./...
+
+# Run runs fleetcostserver and causes it to act as the dev project, this gives
+# you access to the dev datastore instance.
+.PHONY: run-local
+run-local:
+	./fleetcostserver -cloud-project=fleet-cost-dev
