@@ -81,7 +81,7 @@ Examples:
 shivas add labstation -name {hostname} -asset {asset tag} -pools {labstation pool}
 Adds a Labstation to UFS.
 
-shivas add labstation -name {hostname} -pools {labstation pool} -rpm {rpm host} -rpm-outlet {rpm outlet}
+shivas add labstation -name {hostname} -pools {labstation pool} -rpm {rpm host} -rpm-outlet {rpm outlet} -rpm-type {rpm type}
 Adds a labstation to UFS with rpm.
 
 shivas add labstation -f labstation.json
@@ -93,7 +93,7 @@ Adds Labstation(s) to UFS using a csv description file.
 	// UpdateLabstationLongDesc long description for UpdateLabstationCmd
 	UpdateLabstationLongDesc string = `Update and/or deploy a Labstation.
 Examples:
-shivas update labstation -name {hostname} -rpm {rpm host} -outlet {rpm outlet}
+shivas update labstation -name {hostname} -rpm {rpm host} -outlet {rpm outlet} -rpm-type {rpm type}
 Update RPM connected to the Labstation.
 
 shivas update labstation -name {hostname} -rpm -
@@ -127,7 +127,8 @@ Example DUT:
 					},
 					"rpm": {
 						"powerunitName": "chromeos1-row2-rack3-rpm",
-						"powerunitOutlet": ".A1"
+						"powerunitOutlet": ".A1",
+						"powerunitType": "TYPE_SENTRY"
 					}
 				},
 				"pools": [
@@ -159,7 +160,8 @@ Example DUT with peripherals:
 					},
 					"rpm": {
 						"powerunitName": "chromeos1-row2-rack3-rpm",
-						"powerunitOutlet": ".A1"
+						"powerunitOutlet": ".A1",
+						"powerunitType": "TYPE_SENTRY"
 					},
 					"chameleon": {
 						"chameleon_peripherals": [1],
@@ -213,12 +215,12 @@ It is possible to update the underlying asset using -zone, -rack, -model or -boa
 
 [MCSV Mode]
 The file may have multiple or one dut csv record.
-The header format and sequence should be: [name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,pools]
+The header format and sequence should be: [name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools]
 Example mcsv format:
-name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,pools
-dut-1,asset-1,eve,eve,servo-1,9998,ServoXdw,REGULAR,rpm-1,23,"CTS QUOTA"
-dut-2,asset-2,kevin,kevin,servo-2,9998,ServoYdw,,rpm-2,43,QUOTA
-dut-3,asset-3,,,chromeos6-row2-rack3-host4-servo,,,,,,,
+name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools
+dut-1,asset-1,eve,eve,servo-1,9998,ServoXdw,REGULAR,rpm-1,23,TYPE_SENTRY,"CTS QUOTA"
+dut-2,asset-2,kevin,kevin,servo-2,9998,ServoYdw,,rpm-2,43,TYPE_SENTRYQUOTA
+dut-3,asset-3,,,chromeos6-row2-rack3-host4-servo,,,,,,,,
 
 It is possible to update -zone or -rack of asset. This will be applied to all the rows of the csv.
 
@@ -246,7 +248,8 @@ Example DUT:
 					},
 					"rpm": {
 						"powerunitName": "chromeos1-row2-rack3-rpm",
-						"powerunitOutlet": ".A1"
+						"powerunitOutlet": ".A1",
+						"powerunitType": "TYPE_SENTRY"
 					},
 				},
 				"pools": [
@@ -279,7 +282,8 @@ Example DUT with peripherals:
 					},
 					"rpm": {
 						"powerunitName": "chromeos1-row2-rack3-rpm",
-						"powerunitOutlet": ".A1"
+						"powerunitOutlet": ".A1",
+						"powerunitType": "TYPE_SENTRY"
 					},
 					"chameleon": {
 						"chameleon_peripherals": [1],
@@ -341,20 +345,20 @@ The protobuf definition of DeviceUnderTest is a part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/device.proto
 
 The file may have multiple or one dut csv record.
-The header format and sequence should be: [name,asset,servo_host,servo_port,servo_serial,rpm_host,rpm_outlet,pools]
+The header format and sequence should be: [name,asset,servo_host,servo_port,servo_serial,rpm_host,rpm_outlet,rpm_type,pools]
 
 Example mcsv format:
-name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,pools
-dut-1,asset-1,,,servo-1,9998,servo-serial-1,DUAL_V4,rpm-1,22,QUOTA
-dut-2,,,,,9998,,,,,
-dut-3,asset-1,,,,,,,,,
-dut-4,,eve,eve,,,,,rpm-1,22,
+name,asset,model,board,servo_host,servo_port,servo_serial,servo_setup,rpm_host,rpm_outlet,rpm_type,pools
+dut-1,asset-1,,,servo-1,9998,servo-serial-1,DUAL_V4,rpm-1,22,TYPE_SENTRY,QUOTA
+dut-2,,,,,9998,,,,,,
+dut-3,asset-1,,,,,,,,,,
+dut-4,,eve,eve,,,,,rpm-1,22,TYPE_SENTRY,
 
 Example mcsv format (delete/clear support. Use - to clear a field where available):
-dut-6,,,,-,9998,servo-serial-1,DUAL_V4,,,
-dut-7,,,,,,,,-,,
-dut-8,asset-2,,,,,,,-,,
-dut-9,,,,,,,,-,,"QUOTA CQ"
+dut-6,,,,-,9998,servo-serial-1,DUAL_V4,,,,
+dut-7,,,,,,,,-,,,
+dut-8,asset-2,,,,,,,-,,,
+dut-9,,,,,,,,-,,,"QUOTA CQ"
 `
 
 	// LabstationRegistrationFileText description for json file input
@@ -372,7 +376,8 @@ Example Labstation:
                         "labstation": {
                                 "rpm": {
                                         "powerunitName": "chromeos6-row9_10-rack22-rpm3",
-                                        "powerunitOutlet": "AA3"
+                                        "powerunitOutlet": "AA3",
+                                        "powerunitType": "TYPE_SENTRY"
                                 },
                                 "pools": [
                                         "labstation_main"
@@ -395,13 +400,13 @@ The protobuf definition of Labstation is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/device.proto
 
 The file may have multiple or one labstation csv record.
-The header format and sequence should be: [name,asset,model,board,rpm_host,rpm_outlet,pools]
+The header format and sequence should be: [name,asset,model,board,rpm_host,rpm_outlet,rpm_type,pools]
 
 Example mcsv format:
-name,asset,model,board,rpm_host,rpm_outlet,pools
-labstation-1,asset-1,wukong,fizz_labstation,rpm-1,A2,labstation_main
-labstation-2,asset-2,wukong,fizz_labstation,rpm-2,A2,"labstation_main labstation_tryjob"
-labstation-3,asset-3,wukong,fizz_labstation,rpm-3,A2,labstation_main
+name,asset,model,board,rpm_host,rpm_outlet,rpm_type,pools
+labstation-1,asset-1,wukong,fizz_labstation,rpm-1,A2,TYPE_SENTRY,labstation_main
+labstation-2,asset-2,wukong,fizz_labstation,rpm-2,A2,TYPE_SENTRY,"labstation_main labstation_tryjob"
+labstation-3,asset-3,wukong,fizz_labstation,rpm-3,A2,TYPE_SENTRY,labstation_main
 
 It is possible to update -zone or -rack along with csv. The update is applied to all the rows.
 
@@ -421,7 +426,8 @@ Example Labstation:
                         "labstation": {
                                 "rpm": {
                                         "powerunitName": "chromeos6-row9_10-rack22-rpm3",
-                                        "powerunitOutlet": "AA3"
+                                        "powerunitOutlet": "AA3",
+                                        "powerunitType": "TYPE_SENTRY"
                                 },
                                 "pools": [
                                         "labstation_main"
@@ -442,18 +448,19 @@ The protobuf definition of Labstation is part of
 https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/device.proto
 
 The file may have multiple or one labstation csv record.
-The header format and sequence should be: [name,asset,rpm_host,rpm_outlet,pools]
+The header format and sequence should be: [name,asset,model,board,rpm_host,rpm_outlet,rpm_type,pools]
 
 Example mcsv format:
-name,asset,rpm_host,rpm_outlet,pools
-labstation-1,,rpm-1,A2,labstation_main
-labstation-2,asset-1,,,
-labstation-3,,,,"labstation_main labstation_tryjob"
+name,asset,model,board,rpm_host,rpm_outlet,rpm_type,pools
+labstation-1,,,,rpm-1,A2,TYPE_SENTRY,labstation_main
+labstation-2,asset-1,,,,,,
+labstation-3,,,,,,,"labstation_main labstation_tryjob"
 
 Example mcsv format (delete/clear support. Use - to clear a field where available):
 name,asset,rpm_host,rpm_outlet,pools
-labstation-1,,-,,labstation_main
-labstation-2,asset-1,-,,
+name,asset,model,board,rpm_host,rpm_outlet,rpm_type,pools
+labstation-1,,,,-,,,labstation_main
+labstation-2,asset-1,,,-,,,
 `
 
 	// UpdateDUTLongDesc long description for UpdateDUTCmd
@@ -472,7 +479,7 @@ Trigger a deploy task on the given DUT. Nothing is updated.
 shivas update dut -name chromeos6-rack3-row2-host1 -servo chromeos6-rack3-row2-labstation1:0 -servo-serial C1024356789
 Update servo connected to the DUT.
 
-shivas update dut -name chromeos6-rack3-row2-host1 -rpm chromeos6-row11_12-rack24-rpm1 -outlet .A22
+shivas update dut -name chromeos6-rack3-row2-host1 -rpm chromeos6-row11_12-rack24-rpm1 -rpm-outlet .A22 -rpm-type TYPE_SENTRY
 Update rpm connected to the DUT.
 
 shivas update dut -name chromeos6-rack3-row2-host1 -servo -
@@ -987,7 +994,8 @@ Example host(DUT) for an OS machine:
                     },
                     "rpm": {
                         "powerunitName": "rpm-1",
-                        "powerunitOutlet": "23"
+                        "powerunitOutlet": "23",
+                        "powerunitType": "TYPE_SENTRY"
                     },
                     "connectedCamera": [{
                             "cameraType": "CAMERA_HUDDLY"
@@ -1054,7 +1062,8 @@ Example host(Labstation) for an OS machine:
                 "servos": [],
                 "rpm": {
                     "powerunitName": "rpm-1",
-                    "powerunitOutlet": "23"
+                    "powerunitOutlet": "23",
+                    "powerunitType": "TYPE_SENTRY"
                 },
                 "pools": [
                     "ACS_POOL",
