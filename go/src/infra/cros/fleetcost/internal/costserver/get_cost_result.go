@@ -32,7 +32,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 		return f.getCostResultImpl(ctx, req)
 	}
 	readResult, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
-	if readErr == nil {
+	if readErr == nil && readResult != nil {
 		return &fleetcostAPI.GetCostResultResponse{Result: readResult}, nil
 	}
 	if !datastore.IsErrNoSuchEntity(readErr) {
