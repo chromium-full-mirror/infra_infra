@@ -27,6 +27,9 @@ PROJECT_REDIRECT_MAP = {
     'skia': 'https://issues.skia.org',
     'tint': 'https://issues.chromium.org',
     'v8': 'https://issues.chromium.org',
+    'webm': 'https://issues.webmproject.org',
+    'webp': 'https://issues.webmproject.org',
+    'webp2': 'https://issues.webmproject.org',
     'webrtc': 'https://issues.webrtc.org',
 }
 
@@ -39,6 +42,8 @@ PROJECT_COMPONENT_ID_MAP = {
     'pdfium': 1586257,
     'tint': 1571063,
     'v8': 1456824,
+    'webp': 1618983,
+    'webp2': 1619241,
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
