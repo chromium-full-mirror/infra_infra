@@ -230,7 +230,7 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 	// Drop empty .gcloudignore in the main directory. We already skipped ignored
 	// files, but gcloud wants some .gcloudignore anyway, creating the default one
 	// otherwise.
-	if err := inv.Output.AddFromMemory(filepath.Join(mainPkgDestRel, ".gcloudignore"), nil, nil); err != nil {
+	if err := inv.Output.Overlay().AddFromMemory(filepath.Join(mainPkgDestRel, ".gcloudignore"), nil, nil); err != nil {
 		return errors.Annotate(err, "failed to create .gcloudignore").Err()
 	}
 
@@ -439,7 +439,11 @@ func runGoGAEBundleBuildStep(ctx context.Context, inv *stepRunnerInv) error {
 			return errors.Annotate(err, "formatting %s", appYamlBundlePath).Err()
 		}
 		logging.Infof(ctx, "Adjusted %s to use correct paths:\n%s", appYamlBundlePath, blob)
-		if err := inv.Output.AddFromMemory(appYamlBundlePath, blob, nil); err != nil {
+		// Add the fixed YAML to the output's overlay set. That way if this YAML is
+		// readded to the main output set again by **another** bundle step (as a
+		// static file this time), it still will end up being correct in the final
+		// staged output.
+		if err := inv.Output.Overlay().AddFromMemory(appYamlBundlePath, blob, nil); err != nil {
 			return errors.Annotate(err, "rewriting %s", appYamlBundlePath).Err()
 		}
 	}

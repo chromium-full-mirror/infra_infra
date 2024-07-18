@@ -11,13 +11,14 @@ import (
 	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
-	"sort"
 	"strings"
 
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 )
 
@@ -102,8 +103,26 @@ type Excluder func(absPath string, isDir bool) bool
 // Such set can be constructed from existing files on disk (perhaps scattered
 // across many directories), and it then can be either materialized on disk
 // in some root directory, or written into a tarball.
+//
+// A set can optionally have an overlay set. Files in the overlay set are always
+// written to the output instead of files in the main set. This is useful for
+// emitting "overrides" that work regardless in which order files are added
+// to the main set.
 type Set struct {
-	files map[string]File // unix-style path inside the set => File
+	files   map[string]File // unix-style path inside the set => File
+	overlay *Set            // the overlay set, initialized lazily
+}
+
+// Overlay returns a set of files that "override" files in the main set when
+// the set is materialized or enumerated.
+//
+// Note that overriding regular files with directories in the overlay set is
+// not supported and will result in errors when trying to materialize such set.
+func (s *Set) Overlay() *Set {
+	if s.overlay == nil {
+		s.overlay = &Set{}
+	}
+	return s.overlay
 }
 
 // Add adds a file or directory to the set, overriding an existing one, if any.
@@ -188,22 +207,28 @@ func (s *Set) AddSymlink(setPath, target string) error {
 	})
 }
 
-// Len returns number of files in the set.
+// Len returns number of files in the set (including the overlay set).
 func (s *Set) Len() int {
-	return len(s.files)
+	if s.overlay == nil {
+		return len(s.files)
+	}
+	paths := stringset.New(len(s.files))
+	s.enumeratePaths(paths)
+	return paths.Len()
 }
 
 // Enumerate calls the callback for each file in the set, in alphabetical order.
 //
 // Returns whatever error the callback returns.
 func (s *Set) Enumerate(cb func(f File) error) error {
-	names := make([]string, 0, len(s.files))
-	for f := range s.files {
-		names = append(names, f)
-	}
-	sort.Strings(names)
-	for _, n := range names {
-		if err := cb(s.files[n]); err != nil {
+	paths := stringset.New(len(s.files))
+	s.enumeratePaths(paths)
+	for _, n := range paths.ToSortedSlice() {
+		file, ok := s.get(n)
+		if !ok {
+			panic(fmt.Sprintf("path %q is in enumeratePaths set, but get(...) can't get it", n))
+		}
+		if err := cb(file); err != nil {
 			return err
 		}
 	}
@@ -224,9 +249,7 @@ func (s *Set) Files() []File {
 //
 // If there's no such file returns `File{}, false`.
 func (s *Set) File(setPath string) (File, bool) {
-	setPath = path.Clean(filepath.ToSlash(setPath))
-	file, ok := s.files[setPath]
-	return file, ok
+	return s.get(path.Clean(filepath.ToSlash(setPath)))
 }
 
 // Materialize dumps all files in this set into the given directory.
@@ -360,6 +383,31 @@ func (s *Set) ToTarGzFile(path string) (sha256hex string, err error) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+// get returns a file given its normalized set path.
+//
+// Knows about the overlay set.
+func (s *Set) get(setPath string) (File, bool) {
+	if s.overlay != nil {
+		if file, ok := s.overlay.get(setPath); ok {
+			return file, true
+		}
+	}
+	file, ok := s.files[setPath]
+	return file, ok
+}
+
+// enumeratePaths adds all paths in the set into `out`.
+//
+// Knows about the overlay set.
+func (s *Set) enumeratePaths(out stringset.Set) {
+	if s.overlay != nil {
+		s.overlay.enumeratePaths(out)
+	}
+	for p := range s.files {
+		out.Add(p)
+	}
+}
 
 // addImpl implements AddFromDisk.
 func (s *Set) addImpl(fsPath, setPath string, exclude Excluder) error {

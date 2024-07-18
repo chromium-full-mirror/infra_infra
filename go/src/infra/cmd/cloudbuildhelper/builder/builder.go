@@ -160,18 +160,3 @@ func (inv *stepRunnerInv) addFilesToOutput(ctx context.Context, src, dst string,
 	}
 	return inv.Output.AddFromDisk(src, rel, exclude)
 }
-
-// addBlobToOutput adds a non-executable regular file to the output set as
-// filepath.Rel(contextDir, dst), failing if the result is outside of the
-// context dir.
-func (inv *stepRunnerInv) addBlobToOutput(ctx context.Context, dst string, blob []byte) error {
-	rel, err := filepath.Rel(inv.Manifest.ContextDir, dst)
-	if err != nil {
-		return err
-	}
-	logging.Infof(ctx, "Writing ${contextdir}/%s", rel)
-	if strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return errors.Reason("the destination should be under the context directory, got %q", rel).Err()
-	}
-	return inv.Output.AddFromMemory(rel, blob, nil)
-}

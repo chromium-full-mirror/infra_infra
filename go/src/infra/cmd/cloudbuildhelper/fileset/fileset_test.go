@@ -270,6 +270,31 @@ func TestSet(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(hash, ShouldHaveLength, 64)
 	})
+
+	Convey("Overlay set works", t, func(c C) {
+		set := &Set{}
+		set.Add(memFile("f1", "main"))
+		set.Add(memFile("f2", "main"))
+		set.Add(memFile("f3", "main"))
+
+		set.Overlay().Add(memFile("f1", "overlay"))
+		set.Overlay().Add(memFile("f4", "overlay"))
+
+		So(set.Len(), ShouldEqual, 4)
+		So(collect(set), ShouldResemble, []string{
+			"F f1",
+			"F f2",
+			"F f3",
+			"F f4",
+		})
+
+		f1, _ := set.File("f1")
+		So(read(f1), ShouldEqual, "overlay")
+		f2, _ := set.File("f2")
+		So(read(f2), ShouldEqual, "main")
+		f4, _ := set.File("f4")
+		So(read(f4), ShouldEqual, "overlay")
+	})
 }
 
 func collect(s *Set) []string {
