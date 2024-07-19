@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cros/cmd/paris/internal/meta"
 	"infra/cros/cmd/paris/internal/site"
 	"infra/cros/cmd/paris/internal/tasks"
 )
@@ -29,8 +28,6 @@ func application() *cli.Application {
 		},
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
-			meta.Update,
-			meta.Version,
 			subcommands.Section("Authentication"),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
 			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),

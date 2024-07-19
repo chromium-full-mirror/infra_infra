@@ -1,7 +1,6 @@
 # Mallet command line tool
 
-This is a tool for running ad hoc maintenance tasks
-that bypasses the ordinary infrastructure.
+This is a tool for scheduling maintenance tasks and bypasses the ordinary infrastructure.
 
 ## Requirements
 
@@ -21,26 +20,28 @@ make mallet
 go run main.go login
 ```
 
-## Running auto-repair with Mallet
+## Testing auto-repair changes
 
-There are a few ways how you can run auto-repair with local changes.
-1) changes in configurations or plans: can be tested by scheduling them with custom config. For more details go/fleet-recovery-developer#local-tests-with-custom-config
-2) changes in execs - requires run from workstation only. More details go/fleet-recovery-developer#local-tests
+There are a few ways how you can run auto-repair with local changes:
 
-## Example use of mallet: Running auto-repair from local code
+1) Changes in configurations or plans: can be tested by scheduling them with custom config. For more details go/fleet-recovery-developer#local-tests-with-custom-config
+2) Changes in execs - requires run from workstation only. More details go/fleet-recovery-developer#local-tests
 
-To run auto-repair locally use `local-recovery` task. Due to access to the devices requiring special access please configure ssh configs (go/chromeos-lab-duts-ssh) and then create proxies by [labtunel](https://chromium.googlesource.com/chromiumos/platform/dev-util/+/HEAD/contrib/labtunnel/README.md). Then you need to run the below command with the replacement:
-- `HOST_PROXIES_JSON`: created proxies by labtunel(eg."{\"dut-1\":\"127.0.0.1:2200\",\"dut-2\":\"127.0.0.1:2201\",}").
-- `DUT_NAME`: name of the DUT known in UFS.
+## Example: Running auto-repair from local code
 
-```
-go run main.go local -host-proxies HOST_PROXIES_JSON {DUT_NAME}
-```
+Please use go/paris-cli
 
-## Scheduling a job with Mallet
+## Modifying config for tasks
+
+Note: While local data read is not supported, the current approach to modify
+the config is by manually modifying the following file:
+`go/src/infra/cros/recovery/internal/localtlw/dutinfo/dutinfo.go`
+
+## Scheduling tasks
 
 Command `recovery` is designed to schedule custom builder tasks and be able to accept custom config if provided.
 
+## Other interesting links
 
 - go/paris-
 - go/fleet-recovery-developer
