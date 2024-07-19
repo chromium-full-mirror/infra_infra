@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"unicode"
 
 	"golang.org/x/crypto/ssh"
 
@@ -69,9 +70,32 @@ func run(ctx context.Context, provider SSHProvider, addr string, cmd string, bac
 	result = createSessionAndExecute(ctx, cmd, sc, background, sessionLogsKey)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
-	log.Debugf(ctx, "Run SSH %q: Stdout: %s", addr, result.Stdout)
-	log.Debugf(ctx, "Run SSH %q: Stderr: %s", addr, result.Stderr)
+	log.Debugf(ctx, "Run SSH %q: Stdout(%d): %s", addr, len(result.Stderr), trancateString(result.Stdout, 1000))
+	log.Debugf(ctx, "Run SSH %q: Stderr(%d): %s", addr, len(result.Stderr), trancateString(result.Stderr, 1000))
 	return result
+}
+
+// trancateString trancates string
+func trancateString(str string, max int) string {
+	if str == "" || len(str) <= max {
+		return str
+	}
+	lastSpaceIx := -1
+	for i, r := range str {
+		if unicode.IsSpace(r) {
+			lastSpaceIx = i
+		}
+		// We stop when reached max.
+		if i+1 >= max {
+			break
+		}
+	}
+	// If break found then we cut by last one.
+	if lastSpaceIx != -1 {
+		return str[:lastSpaceIx] + "..."
+	}
+	// If there is no breaks then we do just cut by max.
+	return str[:max]
 }
 
 // createSessionAndExecute creates ssh session and perform execution by ssh.
