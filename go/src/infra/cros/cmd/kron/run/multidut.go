@@ -194,6 +194,7 @@ func gatherSecondaryTargets(kronBuildMap map[*kronpb.Build][]*suschpb.SchedulerC
 						}
 
 						pairedDeviceSpec.secondaries = append(pairedDeviceSpec.secondaries, androidDevice)
+						secondariesToPrimary[*androidDevice] = append(secondariesToPrimary[*androidDevice], pairedDeviceSpec)
 						continue
 					}
 
@@ -226,7 +227,6 @@ func gatherSecondaryTargets(kronBuildMap map[*kronpb.Build][]*suschpb.SchedulerC
 						secondariesToPrimary[*secondaryTarget] = []*multiDUTTargetPair{}
 					}
 					secondariesToPrimary[*secondaryTarget] = append(secondariesToPrimary[*secondaryTarget], pairedDeviceSpec)
-
 				}
 			}
 		}
@@ -342,6 +342,13 @@ func (c *CrOSMultiDUTCommand) generateRequestMap(kronBuildMap map[*kronpb.Build]
 	requiredSecondaryBuilds, requiredBuildsToSecondaryTargets, secondariesToPrimary, secondaryDevices, err := gatherSecondaryTargets(kronBuildMap, c.suiteSchedulerConfigs)
 	if err != nil {
 		return nil, err
+	}
+
+	// In the case where the only triggered configs have no CrOS secondaries,
+	// skip fetching from LTS and merging the requests immediately.
+	if len(requiredSecondaryBuilds) == 0 && len(secondariesToPrimary) > 0 {
+		// Merge into RequestsMap
+		return transformToRequestMap(secondariesToPrimary), nil
 	}
 
 	// Fetch secondary device information from from LTS.
