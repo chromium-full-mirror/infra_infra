@@ -739,3 +739,78 @@ func TestGetConfiguration(t *testing.T) {
 		})
 	}
 }
+
+// TestcollectResourcesForPlan tests collectResourcesForPlan function.
+func TestCollectResourcesForPlan(t *testing.T) {
+	t.Parallel()
+	dut := &tlw.Dut{
+		Name: "dut-name",
+		Chromeos: &tlw.ChromeOS{
+			Servo: &tlw.ServoHost{
+				Name: "servo-host",
+			},
+			BluetoothPeers: []*tlw.BluetoothPeer{
+				{Name: "bluetooth-peers1"},
+				{Name: "bluetooth-peers2"},
+				{Name: "bluetooth-peers3"},
+			},
+			WifiRouters: []*tlw.WifiRouterHost{
+				{Name: "wifi-router1"},
+				{Name: "wifi-router2"},
+				{Name: "wifi-router3"},
+			},
+			Chameleon: &tlw.Chameleon{
+				Name: "chameleon",
+			},
+			HumanMotionRobot: &tlw.HumanMotionRobot{
+				Name: "hmr",
+			},
+			Dolos: &tlw.Dolos{
+				Hostname: "dolos",
+			},
+		},
+		Android: &tlw.Android{
+			AssociatedHostname: "android-name",
+		},
+	}
+	cases := []struct {
+		plan string
+		out  []string
+	}{
+		{config.PlanAndroid, []string{"dut-name"}},
+		{config.PlanCrOS, []string{"dut-name"}},
+		{config.PlanCrOSAudit, []string{"dut-name"}},
+		{config.PlanCrOSDeepRepair, []string{"dut-name"}},
+		{config.PlanServo, []string{"servo-host"}},
+		{config.PlanServoDeepRepair, []string{"servo-host"}},
+		{config.PlanChameleon, []string{"chameleon"}},
+		{config.PlanBluetoothPeer, []string{"bluetooth-peers1", "bluetooth-peers2", "bluetooth-peers3"}},
+		{config.PlanWifiRouter, []string{"wifi-router1", "wifi-router2", "wifi-router3"}},
+		{config.PlanHMR, []string{"hmr"}},
+		{config.PlanDolos, []string{"dolos"}},
+		{config.PlanClosing, []string{"dut-name"}},
+		{"cros_bla", []string{"dut-name"}},
+		{"servo_bla", []string{"servo-host"}},
+		{"", []string{"dut-name"}},
+		{"empty", []string{"dut-name"}},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.plan, func(t *testing.T) {
+			t.Parallel()
+			out := collectResourcesForPlan(c.plan, dut)
+			if len(out) == 0 {
+				t.Errorf("%s: did not get reources", c.plan)
+			}
+			if len(out) != len(c.out) {
+				t.Errorf("%s: did not get expeceted list of resource %d!= %d", c.plan, len(out), len(c.out))
+			}
+			for i, v := range c.out {
+				if !cmp.Equal(out[i], v) {
+					t.Errorf("%s: got:%v  want: %v", c.plan, out[i], v)
+				}
+			}
+		})
+	}
+}

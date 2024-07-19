@@ -557,6 +557,8 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		return false
 	}
 	switch {
+	default:
+		fallthrough
 	case matchPlanName(planName, config.PlanCrOS, config.PlanAndroid, config.PlanClosing):
 		if dut.Name != "" {
 			return []string{dut.Name}
