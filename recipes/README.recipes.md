@@ -1138,7 +1138,7 @@ This will prepend 'experimental/' to the currently set prefix if:
   * The recipe is running in experimental mode; OR
   * You pass experimental=True
 
-&mdash; **def [pkgbuild](/recipes/recipe_modules/support_3pp/api.py#906)(self, pools, packages=(), platform='', upload=False, rebuild_pkgbuild=False, cipd_service=None):**
+&mdash; **def [pkgbuild](/recipes/recipe_modules/support_3pp/api.py#907)(self, pools, packages=(), platform='', upload=False, rebuild_pkgbuild=False, cipd_service=None):**
 
 pkgbuild downloads and executes the pkgbuild implementation. It reads
 specs from roots and builds all listed packages. If packages is an empty

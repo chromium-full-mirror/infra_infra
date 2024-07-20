@@ -893,13 +893,14 @@ class Support3ppApi(recipe_api.RecipeApi):
         go_version_variant='bleeding_edge')
     co.gclient_runhooks()
 
-    with co.go_env():
-      with self.m.context(cwd=co.path / 'infra/go/src/infra'):
-        self.m.step('build pkgbuild', [
-            'go', 'build',
-            '-o', str(bin_path / 'edge'),
-            './tools/pkgbuild/cmd/edge',
-        ])
+    exe_suffix = '.exe' if platform_for_host(self.m).startswith('windows') else ''
+    with run_script.get_sdk(self.m, platform_for_host(self.m)), \
+         co.go_env(), self.m.context(cwd=co.path / 'infra/go/src/infra'):
+      self.m.step('build pkgbuild', [
+          'go', 'build',
+          '-o', str(bin_path / f'edge{exe_suffix}'),
+          './tools/pkgbuild/cmd/edge',
+      ])
     return bin_path / 'edge'
 
 
