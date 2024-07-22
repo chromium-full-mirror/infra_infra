@@ -50,7 +50,7 @@ func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Machin
 
 		// Verify RPM fields
 		if rpm := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(); rpm != nil {
-			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "" && rpm.GetPowerunitType() == chromeosLab.OSRPM_TYPE_UNKNOWN)
+			rpmFieldsAllEmpty := (rpm.GetPowerunitName() == "" && rpm.GetPowerunitOutlet() == "")
 			rpmFieldsAllFull := (rpm.GetPowerunitName() != "" && rpm.GetPowerunitOutlet() != "")
 			if !(rpmFieldsAllEmpty || rpmFieldsAllFull) {
 				return errors.Annotate(err, "Validation error - Must specify RPM host and outlet").Err()
