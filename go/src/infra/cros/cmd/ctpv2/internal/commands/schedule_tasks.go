@@ -149,13 +149,15 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
 	// Assign scheduler
-	cmd.Scheduler = schedulers.NewLocalScheduler() // Default
-	if sk.Scheduler == api.SchedulerInfo_QSCHEDULER {
+	switch s := sk.Scheduler; s {
+	case api.SchedulerInfo_QSCHEDULER:
 		cmd.Scheduler = schedulers.NewDirectBBScheduler()
-	} else if sk.Scheduler == api.SchedulerInfo_PRINT_REQUEST_ONLY {
-		cmd.Scheduler = schedulers.NewLocalScheduler()
-	} else if sk.Scheduler == api.SchedulerInfo_SCHEDUKE {
+	case api.SchedulerInfo_PRINT_REQUEST_ONLY:
+		cmd.Scheduler = schedulers.NewDryRunScheduler()
+	case api.SchedulerInfo_SCHEDUKE:
 		cmd.Scheduler = schedulers.NewSchedukeScheduler()
+	default:
+		return fmt.Errorf("cmd %q specified invalid scheduler type %s", cmd.GetCommandType(), s)
 	}
 
 	return nil
@@ -273,6 +275,13 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	}
 	if leaseID != "" {
 		step.Log(fmt.Sprintf("Device Manager lease ID: %s", leaseID))
+	}
+
+	// Don't poll for build status if this is a dry-run.
+	dryRun := cmd.Scheduler.GetSchedulerType() == schedulers.DryRunSchedulerType
+	if dryRun {
+		step.SetSummaryMarkdown("Task launch skipped in dry-run mode")
+		return nil
 	}
 
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {

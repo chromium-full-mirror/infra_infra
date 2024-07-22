@@ -274,9 +274,12 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 // buildSchedulerInfo produces the scheduling system to be used,
 // as well as the qs account for qs scheduling.
 func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
+	dryRun := v1.GetParams().GetDryRunCtpv2()
 	runWithQs := v1.GetParams().GetRunCtpv2WithQs()
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
-	if runWithQs {
+	if dryRun {
+		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
+	} else if runWithQs {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 	return &testapi.SchedulerInfo{

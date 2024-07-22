@@ -12,9 +12,9 @@ const (
 	UnsupportedSchedulerType interfaces.SchedulerType = "UnsupportedScheduler"
 	// Direct bb scheduler schedules requests directly through buildbucket.
 	DirectBBSchedulerType interfaces.SchedulerType = "DirectBBScheduler"
-	// LocalSchedulerType is a dummy scheduler for local mode/debugging. It will
-	// normally print out the request without scheduling anywhere.
-	LocalSchedulerType interfaces.SchedulerType = "LocalScheduler"
+	// DryRunSchedulerType is a stubbed scheduler for dry run mode/debugging. It
+	// will print out the request without scheduling anywhere.
+	DryRunSchedulerType interfaces.SchedulerType = "DryRunScheduler"
 	// Scheduke scheduler schedules requests through Scheduke.
 	SchedukeSchedulerType interfaces.SchedulerType = "SchedukeScheduler"
 )
