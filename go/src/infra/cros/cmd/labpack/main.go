@@ -23,6 +23,7 @@ import (
 
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	luciauth "go.chromium.org/luci/auth"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
@@ -269,20 +270,14 @@ func releaseDMLease(ctx context.Context, lg logger.Logger, leaseID, pool string)
 // getPool returns the pool for the DUT that the given build state is running
 // on, or returns false if it was not found.
 func getPool(s *build.State) (string, bool) {
-	details := s.Build().GetInfra().GetBackend().GetTask().GetDetails()
-	dims, ok := details.GetFields()["bot_dimensions"]
-	if !ok {
-		return "", false
-	}
-	poolsStruct, ok := dims.GetStructValue().GetFields()["label-pool"]
-	if !ok {
-		return "", false
-	}
-	for _, p := range poolsStruct.GetListValue().GetValues() {
-		if p.GetStringValue() == "" {
-			continue
+	for _, d := range protoutil.MustBotDimensions(s.Build()) {
+		if d.GetKey() == "label-pool" {
+			v := d.GetValue()
+			if v == "" {
+				return "", false
+			}
+			return v, true
 		}
-		return p.GetStringValue(), true
 	}
 	return "", false
 }
