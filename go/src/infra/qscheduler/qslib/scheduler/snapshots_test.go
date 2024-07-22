@@ -21,7 +21,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
 
@@ -33,7 +34,7 @@ import (
 var cmpOpt = cmp.Comparer(proto.Equal)
 
 func TestToMetricsSchedulerState(t *testing.T) {
-	Convey("Given a state with some balances, accounts, and requests", t, func() {
+	Convey("Given a state with some balances, accounts, and requests", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(100, 0).UTC()
 		s := New(tm)
@@ -56,7 +57,7 @@ func TestToMetricsSchedulerState(t *testing.T) {
 
 		s.RunOnce(ctx, NullEventSink)
 
-		Convey("test the state is transformed to metrics.SchedulerState.", func() {
+		Convey("test the state is transformed to metrics.SchedulerState.", t, func(t *T) {
 			pool := "foo_pool"
 			accounts := []*metrics.Account{
 				{
@@ -149,7 +150,7 @@ func TestToMetricsSchedulerState(t *testing.T) {
 				workers,
 			}
 			diff := cmp.Diff(s.state.snapshot(pool), want, cmpOpt)
-			So(diff, ShouldBeBlank)
+			So(t, diff, ShouldBeBlank)
 		})
 	})
 }

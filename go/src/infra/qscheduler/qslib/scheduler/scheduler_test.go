@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
 
@@ -34,7 +34,7 @@ import (
 func TestSchedulerReprioritize(t *testing.T) {
 	// Prepare a situation in which one P0 job (out of 2 running) will be
 	// demoted, and a separate P2 job will be promoted to P1.
-	Convey("Given two running requests with different costs for an account that needs 1 demotion from P0, and supports 1 additional P1 job", t, func() {
+	Convey("Two requests with different costs for account needing 1 demotion from P0, & supports 1 more P1 job", t, func(t *T) {
 		ctx := context.Background()
 		tm0 := time.Unix(0, 0)
 		s := New(tm0)
@@ -48,26 +48,26 @@ func TestSchedulerReprioritize(t *testing.T) {
 		}
 		s.state.workers["w2"].runningTask.cost = Balance{1, 0, 0}
 
-		Convey("given both requests running at P0", func() {
-			Convey("when scheduling", func() {
+		Convey("given both requests running at P0", t, func(t *T) {
+			Convey("when scheduling", t, func(t *T) {
 				s.RunOnce(ctx, NullEventSink)
-				Convey("then the cheaper request should be demoted.", func() {
-					So(s.state.workers["w1"].runningTask.priority, ShouldEqual, 1)
-					So(s.state.workers["w2"].runningTask.priority, ShouldEqual, 0)
+				Convey("then the cheaper request should be demoted.", t, func(t *T) {
+					So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(1))
+					So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(0))
 				})
 			})
 		})
 
-		Convey("given both requests running at P2", func() {
+		Convey("given both requests running at P2", t, func(t *T) {
 			for _, wid := range []WorkerID{"w1", "w2"} {
 				s.state.workers[wid].runningTask.priority = 2
 			}
-			Convey("when scheduling", func() {
+			Convey("when scheduling", t, func(t *T) {
 
 				s.RunOnce(ctx, NullEventSink)
-				Convey("then the more expensive should be promoted.", func() {
-					So(s.state.workers["w1"].runningTask.priority, ShouldEqual, 2)
-					So(s.state.workers["w2"].runningTask.priority, ShouldEqual, 1)
+				Convey("then the more expensive should be promoted.", t, func(t *T) {
+					So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(2))
+					So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(1))
 				})
 			})
 		})
@@ -77,7 +77,7 @@ func TestSchedulerReprioritize(t *testing.T) {
 // TestPreempt tests that the scheduler correctly preempts lower priority jobs
 // running on a worker, when a higher priority job appears to take its place.
 func TestSchedulerPreempt(t *testing.T) {
-	Convey("Given a state with two running P1 tasks", t, func() {
+	Convey("Given a state with two running P1 tasks", t, func(t *T) {
 		ctx := context.Background()
 		tm0 := time.Unix(0, 0)
 		s := New(tm0)
@@ -90,37 +90,37 @@ func TestSchedulerPreempt(t *testing.T) {
 			s.state.applyAssignment(&Assignment{RequestID: rid, WorkerID: wid, Type: AssignmentIdleWorker, Priority: 1})
 		}
 		s.state.workers["w1"].runningTask.cost = Balance{0, 1, 0}
-		Convey("given a new P0 request from a different account", func() {
+		Convey("given a new P0 request from a different account", t, func(t *T) {
 			s.AddAccount(ctx, "a2", NewAccountConfig(0, nil, 0, nil, false, ""), nil)
 			s.AddRequest(ctx, NewTaskRequest("r3", "a2", nil, nil, tm0), tm0, nil, NullEventSink)
-			Convey("given sufficient balance", func() {
+			Convey("given sufficient balance", t, func(t *T) {
 				s.state.balances["a2"] = Balance{1}
-				Convey("when scheduling", func() {
+				Convey("when scheduling", t, func(t *T) {
 					tm1 := time.Unix(1, 0)
 					s.UpdateTime(ctx, tm1)
 					got := s.RunOnce(ctx, NullEventSink)
-					Convey("then the cheaper running job is preempted.", func() {
+					Convey("then the cheaper running job is preempted.", t, func(t *T) {
 						want := &Assignment{Type: AssignmentPreemptWorker, Priority: 0, WorkerID: "w2", RequestID: "r3", TaskToAbort: "r2", Time: tm1}
-						So(got, ShouldResemble, []*Assignment{want})
+						So(t, got, ShouldResemble([]*Assignment{want}))
 					})
 				})
 			})
-			Convey("given insufficient balance", func() {
-				Convey("when scheduling", func() {
+			Convey("given insufficient balance", t, func(t *T) {
+				Convey("when scheduling", t, func(t *T) {
 					got := s.RunOnce(ctx, NullEventSink)
-					Convey("then nothing happens.", func() {
-						So(got, ShouldBeEmpty)
+					Convey("then nothing happens.", t, func(t *T) {
+						So(t, got, ShouldBeEmpty)
 					})
 				})
 			})
 		})
 
-		Convey("given a new P0 request from the same account", func() {
+		Convey("given a new P0 request from the same account", t, func(t *T) {
 			s.AddRequest(ctx, NewTaskRequest("r3", "a1", nil, nil, tm0), tm0, nil, NullEventSink)
-			Convey("when scheduling", func() {
+			Convey("when scheduling", t, func(t *T) {
 				got := s.RunOnce(ctx, NullEventSink)
-				Convey("then nothing happens.", func() {
-					So(got, ShouldBeEmpty)
+				Convey("then nothing happens.", t, func(t *T) {
+					So(t, got, ShouldBeEmpty)
 				})
 			})
 		})
@@ -130,28 +130,28 @@ func TestSchedulerPreempt(t *testing.T) {
 // TestDisableFreeTasks tests that the DisableFreeTasks account config behaves
 // as expected.
 func TestDisableFreeTasks(t *testing.T) {
-	Convey("Given a state", t, func() {
+	Convey("Given a state", t, func(t *T) {
 		ctx := context.Background()
 		tm0 := time.Unix(0, 0)
 		s := New(tm0)
-		Convey("with an idle bot, and a task for an account", func() {
+		Convey("with an idle bot, and a task for an account", t, func(t *T) {
 			aid := AccountID("a1")
 			s.AddRequest(ctx, NewTaskRequest("rid", aid, nil, nil, tm0), tm0, nil, NullEventSink)
 			s.MarkIdle(ctx, "worker", nil, tm0, NullEventSink)
-			Convey("when free tasks are enabled", func() {
+			Convey("when free tasks are enabled", t, func(t *T) {
 				config := NewAccountConfig(0, nil, 0, nil, false, "")
 				s.AddAccount(ctx, aid, config, nil)
-				Convey("then when the scheduler runs, the task is assigned.", func() {
+				Convey("then when the scheduler runs, the task is assigned.", t, func(t *T) {
 					assignments := s.RunOnce(ctx, NullEventSink)
-					So(assignments, ShouldHaveLength, 1)
+					So(t, assignments, ShouldHaveLength(1))
 				})
 			})
-			Convey("when free tasks are disabled", func() {
+			Convey("when free tasks are disabled", t, func(t *T) {
 				config := NewAccountConfig(0, nil, 0, nil, true, "")
 				s.AddAccount(ctx, aid, config, nil)
-				Convey("then when the scheduler runs, no task is assigned.", func() {
+				Convey("then when the scheduler runs, no task is assigned.", t, func(t *T) {
 					assignments := s.RunOnce(ctx, NullEventSink)
-					So(assignments, ShouldHaveLength, 0)
+					So(t, assignments, ShouldHaveLength(0))
 				})
 			})
 		})
@@ -163,45 +163,45 @@ func TestDisableFreeTasks(t *testing.T) {
 func TestUpdateBalance(t *testing.T) {
 	t0 := time.Unix(0, 0)
 	aID := AccountID("accountID")
-	Convey("Given a scheduler with an added account config", t, func() {
+	Convey("Given a scheduler with an added account config", t, func(t *T) {
 		ctx := context.Background()
 		s := New(t0)
 		var maxTime float32 = 2.0
 		s.AddAccount(ctx, aID, NewAccountConfig(0, nil, maxTime, []float32{1, 2, 3}, false, ""), nil)
 
-		Convey("then a zeroed balance for that account exists", func() {
-			So(s.state.balances, ShouldContainKey, aID)
-			So(s.state.balances[aID], ShouldResemble, Balance{})
+		Convey("then a zeroed balance for that account exists", t, func(t *T) {
+			So(t, s.state.balances, ShouldContainKey(aID))
+			So(t, s.state.balances[aID], ShouldResemble(Balance{}))
 		})
 
-		Convey("when updating time forward", func() {
+		Convey("when updating time forward", t, func(t *T) {
 			t1 := t0.Add(time.Second)
 			s.UpdateTime(ctx, t1)
-			Convey("then account balance should be increased according to charge rate", func() {
-				So(s.state.balances[aID], ShouldResemble, Balance{1, 2, 3})
+			Convey("then account balance should be increased according to charge rate", t, func(t *T) {
+				So(t, s.state.balances[aID], ShouldResemble(Balance{1, 2, 3}))
 			})
 		})
 
-		Convey("when updating time forward beyond the account's max charge time", func() {
+		Convey("when updating time forward beyond the account's max charge time", t, func(t *T) {
 			t1 := t0.Add(10 * time.Second)
 			s.UpdateTime(ctx, t1)
-			Convey("then account balance saturates at the maximum charge.", func() {
-				So(s.state.balances[aID], ShouldResemble, Balance{2, 4, 6})
+			Convey("then account balance saturates at the maximum charge.", t, func(t *T) {
+				So(t, s.state.balances[aID], ShouldResemble(Balance{2, 4, 6}))
 			})
 		})
 
-		Convey("when account config is removed", func() {
+		Convey("when account config is removed", t, func(t *T) {
 			delete(s.config.AccountConfigs, aID)
-			Convey("when updating time forward", func() {
+			Convey("when updating time forward", t, func(t *T) {
 				t1 := t0.Add(time.Second)
 				s.UpdateTime(ctx, t1)
-				Convey("then account balance is absent.", func() {
-					So(s.state.balances, ShouldNotContainKey, aID)
+				Convey("then account balance is absent.", t, func(t *T) {
+					So(t, s.state.balances, ShouldNotContainKey(aID))
 				})
 			})
 		})
 
-		Convey("when 2 tasks for the account are running", func() {
+		Convey("when 2 tasks for the account are running", t, func(t *T) {
 			r1 := RequestID("request 1")
 			r2 := RequestID("request 2")
 			s.AddRequest(ctx, NewTaskRequest(r1, aID, nil, nil, t0), t0, nil, NullEventSink)
@@ -210,13 +210,13 @@ func TestUpdateBalance(t *testing.T) {
 			s.MarkIdle(ctx, "w2", nil, t0, NullEventSink)
 			s.state.applyAssignment(&Assignment{Priority: 0, RequestID: r1, WorkerID: "w1", Type: AssignmentIdleWorker})
 			s.state.applyAssignment(&Assignment{Priority: 0, RequestID: r2, WorkerID: "w2", Type: AssignmentIdleWorker})
-			So(s.state.queuedRequests, ShouldBeEmpty)
-			So(s.state.workers, ShouldHaveLength, 2)
-			Convey("when updating time forward", func() {
+			So(t, s.state.queuedRequests, ShouldBeEmpty)
+			So(t, s.state.workers, ShouldHaveLength(2))
+			Convey("when updating time forward", t, func(t *T) {
 				t1 := t0.Add(time.Second)
 				s.UpdateTime(ctx, t1)
-				Convey("then account balance reflects charges for running tasks.", func() {
-					So(s.state.balances[aID], ShouldResemble, Balance{-1, 2, 3})
+				Convey("then account balance reflects charges for running tasks.", t, func(t *T) {
+					So(t, s.state.balances[aID], ShouldResemble(Balance{-1, 2, 3}))
 				})
 			})
 		})
@@ -227,7 +227,7 @@ func TestUpdateBalance(t *testing.T) {
 // deserialize correctly from proto, including default values when they are
 // not defined in proto.
 func TestDefaultProtoTimes(t *testing.T) {
-	Convey("Given a state proto with workers and requests, some with undefined examinedTime or modifiedTime", t, func() {
+	Convey("Given a state proto with workers and requests, some with undefined examinedTime or modifiedTime", t, func(t *T) {
 		t1 := tutils.TimestampProto(time.Unix(100, 0))
 		t2 := tutils.TimestampProto(time.Unix(200, 0))
 		stateProto := &protos.SchedulerState{
@@ -242,12 +242,12 @@ func TestDefaultProtoTimes(t *testing.T) {
 			},
 		}
 
-		Convey("then the deserialized state has correct timestamps.", func() {
+		Convey("then the deserialized state has correct timestamps.", t, func(t *T) {
 			state := newStateFromProto(stateProto)
-			So(state.queuedRequests["r1"].examinedTime, ShouldEqual, time.Unix(0, 0))
-			So(state.queuedRequests["r2"].examinedTime, ShouldEqual, time.Unix(100, 0))
-			So(state.workers["w1"].modifiedTime, ShouldEqual, time.Unix(200, 0))
-			So(state.workers["w2"].modifiedTime, ShouldEqual, time.Unix(100, 0))
+			So(t, state.queuedRequests["r1"].examinedTime, ShouldAlmostEqualTime(time.Unix(0, 0)))
+			So(t, state.queuedRequests["r2"].examinedTime, ShouldAlmostEqualTime(time.Unix(100, 0)))
+			So(t, state.workers["w1"].modifiedTime, ShouldAlmostEqualTime(time.Unix(200, 0)))
+			So(t, state.workers["w2"].modifiedTime, ShouldAlmostEqualTime(time.Unix(100, 0)))
 		})
 	})
 }
@@ -255,74 +255,74 @@ func TestDefaultProtoTimes(t *testing.T) {
 // TestWorkerModifiedTime tests that worker.modifiedTime is updated under the
 // right circumstances (when its labels change, or when it becomes idle).
 func TestWorkerModifiedTime(t *testing.T) {
-	Convey("Given a state with a newly added worker", t, func() {
+	Convey("Given a state with a newly added worker", t, func(t *T) {
 		ctx := context.Background()
 		t0 := time.Unix(100, 0)
 		s := New(t0)
 		s.MarkIdle(ctx, "w1", nil, time.Unix(0, 0), NullEventSink)
-		Convey("the worker starts with modification time equal to scheduler's last update time.", func() {
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t0)
+		Convey("the worker starts with modification time equal to scheduler's last update time.", t, func(t *T) {
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t0))
 		})
 
 		t1 := t0.Add(10 * time.Second)
 		s.UpdateTime(ctx, t1)
-		Convey("when scheduler time is updated, worker modificate time is unchanged.", func() {
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t0)
+		Convey("when scheduler time is updated, worker modificate time is unchanged.", t, func(t *T) {
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t0))
 		})
 
 		s.MarkIdle(ctx, "w1", nil, time.Unix(100, 0), NullEventSink)
-		Convey("when worker is marked idle with same labels as before, modification time is unchanged.", func() {
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t0)
+		Convey("when worker is marked idle with same labels as before, modification time is unchanged", t, func(t *T) {
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t0))
 		})
 
 		s.MarkIdle(ctx, "w1", stringset.NewFromSlice("foo"), time.Unix(0, 0), NullEventSink)
-		Convey("when worker has an ignored update (timestamp before previous update), modification time is unchanged.", func() {
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t0)
+		Convey("when worker has an ignored update (timestamp before previous update), modification time is unchanged", t, func(t *T) {
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t0))
 		})
 
 		s.MarkIdle(ctx, "w1", stringset.NewFromSlice("foo"), time.Unix(200, 0), NullEventSink)
-		Convey("when worker has a forward in time update with label change, modification time becomes the scheduler's last update time.", func() {
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t1)
+		Convey("worker has forward in time update with label change, modification time is scheduler's update time", t, func(t *T) {
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t1))
 		})
 	})
 
-	Convey("Given a state with a running worker", t, func() {
+	Convey("Given a state with a running worker", t, func(t *T) {
 		ctx := context.Background()
 		t0 := time.Unix(100, 0)
 		s := New(t0)
 		s.MarkIdle(ctx, "w1", nil, time.Unix(0, 0), NullEventSink)
 		s.AddRequest(ctx, NewTaskRequest("r1", "", nil, nil, t0), t0, nil, NullEventSink)
 		s.RunOnce(ctx, NullEventSink)
-		So(s.state.workers["w1"].IsIdle(), ShouldBeFalse)
-		So(s.state.workers["w1"].modifiedTime, ShouldEqual, t0)
-		Convey("when the worker becomes idle, it's modification time becomes scheduler's latest update time.", func() {
+		So(t, s.state.workers["w1"].IsIdle(), ShouldBeFalse)
+		So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t0))
+		Convey("when the worker becomes idle, it's modification time becomes scheduler's latest update time.", t, func(t *T) {
 			t1 := t0.Add(10 * time.Second)
 			s.UpdateTime(ctx, t1)
 			s.MarkIdle(ctx, "w1", nil, t1, NullEventSink)
-			So(s.state.workers["w1"].IsIdle(), ShouldBeTrue)
-			So(s.state.workers["w1"].modifiedTime, ShouldEqual, t1)
+			So(t, s.state.workers["w1"].IsIdle(), ShouldBeTrue)
+			So(t, s.state.workers["w1"].modifiedTime, ShouldEqual(t1))
 		})
 	})
 }
 
 // TestExaminedTime tests that request.examineTime is updated correctly.
 func TestExaminedTime(t *testing.T) {
-	Convey("Given a state with a new accountless request", t, func() {
+	Convey("Given a state with a new accountless request", t, func(t *T) {
 		ctx := context.Background()
 		t0 := time.Unix(100, 0)
 		s := New(t0)
 		s.AddRequest(ctx, NewTaskRequest("r1", "", nil, nil, t0), t0, nil, NullEventSink)
-		Convey("it starts with examinedTime = 0.", func() {
-			So(s.state.queuedRequests["r1"].examinedTime, ShouldEqual, time.Unix(0, 0))
+		Convey("it starts with examinedTime = 0.", t, func(t *T) {
+			So(t, s.state.queuedRequests["r1"].examinedTime, ShouldAlmostEqualTime(time.Unix(0, 0)))
 		})
 
 		s.RunOnce(ctx, NullEventSink)
-		Convey("after a scheduler run in which it is not assigned, its examinedTime gets updated to scheduler's time.", func() {
-			So(s.state.queuedRequests["r1"].examinedTime, ShouldEqual, t0)
+		Convey("after a scheduler run in which it is not assigned, its examinedTime gets updated to scheduler's time", t, func(t *T) {
+			So(t, s.state.queuedRequests["r1"].examinedTime, ShouldEqual(t0))
 		})
 	})
 
-	Convey("Given two requests with an account with fanout limit, and with free tasks disabled", t, func() {
+	Convey("Given two requests with an account with fanout limit, and with free tasks disabled", t, func(t *T) {
 		ctx := context.Background()
 		t0 := time.Unix(100, 0).UTC()
 		s := New(t0)
@@ -334,10 +334,10 @@ func TestExaminedTime(t *testing.T) {
 		s.AddRequest(ctx, NewTaskRequest("r2", "a1", nil, nil, t0), t0, nil, NullEventSink)
 
 		s.RunOnce(ctx, NullEventSink)
-		Convey("after a scheduler run in which neither is assigned, their examined times are updated to scheduler's time.", func() {
-			So(s.state.queuedRequests, ShouldHaveLength, 2)
+		Convey("after scheduler run in which neither is assigned, their examined times become scheduler's time", t, func(t *T) {
+			So(t, s.state.queuedRequests, ShouldHaveLength(2))
 			for _, r := range s.state.queuedRequests {
-				So(r.examinedTime, ShouldEqual, t0)
+				So(t, r.examinedTime, ShouldEqual(t0))
 			}
 		})
 	})

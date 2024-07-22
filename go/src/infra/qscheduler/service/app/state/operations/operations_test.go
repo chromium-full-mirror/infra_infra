@@ -17,7 +17,7 @@ package operations
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 )
@@ -33,24 +33,24 @@ func taskWithSliceDimensions(sliceDimensions ...[]string) *swarming.TaskSpec {
 }
 
 func TestGetProvisionableLabels(t *testing.T) {
-	Convey("When computing labels, 0-slice tasks return error.", t, func() {
+	Convey("When computing labels, 0-slice tasks return error.", t, func(t *T) {
 		item := &swarming.NotifyTasksItem{Task: taskWithSliceDimensions()}
 		_, err := computeLabels(item)
-		So(err, ShouldNotBeNil)
+		So(t, err, ShouldNotBeNil)
 
 	})
-	Convey("When computing labels, 1-slice tasks return only base labels.", t, func() {
+	Convey("When computing labels, 1-slice tasks return only base labels.", t, func(t *T) {
 		item := &swarming.NotifyTasksItem{
 			Task: taskWithSliceDimensions([]string{"base1", "base2"}),
 		}
 		labels, err := computeLabels(item)
-		So(err, ShouldBeNil)
-		So(labels.provisionable, ShouldBeEmpty)
-		So(labels.base, ShouldContain, "base1")
-		So(labels.base, ShouldContain, "base2")
-		So(labels.base, ShouldHaveLength, 2)
+		So(t, err, ShouldBeNil)
+		So(t, labels.provisionable, ShouldBeEmpty)
+		So(t, labels.base, ShouldContainString("base1"))
+		So(t, labels.base, ShouldContainString("base2"))
+		So(t, labels.base, ShouldHaveLength(2))
 	})
-	Convey("When computing labels, 2-slice tasks return base and provisionable labels.", t, func() {
+	Convey("When computing labels, 2-slice tasks return base and provisionable labels.", t, func(t *T) {
 		item := &swarming.NotifyTasksItem{
 			Task: taskWithSliceDimensions(
 				[]string{"base1", "base2", "provisionable1", "provisionable2"},
@@ -58,15 +58,15 @@ func TestGetProvisionableLabels(t *testing.T) {
 			),
 		}
 		labels, err := computeLabels(item)
-		So(err, ShouldBeNil)
-		So(labels.base, ShouldContain, "base1")
-		So(labels.base, ShouldContain, "base2")
-		So(labels.base, ShouldHaveLength, 2)
-		So(labels.provisionable, ShouldContain, "provisionable1")
-		So(labels.provisionable, ShouldContain, "provisionable2")
-		So(labels.provisionable, ShouldHaveLength, 2)
+		So(t, err, ShouldBeNil)
+		So(t, labels.base, ShouldContainString("base1"))
+		So(t, labels.base, ShouldContainString("base2"))
+		So(t, labels.base, ShouldHaveLength(2))
+		So(t, labels.provisionable, ShouldContainString("provisionable1"))
+		So(t, labels.provisionable, ShouldContainString("provisionable2"))
+		So(t, labels.provisionable, ShouldHaveLength(2))
 	})
-	Convey("When computing labels, 2-slice tasks with invalid dimensions return error.", t, func() {
+	Convey("When computing labels, 2-slice tasks with invalid dimensions return error.", t, func(t *T) {
 		item := &swarming.NotifyTasksItem{
 			Task: taskWithSliceDimensions(
 				[]string{},
@@ -74,12 +74,12 @@ func TestGetProvisionableLabels(t *testing.T) {
 			),
 		}
 		_, err := computeLabels(item)
-		So(err, ShouldNotBeNil)
+		So(t, err, ShouldNotBeNil)
 	})
-	Convey("When computing labels, 3-slice tasks return error.", t, func() {
+	Convey("When computing labels, 3-slice tasks return error.", t, func(t *T) {
 		item := &swarming.NotifyTasksItem{Task: taskWithSliceDimensions(nil, nil, nil)}
 		_, err := computeLabels(item)
-		So(err, ShouldNotBeNil)
+		So(t, err, ShouldNotBeNil)
 	})
 }
 
@@ -116,15 +116,15 @@ func TestGetAccountId(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		Convey("When a task has "+c.name, t, func() {
-			Convey("then getAccountID returns the correct value / error.", func() {
+		Convey("When a task has "+c.name, t, func(t *T) {
+			Convey("then getAccountID returns the correct value / error.", t, func(t *T) {
 				i := &swarming.NotifyTasksItem{Task: &swarming.TaskSpec{Tags: c.tags}}
 				a, err := GetAccountID(i)
-				So(a, ShouldEqual, c.expectedAccount)
+				So(t, a, ShouldEqual(c.expectedAccount))
 				if c.errorExpected {
-					So(err, ShouldNotBeNil)
+					So(t, err, ShouldNotBeNil)
 				} else {
-					So(err, ShouldBeNil)
+					So(t, err, ShouldBeNil)
 				}
 			})
 		})

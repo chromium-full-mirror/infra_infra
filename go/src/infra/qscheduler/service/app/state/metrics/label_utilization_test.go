@@ -16,7 +16,7 @@ package metrics
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
 )
@@ -24,10 +24,10 @@ import (
 func TestCompute(t *testing.T) {
 	sID := "s1"
 	c := newUtilizationCounter()
-	Convey("Label utilization is correctly computed, and previously known labels are retained.", t, func() {
+	Convey("Label utilization is correctly computed, and previously known labels are retained.", t, func(t *T) {
 		utils := c.Compute(sID, labelDigest{})
-		So(utils, ShouldNotBeNil)
-		So(utils, ShouldBeEmpty)
+		So(t, utils, ShouldNotBeNil)
+		So(t, utils, ShouldBeEmpty)
 
 		utils = c.Compute(sID, labelDigest{
 			IdleWorkerLabels:      []stringset.Set{stringset.NewFromSlice("unused_1", "used_1")},
@@ -35,15 +35,15 @@ func TestCompute(t *testing.T) {
 			WaitingTaskBaseLabels: [][]string{{"used_1"}},
 			RunningTaskBaseLabels: [][]string{{"used_2"}},
 		})
-		So(utils, ShouldResemble, map[string]*labelUtilization{
+		So(t, utils, ShouldResemble(map[string]*labelUtilization{
 			"used_1": {IdleBots: 1, WaitingRequests: 1},
 			"used_2": {RunningBots: 1, RunningRequests: 1},
-		})
+		}))
 
 		utils = c.Compute(sID, labelDigest{})
-		So(utils, ShouldResemble, map[string]*labelUtilization{
+		So(t, utils, ShouldResemble(map[string]*labelUtilization{
 			"used_1": {},
 			"used_2": {},
-		})
+		}))
 	})
 }

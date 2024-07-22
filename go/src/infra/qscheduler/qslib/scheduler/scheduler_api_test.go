@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
 
@@ -35,7 +35,7 @@ var FreeBucket = scheduler.FreeBucket
 // requests with idle workers, if they are available, and that the
 // Unassign call reverses this assignment.
 func TestMatchAndUnassign(t *testing.T) {
-	Convey("Given 2 tasks and 2 idle workers", t, func() {
+	Convey("Given 2 tasks and 2 idle workers", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Now().Add(-10 * time.Hour)
 		t1 := time.Now().Add(-10 * time.Hour)
@@ -53,37 +53,37 @@ func TestMatchAndUnassign(t *testing.T) {
 		s.AddRequest(ctx, scheduler.NewTaskRequest(r2, "a1", stringset.NewFromSlice("label2"), nil, t2), t2, nil, scheduler.NullEventSink)
 		c := scheduler.NewAccountConfig(0, nil, 0, nil, false, "")
 		s.AddAccount(ctx, "a1", c, []float32{2, 0, 0})
-		Convey("when scheduling jobs", func() {
+		Convey("when scheduling jobs", t, func(t *T) {
 			muts := s.RunOnce(ctx, scheduler.NullEventSink)
-			Convey("then both jobs should be matched, with provisionable label used as tie-breaker", func() {
+			Convey("then both jobs should be matched, with provisionable label used as tie-breaker", t, func(t *T) {
 				expects := []*scheduler.Assignment{
 					{Type: scheduler.AssignmentIdleWorker, Priority: 0, RequestID: r1, WorkerID: w2, Time: tm},
 					{Type: scheduler.AssignmentIdleWorker, Priority: 0, RequestID: r2, WorkerID: w1, Time: tm},
 				}
-				So(muts, ShouldResemble, expects)
-				So(s.IsAssigned(r1, w2), ShouldBeTrue)
-				So(s.IsAssigned(r2, w1), ShouldBeTrue)
-				So(s.IsAssigned(r1, w1), ShouldBeFalse)
-				So(s.IsAssigned(r2, w2), ShouldBeFalse)
+				So(t, muts, ShouldResemble(expects))
+				So(t, s.IsAssigned(r1, w2), ShouldBeTrue)
+				So(t, s.IsAssigned(r2, w1), ShouldBeTrue)
+				So(t, s.IsAssigned(r1, w1), ShouldBeFalse)
+				So(t, s.IsAssigned(r2, w2), ShouldBeFalse)
 			})
-			Convey("then scheduling jobs again results in no new assignments.", func() {
+			Convey("then scheduling jobs again results in no new assignments.", t, func(t *T) {
 				muts := s.RunOnce(ctx, scheduler.NullEventSink)
-				So(muts, ShouldBeEmpty)
+				So(t, muts, ShouldBeEmpty)
 			})
-			Convey("when jobs are unassigned", func() {
+			Convey("when jobs are unassigned", t, func(t *T) {
 				err := s.Unassign(ctx, r1, w2, t1, scheduler.NullEventSink)
-				So(err, ShouldBeNil)
+				So(t, err, ShouldBeNil)
 				err = s.Unassign(ctx, r2, w1, t2, scheduler.NullEventSink)
-				So(err, ShouldBeNil)
-				Convey("then they are no longer assigned.", func() {
-					So(s.IsAssigned(r1, w2), ShouldBeFalse)
-					So(s.IsAssigned(r2, w1), ShouldBeFalse)
+				So(t, err, ShouldBeNil)
+				Convey("then they are no longer assigned.", t, func(t *T) {
+					So(t, s.IsAssigned(r1, w2), ShouldBeFalse)
+					So(t, s.IsAssigned(r2, w1), ShouldBeFalse)
 				})
-				Convey("then they can be matched again when scheduling jobs if the task did not expire.", func() {
+				Convey("then they can be matched again when scheduling jobs if the task did not expire.", t, func(t *T) {
 					s.MarkIdle(ctx, w1, stringset.New(0), tm, scheduler.NullEventSink)
 					s.MarkIdle(ctx, w2, stringset.NewFromSlice("label1"), tm, scheduler.NullEventSink)
 					muts := s.RunOnce(ctx, scheduler.NullEventSink)
-					So(muts, ShouldHaveLength, 1)
+					So(t, muts, ShouldHaveLength(1))
 				})
 			})
 		})
@@ -93,23 +93,23 @@ func TestMatchAndUnassign(t *testing.T) {
 // TestMatchAccountless tests that requests without a valid account are matched at the lowest
 // possible priority.
 func TestMatchAccountless(t *testing.T) {
-	Convey("Given a state with an idle worker", t, func() {
+	Convey("Given a state with an idle worker", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(0, 0)
 		s := scheduler.New(tm)
 		wid := scheduler.WorkerID("worker")
 		s.MarkIdle(ctx, wid, nil, tm, scheduler.NullEventSink)
 
-		Convey("and a request with no account", func() {
+		Convey("and a request with no account", t, func(t *T) {
 			rid := scheduler.RequestID("req")
 			s.AddRequest(ctx, scheduler.NewTaskRequest(rid, "", nil, nil, tm), tm, nil, scheduler.NullEventSink)
-			Convey("when scheduling is run", func() {
+			Convey("when scheduling is run", t, func(t *T) {
 				muts := s.RunOnce(ctx, scheduler.NullEventSink)
-				Convey("then the request is matched at lowest priority.", func() {
-					So(muts, ShouldHaveLength, 1)
-					So(muts[0].Priority, ShouldEqual, scheduler.FreeBucket)
-					So(muts[0].RequestID, ShouldEqual, rid)
-					So(muts[0].WorkerID, ShouldEqual, wid)
+				Convey("then the request is matched at lowest priority.", t, func(t *T) {
+					So(t, muts, ShouldHaveLength(1))
+					So(t, muts[0].Priority, ShouldEqual(scheduler.FreeBucket))
+					So(t, muts[0].RequestID, ShouldEqual(rid))
+					So(t, muts[0].WorkerID, ShouldEqual(wid))
 				})
 			})
 		})
@@ -119,7 +119,7 @@ func TestMatchAccountless(t *testing.T) {
 // TestMatchProvisionableLabel tests that scheduler correctly matches provisionable
 // label, even when a worker has more provisionable labels than tasks.
 func TestMatchProvisionableLabel(t *testing.T) {
-	Convey("Given 500 tasks with provisionable label 'a' and 1 task with provisionable label 'b'", t, func() {
+	Convey("Given 500 tasks with provisionable label 'a' and 1 task with provisionable label 'b'", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(0, 0)
 		aid := scheduler.AccountID("account1")
@@ -132,17 +132,17 @@ func TestMatchProvisionableLabel(t *testing.T) {
 		}
 		s.AddRequest(ctx, scheduler.NewTaskRequest(reqB, aid, stringset.NewFromSlice("b"), nil, tm), tm, nil, scheduler.NullEventSink)
 
-		Convey("and an idle worker with labels 'b' and 'c'", func() {
+		Convey("and an idle worker with labels 'b' and 'c'", t, func(t *T) {
 			wid := scheduler.WorkerID("workerID")
 			s.MarkIdle(ctx, wid, stringset.NewFromSlice("b", "c"), tm, scheduler.NullEventSink)
 
-			Convey("when scheduling jobs", func() {
+			Convey("when scheduling jobs", t, func(t *T) {
 				muts := s.RunOnce(ctx, scheduler.NullEventSink)
 
-				Convey("then worker is matched to the task with label 'b'.", func() {
-					So(muts, ShouldHaveLength, 1)
-					So(muts[0].RequestID, ShouldEqual, reqB)
-					So(muts[0].WorkerID, ShouldEqual, wid)
+				Convey("then worker is matched to the task with label 'b'.", t, func(t *T) {
+					So(t, muts, ShouldHaveLength(1))
+					So(t, muts[0].RequestID, ShouldEqual(reqB))
+					So(t, muts[0].WorkerID, ShouldEqual(wid))
 				})
 			})
 		})
@@ -150,7 +150,7 @@ func TestMatchProvisionableLabel(t *testing.T) {
 }
 
 func TestBaseLabelMatch(t *testing.T) {
-	Convey("Given a state with 1 worker, and 1 request that has base labels not satisfied by the worker", t, func() {
+	Convey("Given a state with 1 worker, and 1 request that has base labels not satisfied by the worker", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(0, 0)
 		s := scheduler.New(tm)
@@ -160,10 +160,10 @@ func TestBaseLabelMatch(t *testing.T) {
 		s.AddAccount(ctx, aid, scheduler.NewAccountConfig(0, nil, 0, nil, false, ""), []float32{1})
 		s.MarkIdle(ctx, wid, nil, tm, scheduler.NullEventSink)
 		s.AddRequest(ctx, scheduler.NewTaskRequest(rid, aid, nil, stringset.NewFromSlice("unsatisfied_label"), tm), tm, nil, scheduler.NullEventSink)
-		Convey("when scheduling jobs", func() {
+		Convey("when scheduling jobs", t, func(t *T) {
 			m := s.RunOnce(ctx, scheduler.NullEventSink)
-			Convey("no requests should be assigned to workers.", func() {
-				So(m, ShouldBeEmpty)
+			Convey("no requests should be assigned to workers.", t, func(t *T) {
+				So(t, m, ShouldBeEmpty)
 			})
 		})
 	})
@@ -172,7 +172,7 @@ func TestBaseLabelMatch(t *testing.T) {
 // TestMatchRareLabel tests that the worker-to-request match quality heuristics allow a rare worker to be matched
 // to its corresponding rare request, even amidst other common requests that could use that worker.
 func TestMatchRareLabel(t *testing.T) {
-	Convey("Given a state with 10 interchangeable workers and 1 rare-labeled worker", t, func() {
+	Convey("Given a state with 10 interchangeable workers and 1 rare-labeled worker", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(0, 0)
 		s := scheduler.New(tm)
@@ -184,7 +184,7 @@ func TestMatchRareLabel(t *testing.T) {
 		rareLabel := "RareLabel"
 		var rareWorker scheduler.WorkerID = "RareWorker"
 		s.MarkIdle(ctx, rareWorker, stringset.NewFromSlice(commonLabel, rareLabel), tm, scheduler.NullEventSink)
-		Convey("and 10 interchangeable requests and 1 rare-labeled request", func() {
+		Convey("and 10 interchangeable requests and 1 rare-labeled request", t, func(t *T) {
 			var aid scheduler.AccountID = "AccountID"
 			s.AddAccount(ctx, aid, scheduler.NewAccountConfig(0, nil, 0, nil, false, ""), []float32{1})
 			for i := 0; i < 10; i++ {
@@ -193,11 +193,11 @@ func TestMatchRareLabel(t *testing.T) {
 			}
 			var rareRequest scheduler.RequestID = "RareRequest"
 			s.AddRequest(ctx, scheduler.NewTaskRequest(rareRequest, aid, nil, stringset.NewFromSlice(commonLabel, rareLabel), tm), tm, nil, scheduler.NullEventSink)
-			Convey("when scheduling jobs", func() {
+			Convey("when scheduling jobs", t, func(t *T) {
 				muts := s.RunOnce(ctx, scheduler.NullEventSink)
-				Convey("then all jobs are scheduled to workers, including the rare requests and workers.", func() {
-					So(muts, ShouldHaveLength, 11)
-					So(s.IsAssigned(rareRequest, rareWorker), ShouldBeTrue)
+				Convey("then all jobs are scheduled to workers, including the rare requests and workers.", t, func(t *T) {
+					So(t, muts, ShouldHaveLength(11))
+					So(t, s.IsAssigned(rareRequest, rareWorker), ShouldBeTrue)
 				})
 			})
 		})
@@ -218,21 +218,21 @@ func TestAddRequest(t *testing.T) {
 }
 
 func TestExpireWorker(t *testing.T) {
-	Convey("Given an empty scheduler, with an an idle worker", t, func() {
+	Convey("Given an empty scheduler, with an an idle worker", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(0, 0)
 		s := scheduler.New(tm)
 		s.MarkIdle(ctx, "worker1", nil, tm, scheduler.NullEventSink)
-		So(s.GetWorkers(), ShouldHaveLength, 1)
-		Convey("when time is updated by less than expiry threshold, worker is still idle.", func() {
+		So(t, s.GetWorkers(), ShouldHaveLength(1))
+		Convey("when time is updated by less than expiry threshold, worker is still idle.", t, func(t *T) {
 			t2 := tm.Add(150 * time.Second)
 			s.UpdateTime(ctx, t2)
-			So(s.GetWorkers(), ShouldHaveLength, 1)
+			So(t, s.GetWorkers(), ShouldHaveLength(1))
 		})
-		Convey("when time is updated by more than expiry threshold, worker is removed.", func() {
+		Convey("when time is updated by more than expiry threshold, worker is removed.", t, func(t *T) {
 			t2 := tm.Add(301 * time.Second)
 			s.UpdateTime(ctx, t2)
-			So(s.GetWorkers(), ShouldBeEmpty)
+			So(t, s.GetWorkers(), ShouldBeEmpty)
 		})
 	})
 }

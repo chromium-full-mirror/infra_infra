@@ -22,7 +22,8 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
+
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	bqapi "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 
@@ -34,36 +35,36 @@ import (
 )
 
 func TestRamBufferedBQInserter(t *testing.T) {
-	Convey("With mock context", t, func() {
+	Convey("With mock context", t, func(t *T) {
 		ctx := context.Background()
 		ctx = logging.SetLevel(gologger.StdConfig.Use(ctx), logging.Debug)
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
 		bi, err := NewRAMBufferedBQInserter(ctx, "project", "dataset", "table")
-		So(err, ShouldBeNil)
+		So(t, err, ShouldBeNil)
 
-		Convey("drain unused works", func() {
+		Convey("drain unused works", t, func(t *T) {
 			bi.insertRPCMock = func(_ context.Context, req *bqapi.TableDataInsertAllRequest) (*bqapi.TableDataInsertAllResponse, error) {
 				panic("must not be called")
 			}
 			bi.CloseAndDrain(ctx)
 		})
 
-		Convey("sends everything", func() {
+		Convey("sends everything", t, func(t *T) {
 			sent := int32(0)
 			bi.insertRPCMock = func(_ context.Context, req *bqapi.TableDataInsertAllRequest) (*bqapi.TableDataInsertAllResponse, error) {
 				atomic.AddInt32(&sent, int32(len(req.Rows)))
 				return &bqapi.TableDataInsertAllResponse{}, nil
 			}
 			for i := 1; i <= 10; i++ {
-				So(bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("insertId:%d", i))), ShouldBeNil)
+				So(t, bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("insertId:%d", i))), ShouldBeNil)
 			}
 			bi.CloseAndDrain(ctx)
-			So(sent, ShouldEqual, 10)
+			So(t, sent, ShouldEqualInt64(10))
 		})
 
-		Convey("fills missing insertIDs", func() {
+		Convey("fills missing insertIDs", t, func(t *T) {
 			var lock sync.Mutex
 			insertIDs := stringset.Set{}
 			bi.insertRPCMock = func(_ context.Context, req *bqapi.TableDataInsertAllRequest) (*bqapi.TableDataInsertAllResponse, error) {
@@ -79,14 +80,14 @@ func TestRamBufferedBQInserter(t *testing.T) {
 				entries[2*i] = mkTestEntry(2*i, fmt.Sprintf("given:%d", 2*i))
 				entries[2*i+1] = mkTestEntry(2*i + 1)
 			}
-			So(bi.Insert(ctx, entries...), ShouldBeNil)
+			So(t, bi.Insert(ctx, entries...), ShouldBeNil)
 			bi.CloseAndDrain(ctx)
-			So(insertIDs.Has(""), ShouldBeFalse)
-			So(insertIDs.HasAll("given:0", "given:2", "given:4", "given:6", "given:8"), ShouldBeTrue)
-			So(insertIDs.Len(), ShouldEqual, 10)
+			So(t, insertIDs.Has(""), ShouldBeFalse)
+			So(t, insertIDs.HasAll("given:0", "given:2", "given:4", "given:6", "given:8"), ShouldBeTrue)
+			So(t, insertIDs.Len(), ShouldEqual(10))
 		})
 
-		Convey("retries transient errors", func() {
+		Convey("retries transient errors", t, func(t *T) {
 			// Simulate transient failures.
 			var lock sync.Mutex
 			sent := 0
@@ -117,16 +118,16 @@ func TestRamBufferedBQInserter(t *testing.T) {
 			}
 
 			for i := 1; i <= 10; i++ {
-				So(bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("insertId:%d", i))), ShouldBeNil)
+				So(t, bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("insertId:%d", i))), ShouldBeNil)
 			}
 			bi.CloseAndDrain(ctx)
-			So(sent, ShouldEqual, 10)
+			So(t, sent, ShouldEqual(10))
 			for _, v := range tries {
-				So(v, ShouldEqual, 3) // Each batch must be tried till success.
+				So(t, v, ShouldEqual(3)) // Each batch must be tried till success.
 			}
 		})
 
-		Convey("load-shedding: drop ~oldest batch when overloaded", func() {
+		Convey("load-shedding: drop ~oldest batch when overloaded", t, func(t *T) {
 			slow := make(chan struct{})
 
 			var lock sync.Mutex
@@ -144,7 +145,7 @@ func TestRamBufferedBQInserter(t *testing.T) {
 			// Must be > (batches * maxLeases + maxLiveItems). See also assertion at the end.
 			n := 2100
 			for i := 1; i <= n; i++ {
-				So(bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("iid:%09d", i))), ShouldBeNil)
+				So(t, bi.Insert(ctx, mkTestEntry(i, fmt.Sprintf("iid:%09d", i))), ShouldBeNil)
 			}
 			// At this point, sending of some batches could have started,
 			// those batches will be unblocked below and succeed.
@@ -154,11 +155,11 @@ func TestRamBufferedBQInserter(t *testing.T) {
 			// Depending on how batches were cut and max number of senders,
 			// we can be sure only about the very first item being sent and the very
 			// last.
-			So(sent.Has(fmt.Sprintf("iid:%09d", 1)), ShouldBeTrue)
-			So(sent.Has(fmt.Sprintf("iid:%09d", n)), ShouldBeTrue)
+			So(t, sent.Has(fmt.Sprintf("iid:%09d", 1)), ShouldBeTrue)
+			So(t, sent.Has(fmt.Sprintf("iid:%09d", n)), ShouldBeTrue)
 			// Ensures test is actually useful even after parameters in prod code are tweaked
 			// by forcing codepath that drops items.
-			So(sent.Len(), ShouldBeLessThan, n)
+			So(t, sent.Len(), ShouldBeLessThan(n))
 		})
 	})
 }

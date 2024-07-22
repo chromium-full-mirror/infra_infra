@@ -18,9 +18,8 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
 	"infra/qscheduler/qslib/tutils"
@@ -32,9 +31,9 @@ import (
 func TestAssignTasks(t *testing.T) {
 	sch := frontend.NewBatchedServer()
 
-	Convey("Given a batched qscheduler server", t, func() {
+	Convey("Given a batched qscheduler server", t, func(t *T) {
 
-		Convey("in a testing context with a scheduler pool", func() {
+		Convey("in a testing context with a scheduler pool", t, func(t *T) {
 			ctx := gaetesting.TestingContext()
 			ctx = eventlog.Use(ctx, &eventlog.NullBQInserter{})
 
@@ -44,9 +43,9 @@ func TestAssignTasks(t *testing.T) {
 			_, err := admin.CreateSchedulerPool(ctx, &qscheduler.CreateSchedulerPoolRequest{
 				PoolId: poolID,
 			})
-			So(err, ShouldBeNil)
+			So(t, err, ShouldBeNil)
 
-			Convey("with an idle task that has been notified", func() {
+			Convey("with an idle task that has been notified", t, func(t *T) {
 				taskID := "Task1"
 				req := swarming.NotifyTasksRequest{
 					SchedulerId: poolID,
@@ -65,13 +64,13 @@ func TestAssignTasks(t *testing.T) {
 					},
 				}
 				_, err := sch.NotifyTasks(ctx, &req)
-				So(err, ShouldBeNil)
+				So(t, err, ShouldBeNil)
 
 				resp, err := view.InspectPool(ctx, &qscheduler.InspectPoolRequest{PoolId: poolID})
-				So(err, ShouldBeNil)
-				So(resp.NumWaitingTasks, ShouldEqual, 1)
+				So(t, err, ShouldBeNil)
+				So(t, resp.NumWaitingTasks, ShouldEqual(int32(1)))
 
-				Convey("when AssignTasks is called with an idle bot", func() {
+				Convey("when AssignTasks is called with an idle bot", t, func(t *T) {
 					botID := "Bot1"
 					req := swarming.AssignTasksRequest{
 						SchedulerId: poolID,
@@ -81,11 +80,11 @@ func TestAssignTasks(t *testing.T) {
 						},
 					}
 					resp, err := sch.AssignTasks(ctx, &req)
-					Convey("then the task is assigned to the bot.", func() {
-						So(err, ShouldBeNil)
-						So(resp.Assignments, ShouldHaveLength, 1)
-						So(resp.Assignments[0].BotId, ShouldEqual, botID)
-						So(resp.Assignments[0].TaskId, ShouldEqual, taskID)
+					Convey("then the task is assigned to the bot.", t, func(t *T) {
+						So(t, err, ShouldBeNil)
+						So(t, resp.Assignments, ShouldHaveLength(1))
+						So(t, resp.Assignments[0].BotId, ShouldEqual(botID))
+						So(t, resp.Assignments[0].TaskId, ShouldEqual(taskID))
 					})
 				})
 			})

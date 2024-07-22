@@ -22,7 +22,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	. "github.com/smartystreets/goconvey/convey"
+
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -35,7 +36,7 @@ import (
 )
 
 func TestBatcherCancellations(t *testing.T) {
-	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func() {
+	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func(t *T) {
 		ctx := gaetesting.TestingContext()
 		ctx, _ = testclock.UseTime(ctx, time.Now())
 		ctx = eventlog.Use(ctx, &eventlog.NullBQInserter{})
@@ -47,7 +48,7 @@ func TestBatcherCancellations(t *testing.T) {
 		batcher.Start(store)
 		defer batcher.Close()
 
-		Convey("with a bunch of requests in a batch", func() {
+		Convey("with a bunch of requests in a batch", t, func(t *T) {
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
 			nRequests := 10
@@ -67,11 +68,11 @@ func TestBatcherCancellations(t *testing.T) {
 			}()
 			batcher.TBatchWait(nRequests)
 
-			Convey("when the context is cancelled, the whole batch unwinds.", func() {
+			Convey("when the context is cancelled, the whole batch unwinds.", t, func(t *T) {
 				cancel()
 				wg.Wait()
 				for _, err := range errs {
-					So(err, ShouldEqual, context.Canceled)
+					So(t, err, ShouldEqual(context.Canceled))
 				}
 			})
 		})
@@ -79,7 +80,7 @@ func TestBatcherCancellations(t *testing.T) {
 }
 
 func TestBatcherBehavior(t *testing.T) {
-	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func() {
+	Convey("Given a testing context with a scheduler pool, and a batcher for that pool", t, func(t *T) {
 		ctx := gaetesting.TestingContext()
 		ctx, _ = testclock.UseTime(ctx, time.Now())
 		ctx = eventlog.Use(ctx, &eventlog.NullBQInserter{})
@@ -91,7 +92,7 @@ func TestBatcherBehavior(t *testing.T) {
 		batcher.Start(store)
 		defer batcher.Close()
 
-		Convey("a batch of requests can run, with notifications coming before assignments.", func() {
+		Convey("a batch of requests can run, with notifications coming before assignments.", t, func(t *T) {
 			nTasks := 5
 			labels := make([]string, nTasks)
 			// Give each bot-task pair a unique dimension.
@@ -156,8 +157,8 @@ func TestBatcherBehavior(t *testing.T) {
 			wg.Wait()
 			// All tasks should be assigned to their corresponding idle bot.
 			for _, a := range assignements {
-				So(a.Assignments, ShouldHaveLength, 1)
-				So(a.Assignments[0].BotId, ShouldEqual, a.Assignments[0].TaskId)
+				So(t, a.Assignments, ShouldHaveLength(1))
+				So(t, a.Assignments[0].BotId, ShouldEqual(a.Assignments[0].TaskId))
 			}
 		})
 	})

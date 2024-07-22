@@ -20,13 +20,14 @@ import (
 	"time"
 
 	"github.com/kylelemons/godebug/pretty"
-	. "github.com/smartystreets/goconvey/convey"
+
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
 )
 
 func TestClone(t *testing.T) {
-	Convey("Given a state with some balances, accounts, and requests", t, func() {
+	Convey("Given a state with some balances, accounts, and requests", t, func(t *T) {
 		ctx := context.Background()
 		tm := time.Unix(100, 0).UTC()
 		s := New(tm)
@@ -36,7 +37,7 @@ func TestClone(t *testing.T) {
 		s.MarkIdle(ctx, "worker 1", stringset.NewFromSlice("base 1", "base 2"), tm, NullEventSink)
 		s.MarkIdle(ctx, "worker 2", stringset.NewFromSlice("base foo", "base bar"), tm, NullEventSink)
 		s.RunOnce(ctx, NullEventSink)
-		Convey("when state is Cloned via proto roundtrip, it should resemble itself.", func() {
+		Convey("when state is Cloned via proto roundtrip, it should resemble itself.", t, func(t *T) {
 			sClone := s.state.Clone()
 
 			// Null out memoization fields.
@@ -52,7 +53,7 @@ func TestClone(t *testing.T) {
 			}
 
 			diff := pretty.Compare(s.state, sClone)
-			So(diff, ShouldBeBlank)
+			So(t, diff, ShouldBeBlank)
 		})
 	})
 }
