@@ -200,7 +200,7 @@ func watchDMLease(ctx context.Context, lg logger.Logger, state *build.State) err
 	if !ok {
 		return nil
 	}
-	leaseID := leaseIDStructVal.String()
+	leaseID := leaseIDStructVal.GetStringValue()
 
 	// Initialize the DM client with the device's label-pool dimension.
 	pool, ok := getPool(state)
