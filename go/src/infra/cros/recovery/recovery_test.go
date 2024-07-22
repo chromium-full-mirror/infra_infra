@@ -768,6 +768,9 @@ func TestCollectResourcesForPlan(t *testing.T) {
 			Dolos: &tlw.Dolos{
 				Hostname: "dolos",
 			},
+			AmtManager: &tlw.AMTManager{
+				Hostname: "amt",
+			},
 		},
 		Android: &tlw.Android{
 			AssociatedHostname: "android-name",
@@ -788,6 +791,7 @@ func TestCollectResourcesForPlan(t *testing.T) {
 		{config.PlanWifiRouter, []string{"wifi-router1", "wifi-router2", "wifi-router3"}},
 		{config.PlanHMR, []string{"hmr"}},
 		{config.PlanDolos, []string{"dolos"}},
+		{config.PlanAMT, []string{"amt"}},
 		{config.PlanClosing, []string{"dut-name"}},
 		{"cros_bla", []string{"dut-name"}},
 		{"servo_bla", []string{"servo-host"}},

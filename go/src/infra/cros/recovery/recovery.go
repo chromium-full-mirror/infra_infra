@@ -591,6 +591,10 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 		if dolos := dut.GetChromeos().GetDolos(); dolos.GetHostname() != "" {
 			return []string{dolos.GetHostname()}
 		}
+	case matchPlanName(planName, config.PlanAMT):
+		if amt := dut.GetChromeos().GetAmtManager(); amt.GetHostname() != "" {
+			return []string{amt.GetHostname()}
+		}
 	}
 	return nil
 }

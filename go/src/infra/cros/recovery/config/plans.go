@@ -20,6 +20,7 @@ const (
 	PlanWifiRouter      = "wifi_router"
 	PlanHMR             = "human_motion_robot"
 	PlanDolos           = "dolos"
+	PlanAMT             = "amt_manager"
 	// That is final plan which will run always if present in configuration.
 	// The goal is execution final step to clean up stages if something left
 	// over in the devices.
