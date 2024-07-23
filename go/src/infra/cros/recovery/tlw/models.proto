@@ -94,6 +94,15 @@ message CallTouchHostdResponse {
   bool fault = 2;
 }
 
+// RPMType is the RPM model/protocol attached to the device
+enum RPMType {
+  UNKNOWN = 0;
+  // Sentry Switched CDU
+  SENTRY = 1;
+  // IPPower 9850
+  IP9850 = 2;
+}
+
 // RunRPMActionRequest represents data to perform action on RPM outlet.
 message RunRPMActionRequest {
   // Hostname of the DUT.
@@ -114,6 +123,8 @@ message RunRPMActionRequest {
   }
   // Expected state to switch on.
   Action action = 4;
+  // RPM type to operate on
+  RPMType rpm_type = 5;
 }
 
 // RPMOutlet is remote power management outlet allows perform an action to do
@@ -137,6 +148,8 @@ message RPMOutlet {
   }
   // State of the component.
   State state = 3;
+  // RPM type to operate on
+  RPMType type = 4;
 }
 
 // Router devices
