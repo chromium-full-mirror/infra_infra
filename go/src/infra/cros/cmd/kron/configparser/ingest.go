@@ -41,6 +41,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		newBuildList:          []*suschpb.SchedulerConfig{},
 		multiDUTList:          []*suschpb.SchedulerConfig{},
 		newBuild3dList:        ConfigList{},
+		newBuild3dMap:         map[*suschpb.SchedulerConfig]map[BuildTarget]bool{},
 		newBuildMap:           map[BuildTarget]ConfigList{},
 		multiDUTMap:           map[BuildTarget]ConfigList{},
 		configTargets:         map[string]TargetOptions{},
@@ -97,7 +98,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 				return nil, err
 			}
 		case suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD_3D:
-			configDS.addConfigToNewBuild3dList(config)
+			configDS.addConfigToNewBuild3dMap(config, targetOptions)
 		case suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT:
 			configDS.addConfigToMultiDUTMap(config, multiDUTTargets)
 		default:

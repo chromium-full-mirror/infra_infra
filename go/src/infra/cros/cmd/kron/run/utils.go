@@ -354,11 +354,12 @@ func generateGenericBBProperties(requests []*ctpEvent) (*structpb.Struct, error)
 }
 
 // buildCTPRequestsFor3dConfigs creates list of ctp requests for each config per branch.
-func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList) (map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, error) {
+func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList, newBuild3dMap map[*suschpb.SchedulerConfig]map[configparser.BuildTarget]bool) (map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, error) {
 	ctpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
 
 	// processing each config
 	for _, config := range all3dConfigs {
+		buildTargetsMap := newBuild3dMap[config]
 		// processing for each release orch. If the milestone for release orch is targeted branch for config, then ctpEvents is created else skipped
 		for _, buildPackage3d := range buildPackagesMap {
 			// skip if no builds
@@ -375,6 +376,11 @@ func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, al
 				allCtpEvents := []*ctpEvent{}
 				// create ctpRequest for each build in release orchestrator
 				for _, kronBuild := range buildPackage3d.Builds {
+					// // skip if buildTarget is not targeted
+					if _, ok := buildTargetsMap[configparser.BuildTarget(kronBuild.BuildTarget)]; !ok {
+						common.Stdout.Printf("3dConfig:%s, skipping build target:%s\n", config.Name, kronBuild.BuildTarget)
+						continue
+					}
 					ctpRequests, err := buildPerModelConfigs(nil, config, kronBuild, suschpb.Branch_name[int32(buildPackage3d.Branch)])
 					if err != nil {
 						return nil, err

@@ -104,6 +104,9 @@ type SuiteSchedulerConfigs struct {
 	// Array of all NEW_BUILD 3d configs. Allows quick access to all NEW_BUILD 3d configurations.
 	newBuild3dList ConfigList
 
+	// newBuild3dMap stores a mapping of all build targets for a given 3d config.
+	newBuild3dMap map[*suschpb.SchedulerConfig]map[BuildTarget]bool
+
 	// newBuildMap stores a mapping of build target to relevant NEW_BUILD
 	// configs. Allows for retrieval of configs when searching by build target.
 	newBuildMap map[BuildTarget]ConfigList
@@ -268,12 +271,24 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.Schedu
 	return nil
 }
 
-// addConfigToNewBuild3dList takes a 3d configuration and inserts it into the 3d config list.
-func (s *SuiteSchedulerConfigs) addConfigToNewBuild3dList(config *suschpb.SchedulerConfig) {
+// addConfigToNewBuild3dMap takes a 3d configuration and inserts it into the 3d config map.
+func (s *SuiteSchedulerConfigs) addConfigToNewBuild3dMap(config *suschpb.SchedulerConfig, targetOptions TargetOptions) {
 	s.newBuild3dList = append(s.newBuild3dList, config)
 	// Add to the array tracking all SuSch configs.
 	s.configList = append(s.configList, config)
 
 	// Add to the direct access map.
 	s.configMap[TestPlanName(config.Name)] = config
+
+	// Fetch all build targets for the config
+	buildTargets := GetBuildTargetsForAllTargets(targetOptions)
+
+	// Add all buildtargets as a map to the newBuilds3d map
+	targetOptionsMap := make(map[BuildTarget]bool)
+
+	for _, target := range buildTargets {
+		targetOptionsMap[target] = true
+	}
+
+	s.newBuild3dMap[config] = targetOptionsMap
 }

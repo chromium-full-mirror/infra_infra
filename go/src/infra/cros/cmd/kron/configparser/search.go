@@ -81,6 +81,11 @@ func (s *SuiteSchedulerConfigs) FetchAllNewBuild3dConfigs() ConfigList {
 	return s.newBuild3dList
 }
 
+// FetchNewBuild3dMap returns newBuild3dMap.
+func (s *SuiteSchedulerConfigs) FetchNewBuild3dMap() map[*suschpb.SchedulerConfig]map[BuildTarget]bool {
+	return s.newBuild3dMap
+}
+
 // FetchNewBuildConfigsByBuildTarget returns all NEW_BUILD configs that are
 // to be triggered by a new image of the given build target.
 func (s *SuiteSchedulerConfigs) FetchNewBuildConfigsByBuildTarget(target BuildTarget) ConfigList {
