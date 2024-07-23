@@ -133,15 +133,16 @@ func (c *updateCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.UpdateCostIndicator(ctx, &fleetcostAPI.UpdateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Name:        c.name,
-			Type:        c.typ,
-			Board:       c.board,
-			Model:       c.model,
-			Cost:        c.cost,
-			CostCadence: c.costCadence,
-			BurnoutRate: c.burnoutRate,
-			Location:    c.location,
-			Description: c.description,
+			Name:                c.name,
+			Type:                c.typ,
+			Board:               c.board,
+			Model:               c.model,
+			Cost:                c.cost,
+			CostCadence:         c.costCadence,
+			BurnoutRate:         c.burnoutRate,
+			Location:            c.location,
+			Description:         c.description,
+			AmortizationInYears: c.amortizationInYears,
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: c.getFieldMaskPaths(),
