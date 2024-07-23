@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -30,7 +31,7 @@ import (
 func TestCreateVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("CreateVM", t, func() {
+	ftt.Run("CreateVM", t, func(t *ftt.Test) {
 		ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AcsLabAdminRealm)
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "update-machine",
@@ -44,32 +45,32 @@ func TestCreateVM(t *testing.T) {
 			Zone:     ufspb.Zone_ZONE_CHROMEOS3.String(),
 			Machines: []string{"update-machine"},
 		})
-		Convey("Create new VM", func() {
+		t.Run("Create new VM", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-create-1",
 				MachineLseId: "create-host",
 			}
 			resp, err := CreateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
-			So(resp.GetMachineLseId(), ShouldEqual, "create-host")
-			So(resp.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS3.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_REGISTERED))
+			assert.Loosely(t, resp.GetMachineLseId(), should.Equal("create-host"))
+			assert.Loosely(t, resp.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS3.String()))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-create-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "vm")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-create-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_REGISTERED.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
 		})
 
-		Convey("Create new VM with specifying vlan", func() {
+		t.Run("Create new VM with specifying vlan", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 
 			vm1 := &ufspb.VM{
@@ -79,52 +80,52 @@ func TestCreateVM(t *testing.T) {
 			resp, err := CreateVM(ctx, vm1, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_DEPLOYING)
-			So(resp.GetMachineLseId(), ShouldEqual, "create-host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_DEPLOYING))
+			assert.Loosely(t, resp.GetMachineLseId(), should.Equal("create-host"))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "vm-create-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": dhcp.GetIp()})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeTrue)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-create-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "vm")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-create-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_DEPLOYING.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-create-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, dhcp.GetIp())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(dhcp.GetIp()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", fmt.Sprintf("ips/%s", ip[0].GetId()))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[0].GetOldValue(), ShouldEqual, "false")
-			So(changes[0].GetNewValue(), ShouldEqual, "true")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("false"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("true"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-create-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-create-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-create-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 
-		Convey("Create new VM with specifying ip", func() {
+		t.Run("Create new VM with specifying ip", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 
 			vm1 := &ufspb.VM{
@@ -134,50 +135,50 @@ func TestCreateVM(t *testing.T) {
 			resp, err := CreateVM(ctx, vm1, &ufsAPI.NetworkOption{
 				Ip: "192.168.40.19",
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_DEPLOYING)
-			So(resp.GetMachineLseId(), ShouldEqual, "create-host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_DEPLOYING))
+			assert.Loosely(t, resp.GetMachineLseId(), should.Equal("create-host"))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "vm-create-3")
-			So(err, ShouldBeNil)
-			So(dhcp.GetIp(), ShouldEqual, "192.168.40.19")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dhcp.GetIp(), should.Equal("192.168.40.19"))
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.19"})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeTrue)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-create-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "vm")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-create-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_DEPLOYING.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-create-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, "192.168.40.19")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("192.168.40.19"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", fmt.Sprintf("ips/%s", ip[0].GetId()))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[0].GetOldValue(), ShouldEqual, "false")
-			So(changes[0].GetNewValue(), ShouldEqual, "true")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("false"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("true"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-create-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-create-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-create-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 	})
 }
@@ -185,7 +186,7 @@ func TestCreateVM(t *testing.T) {
 func TestUpdateVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateVM", t, func() {
+	ftt.Run("UpdateVM", t, func(t *ftt.Test) {
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "update-machine",
 		})
@@ -194,22 +195,22 @@ func TestUpdateVM(t *testing.T) {
 			Zone:     "fake_zone",
 			Machines: []string{"update-machine"},
 		})
-		Convey("Update non-existing VM", func() {
+		t.Run("Update non-existing VM", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-update-1",
 				MachineLseId: "create-host",
 			}
 			resp, err := UpdateVM(ctx, vm1, nil)
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-update-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update VM - happy path with vlan", func() {
+		t.Run("Update VM - happy path with vlan", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 
 			vm1 := &ufspb.VM{
@@ -217,159 +218,159 @@ func TestUpdateVM(t *testing.T) {
 				MachineLseId: "update-host",
 			}
 			_, err := CreateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := UpdateVMHost(ctx, vm1.Name, &ufsAPI.NetworkOption{
 				Vlan: "vlan-1",
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_DEPLOYING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_DEPLOYING))
 			s, err := state.GetStateRecord(ctx, "vms/vm-update-2")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYING))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "vm-update-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": dhcp.GetIp()})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ips, should.HaveLength(1))
+			assert.Loosely(t, ips[0].GetOccupied(), should.BeTrue)
 
 			// Come from CreateVM+UpdateVMHost
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-update-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// VM created & vlan, ip changes
-			So(changes, ShouldHaveLength, 4)
-			So(changes[0].GetEventLabel(), ShouldEqual, "vm")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[1].GetEventLabel(), ShouldEqual, "vm.vlan")
-			So(changes[1].GetOldValue(), ShouldEqual, "")
-			So(changes[1].GetNewValue(), ShouldEqual, "vlan-1")
-			So(changes[2].GetEventLabel(), ShouldEqual, "vm.ip")
-			So(changes[2].GetOldValue(), ShouldEqual, "")
-			So(changes[2].GetNewValue(), ShouldEqual, "192.168.40.11")
-			So(changes[3].GetEventLabel(), ShouldEqual, "vm.resource_state")
-			So(changes[3].GetOldValue(), ShouldEqual, "STATE_REGISTERED")
-			So(changes[3].GetNewValue(), ShouldEqual, "STATE_DEPLOYING")
+			assert.Loosely(t, changes, should.HaveLength(4))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("vm.vlan"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("vlan-1"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("vm.ip"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("192.168.40.11"))
+			assert.Loosely(t, changes[3].GetEventLabel(), should.Equal("vm.resource_state"))
+			assert.Loosely(t, changes[3].GetOldValue(), should.Equal("STATE_REGISTERED"))
+			assert.Loosely(t, changes[3].GetNewValue(), should.Equal("STATE_DEPLOYING"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-update-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_REGISTERED.String())
-			So(changes[1].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[1].GetOldValue(), ShouldEqual, ufspb.State_STATE_REGISTERED.String())
-			So(changes[1].GetNewValue(), ShouldEqual, ufspb.State_STATE_DEPLOYING.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
 			// Come from UpdateVM
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-update-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, dhcp.GetIp())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(dhcp.GetIp()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", fmt.Sprintf("ips/%s", ips[0].GetId()))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[0].GetOldValue(), ShouldEqual, "false")
-			So(changes[0].GetNewValue(), ShouldEqual, "true")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("false"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("true"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-update-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 come from CreateVM
-			So(msgs, ShouldHaveLength, 2)
+			assert.Loosely(t, msgs, should.HaveLength(2))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 
-		Convey("Update VM - happy path with ip specification & deletion", func() {
+		t.Run("Update VM - happy path with ip specification & deletion", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 			vm1 := &ufspb.VM{
 				Name:         "vm-update-3",
 				MachineLseId: "update-host",
 			}
 			_, err := CreateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = UpdateVMHost(ctx, vm1.Name, &ufsAPI.NetworkOption{
 				Ip: "192.168.40.19",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteVMHost(ctx, vm1.Name)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.GetDHCPConfig(ctx, "vm-update-3")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.19"})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ips, should.HaveLength(1))
+			assert.Loosely(t, ips[0].GetOccupied(), should.BeFalse)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-update-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 7)
-			So(changes[0].GetEventLabel(), ShouldEqual, "vm")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(7))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("vm"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			// vlan & ip info are changed
-			So(changes[1].GetEventLabel(), ShouldEqual, "vm.vlan")
-			So(changes[1].GetOldValue(), ShouldEqual, "")
-			So(changes[1].GetNewValue(), ShouldEqual, "vlan-1")
-			So(changes[2].GetEventLabel(), ShouldEqual, "vm.ip")
-			So(changes[2].GetOldValue(), ShouldEqual, "")
-			So(changes[2].GetNewValue(), ShouldEqual, "192.168.40.19")
-			So(changes[3].GetEventLabel(), ShouldEqual, "vm.resource_state")
-			So(changes[3].GetOldValue(), ShouldEqual, "STATE_REGISTERED")
-			So(changes[3].GetNewValue(), ShouldEqual, "STATE_DEPLOYING")
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("vm.vlan"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("vlan-1"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("vm.ip"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("192.168.40.19"))
+			assert.Loosely(t, changes[3].GetEventLabel(), should.Equal("vm.resource_state"))
+			assert.Loosely(t, changes[3].GetOldValue(), should.Equal("STATE_REGISTERED"))
+			assert.Loosely(t, changes[3].GetNewValue(), should.Equal("STATE_DEPLOYING"))
 			// From deleting vm's ip
-			So(changes[4].GetEventLabel(), ShouldEqual, "vm.vlan")
-			So(changes[4].GetOldValue(), ShouldEqual, "vlan-1")
-			So(changes[4].GetNewValue(), ShouldEqual, "")
-			So(changes[5].GetEventLabel(), ShouldEqual, "vm.ip")
-			So(changes[5].GetOldValue(), ShouldEqual, "192.168.40.19")
-			So(changes[5].GetNewValue(), ShouldEqual, "")
-			So(changes[6].GetEventLabel(), ShouldEqual, "vm.resource_state")
-			So(changes[6].GetOldValue(), ShouldEqual, "STATE_DEPLOYING")
-			So(changes[6].GetNewValue(), ShouldEqual, "STATE_REGISTERED")
+			assert.Loosely(t, changes[4].GetEventLabel(), should.Equal("vm.vlan"))
+			assert.Loosely(t, changes[4].GetOldValue(), should.Equal("vlan-1"))
+			assert.Loosely(t, changes[4].GetNewValue(), should.BeEmpty)
+			assert.Loosely(t, changes[5].GetEventLabel(), should.Equal("vm.ip"))
+			assert.Loosely(t, changes[5].GetOldValue(), should.Equal("192.168.40.19"))
+			assert.Loosely(t, changes[5].GetNewValue(), should.BeEmpty)
+			assert.Loosely(t, changes[6].GetEventLabel(), should.Equal("vm.resource_state"))
+			assert.Loosely(t, changes[6].GetOldValue(), should.Equal("STATE_DEPLOYING"))
+			assert.Loosely(t, changes[6].GetNewValue(), should.Equal("STATE_REGISTERED"))
 			// log dhcp changes
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-update-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, "192.168.40.19")
-			So(changes[1].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[1].GetOldValue(), ShouldEqual, "192.168.40.19")
-			So(changes[1].GetNewValue(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("192.168.40.19"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("192.168.40.19"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.BeEmpty)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", fmt.Sprintf("ips/%s", ips[0].GetId()))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[0].GetOldValue(), ShouldEqual, "false")
-			So(changes[0].GetNewValue(), ShouldEqual, "true")
-			So(changes[1].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[1].GetOldValue(), ShouldEqual, "true")
-			So(changes[1].GetNewValue(), ShouldEqual, "false")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("false"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("true"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("true"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("false"))
 			// snapshots
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-update-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 UpdateVMHost, 1 DeleteVMHost
-			So(msgs, ShouldHaveLength, 3)
+			assert.Loosely(t, msgs, should.HaveLength(3))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 UpdateVMHost, 1 DeleteVMHost
-			So(msgs, ShouldHaveLength, 3)
+			assert.Loosely(t, msgs, should.HaveLength(3))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 2 host update
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[1].Delete, ShouldBeTrue)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
 		})
 
-		Convey("Update VM - happy path with state updating", func() {
+		t.Run("Update VM - happy path with state updating", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 
 			vm1 := &ufspb.VM{
@@ -377,45 +378,45 @@ func TestUpdateVM(t *testing.T) {
 				MachineLseId: "update-host",
 			}
 			_, err := CreateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			vm1.ResourceState = ufspb.State_STATE_NEEDS_REPAIR
 			resp, err := UpdateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
-			So(resp.GetMachineLseId(), ShouldEqual, "update-host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR))
+			assert.Loosely(t, resp.GetMachineLseId(), should.Equal("update-host"))
 			s, err := state.GetStateRecord(ctx, "vms/vm-update-4")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR))
 
 			// Come from CreateVM
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-update-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_REGISTERED.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
 			// Come from UpdateVM
-			So(changes[1].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[1].GetOldValue(), ShouldEqual, ufspb.State_STATE_REGISTERED.String())
-			So(changes[1].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR.String()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-update-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			// snapshots
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-update-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 update
-			So(msgs, ShouldHaveLength, 2)
+			assert.Loosely(t, msgs, should.HaveLength(2))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 update
-			So(msgs, ShouldHaveLength, 2)
+			assert.Loosely(t, msgs, should.HaveLength(2))
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-4")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Partial Update vm", func() {
+		t.Run("Partial Update vm", func(t *ftt.Test) {
 			vm := &ufspb.VM{
 				Name: "vm-7",
 				OsVersion: &ufspb.OSVersion{
@@ -426,7 +427,7 @@ func TestUpdateVM(t *testing.T) {
 				CpuCores:     16,
 			}
 			_, err := CreateVM(ctx, vm, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1 := &ufspb.VM{
 				Name:   "vm-7",
@@ -434,12 +435,12 @@ func TestUpdateVM(t *testing.T) {
 				Memory: 1000,
 			}
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags", "memory"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetTags(), ShouldResemble, []string{"tag-1", "tag-2"})
-			So(resp.GetOsVersion().GetValue(), ShouldEqual, "windows")
-			So(resp.GetCpuCores(), ShouldEqual, 16)
-			So(resp.GetMemory(), ShouldEqual, 1000)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"tag-1", "tag-2"}))
+			assert.Loosely(t, resp.GetOsVersion().GetValue(), should.Equal("windows"))
+			assert.Loosely(t, resp.GetCpuCores(), should.Equal(16))
+			assert.Loosely(t, resp.GetMemory(), should.Equal(1000))
 		})
 	})
 }
@@ -447,7 +448,7 @@ func TestUpdateVM(t *testing.T) {
 func TestDeleteVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("DeleteVM", t, func() {
+	ftt.Run("DeleteVM", t, func(t *ftt.Test) {
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "delete-machine",
 		})
@@ -456,16 +457,16 @@ func TestDeleteVM(t *testing.T) {
 			Zone:     "fake_zone",
 			Machines: []string{"delete-machine"},
 		})
-		Convey("Delete non-existing VM", func() {
+		t.Run("Delete non-existing VM", func(t *ftt.Test) {
 			err := DeleteVM(ctx, "vm-delete-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-delete-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
-		Convey("Delete VM - happy path", func() {
+		t.Run("Delete VM - happy path", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 			vm1 := &ufspb.VM{
 				Name:         "vm-delete-1",
@@ -474,74 +475,74 @@ func TestDeleteVM(t *testing.T) {
 			_, err := CreateVM(ctx, vm1, &ufsAPI.NetworkOption{
 				Ip: "192.168.40.17",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Before
 			s, err := state.GetStateRecord(ctx, "vms/vm-delete-1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYING))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "vm-delete-1")
-			So(err, ShouldBeNil)
-			So(dhcp.GetIp(), ShouldEqual, "192.168.40.17")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dhcp.GetIp(), should.Equal("192.168.40.17"))
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.17"})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeTrue)
 
 			// After
 			err = DeleteVM(ctx, "vm-delete-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = state.GetStateRecord(ctx, "vms/vm-delete-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "vm-delete-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.17"})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ips, should.HaveLength(1))
+			assert.Loosely(t, ips[0].GetOccupied(), should.BeFalse)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "vms/vm-delete-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[1].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[1].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[1].GetEventLabel(), ShouldEqual, "vm")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("vm"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "states/vms/vm-delete-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[1].GetEventLabel(), ShouldEqual, "state_record.state")
-			So(changes[1].GetOldValue(), ShouldEqual, ufspb.State_STATE_DEPLOYING.String())
-			So(changes[1].GetNewValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("state_record.state"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-delete-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[1].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[1].GetOldValue(), ShouldEqual, "192.168.40.17")
-			So(changes[1].GetNewValue(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("192.168.40.17"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.BeEmpty)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", fmt.Sprintf("ips/%s", ips[0].GetId()))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[1].GetEventLabel(), ShouldEqual, "ip.occupied")
-			So(changes[1].GetOldValue(), ShouldEqual, "true")
-			So(changes[1].GetNewValue(), ShouldEqual, "false")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("ip.occupied"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("true"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("false"))
 			// snapshots
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-delete-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[1].Delete, ShouldBeTrue)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-delete-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[1].Delete, ShouldBeTrue)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-delete-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[1].Delete, ShouldBeTrue)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
 		})
 	})
 }
@@ -591,48 +592,48 @@ func TestListVMs(t *testing.T) {
 			Storage:  9876,
 		},
 	}
-	Convey("ListVMs", t, func() {
+	ftt.Run("ListVMs", t, func(t *ftt.Test) {
 		_, err := inventory.BatchUpdateVMs(ctx, vms)
-		So(err, ShouldBeNil)
-		Convey("List VMs - filter invalid - error", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("List VMs - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListVMs(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List VMs - filter vlan - happy path with filter", func() {
+		t.Run("List VMs - filter vlan - happy path with filter", func(t *ftt.Test) {
 			resp, _, _ := ListVMs(ctx, 5, "", "vlan=vlan-1", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldHaveLength, 2)
-			So(ufsAPI.ParseResources(resp, "Name"), ShouldResemble, []string{"vm-list-1", "vm-list-3"})
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.HaveLength(2))
+			assert.Loosely(t, ufsAPI.ParseResources(resp, "Name"), should.Resemble([]string{"vm-list-1", "vm-list-3"}))
 		})
 
-		Convey("List VMs - Full listing - happy path", func() {
+		t.Run("List VMs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListVMs(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, vms)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(vms))
 		})
-		Convey("List VMs - multiple filters", func() {
+		t.Run("List VMs - multiple filters", func(t *ftt.Test) {
 			resp, _, err := ListVMs(ctx, 5, "", "vlan=vlan-2 & state=deployed_testing & zone=atlanta", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0].GetName(), ShouldEqual, "vm-list-4")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0].GetName(), should.Equal("vm-list-4"))
 		})
-		Convey("List VMs - resource filters", func() {
+		t.Run("List VMs - resource filters", func(t *ftt.Test) {
 			resp, _, err := ListVMs(ctx, 5, "", "cpucores=8 & memory=1234 & storage=9876", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0].GetName(), ShouldEqual, "vm-list-5")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0].GetName(), should.Equal("vm-list-5"))
 		})
 	})
 }
 func TestBatchGetVMs(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetVMs", t, func() {
-		Convey("Batch get vms - happy path", func() {
+	ftt.Run("BatchGetVMs", t, func(t *ftt.Test) {
+		t.Run("Batch get vms - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.VM, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.VM{
@@ -640,27 +641,27 @@ func TestBatchGetVMs(t *testing.T) {
 				}
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := inventory.BatchGetVMs(ctx, []string{"vm-batchGet-0", "vm-batchGet-1", "vm-batchGet-2", "vm-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get vms  - missing id", func() {
+		t.Run("Batch get vms  - missing id", func(t *ftt.Test) {
 			resp, err := inventory.BatchGetVMs(ctx, []string{"vm-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "vm-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("vm-batchGet-non-existing"))
 		})
-		Convey("Batch get vms  - empty input", func() {
+		t.Run("Batch get vms  - empty input", func(t *ftt.Test) {
 			resp, err := inventory.BatchGetVMs(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = inventory.BatchGetVMs(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }
@@ -695,126 +696,126 @@ func TestRealmPermissionForVM(t *testing.T) {
 		Machines: []string{"machine-osatl-2"},
 		Hostname: "lse-browser-2",
 	})
-	Convey("TestRealmPermissionForVM", t, func() {
+	ftt.Run("TestRealmPermissionForVM", t, func(t *ftt.Test) {
 
-		Convey("CreateVM with permission - pass", func() {
+		t.Run("CreateVM with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-1",
 				MachineLseId: "lse-browser-1",
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
 			resp, _ := CreateVM(ctx, vm1, nil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, vm1)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(vm1))
 		})
 
-		Convey("CreateVM without permission - fail", func() {
+		t.Run("CreateVM without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-2",
 				MachineLseId: "lse-browser-1",
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.AtlLabAdminRealm)
 			_, err := CreateVM(ctx, vm1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("DeleteVM with permission - pass", func() {
+		t.Run("DeleteVM with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-3",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesDelete, util.BrowserLabAdminRealm)
 			err = DeleteVM(ctx, "vm-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("DeleteVM without permission - fail", func() {
+		t.Run("DeleteVM without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-4",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesDelete, util.AtlLabAdminRealm)
 			err = DeleteVM(ctx, "vm-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("UpdateVM with permission - pass", func() {
+		t.Run("UpdateVM with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-5",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.Tags, ShouldResemble, []string{"Dell"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
 		})
 
-		Convey("UpdateVM without permission - fail", func() {
+		t.Run("UpdateVM without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-6",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateVM(ctx, vm1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("UpdateVM(new machinelse and same realm) with permission - pass", func() {
+		t.Run("UpdateVM(new machinelse and same realm) with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-7",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-1.1"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.MachineLseId, ShouldEqual, "lse-browser-1.1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.MachineLseId, should.Equal("lse-browser-1.1"))
 		})
 
-		Convey("UpdateVM(new machinelse and different realm) without permission - fail", func() {
+		t.Run("UpdateVM(new machinelse and different realm) without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-8",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-2"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateVM(ctx, vm1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("UpdateVM(new machinelse and different realm) with permission - pass", func() {
+		t.Run("UpdateVM(new machinelse and different realm) with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-9",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-2"
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -826,80 +827,80 @@ func TestRealmPermissionForVM(t *testing.T) {
 				),
 			})
 			resp, err := UpdateVM(ctx, vm1, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.MachineLseId, ShouldEqual, "lse-browser-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.MachineLseId, should.Equal("lse-browser-2"))
 		})
 
-		Convey("Partial UpdateVM with permission - pass", func() {
+		t.Run("Partial UpdateVM with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-10",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.Tags, ShouldResemble, []string{"Dell"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
 		})
 
-		Convey("Partial UpdateVM without permission - fail", func() {
+		t.Run("Partial UpdateVM without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-11",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.Tags = []string{"Dell"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Partial UpdateVM(new machinelse and same realm) with permission - pass", func() {
+		t.Run("Partial UpdateVM(new machinelse and same realm) with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-12",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-1.1"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"machineLseId"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.MachineLseId, ShouldResemble, "lse-browser-1.1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.MachineLseId, should.Match("lse-browser-1.1"))
 		})
 
-		Convey("Partial UpdateVM(new machinelse and different realm) without permission - fail", func() {
+		t.Run("Partial UpdateVM(new machinelse and different realm) without permission - fail", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-13",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-2"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"machineLseId"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Partial UpdateVM(new machinelse and different realm) with permission - pass", func() {
+		t.Run("Partial UpdateVM(new machinelse and different realm) with permission - pass", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "vm-14",
 				MachineLseId: "lse-browser-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.MachineLseId = "lse-browser-2"
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -911,9 +912,9 @@ func TestRealmPermissionForVM(t *testing.T) {
 				),
 			})
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"machineLseId"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.MachineLseId, ShouldResemble, "lse-browser-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.MachineLseId, should.Match("lse-browser-2"))
 		})
 
 	})
@@ -922,7 +923,7 @@ func TestRealmPermissionForVM(t *testing.T) {
 func TestGenNewMacAddress(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("genNewMacAddress", t, func() {
+	ftt.Run("genNewMacAddress", t, func(t *ftt.Test) {
 		entities := make([]*ufspb.VM, 2)
 		entities[0] = &ufspb.VM{
 			Name:       "vm-genNewMac-0",
@@ -933,28 +934,28 @@ func TestGenNewMacAddress(t *testing.T) {
 			MacAddress: "00:50:56:3f:ff:ff",
 		}
 		_, err := inventory.BatchUpdateVMs(ctx, entities)
-		So(err, ShouldBeNil)
-		Convey("genNewMacAddress - happy path", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("genNewMacAddress - happy path", func(t *ftt.Test) {
 			mac, err := genNewMacAddress(ctx)
-			So(err, ShouldBeNil)
-			So(mac, ShouldEqual, "00:50:56:00:00:01")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, mac, should.Equal("00:50:56:00:00:01"))
 
 			sc, err := configuration.GetServiceConfig(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			sc.LastCheckedVMMacAddress = "3ffffc"
 			err = configuration.UpdateServiceConfig(ctx, sc)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			mac, err = genNewMacAddress(ctx)
-			So(err, ShouldBeNil)
-			So(mac, ShouldEqual, "00:50:56:3f:ff:fe")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, mac, should.Equal("00:50:56:3f:ff:fe"))
 
 			sc.LastCheckedVMMacAddress = "3ffffe"
 			err = configuration.UpdateServiceConfig(ctx, sc)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			mac, err = genNewMacAddress(ctx)
-			So(mac, ShouldNotBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "4 million")
+			assert.Loosely(t, mac, should.Equal(""))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("4 million"))
 		})
 	})
 }

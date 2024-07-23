@@ -8,10 +8,11 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -56,7 +57,7 @@ func TestSyncDeviceConfigs(t *testing.T) {
 	ctx = external.WithTestingContext(ctx)
 	ctx = grantRealmPerms(ctx, "chromeos:board1-model1", "chromeos:board2-model2", "chromeos:realm")
 
-	Convey("When sync is run with a valid config", t, func() {
+	ftt.Run("When sync is run with a valid config", t, func(t *ftt.Test) {
 		namespaceToRealmAssignerMap = map[string]configuration.RealmAssignerFunc{
 			"random-ns":             configuration.BoardModelRealmAssigner,
 			util.OSPartnerNamespace: ConstantRealmAssigner,
@@ -69,31 +70,31 @@ func TestSyncDeviceConfigs(t *testing.T) {
 		})
 
 		err := syncDeviceConfigs(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("DeviceConfigs should be fetchable in all namespaces specified", func() {
+		t.Run("DeviceConfigs should be fetchable in all namespaces specified", func(t *ftt.Test) {
 			for ns := range namespaceToRealmAssignerMap {
 				ctx, err := util.SetupDatastoreNamespace(ctx, ns)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board1", "model1", ""))
-				So(cfg, ShouldResembleProto, expectedConfigs[0])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, cfg, should.Resemble(expectedConfigs[0]))
+				assert.Loosely(t, err, should.BeNil)
 				cfg2, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board2", "model2", ""))
-				So(cfg2, ShouldResembleProto, expectedConfigs[1])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, cfg2, should.Resemble(expectedConfigs[1]))
+				assert.Loosely(t, err, should.BeNil)
 			}
 		})
-		Convey("DeviceConfigs should only be fetchable in namespaces specified", func() {
+		t.Run("DeviceConfigs should only be fetchable in namespaces specified", func(t *ftt.Test) {
 			ctx, err := util.SetupDatastoreNamespace(ctx, "fake")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board1", "model1", ""))
-			So(cfg, ShouldBeNil)
-			So(err, ShouldBeError)
+			assert.Loosely(t, cfg, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 			cfg2, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board2", "model2", ""))
-			So(cfg2, ShouldBeNil)
-			So(err, ShouldBeError)
+			assert.Loosely(t, cfg2, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

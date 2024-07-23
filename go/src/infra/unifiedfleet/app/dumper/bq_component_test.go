@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -79,12 +80,12 @@ func TestGetAllHwidData(t *testing.T) {
 		})
 	}
 
-	Convey("getAllHwidData", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("getAllHwidData", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := getAllHwidData(ctx)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, bqMsgs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(bqMsgs))
 		})
 	})
 }
