@@ -114,7 +114,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			// TODO(go.dev/issue/62067): Dump the raw JSON to a file and log it once `go build -json` is
 			// available.
-			testCmd := spec.wrapTestCmd(ctx, spec.distTestCmd(portContext, gorootSrc, "", nil, true), "")
+			testCmd := spec.wrapTestCmd(portContext, spec.distTestCmd(portContext, gorootSrc, "", nil, true), "")
 			g.Go(func() error {
 				testErrors[i] = cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false)
 				return nil
@@ -312,7 +312,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 			}
 			// TODO(go.dev/issue/62067): Dump the raw JSON to a file and log it once `go build -json` is
 			// available.
-			testCmd := spec.wrapTestCmd(ctx, spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...), "")
+			testCmd := spec.wrapTestCmd(portContext, spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...), "")
 			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
 				stepName += " (skipped)"
 				testCmd = command(portContext, "echo", "(skipped)")

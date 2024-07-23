@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -431,6 +432,19 @@ func (b *buildSpec) wrapTestCmd(ctx context.Context, cmd *exec.Cmd, dumpJSONFile
 	args = append(args, "--")
 	args = append(args, cmd.Args...)
 	cmd.Args = args
+	if runtime.GOOS == "windows" {
+		// Workaround for go.dev/issue/68310.
+		// Can be removed when at least go1.22.6 or go1.23rc2 is used to build golangbuild.
+		copy := exec.CommandContext(ctx, cmd.Path, cmd.Args[1:]...)
+		copy.Env = cmd.Env
+		copy.Dir = cmd.Dir
+		copy.Stdin = cmd.Stdin
+		copy.Stdout = cmd.Stdout
+		copy.Stderr = cmd.Stderr
+		copy.SysProcAttr = cmd.SysProcAttr
+		copy.WaitDelay = cmd.WaitDelay
+		*cmd = *copy
+	}
 	return cmd
 }
 
