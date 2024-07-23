@@ -17,13 +17,11 @@ import (
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	luciauth "go.chromium.org/luci/server/auth"
 )
 
-// GerritAuthOptsOnBot provides auth opts to authorize to Gerrit from a bot env.
-var GerritAuthOptsOnBot = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Method: auth.AutoSelectMethod,
-	Scopes: []string{auth.OAuthScopeEmail, gitiles.OAuthScope},
-})
+// GerritAuthScopes provides auth scopes to authorize to Gerrit.
+var GerritAuthScopes = []string{auth.OAuthScopeEmail, gitiles.OAuthScope}
 
 type clientThatSendsRequests interface {
 	Do(*http.Request) (resp *http.Response, err error)
@@ -96,12 +94,41 @@ func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request, ba
 	return resp, nil
 }
 
-// GerritClient initializes an HTTP client with auth opts to read from Gerrit.
-func GerritClient(ctx context.Context, authOpts auth.Options) (*http.Client, error) {
+// SilentLoginHTTPClient initializes a silent-login HTTP client with the given
+// auth options. It is not compatible with code running in an App Engine
+// environment.
+func SilentLoginHTTPClient(ctx context.Context, authOpts auth.Options) (*http.Client, error) {
 	ga := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 	c, err := ga.Client()
 	if err != nil {
-		return nil, errors.Annotate(err, "initializing HTTP client for Gerrit calls").Err()
+		return nil, errors.Annotate(err, "initializing silent-login HTTP client").Err()
 	}
 	return c, nil
+}
+
+// SilentLoginHTTPClientForAudience initializes an HTTP client for use with the
+// given audience, by service accounts that can use SilentLogin. It is not
+// compatible with code running in an App Engine environment.
+func SilentLoginHTTPClientForAudience(ctx context.Context, audience string) (*http.Client, error) {
+	a := chromeinfra.SetDefaultAuthOptions(auth.Options{
+		UseIDTokens: true,
+		Audience:    audience,
+	})
+	return SilentLoginHTTPClient(ctx, a)
+}
+
+// GCPHTTPClient initializes an HTTP client for use in a GCP environment.
+func GCPHTTPClient(ctx context.Context, rpcOpts ...luciauth.RPCOption) (*http.Client, error) {
+	t, err := luciauth.GetRPCTransport(ctx, luciauth.AsSelf, rpcOpts...)
+	if err != nil {
+		return nil, errors.Annotate(err, "creating transport for GAE HTTP client").Err()
+	}
+	return &http.Client{Transport: t}, nil
+}
+
+// GCPHTTPClientForAudience initializes an HTTP client for use in a GCP
+// environment with the given audience.
+func GCPHTTPClientForAudience(ctx context.Context, audience string) (*http.Client, error) {
+	opts := luciauth.WithIDTokenAudience(audience)
+	return GCPHTTPClient(ctx, opts)
 }

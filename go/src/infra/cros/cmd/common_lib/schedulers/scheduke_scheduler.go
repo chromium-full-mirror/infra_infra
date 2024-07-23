@@ -35,7 +35,7 @@ func NewSchedukeScheduler() *SchedukeScheduler {
 func (s *SchedukeScheduler) Setup(pool string) error {
 	ctx := context.Background()
 	if s.schedukeClient == nil {
-		c, err := common.NewSchedukeClient(ctx, pool, false)
+		c, err := common.NewSchedukeClientForLUCIExe(ctx, pool)
 		if err != nil {
 			return err
 		}

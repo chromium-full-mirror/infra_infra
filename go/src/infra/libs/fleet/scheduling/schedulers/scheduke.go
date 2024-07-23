@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	gitilesApi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	luciauth "go.chromium.org/luci/server/auth"
 
@@ -38,7 +37,7 @@ type schedukeAPI struct {
 // NewSchedukeClientForCLI constructs a new Scheduke TaskSchedulingAPI for use
 // in a CLI.
 func NewSchedukeClientForCLI(ctx context.Context, pool string, authOpts auth.Options) (api.TaskSchedulingAPI, error) {
-	gc, err := common.GerritClient(ctx, authOpts)
+	gc, err := common.SilentLoginHTTPClient(ctx, authOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "creating Scheduke client for CLI: initializing Gerrit client").Err()
 	}
@@ -54,13 +53,13 @@ func NewSchedukeClientForCLI(ctx context.Context, pool string, authOpts auth.Opt
 // NewSchedukeClientForAutomation constructs a new Scheduke TaskSchedulingAPI
 // for use from services.
 func NewSchedukeClientForAutomation(ctx context.Context, pool string) (api.TaskSchedulingAPI, error) {
-	transport, err := luciauth.GetRPCTransport(ctx, luciauth.AsSelf, luciauth.WithScopes(auth.OAuthScopeEmail, gitilesApi.OAuthScope))
+	gc, err := common.GCPHTTPClient(ctx, luciauth.WithScopes(common.GerritAuthScopes...))
 	if err != nil {
 		return nil, errors.Annotate(err, "creating Scheduke client for automation: initializing Gerrit client").Err()
 	}
 	return &schedukeAPI{
 		usedByCLI:      false,
-		gerritClient:   &http.Client{Transport: transport},
+		gerritClient:   gc,
 		pool:           pool,
 		schedukeClient: nil,
 	}, nil
@@ -145,13 +144,12 @@ func (s *schedukeAPI) setupSchedukeClient(ctx context.Context) error {
 
 	if s.usedByCLI {
 		dev := s.pool == common.SchedukeDevPool
-		c, err = common.NewSchedukeClientForEnv(ctx, dev, s.authOpts)
+		c, err = common.NewSchedukeClientForCLI(ctx, dev, s.authOpts)
 		if err != nil {
 			return errors.Annotate(err, "initializing Scheduke client for CLI").Err()
 		}
 	} else {
-		isLocalService := false
-		c, err = common.NewSchedukeClient(ctx, s.pool, isLocalService)
+		c, err = common.NewSchedukeClientForGCP(ctx, s.pool)
 		if err != nil {
 			return errors.Annotate(err, "initializing Scheduke client for automation").Err()
 		}

@@ -49,7 +49,7 @@ func Abandon(ctx context.Context, authOpts auth.Options, deviceNames []string, d
 		return err
 	}
 
-	sc, err := NewSchedukeClientForEnv(ctx, dev, authOpts)
+	sc, err := NewSchedukeClientForCLI(ctx, dev, authOpts)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,7 @@ func Leases(ctx context.Context, authOpts auth.Options, dev bool) ([]*LeaseInfo,
 // ShouldUseScheduke returns a bool indicating whether a lease request in the
 // pool should use this Scheduke API.
 func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) (bool, error) {
-	gc, err := GerritClient(ctx, authOpts)
+	gc, err := SilentLoginHTTPClient(ctx, authOpts)
 	if err != nil {
 		return false, errors.Annotate(err, "initializing Gerrit client to read Scheduke pools allowlist").Err()
 	}

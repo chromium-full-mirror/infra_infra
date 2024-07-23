@@ -25,6 +25,7 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	luciauth "go.chromium.org/luci/server/auth"
 )
 
 const (
@@ -53,69 +54,124 @@ type SchedukeClient struct {
 	local                            bool
 }
 
-// NewSchedukeClientForEnv returns a Scheduke client for the given environment
-// (dev/prod), and uses the given auth info to determine whether the run is
-// local or not.
-func NewSchedukeClientForEnv(ctx context.Context, dev bool, authOpts auth.Options) (*SchedukeClient, error) {
+// NewSchedukeClientForCLI returns a Scheduke client that can be called from a
+// CLI that talks to the given Scheduke environment (dev/prod), and uses the
+// given auth info to determine whether the CLI is being used by a human or not.
+func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Options) (*SchedukeClient, error) {
+	// Set up Gerrit client.
+	gc, err := SilentLoginHTTPClient(ctx, authOpts)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Gerrit client").Err()
+	}
+
+	// Determine Scheduke instance to send requests to.
 	baseURL := schedukeProdURL
 	if dev {
 		baseURL = schedukeDevURL
 	}
+
+	// Determine whether CLI is being run by a human or not.
 	userEmail, err := getUserEmail(ctx, authOpts)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: getting user email").Err()
 	}
 	local := strings.HasSuffix(userEmail, "@google.com")
-	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
-	err = client.setUpHTTPClients(authOpts)
-	return &client, err
+
+	// Set up Scheduke client.
+	var sc *http.Client
+	if local {
+		if err := confirmGcloudLogin(); err != nil {
+			return nil, errors.Annotate(err, "NewSchedukeClientForCLI: confirming gcloud login").Err()
+		}
+		// Scheduke doesn't require an authenticated HTTP transport if the CLI is
+		// being used by a human, since we add the user's gcloud token as a header
+		// on each request.
+		sc = &http.Client{}
+	} else {
+		sc, err = SilentLoginHTTPClientForAudience(ctx, baseURL)
+		if err != nil {
+			return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Scheduke HTTP client").Err()
+		}
+	}
+
+	s := SchedukeClient{
+		ctx:                ctx,
+		local:              local,
+		baseURL:            baseURL,
+		gerritClient:       gc,
+		schedukeHTTPClient: sc,
+	}
+
+	// Ping Scheduke base URL to confirm IAM works; don't use exponential backoff
+	// here so that we return errors quickly to the end-user.
+	if _, err = s.makeRequest(http.MethodGet, s.baseURL, nil, false); err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: confirming Scheduke auth").Err()
+	}
+
+	return &s, err
 }
 
-func NewSchedukeClient(ctx context.Context, pool string, local bool) (*SchedukeClient, error) {
+// NewSchedukeClientForLUCIExe returns a Scheduke client that can be called from
+// luciexe code running on a Buildbucket build.
+func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeClient, error) {
+	// Set up Gerrit client.
+	gc, err := SilentLoginHTTPClient(ctx, chromeinfra.SetDefaultAuthOptions(auth.Options{
+		Method: auth.AutoSelectMethod,
+		Scopes: GerritAuthScopes,
+	}))
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Gerrit client").Err()
+	}
+
+	// Determine Scheduke instance to send requests to.
 	baseURL := schedukeProdURL
 	if pool == SchedukeDevPool {
 		baseURL = schedukeDevURL
 	}
 
-	client := SchedukeClient{ctx: ctx, local: local, baseURL: baseURL}
-	err := client.setUpHTTPClients(GerritAuthOptsOnBot)
-	return &client, err
+	// Set up Scheduke client.
+	sc, err := SilentLoginHTTPClientForAudience(ctx, baseURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Scheduke HTTP client").Err()
+	}
+
+	return &SchedukeClient{
+		ctx:                ctx,
+		local:              false,
+		baseURL:            baseURL,
+		gerritClient:       gc,
+		schedukeHTTPClient: sc,
+	}, nil
 }
 
-// httpClient configures HTTP clients for Scheduke and Gerrit, with
-// authentication set up.
-func (s *SchedukeClient) setUpHTTPClients(gerritAuthOpts auth.Options) error {
-	// Gerrit requires auth options whether running locally or on a bot.
-	gc, err := GerritClient(s.ctx, gerritAuthOpts)
+// NewSchedukeClientForGCP returns a Scheduke client that can be called from a
+// GCP environment.
+func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient, error) {
+	// Set Up Gerrit client.
+	gc, err := GCPHTTPClient(ctx, luciauth.WithScopes(GerritAuthScopes...))
 	if err != nil {
-		return errors.Annotate(err, "create Gerrit http client").Err()
+		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: seeting up Gerrit client").Err()
 	}
-	s.gerritClient = gc
 
-	// Scheduke only requires auth options when running on a bot.
-	if s.local {
-		err := confirmGcloudLogin()
-		if err != nil {
-			return err
-		}
-		s.schedukeHTTPClient = &http.Client{}
-	} else {
-		sa := auth.NewAuthenticator(s.ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
-			UseIDTokens: true,
-			Audience:    s.baseURL,
-		}))
-		sc, err := sa.Client()
-		if err != nil {
-			return errors.Annotate(err, "create Scheduke http client").Err()
-		}
-		s.schedukeHTTPClient = sc
+	// Determine Scheduke instance to send requests to.
+	baseURL := schedukeProdURL
+	if pool == SchedukeDevPool {
+		baseURL = schedukeDevURL
 	}
-	// Ping Scheduke base URL to confirm IAM works; don't use exponential backoff
-	// here so that we return errors quickly to the end-user.
-	if _, err = s.makeRequest(http.MethodGet, s.baseURL, nil, false); err != nil {
-		return errors.Annotate(err, "confirming Scheduke auth").Err()
+
+	// Set up Scheduke client.
+	sc, err := GCPHTTPClientForAudience(ctx, baseURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: setting up Scheduke HTTP client").Err()
 	}
-	return nil
+
+	return &SchedukeClient{
+		ctx:                ctx,
+		local:              false,
+		baseURL:            baseURL,
+		gerritClient:       gc,
+		schedukeHTTPClient: sc,
+	}, nil
 }
 
 // token generates the user's Gcloud auth token.

@@ -27,7 +27,7 @@ const ufsHost = "ufs.api.cr.dev"
 func listLeasesFromScheduke(ctx context.Context, authOpts auth.Options, dev bool) ([]*schedukepb.TaskWithState, error) {
 	user, err := getUserEmail(ctx, authOpts)
 
-	sc, err := NewSchedukeClientForEnv(ctx, dev, authOpts)
+	sc, err := NewSchedukeClientForCLI(ctx, dev, authOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims ma
 	schedukeDims, pool, deviceName := schedukeDimsPoolAndDeviceNameForLease(dims)
 	dev := pool == SchedukeDevPool
 
-	sc, err := NewSchedukeClientForEnv(ctx, dev, authOpts)
+	sc, err := NewSchedukeClientForCLI(ctx, dev, authOpts)
 	if err != nil {
 		return "", err
 	}
