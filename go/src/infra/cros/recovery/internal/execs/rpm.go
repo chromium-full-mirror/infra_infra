@@ -27,6 +27,7 @@ func (ei *ExecInfo) RPMAction(ctx context.Context, hostname string, o *tlw.RPMOu
 		RpmHostname: o.GetHostname(),
 		RpmOutlet:   o.GetOutlet(),
 		Action:      action,
+		RpmType:     o.GetType(),
 	}
 	err := ei.runArgs.Access.RunRPMAction(ctx, req)
 	return errors.Annotate(err, "rpm action").Err()

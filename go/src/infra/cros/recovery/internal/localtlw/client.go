@@ -299,12 +299,24 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 	default:
 		return errors.Reason("run rpm action: unknown action: %s", req.GetAction().String()).Err()
 	}
+	var t rpm.RPMType
+	switch req.GetRpmType() {
+	case tlw.RPMType_SENTRY:
+		t = rpm.RPMTypeSentry
+	case tlw.RPMType_IP9850:
+		t = rpm.RPMTypeIP9850
+	default:
+		// This is new field. Instead of backfilling, we assume this is a Sentry RPM.
+		// Any other RPM should have its type explicitly set.
+		t = rpm.RPMTypeSentry
+	}
 	log.Debugf(ctx, "Changing state RPM outlet %s:%s to state %q.", req.GetRpmHostname(), req.GetRpmOutlet(), s)
 	rpmReq := &rpm.RPMPowerRequest{
 		Hostname:          req.GetHostname(),
 		PowerUnitHostname: req.GetRpmHostname(),
 		PowerunitOutlet:   req.GetRpmOutlet(),
 		State:             s,
+		Type:              t,
 	}
 	if err := rpm.SetPowerState(ctx, rpmReq); err != nil {
 		return errors.Annotate(err, "run rpm action").Err()

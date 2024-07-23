@@ -38,6 +38,22 @@ const (
 	PowerStateCycle PowerState = "CYCLE"
 )
 
+var sentryStateMap = map[PowerState]string{
+	PowerStateOn:    "on",
+	PowerStateOff:   "off",
+	PowerStateCycle: "reboot",
+}
+
+// RPMType is the RPM model/protocol for the device
+type RPMType string
+
+const (
+	// Sentry Switched CDU RPM
+	RPMTypeSentry RPMType = "SENTRY"
+	// IPPower 9850 RPM
+	RPMTypeIP9850 RPMType = "IP9850"
+)
+
 // RPMPowerRequest holds data required from rpm service to perform a state change.
 type RPMPowerRequest struct {
 	// Hostname of the DUT.
@@ -50,6 +66,8 @@ type RPMPowerRequest struct {
 	HydraHostname string
 	// The expecting new state to set power to.
 	State PowerState
+	// RPMType is the RPM model/protocol for the device
+	Type RPMType
 }
 
 // SetPowerState talks to RPM service via xmltpc to set power state based on a RPMPowerRequest.
@@ -75,6 +93,36 @@ func SetPowerState(ctx context.Context, req *RPMPowerRequest) error {
 		return errors.Reason("set power state: failed to change outlet status for host: %s to state: %s.", req.Hostname, req.State).Err()
 	}
 	return nil
+}
+
+// SetPowerStateHTTP talks to RPM directly over HTTPS to set power state based on RPMPowerRequest.
+func SetPowerStateHTTP(ctx context.Context, req *RPMPowerRequest) error {
+	if err := validateRequest(req); err != nil {
+		return errors.Annotate(err, "set power state").Err()
+	}
+	switch req.Type {
+	case RPMTypeSentry:
+		return setPowerStateSentry(ctx, req)
+	case RPMTypeIP9850:
+		return setPowerStateIP9850(ctx, req)
+	case "":
+		return errors.Reason("SetPowerStateHTTP: RPMType cannot be empty.").Err()
+	default:
+		return errors.Reason("SetPowerStateHTTP: unknown RPMType %s.", req.Type).Err()
+	}
+}
+
+// setPowerStateSentry sets power state for Sentry Switched CDU over HTTP based on RPMPowerRequest.
+// http://www.servertech.com/products/switched-pdus/
+// https://cdn10.servertech.com/assets/documents/documents/968/original/JSON_API_Web_Service_%28JAWS%29_V1.06.pdf?1641867726
+func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
+	return errors.Reason("Not implemented").Err()
+}
+
+// setPowerStateSentry sets power state for IPPower 9850 RPM over HTTP based on RPMPowerRequest.
+// https://www.aviosys.com/products/9850.php
+func setPowerStateIP9850(ctx context.Context, req *RPMPowerRequest) error {
+	return errors.Reason("Not implemented").Err()
 }
 
 // validateRequest validates args in a RPMPowerRequest.
