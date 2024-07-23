@@ -42,6 +42,22 @@
                     },
                     "modem_info": {
                         "type": "MODEM_TYPE_FIBOCOMM_L850GL"
+                    },
+                    "gfx_info": {
+                        "display_panel_name": "CMN 4679",
+                        "display_present_hdr": "hdr unsupported",
+                        "display_present_psr": "psr unsupported",
+                        "display_present_vrr": "vrr unsupported",
+                        "display_refresh_rate": "60.00",
+                        "display_resolution": "1366x912",
+                        "gpu_family": "mali-g57",
+                        "gpu_id": "mediatek:mali-g57",
+                        "gpu_open_gles_version": "3.2",
+                        "gpu_vendor": "mediatek",
+                        "gpu_vulkan_version": "1.3.283",
+                        "platform_cpu_vendor": "mediatek",
+                        "platform_disk_size": "62",
+                        "platform_memory_size": "4"
                     }
                 }
             },

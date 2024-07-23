@@ -407,6 +407,24 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 		newTags = AppendTags(newTags, "modem_type", modemInfo.GetType().String())
 	}
 
+	gfxInfo := buildMetadata.GetGfxInfo()
+	if gfxInfo != nil {
+		newTags = AppendTags(newTags, "display_panel_name", gfxInfo.DisplayPanelName)
+		newTags = AppendTags(newTags, "display_present_hdr", gfxInfo.DisplayPresentHdr)
+		newTags = AppendTags(newTags, "display_present_psr", gfxInfo.DisplayPresentPsr)
+		newTags = AppendTags(newTags, "display_present_vrr", gfxInfo.DisplayPresentVrr)
+		newTags = AppendTags(newTags, "display_refresh_rate", gfxInfo.DisplayRefreshRate)
+		newTags = AppendTags(newTags, "display_resolution", gfxInfo.DisplayResolution)
+		newTags = AppendTags(newTags, "gpu_family", gfxInfo.GpuFamily)
+		newTags = AppendTags(newTags, "gpu_id", gfxInfo.GpuId)
+		newTags = AppendTags(newTags, "gpu_open_gles_version", gfxInfo.GpuOpenGlesVersion)
+		newTags = AppendTags(newTags, "gpu_vendor", gfxInfo.GpuVendor)
+		newTags = AppendTags(newTags, "gpu_vulkan_version", gfxInfo.GpuVulkanVersion)
+		newTags = AppendTags(newTags, "platform_cpu_vendor", gfxInfo.PlatformCpuVendor)
+		newTags = AppendTags(newTags, "platform_disk_size", strconv.FormatUint(gfxInfo.PlatformDiskSize, 10))
+		newTags = AppendTags(newTags, "platform_memory_size", strconv.FormatUint(gfxInfo.PlatformMemorySize, 10))
+	}
+
 	return newTags
 }
 
