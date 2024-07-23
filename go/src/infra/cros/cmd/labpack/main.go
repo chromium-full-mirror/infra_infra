@@ -93,8 +93,10 @@ func main() {
 			}
 			defer func() { lg.Close() }()
 
+			ctx, cancel := context.WithCancel(ctx)
 			eg, ctx := errgroup.WithContext(ctx)
 			eg.Go(func() error {
+				defer cancel()
 				return mainRunInternal(ctx, logRoot, lg, input, state, writeOutputProps)
 			})
 			eg.Go(func() error {
@@ -224,7 +226,7 @@ func watchDMLease(ctx context.Context, lg logger.Logger, state *build.State) err
 		}
 	}()
 
-	// Renew the lease every few minutes on a loop.
+	// Renew the lease every few minutes on a loop until ctx is cancelled.
 	lastLeaseExtensionTime := time.Now()
 	loopSleepInterval := 5 * time.Second
 	for {
