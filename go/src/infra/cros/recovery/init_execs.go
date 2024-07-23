@@ -6,6 +6,7 @@ package recovery
 
 // These package imports register exec functions for the execs package.
 import (
+	_ "infra/cros/recovery/internal/execs/amt"
 	_ "infra/cros/recovery/internal/execs/android"
 	_ "infra/cros/recovery/internal/execs/btpeer"
 	_ "infra/cros/recovery/internal/execs/chameleon"
