@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -31,23 +31,23 @@ func TestCreateChromePlatform(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	chromePlatform1 := mockChromePlatform("ChromePlatform-1", "Camera")
 	chromePlatform2 := mockChromePlatform("", "Sensor")
-	Convey("CreateChromePlatform", t, func() {
-		Convey("Create new chromePlatform", func() {
+	ftt.Run("CreateChromePlatform", t, func(t *ftt.Test) {
+		t.Run("Create new chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
 		})
-		Convey("Create existing chromePlatform", func() {
+		t.Run("Create existing chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create chromePlatform - invalid ID", func() {
+		t.Run("Create chromePlatform - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -59,27 +59,27 @@ func TestUpdateChromePlatform(t *testing.T) {
 	chromePlatform2 := mockChromePlatform("ChromePlatform-1", "Printer")
 	chromePlatform3 := mockChromePlatform("ChromePlatform-3", "Sensor")
 	chromePlatform4 := mockChromePlatform("", "Scanner")
-	Convey("UpdateChromePlatform", t, func() {
-		Convey("Update existing chromePlatform", func() {
+	ftt.Run("UpdateChromePlatform", t, func(t *ftt.Test) {
+		t.Run("Update existing chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
 
 			resp, err = UpdateChromePlatform(ctx, chromePlatform2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
 		})
-		Convey("Update non-existing chromePlatform", func() {
+		t.Run("Update non-existing chromePlatform", func(t *ftt.Test) {
 			resp, err := UpdateChromePlatform(ctx, chromePlatform3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update chromePlatform - invalid ID", func() {
+		t.Run("Update chromePlatform - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateChromePlatform(ctx, chromePlatform4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -88,26 +88,26 @@ func TestGetChromePlatform(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	chromePlatform1 := mockChromePlatform("ChromePlatform-1", "Camera")
-	Convey("GetChromePlatform", t, func() {
-		Convey("Get chromePlatform by existing ID", func() {
+	ftt.Run("GetChromePlatform", t, func(t *ftt.Test) {
+		t.Run("Get chromePlatform by existing ID", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
 			resp, err = GetChromePlatform(ctx, "ChromePlatform-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
 		})
-		Convey("Get chromePlatform by non-existing ID", func() {
+		t.Run("Get chromePlatform by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetChromePlatform(ctx, "chromePlatform-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get chromePlatform - invalid ID", func() {
+		t.Run("Get chromePlatform - invalid ID", func(t *ftt.Test) {
 			resp, err := GetChromePlatform(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -122,34 +122,34 @@ func TestListChromePlatforms(t *testing.T) {
 		resp, _ := CreateChromePlatform(ctx, chromePlatform1)
 		chromePlatforms = append(chromePlatforms, resp)
 	}
-	Convey("ListChromePlatforms", t, func() {
-		Convey("List chromePlatforms - page_token invalid", func() {
+	ftt.Run("ListChromePlatforms", t, func(t *ftt.Test) {
+		t.Run("List chromePlatforms - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListChromePlatforms(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List chromePlatforms - Full listing with no pagination", func() {
+		t.Run("List chromePlatforms - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListChromePlatforms(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatforms)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatforms))
 		})
 
-		Convey("List chromePlatforms - listing with pagination", func() {
+		t.Run("List chromePlatforms - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListChromePlatforms(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatforms[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatforms[:3]))
 
 			resp, _, err = ListChromePlatforms(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatforms[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatforms[3:]))
 		})
 	})
 }
@@ -159,29 +159,29 @@ func TestDeleteChromePlatform(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	chromePlatform2 := mockChromePlatform("chromePlatform-2", "Camera")
-	Convey("DeleteChromePlatform", t, func() {
-		Convey("Delete chromePlatform successfully by existing ID", func() {
+	ftt.Run("DeleteChromePlatform", t, func(t *ftt.Test) {
+		t.Run("Delete chromePlatform successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateChromePlatform(ctx, chromePlatform2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, chromePlatform2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
 
 			err := DeleteChromePlatform(ctx, "chromePlatform-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetChromePlatform(ctx, "chromePlatform-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete chromePlatform by non-existing ID", func() {
+		t.Run("Delete chromePlatform by non-existing ID", func(t *ftt.Test) {
 			err := DeleteChromePlatform(ctx, "chromePlatform-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete chromePlatform - invalid ID", func() {
+		t.Run("Delete chromePlatform - invalid ID", func(t *ftt.Test) {
 			err := DeleteChromePlatform(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }

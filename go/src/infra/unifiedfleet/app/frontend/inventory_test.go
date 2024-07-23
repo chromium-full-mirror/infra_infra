@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,7 +16,9 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -97,54 +98,54 @@ func TestUpdateNetworkOpt(t *testing.T) {
 		Ip:   "",
 		Nic:  "eth0",
 	}
-	Convey("No vlan & ip, empty nwOpt", t, func() {
+	ftt.Run("No vlan & ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "", nil)
-		So(nwOpt, ShouldBeNil)
+		assert.Loosely(t, nwOpt, should.BeNil)
 	})
-	Convey("No vlan & ip, non-empty nwOpt", t, func() {
+	ftt.Run("No vlan & ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "", input)
-		So(nwOpt, ShouldResembleProto, input)
+		assert.Loosely(t, nwOpt, should.Resemble(input))
 	})
-	Convey("Have vlan, no ip, empty nwOpt", t, func() {
+	ftt.Run("Have vlan, no ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan1", "", nil)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Vlan: "vlan1",
-		})
+		}))
 	})
-	Convey("Have vlan, no ip, non-empty nwOpt", t, func() {
+	ftt.Run("Have vlan, no ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan2", "", input)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Vlan: "vlan2",
 			Nic:  "eth0",
-		})
+		}))
 	})
-	Convey("no vlan, have ip, empty nwOpt", t, func() {
+	ftt.Run("no vlan, have ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "0.0.0.0", nil)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Ip: "0.0.0.0",
-		})
+		}))
 	})
-	Convey("no vlan, have ip, non-empty nwOpt", t, func() {
+	ftt.Run("no vlan, have ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "0.0.0.0", input)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Ip:  "0.0.0.0",
 			Nic: "eth0",
-		})
+		}))
 	})
-	Convey("have vlan, have ip, empty nwOpt", t, func() {
+	ftt.Run("have vlan, have ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan1", "0.0.0.0", nil)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Ip:   "0.0.0.0",
 			Vlan: "vlan1",
-		})
+		}))
 	})
-	Convey("have vlan, have ip, non-empty nwOpt", t, func() {
+	ftt.Run("have vlan, have ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan2", "0.0.0.0", input)
-		So(nwOpt, ShouldResembleProto, &ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
 			Ip:   "0.0.0.0",
 			Vlan: "vlan2",
 			Nic:  "eth0",
-		})
+		}))
 	})
 }
 
@@ -153,19 +154,19 @@ func TestCreateMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("CreateMachineLSEs", t, func() {
-		Convey("Create new machineLSE with machineLSE_id", func() {
+	ftt.Run("CreateMachineLSEs", t, func(t *ftt.Test) {
+		t.Run("Create new machineLSE with machineLSE_id", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-1",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			mlsePrototype := &ufspb.MachineLSEPrototype{
 				Name: "browser:no-vm",
 			}
 			_, err = configuration.CreateMachineLSEPrototype(ctx, mlsePrototype)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machineLSE1 := mockMachineLSE("machineLSE-1")
 			machineLSE1.MachineLsePrototype = "browser:no-vm"
@@ -178,54 +179,54 @@ func TestCreateMachineLSE(t *testing.T) {
 				MachineLSEId: "machinelse-1",
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 		})
 
-		Convey("Create new machineLSE - Invalid input nil", func() {
+		t.Run("Create new machineLSE - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateMachineLSERequest{
 				MachineLSE: nil,
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new machineLSE - Invalid input empty ID", func() {
+		t.Run("Create new machineLSE - Invalid input empty ID", func(t *ftt.Test) {
 			req := &ufsAPI.CreateMachineLSERequest{
 				MachineLSE:   mockMachineLSE("machineLSE-3"),
 				MachineLSEId: "",
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new machineLSE - Invalid input invalid characters", func() {
+		t.Run("Create new machineLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.CreateMachineLSERequest{
 				MachineLSE:   mockMachineLSE("machineLSE-4"),
 				MachineLSEId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidHostname)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidHostname))
 		})
 
-		Convey("Create new machineLSE - Invalid input nil machines", func() {
+		t.Run("Create new machineLSE - Invalid input nil machines", func(t *ftt.Test) {
 			req := &ufsAPI.CreateMachineLSERequest{
 				MachineLSE:   mockMachineLSE("machineLSE-4"),
 				MachineLSEId: "machineLSE-4",
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyMachineName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyMachineName))
 		})
 
-		Convey("Create new machineLSE - Invalid input empty machines", func() {
+		t.Run("Create new machineLSE - Invalid input empty machines", func(t *ftt.Test) {
 			mlse := mockMachineLSE("machineLSE-4")
 			mlse.Machines = []string{""}
 			req := &ufsAPI.CreateMachineLSERequest{
@@ -233,9 +234,9 @@ func TestCreateMachineLSE(t *testing.T) {
 				MachineLSEId: "machineLSE-4",
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyMachineName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyMachineName))
 		})
 	})
 }
@@ -245,19 +246,19 @@ func TestUpdateMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("UpdateMachineLSEs", t, func() {
-		Convey("Update existing machineLSEs", func() {
+	ftt.Run("UpdateMachineLSEs", t, func(t *ftt.Test) {
+		t.Run("Update existing machineLSEs", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-0",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Machines: []string{"machine-0"},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machineLSE := mockMachineLSE("machineLSE-1")
 			machineLSE.Machines = []string{"machine-0"}
@@ -265,22 +266,22 @@ func TestUpdateMachineLSE(t *testing.T) {
 				MachineLSE: machineLSE,
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE))
 		})
 
-		Convey("Update existing machineLSEs with states", func() {
+		t.Run("Update existing machineLSEs with states", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-1",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "machinelse-state",
 				Machines: []string{"machine-1"},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machineLSE := mockMachineLSE("machineLSE-state")
 			machineLSE.Machines = []string{"machine-1"}
@@ -289,44 +290,44 @@ func TestUpdateMachineLSE(t *testing.T) {
 				MachineLSE: machineLSE,
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE))
 			s, err := state.GetStateRecord(ctx, "hosts/machinelse-state")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYED_TESTING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYED_TESTING))
 		})
 
-		Convey("Update machineLSE - Invalid input nil", func() {
+		t.Run("Update machineLSE - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateMachineLSERequest{
 				MachineLSE: nil,
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update machineLSE - Invalid input empty name", func() {
+		t.Run("Update machineLSE - Invalid input empty name", func(t *ftt.Test) {
 			machineLSE4 := mockMachineLSE("")
 			machineLSE4.Name = ""
 			req := &ufsAPI.UpdateMachineLSERequest{
 				MachineLSE: machineLSE4,
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update machineLSE - Invalid input invalid characters", func() {
+		t.Run("Update machineLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			machineLSE5 := mockMachineLSE("a.b)7&")
 			req := &ufsAPI.UpdateMachineLSERequest{
 				MachineLSE: machineLSE5,
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -336,47 +337,47 @@ func TestGetMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("GetMachineLSE", t, func() {
-		Convey("Get machineLSE by existing ID", func() {
+	ftt.Run("GetMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Get machineLSE by existing ID", func(t *ftt.Test) {
 			machineLSE1, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "machinelse-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machineLSE1.Name = util.AddPrefix(util.MachineLSECollection, machineLSE1.Name)
 
 			req := &ufsAPI.GetMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "machinelse-1"),
 			}
 			resp, err := tf.Fleet.GetMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 		})
-		Convey("Get machineLSE by non-existing ID", func() {
+		t.Run("Get machineLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "machineLSE-2"),
 			}
 			resp, err := tf.Fleet.GetMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machineLSE - Invalid input empty name", func() {
+		t.Run("Get machineLSE - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSERequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get machineLSE - Invalid input invalid characters", func() {
+		t.Run("Get machineLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -386,7 +387,7 @@ func TestCreateVM(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("CreateVM", t, func() {
+	ftt.Run("CreateVM", t, func(t *ftt.Test) {
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "inventory-create-machine",
 			Location: &ufspb.Location{
@@ -398,7 +399,7 @@ func TestCreateVM(t *testing.T) {
 			Zone:     ufspb.Zone_ZONE_CHROMEOS3.String(),
 			Machines: []string{"inventory-create-machine"},
 		})
-		Convey("Create new VM - happy path", func() {
+		t.Run("Create new VM - happy path", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "inventory-create-vm1",
 				MachineLseId: "inventory-create-host",
@@ -406,34 +407,34 @@ func TestCreateVM(t *testing.T) {
 			_, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: vm1,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := tf.Fleet.GetVM(ctx, &ufsAPI.GetVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-create-vm1"),
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetName(), ShouldEqual, "vms/inventory-create-vm1")
-			So(resp.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS3.String())
-			So(resp.GetMachineLseId(), ShouldEqual, "inventory-create-host")
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal("vms/inventory-create-vm1"))
+			assert.Loosely(t, resp.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS3.String()))
+			assert.Loosely(t, resp.GetMachineLseId(), should.Equal("inventory-create-host"))
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_REGISTERED))
 
 			s, err := state.GetStateRecord(ctx, "vms/inventory-create-vm1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 		})
 
-		Convey("Create new VM - missing host ", func() {
+		t.Run("Create new VM - missing host ", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name: "missing",
 			}
 			_, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: vm1,
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyHostName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyHostName))
 		})
 
-		Convey("Create vm - Invalid mac", func() {
+		t.Run("Create vm - Invalid mac", func(t *ftt.Test) {
 			resp, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: &ufspb.VM{
 					Name:         "createvm-0",
@@ -441,12 +442,12 @@ func TestCreateVM(t *testing.T) {
 					MachineLseId: "inventory-create-host",
 				},
 			})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Create new VM - assign ip", func() {
+		t.Run("Create new VM - assign ip", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 			vm1 := &ufspb.VM{
 				Name:         "inventory-create-vm2",
@@ -458,19 +459,19 @@ func TestCreateVM(t *testing.T) {
 					Vlan: "vlan-1",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := tf.Fleet.GetVM(ctx, &ufsAPI.GetVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-create-vm2"),
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetVlan(), ShouldEqual, "vlan-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetVlan(), should.Equal("vlan-1"))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "inventory-create-vm2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": dhcp.GetIp()})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeTrue)
 		})
 	})
 }
@@ -480,7 +481,7 @@ func TestUpdateVM(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("UpdateVM", t, func() {
+	ftt.Run("UpdateVM", t, func(t *ftt.Test) {
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "inventory-update-machine",
 			Location: &ufspb.Location{
@@ -492,7 +493,7 @@ func TestUpdateVM(t *testing.T) {
 			Zone:     ufspb.Zone_ZONE_CHROMEOS3.String(),
 			Machines: []string{"inventory-update-machine"},
 		})
-		Convey("Update existing VM", func() {
+		t.Run("Update existing VM", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "inventory-update-vm1",
 				MachineLseId: "inventory-update-host",
@@ -500,23 +501,23 @@ func TestUpdateVM(t *testing.T) {
 			_, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: vm1,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			vm, err := tf.Fleet.GetVM(ctx, &ufsAPI.GetVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-update-vm1"),
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			vm.UpdateTime = nil
 
 			req := &ufsAPI.UpdateVMRequest{
 				Vm: vm1,
 			}
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp.UpdateTime = nil
-			So(resp, ShouldResembleProto, vm)
+			assert.Loosely(t, resp, should.Resemble(vm))
 		})
 
-		Convey("Update existing VMs with states", func() {
+		t.Run("Update existing VMs with states", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "inventory-update-vm2",
 				MachineLseId: "inventory-update-host",
@@ -524,43 +525,43 @@ func TestUpdateVM(t *testing.T) {
 			_, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: vm1,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vm1.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			req := &ufsAPI.UpdateVMRequest{
 				Vm: vm1,
 			}
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_DEPLOYED_TESTING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_DEPLOYED_TESTING))
 			s, err := state.GetStateRecord(ctx, "vms/inventory-update-vm2")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DEPLOYED_TESTING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYED_TESTING))
 		})
 
-		Convey("Update VM - Invalid input nil", func() {
+		t.Run("Update VM - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateVMRequest{
 				Vm: nil,
 			}
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update vm - Invalid mac", func() {
+		t.Run("Update vm - Invalid mac", func(t *ftt.Test) {
 			resp, err := tf.Fleet.UpdateVM(ctx, &ufsAPI.UpdateVMRequest{
 				Vm: &ufspb.VM{
 					Name:       "updatevm-0",
 					MacAddress: "123",
 				},
 			})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Update VM - Invalid input empty name", func() {
+		t.Run("Update VM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateVMRequest{
 				Vm: &ufspb.VM{
 					Name:         "",
@@ -568,12 +569,12 @@ func TestUpdateVM(t *testing.T) {
 				},
 			}
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update VM - Invalid input invalid characters", func() {
+		t.Run("Update VM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateVMRequest{
 				Vm: &ufspb.VM{
 					Name:         util.AddPrefix(util.VMCollection, "a.b)7&"),
@@ -581,9 +582,9 @@ func TestUpdateVM(t *testing.T) {
 				},
 			}
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -593,7 +594,7 @@ func TestDeleteVM(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteVM", t, func() {
+	ftt.Run("DeleteVM", t, func(t *ftt.Test) {
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "inventory-delete-machine",
 			Location: &ufspb.Location{
@@ -605,7 +606,7 @@ func TestDeleteVM(t *testing.T) {
 			Zone:     ufspb.Zone_ZONE_CHROMEOS3.String(),
 			Machines: []string{"inventory-delete-machine"},
 		})
-		Convey("Delete vm by existing ID", func() {
+		t.Run("Delete vm by existing ID", func(t *ftt.Test) {
 			vm1 := &ufspb.VM{
 				Name:         "inventory-delete-vm1",
 				MachineLseId: "inventory-delete-host",
@@ -613,24 +614,24 @@ func TestDeleteVM(t *testing.T) {
 			_, err := tf.Fleet.CreateVM(ctx, &ufsAPI.CreateVMRequest{
 				Vm: vm1,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &ufsAPI.DeleteVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-delete-vm1"),
 			}
 			_, err = tf.Fleet.DeleteVM(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetVM(tf.C, "inventory-delete-vm1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			s, err := state.GetStateRecord(ctx, "vms/inventory-delete-vm1")
-			So(s, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, s, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete vm by existing ID with assigned ip", func() {
+		t.Run("Delete vm by existing ID with assigned ip", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 			vm1 := &ufspb.VM{
 				Name:         "inventory-delete-vm2",
@@ -642,52 +643,52 @@ func TestDeleteVM(t *testing.T) {
 					Ip: "192.168.40.18",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &ufsAPI.DeleteVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-delete-vm2"),
 			}
 			_, err = tf.Fleet.DeleteVM(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetVM(tf.C, "inventory-delete-vm2")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "inventory-delete-vm2")
-			So(dhcp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, dhcp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.18"})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ips, should.HaveLength(1))
+			assert.Loosely(t, ips[0].GetOccupied(), should.BeFalse)
 		})
-		Convey("Delete vm by non-existing ID", func() {
+		t.Run("Delete vm by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "inventory-delete-vm3"),
 			}
 			_, err := tf.Fleet.DeleteVM(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete vm - Invalid input empty name", func() {
+		t.Run("Delete vm - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteVMRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Delete vm - Invalid input invalid characters", func() {
+		t.Run("Delete vm - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteVMRequest{
 				Name: util.AddPrefix(util.VMCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -732,35 +733,35 @@ func TestListVMs(t *testing.T) {
 			ResourceState: ufspb.State_STATE_DEPLOYED_TESTING,
 		},
 	}
-	Convey("ListVMs", t, func() {
+	ftt.Run("ListVMs", t, func(t *ftt.Test) {
 		_, err := inventory.BatchUpdateVMs(ctx, vms)
-		So(err, ShouldBeNil)
-		Convey("ListVMs - page_size negative - error", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("ListVMs - page_size negative - error", func(t *ftt.Test) {
 			resp, err := tf.Fleet.ListVMs(tf.C, &ufsAPI.ListVMsRequest{
 				PageSize: -5,
 			})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListVMs - invalid filter - error", func() {
+		t.Run("ListVMs - invalid filter - error", func(t *ftt.Test) {
 			resp, err := tf.Fleet.ListVMs(tf.C, &ufsAPI.ListVMsRequest{
 				Filter: "os=os-1 | state=serving",
 			})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("List VMs - happy path", func() {
+		t.Run("List VMs - happy path", func(t *ftt.Test) {
 			resp, err := tf.Fleet.ListVMs(tf.C, &ufsAPI.ListVMsRequest{
 				Filter:   "os=os-1 & state=serving",
 				PageSize: 5,
 			})
-			So(err, ShouldBeNil)
-			So(resp.GetVms(), ShouldHaveLength, 2)
-			So(ufsAPI.ParseResources(resp.GetVms(), "Name"), ShouldResemble, []string{"vm-list-1", "vm-list-2"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetVms(), should.HaveLength(2))
+			assert.Loosely(t, ufsAPI.ParseResources(resp.GetVms(), "Name"), should.Resemble([]string{"vm-list-1", "vm-list-2"}))
 		})
 	})
 }
@@ -779,50 +780,50 @@ func TestListMachineLSEs(t *testing.T) {
 		resp.Name = util.AddPrefix(util.MachineLSECollection, resp.Name)
 		machineLSEs = append(machineLSEs, resp)
 	}
-	Convey("ListMachineLSEs", t, func() {
-		Convey("ListMachineLSEs - page_size negative - error", func() {
+	ftt.Run("ListMachineLSEs", t, func(t *ftt.Test) {
+		t.Run("ListMachineLSEs - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachineLSEsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListMachineLSEs - Full listing - happy path", func() {
+		t.Run("ListMachineLSEs - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachineLSEsRequest{}
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.MachineLSEs, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.MachineLSEs, should.Resemble(machineLSEs))
 		})
 
-		Convey("ListMachineLSEs - filter format invalid format OR - error", func() {
+		t.Run("ListMachineLSEs - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachineLSEsRequest{
 				Filter: "machine=mac-1|rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListMachineLSEs(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListMachineLSEs - filter format valid AND", func() {
+		t.Run("ListMachineLSEs - filter format valid AND", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachineLSEsRequest{
 				Filter: "machine=mac-1 & machineprototype=mlsep-1",
 			}
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.MachineLSEs, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.MachineLSEs, should.BeNil)
 		})
 
-		Convey("ListMachineLSEs - filter format valid", func() {
+		t.Run("ListMachineLSEs - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachineLSEsRequest{
 				Filter: "machine=mac-1",
 			}
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.MachineLSEs, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.MachineLSEs, should.Resemble(machineLSEs))
 		})
 	})
 }
@@ -832,38 +833,38 @@ func TestDeleteMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteMachineLSE", t, func() {
-		Convey("Delete machineLSE by existing ID", func() {
+	ftt.Run("DeleteMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Delete machineLSE by existing ID", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-1",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Hostname: "machinelse-1",
 				Machines: []string{"machine-1"},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &ufsAPI.DeleteMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "machineLSE-1"),
 			}
 			_, err = tf.Fleet.DeleteMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetMachineLSE(tf.C, "machineLSE-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSE by existing ID with assigned ip", func() {
+		t.Run("Delete machineLSE by existing ID with assigned ip", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-with-ip",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "machinelse-with-ip",
@@ -871,14 +872,14 @@ func TestDeleteMachineLSE(t *testing.T) {
 				Nic:      "eth0",
 				Machines: []string{"machine-1"},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
 				{
 					Hostname: "machinelse-with-ip",
 					Ip:       "1.2.3.4",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, []*ufspb.IP{
 				{
 					Id:       "vlan:1234",
@@ -888,53 +889,53 @@ func TestDeleteMachineLSE(t *testing.T) {
 					Occupied: true,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &ufsAPI.DeleteMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "machineLSE-with-ip"),
 			}
 			_, err = tf.Fleet.DeleteMachineLSE(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetMachineLSE(tf.C, "machineLSE-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			dhcp, err := configuration.GetDHCPConfig(ctx, "machineLSE-with-ip")
-			So(err, ShouldNotBeNil)
-			So(dhcp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, dhcp, should.BeNil)
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 			ips, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.4"})
-			So(err, ShouldBeNil)
-			So(ips, ShouldHaveLength, 1)
-			So(ips[0].GetOccupied(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ips, should.HaveLength(1))
+			assert.Loosely(t, ips[0].GetOccupied(), should.BeFalse)
 		})
-		Convey("Delete machineLSE by non-existing ID", func() {
+		t.Run("Delete machineLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "machineLSE-2"),
 			}
 			_, err := tf.Fleet.DeleteMachineLSE(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSE - Invalid input empty name", func() {
+		t.Run("Delete machineLSE - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineLSERequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Delete machineLSE - Invalid input invalid characters", func() {
+		t.Run("Delete machineLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineLSERequest{
 				Name: util.AddPrefix(util.MachineLSECollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteMachineLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -944,20 +945,20 @@ func TestRenameMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameMachineLSE", t, func() {
-		Convey("Rename an empty machineLSE name - returns error", func() {
+	ftt.Run("RenameMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Rename an empty machineLSE name - returns error", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameMachineLSE(tf.C, &ufsAPI.RenameMachineLSERequest{
 				Name: "",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename a machineLSE to an empty name - returns error", func() {
+		t.Run("Rename a machineLSE to an empty name - returns error", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameMachineLSE(tf.C, &ufsAPI.RenameMachineLSERequest{
 				Name:    "oldMachineLSE",
 				NewName: "",
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
@@ -969,58 +970,58 @@ func TestCreateRackLSE(t *testing.T) {
 	defer validate()
 	rackLSE1 := mockRackLSE("rackLSE-1")
 	rackLSE2 := mockRackLSE("rackLSE-2")
-	Convey("CreateRackLSEs", t, func() {
-		Convey("Create new rackLSE with rackLSE_id", func() {
+	ftt.Run("CreateRackLSEs", t, func(t *ftt.Test) {
+		t.Run("Create new rackLSE with rackLSE_id", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE:   rackLSE1,
 				RackLSEId: "rackLSE-1",
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 		})
 
-		Convey("Create existing rackLSEs", func() {
+		t.Run("Create existing rackLSEs", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE:   rackLSE1,
 				RackLSEId: "rackLSE-1",
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
 
-		Convey("Create new rackLSE - Invalid input nil", func() {
+		t.Run("Create new rackLSE - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE: nil,
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new rackLSE - Invalid input empty ID", func() {
+		t.Run("Create new rackLSE - Invalid input empty ID", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE:   rackLSE2,
 				RackLSEId: "",
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new rackLSE - Invalid input invalid characters", func() {
+		t.Run("Create new rackLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE:   rackLSE2,
 				RackLSEId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1035,71 +1036,71 @@ func TestUpdateRackLSE(t *testing.T) {
 	rackLSE3 := mockRackLSE("rackLSE-3")
 	rackLSE4 := mockRackLSE("")
 	rackLSE5 := mockRackLSE("a.b)7&")
-	Convey("UpdateRackLSEs", t, func() {
-		Convey("Update existing rackLSEs", func() {
+	ftt.Run("UpdateRackLSEs", t, func(t *ftt.Test) {
+		t.Run("Update existing rackLSEs", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRackLSERequest{
 				RackLSE:   rackLSE1,
 				RackLSEId: "rackLSE-1",
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 			ureq := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: rackLSE2,
 			}
 			resp, err = tf.Fleet.UpdateRackLSE(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE2))
 		})
 
-		Convey("Update non-existing rackLSEs", func() {
+		t.Run("Update non-existing rackLSEs", func(t *ftt.Test) {
 			ureq := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: rackLSE3,
 			}
 			resp, err := tf.Fleet.UpdateRackLSE(tf.C, ureq)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Update rackLSE - Invalid input nil", func() {
+		t.Run("Update rackLSE - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: nil,
 			}
 			resp, err := tf.Fleet.UpdateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update rackLSE - Invalid input empty name", func() {
+		t.Run("Update rackLSE - Invalid input empty name", func(t *ftt.Test) {
 			rackLSE4.Name = ""
 			req := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: rackLSE4,
 			}
 			resp, err := tf.Fleet.UpdateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update rackLSE - Invalid input invalid characters", func() {
+		t.Run("Update rackLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: rackLSE5,
 			}
 			resp, err := tf.Fleet.UpdateRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
 
 func TestGetRackLSE(t *testing.T) {
 	t.Parallel()
-	Convey("GetRackLSE", t, func() {
+	ftt.Run("GetRackLSE", t, func(t *ftt.Test) {
 		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
+		tf, validate := newTestFixtureWithContext(ctx, t.T)
 		defer validate()
 		rackLSE1 := mockRackLSE("rackLSE-1")
 		req := &ufsAPI.CreateRackLSERequest{
@@ -1107,42 +1108,42 @@ func TestGetRackLSE(t *testing.T) {
 			RackLSEId: "rackLSE-1",
 		}
 		resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, rackLSE1)
-		Convey("Get rackLSE by existing ID", func() {
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(rackLSE1))
+		t.Run("Get rackLSE by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-1"),
 			}
 			resp, err := tf.Fleet.GetRackLSE(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 		})
-		Convey("Get rackLSE by non-existing ID", func() {
+		t.Run("Get rackLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-2"),
 			}
 			resp, err := tf.Fleet.GetRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get rackLSE - Invalid input empty name", func() {
+		t.Run("Get rackLSE - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get rackLSE - Invalid input invalid characters", func() {
+		t.Run("Get rackLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1161,59 +1162,59 @@ func TestListRackLSEs(t *testing.T) {
 		resp.Name = util.AddPrefix(util.RackLSECollection, resp.Name)
 		rackLSEs = append(rackLSEs, resp)
 	}
-	Convey("ListRackLSEs", t, func() {
-		Convey("ListRackLSEs - page_size negative - error", func() {
+	ftt.Run("ListRackLSEs", t, func(t *ftt.Test) {
+		t.Run("ListRackLSEs - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListRackLSEsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListRackLSEs - Full listing - happy path", func() {
+		t.Run("ListRackLSEs - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListRackLSEsRequest{}
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.RackLSEs, ShouldResembleProto, rackLSEs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RackLSEs, should.Resemble(rackLSEs))
 		})
 
-		Convey("ListRackLSEs - filter format invalid format OR - error", func() {
+		t.Run("ListRackLSEs - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListRackLSEsRequest{
 				Filter: "rack=mac-1|rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListRackLSEs(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListRackLSEs - filter format valid AND", func() {
+		t.Run("ListRackLSEs - filter format valid AND", func(t *ftt.Test) {
 			req := &ufsAPI.ListRackLSEsRequest{
 				Filter: "rack=rack-1 & rackprototype=mlsep-1",
 			}
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.RackLSEs, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RackLSEs, should.BeNil)
 		})
 
-		Convey("ListRackLSEs - filter format valid", func() {
+		t.Run("ListRackLSEs - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListRackLSEsRequest{
 				Filter: "rack=rack-1",
 			}
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.RackLSEs, ShouldResembleProto, rackLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RackLSEs, should.Resemble(rackLSEs))
 		})
 	})
 }
 
 func TestDeleteRackLSE(t *testing.T) {
 	t.Parallel()
-	Convey("DeleteRackLSE", t, func() {
+	ftt.Run("DeleteRackLSE", t, func(t *ftt.Test) {
 		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
+		tf, validate := newTestFixtureWithContext(ctx, t.T)
 		defer validate()
 		rackLSE1 := mockRackLSE("")
 		req := &ufsAPI.CreateRackLSERequest{
@@ -1221,47 +1222,47 @@ func TestDeleteRackLSE(t *testing.T) {
 			RackLSEId: "rackLSE-1",
 		}
 		resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, rackLSE1)
-		Convey("Delete rackLSE by existing ID", func() {
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(rackLSE1))
+		t.Run("Delete rackLSE by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-1"),
 			}
 			_, err := tf.Fleet.DeleteRackLSE(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			greq := &ufsAPI.GetRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-1"),
 			}
 			res, err := tf.Fleet.GetRackLSE(tf.C, greq)
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSE by non-existing ID", func() {
+		t.Run("Delete rackLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-2"),
 			}
 			_, err := tf.Fleet.DeleteRackLSE(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSE - Invalid input empty name", func() {
+		t.Run("Delete rackLSE - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackLSERequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Delete rackLSE - Invalid input invalid characters", func() {
+		t.Run("Delete rackLSE - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteRackLSE(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1271,8 +1272,8 @@ func TestImportOSMachineLSEs(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Import ChromeOS machine lses", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Import ChromeOS machine lses", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ImportOSMachineLSEsRequest{
 				Source: &ufsAPI.ImportOSMachineLSEsRequest_MachineDbSource{
 					MachineDbSource: &ufsAPI.MachineDBSource{
@@ -1282,83 +1283,83 @@ func TestImportOSMachineLSEs(t *testing.T) {
 			}
 			tf.Fleet.importPageSize = 25
 			res, err := tf.Fleet.ImportOSMachineLSEs(ctx, req)
-			So(err, ShouldBeNil)
-			So(res.Code, ShouldEqual, code.Code_OK)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.Code, should.Equal(code.Code_OK))
 
 			// Verify machine lse prototypes
 			lps, _, err := configuration.ListMachineLSEPrototypes(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(lps, "Name"), ShouldResemble, []string{"acs:camera", "acs:wificell", "atl:labstation", "atl:standard"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ufsAPI.ParseResources(lps, "Name"), should.Resemble([]string{"acs:camera", "acs:wificell", "atl:labstation", "atl:standard"}))
 
 			// Verify machine lses
 			machineLSEs, _, err := inventory.ListMachineLSEs(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(ufsAPI.ParseResources(machineLSEs, "Name"), ShouldResemble, []string{"chromeos2-test_host", "chromeos3-test_host", "chromeos5-test_host", "test_servo"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ufsAPI.ParseResources(machineLSEs, "Name"), should.Resemble([]string{"chromeos2-test_host", "chromeos3-test_host", "chromeos5-test_host", "test_servo"}))
 			// Spot check some fields
 			for _, r := range machineLSEs {
 				switch r.GetName() {
 				case "test_host", "chromeos1-test_host", "chromeos3-test_host":
-					So(r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), ShouldResemble, []string{"DUT_POOL_QUOTA", "hotrod"})
-					So(r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeTrue)
+					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), should.Resemble([]string{"DUT_POOL_QUOTA", "hotrod"}))
+					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeTrue)
 				case "test_servo":
-					So(r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), ShouldResemble, []string{"labstation_main"})
-					So(r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitName(), ShouldEqual, "test_power_unit_name")
+					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Resemble([]string{"labstation_main"}))
+					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitName(), should.Equal("test_power_unit_name"))
 				}
 			}
 			lse, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_dut_id", false)
-			So(err, ShouldBeNil)
-			So(lse, ShouldHaveLength, 1)
-			So(lse[0].GetMachineLsePrototype(), ShouldEqual, "atl:standard")
-			So(lse[0].GetHostname(), ShouldEqual, "chromeos2-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse, should.HaveLength(1))
+			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("atl:standard"))
+			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos2-test_host"))
 			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_camera_dut_id", false)
-			So(err, ShouldBeNil)
-			So(lse, ShouldHaveLength, 1)
-			So(lse[0].GetMachineLsePrototype(), ShouldEqual, "acs:camera")
-			So(lse[0].GetHostname(), ShouldEqual, "chromeos3-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse, should.HaveLength(1))
+			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("acs:camera"))
+			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos3-test_host"))
 			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_wifi_dut_id", false)
-			So(err, ShouldBeNil)
-			So(lse, ShouldHaveLength, 1)
-			So(lse[0].GetMachineLsePrototype(), ShouldEqual, "acs:wificell")
-			So(lse[0].GetHostname(), ShouldEqual, "chromeos5-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse, should.HaveLength(1))
+			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("acs:wificell"))
+			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos5-test_host"))
 			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_labstation_id", false)
-			So(err, ShouldBeNil)
-			So(lse, ShouldHaveLength, 1)
-			So(lse[0].GetMachineLsePrototype(), ShouldEqual, "atl:labstation")
-			So(lse[0].GetHostname(), ShouldEqual, "test_servo")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse, should.HaveLength(1))
+			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("atl:labstation"))
+			assert.Loosely(t, lse[0].GetHostname(), should.Equal("test_servo"))
 
 			// Verify dut states
 			resp, err := state.GetAllDutStates(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Labstation doesn't have dut state
-			So(resp.Passed(), ShouldHaveLength, 3)
+			assert.Loosely(t, resp.Passed(), should.HaveLength(3))
 			ds, err := state.GetDutState(ctx, "mock_dut_id")
-			So(err, ShouldBeNil)
-			So(ds.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(ds.GetWorkingBluetoothBtpeer(), ShouldEqual, 1)
-			So(ds.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_NORMAL)
-			So(ds.GetCr50Phase(), ShouldEqual, chromeosLab.DutState_CR50_PHASE_PVT)
-			So(ds.GetHostname(), ShouldEqual, "chromeos2-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
+			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
+			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
+			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos2-test_host"))
 
 			ds, err = state.GetDutState(ctx, "mock_camera_dut_id")
-			So(err, ShouldBeNil)
-			So(ds.GetServo(), ShouldEqual, chromeosLab.PeripheralState_SERVOD_ISSUE)
-			So(ds.GetWorkingBluetoothBtpeer(), ShouldEqual, 1)
-			So(ds.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_NORMAL)
-			So(ds.GetCr50Phase(), ShouldEqual, chromeosLab.DutState_CR50_PHASE_PVT)
-			So(ds.GetHostname(), ShouldEqual, "chromeos3-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_SERVOD_ISSUE))
+			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
+			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
+			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
+			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos3-test_host"))
 
 			ds, err = state.GetDutState(ctx, "mock_wifi_dut_id")
-			So(err, ShouldBeNil)
-			So(ds.GetServo(), ShouldEqual, chromeosLab.PeripheralState_NOT_CONNECTED)
-			So(ds.GetWorkingBluetoothBtpeer(), ShouldEqual, 1)
-			So(ds.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_NORMAL)
-			So(ds.GetCr50Phase(), ShouldEqual, chromeosLab.DutState_CR50_PHASE_PVT)
-			So(ds.GetHostname(), ShouldEqual, "chromeos5-test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_NOT_CONNECTED))
+			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
+			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
+			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
+			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos5-test_host"))
 
 			ds, err = state.GetDutState(ctx, "mock_labstation_id")
-			So(ds, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, ds, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -1368,50 +1369,50 @@ func TestGetMachineLSEDeployment(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("GetMachineLSEDeployment", t, func() {
-		Convey("Get machine lse deployment record by existing ID", func() {
+	ftt.Run("GetMachineLSEDeployment", t, func(t *ftt.Test) {
+		t.Run("Get machine lse deployment record by existing ID", func(t *ftt.Test) {
 			dr1, err := inventory.UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{
 				{
 					SerialNumber: "dr-get-1",
 				},
 			})
-			So(err, ShouldBeNil)
-			So(dr1, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dr1, should.HaveLength(1))
 			dr1[0].SerialNumber = util.AddPrefix(util.MachineLSEDeploymentCollection, dr1[0].SerialNumber)
 
 			req := &ufsAPI.GetMachineLSEDeploymentRequest{
 				Name: util.AddPrefix(util.MachineLSEDeploymentCollection, "dr-get-1"),
 			}
 			resp, err := tf.Fleet.GetMachineLSEDeployment(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dr1[0])
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dr1[0]))
 		})
-		Convey("Get machine lse deployment record by non-existing ID", func() {
+		t.Run("Get machine lse deployment record by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEDeploymentRequest{
 				Name: util.AddPrefix(util.MachineLSEDeploymentCollection, "dr-get-2"),
 			}
 			resp, err := tf.Fleet.GetMachineLSEDeployment(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machine lse deployment record - Invalid input empty name", func() {
+		t.Run("Get machine lse deployment record - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEDeploymentRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetMachineLSEDeployment(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get machine lse deployment record - Invalid input invalid characters", func() {
+		t.Run("Get machine lse deployment record - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEDeploymentRequest{
 				Name: util.AddPrefix(util.MachineLSEDeploymentCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetMachineLSEDeployment(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1421,36 +1422,36 @@ func TestCreateSchedulingUnit(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("CreateSchedulingUnit", t, func() {
-		Convey("Create new SchedulingUnit with schedulingUnitId - happy path", func() {
+	ftt.Run("CreateSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Create new SchedulingUnit with schedulingUnitId - happy path", func(t *ftt.Test) {
 			su := mockSchedulingUnit("")
 			req := &ufsAPI.CreateSchedulingUnitRequest{
 				SchedulingUnit:   su,
 				SchedulingUnitId: "su-1",
 			}
 			resp, err := tf.Fleet.CreateSchedulingUnit(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, su)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(su))
 		})
 
-		Convey("Create new SchedulingUnit with nil entity", func() {
+		t.Run("Create new SchedulingUnit with nil entity", func(t *ftt.Test) {
 			req := &ufsAPI.CreateSchedulingUnitRequest{
 				SchedulingUnit:   nil,
 				SchedulingUnitId: "su-2",
 			}
 			_, err := tf.Fleet.CreateSchedulingUnit(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new SchedulingUnit without schedulingUnitId", func() {
+		t.Run("Create new SchedulingUnit without schedulingUnitId", func(t *ftt.Test) {
 			su := mockSchedulingUnit("")
 			req := &ufsAPI.CreateSchedulingUnitRequest{
 				SchedulingUnit: su,
 			}
 			_, err := tf.Fleet.CreateSchedulingUnit(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 	})
 }
@@ -1460,8 +1461,8 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("UpdateSchedulingUnit", t, func() {
-		Convey("Update existing SchedulingUnit - happy path", func() {
+	ftt.Run("UpdateSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Update existing SchedulingUnit - happy path", func(t *ftt.Test) {
 			inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
 				Name: "su-1",
 			})
@@ -1472,41 +1473,41 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 				SchedulingUnit: su1,
 			}
 			resp, err := tf.Fleet.UpdateSchedulingUnit(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, su1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(su1))
 		})
 
-		Convey("Update SchedulingUnit - Invalid input nil", func() {
+		t.Run("Update SchedulingUnit - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateSchedulingUnitRequest{
 				SchedulingUnit: nil,
 			}
 			resp, err := tf.Fleet.UpdateSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update SchedulingUnit - Invalid input empty name", func() {
+		t.Run("Update SchedulingUnit - Invalid input empty name", func(t *ftt.Test) {
 			su := mockSchedulingUnit("")
 			su.Name = ""
 			req := &ufsAPI.UpdateSchedulingUnitRequest{
 				SchedulingUnit: su,
 			}
 			resp, err := tf.Fleet.UpdateSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update SchedulingUnit - Invalid input invalid name", func() {
+		t.Run("Update SchedulingUnit - Invalid input invalid name", func(t *ftt.Test) {
 			su := mockSchedulingUnit("a.b)7&")
 			req := &ufsAPI.UpdateSchedulingUnitRequest{
 				SchedulingUnit: su,
 			}
 			resp, err := tf.Fleet.UpdateSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1519,35 +1520,35 @@ func TestGetSchedulingUnit(t *testing.T) {
 	su, _ := inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
 		Name: "su-1",
 	})
-	Convey("GetSchedulingUnit", t, func() {
-		Convey("Get SchedulingUnit by existing ID - happy path", func() {
+	ftt.Run("GetSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Get SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetSchedulingUnitRequest{
 				Name: util.AddPrefix(util.SchedulingUnitCollection, "su-1"),
 			}
 			resp, _ := tf.Fleet.GetSchedulingUnit(tf.C, req)
-			So(resp, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			So(resp, ShouldResembleProto, su)
+			assert.Loosely(t, resp, should.Resemble(su))
 		})
 
-		Convey("Get SchedulingUnit - Invalid input empty name", func() {
+		t.Run("Get SchedulingUnit - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetSchedulingUnitRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Get SchedulingUnit - Invalid input invalid characters", func() {
+		t.Run("Get SchedulingUnit - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetSchedulingUnitRequest{
 				Name: util.AddPrefix(util.SchedulingUnitCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1560,38 +1561,38 @@ func TestDeleteSchedulingUnit(t *testing.T) {
 	inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
 		Name: "su-1",
 	})
-	Convey("DeleteSchedulingUnit", t, func() {
-		Convey("Delete SchedulingUnit by existing ID - happy path", func() {
+	ftt.Run("DeleteSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Delete SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteSchedulingUnitRequest{
 				Name: util.AddPrefix(util.SchedulingUnitCollection, "su-1"),
 			}
 			_, err := tf.Fleet.DeleteSchedulingUnit(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetSchedulingUnit(tf.C, "su-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete SchedulingUnit - Invalid input empty name", func() {
+		t.Run("Delete SchedulingUnit - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteSchedulingUnitRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete SchedulingUnit - Invalid input invalid characters", func() {
+		t.Run("Delete SchedulingUnit - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteSchedulingUnitRequest{
 				Name: util.AddPrefix(util.SchedulingUnitCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteSchedulingUnit(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1609,32 +1610,32 @@ func TestListSchedulingUnits(t *testing.T) {
 		resp.Name = util.AddPrefix(util.SchedulingUnitCollection, resp.Name)
 		schedulingUnits = append(schedulingUnits, resp)
 	}
-	Convey("ListSchedulingUnits", t, func() {
-		Convey("ListSchedulingUnits - page_size negative - error", func() {
+	ftt.Run("ListSchedulingUnits", t, func(t *ftt.Test) {
+		t.Run("ListSchedulingUnits - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListSchedulingUnitsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListSchedulingUnits(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListSchedulingUnits - Full listing with no pagination - happy path", func() {
+		t.Run("ListSchedulingUnits - Full listing with no pagination - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListSchedulingUnitsRequest{}
 			resp, err := tf.Fleet.ListSchedulingUnits(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.SchedulingUnits, ShouldResembleProto, schedulingUnits)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.SchedulingUnits, should.Resemble(schedulingUnits))
 		})
 
-		Convey("ListSchedulingUnits - filter format invalid format OR - error", func() {
+		t.Run("ListSchedulingUnits - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListSchedulingUnitsRequest{
 				Filter: "state=x|state=y",
 			}
 			_, err := tf.Fleet.ListSchedulingUnits(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 	})
 }
@@ -1708,54 +1709,54 @@ func TestGetDeviceData(t *testing.T) {
 	}
 	inventory.BatchUpdateVMs(ctx, vms)
 
-	Convey("GetDeviceData", t, func() {
-		Convey("Get Browser Host by hostname - happy path", func() {
+	ftt.Run("GetDeviceData", t, func(t *ftt.Test) {
+		t.Run("Get Browser Host by hostname - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: "browser-host1",
 			}
 			resp, err := tf.Fleet.GetDeviceData(ctx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_BROWSER_DEVICE)
-			So(resp.GetBrowserDeviceData().GetHost().GetHostname(), ShouldEqual, "browser-host1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_BROWSER_DEVICE))
+			assert.Loosely(t, resp.GetBrowserDeviceData().GetHost().GetHostname(), should.Equal("browser-host1"))
 		})
 
-		Convey("Get Browser VM by hostname - happy path", func() {
+		t.Run("Get Browser VM by hostname - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: "browser-vm1",
 			}
 			resp, err := tf.Fleet.GetDeviceData(ctx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_BROWSER_DEVICE)
-			So(resp.GetBrowserDeviceData().GetVm().GetName(), ShouldEqual, "browser-vm1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_BROWSER_DEVICE))
+			assert.Loosely(t, resp.GetBrowserDeviceData().GetVm().GetName(), should.Equal("browser-vm1"))
 		})
 
-		Convey("Get SchedulingUnit by existing ID - happy path", func() {
+		t.Run("Get SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: util.AddPrefix(util.SchedulingUnitCollection, "su-1"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
 			resp.GetSchedulingUnit().Name = util.RemovePrefix(resp.GetSchedulingUnit().Name)
-			So(resp.GetSchedulingUnit(), ShouldResembleProto, su)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT)
+			assert.Loosely(t, resp.GetSchedulingUnit(), should.Resemble(su))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT))
 		})
 
-		Convey("Get ChromeOSDeviceData by existing hostname - happy path", func() {
+		t.Run("Get ChromeOSDeviceData by existing hostname - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: util.AddPrefix(util.MachineLSECollection, "lse-1"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeOsDeviceData().GetLabConfig(), ShouldResembleProto, machinelse)
-			So(resp.GetChromeOsDeviceData().GetMachine(), ShouldResembleProto, machine)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machinelse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machine))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 		})
 
-		Convey("Get ChromeOSDeviceData by existing hostname in os namespace", func() {
+		t.Run("Get ChromeOSDeviceData by existing hostname in os namespace", func(t *ftt.Test) {
 			machineOs := &ufspb.Machine{
 				Name: "machine-os-1",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -1778,44 +1779,44 @@ func TestGetDeviceData(t *testing.T) {
 				Hostname: util.AddPrefix(util.MachineLSECollection, "lse-os-1"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeOsDeviceData().GetLabConfig(), ShouldResembleProto, machineOsLse)
-			So(resp.GetChromeOsDeviceData().GetMachine(), ShouldResembleProto, machineOs)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machineOsLse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machineOs))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 
 			// Should not exist in Browser namespace
 			respBrowser, err := tf.Fleet.GetDeviceData(tf.C, req)
-			So(respBrowser, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "no valid device found")
+			assert.Loosely(t, respBrowser, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("no valid device found"))
 		})
 
-		Convey("Get ChromeOSDeviceData by existing asset tag - happy path", func() {
+		t.Run("Get ChromeOSDeviceData by existing asset tag - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				DeviceId: "machine-1",
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeOsDeviceData().GetLabConfig(), ShouldResembleProto, machinelse)
-			So(resp.GetChromeOsDeviceData().GetMachine(), ShouldResembleProto, machine)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machinelse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machine))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 		})
 
-		Convey("Get AttachedDeviceData by existing hostname - happy path", func() {
+		t.Run("Get AttachedDeviceData by existing hostname - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: util.AddPrefix(util.MachineLSECollection, "admlse-1"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetAttachedDeviceData().GetLabConfig(), ShouldResembleProto, admlse)
-			So(resp.GetAttachedDeviceData().GetMachine(), ShouldResembleProto, adm)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 		})
 
-		Convey("Get AttachedDeviceData by existing hostname in os namespace", func() {
+		t.Run("Get AttachedDeviceData by existing hostname in os namespace", func(t *ftt.Test) {
 			adm := &ufspb.Machine{
 				Name: "adm-os-1",
 				Device: &ufspb.Machine_AttachedDevice{
@@ -1838,49 +1839,49 @@ func TestGetDeviceData(t *testing.T) {
 				Hostname: util.AddPrefix(util.MachineLSECollection, "admlse-os-1"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetAttachedDeviceData().GetLabConfig(), ShouldResembleProto, admlse)
-			So(resp.GetAttachedDeviceData().GetMachine(), ShouldResembleProto, adm)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 
 			// Should not exist in Browser namespace
 			respBrowser, err := tf.Fleet.GetDeviceData(tf.C, req)
-			So(respBrowser, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "no valid device found")
+			assert.Loosely(t, respBrowser, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("no valid device found"))
 		})
 
-		Convey("Get AttachedDeviceData by existing asset tag - happy path", func() {
+		t.Run("Get AttachedDeviceData by existing asset tag - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				DeviceId: "adm-1",
 			}
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetAttachedDeviceData().GetLabConfig(), ShouldResembleProto, admlse)
-			So(resp.GetAttachedDeviceData().GetMachine(), ShouldResembleProto, adm)
-			So(resp.GetResourceType(), ShouldEqual, ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 		})
 
-		Convey("Get device data - Invalid input empty name", func() {
+		t.Run("Get device data - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: "",
 			}
 			resp, err := tf.Fleet.GetDeviceData(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Both Id and hostname are empty")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Both Id and hostname are empty"))
 		})
 
-		Convey("Get device data - Invalid input invalid characters", func() {
+		t.Run("Get device data - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetDeviceDataRequest{
 				Hostname: util.AddPrefix(util.SchedulingUnitCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetDeviceData(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "no valid device found")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("no valid device found"))
 		})
 	})
 }
@@ -1961,7 +1962,7 @@ func TestGetDUTsForLabstation(t *testing.T) {
 }
 `
 
-	Convey("smoke test", t, func() {
+	ftt.Run("smoke test", t, func(t *ftt.Test) {
 		_, err := inventory.CreateMachineLSE(ctx, mustParseMachineLSE(labstation))
 		if err != nil {
 			panic(err.Error())
@@ -1972,15 +1973,15 @@ func TestGetDUTsForLabstation(t *testing.T) {
 		}
 
 		resp, err := tf.Fleet.GetDUTsForLabstation(tf.C, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &ufsAPI.GetDUTsForLabstationResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&ufsAPI.GetDUTsForLabstationResponse{
 			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
 				{
 					Hostname: "fake-labstation",
 					DutName:  []string{},
 				},
 			},
-		})
+		}))
 
 		_, err = inventory.CreateMachineLSE(ctx, mustParseMachineLSE(dut))
 		if err != nil {
@@ -1988,15 +1989,15 @@ func TestGetDUTsForLabstation(t *testing.T) {
 		}
 
 		resp, err = tf.Fleet.GetDUTsForLabstation(tf.C, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &ufsAPI.GetDUTsForLabstationResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&ufsAPI.GetDUTsForLabstationResponse{
 			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
 				{
 					Hostname: "fake-labstation",
 					DutName:  []string{"fake-dut"},
 				},
 			},
-		})
+		}))
 
 	})
 }

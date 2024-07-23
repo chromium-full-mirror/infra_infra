@@ -8,16 +8,16 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/configuration"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func mockChromeOSMachine(id, lab, board string) *ufspb.Machine {
@@ -42,12 +42,12 @@ func mockChromeBrowserMachine(id, lab, name string) *ufspb.Machine {
 	}
 }
 
-func assertMachineEqual(a *ufspb.Machine, b *ufspb.Machine) {
-	So(a.GetName(), ShouldEqual, b.GetName())
-	So(a.GetChromeBrowserMachine().GetDescription(), ShouldEqual,
-		b.GetChromeBrowserMachine().GetDescription())
-	So(a.GetChromeosMachine().GetReferenceBoard(), ShouldEqual,
-		b.GetChromeosMachine().GetReferenceBoard())
+func assertMachineEqual(t *ftt.Test, a *ufspb.Machine, b *ufspb.Machine) {
+	assert.Loosely(t, a.GetName(), should.Equal(b.GetName()))
+	assert.Loosely(t, a.GetChromeBrowserMachine().GetDescription(), should.Equal(
+		b.GetChromeBrowserMachine().GetDescription()))
+	assert.Loosely(t, a.GetChromeosMachine().GetReferenceBoard(), should.Equal(
+		b.GetChromeosMachine().GetReferenceBoard()))
 }
 
 func mockRack(id string, rackCapactiy int32) *ufspb.Rack {
@@ -102,12 +102,12 @@ func TestMachineRegistration(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Machine Registration", t, func() {
-		Convey("Register machine - happy path", func() {
+	ftt.Run("Machine Registration", t, func(t *ftt.Test) {
+		t.Run("Register machine - happy path", func(t *ftt.Test) {
 			s := mockSwitch("")
 			s.Name = "test-switch"
 			_, err := registration.CreateSwitch(ctx, s)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := mockNic("")
 			nic.Name = "nic-X"
@@ -127,41 +127,41 @@ func TestMachineRegistration(t *testing.T) {
 				Machine: machine,
 			}
 			resp, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machine))
 		})
 
-		Convey("Register machine with nil machine", func() {
+		t.Run("Register machine with nil machine", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Machine "+ufsAPI.NilEntity)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Machine "+ufsAPI.NilEntity))
 		})
 
-		Convey("Register machine - Invalid input empty machine name", func() {
+		t.Run("Register machine - Invalid input empty machine name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "",
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Machine "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Machine "+ufsAPI.EmptyName))
 		})
 
-		Convey("Create new machine - Invalid input invalid characters in machine name", func() {
+		t.Run("Create new machine - Invalid input invalid characters in machine name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "a.b)7&",
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Register machine - Invalid input empty nic name", func() {
+		t.Run("Register machine - Invalid input empty nic name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "machine-1",
@@ -175,11 +175,11 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Nic "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Nic "+ufsAPI.EmptyName))
 		})
 
-		Convey("Register machine - Invalid input invalid characters in nic name", func() {
+		t.Run("Register machine - Invalid input invalid characters in nic name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "machine-1",
@@ -193,11 +193,11 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Register machine - Invalid input empty drac name", func() {
+		t.Run("Register machine - Invalid input empty drac name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "machine-1",
@@ -211,11 +211,11 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Drac "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Drac "+ufsAPI.EmptyName))
 		})
 
-		Convey("Register machine - Invalid input invalid characters in drac name", func() {
+		t.Run("Register machine - Invalid input invalid characters in drac name", func(t *ftt.Test) {
 			req := &ufsAPI.MachineRegistrationRequest{
 				Machine: &ufspb.Machine{
 					Name: "machine-1",
@@ -229,8 +229,8 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.MachineRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -240,8 +240,8 @@ func TestRackRegistration(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Rack Registration", t, func() {
-		Convey("Register Rack - happy path", func() {
+	ftt.Run("Rack Registration", t, func(t *ftt.Test) {
+		t.Run("Register Rack - happy path", func(t *ftt.Test) {
 			switches := []*ufspb.Switch{{
 				Name: "switch-X",
 			}}
@@ -261,40 +261,40 @@ func TestRackRegistration(t *testing.T) {
 				Rack: rack,
 			}
 			resp, _ := tf.Fleet.RackRegistration(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, rack)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(rack))
 		})
 
-		Convey("Register rack with nil rack", func() {
+		t.Run("Register rack with nil rack", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Rack "+ufsAPI.NilEntity)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Rack "+ufsAPI.NilEntity))
 		})
 
-		Convey("Register rack - Invalid input empty rack name", func() {
+		t.Run("Register rack - Invalid input empty rack name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "",
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Rack "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Rack "+ufsAPI.EmptyName))
 		})
 
-		Convey("Create new rack - Invalid input invalid characters in rack name", func() {
+		t.Run("Create new rack - Invalid input invalid characters in rack name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "a.b)7&",
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Register rack - Invalid input empty switch name", func() {
+		t.Run("Register rack - Invalid input empty switch name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "rack-1",
@@ -308,11 +308,11 @@ func TestRackRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Switch "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Switch "+ufsAPI.EmptyName))
 		})
 
-		Convey("Register rack - Invalid input invalid characters in switch name", func() {
+		t.Run("Register rack - Invalid input invalid characters in switch name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "rack-1",
@@ -326,11 +326,11 @@ func TestRackRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Register rack - Invalid input empty kvm name", func() {
+		t.Run("Register rack - Invalid input empty kvm name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "rack-1",
@@ -344,11 +344,11 @@ func TestRackRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "KVM "+ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("KVM "+ufsAPI.EmptyName))
 		})
 
-		Convey("Register rack - Invalid input invalid characters in kvm name", func() {
+		t.Run("Register rack - Invalid input invalid characters in kvm name", func(t *ftt.Test) {
 			req := &ufsAPI.RackRegistrationRequest{
 				Rack: &ufspb.Rack{
 					Name: "rack-1",
@@ -362,8 +362,8 @@ func TestRackRegistration(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.RackRegistration(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -376,50 +376,50 @@ func TestUpdateMachine(t *testing.T) {
 	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "veyron")
 	chromeOSMachine3 := mockChromeOSMachine("", "chromeoslab", "samus")
 	chromeOSMachine4 := mockChromeOSMachine("a.b)7&", "chromeoslab", "samus")
-	Convey("UpdateMachines", t, func() {
-		Convey("Update existing machines - happy path", func() {
+	ftt.Run("UpdateMachines", t, func(t *ftt.Test) {
+		t.Run("Update existing machines - happy path", func(t *ftt.Test) {
 			_, err := registration.CreateMachine(tf.C, &ufspb.Machine{
 				Name: "chromeos-asset-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ureq := &ufsAPI.UpdateMachineRequest{
 				Machine: chromeOSMachine2,
 			}
 			resp, err := tf.Fleet.UpdateMachine(tf.C, ureq)
-			So(err, ShouldBeNil)
-			assertMachineEqual(resp, chromeOSMachine2)
+			assert.Loosely(t, err, should.BeNil)
+			assertMachineEqual(t, resp, chromeOSMachine2)
 		})
 
-		Convey("Update machine - Invalid input nil", func() {
+		t.Run("Update machine - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateMachineRequest{
 				Machine: nil,
 			}
 			resp, err := tf.Fleet.UpdateMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update machine - Invalid input empty name", func() {
+		t.Run("Update machine - Invalid input empty name", func(t *ftt.Test) {
 			chromeOSMachine3.Name = ""
 			req := &ufsAPI.UpdateMachineRequest{
 				Machine: chromeOSMachine3,
 			}
 			resp, err := tf.Fleet.UpdateMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update machine - Invalid input invalid characters", func() {
+		t.Run("Update machine - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateMachineRequest{
 				Machine: chromeOSMachine4,
 			}
 			resp, err := tf.Fleet.UpdateMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -432,35 +432,35 @@ func TestGetMachine(t *testing.T) {
 	chromeOSMachine1, _ := registration.CreateMachine(tf.C, &ufspb.Machine{
 		Name: "chromeos-asset-1",
 	})
-	Convey("GetMachine", t, func() {
-		Convey("Get machine by existing ID", func() {
+	ftt.Run("GetMachine", t, func(t *ftt.Test) {
+		t.Run("Get machine by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineRequest{
 				Name: util.AddPrefix(util.MachineCollection, "chromeos-asset-1"),
 			}
 			resp, err := tf.Fleet.GetMachine(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			So(resp, ShouldResembleProto, chromeOSMachine1)
+			assert.Loosely(t, resp, should.Resemble(chromeOSMachine1))
 		})
 
-		Convey("Get machine - Invalid input empty name", func() {
+		t.Run("Get machine - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Get machine - Invalid input invalid characters", func() {
+		t.Run("Get machine - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineRequest{
 				Name: util.AddPrefix(util.MachineCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -478,50 +478,50 @@ func TestListMachines(t *testing.T) {
 		chromeOSMachine1.Name = util.AddPrefix(util.MachineCollection, chromeOSMachine1.Name)
 		machines = append(machines, resp)
 	}
-	Convey("ListMachines", t, func() {
-		Convey("ListMachines - page_size negative - error", func() {
+	ftt.Run("ListMachines", t, func(t *ftt.Test) {
+		t.Run("ListMachines - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachinesRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListMachines(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListMachines - Full listing - happy path", func() {
+		t.Run("ListMachines - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachinesRequest{}
 			resp, err := tf.Fleet.ListMachines(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Machines, ShouldResembleProto, machines)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Machines, should.Resemble(machines))
 		})
 
-		Convey("ListMachines - filter format invalid format OR - error", func() {
+		t.Run("ListMachines - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachinesRequest{
 				Filter: "machine=mac-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListMachines(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListMachines - filter format valid AND", func() {
+		t.Run("ListMachines - filter format valid AND", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachinesRequest{
 				Filter: "kvm=kvm-1 & rpm=rpm-1",
 			}
 			resp, err := tf.Fleet.ListMachines(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.Machines, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Machines, should.BeNil)
 		})
 
-		Convey("ListMachines - filter format valid", func() {
+		t.Run("ListMachines - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListMachinesRequest{
 				Filter: "rack=rack-1",
 			}
 			resp, err := tf.Fleet.ListMachines(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.Machines, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Machines, should.BeNil)
 		})
 	})
 }
@@ -534,37 +534,37 @@ func TestDeleteMachine(t *testing.T) {
 	registration.CreateMachine(tf.C, &ufspb.Machine{
 		Name: "chromeos-asset-1",
 	})
-	Convey("DeleteMachine", t, func() {
-		Convey("Delete machine by existing ID", func() {
+	ftt.Run("DeleteMachine", t, func(t *ftt.Test) {
+		t.Run("Delete machine by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineRequest{
 				Name: util.AddPrefix(util.MachineCollection, "chromeos-asset-1"),
 			}
 			_, err := tf.Fleet.DeleteMachine(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetMachine(tf.C, "chromeos-asset-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete machine - Invalid input empty name", func() {
+		t.Run("Delete machine - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete machine - Invalid input invalid characters", func() {
+		t.Run("Delete machine - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteMachineRequest{
 				Name: util.AddPrefix(util.MachineCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteMachine(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -574,28 +574,28 @@ func TestRenameMachine(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameMachine", t, func() {
-		Convey("Rename an empty machine name", func() {
+	ftt.Run("RenameMachine", t, func(t *ftt.Test) {
+		t.Run("Rename an empty machine name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
 				Name: "",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename a machine to an empty name", func() {
+		t.Run("Rename a machine to an empty name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
 				Name:    "oldMachine",
 				NewName: "",
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("The new machine name after renaming doesn't follow machine name format", func() {
+		t.Run("The new machine name after renaming doesn't follow machine name format", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
 				Name:    "machines/oldMachine",
 				NewName: "newMachine",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.MachineNameFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.MachineNameFormat))
 		})
 	})
 }
@@ -607,36 +607,36 @@ func TestUpdateRack(t *testing.T) {
 	defer validate()
 	rack3 := mockRack("rack-3", 6)
 	rack4 := mockRack("a.b)7&", 6)
-	Convey("UpdateRack", t, func() {
-		Convey("Update rack - Invalid input nil", func() {
+	ftt.Run("UpdateRack", t, func(t *ftt.Test) {
+		t.Run("Update rack - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRackRequest{
 				Rack: nil,
 			}
 			resp, err := tf.Fleet.UpdateRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update rack - Invalid input empty name", func() {
+		t.Run("Update rack - Invalid input empty name", func(t *ftt.Test) {
 			rack3.Name = ""
 			req := &ufsAPI.UpdateRackRequest{
 				Rack: rack3,
 			}
 			resp, err := tf.Fleet.UpdateRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update rack - Invalid input invalid characters", func() {
+		t.Run("Update rack - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRackRequest{
 				Rack: rack4,
 			}
 			resp, err := tf.Fleet.UpdateRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -646,53 +646,53 @@ func TestGetRack(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("GetRack", t, func() {
-		Convey("Get rack by existing ID", func() {
+	ftt.Run("GetRack", t, func(t *ftt.Test) {
+		t.Run("Get rack by existing ID", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name: "rack-1",
 			}
 			_, err := registration.CreateRack(tf.C, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			rack1.Name = util.AddPrefix(util.RackCollection, "rack-1")
 
 			resp, err := tf.Fleet.GetRack(tf.C, &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "rack-1"),
 			})
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 
 			resp, err = tf.Fleet.GetRack(tf.C, &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "RACK-1"),
 			})
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 		})
-		Convey("Get rack by non-existing ID", func() {
+		t.Run("Get rack by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "rack-2"),
 			}
 			resp, err := tf.Fleet.GetRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get rack - Invalid input empty name", func() {
+		t.Run("Get rack - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get rack - Invalid input invalid characters", func() {
+		t.Run("Get rack - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -711,32 +711,32 @@ func TestListRacks(t *testing.T) {
 		rack1.Name = util.AddPrefix(util.RackCollection, rack1.Name)
 		racks = append(racks, resp)
 	}
-	Convey("ListRacks", t, func() {
-		Convey("ListRacks - page_size negative - error", func() {
+	ftt.Run("ListRacks", t, func(t *ftt.Test) {
+		t.Run("ListRacks - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListRacksRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListRacks - Full listing - happy path", func() {
+		t.Run("ListRacks - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListRacksRequest{}
 			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Racks, ShouldResembleProto, racks)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Racks, should.Resemble(racks))
 		})
 
-		Convey("ListRacks - filter format valid", func() {
+		t.Run("ListRacks - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListRacksRequest{
 				Filter: "tag=tag-1",
 			}
 			resp, err := tf.Fleet.ListRacks(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.Racks, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Racks, should.BeNil)
 		})
 	})
 }
@@ -746,49 +746,49 @@ func TestDeleteRack(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteRack", t, func() {
-		Convey("Delete rack by existing ID", func() {
+	ftt.Run("DeleteRack", t, func(t *ftt.Test) {
+		t.Run("Delete rack by existing ID", func(t *ftt.Test) {
 			_, err := registration.CreateRack(tf.C, &ufspb.Rack{
 				Name: "rack-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &ufsAPI.DeleteRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "rack-1"),
 			}
 			_, err = tf.Fleet.DeleteRack(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := registration.GetRack(tf.C, "rack-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rack by non-existing ID", func() {
+		t.Run("Delete rack by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "rack-2"),
 			}
 			_, err := tf.Fleet.DeleteRack(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rack - Invalid input empty name", func() {
+		t.Run("Delete rack - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Delete rack - Invalid input invalid characters", func() {
+		t.Run("Delete rack - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteRack(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -798,33 +798,33 @@ func TestRenameRack(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameRack", t, func() {
-		Convey("Rename a empty rack name", func() {
+	ftt.Run("RenameRack", t, func(t *ftt.Test) {
+		t.Run("Rename a empty rack name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name: "",
 			})
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename a rack to an empty name", func() {
+		t.Run("Rename a rack to an empty name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "oldRack",
 				NewName: "",
 			})
-			So(err.Error(), ShouldContainSubstring, "Missing new rack name")
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Missing new rack name"))
 		})
-		Convey("The new rack name after renaming doesn't follow rackname format", func() {
+		t.Run("The new rack name after renaming doesn't follow rackname format", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "racks/oldRack",
 				NewName: "newrack",
 			})
-			So(err.Error(), ShouldContainSubstring, ufsAPI.RackNameFormat)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.RackNameFormat))
 		})
-		Convey("The new rack name is not all lowercase", func() {
+		t.Run("The new rack name is not all lowercase", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameRack(tf.C, &ufsAPI.RenameRackRequest{
 				Name:    "racks/oldRack",
 				NewName: "newRack",
 			})
-			So(err.Error(), ShouldContainSubstring, "should be in all lowercase")
+			assert.Loosely(t, err.Error(), should.ContainSubstring("should be in all lowercase"))
 		})
 	})
 }
@@ -845,8 +845,8 @@ func TestCreateNic(t *testing.T) {
 		Name:         "test-switch",
 		CapacityPort: 100,
 	})
-	Convey("CreateNic", t, func() {
-		Convey("Create new nic with nic_id", func() {
+	ftt.Run("CreateNic", t, func(t *ftt.Test) {
+		t.Run("Create new nic with nic_id", func(t *ftt.Test) {
 			nic := mockNic("")
 			nic.Machine = "machine-1"
 			req := &ufsAPI.CreateNicRequest{
@@ -854,21 +854,21 @@ func TestCreateNic(t *testing.T) {
 				NicId: "nic-1",
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 		})
 
-		Convey("Create new nic - Invalid input nil", func() {
+		t.Run("Create new nic - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateNicRequest{
 				Nic: nil,
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new nic - Invalid mac", func() {
+		t.Run("Create new nic - Invalid mac", func(t *ftt.Test) {
 			nic := mockNic("createNic-0")
 			nic.MacAddress = "123"
 			req := &ufsAPI.CreateNicRequest{
@@ -876,12 +876,12 @@ func TestCreateNic(t *testing.T) {
 				NicId: "createNic-0",
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Create new nic - Invalid input empty ID", func() {
+		t.Run("Create new nic - Invalid input empty ID", func(t *ftt.Test) {
 			nic := mockNic("")
 			nic.Machine = "machine-1"
 			req := &ufsAPI.CreateNicRequest{
@@ -889,12 +889,12 @@ func TestCreateNic(t *testing.T) {
 				NicId: "",
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new nic - Invalid input invalid characters", func() {
+		t.Run("Create new nic - Invalid input invalid characters", func(t *ftt.Test) {
 			nic := mockNic("")
 			nic.Machine = "machine-1"
 			req := &ufsAPI.CreateNicRequest{
@@ -902,21 +902,21 @@ func TestCreateNic(t *testing.T) {
 				NicId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Create new nic - Invalid input empty machine", func() {
+		t.Run("Create new nic - Invalid input empty machine", func(t *ftt.Test) {
 			nic := mockNic("")
 			req := &ufsAPI.CreateNicRequest{
 				Nic:   nic,
 				NicId: "nic-5",
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyMachineName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyMachineName))
 		})
 	})
 }
@@ -933,14 +933,14 @@ func TestUpdateNic(t *testing.T) {
 		},
 	}
 	registration.CreateMachine(tf.C, machine1)
-	Convey("UpdateNic", t, func() {
-		Convey("Update existing nic", func() {
+	ftt.Run("UpdateNic", t, func(t *ftt.Test) {
+		t.Run("Update existing nic", func(t *ftt.Test) {
 			nic1 := &ufspb.Nic{
 				Name:    "nic-1",
 				Machine: "machine-1",
 			}
 			_, err := registration.CreateNic(tf.C, nic1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := mockNic("nic-1")
 			nic2.SwitchInterface = nil
@@ -949,21 +949,21 @@ func TestUpdateNic(t *testing.T) {
 				Nic: nic2,
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic2))
 		})
 
-		Convey("Update nic - Invalid input nil", func() {
+		t.Run("Update nic - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateNicRequest{
 				Nic: nil,
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update nic - Invalid mac", func() {
+		t.Run("Update nic - Invalid mac", func(t *ftt.Test) {
 			nic := mockNic("updateNic-0")
 			nic.MacAddress = "123"
 			nic.Machine = "machine-1"
@@ -971,12 +971,12 @@ func TestUpdateNic(t *testing.T) {
 				Nic: nic,
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Update nic - Invalid input empty name", func() {
+		t.Run("Update nic - Invalid input empty name", func(t *ftt.Test) {
 			nic := mockNic("")
 			nic.Name = ""
 			nic.Machine = "machine-1"
@@ -984,21 +984,21 @@ func TestUpdateNic(t *testing.T) {
 				Nic: nic,
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update nic - Invalid input invalid characters", func() {
+		t.Run("Update nic - Invalid input invalid characters", func(t *ftt.Test) {
 			nic := mockNic("a.b)7&")
 			nic.Machine = "machine-1"
 			req := &ufsAPI.UpdateNicRequest{
 				Nic: nic,
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1008,8 +1008,8 @@ func TestGetNic(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("GetNic", t, func() {
-		Convey("Get nic by existing ID", func() {
+	ftt.Run("GetNic", t, func(t *ftt.Test) {
+		t.Run("Get nic by existing ID", func(t *ftt.Test) {
 			nic1 := &ufspb.Nic{
 				Name: "nic-1",
 			}
@@ -1020,28 +1020,28 @@ func TestGetNic(t *testing.T) {
 				Name: util.AddPrefix(util.NicCollection, "nic-1"),
 			}
 			resp, err := tf.Fleet.GetNic(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 		})
 
-		Convey("Get nic - Invalid input empty name", func() {
+		t.Run("Get nic - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetNicRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Get nic - Invalid input invalid characters", func() {
+		t.Run("Get nic - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetNicRequest{
 				Name: util.AddPrefix(util.NicCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1060,41 +1060,41 @@ func TestListNics(t *testing.T) {
 		nic.Name = util.AddPrefix(util.NicCollection, nic.Name)
 		nics = append(nics, resp)
 	}
-	Convey("ListNics", t, func() {
-		Convey("ListNics - page_size negative - error", func() {
+	ftt.Run("ListNics", t, func(t *ftt.Test) {
+		t.Run("ListNics - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListNicsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListNics(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListNics - Full listing - happy path", func() {
+		t.Run("ListNics - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListNicsRequest{}
 			resp, err := tf.Fleet.ListNics(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Nics, ShouldResembleProto, nics)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Nics, should.Resemble(nics))
 		})
 
-		Convey("ListNics - filter format invalid format OR - error", func() {
+		t.Run("ListNics - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListNicsRequest{
 				Filter: "nic=mac-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListNics(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListNics - filter format valid", func() {
+		t.Run("ListNics - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListNicsRequest{
 				Filter: "switch=switch-1",
 			}
 			resp, err := tf.Fleet.ListNics(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.Nics, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Nics, should.BeNil)
 		})
 	})
 }
@@ -1104,25 +1104,25 @@ func TestDeleteNic(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteNic", t, func() {
-		Convey("Delete nic - Invalid input empty name", func() {
+	ftt.Run("DeleteNic", t, func(t *ftt.Test) {
+		t.Run("Delete nic - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteNicRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete nic - Invalid input invalid characters", func() {
+		t.Run("Delete nic - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteNicRequest{
 				Name: util.AddPrefix(util.NicCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteNic(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1132,28 +1132,28 @@ func TestRenameNic(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameNic", t, func() {
-		Convey("Rename an empty nic name", func() {
+	ftt.Run("RenameNic", t, func(t *ftt.Test) {
+		t.Run("Rename an empty nic name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
 				Name: "",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename a nic to an empty name", func() {
+		t.Run("Rename a nic to an empty name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
 				Name:    "oldNic",
 				NewName: "",
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("The new nic name after renaming doesn't follow nic name format", func() {
+		t.Run("The new nic name after renaming doesn't follow nic name format", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
 				Name:    "nics/oldNic",
 				NewName: "newNic",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NicNameFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NicNameFormat))
 		})
 	})
 }
@@ -1170,8 +1170,8 @@ func TestCreateKVM(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("CreateKVM", t, func() {
-		Convey("Create new KVM with KVM_id", func() {
+	ftt.Run("CreateKVM", t, func(t *ftt.Test) {
+		t.Run("Create new KVM with KVM_id", func(t *ftt.Test) {
 			KVM1 := mockKVM("")
 			KVM1.Rack = "rack-1"
 			req := &ufsAPI.CreateKVMRequest{
@@ -1179,21 +1179,21 @@ func TestCreateKVM(t *testing.T) {
 				KVMId: "KVM-1",
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 		})
 
-		Convey("Create new KVM - Invalid input nil", func() {
+		t.Run("Create new KVM - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateKVMRequest{
 				KVM: nil,
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create kvm - Invalid mac", func() {
+		t.Run("Create kvm - Invalid mac", func(t *ftt.Test) {
 			kvm := mockKVM("createKVM-0")
 			kvm.MacAddress = "123"
 			kvm.Rack = "rack-1"
@@ -1202,12 +1202,12 @@ func TestCreateKVM(t *testing.T) {
 				KVMId: "createKVM-0",
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Create new KVM - Invalid input empty ID", func() {
+		t.Run("Create new KVM - Invalid input empty ID", func(t *ftt.Test) {
 			KVM1 := mockKVM("")
 			KVM1.Rack = "rack-1"
 			req := &ufsAPI.CreateKVMRequest{
@@ -1215,12 +1215,12 @@ func TestCreateKVM(t *testing.T) {
 				KVMId: "",
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new KVM - Invalid input invalid characters", func() {
+		t.Run("Create new KVM - Invalid input invalid characters", func(t *ftt.Test) {
 			KVM1 := mockKVM("")
 			KVM1.Rack = "rack-1"
 			req := &ufsAPI.CreateKVMRequest{
@@ -1228,20 +1228,20 @@ func TestCreateKVM(t *testing.T) {
 				KVMId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Create new kvm - Invalid input empty rack", func() {
+		t.Run("Create new kvm - Invalid input empty rack", func(t *ftt.Test) {
 			req := &ufsAPI.CreateKVMRequest{
 				KVM:   mockKVM("x"),
 				KVMId: "kvm-5",
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyRackName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyRackName))
 		})
 	})
 }
@@ -1258,15 +1258,15 @@ func TestUpdateKVM(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("UpdateKVM", t, func() {
-		Convey("Update existing KVM", func() {
+	ftt.Run("UpdateKVM", t, func(t *ftt.Test) {
+		t.Run("Update existing KVM", func(t *ftt.Test) {
 			KVM1 := &ufspb.KVM{
 				Name: "kvm-1",
 				Rack: "rack-1",
 			}
 			resp, err := registration.CreateKVM(tf.C, KVM1)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			KVM2 := mockKVM("KVM-1")
 			KVM2.Rack = "rack-1"
@@ -1274,21 +1274,21 @@ func TestUpdateKVM(t *testing.T) {
 				KVM: KVM2,
 			}
 			resp, err = tf.Fleet.UpdateKVM(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM2))
 		})
 
-		Convey("Update KVM - Invalid input nil", func() {
+		t.Run("Update KVM - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateKVMRequest{
 				KVM: nil,
 			}
 			resp, err := tf.Fleet.UpdateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update kvm - Invalid mac", func() {
+		t.Run("Update kvm - Invalid mac", func(t *ftt.Test) {
 			kvm := mockKVM("updateKVM-0")
 			kvm.MacAddress = "123"
 			kvm.Rack = "rack-1"
@@ -1296,12 +1296,12 @@ func TestUpdateKVM(t *testing.T) {
 				KVM: kvm,
 			}
 			resp, err := tf.Fleet.UpdateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Update KVM - Invalid input empty name", func() {
+		t.Run("Update KVM - Invalid input empty name", func(t *ftt.Test) {
 			KVM3 := mockKVM("KVM-3")
 			KVM3.Name = ""
 			KVM3.Rack = "rack-1"
@@ -1309,70 +1309,70 @@ func TestUpdateKVM(t *testing.T) {
 				KVM: KVM3,
 			}
 			resp, err := tf.Fleet.UpdateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update KVM - Invalid input invalid characters", func() {
+		t.Run("Update KVM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateKVMRequest{
 				KVM: mockKVM("a.b)7&"),
 			}
 			resp, err := tf.Fleet.UpdateKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
 
 func TestGetKVM(t *testing.T) {
 	t.Parallel()
-	Convey("GetKVM", t, func() {
+	ftt.Run("GetKVM", t, func(t *ftt.Test) {
 		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
+		tf, validate := newTestFixtureWithContext(ctx, t.T)
 		defer validate()
-		Convey("Get KVM by existing ID", func() {
+		t.Run("Get KVM by existing ID", func(t *ftt.Test) {
 			KVM1 := &ufspb.KVM{
 				Name: "kvm-1",
 			}
 			_, err := registration.CreateKVM(tf.C, KVM1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			KVM1.Name = util.AddPrefix(util.KVMCollection, "kvm-1")
 
 			req := &ufsAPI.GetKVMRequest{
 				Name: util.AddPrefix(util.KVMCollection, "KVM-1"),
 			}
 			resp, err := tf.Fleet.GetKVM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 		})
-		Convey("Get KVM by non-existing ID", func() {
+		t.Run("Get KVM by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetKVMRequest{
 				Name: util.AddPrefix(util.KVMCollection, "KVM-2"),
 			}
 			resp, err := tf.Fleet.GetKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get KVM - Invalid input empty name", func() {
+		t.Run("Get KVM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetKVMRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get KVM - Invalid input invalid characters", func() {
+		t.Run("Get KVM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetKVMRequest{
 				Name: util.AddPrefix(util.KVMCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1391,41 +1391,41 @@ func TestListKVMs(t *testing.T) {
 		kvm.Name = util.AddPrefix(util.KVMCollection, kvm.Name)
 		KVMs = append(KVMs, resp)
 	}
-	Convey("ListKVMs", t, func() {
-		Convey("ListKVMs - page_size negative - error", func() {
+	ftt.Run("ListKVMs", t, func(t *ftt.Test) {
+		t.Run("ListKVMs - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListKVMsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListKVMs - Full listing - happy path", func() {
+		t.Run("ListKVMs - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListKVMsRequest{}
 			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.KVMs, ShouldResembleProto, KVMs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.KVMs, should.Resemble(KVMs))
 		})
 
-		Convey("ListKVMs - filter format invalid format OR - error", func() {
+		t.Run("ListKVMs - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListKVMsRequest{
 				Filter: "platform=chromeplatform-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListKVMs - filter format valid", func() {
+		t.Run("ListKVMs - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListKVMsRequest{
 				Filter: "platform=chromeplatform-1",
 			}
 			resp, err := tf.Fleet.ListKVMs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.KVMs, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.KVMs, should.BeNil)
 		})
 	})
 }
@@ -1435,8 +1435,8 @@ func TestDeleteKVM(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteKVM", t, func() {
-		Convey("Delete KVM by existing ID without references", func() {
+	ftt.Run("DeleteKVM", t, func(t *ftt.Test) {
+		t.Run("Delete KVM by existing ID without references", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-2",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -1444,44 +1444,44 @@ func TestDeleteKVM(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			KVM2 := &ufspb.KVM{
 				Name: "kvm-2",
 				Rack: "rack-2",
 			}
 			_, err = registration.CreateKVM(tf.C, KVM2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			dreq := &ufsAPI.DeleteKVMRequest{
 				Name: util.AddPrefix(util.KVMCollection, "KVM-2"),
 			}
 			_, err = tf.Fleet.DeleteKVM(tf.C, dreq)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetKVM(tf.C, "KVM-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete KVM - Invalid input empty name", func() {
+		t.Run("Delete KVM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteKVMRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete KVM - Invalid input invalid characters", func() {
+		t.Run("Delete KVM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteKVMRequest{
 				Name: util.AddPrefix(util.KVMCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteKVM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1501,47 +1501,47 @@ func TestCreateRPM(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("CreateRPM", t, func() {
-		Convey("Create new RPM with RPM_id", func() {
+	ftt.Run("CreateRPM", t, func(t *ftt.Test) {
+		t.Run("Create new RPM with RPM_id", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRPMRequest{
 				RPM:   RPM1,
 				RPMId: "RPM-1",
 			}
 			resp, err := tf.Fleet.CreateRPM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 		})
 
-		Convey("Create new RPM - Invalid input nil", func() {
+		t.Run("Create new RPM - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRPMRequest{
 				RPM: nil,
 			}
 			resp, err := tf.Fleet.CreateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new RPM - Invalid input empty ID", func() {
+		t.Run("Create new RPM - Invalid input empty ID", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRPMRequest{
 				RPM:   RPM2,
 				RPMId: "",
 			}
 			resp, err := tf.Fleet.CreateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new RPM - Invalid input invalid characters", func() {
+		t.Run("Create new RPM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.CreateRPMRequest{
 				RPM:   RPM2,
 				RPMId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1561,91 +1561,91 @@ func TestUpdateRPM(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("UpdateRPM", t, func() {
-		Convey("Update existing RPM", func() {
+	ftt.Run("UpdateRPM", t, func(t *ftt.Test) {
+		t.Run("Update existing RPM", func(t *ftt.Test) {
 			_, err := registration.CreateRPM(tf.C, &ufspb.RPM{Name: "rpm-1", Rack: "rack-1"})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			RPM2.Rack = "rack-1"
 			ureq := &ufsAPI.UpdateRPMRequest{
 				RPM: RPM2,
 			}
 			resp, err := tf.Fleet.UpdateRPM(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM2))
 		})
 
-		Convey("Update RPM - Invalid input nil", func() {
+		t.Run("Update RPM - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRPMRequest{
 				RPM: nil,
 			}
 			resp, err := tf.Fleet.UpdateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update RPM - Invalid input empty name", func() {
+		t.Run("Update RPM - Invalid input empty name", func(t *ftt.Test) {
 			RPM3.Name = ""
 			req := &ufsAPI.UpdateRPMRequest{
 				RPM: RPM3,
 			}
 			resp, err := tf.Fleet.UpdateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update RPM - Invalid input invalid characters", func() {
+		t.Run("Update RPM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateRPMRequest{
 				RPM: RPM4,
 			}
 			resp, err := tf.Fleet.UpdateRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
 
 func TestGetRPM(t *testing.T) {
 	t.Parallel()
-	Convey("GetRPM", t, func() {
+	ftt.Run("GetRPM", t, func(t *ftt.Test) {
 		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
+		tf, validate := newTestFixtureWithContext(ctx, t.T)
 		defer validate()
-		Convey("Get RPM by existing ID", func() {
+		t.Run("Get RPM by existing ID", func(t *ftt.Test) {
 			RPM1 := &ufspb.RPM{
 				Name: "rpm-1",
 			}
 			_, err := registration.CreateRPM(tf.C, RPM1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			RPM1.Name = util.AddPrefix(util.RPMCollection, "rpm-1")
 
 			req := &ufsAPI.GetRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "RPM-1"),
 			}
 			resp, err := tf.Fleet.GetRPM(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 		})
-		Convey("Get RPM - Invalid input empty name", func() {
+		t.Run("Get RPM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetRPMRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get RPM - Invalid input invalid characters", func() {
+		t.Run("Get RPM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1664,34 +1664,34 @@ func TestListRPMs(t *testing.T) {
 		resp.Name = util.AddPrefix(util.RPMCollection, resp.Name)
 		RPMs = append(RPMs, resp)
 	}
-	Convey("ListRPMs", t, func() {
-		Convey("ListRPMs - page_size negative - error", func() {
+	ftt.Run("ListRPMs", t, func(t *ftt.Test) {
+		t.Run("ListRPMs - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListRPMsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListRPMs - Full listing - happy path", func() {
+		t.Run("ListRPMs - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListRPMsRequest{
 				PageSize: 2000,
 			}
 			resp, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.RPMs, ShouldResembleProto, RPMs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RPMs, should.Resemble(RPMs))
 		})
 
-		Convey("ListRPMs - filter format invalid format OR - error", func() {
+		t.Run("ListRPMs - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListRPMsRequest{
 				Filter: "platform=chromeplatform-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListRPMs(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 	})
 }
@@ -1701,8 +1701,8 @@ func TestDeleteRPM(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteRPM", t, func() {
-		Convey("Delete RPM by existing ID", func() {
+	ftt.Run("DeleteRPM", t, func(t *ftt.Test) {
+		t.Run("Delete RPM by existing ID", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-2",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -1710,54 +1710,54 @@ func TestDeleteRPM(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.CreateRPM(tf.C, &ufspb.RPM{
 				Name: "rpm-2", Rack: "rack-2"})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			dreq := &ufsAPI.DeleteRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "RPM-2"),
 			}
 			_, err = tf.Fleet.DeleteRPM(tf.C, dreq)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			greq := &ufsAPI.GetRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "RPM-2"),
 			}
 			res, err := tf.Fleet.GetRPM(tf.C, greq)
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete RPM by non-existing ID", func() {
+		t.Run("Delete RPM by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "RPM-2"),
 			}
 			_, err := tf.Fleet.DeleteRPM(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete RPM - Invalid input empty name", func() {
+		t.Run("Delete RPM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRPMRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete RPM - Invalid input invalid characters", func() {
+		t.Run("Delete RPM - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRPMRequest{
 				Name: util.AddPrefix(util.RPMCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteRPM(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1778,8 +1778,8 @@ func TestCreateDrac(t *testing.T) {
 		Name:         "test-switch",
 		CapacityPort: 100,
 	})
-	Convey("CreateDrac", t, func() {
-		Convey("Create new drac - Happy path", func() {
+	ftt.Run("CreateDrac", t, func(t *ftt.Test) {
+		t.Run("Create new drac - Happy path", func(t *ftt.Test) {
 			setupTestVlan(ctx)
 			drac := mockDrac("")
 			drac.Machine = "machine-1"
@@ -1791,31 +1791,31 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac))
 
 			// Verify network settings
 			dhcp, err := configuration.GetDHCPConfig(ctx, "drac-1")
-			So(err, ShouldBeNil)
-			So(dhcp.GetIp(), ShouldEqual, "192.168.40.10")
-			So(dhcp.GetVlan(), ShouldEqual, "vlan-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dhcp.GetIp(), should.Equal("192.168.40.10"))
+			assert.Loosely(t, dhcp.GetVlan(), should.Equal("vlan-1"))
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.10"})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeTrue)
 		})
 
-		Convey("Create new drac - Invalid input nil", func() {
+		t.Run("Create new drac - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateDracRequest{
 				Drac: nil,
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new mac - Invalid mac", func() {
+		t.Run("Create new mac - Invalid mac", func(t *ftt.Test) {
 			drac := mockDrac("createDrac-0")
 			drac.MacAddress = "123"
 			req := &ufsAPI.CreateDracRequest{
@@ -1823,12 +1823,12 @@ func TestCreateDrac(t *testing.T) {
 				DracId: "createDrac-0",
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Create new drac - Invalid input empty ID", func() {
+		t.Run("Create new drac - Invalid input empty ID", func(t *ftt.Test) {
 			drac := mockDrac("")
 			drac.Machine = "machine-1"
 			req := &ufsAPI.CreateDracRequest{
@@ -1836,12 +1836,12 @@ func TestCreateDrac(t *testing.T) {
 				DracId: "",
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new drac - Invalid input invalid characters", func() {
+		t.Run("Create new drac - Invalid input invalid characters", func(t *ftt.Test) {
 			drac := mockDrac("")
 			drac.Machine = "machine-1"
 			req := &ufsAPI.CreateDracRequest{
@@ -1849,21 +1849,21 @@ func TestCreateDrac(t *testing.T) {
 				DracId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Create new drac - Invalid input empty machine", func() {
+		t.Run("Create new drac - Invalid input empty machine", func(t *ftt.Test) {
 			drac := mockDrac("")
 			req := &ufsAPI.CreateDracRequest{
 				Drac:   drac,
 				DracId: "drac-5",
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyMachineName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyMachineName))
 		})
 	})
 }
@@ -1880,15 +1880,15 @@ func TestUpdateDrac(t *testing.T) {
 		},
 	}
 	registration.CreateMachine(tf.C, machine1)
-	Convey("UpdateDrac", t, func() {
-		Convey("Update existing drac", func() {
+	ftt.Run("UpdateDrac", t, func(t *ftt.Test) {
+		t.Run("Update existing drac", func(t *ftt.Test) {
 			drac1 := &ufspb.Drac{
 				Name:    "drac-1",
 				Machine: "machine-1",
 			}
 			resp, err := registration.CreateDrac(tf.C, drac1)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := mockDrac("drac-1")
 			drac2.SwitchInterface = nil
@@ -1897,21 +1897,21 @@ func TestUpdateDrac(t *testing.T) {
 				Drac: drac2,
 			}
 			resp, err = tf.Fleet.UpdateDrac(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac2))
 		})
 
-		Convey("Update drac - Invalid input nil", func() {
+		t.Run("Update drac - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateDracRequest{
 				Drac: nil,
 			}
 			resp, err := tf.Fleet.UpdateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update drac - Invalid mac", func() {
+		t.Run("Update drac - Invalid mac", func(t *ftt.Test) {
 			drac := mockDrac("updateDrac-0")
 			drac.MacAddress = "123"
 			drac.Machine = "machine-1"
@@ -1919,12 +1919,12 @@ func TestUpdateDrac(t *testing.T) {
 				Drac: drac,
 			}
 			resp, err := tf.Fleet.UpdateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidMac)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidMac))
 		})
 
-		Convey("Update drac - Invalid input empty name", func() {
+		t.Run("Update drac - Invalid input empty name", func(t *ftt.Test) {
 			drac := mockDrac("")
 			drac.Name = ""
 			drac.Machine = "machine-1"
@@ -1932,21 +1932,21 @@ func TestUpdateDrac(t *testing.T) {
 				Drac: drac,
 			}
 			resp, err := tf.Fleet.UpdateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update drac - Invalid input invalid characters", func() {
+		t.Run("Update drac - Invalid input invalid characters", func(t *ftt.Test) {
 			drac := mockDrac("a.b)7&")
 			drac.Machine = "machine-1"
 			req := &ufsAPI.UpdateDracRequest{
 				Drac: drac,
 			}
 			resp, err := tf.Fleet.UpdateDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -1957,8 +1957,8 @@ func TestGetDrac(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 
-	Convey("GetDrac", t, func() {
-		Convey("Get drac by existing ID", func() {
+	ftt.Run("GetDrac", t, func(t *ftt.Test) {
+		t.Run("Get drac by existing ID", func(t *ftt.Test) {
 			drac1 := &ufspb.Drac{
 				Name: "drac-1",
 			}
@@ -1969,28 +1969,28 @@ func TestGetDrac(t *testing.T) {
 				Name: util.AddPrefix(util.DracCollection, "drac-1"),
 			}
 			resp, err := tf.Fleet.GetDrac(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac1))
 		})
 
-		Convey("Get drac - Invalid input empty name", func() {
+		t.Run("Get drac - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetDracRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Get drac - Invalid input invalid characters", func() {
+		t.Run("Get drac - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetDracRequest{
 				Name: util.AddPrefix(util.DracCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -2009,41 +2009,41 @@ func TestListDracs(t *testing.T) {
 		drac.Name = util.AddPrefix(util.DracCollection, drac.Name)
 		dracs = append(dracs, resp)
 	}
-	Convey("ListDracs", t, func() {
-		Convey("ListDracs - page_size negative - error", func() {
+	ftt.Run("ListDracs", t, func(t *ftt.Test) {
+		t.Run("ListDracs - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListDracsRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListDracs(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListDracs - Full listing - happy path", func() {
+		t.Run("ListDracs - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListDracsRequest{}
 			resp, err := tf.Fleet.ListDracs(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Dracs, ShouldResembleProto, dracs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Dracs, should.Resemble(dracs))
 		})
 
-		Convey("ListDracs - filter format invalid format OR - error", func() {
+		t.Run("ListDracs - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListDracsRequest{
 				Filter: "drac=mac-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListDracs(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 
-		Convey("ListDracs - filter format valid", func() {
+		t.Run("ListDracs - filter format valid", func(t *ftt.Test) {
 			req := &ufsAPI.ListDracsRequest{
 				Filter: "switch=switch-1",
 			}
 			resp, err := tf.Fleet.ListDracs(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.Dracs, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Dracs, should.BeNil)
 		})
 	})
 }
@@ -2053,25 +2053,25 @@ func TestDeleteDrac(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteDrac", t, func() {
-		Convey("Delete drac - Invalid input empty name", func() {
+	ftt.Run("DeleteDrac", t, func(t *ftt.Test) {
+		t.Run("Delete drac - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteDracRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete drac - Invalid input invalid characters", func() {
+		t.Run("Delete drac - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteDracRequest{
 				Name: util.AddPrefix(util.DracCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteDrac(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -2088,8 +2088,8 @@ func TestCreateSwitch(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("CreateSwitch", t, func() {
-		Convey("Create new switch with switch_id", func() {
+	ftt.Run("CreateSwitch", t, func(t *ftt.Test) {
+		t.Run("Create new switch with switch_id", func(t *ftt.Test) {
 			switch1 := mockSwitch("")
 			switch1.Rack = "rack-1"
 			req := &ufsAPI.CreateSwitchRequest{
@@ -2097,21 +2097,21 @@ func TestCreateSwitch(t *testing.T) {
 				SwitchId: "Switch-1",
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 		})
 
-		Convey("Create new switch - Invalid input nil", func() {
+		t.Run("Create new switch - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.CreateSwitchRequest{
 				Switch: nil,
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new switch - Invalid input empty ID", func() {
+		t.Run("Create new switch - Invalid input empty ID", func(t *ftt.Test) {
 			switch1 := mockSwitch("")
 			switch1.Rack = "rack-1"
 			req := &ufsAPI.CreateSwitchRequest{
@@ -2119,12 +2119,12 @@ func TestCreateSwitch(t *testing.T) {
 				SwitchId: "",
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new switch - Invalid input invalid characters", func() {
+		t.Run("Create new switch - Invalid input invalid characters", func(t *ftt.Test) {
 			switch1 := mockSwitch("")
 			switch1.Rack = "rack-1"
 			req := &ufsAPI.CreateSwitchRequest{
@@ -2132,20 +2132,20 @@ func TestCreateSwitch(t *testing.T) {
 				SwitchId: "a.b)7&",
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 
-		Convey("Create new switch - Invalid input empty rack", func() {
+		t.Run("Create new switch - Invalid input empty rack", func(t *ftt.Test) {
 			req := &ufsAPI.CreateSwitchRequest{
 				Switch:   mockSwitch("x"),
 				SwitchId: "switch-5",
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyRackName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyRackName))
 		})
 	})
 }
@@ -2162,15 +2162,15 @@ func TestUpdateSwitch(t *testing.T) {
 		},
 	}
 	registration.CreateRack(tf.C, rack1)
-	Convey("UpdateSwitch", t, func() {
-		Convey("Update existing switch", func() {
+	ftt.Run("UpdateSwitch", t, func(t *ftt.Test) {
+		t.Run("Update existing switch", func(t *ftt.Test) {
 			switch1 := &ufspb.Switch{
 				Name: "switch-1",
 				Rack: "rack-1",
 			}
 			resp, err := registration.CreateSwitch(tf.C, switch1)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			switch2 := mockSwitch("switch-1")
 			switch2.Rack = "rack-1"
@@ -2178,21 +2178,21 @@ func TestUpdateSwitch(t *testing.T) {
 				Switch: switch2,
 			}
 			resp, err = tf.Fleet.UpdateSwitch(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch2))
 		})
 
-		Convey("Update switch - Invalid input nil", func() {
+		t.Run("Update switch - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateSwitchRequest{
 				Switch: nil,
 			}
 			resp, err := tf.Fleet.UpdateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update switch - Invalid input empty name", func() {
+		t.Run("Update switch - Invalid input empty name", func(t *ftt.Test) {
 			switch1 := mockSwitch("")
 			switch1.Name = ""
 			switch1.Rack = "rack-1"
@@ -2200,19 +2200,19 @@ func TestUpdateSwitch(t *testing.T) {
 				Switch: switch1,
 			}
 			resp, err := tf.Fleet.UpdateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update switch - Invalid input invalid characters", func() {
+		t.Run("Update switch - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateSwitchRequest{
 				Switch: mockSwitch("a.b)7&"),
 			}
 			resp, err := tf.Fleet.UpdateSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -2222,48 +2222,48 @@ func TestGetSwitch(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("GetSwitch", t, func() {
-		Convey("Get switch by existing ID", func() {
+	ftt.Run("GetSwitch", t, func(t *ftt.Test) {
+		t.Run("Get switch by existing ID", func(t *ftt.Test) {
 			switch1 := &ufspb.Switch{
 				Name: "switch-1",
 			}
 			_, err := registration.CreateSwitch(tf.C, switch1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			switch1.Name = util.AddPrefix(util.SwitchCollection, "switch-1")
 
 			req := &ufsAPI.GetSwitchRequest{
 				Name: util.AddPrefix(util.SwitchCollection, "switch-1"),
 			}
 			resp, err := tf.Fleet.GetSwitch(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 		})
-		Convey("Get switch by non-existing ID", func() {
+		t.Run("Get switch by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetSwitchRequest{
 				Name: util.AddPrefix(util.SwitchCollection, "switch-2"),
 			}
 			resp, err := tf.Fleet.GetSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get switch - Invalid input empty name", func() {
+		t.Run("Get switch - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetSwitchRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Get switch - Invalid input invalid characters", func() {
+		t.Run("Get switch - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetSwitchRequest{
 				Name: util.AddPrefix(util.SwitchCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -2282,32 +2282,32 @@ func TestListSwitches(t *testing.T) {
 		s.Name = util.AddPrefix(util.SwitchCollection, s.Name)
 		switches = append(switches, resp)
 	}
-	Convey("ListSwitches", t, func() {
-		Convey("ListSwitches - page_size negative - error", func() {
+	ftt.Run("ListSwitches", t, func(t *ftt.Test) {
+		t.Run("ListSwitches - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListSwitchesRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListSwitches - Full listing - happy path", func() {
+		t.Run("ListSwitches - Full listing - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListSwitchesRequest{}
 			resp, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Switches, ShouldResembleProto, switches)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Switches, should.Resemble(switches))
 		})
 
-		Convey("ListSwitches - filter format invalid format OR - error", func() {
+		t.Run("ListSwitches - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListSwitchesRequest{
 				Filter: "platform=chromeplatform-1 | rpm=rpm-2",
 			}
 			_, err := tf.Fleet.ListSwitches(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 	})
 }
@@ -2317,8 +2317,8 @@ func TestDeleteSwitch(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("DeleteSwitch", t, func() {
-		Convey("Delete switch by existing ID without references", func() {
+	ftt.Run("DeleteSwitch", t, func(t *ftt.Test) {
+		t.Run("Delete switch by existing ID without references", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-2",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -2326,44 +2326,44 @@ func TestDeleteSwitch(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			switch2 := &ufspb.Switch{
 				Name: "switch-2",
 				Rack: "rack-2",
 			}
 			_, err = registration.CreateSwitch(tf.C, switch2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			dreq := &ufsAPI.DeleteSwitchRequest{
 				Name: util.AddPrefix(util.SwitchCollection, "switch-2"),
 			}
 			_, err = tf.Fleet.DeleteSwitch(tf.C, dreq)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetSwitch(tf.C, "switch-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete switch - Invalid input empty name", func() {
+		t.Run("Delete switch - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteSwitchRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete switch - Invalid input invalid characters", func() {
+		t.Run("Delete switch - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteSwitchRequest{
 				Name: util.AddPrefix(util.SwitchCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteSwitch(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
 		})
 	})
 }
@@ -2373,28 +2373,28 @@ func TestRenameSwitch(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameSwitch", t, func() {
-		Convey("Rename an empty switch name", func() {
+	ftt.Run("RenameSwitch", t, func(t *ftt.Test) {
+		t.Run("Rename an empty switch name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
 				Name: "",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename a switch to an empty name", func() {
+		t.Run("Rename a switch to an empty name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
 				Name:    "oldSwitch",
 				NewName: "",
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("The new switch name after renaming doesn't follow switch name format", func() {
+		t.Run("The new switch name after renaming doesn't follow switch name format", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
 				Name:    "switches/oldSwitch",
 				NewName: "newSwitch",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.SwitchNameFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.SwitchNameFormat))
 		})
 	})
 }
@@ -2404,8 +2404,8 @@ func TestCreateAsset(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Create Asset", t, func() {
-		Convey("Create valid asset", func() {
+	ftt.Run("Create Asset", t, func(t *ftt.Test) {
+		t.Run("Create valid asset", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: "assets/C001001",
 				Type: ufspb.AssetType_DUT,
@@ -2427,15 +2427,15 @@ func TestCreateAsset(t *testing.T) {
 				Rack: rack,
 			}
 			rackResp, err := tf.Fleet.RackRegistration(tf.C, rackReq)
-			So(err, ShouldBeNil)
-			So(rackResp, ShouldNotBeNil)
-			So(rackResp, ShouldResembleProto, rack)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rackResp, should.NotBeNil)
+			assert.Loosely(t, rackResp, should.Resemble(rack))
 			resp, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, asset)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(asset))
 		})
-		Convey("Create asset - invalid name", func() {
+		t.Run("Create asset - invalid name", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: "C001001",
 				Type: ufspb.AssetType_DUT,
@@ -2448,9 +2448,9 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Create asset - empty name", func() {
+		t.Run("Create asset - empty name", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: " ",
 				Type: ufspb.AssetType_DUT,
@@ -2463,9 +2463,9 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Create asset - missing location", func() {
+		t.Run("Create asset - missing location", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: "assets/C001001",
 				Type: ufspb.AssetType_DUT,
@@ -2474,9 +2474,9 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Create asset - missing rack", func() {
+		t.Run("Create asset - missing rack", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: "assets/C001001",
 				Type: ufspb.AssetType_DUT,
@@ -2488,9 +2488,9 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Create asset - zone unspecified", func() {
+		t.Run("Create asset - zone unspecified", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
 				Name: "assets/C001001",
 				Type: ufspb.AssetType_DUT,
@@ -2503,7 +2503,7 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
@@ -2513,20 +2513,20 @@ func TestRenameAsset(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("RenameAsset", t, func() {
-		Convey("Rename an empty asset name", func() {
+	ftt.Run("RenameAsset", t, func(t *ftt.Test) {
+		t.Run("Rename an empty asset name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameAsset(tf.C, &ufsAPI.RenameAssetRequest{
 				Name: "",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
-		Convey("Rename an asset to an empty name", func() {
+		t.Run("Rename an asset to an empty name", func(t *ftt.Test) {
 			_, err := tf.Fleet.RenameAsset(tf.C, &ufsAPI.RenameAssetRequest{
 				Name:    "oldAsset",
 				NewName: "",
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

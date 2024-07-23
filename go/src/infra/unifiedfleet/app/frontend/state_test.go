@@ -8,10 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	api "infra/unifiedfleet/api/v1/rpc"
@@ -28,8 +27,8 @@ func TestUpdateState(t *testing.T) {
 	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Update state", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Update state", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			req := &api.UpdateStateRequest{
 				State: &ufspb.StateRecord{
 					ResourceName: "hosts/chromeos1-row2-rack3-host4",
@@ -37,13 +36,13 @@ func TestUpdateState(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.UpdateState(osCtx, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			s, err := state.GetStateRecord(osCtx, "hosts/chromeos1-row2-rack3-host4")
-			So(err, ShouldBeNil)
-			So(s.GetResourceName(), ShouldEqual, "hosts/chromeos1-row2-rack3-host4")
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_RESERVED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetResourceName(), should.Equal("hosts/chromeos1-row2-rack3-host4"))
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_RESERVED))
 		})
-		Convey("invalid resource prefix", func() {
+		t.Run("invalid resource prefix", func(t *ftt.Test) {
 			req := &api.UpdateStateRequest{
 				State: &ufspb.StateRecord{
 					ResourceName: "resources/chromeos1-row2-rack3-host4",
@@ -51,10 +50,10 @@ func TestUpdateState(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.UpdateState(osCtx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
-		Convey("empty resource name", func() {
+		t.Run("empty resource name", func(t *ftt.Test) {
 			req := &api.UpdateStateRequest{
 				State: &ufspb.StateRecord{
 					ResourceName: "",
@@ -62,10 +61,10 @@ func TestUpdateState(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.UpdateState(osCtx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
-		Convey("invalid characters in resource name", func() {
+		t.Run("invalid characters in resource name", func(t *ftt.Test) {
 			req := &api.UpdateStateRequest{
 				State: &ufspb.StateRecord{
 					ResourceName: "hosts/host1@_@",
@@ -73,8 +72,8 @@ func TestUpdateState(t *testing.T) {
 				},
 			}
 			_, err := tf.Fleet.UpdateState(osCtx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
 	})
 }
@@ -84,52 +83,52 @@ func TestGetState(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Get state", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Get state", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			s := &ufspb.StateRecord{
 				ResourceName: "hosts/chromeos1-row2-rack3-host4",
 				State:        ufspb.State_STATE_RESERVED,
 			}
 			_, err := state.UpdateStateRecord(ctx, s)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req := &api.GetStateRequest{
 				ResourceName: "hosts/chromeos1-row2-rack3-host4",
 			}
 			res, err := tf.Fleet.GetState(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, s)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(s))
 		})
-		Convey("valid resource name, but not found", func() {
+		t.Run("valid resource name, but not found", func(t *ftt.Test) {
 			res, err := tf.Fleet.GetState(ctx, &api.GetStateRequest{
 				ResourceName: "hosts/chromeos-fakehost",
 			})
-			So(err, ShouldNotBeNil)
-			So(res, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, datastore.NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(datastore.NotFound))
 		})
-		Convey("invalid resource prefix", func() {
+		t.Run("invalid resource prefix", func(t *ftt.Test) {
 			req := &api.GetStateRequest{
 				ResourceName: "resources/chromeos1-row2-rack3-host4",
 			}
 			_, err := tf.Fleet.GetState(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
-		Convey("empty resource name", func() {
+		t.Run("empty resource name", func(t *ftt.Test) {
 			req := &api.GetStateRequest{
 				ResourceName: "",
 			}
 			_, err := tf.Fleet.GetState(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
-		Convey("invalid characters in resource name", func() {
+		t.Run("invalid characters in resource name", func(t *ftt.Test) {
 			req := &api.GetStateRequest{
 				ResourceName: "hosts/host1@_@",
 			}
 			_, err := tf.Fleet.GetState(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.ResourceFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.ResourceFormat))
 		})
 	})
 }
@@ -144,48 +143,48 @@ func TestUpdateDutState(t *testing.T) {
 		Id:       &chromeosLab.ChromeOSDeviceID{Value: "UUID:01"},
 		Hostname: "hostname-01",
 	}
-	Convey("Update dut state", t, func() {
-		Convey("empty dut ID", func() {
+	ftt.Run("Update dut state", t, func(t *ftt.Test) {
+		t.Run("empty dut ID", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.EmptyID)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.EmptyID))
 		})
 
-		Convey("dut ID with all spaces", func() {
+		t.Run("dut ID with all spaces", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{
 					Id: &chromeosLab.ChromeOSDeviceID{Value: "   "},
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, api.EmptyID)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(api.EmptyID))
 		})
 
-		Convey("empty hostname", func() {
+		t.Run("empty hostname", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{
 					Id:       &chromeosLab.ChromeOSDeviceID{Value: "UUID:01"},
 					Hostname: "   ",
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Hostname cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Hostname cannot be empty"))
 		})
 
-		Convey("non-matched dut ID in lab meta", func() {
+		t.Run("non-matched dut ID in lab meta", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: dutStateGood,
 				LabMeta: &ufspb.LabMeta{
 					ChromeosDeviceId: "UUID:wrong",
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Mismatched dut ID")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Mismatched dut ID"))
 		})
 
-		Convey("non-matched dut hostname in lab meta", func() {
+		t.Run("non-matched dut hostname in lab meta", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: dutStateGood,
 				LabMeta: &ufspb.LabMeta{
@@ -193,22 +192,22 @@ func TestUpdateDutState(t *testing.T) {
 					Hostname:         "hostname-wrong",
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Mismatched dut hostname")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Mismatched dut hostname"))
 		})
 
-		Convey("non-matched dut ID in dut meta", func() {
+		t.Run("non-matched dut ID in dut meta", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: dutStateGood,
 				DutMeta: &ufspb.DutMeta{
 					ChromeosDeviceId: "UUID:wrong",
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Mismatched dut ID")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Mismatched dut ID"))
 		})
 
-		Convey("non-matched dut hostname in dut meta", func() {
+		t.Run("non-matched dut hostname in dut meta", func(t *ftt.Test) {
 			_, err := tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: dutStateGood,
 				DutMeta: &ufspb.DutMeta{
@@ -216,13 +215,13 @@ func TestUpdateDutState(t *testing.T) {
 					Hostname:         "hostname-wrong",
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Mismatched dut hostname")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Mismatched dut hostname"))
 		})
 
-		Convey("happy path with no data", func() {
+		t.Run("happy path with no data", func(t *ftt.Test) {
 			err := mockOSMachineAssetAndHost(ctx, "rpc-dutstate-id1", "rpc-dutstate-host1", "dut")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Use osCtx as we will restrict ctx to include namespace in prod.
 			_, err = tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
@@ -231,26 +230,26 @@ func TestUpdateDutState(t *testing.T) {
 					Hostname: "rpc-dutstate-host1",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			m, err := registration.GetMachine(osCtx, "rpc-dutstate-id1")
-			So(err, ShouldBeNil)
-			So(m.GetSerialNumber(), ShouldEqual, "")
-			So(m.GetChromeosMachine().GetSku(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, m.GetChromeosMachine().GetSku(), should.BeEmpty)
 			a, err := registration.GetAsset(osCtx, "rpc-dutstate-id1")
-			So(err, ShouldBeNil)
-			So(a.GetInfo().GetSerialNumber(), ShouldEqual, "")
-			So(a.GetInfo().GetSku(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.GetInfo().GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, a.GetInfo().GetSku(), should.BeEmpty)
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host1")
-			So(err, ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), ShouldBeEmpty)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.BeEmpty)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeFalse)
 		})
 
-		Convey("happy path with dut meta", func() {
+		t.Run("happy path with dut meta", func(t *ftt.Test) {
 			err := mockOSMachineAssetAndHost(ctx, "rpc-dutstate-id2", "rpc-dutstate-host2", "dut")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Use osCtx as we will restrict ctx to include namespace in prod.
 			_, err = tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{
@@ -265,28 +264,28 @@ func TestUpdateDutState(t *testing.T) {
 					DeviceSku:        "real-sku",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			m, err := registration.GetMachine(osCtx, "rpc-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(m.GetSerialNumber(), ShouldEqual, "real-serial")
-			So(m.GetChromeosMachine().GetSku(), ShouldEqual, "real-sku")
-			So(m.GetChromeosMachine().GetHwid(), ShouldEqual, "real-hwid")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.GetSerialNumber(), should.Equal("real-serial"))
+			assert.Loosely(t, m.GetChromeosMachine().GetSku(), should.Equal("real-sku"))
+			assert.Loosely(t, m.GetChromeosMachine().GetHwid(), should.Equal("real-hwid"))
 			a, err := registration.GetAsset(osCtx, "rpc-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(a.GetInfo().GetSerialNumber(), ShouldEqual, "real-serial")
-			So(a.GetInfo().GetSku(), ShouldEqual, "real-sku")
-			So(a.GetInfo().GetHwid(), ShouldEqual, "real-hwid")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.GetInfo().GetSerialNumber(), should.Equal("real-serial"))
+			assert.Loosely(t, a.GetInfo().GetSku(), should.Equal("real-sku"))
+			assert.Loosely(t, a.GetInfo().GetHwid(), should.Equal("real-hwid"))
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host2")
-			So(err, ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), ShouldBeEmpty)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.BeEmpty)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeFalse)
 		})
 
-		Convey("happy path with lab meta", func() {
+		t.Run("happy path with lab meta", func(t *ftt.Test) {
 			err := mockOSMachineAssetAndHost(ctx, "rpc-dutstate-id3", "rpc-dutstate-host3", "dut")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			topology := &chromeosLab.ServoTopology{
 				Main: &chromeosLab.ServoTopologyItem{
 					Type:         "servo_v4",
@@ -308,26 +307,26 @@ func TestUpdateDutState(t *testing.T) {
 					SmartUsbhub:      true,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			m, err := registration.GetMachine(osCtx, "rpc-dutstate-id3")
-			So(err, ShouldBeNil)
-			So(m.GetSerialNumber(), ShouldEqual, "")
-			So(m.GetChromeosMachine().GetSku(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, m.GetChromeosMachine().GetSku(), should.BeEmpty)
 			a, err := registration.GetAsset(osCtx, "rpc-dutstate-id3")
-			So(err, ShouldBeNil)
-			So(a.GetInfo().GetSerialNumber(), ShouldEqual, "")
-			So(a.GetInfo().GetSku(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.GetInfo().GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, a.GetInfo().GetSku(), should.BeEmpty)
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host3")
-			So(err, ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), ShouldEqual, "servo_v4_with_ccd_cr50")
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), ShouldResembleProto, topology)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.Equal("servo_v4_with_ccd_cr50"))
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.Resemble(topology))
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeTrue)
 		})
 
-		Convey("only dut meta update for labstation", func() {
+		t.Run("only dut meta update for labstation", func(t *ftt.Test) {
 			err := mockOSMachineAssetAndHost(ctx, "rpc-dutstate-id4", "rpc-dutstate-host4", "labstation")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Use osCtx as we will restrict ctx to include namespace in prod.
 			_, err = tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{
@@ -346,24 +345,24 @@ func TestUpdateDutState(t *testing.T) {
 					SmartUsbhub:      true,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			m, err := registration.GetMachine(osCtx, "rpc-dutstate-id4")
-			So(err, ShouldBeNil)
-			So(m.GetSerialNumber(), ShouldEqual, "real-serial")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.GetSerialNumber(), should.Equal("real-serial"))
 			a, err := registration.GetAsset(osCtx, "rpc-dutstate-id4")
-			So(err, ShouldBeNil)
-			So(a.GetInfo().GetSerialNumber(), ShouldEqual, "real-serial")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.GetInfo().GetSerialNumber(), should.Equal("real-serial"))
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host4")
-			So(err, ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), ShouldBeEmpty)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.BeEmpty)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeFalse)
 		})
 
-		Convey("no update for chrome device", func() {
+		t.Run("no update for chrome device", func(t *ftt.Test) {
 			err := mockOSMachineAssetAndHost(ctx, "rpc-dutstate-id5", "rpc-dutstate-host5", "browser")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Use osCtx as we will restrict ctx to include namespace in prod.
 			_, err = tf.Fleet.UpdateDutState(osCtx, &api.UpdateDutStateRequest{
 				DutState: &chromeosLab.DutState{
@@ -382,19 +381,19 @@ func TestUpdateDutState(t *testing.T) {
 					SmartUsbhub:      true,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			m, err := registration.GetMachine(osCtx, "rpc-dutstate-id5")
-			So(err, ShouldBeNil)
-			So(m.GetSerialNumber(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.GetSerialNumber(), should.BeEmpty)
 			_, err = registration.GetAsset(osCtx, "rpc-dutstate-id5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("not found"))
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host5")
-			So(err, ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), ShouldBeEmpty)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), ShouldBeNil)
-			So(lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.BeEmpty)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.BeNil)
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeFalse)
 		})
 	})
 }

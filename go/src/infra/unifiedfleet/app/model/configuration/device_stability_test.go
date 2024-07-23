@@ -10,32 +10,34 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/dut"
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestDeviceStability(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("Test Device Stability", t, func() {
+	ftt.Run("Test Device Stability", t, func(t *ftt.Test) {
 		b, err := ioutil.ReadFile("test_device_stability.cfg")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		unmarshaller := &jsonpb.Unmarshaler{AllowUnknownFields: false}
 		var dsList dut.DeviceStabilityList
 		err = unmarshaller.Unmarshal(bytes.NewBuffer(b), &dsList)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		for _, ds := range dsList.GetValues() {
 			for _, id := range ds.GetDutCriteria()[0].GetValues() {
 				err := UpdateDeviceStability(ctx, id, ds)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 		}
-		Convey("GetDeviceStability", func() {
+		t.Run("GetDeviceStability", func(t *ftt.Test) {
 			resp, err := GetDeviceStability(ctx, "milkyway")
-			So(err, ShouldBeNil)
-			So(resp.GetStability().String(), ShouldEqual, "UNSTABLE")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetStability().String(), should.Equal("UNSTABLE"))
 		})
 	})
 }

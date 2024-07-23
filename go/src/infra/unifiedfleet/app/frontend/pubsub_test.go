@@ -7,8 +7,9 @@ package frontend
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/registration"
 )
@@ -16,16 +17,16 @@ import (
 func TestUpdateAssetInfoHelper(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("Testing updateAssetInfoHelper", t, func() {
-		Convey("Update non-existing asset", func() {
+	ftt.Run("Testing updateAssetInfoHelper", t, func(t *ftt.Test) {
+		t.Run("Update non-existing asset", func(t *ftt.Test) {
 			// Shouldn't work as we didn't create the asset
 			err := updateAssetInfoHelper(ctx, &ufspb.AssetInfo{
 				AssetTag: "test-tag",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Entity not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Entity not found"))
 		})
-		Convey("Update asset with missing machine", func() {
+		t.Run("Update asset with missing machine", func(t *ftt.Test) {
 			a1 := &ufspb.Asset{
 				Name:  "test-tag",
 				Model: "test-model",
@@ -37,17 +38,17 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 			}
 			// Create an asset.
 			_, err := registration.CreateAsset(ctx, a1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Update a dut asset without machine.
 			err = updateAssetInfoHelper(ctx, &ufspb.AssetInfo{
 				AssetTag:    "test-tag",
 				Model:       "test-model",
 				BuildTarget: "test-target",
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Entity not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Entity not found"))
 		})
-		Convey("Update asset info - Happy path", func() {
+		t.Run("Update asset info - Happy path", func(t *ftt.Test) {
 			l1 := &ufspb.Location{
 				Zone: ufspb.Zone_ZONE_CROS_GOOGLER_DESK,
 				Rack: "test-rack",
@@ -69,10 +70,10 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 			}
 			// Create an asset
 			_, err := registration.CreateAsset(ctx, a1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Create a corresponding machine
 			_, err = registration.CreateMachine(ctx, m1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Update buildtarget for the asset
 			err = updateAssetInfoHelper(ctx, &ufspb.AssetInfo{
 				AssetTag:      "test-tag1",
@@ -81,15 +82,15 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 				HasWifiBt:     true,
 				WifiBluetooth: "test-wifichip",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Machine should reflect the change
 			m2, err := registration.GetMachine(ctx, "test-tag1")
-			So(err, ShouldBeNil)
-			So(m2.GetChromeosMachine().GetBuildTarget(), ShouldEqual, "test-target")
-			So(m2.GetChromeosMachine().GetWifiBluetooth(), ShouldEqual, "test-wifichip")
-			So(m2.GetChromeosMachine().GetHasWifiBt(), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m2.GetChromeosMachine().GetBuildTarget(), should.Equal("test-target"))
+			assert.Loosely(t, m2.GetChromeosMachine().GetWifiBluetooth(), should.Equal("test-wifichip"))
+			assert.Loosely(t, m2.GetChromeosMachine().GetHasWifiBt(), should.BeTrue)
 		})
-		Convey("Update asset info - Machine avoids HWID, phase, sku and mac", func() {
+		t.Run("Update asset info - Machine avoids HWID, phase, sku and mac", func(t *ftt.Test) {
 			l1 := &ufspb.Location{
 				Zone: ufspb.Zone_ZONE_CROS_GOOGLER_DESK,
 				Rack: "test-rack",
@@ -115,10 +116,10 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 			}
 			// Create an asset
 			_, err := registration.CreateAsset(ctx, a1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Create a corresponding machine
 			_, err = registration.CreateMachine(ctx, m1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Update buildtarget for the asset
 			err = updateAssetInfoHelper(ctx, &ufspb.AssetInfo{
 				AssetTag:           "test-tag2",
@@ -128,21 +129,21 @@ func TestUpdateAssetInfoHelper(t *testing.T) {
 				Phase:              "EVT",
 				Hwid:               "NOTEST HWID124RFGG",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Machine should not reflect the change
 			m2, err := registration.GetMachine(ctx, "test-tag2")
-			So(err, ShouldBeNil)
-			So(m2.GetChromeosMachine().GetSku(), ShouldEqual, "21")
-			So(m2.GetChromeosMachine().GetHwid(), ShouldEqual, "TESTHWID 123FGHEASFG")
-			So(m2.GetChromeosMachine().GetPhase(), ShouldEqual, "PVT")
-			So(m2.GetChromeosMachine().GetMacAddress(), ShouldEqual, "FF:FF:FF:EE:EE:EE")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m2.GetChromeosMachine().GetSku(), should.Equal("21"))
+			assert.Loosely(t, m2.GetChromeosMachine().GetHwid(), should.Equal("TESTHWID 123FGHEASFG"))
+			assert.Loosely(t, m2.GetChromeosMachine().GetPhase(), should.Equal("PVT"))
+			assert.Loosely(t, m2.GetChromeosMachine().GetMacAddress(), should.Equal("FF:FF:FF:EE:EE:EE"))
 			// Asset should record the change
 			a2, err := registration.GetAsset(ctx, "test-tag2")
-			So(err, ShouldBeNil)
-			So(a2.GetInfo().GetPhase(), ShouldEqual, "EVT")
-			So(a2.GetInfo().GetEthernetMacAddress(), ShouldEqual, "11:11:11:22:22:22")
-			So(a2.GetInfo().GetHwid(), ShouldEqual, "NOTEST HWID124RFGG")
-			So(a2.GetInfo().GetSku(), ShouldEqual, "0")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a2.GetInfo().GetPhase(), should.Equal("EVT"))
+			assert.Loosely(t, a2.GetInfo().GetEthernetMacAddress(), should.Equal("11:11:11:22:22:22"))
+			assert.Loosely(t, a2.GetInfo().GetHwid(), should.Equal("NOTEST HWID124RFGG"))
+			assert.Loosely(t, a2.GetInfo().GetSku(), should.Equal("0"))
 		})
 	})
 }

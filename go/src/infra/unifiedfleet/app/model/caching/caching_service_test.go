@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -28,21 +28,21 @@ func TestCreateCachingService(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("CreateCachingService", t, func() {
-		Convey("Create new CachingService", func() {
+	ftt.Run("CreateCachingService", t, func(t *ftt.Test) {
+		t.Run("Create new CachingService", func(t *ftt.Test) {
 			cs := mockCachingService("127.0.0.1")
 			resp, err := CreateCachingService(ctx, cs)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cs))
 		})
-		Convey("Create existing CachingService", func() {
+		t.Run("Create existing CachingService", func(t *ftt.Test) {
 			cs1 := mockCachingService("128.0.0.1")
 			CreateCachingService(ctx, cs1)
 
 			resp, err := CreateCachingService(ctx, cs1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
 	})
 }
@@ -51,12 +51,12 @@ func TestBatchCreateCachingServices(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("BatchUpdateCachingServices", t, func() {
-		Convey("Create new CachingService", func() {
+	ftt.Run("BatchUpdateCachingServices", t, func(t *ftt.Test) {
+		t.Run("Create new CachingService", func(t *ftt.Test) {
 			cs := mockCachingService("128.0.0.1")
 			resp, err := BatchUpdateCachingServices(ctx, []*ufspb.CachingService{cs})
-			So(err, ShouldBeNil)
-			So(resp[0], ShouldResembleProto, cs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp[0], should.Resemble(cs))
 		})
 	})
 }
@@ -65,26 +65,26 @@ func TestGetCachingService(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	cs1 := mockCachingService("cs-1")
-	Convey("GetCachingService", t, func() {
-		Convey("Get CachingService by existing name/ID", func() {
+	ftt.Run("GetCachingService", t, func(t *ftt.Test) {
+		t.Run("Get CachingService by existing name/ID", func(t *ftt.Test) {
 			resp, err := CreateCachingService(ctx, cs1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cs1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cs1))
 			resp, err = GetCachingService(ctx, "cs-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cs1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cs1))
 		})
-		Convey("Get CachingService by non-existing name/ID", func() {
+		t.Run("Get CachingService by non-existing name/ID", func(t *ftt.Test) {
 			resp, err := GetCachingService(ctx, "cs-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get CachingService - invalid name/ID", func() {
+		t.Run("Get CachingService - invalid name/ID", func(t *ftt.Test) {
 			resp, err := GetCachingService(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -95,25 +95,25 @@ func TestDeleteCachingService(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	cs1 := mockCachingService("cs-1")
 	CreateCachingService(ctx, cs1)
-	Convey("DeleteCachingService", t, func() {
-		Convey("Delete CachingService successfully by existing ID", func() {
+	ftt.Run("DeleteCachingService", t, func(t *ftt.Test) {
+		t.Run("Delete CachingService successfully by existing ID", func(t *ftt.Test) {
 			err := DeleteCachingService(ctx, "cs-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := GetCachingService(ctx, "cs-1")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete CachingService by non-existing ID", func() {
+		t.Run("Delete CachingService by non-existing ID", func(t *ftt.Test) {
 			err := DeleteCachingService(ctx, "cs-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete CachingService - invalid ID", func() {
+		t.Run("Delete CachingService - invalid ID", func(t *ftt.Test) {
 			err := DeleteCachingService(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -128,34 +128,34 @@ func TestListCachingServices(t *testing.T) {
 		resp, _ := CreateCachingService(ctx, cs)
 		cachingServices = append(cachingServices, resp)
 	}
-	Convey("ListCachingServices", t, func() {
-		Convey("List CachingServices - page_token invalid", func() {
+	ftt.Run("ListCachingServices", t, func(t *ftt.Test) {
+		t.Run("List CachingServices - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListCachingServices(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List CachingServices - Full listing with no pagination", func() {
+		t.Run("List CachingServices - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListCachingServices(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cachingServices)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cachingServices))
 		})
 
-		Convey("List CachingServices - listing with pagination", func() {
+		t.Run("List CachingServices - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListCachingServices(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cachingServices[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cachingServices[:3]))
 
 			resp, _, err = ListCachingServices(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cachingServices[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cachingServices[3:]))
 		})
 	})
 }
