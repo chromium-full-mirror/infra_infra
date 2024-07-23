@@ -149,7 +149,7 @@ func ListCostIndicators(ctx context.Context, limit int, filter *fleetcostAPI.Lis
 	return out, nil
 }
 
-// ApplyFilter applies filters to a datastore query and returns the original query unmodified
+// ApplyFilter applies filters to a datastore query and returns it.
 func ApplyFilter(query *datastore.Query, filter *fleetcostAPI.ListCostIndicatorsFilter) (*datastore.Query, error) {
 	if filter == nil {
 		return query, nil

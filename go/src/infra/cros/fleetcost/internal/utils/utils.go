@@ -278,3 +278,19 @@ func SafeDivide(x float64, y float64) (float64, error) {
 	}
 	return x / y, nil
 }
+
+// FriendlyString converts a cost indicator to a friendly string.
+func FriendlyString(indicator *fleetcostpb.CostIndicator) string {
+	if indicator == nil {
+		return "<nil>"
+	}
+	message := fmt.Sprintf(
+		"type=%s board=%s model=%s sku=%s loc=%s",
+		indicator.GetType().String(),
+		indicator.GetBoard(),
+		indicator.GetModel(),
+		indicator.GetSku(),
+		indicator.GetLocation().String(),
+	)
+	return message
+}

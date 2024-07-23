@@ -61,7 +61,7 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			ok: false,
 		},
 		{
-			name: "good record",
+			name: "record with unknown location",
 			in: &fleetcostAPI.CreateCostIndicatorRequest{
 				CostIndicator: &models.CostIndicator{
 					Name:     "",
@@ -75,6 +75,39 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 				},
 			},
 			ok: false,
+		},
+		{
+			name: "good record",
+			in: &fleetcostAPI.CreateCostIndicatorRequest{
+				CostIndicator: &models.CostIndicator{
+					Name:     "",
+					Location: models.Location_LOCATION_ALL,
+					Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					Cost: &money.Money{
+						CurrencyCode: "USD",
+						Units:        123.0,
+					},
+					CostCadence: models.CostCadence_COST_CADENCE_HOURLY,
+				},
+			},
+			ok: true,
+		},
+		{
+			name: "good record with amortization",
+			in: &fleetcostAPI.CreateCostIndicatorRequest{
+				CostIndicator: &models.CostIndicator{
+					Name:     "",
+					Location: models.Location_LOCATION_ALL,
+					Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+					Cost: &money.Money{
+						CurrencyCode: "USD",
+						Units:        123.0,
+					},
+					CostCadence:         models.CostCadence_COST_CADENCE_ONE_TIME,
+					AmortizationInYears: 0.380765,
+				},
+			},
+			ok: true,
 		},
 	}
 
@@ -90,7 +123,7 @@ func TestValidateCreateCostIndicatorRequest(t *testing.T) {
 			case ok && !tt.ok:
 				t.Error("in is unexpectedly ok")
 			case !ok && tt.ok:
-				t.Error("in is unexpectedly not ok")
+				t.Errorf("in is unexpectedly not ok: %s", err)
 			}
 		})
 	}
