@@ -208,8 +208,10 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 			Decorations: &requestpb.Request_Params_Decorations{
 				Tags: getTags(board, model, buildImage, branchTrigger, config),
 			},
-			RunViaCft:          config.GetRunOptions().GetRunViaCft(),
-			UserDefinedFilters: append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
+			RunViaCft:            config.GetRunOptions().GetRunViaCft(),
+			RunViaTrv2:           config.GetRunOptions().GetRunViaTrv2(),
+			TranslateTrv2Request: config.GetRunOptions().GetDynamicTrv2(),
+			UserDefinedFilters:   append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
 		},
 		TestPlan: getTestPlan(config),
 	}
