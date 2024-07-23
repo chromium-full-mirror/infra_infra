@@ -6,20 +6,35 @@ package cros
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
-const (
-	// command to check whether the wifi device has been recogonized
-	// and its device driver been loaded by the kernel.
-	wifiDetectCmd = `lsmod | grep -E iwl\|rtw\|mt792\|ath\|mwifiex`
-)
+// Detect if WiFiAdapter is present and initialized.
+func hasWiFiAdapter(ctx context.Context, r components.Runner) (bool, error) {
+	const wifiDetectCmd = `iw list`
+	output, err := r(ctx, time.Minute, wifiDetectCmd)
+	if err != nil {
+		return false, errors.Annotate(err, "WiFi Adapter check failed").Err()
+	}
+
+	// if 'iw list' command enumerates any phy radio, there will
+	// be a line starting with 'Wiphy phy'.
+	for _, word := range strings.Fields(output) {
+		if word == "Wiphy" {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
 
 // auditWiFiExec will validate wifi chip and update state.
 //
@@ -30,8 +45,9 @@ func auditWiFiExec(ctx context.Context, info *execs.ExecInfo) error {
 	if wifi == nil {
 		return errors.Reason("audit wifi: data is not present in dut info").Err()
 	}
-	_, err := r(ctx, time.Minute, wifiDetectCmd)
-	if err == nil {
+	isWiFiDetected, err := hasWiFiAdapter(ctx, r)
+
+	if err == nil && isWiFiDetected {
 		// successfully detected
 		wifi.State = tlw.HardwareState_HARDWARE_NORMAL
 		log.Infof(ctx, "set wifi state to be: %s", tlw.HardwareState_HARDWARE_NORMAL)
