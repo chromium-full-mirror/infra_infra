@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -21,6 +22,12 @@ import (
 	"infra/cros/dutstate"
 )
 
+var (
+	poolsDisallowed = []string{
+		"satlab_internal_automation_test",
+	}
+)
+
 // UpdateDutStateCmd represents update dut state command.
 type UpdateDutStateCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
@@ -30,6 +37,7 @@ type UpdateDutStateCmd struct {
 	UfsNameSpace       string                    // optional
 	ProvisionResponses map[string][]*testapi.InstallResponse
 	ProvisionDevices   map[string]*testapi.CrosTestRequest_Device
+	SkipReason         string
 
 	// Updates
 	CurrentDutState dutstate.State
@@ -76,6 +84,11 @@ func (cmd *UpdateDutStateCmd) Execute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Update dut states if required")
 	defer func() { step.End(err) }()
+
+	if cmd.SkipReason != "" {
+		step.SetSummaryMarkdown(fmt.Sprintf("Skipped: %s", cmd.SkipReason))
+		return nil
+	}
 
 	for deviceId := range cmd.ProvisionDevices {
 		err := cmd.updateDevice(ctx, deviceId)
@@ -155,6 +168,11 @@ func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: UfsNameSpace. Default namespace will be used.", cmd.GetCommandType())
 	} else {
 		cmd.UfsNameSpace = sk.CommonConfig.GetUfsConfig().GetUfsNamespace()
+	}
+
+	pool := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, common.LabelPool)
+	if slices.Contains(poolsDisallowed, pool) {
+		cmd.SkipReason = fmt.Sprintf("pool %s has been marked disallowed for dut state updates", pool)
 	}
 
 	return nil

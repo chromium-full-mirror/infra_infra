@@ -658,6 +658,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	keyvals["build"] = trHelper.builderStr                                                                                              // Required for rdb-publish
 	keyvals["build_target"] = trHelper.primaryTarget.board
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
+	keyvals[common.LabelPool] = trHelper.pool
 
 	gsSourcePath := ""
 	if path, ok := trHelper.lookupTable["installPath"]; ok {

@@ -51,6 +51,7 @@ const (
 	FireStoreContainersProdCollection      = "containers-prod"
 	LabelStaging                           = "staging"
 	LabelProd                              = "prod"
+	LabelPool                              = "label-pool"
 	BotParamsRejectedErrKey                = "Bot Params Rejected"
 	EnumerationErrKey                      = "Enumeration Error"
 	OtherErrKey                            = "Other Error"
