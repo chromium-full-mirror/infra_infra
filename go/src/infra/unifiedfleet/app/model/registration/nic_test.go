@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateNic(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	nic1 := mockNic("Nic-1")
 	nic2 := mockNic("")
-	Convey("CreateNic", t, func() {
-		Convey("Create new nic", func() {
+	ftt.Run("CreateNic", t, func(t *ftt.Test) {
+		t.Run("Create new nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 		})
-		Convey("Create existing nic", func() {
+		t.Run("Create existing nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create nic - invalid ID", func() {
+		t.Run("Create nic - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateNic(t *testing.T) {
 	nic2 := mockNic("Nic-1")
 	nic3 := mockNic("Nic-3")
 	nic4 := mockNic("")
-	Convey("UpdateNic", t, func() {
-		Convey("Update existing nic", func() {
+	ftt.Run("UpdateNic", t, func(t *ftt.Test) {
+		t.Run("Update existing nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 
 			resp, err = UpdateNic(ctx, nic2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic2))
 		})
-		Convey("Update non-existing nic", func() {
+		t.Run("Update non-existing nic", func(t *ftt.Test) {
 			resp, err := UpdateNic(ctx, nic3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update nic - invalid ID", func() {
+		t.Run("Update nic - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateNic(ctx, nic4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetNic(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	nic1 := mockNic("Nic-1")
-	Convey("GetNic", t, func() {
-		Convey("Get nic by existing ID", func() {
+	ftt.Run("GetNic", t, func(t *ftt.Test) {
+		t.Run("Get nic by existing ID", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 			resp, err = GetNic(ctx, "Nic-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 		})
-		Convey("Get nic by non-existing ID", func() {
+		t.Run("Get nic by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetNic(ctx, "nic-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get nic - invalid ID", func() {
+		t.Run("Get nic - invalid ID", func(t *ftt.Test) {
 			resp, err := GetNic(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListNics(t *testing.T) {
 		resp, _ := CreateNic(ctx, nic1)
 		nics = append(nics, resp)
 	}
-	Convey("ListNics", t, func() {
-		Convey("List nics - page_token invalid", func() {
+	ftt.Run("ListNics", t, func(t *ftt.Test) {
+		t.Run("List nics - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListNics(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List nics - Full listing with no pagination", func() {
+		t.Run("List nics - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListNics(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics))
 		})
 
-		Convey("List nics - listing with pagination", func() {
+		t.Run("List nics - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListNics(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics[:3]))
 
 			resp, _, err = ListNics(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics[3:]))
 		})
 	})
 }
@@ -158,65 +158,65 @@ func TestDeleteNic(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	nic2 := mockNic("nic-2")
-	Convey("DeleteNic", t, func() {
-		Convey("Delete nic successfully by existing ID", func() {
+	ftt.Run("DeleteNic", t, func(t *ftt.Test) {
+		t.Run("Delete nic successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateNic(ctx, nic2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic2))
 
 			err := DeleteNic(ctx, "nic-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetNic(ctx, "nic-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete nic by non-existing ID", func() {
+		t.Run("Delete nic by non-existing ID", func(t *ftt.Test) {
 			err := DeleteNic(ctx, "nic-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete nic - invalid ID", func() {
+		t.Run("Delete nic - invalid ID", func(t *ftt.Test) {
 			err := DeleteNic(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestBatchUpdateNics(t *testing.T) {
 	t.Parallel()
-	Convey("BatchUpdateNics", t, func() {
+	ftt.Run("BatchUpdateNics", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		nics := make([]*ufspb.Nic, 0, 4)
 		for i := 0; i < 4; i++ {
 			nic1 := mockNic(fmt.Sprintf("nic-%d", i))
 			resp, err := CreateNic(ctx, nic1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic1))
 			nics = append(nics, resp)
 		}
-		Convey("BatchUpdate all nics", func() {
+		t.Run("BatchUpdate all nics", func(t *ftt.Test) {
 			resp, err := BatchUpdateNics(ctx, nics)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics))
 		})
-		Convey("BatchUpdate existing and non-existing nics", func() {
+		t.Run("BatchUpdate existing and non-existing nics", func(t *ftt.Test) {
 			Nic5 := mockNic("")
 			nics = append(nics, Nic5)
 			resp, err := BatchUpdateNics(ctx, nics)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestQueryNicByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryNicByPropertyName", t, func() {
+	ftt.Run("QueryNicByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dummyNic := &ufspb.Nic{
@@ -229,28 +229,28 @@ func TestQueryNicByPropertyName(t *testing.T) {
 			},
 		}
 		resp, cerr := CreateNic(ctx, nic1)
-		So(cerr, ShouldBeNil)
-		So(resp, ShouldResembleProto, nic1)
+		assert.Loosely(t, cerr, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(nic1))
 
 		nics := make([]*ufspb.Nic, 0, 1)
 		nics = append(nics, nic1)
 
 		nics1 := make([]*ufspb.Nic, 0, 1)
 		nics1 = append(nics1, dummyNic)
-		Convey("Query By existing Switch keysonly", func() {
+		t.Run("Query By existing Switch keysonly", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-1", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics1))
 		})
-		Convey("Query By non-existing Switch", func() {
+		t.Run("Query By non-existing Switch", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-2", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing Switch", func() {
+		t.Run("Query By existing Switch", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-1", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nics)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nics))
 		})
 	})
 }

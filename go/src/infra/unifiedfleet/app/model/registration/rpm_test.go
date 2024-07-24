@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateRPM(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	RPM1 := mockRPM("RPM-1")
 	RPM2 := mockRPM("")
-	Convey("CreateRPM", t, func() {
-		Convey("Create new RPM", func() {
+	ftt.Run("CreateRPM", t, func(t *ftt.Test) {
+		t.Run("Create new RPM", func(t *ftt.Test) {
 			resp, err := CreateRPM(ctx, RPM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 		})
-		Convey("Create existing RPM", func() {
+		t.Run("Create existing RPM", func(t *ftt.Test) {
 			resp, err := CreateRPM(ctx, RPM1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create RPM - invalid ID", func() {
+		t.Run("Create RPM - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateRPM(ctx, RPM2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateRPM(t *testing.T) {
 	RPM2 := mockRPM("RPM-1")
 	RPM3 := mockRPM("RPM-3")
 	RPM4 := mockRPM("")
-	Convey("UpdateRPM", t, func() {
-		Convey("Update existing RPM", func() {
+	ftt.Run("UpdateRPM", t, func(t *ftt.Test) {
+		t.Run("Update existing RPM", func(t *ftt.Test) {
 			resp, err := CreateRPM(ctx, RPM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 
 			resp, err = UpdateRPM(ctx, RPM2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM2))
 		})
-		Convey("Update non-existing RPM", func() {
+		t.Run("Update non-existing RPM", func(t *ftt.Test) {
 			resp, err := UpdateRPM(ctx, RPM3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update RPM - invalid ID", func() {
+		t.Run("Update RPM - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateRPM(ctx, RPM4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetRPM(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	RPM1 := mockRPM("RPM-1")
-	Convey("GetRPM", t, func() {
-		Convey("Get RPM by existing ID", func() {
+	ftt.Run("GetRPM", t, func(t *ftt.Test) {
+		t.Run("Get RPM by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRPM(ctx, RPM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 			resp, err = GetRPM(ctx, "RPM-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM1))
 		})
-		Convey("Get RPM by non-existing ID", func() {
+		t.Run("Get RPM by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRPM(ctx, "RPM-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get RPM - invalid ID", func() {
+		t.Run("Get RPM - invalid ID", func(t *ftt.Test) {
 			resp, err := GetRPM(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListRPMs(t *testing.T) {
 		resp, _ := CreateRPM(ctx, RPM1)
 		RPMs = append(RPMs, resp)
 	}
-	Convey("ListRPMs", t, func() {
-		Convey("List RPMs - page_token invalid", func() {
+	ftt.Run("ListRPMs", t, func(t *ftt.Test) {
+		t.Run("List RPMs - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRPMs(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List RPMs - Full listing with no pagination", func() {
+		t.Run("List RPMs - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRPMs(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPMs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPMs))
 		})
 
-		Convey("List RPMs - listing with pagination", func() {
+		t.Run("List RPMs - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRPMs(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPMs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPMs[:3]))
 
 			resp, _, err = ListRPMs(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPMs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPMs[3:]))
 		})
 	})
 }
@@ -158,29 +158,29 @@ func TestDeleteRPM(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	RPM4 := mockRPM("RPM-4")
-	Convey("DeleteRPM", t, func() {
-		Convey("Delete RPM successfully by existing ID", func() {
+	ftt.Run("DeleteRPM", t, func(t *ftt.Test) {
+		t.Run("Delete RPM successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRPM(ctx, RPM4)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, RPM4)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(RPM4))
 
 			err := DeleteRPM(ctx, "RPM-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetRPM(ctx, "RPM-4")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete RPM by non-existing ID", func() {
+		t.Run("Delete RPM by non-existing ID", func(t *ftt.Test) {
 			err := DeleteRPM(ctx, "RPM-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete RPM - invalid ID", func() {
+		t.Run("Delete RPM - invalid ID", func(t *ftt.Test) {
 			err := DeleteRPM(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }

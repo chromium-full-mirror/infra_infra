@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -36,23 +36,23 @@ func TestCreateRack(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	rack1 := mockRack("Rack-1", 5, ufspb.Zone_ZONE_CHROMEOS4)
 	rack2 := mockRack("", 10, ufspb.Zone_ZONE_CHROMEOS4)
-	Convey("CreateRack", t, func() {
-		Convey("Create new rack", func() {
+	ftt.Run("CreateRack", t, func(t *ftt.Test) {
+		t.Run("Create new rack", func(t *ftt.Test) {
 			resp, err := CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 		})
-		Convey("Create existing rack", func() {
+		t.Run("Create existing rack", func(t *ftt.Test) {
 			resp, err := CreateRack(ctx, rack1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create rack - invalid ID", func() {
+		t.Run("Create rack - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateRack(ctx, rack2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -64,27 +64,27 @@ func TestUpdateRack(t *testing.T) {
 	rack2 := mockRack("Rack-1", 10, ufspb.Zone_ZONE_CHROMEOS4)
 	rack3 := mockRack("Rack-3", 15, ufspb.Zone_ZONE_CHROMEOS4)
 	rack4 := mockRack("", 20, ufspb.Zone_ZONE_CHROMEOS4)
-	Convey("UpdateRack", t, func() {
-		Convey("Update existing rack", func() {
+	ftt.Run("UpdateRack", t, func(t *ftt.Test) {
+		t.Run("Update existing rack", func(t *ftt.Test) {
 			resp, err := CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 
 			resp, err = UpdateRack(ctx, rack2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack2))
 		})
-		Convey("Update non-existing rack", func() {
+		t.Run("Update non-existing rack", func(t *ftt.Test) {
 			resp, err := UpdateRack(ctx, rack3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update rack - invalid ID", func() {
+		t.Run("Update rack - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateRack(ctx, rack4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -93,26 +93,26 @@ func TestGetRack(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	rack1 := mockRack("Rack-1", 5, ufspb.Zone_ZONE_CHROMEOS4)
-	Convey("GetRack", t, func() {
-		Convey("Get rack by existing ID", func() {
+	ftt.Run("GetRack", t, func(t *ftt.Test) {
+		t.Run("Get rack by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 			resp, err = GetRack(ctx, "Rack-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 		})
-		Convey("Get rack by non-existing ID", func() {
+		t.Run("Get rack by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRack(ctx, "rack-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get rack - invalid ID", func() {
+		t.Run("Get rack - invalid ID", func(t *ftt.Test) {
 			resp, err := GetRack(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -133,45 +133,45 @@ func TestGetRackACL(t *testing.T) {
 		t.Errorf("failed to create rack: %s", err)
 	}
 
-	Convey("When a rack is created in a certain realm", t, func() {
+	ftt.Run("When a rack is created in a certain realm", t, func(t *ftt.Test) {
 
-		Convey("No user is rejected", func() {
+		t.Run("No user is rejected", func(t *ftt.Test) {
 			resp, err := getRackACL(ctx, "rack-123")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Internal")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Internal"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user without perms is rejected", func() {
+		t.Run("A user without perms is rejected", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			resp, err := getRackACL(userCtx, "rack-123")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user without the correct perm is rejected", func() {
+		t.Run("A user without the correct perm is rejected", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.ConfigurationsGet)
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsCreate)
 			resp, err := getRackACL(userCtx, "rack-123")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user without the correct realm is rejected", func() {
+		t.Run("A user without the correct realm is rejected", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.RegistrationsGet)
 			resp, err := getRackACL(userCtx, "rack-123")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user with the correct realm and permission is accepted", func() {
+		t.Run("A user with the correct realm and permission is accepted", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
 			resp, err := getRackACL(userCtx, "rack-123")
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, rack)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(rack))
 		})
 	})
 }
@@ -199,44 +199,44 @@ func TestBatchGetRackACL(t *testing.T) {
 		t.Errorf("failed to create rack: %s", err)
 	}
 
-	Convey("When two racks are created", t, func() {
-		Convey("No user is rejected", func() {
+	ftt.Run("When two racks are created", t, func(t *ftt.Test) {
+		t.Run("No user is rejected", func(t *ftt.Test) {
 			resp, err := BatchGetRacksACL(ctx, []string{"rack-1", "rack-2"})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Internal")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Internal"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user without perms is rejected", func() {
+		t.Run("A user without perms is rejected", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user requesting racks without for at least one is rejected", func() {
+		t.Run("A user requesting racks without for at least one is rejected", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
 			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("A user requesting only racks they can access succeeds", func() {
+		t.Run("A user requesting only racks they can access succeeds", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
 			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.Rack{rack1})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.Rack{rack1}))
 		})
-		Convey("A user with all realm perms can see racks in multiple realms", func() {
+		t.Run("A user with all realm perms can see racks in multiple realms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "email@google.com")
 			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
 			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.RegistrationsGet)
 			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.Rack{rack1, rack2})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.Rack{rack1, rack2}))
 		})
 	})
 }
@@ -251,34 +251,34 @@ func TestListRacks(t *testing.T) {
 		resp, _ := CreateRack(ctx, rack1)
 		racks = append(racks, resp)
 	}
-	Convey("ListRacks", t, func() {
-		Convey("List racks - page_token invalid", func() {
+	ftt.Run("ListRacks", t, func(t *ftt.Test) {
+		t.Run("List racks - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacks(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List racks - Full listing with no pagination", func() {
+		t.Run("List racks - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacks(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks))
 		})
 
-		Convey("List racks - listing with pagination", func() {
+		t.Run("List racks - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacks(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks[:3]))
 
 			resp, _, err = ListRacks(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks[3:]))
 		})
 	})
 }
@@ -308,58 +308,58 @@ func TestListRacksACL(t *testing.T) {
 	mockRealmPerms(allPermUserCtx, util.BrowserLabAdminRealm, util.RegistrationsList)
 	mockRealmPerms(allPermUserCtx, util.AtlLabAdminRealm, util.RegistrationsList)
 
-	Convey("ListRacks", t, func() {
-		Convey("List racks - anonymous call rejected", func() {
+	ftt.Run("ListRacks", t, func(t *ftt.Test) {
+		t.Run("List racks - anonymous call rejected", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(ctx, 100, "", nil, false)
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List racks - filter on realm rejected", func() {
+		t.Run("List racks - filter on realm rejected", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"realm": nil}, false)
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List racks - happy path with no perms returns no results", func() {
+		t.Run("List racks - happy path with no perms returns no results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(noPermUserCtx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List racks - happy path with partial perms returns partial results", func() {
+		t.Run("List racks - happy path with partial perms returns partial results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(somePermUserCtx, 2, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks[4:6])
-			So(nextPageToken, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks[4:6]))
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListRacksACL(somePermUserCtx, 100, nextPageToken, nil, false)
-			So(err2, ShouldBeNil)
-			So(resp2, ShouldResembleProto, racks[6:])
-			So(nextPageToken2, ShouldBeEmpty)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, resp2, should.Resemble(racks[6:]))
+			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
-		Convey("List racks - happy path with all perms returns all results", func() {
+		t.Run("List racks - happy path with all perms returns all results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 4, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks[:4])
-			So(nextPageToken, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks[:4]))
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListRacksACL(allPermUserCtx, 100, nextPageToken, nil, false)
-			So(err2, ShouldBeNil)
-			So(resp2, ShouldResembleProto, racks[4:])
-			So(nextPageToken2, ShouldBeEmpty)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, resp2, should.Resemble(racks[4:]))
+			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
-		Convey("List racks - happy path with all perms and filters returns filtered results", func() {
+		t.Run("List racks - happy path with all perms and filters returns filtered results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, racks[:4])
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(racks[:4]))
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List racks - happy path with all perms and filters with no matches returns no results", func() {
+		t.Run("List racks - happy path with all perms and filters with no matches returns no results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRacksACL(allPermUserCtx, 100, "", map[string][]interface{}{"zone": {"fake"}}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 	})
 }
@@ -368,63 +368,63 @@ func TestDeleteRack(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	rack1 := mockRack("rack-1", 5, ufspb.Zone_ZONE_CHROMEOS4)
-	Convey("DeleteRack", t, func() {
-		Convey("Delete rack by existing ID", func() {
+	ftt.Run("DeleteRack", t, func(t *ftt.Test) {
+		t.Run("Delete rack by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRack(ctx, rack1)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 			err := DeleteRack(ctx, "rack-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			res, err := GetRack(ctx, "rack-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rack by non-existing ID", func() {
+		t.Run("Delete rack by non-existing ID", func(t *ftt.Test) {
 			err := DeleteRack(ctx, "rack-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rack - invalid ID", func() {
+		t.Run("Delete rack - invalid ID", func(t *ftt.Test) {
 			err := DeleteRack(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestBatchUpdateRacks(t *testing.T) {
 	t.Parallel()
-	Convey("BatchUpdateRacks", t, func() {
+	ftt.Run("BatchUpdateRacks", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		Racks := make([]*ufspb.Rack, 0, 4)
 		for i := 0; i < 4; i++ {
 			Rack1 := mockRack(fmt.Sprintf("Rack-%d", i), 10, ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateRack(ctx, Rack1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, Rack1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(Rack1))
 			Racks = append(Racks, resp)
 		}
-		Convey("BatchUpdate all Racks", func() {
+		t.Run("BatchUpdate all Racks", func(t *ftt.Test) {
 			resp, err := BatchUpdateRacks(ctx, Racks)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, Racks)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(Racks))
 		})
-		Convey("BatchUpdate existing and invalid Racks", func() {
+		t.Run("BatchUpdate existing and invalid Racks", func(t *ftt.Test) {
 			Rack5 := mockRack("", 10, ufspb.Zone_ZONE_CHROMEOS4)
 			Racks = append(Racks, Rack5)
 			resp, err := BatchUpdateRacks(ctx, Racks)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestQueryRackByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryRackByPropertyName", t, func() {
+	ftt.Run("QueryRackByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dummyRack := &ufspb.Rack{
@@ -438,33 +438,33 @@ func TestQueryRackByPropertyName(t *testing.T) {
 			Tags: []string{"tag-1"},
 		}
 		resp, cerr := CreateRack(ctx, Rack1)
-		So(cerr, ShouldBeNil)
-		So(resp, ShouldResembleProto, Rack1)
+		assert.Loosely(t, cerr, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(Rack1))
 
 		Racks := make([]*ufspb.Rack, 0, 1)
 		Racks = append(Racks, Rack1)
 
 		dummyRacks := make([]*ufspb.Rack, 0, 1)
 		dummyRacks = append(dummyRacks, dummyRack)
-		Convey("Query By existing Rack", func() {
+		t.Run("Query By existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackByPropertyName(ctx, "tags", "tag-1", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, Racks)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(Racks))
 		})
-		Convey("Query By non-existing Rack", func() {
+		t.Run("Query By non-existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackByPropertyName(ctx, "tags", "tag-5", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing RackPrototype keysonly", func() {
+		t.Run("Query By existing RackPrototype keysonly", func(t *ftt.Test) {
 			resp, err := QueryRackByPropertyName(ctx, "tags", "tag-1", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dummyRacks)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dummyRacks))
 		})
-		Convey("Query By non-existing RackPrototype", func() {
+		t.Run("Query By non-existing RackPrototype", func(t *ftt.Test) {
 			resp, err := QueryRackByPropertyName(ctx, "tags", "tag-5", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }

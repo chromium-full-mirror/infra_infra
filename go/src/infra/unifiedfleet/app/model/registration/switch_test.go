@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -24,23 +24,23 @@ func TestCreateSwitch(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	switch1 := mockSwitch("Switch-1")
 	switch2 := mockSwitch("")
-	Convey("CreateSwitch", t, func() {
-		Convey("Create new switch", func() {
+	ftt.Run("CreateSwitch", t, func(t *ftt.Test) {
+		t.Run("Create new switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 		})
-		Convey("Create existing switch", func() {
+		t.Run("Create existing switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create switch - invalid ID", func() {
+		t.Run("Create switch - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -52,27 +52,27 @@ func TestUpdateSwitch(t *testing.T) {
 	switch2 := mockSwitch("Switch-1")
 	switch3 := mockSwitch("Switch-3")
 	switch4 := mockSwitch("")
-	Convey("UpdateSwitch", t, func() {
-		Convey("Update existing switch", func() {
+	ftt.Run("UpdateSwitch", t, func(t *ftt.Test) {
+		t.Run("Update existing switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 
 			resp, err = UpdateSwitch(ctx, switch2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch2))
 		})
-		Convey("Update non-existing switch", func() {
+		t.Run("Update non-existing switch", func(t *ftt.Test) {
 			resp, err := UpdateSwitch(ctx, switch3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update switch - invalid ID", func() {
+		t.Run("Update switch - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateSwitch(ctx, switch4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -81,26 +81,26 @@ func TestGetSwitch(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	switch1 := mockSwitch("Switch-1")
-	Convey("GetSwitch", t, func() {
-		Convey("Get switch by existing ID", func() {
+	ftt.Run("GetSwitch", t, func(t *ftt.Test) {
+		t.Run("Get switch by existing ID", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 			resp, err = GetSwitch(ctx, "Switch-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch1))
 		})
-		Convey("Get switch by non-existing ID", func() {
+		t.Run("Get switch by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetSwitch(ctx, "switch-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get switch - invalid ID", func() {
+		t.Run("Get switch - invalid ID", func(t *ftt.Test) {
 			resp, err := GetSwitch(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -115,34 +115,34 @@ func TestListSwitches(t *testing.T) {
 		resp, _ := CreateSwitch(ctx, switch1)
 		switches = append(switches, resp)
 	}
-	Convey("ListSwitches", t, func() {
-		Convey("List switches - page_token invalid", func() {
+	ftt.Run("ListSwitches", t, func(t *ftt.Test) {
+		t.Run("List switches - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSwitches(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List switches - Full listing with no pagination", func() {
+		t.Run("List switches - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSwitches(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switches)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switches))
 		})
 
-		Convey("List switches - listing with pagination", func() {
+		t.Run("List switches - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSwitches(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switches[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switches[:3]))
 
 			resp, _, err = ListSwitches(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, switches[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switches[3:]))
 		})
 	})
 }
@@ -152,29 +152,29 @@ func TestDeleteSwitch(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	switch2 := mockSwitch("switch-2")
-	Convey("DeleteSwitch", t, func() {
-		Convey("Delete switch successfully by existing ID", func() {
+	ftt.Run("DeleteSwitch", t, func(t *ftt.Test) {
+		t.Run("Delete switch successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateSwitch(ctx, switch2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, switch2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(switch2))
 
 			err := DeleteSwitch(ctx, "switch-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetSwitch(ctx, "switch-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete switch by non-existing ID", func() {
+		t.Run("Delete switch by non-existing ID", func(t *ftt.Test) {
 			err := DeleteSwitch(ctx, "switch-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete switch - invalid ID", func() {
+		t.Run("Delete switch - invalid ID", func(t *ftt.Test) {
 			err := DeleteSwitch(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -183,29 +183,29 @@ func TestImportSwitches(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("import switches", t, func() {
+	ftt.Run("import switches", t, func(t *ftt.Test) {
 		switches := []*ufspb.Switch{
 			mockSwitch("switch1"),
 			mockSwitch("switch2"),
 		}
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := ImportSwitches(ctx, switches)
-			So(err, ShouldBeNil)
-			So(resp.Passed(), ShouldHaveLength, len(switches))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Passed(), should.HaveLength(len(switches)))
 			getRes, _, err := ListSwitches(ctx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(getRes, ShouldResembleProto, switches)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, getRes, should.Resemble(switches))
 		})
-		Convey("happy path also for importing existing switches", func() {
+		t.Run("happy path also for importing existing switches", func(t *ftt.Test) {
 			switch1 := []*ufspb.Switch{
 				mockSwitch("switch1"),
 			}
 			resp, err := ImportSwitches(ctx, switch1)
-			So(err, ShouldBeNil)
-			So(resp.Passed(), ShouldHaveLength, len(switch1))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Passed(), should.HaveLength(len(switch1)))
 			s, err := GetSwitch(ctx, "switch1")
-			So(err, ShouldBeNil)
-			So(s, ShouldResembleProto, switch1[0])
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s, should.Resemble(switch1[0]))
 		})
 	})
 }

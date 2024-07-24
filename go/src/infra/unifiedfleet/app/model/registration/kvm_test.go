@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateKVM(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	KVM1 := mockKVM("KVM-1")
 	KVM2 := mockKVM("")
-	Convey("CreateKVM", t, func() {
-		Convey("Create new KVM", func() {
+	ftt.Run("CreateKVM", t, func(t *ftt.Test) {
+		t.Run("Create new KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 		})
-		Convey("Create existing KVM", func() {
+		t.Run("Create existing KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create KVM - invalid ID", func() {
+		t.Run("Create KVM - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateKVM(t *testing.T) {
 	KVM2 := mockKVM("KVM-1")
 	KVM3 := mockKVM("KVM-3")
 	KVM4 := mockKVM("")
-	Convey("UpdateKVM", t, func() {
-		Convey("Update existing KVM", func() {
+	ftt.Run("UpdateKVM", t, func(t *ftt.Test) {
+		t.Run("Update existing KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 
 			resp, err = UpdateKVM(ctx, KVM2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM2))
 		})
-		Convey("Update non-existing KVM", func() {
+		t.Run("Update non-existing KVM", func(t *ftt.Test) {
 			resp, err := UpdateKVM(ctx, KVM3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update KVM - invalid ID", func() {
+		t.Run("Update KVM - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateKVM(ctx, KVM4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetKVM(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	KVM1 := mockKVM("KVM-1")
-	Convey("GetKVM", t, func() {
-		Convey("Get KVM by existing ID", func() {
+	ftt.Run("GetKVM", t, func(t *ftt.Test) {
+		t.Run("Get KVM by existing ID", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 			resp, err = GetKVM(ctx, "KVM-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM1))
 		})
-		Convey("Get KVM by non-existing ID", func() {
+		t.Run("Get KVM by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetKVM(ctx, "KVM-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get KVM - invalid ID", func() {
+		t.Run("Get KVM - invalid ID", func(t *ftt.Test) {
 			resp, err := GetKVM(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListKVMs(t *testing.T) {
 		resp, _ := CreateKVM(ctx, KVM1)
 		KVMs = append(KVMs, resp)
 	}
-	Convey("ListKVMs", t, func() {
-		Convey("List KVMs - page_token invalid", func() {
+	ftt.Run("ListKVMs", t, func(t *ftt.Test) {
+		t.Run("List KVMs - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListKVMs(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List KVMs - Full listing with no pagination", func() {
+		t.Run("List KVMs - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListKVMs(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVMs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVMs))
 		})
 
-		Convey("List KVMs - listing with pagination", func() {
+		t.Run("List KVMs - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListKVMs(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVMs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVMs[:3]))
 
 			resp, _, err = ListKVMs(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVMs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVMs[3:]))
 		})
 	})
 }
@@ -158,36 +158,36 @@ func TestDeleteKVM(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	KVM4 := mockKVM("KVM-4")
-	Convey("DeleteKVM", t, func() {
-		Convey("Delete KVM successfully by existing ID", func() {
+	ftt.Run("DeleteKVM", t, func(t *ftt.Test) {
+		t.Run("Delete KVM successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateKVM(ctx, KVM4)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, KVM4)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(KVM4))
 
 			err := DeleteKVM(ctx, "KVM-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetKVM(ctx, "KVM-4")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete KVM by non-existing ID", func() {
+		t.Run("Delete KVM by non-existing ID", func(t *ftt.Test) {
 			err := DeleteKVM(ctx, "KVM-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete KVM - invalid ID", func() {
+		t.Run("Delete KVM - invalid ID", func(t *ftt.Test) {
 			err := DeleteKVM(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestBatchUpdateKVMs(t *testing.T) {
 	t.Parallel()
-	Convey("BatchUpdateKVMs", t, func() {
+	ftt.Run("BatchUpdateKVMs", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		kvms := make([]*ufspb.KVM, 0, 4)
@@ -195,29 +195,29 @@ func TestBatchUpdateKVMs(t *testing.T) {
 			kvm1 := mockKVM(fmt.Sprintf("kvm-%d", i))
 			kvm1.ChromePlatform = "chromePlatform-1"
 			resp, err := CreateKVM(ctx, kvm1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, kvm1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(kvm1))
 			kvms = append(kvms, resp)
 		}
-		Convey("BatchUpdate all kvms", func() {
+		t.Run("BatchUpdate all kvms", func(t *ftt.Test) {
 			resp, err := BatchUpdateKVMs(ctx, kvms)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, kvms)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(kvms))
 		})
-		Convey("BatchUpdate existing and non-existing kvms", func() {
+		t.Run("BatchUpdate existing and non-existing kvms", func(t *ftt.Test) {
 			KVM5 := mockKVM("")
 			kvms = append(kvms, KVM5)
 			resp, err := BatchUpdateKVMs(ctx, kvms)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestQueryKVMByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryKVMByPropertyName", t, func() {
+	ftt.Run("QueryKVMByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dummyKVM := &ufspb.KVM{
@@ -226,28 +226,28 @@ func TestQueryKVMByPropertyName(t *testing.T) {
 		kvm1 := mockKVM("kvm-15")
 		kvm1.ChromePlatform = "chromePlatform-1"
 		resp, cerr := CreateKVM(ctx, kvm1)
-		So(cerr, ShouldBeNil)
-		So(resp, ShouldResembleProto, kvm1)
+		assert.Loosely(t, cerr, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(kvm1))
 
 		kvms := make([]*ufspb.KVM, 0, 1)
 		kvms = append(kvms, kvm1)
 
 		kvms1 := make([]*ufspb.KVM, 0, 1)
 		kvms1 = append(kvms1, dummyKVM)
-		Convey("Query By existing ChromePlatform keysonly", func() {
+		t.Run("Query By existing ChromePlatform keysonly", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-1", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, kvms1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(kvms1))
 		})
-		Convey("Query By non-existing ChromePlatform", func() {
+		t.Run("Query By non-existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-2", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing ChromePlatform", func() {
+		t.Run("Query By existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-1", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, kvms)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(kvms))
 		})
 	})
 }

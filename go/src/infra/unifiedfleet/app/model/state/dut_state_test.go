@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -40,38 +40,38 @@ func mockDutStateWithRealm(id string, realm string) *chromeosLab.DutState {
 func TestUpdateDutState(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("UpdateDutState", t, func() {
-		Convey("Update existing dut state", func() {
+	ftt.Run("UpdateDutState", t, func(t *ftt.Test) {
+		t.Run("Update existing dut state", func(t *ftt.Test) {
 			dutState1 := mockDutState("existing-dut-id")
 			resp, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
-			So(err, ShouldBeNil)
-			So(resp[0], ShouldResembleProto, dutState1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp[0], should.Resemble(dutState1))
 
 			dutState1.Servo = chromeosLab.PeripheralState_BAD_RIBBON_CABLE
 			resp, err = UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
-			So(err, ShouldBeNil)
-			So(resp[0], ShouldResembleProto, dutState1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp[0], should.Resemble(dutState1))
 
 			getRes, err := GetDutState(ctx, "existing-dut-id")
-			So(err, ShouldBeNil)
-			So(getRes, ShouldResembleProto, dutState1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, getRes, should.Resemble(dutState1))
 		})
-		Convey("Update non-existing dut state", func() {
+		t.Run("Update non-existing dut state", func(t *ftt.Test) {
 			dutState1 := mockDutState("non-existing-dut-id")
 			resp, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
-			So(resp[0], ShouldResembleProto, dutState1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp[0], should.Resemble(dutState1))
+			assert.Loosely(t, err, should.BeNil)
 
 			getRes, err := GetDutState(ctx, "non-existing-dut-id")
-			So(err, ShouldBeNil)
-			So(getRes, ShouldResembleProto, dutState1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, getRes, should.Resemble(dutState1))
 		})
-		Convey("Update dut state - invalid ID", func() {
+		t.Run("Update dut state - invalid ID", func(t *ftt.Test) {
 			dutState1 := mockDutState("")
 			resp, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsds.InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.InternalError))
 		})
 	})
 }
@@ -81,30 +81,30 @@ func TestDeleteDutState(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 
-	Convey("DeleteDutStates", t, func() {
-		Convey("Delete dut state by existing ID", func() {
+	ftt.Run("DeleteDutStates", t, func(t *ftt.Test) {
+		t.Run("Delete dut state by existing ID", func(t *ftt.Test) {
 			dutState1 := mockDutState("delete-dut-id1")
 			dutState2 := mockDutState("delete-dut-id2")
 			_, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1, dutState2})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := GetAllDutStates(ctx)
-			So(err, ShouldBeNil)
-			So(resp.Passed(), ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Passed(), should.HaveLength(2))
 
 			resp2 := DeleteDutStates(ctx, []string{"delete-dut-id2"})
-			So(resp2.Passed(), ShouldHaveLength, 1)
+			assert.Loosely(t, resp2.Passed(), should.HaveLength(1))
 
 			resp, err = GetAllDutStates(ctx)
-			So(err, ShouldBeNil)
-			So(resp.Passed(), ShouldHaveLength, 1)
-			So(resp.Passed()[0].Data.(*chromeosLab.DutState).GetId().GetValue(), ShouldEqual, "delete-dut-id1")
-			So(resp.Passed()[0].Data.(*chromeosLab.DutState).GetHostname(), ShouldEqual, "hostname-delete-dut-id1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Passed(), should.HaveLength(1))
+			assert.Loosely(t, resp.Passed()[0].Data.(*chromeosLab.DutState).GetId().GetValue(), should.Equal("delete-dut-id1"))
+			assert.Loosely(t, resp.Passed()[0].Data.(*chromeosLab.DutState).GetHostname(), should.Equal("hostname-delete-dut-id1"))
 		})
 
-		Convey("Delete dut state by non-existing ID", func() {
+		t.Run("Delete dut state by non-existing ID", func(t *ftt.Test) {
 			resp := DeleteDutStates(ctx, []string{"delete-dut-non-existing-id"})
-			So(resp.Failed(), ShouldHaveLength, 1)
+			assert.Loosely(t, resp.Failed(), should.HaveLength(1))
 		})
 	})
 }
@@ -128,21 +128,21 @@ func TestGetDutStateACL(t *testing.T) {
 		fmt.Println("Not able to instantiate DutStates in TestGetDutStateACL")
 	}
 
-	Convey("GetDutStateACL", t, func() {
-		Convey("GetDutStateACL - no user", func() {
+	ftt.Run("GetDutStateACL", t, func(t *ftt.Test) {
+		t.Run("GetDutStateACL - no user", func(t *ftt.Test) {
 			resp, err := GetDutStateACL(ctx, "dut-state-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Internal")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Internal"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetDutStateACL - no perms", func() {
+		t.Run("GetDutStateACL - no perms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			resp, err := GetDutStateACL(userCtx, "dut-state-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetDutStateACL - missing perms", func() {
+		t.Run("GetDutStateACL - missing perms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsList)
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsGet)
@@ -152,11 +152,11 @@ func TestGetDutStateACL(t *testing.T) {
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesDelete)
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesCreate)
 			resp, err := GetDutStateACL(userCtx, "dut-state-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetDutStateACL - missing realms", func() {
+		t.Run("GetDutStateACL - missing realms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.ConfigurationsGet)
 			mockRealmPerms(userCtx, util.AtlLabChromiumAdminRealm, util.ConfigurationsGet)
@@ -164,31 +164,31 @@ func TestGetDutStateACL(t *testing.T) {
 			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.ConfigurationsGet)
 			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.ConfigurationsGet)
 			resp, err := GetDutStateACL(userCtx, "dut-state-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 			// 2nd dut-state of different realm
 			user2Ctx := mockUser(ctx, "name@chromium.org")
 			mockRealmPerms(user2Ctx, util.BrowserLabAdminRealm, util.ConfigurationsGet)
 			resp, err = GetDutStateACL(user2Ctx, "dut-state-2")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetDutStateACL - happy path", func() {
+		t.Run("GetDutStateACL - happy path", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.ConfigurationsGet)
 			resp, err := GetDutStateACL(userCtx, "dut-state-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, dutState1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(dutState1))
 			// 2nd dut-state of different realm
 			user2Ctx := mockUser(ctx, "name@chromium.org")
 			mockRealmPerms(user2Ctx, util.SatLabInternalUserRealm, util.ConfigurationsGet)
 			resp, err = GetDutStateACL(user2Ctx, "dut-state-2")
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, dutState2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(dutState2))
 		})
 	})
 }
@@ -218,52 +218,52 @@ func TestListDutStatesACL(t *testing.T) {
 	allPermUserCtx := mockUser(ctx, "all@google.com")
 	mockRealmPerms(allPermUserCtx, util.BrowserLabAdminRealm, util.ConfigurationsList)
 	mockRealmPerms(allPermUserCtx, util.SatLabInternalUserRealm, util.ConfigurationsList)
-	Convey("ListDutStates", t, func() {
-		Convey("List DutStates - anonymous call rejected", func() {
+	ftt.Run("ListDutStates", t, func(t *ftt.Test) {
+		t.Run("List DutStates - anonymous call rejected", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(ctx, 100, "", nil, false)
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List DutStates - filter on realm rejected", func() {
+		t.Run("List DutStates - filter on realm rejected", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"realm": nil}, false)
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List DutStates - happy path with no perms returns no results", func() {
+		t.Run("List DutStates - happy path with no perms returns no results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(noPermUserCtx, 100, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
-		Convey("List DutStates - happy path with partial perms returns partial results", func() {
+		t.Run("List DutStates - happy path with partial perms returns partial results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(somePermUserCtx, 2, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dutStates[:2])
-			So(nextPageToken, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dutStates[:2]))
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListDutStatesACL(somePermUserCtx, 100, nextPageToken, nil, false)
-			So(err2, ShouldBeNil)
-			So(resp2, ShouldResembleProto, dutStates[2:4])
-			So(nextPageToken2, ShouldBeEmpty)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, resp2, should.Resemble(dutStates[2:4]))
+			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
-		Convey("List DutStates - happy path with all perms returns all results", func() {
+		t.Run("List DutStates - happy path with all perms returns all results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 4, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dutStates[:4])
-			So(nextPageToken, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dutStates[:4]))
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListDutStatesACL(allPermUserCtx, 100, nextPageToken, nil, false)
-			So(err2, ShouldBeNil)
-			So(resp2, ShouldResembleProto, dutStates[4:])
-			So(nextPageToken2, ShouldBeEmpty)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, resp2, should.Resemble(dutStates[4:]))
+			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
-		Convey("List DutStates - happy path with all perms and filters with no matches returns no results", func() {
+		t.Run("List DutStates - happy path with all perms and filters with no matches returns no results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"hostname": {"fake"}}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 	})
 }
