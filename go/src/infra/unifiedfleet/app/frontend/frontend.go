@@ -26,9 +26,20 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
+// AllowOriginAllAndCustomHeaders is similar to LUCI's prpc.AllowOriginAll
+// function but includes custom Namespace header used by UFS. Allows
+// web clients to set Namespace for UFS.
+func AllowOriginAllAndCustomHeaders(ctx context.Context, origin string) prpc.AccessControlDecision {
+	return prpc.AccessControlDecision{
+		AllowCrossOriginRequests: true,
+		AllowCredentials:         true,
+		AllowHeaders:             []string{util.Namespace},
+	}
+}
+
 // InstallServices installs ...
 func InstallServices(apiServer *server.Server) {
-	apiServer.ConfigurePRPC(func(p *prpc.Server) { p.AccessControl = prpc.AllowOriginAll })
+	apiServer.ConfigurePRPC(func(p *prpc.Server) { p.AccessControl = AllowOriginAllAndCustomHeaders })
 	api.RegisterFleetServer(apiServer, &api.DecoratedFleet{
 		Service: &FleetServerImpl{},
 		Prelude: checkAccess,
