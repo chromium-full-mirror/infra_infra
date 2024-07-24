@@ -1345,8 +1345,8 @@ github.com/zeebo/xxh3 v1.0.2/go.mod h1:5NWz9Sef7zIDm2JHfFlcQvNekmcEl9ekUZQQKCYaD
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4 h1:oq5hS2hdsUjZ17mZR3dG+p1wYu4H+QDCE3Oa0CyXR3Y=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4/go.mod h1:mP+pnPJ8U3Ps18aQr/ic2ZdhRQaGhCaoKPJKevbCMKo=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240612102021-79605f69338e h1:XqDZGBn+VXVhTj1pukvGv6MSQR13WypQrIfYkM7W5GM=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240612102021-79605f69338e/go.mod h1:axt7+qebLhbMpR9MpTU9y9YhPOpF+elBYuj3quLspV8=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240723171423-2527ed994429 h1:u2ZM3v9KC9la87FO8TRKeAg3U3pzno3im/6J6pn5rg4=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240723171423-2527ed994429/go.mod h1:0yN0hP98r75BER3NYCkTxXHud2rWqe6HaUrURNKJ19g=
 go.einride.tech/aip v0.67.1 h1:d/4TW92OxXBngkSOwWS2CH5rez869KpKMaN44mdxkFI=
 go.einride.tech/aip v0.67.1/go.mod h1:ZGX4/zKw8dcgzdLsrvpOOGxfxI2QSk12SlP7d6c0/XI=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=

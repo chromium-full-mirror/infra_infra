@@ -43,7 +43,8 @@ type FirmwareBranchBuild struct {
 }
 
 const saProject = "chromeos-bot"
-const saFile = "/creds/service_accounts/service-account-chromeos.json"
+
+var saFile string
 
 func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
 	log.Println("Executing firmware filter")
@@ -128,6 +129,7 @@ func main() {
 	fs := flag.NewFlagSet("Run firmware-provision-filter", flag.ExitOnError)
 	fs.StringVar(&firmwareSpecs.Ro, "ro", "", "Spec for firmare RO")
 	fs.StringVar(&firmwareSpecs.Rw, "rw", "", "Spec for firmare RW")
+	fs.StringVar(&saFile, "serviceAccountCred", "/creds/service_accounts/service-account-chromeos.json", "Path to service account credential json file")
 
 	err := server.ServerWithFlagSet(fs, firmwareSpecs.executor, "fw_filter")
 	if err != nil {
