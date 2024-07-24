@@ -7,10 +7,10 @@ package inventory
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -29,14 +29,14 @@ func mockVMWithOwnership(id string, ownership *ufspb.OwnershipData) *ufspb.VM {
 	return machine
 }
 
-func assertVMWithOwnershipEqual(a *ufspb.VM, b *ufspb.VM) {
+func assertVMWithOwnershipEqual(t *ftt.Test, a *ufspb.VM, b *ufspb.VM) {
 	if a.GetOwnership() == nil && b.GetOwnership() == nil {
 		return
 	}
-	So(a.GetOwnership().PoolName, ShouldEqual, b.GetOwnership().PoolName)
-	So(a.GetOwnership().SwarmingInstance, ShouldEqual, b.GetOwnership().SwarmingInstance)
-	So(a.GetOwnership().Customer, ShouldEqual, b.GetOwnership().Customer)
-	So(a.GetOwnership().SecurityLevel, ShouldEqual, b.GetOwnership().SecurityLevel)
+	assert.Loosely(t, a.GetOwnership().PoolName, should.Equal(b.GetOwnership().PoolName))
+	assert.Loosely(t, a.GetOwnership().SwarmingInstance, should.Equal(b.GetOwnership().SwarmingInstance))
+	assert.Loosely(t, a.GetOwnership().Customer, should.Equal(b.GetOwnership().Customer))
+	assert.Loosely(t, a.GetOwnership().SecurityLevel, should.Equal(b.GetOwnership().SecurityLevel))
 }
 
 func TestBatchUpdateVMs(t *testing.T) {
@@ -45,25 +45,25 @@ func TestBatchUpdateVMs(t *testing.T) {
 	vm1 := mockVM("vm-1")
 	vm2 := mockVM("vm-2")
 	vm3 := mockVM("")
-	Convey("Batch Update VM", t, func() {
-		Convey("BatchUpdate all vms", func() {
+	ftt.Run("Batch Update VM", t, func(t *ftt.Test) {
+		t.Run("BatchUpdate all vms", func(t *ftt.Test) {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1, vm2})
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm1, vm2})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1, vm2}))
 		})
-		Convey("BatchUpdate existing vms", func() {
+		t.Run("BatchUpdate existing vms", func(t *ftt.Test) {
 			vm2.MacAddress = "123"
 			_, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1, vm2})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			vm, err := GetVM(ctx, "vm-2")
-			So(err, ShouldBeNil)
-			So(vm.GetMacAddress(), ShouldEqual, "123")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, vm.GetMacAddress(), should.Equal("123"))
 		})
-		Convey("BatchUpdate invalid vms", func() {
+		t.Run("BatchUpdate invalid vms", func(t *ftt.Test) {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1, vm2, vm3})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,39 +87,39 @@ func TestUpdateVMOwnership(t *testing.T) {
 	vm1 := mockVM("vm-1")
 	vm1_ownership := mockVMWithOwnership("vm-1", ownershipData)
 	vm2 := mockVMWithOwnership("vm-1", ownershipData2)
-	Convey("UpdateVM", t, func() {
-		Convey("Update existing VM with ownership data", func() {
+	ftt.Run("UpdateVM", t, func(t *ftt.Test) {
+		t.Run("Update existing VM with ownership data", func(t *ftt.Test) {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm1})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1}))
 
 			// Ownership data should be updated
 			vmResp, err := UpdateVMOwnership(ctx, resp[0].Name, ownershipData)
-			So(err, ShouldBeNil)
-			So(vmResp.GetOwnership(), ShouldNotBeNil)
-			assertVMWithOwnershipEqual(vmResp, vm1_ownership)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, vmResp.GetOwnership(), should.NotBeNil)
+			assertVMWithOwnershipEqual(t, vmResp, vm1_ownership)
 
 			// Regular Update calls should not override ownership data
 			resp, err = BatchUpdateVMs(ctx, []*ufspb.VM{vm2})
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm2})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm2}))
 
 			vmResp, err = GetVM(ctx, "vm-1")
-			So(err, ShouldBeNil)
-			So(vmResp.GetOwnership(), ShouldNotBeNil)
-			assertVMWithOwnershipEqual(vmResp, vm1_ownership)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, vmResp.GetOwnership(), should.NotBeNil)
+			assertVMWithOwnershipEqual(t, vmResp, vm1_ownership)
 		})
-		Convey("Update non-existing VM with ownership", func() {
+		t.Run("Update non-existing VM with ownership", func(t *ftt.Test) {
 			resp, err := UpdateVMOwnership(ctx, "dummy", ownershipData)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update VM with ownership - invalid ID", func() {
+		t.Run("Update VM with ownership - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateVMOwnership(ctx, "", ownershipData)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -127,18 +127,18 @@ func TestUpdateVMOwnership(t *testing.T) {
 func TestGetVM(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("GetVM", t, func() {
-		Convey("Get machineLSE by non-existing ID", func() {
+	ftt.Run("GetVM", t, func(t *ftt.Test) {
+		t.Run("Get machineLSE by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSE(ctx, "empty")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machineLSE - invalid ID", func() {
+		t.Run("Get machineLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSE(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -163,65 +163,65 @@ func TestListVMs(t *testing.T) {
 	vm4 := mockVM("vm-4")
 	vms := []*ufspb.VM{vm1, vm2, vm3, vm4}
 
-	Convey("ListVMs", t, func() {
+	ftt.Run("ListVMs", t, func(t *ftt.Test) {
 		_, err := BatchUpdateVMs(ctx, vms)
-		So(err, ShouldBeNil)
-		Convey("List vms - page_token invalid", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("List vms - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMs(ctx, 5, 5, "abc", nil, false, nil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List vms - Full listing with no pagination", func() {
+		t.Run("List vms - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMs(ctx, 4, 4, "", nil, false, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(resp, ShouldResembleProto, vms)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, resp, should.Resemble(vms))
 		})
 
-		Convey("List vms - listing with pagination", func() {
+		t.Run("List vms - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMs(ctx, 3, 3, "", nil, false, nil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vms[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vms[:3]))
 
 			resp, _, err = ListVMs(ctx, 2, 2, nextPageToken, nil, false, nil)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vms[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vms[3:]))
 		})
 	})
-	Convey("ListVMs with Filters", t, func() {
+	ftt.Run("ListVMs with Filters", t, func(t *ftt.Test) {
 		_, err := BatchUpdateVMs(ctx, vms)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		filterMap := make(map[string][]interface{})
-		Convey("List vms - Filter by state", func() {
+		t.Run("List vms - Filter by state", func(t *ftt.Test) {
 			filterMap["state"] = []interface{}{"STATE_DECOMMISSIONED"}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm1})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1}))
 		})
-		Convey("List vms - Filter by tags", func() {
+		t.Run("List vms - Filter by tags", func(t *ftt.Test) {
 			filterMap["tags"] = []interface{}{"tag-1"}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm2})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm2}))
 		})
-		Convey("List vms - Filter by memory", func() {
+		t.Run("List vms - Filter by memory", func(t *ftt.Test) {
 			filterMap["memory"] = []interface{}{1234}
 			resp, nextPageToken, err := ListVMs(ctx, 1, 2, "", filterMap, false, nil)
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.VM{vm3})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm3}))
 		})
 	})
 }
@@ -246,43 +246,43 @@ func TestListVMsByIdPrefixSearch(t *testing.T) {
 	}
 	vm4 := mockVM("vm-4")
 	vms := []*ufspb.VM{vm1, vm2, vm3, vm4}
-	Convey("ListMachinesByIdPrefixSearch", t, func() {
+	ftt.Run("ListMachinesByIdPrefixSearch", t, func(t *ftt.Test) {
 		_, err := BatchUpdateVMs(ctx, vms)
-		So(err, ShouldBeNil)
-		Convey("List vms - page_token invalid", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("List vms - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 5, 2, "abc", "vm-", false, nil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List vms - Full listing with valid prefix and no pagination", func() {
+		t.Run("List vms - Full listing with valid prefix and no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 4, 4, "", "vm-", false, nil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vms)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vms))
 		})
 
-		Convey("List vms - Full listing with invalid prefix", func() {
+		t.Run("List vms - Full listing with invalid prefix", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 4, 2, "", "vm1-", false, nil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("List vms - listing with valid prefix and pagination", func() {
+		t.Run("List vms - listing with valid prefix and pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVMsByIdPrefixSearch(ctx, 3, 3, "", "vm-", false, nil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vms[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vms[:3]))
 
 			resp, _, err = ListVMsByIdPrefixSearch(ctx, 2, 2, nextPageToken, "vm-", false, nil)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vms[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vms[3:]))
 		})
 	})
 }
@@ -298,62 +298,62 @@ func TestDeleteVMs(t *testing.T) {
 		SecurityLevel:    "test-security-level",
 	}
 	vm1_ownership := mockVMWithOwnership("vm-delete1", ownershipData)
-	Convey("DeleteVMs", t, func() {
-		Convey("Delete VM by existing ID", func() {
+	ftt.Run("DeleteVMs", t, func(t *ftt.Test) {
+		t.Run("Delete VM by existing ID", func(t *ftt.Test) {
 			_, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			DeleteVMs(ctx, []string{"vm-delete1"})
 			vm, err := GetVM(ctx, "vm-delete1")
-			So(vm, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, vm, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete vms by non-existing ID", func() {
+		t.Run("Delete vms by non-existing ID", func(t *ftt.Test) {
 			res := DeleteVMs(ctx, []string{"vm-delete2"})
-			So(res.Failed(), ShouldHaveLength, 1)
+			assert.Loosely(t, res.Failed(), should.HaveLength(1))
 		})
-		Convey("Delete machineLSE - invalid ID", func() {
+		t.Run("Delete machineLSE - invalid ID", func(t *ftt.Test) {
 			res := DeleteVMs(ctx, []string{""})
-			So(res.Failed(), ShouldHaveLength, 1)
+			assert.Loosely(t, res.Failed(), should.HaveLength(1))
 		})
-		Convey("Delete VM - with ownershipdata", func() {
+		t.Run("Delete VM - with ownershipdata", func(t *ftt.Test) {
 			vmResp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Ownership data should be updated
 			resp, err := UpdateVMOwnership(ctx, vmResp[0].Name, ownershipData)
-			So(err, ShouldBeNil)
-			assertVMWithOwnershipEqual(resp, vm1_ownership)
+			assert.Loosely(t, err, should.BeNil)
+			assertVMWithOwnershipEqual(t, resp, vm1_ownership)
 
 			DeleteVMs(ctx, []string{"vm-delete1"})
 			vm, err := GetVM(ctx, "vm-delete1")
-			So(vm, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, vm, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
 
 func TestQueryVMByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryVMByPropertyName", t, func() {
+	ftt.Run("QueryVMByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		vm1 := mockVM("vm-queryByProperty1")
 		vm1.MacAddress = "00:50:56:17:00:00"
 		_, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Query By existing mac address", func() {
+		t.Run("Query By existing mac address", func(t *ftt.Test) {
 			resp, err := QueryVMByPropertyName(ctx, "mac_address", "00:50:56:17:00:00", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0], ShouldResembleProto, vm1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0], should.Resemble(vm1))
 		})
-		Convey("Query By non-existing mac address", func() {
+		t.Run("Query By non-existing mac address", func(t *ftt.Test) {
 			resp, err := QueryVMByPropertyName(ctx, "mac_address", "00:50:56:xx:yy:zz", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }

@@ -9,11 +9,12 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -23,33 +24,33 @@ func TestBatchUpdateIPs(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("happy path", t, func() {
+	ftt.Run("happy path", t, func(t *ftt.Test) {
 		count := 10
 		ips := mockIps(count)
 
 		resp, err := BatchUpdateIPs(ctx, ips)
 
-		So(err, ShouldBeNil)
-		So(resp, ShouldHaveLength, len(ips))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.HaveLength(len(ips)))
 
 		getRes, _, err := ListIPs(ctx, 10, "", nil, false)
 
-		So(err, ShouldBeNil)
-		So(getRes, ShouldResembleProto, ips)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, getRes, should.Resemble(ips))
 	})
-	Convey("happy path - Updates multiple batches of IPs", t, func() {
+	ftt.Run("happy path - Updates multiple batches of IPs", t, func(t *ftt.Test) {
 		count := 700
 		ips := mockIps(count)
 
 		resp, err := BatchUpdateIPs(ctx, ips)
 
-		So(err, ShouldBeNil)
-		So(resp, ShouldHaveLength, len(ips))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.HaveLength(len(ips)))
 
 		getRes, _, err := ListIPs(ctx, 700, "", nil, false)
 
-		So(err, ShouldBeNil)
-		So(getRes, ShouldHaveLength, count)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, getRes, should.HaveLength(count))
 	})
 }
 

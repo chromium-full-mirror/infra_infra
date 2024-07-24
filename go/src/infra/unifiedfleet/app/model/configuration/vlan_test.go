@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateVlan(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	vlan1 := mockVlan("Vlan-1")
 	vlan2 := mockVlan("")
-	Convey("CreateVlan", t, func() {
-		Convey("Create new vlan", func() {
+	ftt.Run("CreateVlan", t, func(t *ftt.Test) {
+		t.Run("Create new vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan1))
 		})
-		Convey("Create existing vlan", func() {
+		t.Run("Create existing vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create vlan - invalid ID", func() {
+		t.Run("Create vlan - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateVlan(t *testing.T) {
 	vlan2 := mockVlan("Vlan-1")
 	vlan3 := mockVlan("Vlan-3")
 	vlan4 := mockVlan("")
-	Convey("UpdateVlan", t, func() {
-		Convey("Update existing vlan", func() {
+	ftt.Run("UpdateVlan", t, func(t *ftt.Test) {
+		t.Run("Update existing vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan1))
 
 			resp, err = UpdateVlan(ctx, vlan2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan2))
 		})
-		Convey("Update non-existing vlan", func() {
+		t.Run("Update non-existing vlan", func(t *ftt.Test) {
 			resp, err := UpdateVlan(ctx, vlan3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update vlan - invalid ID", func() {
+		t.Run("Update vlan - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateVlan(ctx, vlan4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetVlan(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	vlan1 := mockVlan("Vlan-1")
-	Convey("GetVlan", t, func() {
-		Convey("Get vlan by existing ID", func() {
+	ftt.Run("GetVlan", t, func(t *ftt.Test) {
+		t.Run("Get vlan by existing ID", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan1))
 			resp, err = GetVlan(ctx, "Vlan-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan1))
 		})
-		Convey("Get vlan by non-existing ID", func() {
+		t.Run("Get vlan by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetVlan(ctx, "vlan-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get vlan - invalid ID", func() {
+		t.Run("Get vlan - invalid ID", func(t *ftt.Test) {
 			resp, err := GetVlan(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListVlans(t *testing.T) {
 		resp, _ := CreateVlan(ctx, vlan1)
 		vlans = append(vlans, resp)
 	}
-	Convey("ListVlans", t, func() {
-		Convey("List vlans - page_token invalid", func() {
+	ftt.Run("ListVlans", t, func(t *ftt.Test) {
+		t.Run("List vlans - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVlans(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List vlans - Full listing with no pagination", func() {
+		t.Run("List vlans - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVlans(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlans)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlans))
 		})
 
-		Convey("List vlans - listing with pagination", func() {
+		t.Run("List vlans - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListVlans(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlans[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlans[:3]))
 
 			resp, _, err = ListVlans(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlans[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlans[3:]))
 		})
 	})
 }
@@ -158,29 +158,29 @@ func TestDeleteVlan(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	vlan2 := mockVlan("vlan-2")
-	Convey("DeleteVlan", t, func() {
-		Convey("Delete vlan successfully by existing ID", func() {
+	ftt.Run("DeleteVlan", t, func(t *ftt.Test) {
+		t.Run("Delete vlan successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateVlan(ctx, vlan2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, vlan2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(vlan2))
 
 			err := DeleteVlan(ctx, "vlan-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetVlan(ctx, "vlan-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete vlan by non-existing ID", func() {
+		t.Run("Delete vlan by non-existing ID", func(t *ftt.Test) {
 			err := DeleteVlan(ctx, "vlan-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete vlan - invalid ID", func() {
+		t.Run("Delete vlan - invalid ID", func(t *ftt.Test) {
 			err := DeleteVlan(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }

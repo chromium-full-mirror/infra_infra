@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -28,21 +28,21 @@ func TestCreateSchedulingUnit(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("CreateSchedulingUnit", t, func() {
-		Convey("Create new SchedulingUnit", func() {
+	ftt.Run("CreateSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Create new SchedulingUnit", func(t *ftt.Test) {
 			su := mockSchedulingUnit("SU-X")
 			resp, err := CreateSchedulingUnit(ctx, su)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, su)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(su))
 		})
-		Convey("Create existing SchedulingUnit", func() {
+		t.Run("Create existing SchedulingUnit", func(t *ftt.Test) {
 			su1 := mockSchedulingUnit("SU-Y")
 			CreateSchedulingUnit(ctx, su1)
 
 			resp, err := CreateSchedulingUnit(ctx, su1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
 	})
 }
@@ -51,12 +51,12 @@ func TestBatchUpdateSchedulingUnits(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("BatchUpdateSchedulingUnits", t, func() {
-		Convey("Create new SchedulingUnit", func() {
+	ftt.Run("BatchUpdateSchedulingUnits", t, func(t *ftt.Test) {
+		t.Run("Create new SchedulingUnit", func(t *ftt.Test) {
 			su := mockSchedulingUnit("SU-A")
 			resp, err := BatchUpdateSchedulingUnits(ctx, []*ufspb.SchedulingUnit{su})
-			So(err, ShouldBeNil)
-			So(resp[0], ShouldResembleProto, su)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp[0], should.Resemble(su))
 		})
 	})
 }
@@ -83,36 +83,36 @@ func TestQuerySchedulingUnitByPropertyNames(t *testing.T) {
 		Tags:        []string{"tags-3"},
 	}
 	schedulingUnits := []*ufspb.SchedulingUnit{schedulingUnit1, schedulingUnit2}
-	Convey("QuerySchedulingUnitByPropertyNames", t, func() {
+	ftt.Run("QuerySchedulingUnitByPropertyNames", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		_, err := BatchUpdateSchedulingUnits(ctx, schedulingUnits)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Query By existing MachineLSE", func() {
+		t.Run("Query By existing MachineLSE", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": "dut-1"}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.SchedulingUnit{schedulingUnit1})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.SchedulingUnit{schedulingUnit1}))
 		})
-		Convey("Query By non-existing MachineLSE", func() {
+		t.Run("Query By non-existing MachineLSE", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": "dut-4"}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing pools and tags", func() {
+		t.Run("Query By existing pools and tags", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "tags": "tags-3"}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, schedulingUnits)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(schedulingUnits))
 		})
-		Convey("Query By existing pools and MachineLSEs", func() {
+		t.Run("Query By existing pools and MachineLSEs", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "machinelses": "dut-2"}, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, []*ufspb.SchedulingUnit{schedulingUnit2})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble([]*ufspb.SchedulingUnit{schedulingUnit2}))
 		})
-		Convey("Query By existing pools and tags by keysonly", func() {
+		t.Run("Query By existing pools and tags by keysonly", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "tags": "tags-3"}, true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, keysOnlySchedulingUnits)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(keysOnlySchedulingUnits))
 		})
 	})
 }
@@ -121,26 +121,26 @@ func TestGetSchedulingUnit(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	su1 := mockSchedulingUnit("su-1")
-	Convey("GetSchedulingUnit", t, func() {
-		Convey("Get SchedulingUnit by existing name/ID", func() {
+	ftt.Run("GetSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Get SchedulingUnit by existing name/ID", func(t *ftt.Test) {
 			resp, err := CreateSchedulingUnit(ctx, su1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, su1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(su1))
 			resp, err = GetSchedulingUnit(ctx, "su-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, su1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(su1))
 		})
-		Convey("Get SchedulingUnit by non-existing name/ID", func() {
+		t.Run("Get SchedulingUnit by non-existing name/ID", func(t *ftt.Test) {
 			resp, err := GetSchedulingUnit(ctx, "su-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get SchedulingUnit - invalid name/ID", func() {
+		t.Run("Get SchedulingUnit - invalid name/ID", func(t *ftt.Test) {
 			resp, err := GetSchedulingUnit(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -151,25 +151,25 @@ func TestDeleteSchedulingUnit(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	su1 := mockSchedulingUnit("su-1")
 	CreateSchedulingUnit(ctx, su1)
-	Convey("DeleteSchedulingUnit", t, func() {
-		Convey("Delete SchedulingUnit successfully by existing ID", func() {
+	ftt.Run("DeleteSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Delete SchedulingUnit successfully by existing ID", func(t *ftt.Test) {
 			err := DeleteSchedulingUnit(ctx, "su-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := GetSchedulingUnit(ctx, "su-1")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete SchedulingUnit by non-existing ID", func() {
+		t.Run("Delete SchedulingUnit by non-existing ID", func(t *ftt.Test) {
 			err := DeleteSchedulingUnit(ctx, "su-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete SchedulingUnit - invalid ID", func() {
+		t.Run("Delete SchedulingUnit - invalid ID", func(t *ftt.Test) {
 			err := DeleteSchedulingUnit(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -184,34 +184,34 @@ func TestListSchedulingUnits(t *testing.T) {
 		resp, _ := CreateSchedulingUnit(ctx, su)
 		SchedulingUnits = append(SchedulingUnits, resp)
 	}
-	Convey("ListSchedulingUnits", t, func() {
-		Convey("List SchedulingUnits - page_token invalid", func() {
+	ftt.Run("ListSchedulingUnits", t, func(t *ftt.Test) {
+		t.Run("List SchedulingUnits - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSchedulingUnits(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List SchedulingUnits - Full listing with no pagination", func() {
+		t.Run("List SchedulingUnits - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSchedulingUnits(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, SchedulingUnits)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(SchedulingUnits))
 		})
 
-		Convey("List SchedulingUnits - listing with pagination", func() {
+		t.Run("List SchedulingUnits - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListSchedulingUnits(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, SchedulingUnits[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(SchedulingUnits[:3]))
 
 			resp, _, err = ListSchedulingUnits(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, SchedulingUnits[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(SchedulingUnits[3:]))
 		})
 	})
 }

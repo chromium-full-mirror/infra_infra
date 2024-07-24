@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateMachineLSEPrototype(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEPrototype1 := mockMachineLSEPrototype("MachineLSEPrototype-1")
 	machineLSEPrototype2 := mockMachineLSEPrototype("")
-	Convey("CreateMachineLSEPrototype", t, func() {
-		Convey("Create new machineLSEPrototype", func() {
+	ftt.Run("CreateMachineLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Create new machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 		})
-		Convey("Create existing machineLSEPrototype", func() {
+		t.Run("Create existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create machineLSEPrototype - invalid ID", func() {
+		t.Run("Create machineLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateMachineLSEPrototype(t *testing.T) {
 	machineLSEPrototype2 := mockMachineLSEPrototype("MachineLSEPrototype-1")
 	machineLSEPrototype3 := mockMachineLSEPrototype("MachineLSEPrototype-3")
 	machineLSEPrototype4 := mockMachineLSEPrototype("")
-	Convey("UpdateMachineLSEPrototype", t, func() {
-		Convey("Update existing machineLSEPrototype", func() {
+	ftt.Run("UpdateMachineLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Update existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 
 			resp, err = UpdateMachineLSEPrototype(ctx, machineLSEPrototype2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
 		})
-		Convey("Update non-existing machineLSEPrototype", func() {
+		t.Run("Update non-existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEPrototype(ctx, machineLSEPrototype3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update machineLSEPrototype - invalid ID", func() {
+		t.Run("Update machineLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEPrototype(ctx, machineLSEPrototype4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetMachineLSEPrototype(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	machineLSEPrototype1 := mockMachineLSEPrototype("MachineLSEPrototype-1")
-	Convey("GetMachineLSEPrototype", t, func() {
-		Convey("Get machineLSEPrototype by existing ID", func() {
+	ftt.Run("GetMachineLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Get machineLSEPrototype by existing ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 			resp, err = GetMachineLSEPrototype(ctx, "MachineLSEPrototype-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 		})
-		Convey("Get machineLSEPrototype by non-existing ID", func() {
+		t.Run("Get machineLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machineLSEPrototype - invalid ID", func() {
+		t.Run("Get machineLSEPrototype - invalid ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSEPrototype(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 		resp, _ := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 		machineLSEPrototypes = append(machineLSEPrototypes, resp)
 	}
-	Convey("ListMachineLSEPrototypes", t, func() {
-		Convey("List machineLSEPrototypes - page_token invalid", func() {
+	ftt.Run("ListMachineLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("List machineLSEPrototypes - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEPrototypes(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List machineLSEPrototypes - Full listing with no pagination", func() {
+		t.Run("List machineLSEPrototypes - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEPrototypes(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototypes)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes))
 		})
 
-		Convey("List machineLSEPrototypes - listing with pagination", func() {
+		t.Run("List machineLSEPrototypes - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEPrototypes(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototypes[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes[:3]))
 
 			resp, _, err = ListMachineLSEPrototypes(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototypes[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes[3:]))
 		})
 	})
 }
@@ -158,29 +158,29 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEPrototype2 := mockMachineLSEPrototype("machineLSEPrototype-2")
-	Convey("DeleteMachineLSEPrototype", t, func() {
-		Convey("Delete machineLSEPrototype successfully by existing ID", func() {
+	ftt.Run("DeleteMachineLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Delete machineLSEPrototype successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSEPrototype(ctx, machineLSEPrototype2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = GetMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSEPrototype by non-existing ID", func() {
+		t.Run("Delete machineLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSEPrototype - invalid ID", func() {
+		t.Run("Delete machineLSEPrototype - invalid ID", func(t *ftt.Test) {
 			err := DeleteMachineLSEPrototype(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }

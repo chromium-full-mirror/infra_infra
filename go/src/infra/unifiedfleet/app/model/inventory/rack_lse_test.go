@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,23 +30,23 @@ func TestCreateRackLSE(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	rackLSE1 := mockRackLSE("rackLSE-1")
 	rackLSE2 := mockRackLSE("")
-	Convey("CreateRackLSE", t, func() {
-		Convey("Create new rackLSE", func() {
+	ftt.Run("CreateRackLSE", t, func(t *ftt.Test) {
+		t.Run("Create new rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 		})
-		Convey("Create existing rackLSE", func() {
+		t.Run("Create existing rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create rackLSE - invalid ID", func() {
+		t.Run("Create rackLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -58,27 +58,27 @@ func TestUpdateRackLSE(t *testing.T) {
 	rackLSE2 := mockRackLSE("rackLSE-1")
 	rackLSE3 := mockRackLSE("rackLSE-3")
 	rackLSE4 := mockRackLSE("")
-	Convey("UpdateRackLSE", t, func() {
-		Convey("Update existing rackLSE", func() {
+	ftt.Run("UpdateRackLSE", t, func(t *ftt.Test) {
+		t.Run("Update existing rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 
 			resp, err = UpdateRackLSE(ctx, rackLSE2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE2))
 		})
-		Convey("Update non-existing rackLSE", func() {
+		t.Run("Update non-existing rackLSE", func(t *ftt.Test) {
 			resp, err := UpdateRackLSE(ctx, rackLSE3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update rackLSE - invalid ID", func() {
+		t.Run("Update rackLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateRackLSE(ctx, rackLSE4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -87,26 +87,26 @@ func TestGetRackLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	rackLSE1 := mockRackLSE("rackLSE-1")
-	Convey("GetRackLSE", t, func() {
-		Convey("Get rackLSE by existing ID", func() {
+	ftt.Run("GetRackLSE", t, func(t *ftt.Test) {
+		t.Run("Get rackLSE by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 			resp, err = GetRackLSE(ctx, "rackLSE-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 		})
-		Convey("Get rackLSE by non-existing ID", func() {
+		t.Run("Get rackLSE by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRackLSE(ctx, "rackLSE-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get rackLSE - invalid ID", func() {
+		t.Run("Get rackLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := GetRackLSE(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -121,34 +121,34 @@ func TestListRackLSEs(t *testing.T) {
 		resp, _ := CreateRackLSE(ctx, rackLSE1)
 		rackLSEs = append(rackLSEs, resp)
 	}
-	Convey("ListRackLSEs", t, func() {
-		Convey("List rackLSEs - page_token invalid", func() {
+	ftt.Run("ListRackLSEs", t, func(t *ftt.Test) {
+		t.Run("List rackLSEs - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEs(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List rackLSEs - Full listing with no pagination", func() {
+		t.Run("List rackLSEs - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEs(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEs))
 		})
 
-		Convey("List rackLSEs - listing with pagination", func() {
+		t.Run("List rackLSEs - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListRackLSEs(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEs[:3]))
 
 			resp, _, err = ListRackLSEs(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEs[3:]))
 		})
 	})
 }
@@ -157,63 +157,63 @@ func TestDeleteRackLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	rackLSE1 := mockRackLSE("rackLSE-1")
-	Convey("DeleteRackLSE", t, func() {
-		Convey("Delete rackLSE by existing ID", func() {
+	ftt.Run("DeleteRackLSE", t, func(t *ftt.Test) {
+		t.Run("Delete rackLSE by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRackLSE(ctx, rackLSE1)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 			err := DeleteRackLSE(ctx, "rackLSE-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			res, err := GetRackLSE(ctx, "rackLSE-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSE by non-existing ID", func() {
+		t.Run("Delete rackLSE by non-existing ID", func(t *ftt.Test) {
 			err := DeleteRackLSE(ctx, "rackLSE-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete rackLSE - invalid ID", func() {
+		t.Run("Delete rackLSE - invalid ID", func(t *ftt.Test) {
 			err := DeleteRackLSE(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestBatchUpdateRackLSEs(t *testing.T) {
 	t.Parallel()
-	Convey("BatchUpdateRackLSEs", t, func() {
+	ftt.Run("BatchUpdateRackLSEs", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		rackLSEs := make([]*ufspb.RackLSE, 0, 4)
 		for i := 0; i < 4; i++ {
 			rackLSE1 := mockRackLSE(fmt.Sprintf("rackLSE-%d", i))
 			resp, err := CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSE1))
 			rackLSEs = append(rackLSEs, resp)
 		}
-		Convey("BatchUpdate all rackLSEs", func() {
+		t.Run("BatchUpdate all rackLSEs", func(t *ftt.Test) {
 			resp, err := BatchUpdateRackLSEs(ctx, rackLSEs)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEs))
 		})
-		Convey("BatchUpdate existing and invalid rackLSEs", func() {
+		t.Run("BatchUpdate existing and invalid rackLSEs", func(t *ftt.Test) {
 			rackLSE5 := mockRackLSE("")
 			rackLSEs = append(rackLSEs, rackLSE5)
 			resp, err := BatchUpdateRackLSEs(ctx, rackLSEs)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestQueryRackLSEByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryRackLSEByPropertyName", t, func() {
+	ftt.Run("QueryRackLSEByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dummyrackLSE := &ufspb.RackLSE{
@@ -225,33 +225,33 @@ func TestQueryRackLSEByPropertyName(t *testing.T) {
 			RackLsePrototype: "rackLsePrototype-1",
 		}
 		resp, cerr := CreateRackLSE(ctx, rackLSE1)
-		So(cerr, ShouldBeNil)
-		So(resp, ShouldResembleProto, rackLSE1)
+		assert.Loosely(t, cerr, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(rackLSE1))
 
 		rackLSEs := make([]*ufspb.RackLSE, 0, 1)
 		rackLSEs = append(rackLSEs, rackLSE1)
 
 		dummyrackLSEs := make([]*ufspb.RackLSE, 0, 1)
 		dummyrackLSEs = append(dummyrackLSEs, dummyrackLSE)
-		Convey("Query By existing Rack", func() {
+		t.Run("Query By existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "rack_ids", "rack-1", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEs))
 		})
-		Convey("Query By non-existing Rack", func() {
+		t.Run("Query By non-existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "rack_ids", "rack-5", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing RackLsePrototype keysonly", func() {
+		t.Run("Query By existing RackLsePrototype keysonly", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "racklse_prototype_id", "rackLsePrototype-1", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dummyrackLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dummyrackLSEs))
 		})
-		Convey("Query By non-existing RackLsePrototype", func() {
+		t.Run("Query By non-existing RackLsePrototype", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "racklse_prototype_id", "rackLsePrototype-2", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }

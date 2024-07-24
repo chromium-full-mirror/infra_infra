@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -27,34 +27,34 @@ func mockMachineLSEDeployment(id string) *ufspb.MachineLSEDeployment {
 func TestUpdateMachineLSEDeployment(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("UpdateMachineLSE", t, func() {
-		Convey("Update non-existing machineLSEDeployment", func() {
+	ftt.Run("UpdateMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Update non-existing machineLSEDeployment", func(t *ftt.Test) {
 			md1 := mockMachineLSEDeployment("serial-1")
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md1})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0], ShouldResembleProto, md1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0], should.Resemble(md1))
 		})
 
-		Convey("Update existing machineLSEDeployment", func() {
+		t.Run("Update existing machineLSEDeployment", func(t *ftt.Test) {
 			md2 := mockMachineLSEDeployment("serial-2")
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md2})
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			md2.Hostname = "hostname-2"
 			resp, err = UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md2})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0], ShouldResembleProto, md2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0], should.Resemble(md2))
 		})
 
-		Convey("Update machineLSEDeployment - invalid hostname", func() {
+		t.Run("Update machineLSEDeployment - invalid hostname", func(t *ftt.Test) {
 			md3 := mockMachineLSEDeployment("")
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md3})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Empty")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Empty"))
 		})
 	})
 }
@@ -63,27 +63,27 @@ func TestGetMachineLSEDeployment(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	dr1 := mockMachineLSEDeployment("dr-get-1")
-	Convey("GetMachineLSEDeployment", t, func() {
-		Convey("Get machine deployment record by existing ID", func() {
+	ftt.Run("GetMachineLSEDeployment", t, func(t *ftt.Test) {
+		t.Run("Get machine deployment record by existing ID", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{dr1})
-			So(err, ShouldBeNil)
-			So(resp[0], ShouldResembleProto, dr1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp[0], should.Resemble(dr1))
 			respDr, err := GetMachineLSEDeployment(ctx, "dr-get-1")
-			So(err, ShouldBeNil)
-			So(respDr, ShouldResembleProto, dr1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, respDr, should.Resemble(dr1))
 		})
 
-		Convey("Get machine deployment record by non-existing ID", func() {
+		t.Run("Get machine deployment record by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSEDeployment(ctx, "dr-get-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machine deployment record - invalid ID", func() {
+		t.Run("Get machine deployment record - invalid ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSEDeployment(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -91,36 +91,36 @@ func TestGetMachineLSEDeployment(t *testing.T) {
 func TestBatchGetMachineLSEDeployments(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("BatchGetMachineLSEDeployments", t, func() {
-		Convey("Batch get machine lse deployments - happy path", func() {
+	ftt.Run("BatchGetMachineLSEDeployments", t, func(t *ftt.Test) {
+		t.Run("Batch get machine lse deployments - happy path", func(t *ftt.Test) {
 			drs := make([]*ufspb.MachineLSEDeployment, 4)
 			for i := 0; i < 4; i++ {
 				drs[i] = mockMachineLSEDeployment(fmt.Sprintf("dr-batchGet-%d", i))
 			}
 			_, err := UpdateMachineLSEDeployments(ctx, drs)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := BatchGetMachineLSEDeployments(ctx, []string{"dr-batchGet-0", "dr-batchGet-1", "dr-batchGet-2", "dr-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, drs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(drs))
 		})
 
-		Convey("Batch get machine lse deployments - missing id", func() {
+		t.Run("Batch get machine lse deployments - missing id", func(t *ftt.Test) {
 			resp, err := BatchGetMachineLSEDeployments(ctx, []string{"dr-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "dr-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("dr-batchGet-non-existing"))
 		})
 
-		Convey("Batch get machine lse deployments - empty input", func() {
+		t.Run("Batch get machine lse deployments - empty input", func(t *ftt.Test) {
 			resp, err := BatchGetMachineLSEDeployments(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = BatchGetMachineLSEDeployments(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }
@@ -134,34 +134,34 @@ func TestListMachineLSEDeployments(t *testing.T) {
 		drs[i] = mockMachineLSEDeployment(fmt.Sprintf("dr-List-%d", i))
 	}
 	updatedDrs, _ := UpdateMachineLSEDeployments(ctx, drs)
-	Convey("ListMachineLSEDeployments", t, func() {
-		Convey("List machine lse deployment records - page_token invalid", func() {
+	ftt.Run("ListMachineLSEDeployments", t, func(t *ftt.Test) {
+		t.Run("List machine lse deployment records - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEDeployments(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List machine lse deployment records - Full listing with no pagination", func() {
+		t.Run("List machine lse deployment records - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEDeployments(ctx, 4, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, updatedDrs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(updatedDrs))
 		})
 
-		Convey("List machine lse deployment records - listing with pagination", func() {
+		t.Run("List machine lse deployment records - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEDeployments(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, updatedDrs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(updatedDrs[:3]))
 
 			resp, _, err = ListMachineLSEDeployments(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, updatedDrs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(updatedDrs[3:]))
 		})
 	})
 }

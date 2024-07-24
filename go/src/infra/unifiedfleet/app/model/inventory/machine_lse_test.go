@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -55,29 +55,29 @@ func TestCreateMachineLSE(t *testing.T) {
 		SecurityLevel:    "test-security-level",
 	}
 	machineLSE3Ownership := mockMachineLSEWithOwnership("machineLSE-3", ownershipData)
-	Convey("CreateMachineLSE", t, func() {
-		Convey("Create new machineLSE", func() {
+	ftt.Run("CreateMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Create new machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 		})
-		Convey("Create existing machineLSE", func() {
+		t.Run("Create existing machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(AlreadyExists))
 		})
-		Convey("Create machineLSE - invalid ID", func() {
+		t.Run("Create machineLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE2)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
-		Convey("Create machineLSE with ownership data - ownership is not saved", func() {
+		t.Run("Create machineLSE with ownership data - ownership is not saved", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE3Ownership)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE3Ownership)
-			So(resp.Ownership, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE3Ownership))
+			assert.Loosely(t, resp.Ownership, should.BeNil)
 		})
 	})
 }
@@ -90,27 +90,27 @@ func TestUpdateMachineLSE(t *testing.T) {
 	machineLSE2.Hostname = "Linux Server"
 	machineLSE3 := mockMachineLSE("machineLSE-3")
 	machineLSE4 := mockMachineLSE("")
-	Convey("UpdateMachineLSE", t, func() {
-		Convey("Update existing machineLSE", func() {
+	ftt.Run("UpdateMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Update existing machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 
 			resp, err = UpdateMachineLSE(ctx, machineLSE2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE2))
 		})
-		Convey("Update non-existing machineLSE", func() {
+		t.Run("Update non-existing machineLSE", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSE(ctx, machineLSE3)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update machineLSE - invalid ID", func() {
+		t.Run("Update machineLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSE(ctx, machineLSE4)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -134,37 +134,37 @@ func TestUpdateMachineOwnership(t *testing.T) {
 	machineLSE1 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData)
 	machineLSE2 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData2)
 
-	Convey("UpdateMachine", t, func() {
-		Convey("Update existing machine with ownership data", func() {
+	ftt.Run("UpdateMachine", t, func(t *ftt.Test) {
+		t.Run("Update existing machine with ownership data", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 
 			// Ownership data should be updated
 			resp, err = UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
-			So(err, ShouldBeNil)
-			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
 
 			// Regular Update calls should not override ownership data
 			resp, err = UpdateMachineLSE(ctx, machineLSE2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE2))
 
 			resp, err = GetMachineLSE(ctx, "machineLSE-1")
-			So(err, ShouldBeNil)
-			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
 		})
-		Convey("Update non-existing machine with ownership", func() {
+		t.Run("Update non-existing machine with ownership", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEOwnership(ctx, "dummy", ownershipData)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Update machine with ownership - invalid ID", func() {
+		t.Run("Update machine with ownership - invalid ID", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEOwnership(ctx, "", ownershipData)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -173,26 +173,26 @@ func TestGetMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	machineLSE1 := mockMachineLSE("machineLSE-1")
-	Convey("GetMachineLSE", t, func() {
-		Convey("Get machineLSE by existing ID", func() {
+	ftt.Run("GetMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Get machineLSE by existing ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 			resp, err = GetMachineLSE(ctx, "machineLSE-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 		})
-		Convey("Get machineLSE by non-existing ID", func() {
+		t.Run("Get machineLSE by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSE(ctx, "machineLSE-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Get machineLSE - invalid ID", func() {
+		t.Run("Get machineLSE - invalid ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSE(ctx, "")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
@@ -207,21 +207,21 @@ func TestGetMachineLSEACL(t *testing.T) {
 	})
 	machineLSE1 := mockMachineLSEWithRealm("machineLSE-1", util.BrowserLabAdminRealm)
 	CreateMachineLSE(ctx, machineLSE1)
-	Convey("GetMachineLSEACL", t, func() {
-		Convey("GetMachineLSEACL - no user", func() {
+	ftt.Run("GetMachineLSEACL", t, func(t *ftt.Test) {
+		t.Run("GetMachineLSEACL - no user", func(t *ftt.Test) {
 			resp, err := GetMachineLSEACL(ctx, "machineLSE-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Internal")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Internal"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetMachineLSEACL - no perms", func() {
+		t.Run("GetMachineLSEACL - no perms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetMachineLSEACL - missing perms", func() {
+		t.Run("GetMachineLSEACL - missing perms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsList)
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsGet)
@@ -231,11 +231,11 @@ func TestGetMachineLSEACL(t *testing.T) {
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesDelete)
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesCreate)
 			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetMachineLSEACL - missing realms", func() {
+		t.Run("GetMachineLSEACL - missing realms", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.InventoriesGet)
 			mockRealmPerms(userCtx, util.AtlLabChromiumAdminRealm, util.InventoriesGet)
@@ -243,17 +243,17 @@ func TestGetMachineLSEACL(t *testing.T) {
 			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.InventoriesGet)
 			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.InventoriesGet)
 			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("GetMachineLSEACL - happy path", func() {
+		t.Run("GetMachineLSEACL - happy path", func(t *ftt.Test) {
 			userCtx := mockUser(ctx, "nombre@chromium.org")
 			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesGet)
 			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 		})
 	})
 }
@@ -268,34 +268,34 @@ func TestListMachineLSEs(t *testing.T) {
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
 	}
-	Convey("ListMachineLSEs", t, func() {
-		Convey("List machineLSEs - page_token invalid", func() {
+	ftt.Run("ListMachineLSEs", t, func(t *ftt.Test) {
+		t.Run("List machineLSEs - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEs(ctx, 5, "abc", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List machineLSEs - Full listing with no pagination", func() {
+		t.Run("List machineLSEs - Full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEs(ctx, 4, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
 
-		Convey("List machineLSEs - listing with pagination", func() {
+		t.Run("List machineLSEs - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEs(ctx, 3, "", nil, false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs[:3]))
 
 			resp, _, err = ListMachineLSEs(ctx, 2, nextPageToken, nil, false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs[3:]))
 		})
 	})
 }
@@ -346,49 +346,49 @@ func TestListMachineLSEsACL(t *testing.T) {
 	})
 	// Anonymous User has no permissions
 	ctx = auth.WithState(ctx, &authtest.FakeState{})
-	Convey("ListMachineLSEsACL", t, func() {
-		Convey("List machineLSEs ACLed - anonymous user", func() {
+	ftt.Run("ListMachineLSEsACL", t, func(t *ftt.Test) {
+		t.Run("List machineLSEs ACLed - anonymous user", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsACL(ctx, 5, "", nil, false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("List machineLSEs ACLed - Filter on realm", func() {
+		t.Run("List machineLSEs ACLed - Filter on realm", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 4, "", map[string][]interface{}{"realm": {"test"}}, false)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Cannot filter on realm")
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Cannot filter on realm"))
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 
-		Convey("List machineLSEs ACLed - Happy path, no permissions", func() {
+		t.Run("List machineLSEs ACLed - Happy path, no permissions", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsACL(ctxMermaid, 4, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 
-		Convey("List machineLSEs ACLed - Happy path, single realm", func() {
+		t.Run("List machineLSEs ACLed - Happy path, single realm", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 10, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(resp, ShouldResembleProto, browserMachineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.Resemble(browserMachineLSEs))
 		})
 
-		Convey("List machineLSEs ACLed - Happy path, two realms", func() {
+		t.Run("List machineLSEs ACLed - Happy path, two realms", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsACL(ctxSpider, 4, "", nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(resp, ShouldResembleProto, browserMachineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, resp, should.Resemble(browserMachineLSEs))
 			// Get the remaining machineLSEs
 			resp, nextPageToken, err = ListMachineLSEsACL(ctxSpider, 10, nextPageToken, nil, false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(resp, ShouldResembleProto, acsMachineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, resp, should.Resemble(acsMachineLSEs))
 		})
 
 	})
@@ -406,41 +406,41 @@ func TestListMachineLSEsByIdPrefixSearch(t *testing.T) {
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
 	}
-	Convey("ListMachinesByIdPrefixSearch", t, func() {
-		Convey("List machines - page_token invalid", func() {
+	ftt.Run("ListMachinesByIdPrefixSearch", t, func(t *ftt.Test) {
+		t.Run("List machines - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 5, "abc", "machineLSE-", false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InvalidPageToken))
 		})
 
-		Convey("List machines - Full listing with valid prefix and no pagination", func() {
+		t.Run("List machines - Full listing with valid prefix and no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 4, "", "machineLSE-", false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
 
-		Convey("List machines - Full listing with invalid prefix", func() {
+		t.Run("List machines - Full listing with invalid prefix", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 4, "", "machineLSE1-", false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("List machines - listing with valid prefix and pagination", func() {
+		t.Run("List machines - listing with valid prefix and pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListMachineLSEsByIdPrefixSearch(ctx, 3, "", "machineLSE-", false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs[:3]))
 
 			resp, _, err = ListMachineLSEsByIdPrefixSearch(ctx, 2, nextPageToken, "machineLSE-", false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs[3:]))
 		})
 	})
 }
@@ -454,80 +454,80 @@ func TestDeleteMachineLSE(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 	}
 	machineLSE2 := mockMachineLSEWithOwnership("machineLSE-2", ownershipData)
-	Convey("DeleteMachineLSE", t, func() {
-		Convey("Delete machineLSE by existing ID", func() {
+	ftt.Run("DeleteMachineLSE", t, func(t *ftt.Test) {
+		t.Run("Delete machineLSE by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSE(ctx, machineLSE1)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 			err := DeleteMachineLSE(ctx, "machineLSE-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			res, err := GetMachineLSE(ctx, "machineLSE-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSE by non-existing ID", func() {
+		t.Run("Delete machineLSE by non-existing ID", func(t *ftt.Test) {
 			err := DeleteMachineLSE(ctx, "machineLSE-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Delete machineLSE - invalid ID", func() {
+		t.Run("Delete machineLSE - invalid ID", func(t *ftt.Test) {
 			err := DeleteMachineLSE(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
-		Convey("Delete machineLSE - with ownershipdata", func() {
+		t.Run("Delete machineLSE - with ownershipdata", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSE(ctx, machineLSE2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE2))
 
 			// Ownership data should be updated
 			resp, err := UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
-			So(err, ShouldBeNil)
-			So(resp.GetOwnership(), ShouldResembleProto, ownershipData)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
 
 			err = DeleteMachineLSE(ctx, "machineLSE-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			res, err := GetMachineLSE(ctx, "machineLSE-2")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
 
 func TestBatchUpdateMachineLSEs(t *testing.T) {
 	t.Parallel()
-	Convey("BatchUpdateMachineLSEs", t, func() {
+	ftt.Run("BatchUpdateMachineLSEs", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
 		for i := 0; i < 4; i++ {
 			machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSE1))
 			machineLSEs = append(machineLSEs, resp)
 		}
-		Convey("BatchUpdate all machineLSEs", func() {
+		t.Run("BatchUpdate all machineLSEs", func(t *ftt.Test) {
 			resp, err := BatchUpdateMachineLSEs(ctx, machineLSEs)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
-		Convey("BatchUpdate existing and invalid machineLSEs", func() {
+		t.Run("BatchUpdate existing and invalid machineLSEs", func(t *ftt.Test) {
 			machineLSE5 := mockMachineLSE("")
 			machineLSEs = append(machineLSEs, machineLSE5)
 			resp, err := BatchUpdateMachineLSEs(ctx, machineLSEs)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, InternalError)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
 		})
 	})
 }
 
 func TestQueryMachineLSEByPropertyName(t *testing.T) {
 	t.Parallel()
-	Convey("QueryMachineLSEByPropertyName", t, func() {
+	ftt.Run("QueryMachineLSEByPropertyName", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dummymachineLSE := &ufspb.MachineLSE{
@@ -540,38 +540,38 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 			LogicalZone:         ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36,
 		}
 		resp, cerr := CreateMachineLSE(ctx, machineLSE1)
-		So(cerr, ShouldBeNil)
-		So(resp, ShouldResembleProto, machineLSE1)
+		assert.Loosely(t, cerr, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(machineLSE1))
 
 		machineLSEs := make([]*ufspb.MachineLSE, 0, 1)
 		machineLSEs = append(machineLSEs, machineLSE1)
 
 		dummymachineLSEs := make([]*ufspb.MachineLSE, 0, 1)
 		dummymachineLSEs = append(dummymachineLSEs, dummymachineLSE)
-		Convey("Query By existing Machine", func() {
+		t.Run("Query By existing Machine", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machine_ids", "machine-1", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
-		Convey("Query By non-existing Machine", func() {
+		t.Run("Query By non-existing Machine", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machine_ids", "machine-5", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By existing MachineLsePrototype keysonly", func() {
+		t.Run("Query By existing MachineLsePrototype keysonly", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machinelse_prototype_id", "machineLsePrototype-1", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, dummymachineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(dummymachineLSEs))
 		})
-		Convey("Query By non-existing MachineLsePrototype", func() {
+		t.Run("Query By non-existing MachineLsePrototype", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machinelse_prototype_id", "machineLsePrototype-2", true)
-			So(err, ShouldBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Query By LogicalZone", func() {
+		t.Run("Query By LogicalZone", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "logical_zone", "LOGICAL_ZONE_DRILLZONE_SFO36", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
 	})
 }
@@ -587,21 +587,21 @@ func TestListAllMachineLSEs(t *testing.T) {
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
 	}
-	Convey("ListAllMachineLSEs", t, func() {
-		Convey("List all machineLSEs - keysOnly", func() {
+	ftt.Run("ListAllMachineLSEs", t, func(t *ftt.Test) {
+		t.Run("List all machineLSEs - keysOnly", func(t *ftt.Test) {
 			resp, _ := ListAllMachineLSEs(ctx, true)
-			So(resp, ShouldNotBeNil)
-			So(len(resp), ShouldEqual, 4)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, len(resp), should.Equal(4))
 			for i := 0; i < 4; i++ {
-				So(resp[i].GetName(), ShouldEqual, fmt.Sprintf("machineLSE-%d", i))
-				So(resp[i].GetDescription(), ShouldBeEmpty)
+				assert.Loosely(t, resp[i].GetName(), should.Equal(fmt.Sprintf("machineLSE-%d", i)))
+				assert.Loosely(t, resp[i].GetDescription(), should.BeEmpty)
 			}
 		})
 
-		Convey("List all machineLSEs", func() {
+		t.Run("List all machineLSEs", func(t *ftt.Test) {
 			resp, _ := ListAllMachineLSEs(ctx, false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machineLSEs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEs))
 		})
 	})
 }
