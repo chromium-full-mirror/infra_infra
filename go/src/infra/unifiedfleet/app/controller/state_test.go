@@ -7,10 +7,9 @@ package controller
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/model/inventory"
@@ -41,37 +40,37 @@ func TestGetState(t *testing.T) {
 		ResourceName: "machine/os-machine-3",
 		State:        ufspb.State_STATE_SERVING,
 	})
-	Convey("GetState", t, func() {
-		Convey("GetState for a browser machine with default namespace context", func() {
+	ftt.Run("GetState", t, func(t *ftt.Test) {
+		t.Run("GetState for a browser machine with default namespace context", func(t *ftt.Test) {
 			res, err := GetState(ctx, "machine/browser-machine-1")
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, bm1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(bm1))
 		})
 
-		Convey("GetState for a os machine with default namespace context", func() {
+		t.Run("GetState for a os machine with default namespace context", func(t *ftt.Test) {
 			res, err := GetState(ctx, "machine/os-machine-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// TODO(eshwarn): change this check when fall back read is removed
-			So(res, ShouldResembleProto, os1Serving)
+			assert.Loosely(t, res, should.Resemble(os1Serving))
 			res, err = GetState(ctx, "machine/os-machine-2")
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, os2Registered)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(os2Registered))
 			res, err = GetState(ctx, "machine/os-machine-3")
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, os3Serving)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(os3Serving))
 		})
 
-		Convey("GetState for a os machine with os namespace context", func() {
+		t.Run("GetState for a os machine with os namespace context", func(t *ftt.Test) {
 			res, err := GetState(osCtx, "machine/os-machine-1")
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, os1Serving)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(os1Serving))
 			res, err = GetState(osCtx, "machine/os-machine-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// TODO(eshwarn): change this check when fall back read is removed
-			So(res, ShouldResembleProto, os2Registered)
+			assert.Loosely(t, res, should.Resemble(os2Registered))
 			res, err = GetState(osCtx, "machine/os-machine-3")
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, os3Serving)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(os3Serving))
 		})
 	})
 }
@@ -81,8 +80,8 @@ func TestUpdateState(t *testing.T) {
 	ctx := testingContext()
 	// os namespace context
 	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
-	Convey("UpdateState", t, func() {
-		Convey("UpdateState for machine only in os namespace", func() {
+	ftt.Run("UpdateState", t, func(t *ftt.Test) {
+		t.Run("UpdateState for machine only in os namespace", func(t *ftt.Test) {
 			// creating in os namespace
 			state.UpdateStateRecord(osCtx, &ufspb.StateRecord{
 				ResourceName: "machines/os-machine-1",
@@ -94,54 +93,54 @@ func TestUpdateState(t *testing.T) {
 				State:        ufspb.State_STATE_NEEDS_REPAIR,
 			}
 			res, err := UpdateState(osCtx, sr)
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, sr)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(sr))
 
 			res, err = state.GetStateRecord(osCtx, "machines/os-machine-1")
-			So(err, ShouldBeNil)
-			So(res.GetResourceName(), ShouldEqual, "machines/os-machine-1")
-			So(res.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.GetResourceName(), should.Equal("machines/os-machine-1"))
+			assert.Loosely(t, res.GetState(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR))
 
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "states/machines/os-machine-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetName(), ShouldEqual, "states/machines/os-machine-1")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_SERVING.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetName(), should.Equal("states/machines/os-machine-1"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_SERVING.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR.String()))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "states/machines/os-machine-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("UpdateState for non-existing machine in os namespace", func() {
+		t.Run("UpdateState for non-existing machine in os namespace", func(t *ftt.Test) {
 			sr := &ufspb.StateRecord{
 				ResourceName: "machines/os-machine-2",
 				State:        ufspb.State_STATE_NEEDS_REPAIR,
 			}
 			res, err := UpdateState(osCtx, sr)
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, sr)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(sr))
 
 			res, err = state.GetStateRecord(osCtx, "machines/os-machine-2")
-			So(err, ShouldBeNil)
-			So(res.GetResourceName(), ShouldEqual, "machines/os-machine-2")
-			So(res.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.GetResourceName(), should.Equal("machines/os-machine-2"))
+			assert.Loosely(t, res.GetState(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR))
 
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "states/machines/os-machine-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetName(), ShouldEqual, "states/machines/os-machine-2")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetName(), should.Equal("states/machines/os-machine-2"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR.String()))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "states/machines/os-machine-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("UpdateState for machine lse lacking perms", func() {
+		t.Run("UpdateState for machine lse lacking perms", func(t *ftt.Test) {
 			// user has no realm permissions
 			noPermsCtx := withAuthorizedNoPermsUser(osCtx)
 			state.UpdateStateRecord(noPermsCtx, &ufspb.StateRecord{
@@ -158,18 +157,18 @@ func TestUpdateState(t *testing.T) {
 				State:        ufspb.State_STATE_NEEDS_REPAIR,
 			}
 			res, err := UpdateState(noPermsCtx, sr)
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "PermissionDenied")
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("PermissionDenied"))
 
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "states/machines/os-machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "states/machines/os-machine-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
-		Convey("UpdateState for machine lse with perms", func() {
+		t.Run("UpdateState for machine lse with perms", func(t *ftt.Test) {
 			// user has correct realm perms
 			atlPermsCtx := withAuthorizedAtlUser(osCtx)
 			state.UpdateStateRecord(atlPermsCtx, &ufspb.StateRecord{
@@ -186,25 +185,25 @@ func TestUpdateState(t *testing.T) {
 				State:        ufspb.State_STATE_NEEDS_REPAIR,
 			}
 			res, err := UpdateState(atlPermsCtx, sr)
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, sr)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(sr))
 
 			res, err = state.GetStateRecord(atlPermsCtx, "machinelses/os-machine-4")
-			So(err, ShouldBeNil)
-			So(res.GetResourceName(), ShouldEqual, "machinelses/os-machine-4")
-			So(res.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.GetResourceName(), should.Equal("machinelses/os-machine-4"))
+			assert.Loosely(t, res.GetState(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR))
 
 			changes, err := history.QueryChangesByPropertyName(atlPermsCtx, "name", "states/machinelses/os-machine-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetName(), ShouldEqual, "states/machinelses/os-machine-4")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_SERVING.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
-			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetName(), should.Equal("states/machinelses/os-machine-4"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_SERVING.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_NEEDS_REPAIR.String()))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(atlPermsCtx, "resource_name", "states/machinelses/os-machine-4")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 	})
 }

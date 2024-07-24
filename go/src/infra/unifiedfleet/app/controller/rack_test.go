@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -28,8 +29,8 @@ import (
 func TestRackRegistration(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("RackRegistration", t, func() {
-		Convey("Create new rack", func() {
+	ftt.Run("RackRegistration", t, func(t *ftt.Test) {
+		t.Run("Create new rack", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-1",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -39,34 +40,34 @@ func TestRackRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			resp, err := RackRegistration(ctx, rack)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeBrowserRack().GetKvmObjects(), ShouldBeNil)
-			So(resp.GetChromeBrowserRack().GetRpmObjects(), ShouldBeNil)
-			So(resp.GetChromeBrowserRack().GetSwitchObjects(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeBrowserRack().GetKvmObjects(), should.BeNil)
+			assert.Loosely(t, resp.GetChromeBrowserRack().GetRpmObjects(), should.BeNil)
+			assert.Loosely(t, resp.GetChromeBrowserRack().GetSwitchObjects(), should.BeNil)
 			s, err := state.GetStateRecord(ctx, "racks/rack-1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "racks/rack-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 
 			rack.Name = "RACK-1"
 			resp, err = RackRegistration(ctx, rack)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already exists in the system")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already exists in the system"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 
-		Convey("Create new rack with nil browser/chromeos rack", func() {
+		t.Run("Create new rack with nil browser/chromeos rack", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-2",
 				Location: &ufspb.Location{
@@ -74,39 +75,39 @@ func TestRackRegistration(t *testing.T) {
 				},
 			}
 			resp, err := RackRegistration(ctx, rack)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeBrowserRack(), ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeBrowserRack(), should.NotBeNil)
 
 			resp, _ = registration.GetRack(ctx, "rack-2")
-			So(resp.GetChromeBrowserRack(), ShouldNotBeNil)
+			assert.Loosely(t, resp.GetChromeBrowserRack(), should.NotBeNil)
 			s, err := state.GetStateRecord(ctx, "racks/rack-1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 		})
 
-		Convey("Create new rack with nil browser/chromeos rack and no lcoation info", func() {
+		t.Run("Create new rack with nil browser/chromeos rack and no lcoation info", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-3",
 			}
 			_, err := RackRegistration(ctx, rack)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "zone information in the location object cannot be empty/unspecified for a rack")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("zone information in the location object cannot be empty/unspecified for a rack"))
 
 			// No changes are recorded as the creation fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Create new rack - permission denied: same realm and no create permission", func() {
+		t.Run("Create new rack - permission denied: same realm and no create permission", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-12",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -116,11 +117,11 @@ func TestRackRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err := RackRegistration(ctx, rack)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Create new rack - permission denied: different realm", func() {
+		t.Run("Create new rack - permission denied: different realm", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-13",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -130,11 +131,11 @@ func TestRackRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			_, err := RackRegistration(ctx, rack)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Create new rack - duplicated bbnum", func() {
+		t.Run("Create new rack - duplicated bbnum", func(t *ftt.Test) {
 			fmt.Println("duplicated bbnum")
 			rack := &ufspb.Rack{
 				Name:  "rack-14",
@@ -146,7 +147,7 @@ func TestRackRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			_, err := RackRegistration(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			rack2 := &ufspb.Rack{
 				Name:  "rack-14-duplicated",
 				Bbnum: 14,
@@ -156,8 +157,8 @@ func TestRackRegistration(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err = RackRegistration(ctx, rack2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already has bbnum 14")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already has bbnum 14"))
 		})
 	})
 }
@@ -165,17 +166,17 @@ func TestRackRegistration(t *testing.T) {
 func TestUpdateRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateRack", t, func() {
-		Convey("Update non-existing rack - error", func() {
+	ftt.Run("UpdateRack", t, func(t *ftt.Test) {
+		t.Run("Update non-existing rack - error", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-1",
 			}
 			_, err := UpdateRack(ctx, rack, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Update existing rack", func() {
+		t.Run("Update existing rack", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name:  "rack-2",
 				Bbnum: 100,
@@ -185,7 +186,7 @@ func TestUpdateRack(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack = &ufspb.Rack{
 				Name:  "rack-2",
@@ -198,16 +199,16 @@ func TestUpdateRack(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateRack(ctx, rack, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, rack)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(rack))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "racks/rack-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Update existing rack - valid/invalid bbnum", func() {
+		t.Run("Update existing rack - valid/invalid bbnum", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name:  "rack-bbnum1",
 				Bbnum: 101,
@@ -216,7 +217,7 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			rack2 := &ufspb.Rack{
 				Name:  "rack-bbnum2",
 				Bbnum: 102,
@@ -225,7 +226,7 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateRack(ctx, rack2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rackToUpdate := &ufspb.Rack{
 				Name:  "rack-bbnum1",
@@ -235,15 +236,15 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err = UpdateRack(ctx, rackToUpdate, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rackToUpdate.Bbnum = 102
 			_, err = UpdateRack(ctx, rackToUpdate, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already has bbnum 102")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already has bbnum 102"))
 		})
 
-		Convey("Update existing rack with nil rack/browser machine", func() {
+		t.Run("Update existing rack with nil rack/browser machine", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-3",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -251,17 +252,17 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack = &ufspb.Rack{
 				Name: "rack-3",
 			}
 			resp, err := UpdateRack(ctx, rack, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
 		})
 
-		Convey("Partial Update rack", func() {
+		t.Run("Partial Update rack", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name:       "rack-4",
 				CapacityRu: 55,
@@ -269,7 +270,7 @@ func TestUpdateRack(t *testing.T) {
 				Tags:       []string{"atl", "megarack"},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack1 := &ufspb.Rack{
 				Name:       "rack-4",
@@ -277,21 +278,21 @@ func TestUpdateRack(t *testing.T) {
 				Bbnum:      255,
 			}
 			resp, err := UpdateRack(ctx, rack1, &field_mask.FieldMask{Paths: []string{"capacity", "bbnum"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetCapacityRu(), ShouldEqual, 100)
-			So(resp.GetBbnum(), ShouldEqual, 255)
-			So(resp.GetTags(), ShouldResemble, []string{"atl", "megarack"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetCapacityRu(), should.Equal(100))
+			assert.Loosely(t, resp.GetBbnum(), should.Equal(255))
+			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"atl", "megarack"}))
 		})
 
-		Convey("Partial Update rack - invalid bbnum", func() {
+		t.Run("Partial Update rack - invalid bbnum", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name:  "rack-4-bbnum1",
 				Bbnum: 155,
 				Tags:  []string{"atl", "megarack"},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			rack2 := &ufspb.Rack{
 				Name:  "rack-4-bbnum2",
 				Bbnum: 156,
@@ -300,7 +301,7 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateRack(ctx, rack2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rackToUpdate := &ufspb.Rack{
 				Name:  "rack-4-bbnum1",
@@ -311,11 +312,11 @@ func TestUpdateRack(t *testing.T) {
 			}
 
 			_, err = UpdateRack(ctx, rackToUpdate, &field_mask.FieldMask{Paths: []string{"bbnum"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already has bbnum 156")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already has bbnum 156"))
 		})
 
-		Convey("Update rack - permission denied: same realm and no update permission", func() {
+		t.Run("Update rack - permission denied: same realm and no update permission", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-21",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -326,16 +327,16 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack.Tags = []string{"tag-21"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update rack - permission denied: different realm", func() {
+		t.Run("Update rack - permission denied: different realm", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-22",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -346,16 +347,16 @@ func TestUpdateRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack.Tags = []string{"tag-22"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update rack(realm name) - different realm with permission success", func() {
+		t.Run("Update rack(realm name) - different realm with permission success", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-23",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -364,7 +365,7 @@ func TestUpdateRack(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack.Realm = util.AtlLabAdminRealm
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -376,11 +377,11 @@ func TestUpdateRack(t *testing.T) {
 				),
 			})
 			resp, err := UpdateRack(ctx, rack, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack))
 		})
 
-		Convey("Update rack(realm name) - permission denied: different realm without permission", func() {
+		t.Run("Update rack(realm name) - permission denied: different realm without permission", func(t *ftt.Test) {
 			rack := &ufspb.Rack{
 				Name: "rack-24",
 				Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -389,13 +390,13 @@ func TestUpdateRack(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err := registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack.Realm = util.AtlLabAdminRealm
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateRack(ctx, rack, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -403,8 +404,8 @@ func TestUpdateRack(t *testing.T) {
 func TestDeleteRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("DeleteRack", t, func() {
-		Convey("Delete rack by existing ID with rackLSE reference", func() {
+	ftt.Run("DeleteRack", t, func(t *ftt.Test) {
+		t.Run("Delete rack by existing ID with rackLSE reference", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name: "rack-3",
 				Location: &ufspb.Location{
@@ -412,65 +413,65 @@ func TestDeleteRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rackLSE1 := &ufspb.RackLSE{
 				Name:  "racklse-1",
 				Racks: []string{"rack-3"},
 			}
 			_, err = inventory.CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteRack(ctx, "rack-3")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, CannotDelete)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(CannotDelete))
 
 			resp, err := registration.GetRack(ctx, "rack-3")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, rack1)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rack1))
 
 			// No changes are recorded as the deletion fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Delete rack by existing ID without references", func() {
+		t.Run("Delete rack by existing ID without references", func(t *ftt.Test) {
 			rack2 := &ufspb.Rack{
 				Name: "rack-4",
 			}
 			_, err := registration.CreateRack(ctx, rack2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteRack(ctx, "rack-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := registration.GetRack(ctx, "rack-4")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "racks/rack-4")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Delete rack with rpms - happy path", func() {
+		t.Run("Delete rack with rpms - happy path", func(t *ftt.Test) {
 			rpm := &ufspb.RPM{
 				Name: "rpm-6",
 				Rack: "rack-6",
 			}
 			_, err := registration.CreateRPM(ctx, rpm)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack := &ufspb.Rack{
 				Name: "rack-6",
@@ -479,7 +480,7 @@ func TestDeleteRack(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = state.BatchUpdateStates(ctx, []*ufspb.StateRecord{
 				{
@@ -487,14 +488,14 @@ func TestDeleteRack(t *testing.T) {
 					State:        ufspb.State_STATE_SERVING,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
 				{
 					Hostname: "rpm-6",
 					Ip:       "1.2.3.6",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, []*ufspb.IP{
 				{
 					Id:       "ip2",
@@ -504,53 +505,53 @@ func TestDeleteRack(t *testing.T) {
 					Ipv4:     uint32(100),
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteRack(ctx, "rack-6")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetRack(ctx, "rack-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = registration.GetRPM(ctx, "rpm-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "kvm-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			resIPs, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.6"})
-			So(err, ShouldBeNil)
-			So(resIPs, ShouldHaveLength, 1)
-			So(resIPs[0].Occupied, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resIPs, should.HaveLength(1))
+			assert.Loosely(t, resIPs[0].Occupied, should.BeFalse)
 
 			_, err = state.GetStateRecord(ctx, "racks/rack-6")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = state.GetStateRecord(ctx, "rpms/rpm-6")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-6")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 		})
 
-		Convey("Delete rack with switches, kvms - happy path", func() {
+		t.Run("Delete rack with switches, kvms - happy path", func(t *ftt.Test) {
 			kvm := &ufspb.KVM{
 				Name: "kvm-5",
 				Rack: "rack-5",
 			}
 			_, err := registration.CreateKVM(ctx, kvm)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			switch5 := &ufspb.Switch{
 				Name: "switch-5",
 				Rack: "rack-5",
 			}
 			_, err = registration.CreateSwitch(ctx, switch5)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rack := &ufspb.Rack{
 				Name: "rack-5",
@@ -559,7 +560,7 @@ func TestDeleteRack(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = state.BatchUpdateStates(ctx, []*ufspb.StateRecord{
 				{
@@ -575,14 +576,14 @@ func TestDeleteRack(t *testing.T) {
 					State:        ufspb.State_STATE_SERVING,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
 				{
 					Hostname: "kvm-5",
 					Ip:       "1.2.3.4",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, []*ufspb.IP{
 				{
 					Id:       "ip1",
@@ -592,46 +593,46 @@ func TestDeleteRack(t *testing.T) {
 					Ipv4:     uint32(100),
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteRack(ctx, "rack-5")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetRack(ctx, "rack-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = registration.GetKVM(ctx, "kvm-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "kvm-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			resIPs, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.4"})
-			So(err, ShouldBeNil)
-			So(resIPs, ShouldHaveLength, 1)
-			So(resIPs[0].Occupied, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resIPs, should.HaveLength(1))
+			assert.Loosely(t, resIPs[0].Occupied, should.BeFalse)
 
 			_, err = registration.GetSwitch(ctx, "switch-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = state.GetStateRecord(ctx, "racks/rack-5")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = state.GetStateRecord(ctx, "switches/switch-5")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = state.GetStateRecord(ctx, "kvms/kvm-5")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 		})
 
-		Convey("Delete rack - Permission denied: same realm and no delete permission", func() {
+		t.Run("Delete rack - Permission denied: same realm and no delete permission", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name: "rack-31",
 				Location: &ufspb.Location{
@@ -639,15 +640,15 @@ func TestDeleteRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			err = DeleteRack(ctx, "rack-31")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Delete rack - Permission denied: different realm", func() {
+		t.Run("Delete rack - Permission denied: different realm", func(t *ftt.Test) {
 			rack1 := &ufspb.Rack{
 				Name: "rack-32",
 				Location: &ufspb.Location{
@@ -655,12 +656,12 @@ func TestDeleteRack(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteRack(ctx, "rack-32")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -668,76 +669,76 @@ func TestDeleteRack(t *testing.T) {
 func TestReplaceRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("ReplaceRacks", t, func() {
-		Convey("Repalce an old Rack with new rack with RackLSE reference", func() {
+	ftt.Run("ReplaceRacks", t, func(t *ftt.Test) {
+		t.Run("Repalce an old Rack with new rack with RackLSE reference", func(t *ftt.Test) {
 			oldRack1 := &ufspb.Rack{
 				Name: "rack-4",
 			}
 			_, err := registration.CreateRack(ctx, oldRack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rackLSE1 := &ufspb.RackLSE{
 				Name:  "racklse-1",
 				Racks: []string{"rack-0", "rack-50", "rack-4", "rack-7"},
 			}
 			_, err = inventory.CreateRackLSE(ctx, rackLSE1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			newRack2 := &ufspb.Rack{
 				Name: "rack-100",
 			}
 			resp, err := ReplaceRack(ctx, oldRack1, newRack2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, newRack2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(newRack2))
 
 			rlse, err := inventory.GetRackLSE(ctx, "racklse-1")
-			So(err, ShouldBeNil)
-			So(rlse, ShouldNotBeNil)
-			So(rlse.GetRacks(), ShouldResemble, []string{"rack-0", "rack-50", "rack-100", "rack-7"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rlse, should.NotBeNil)
+			assert.Loosely(t, rlse.GetRacks(), should.Resemble([]string{"rack-0", "rack-50", "rack-100", "rack-7"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "racks/rack-100")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
 		})
 
-		Convey("Repalce an old Rack with already existing rack", func() {
+		t.Run("Repalce an old Rack with already existing rack", func(t *ftt.Test) {
 			existingRack1 := &ufspb.Rack{
 				Name: "rack-105",
 			}
 			_, err := registration.CreateRack(ctx, existingRack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			oldRack1 := &ufspb.Rack{
 				Name: "rack-5",
 			}
 			_, err = registration.CreateRack(ctx, oldRack1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			newRack2 := &ufspb.Rack{
 				Name: "rack-105",
 			}
 			rresp, rerr := ReplaceRack(ctx, oldRack1, newRack2)
-			So(rerr, ShouldNotBeNil)
-			So(rresp, ShouldBeNil)
-			So(rerr.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, rerr, should.NotBeNil)
+			assert.Loosely(t, rresp, should.BeNil)
+			assert.Loosely(t, rerr.Error(), should.ContainSubstring(AlreadyExists))
 
 			// No change are recorded as the replacement fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "racks/rack-105")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 	})
 }
@@ -763,23 +764,23 @@ func TestListRacks(t *testing.T) {
 		}
 		racks = append(racks, resp)
 	}
-	Convey("ListRacks", t, func() {
-		Convey("List Racks - filter invalid - error", func() {
+	ftt.Run("ListRacks", t, func(t *ftt.Test) {
+		t.Run("List Racks - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListRacks(ctx, 5, "", "invalid=mx-1", false, false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List Racks - filter switch - happy path", func() {
+		t.Run("List Racks - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRacks(ctx, 5, "", "tag=tag-12", false, false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, racksWithSwitch)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(racksWithSwitch))
 		})
 
-		Convey("ListRacks - Full listing - happy path", func() {
+		t.Run("ListRacks - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRacks(ctx, 5, "", "", false, false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, racks)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(racks))
 		})
 	})
 }
@@ -787,8 +788,8 @@ func TestListRacks(t *testing.T) {
 func TestBatchGetRacks(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetRacks", t, func() {
-		Convey("Batch get racks - happy path", func() {
+	ftt.Run("BatchGetRacks", t, func(t *ftt.Test) {
+		t.Run("Batch get racks - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Rack, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.Rack{
@@ -796,27 +797,27 @@ func TestBatchGetRacks(t *testing.T) {
 				}
 			}
 			_, err := registration.BatchUpdateRacks(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := registration.BatchGetRacks(ctx, []string{"rack-batchGet-0", "rack-batchGet-1", "rack-batchGet-2", "rack-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get racks  - missing id", func() {
+		t.Run("Batch get racks  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetRacks(ctx, []string{"rack-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "rack-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("rack-batchGet-non-existing"))
 		})
-		Convey("Batch get racks  - empty input", func() {
+		t.Run("Batch get racks  - empty input", func(t *ftt.Test) {
 			resp, err := registration.BatchGetRacks(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = registration.BatchGetRacks(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }
@@ -830,8 +831,8 @@ func TestRenameRack(t *testing.T) {
 			Zone: ufspb.Zone_ZONE_CHROMEOS4,
 		},
 	})
-	Convey("RenameRack", t, func() {
-		Convey("RenameRack - happy path", func() {
+	ftt.Run("RenameRack", t, func(t *ftt.Test) {
+		t.Run("RenameRack - happy path", func(t *ftt.Test) {
 			ctx := initializeMockAuthDB(ctx, "user:user@example.com", util.AtlLabAdminRealm, util.RegistrationsUpdate, util.RegistrationsCreate, util.InventoriesCreate)
 			_, err := registration.CreateRack(ctx, &ufspb.Rack{
 				Name: "rename-rack-0-old",
@@ -839,7 +840,7 @@ func TestRenameRack(t *testing.T) {
 					Zone: ufspb.Zone_ZONE_CHROMEOS4,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = AssetRegistration(ctx, &ufspb.Asset{
 				Name: "rename-asset-0",
 				Location: &ufspb.Location{
@@ -848,7 +849,7 @@ func TestRenameRack(t *testing.T) {
 				},
 				Realm: util.AtlLabAdminRealm,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = MachineRegistration(ctx, &ufspb.Machine{
 				Name: "rename-machine-0",
 				Location: &ufspb.Location{
@@ -857,7 +858,7 @@ func TestRenameRack(t *testing.T) {
 				},
 				Realm: util.AtlLabAdminRealm,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Hostname: "rename-host-0",
 				Machines: []string{"rename-machine-0"},
@@ -865,82 +866,82 @@ func TestRenameRack(t *testing.T) {
 					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 				},
 			}, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Test begins
 			_, err = RenameRack(ctx, "rename-rack-0-old", "rename-rack-0-new")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			asset, err := GetAsset(ctx, "rename-asset-0")
-			So(err, ShouldBeNil)
-			So(asset.GetLocation().GetRack(), ShouldEqual, "rename-rack-0-new")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, asset.GetLocation().GetRack(), should.Equal("rename-rack-0-new"))
 			machine, err := GetMachine(ctx, "rename-machine-0")
-			So(err, ShouldBeNil)
-			So(machine.GetLocation().GetRack(), ShouldEqual, "rename-rack-0-new")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, machine.GetLocation().GetRack(), should.Equal("rename-rack-0-new"))
 			lse, err := GetMachineLSE(ctx, "rename-host-0")
-			So(err, ShouldBeNil)
-			So(lse.GetRack(), ShouldEqual, "rename-rack-0-new")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetRack(), should.Equal("rename-rack-0-new"))
 			// Verify change events
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rename-rack-0-new")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rack")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[1].GetEventLabel(), ShouldEqual, "rack.name")
-			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
-			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("rack"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("rack.name"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("rename-rack-0-old"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("rename-rack-0-new"))
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "assets/rename-asset-0")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// The first is the registration of the asset, the second is the rack change.
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "asset")
-			So(changes[1].GetEventLabel(), ShouldEqual, "asset.location")
-			So(changes[1].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
-			So(changes[1].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("asset"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("asset.location"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.ContainSubstring("rename-rack-0-old"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.ContainSubstring("rename-rack-0-new"))
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/rename-machine-0")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// The first is the registration of the machine, the second is the rack change.
-			So(changes, ShouldHaveLength, 3)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 			// Please note that adding a machine will set the machine state to registered.
 			// Adding a machine lse for a machine will change the machine's state to SERVING automatically.
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine.resource_state")
-			So(changes[1].GetOldValue(), ShouldEqual, "STATE_REGISTERED")
-			So(changes[1].GetNewValue(), ShouldEqual, "STATE_SERVING")
-			So(changes[2].GetEventLabel(), ShouldEqual, "machine.location")
-			So(changes[2].GetOldValue(), ShouldContainSubstring, "rename-rack-0-old")
-			So(changes[2].GetNewValue(), ShouldContainSubstring, "rename-rack-0-new")
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine.resource_state"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("STATE_REGISTERED"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("STATE_SERVING"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("machine.location"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.ContainSubstring("rename-rack-0-old"))
+			assert.Loosely(t, changes[2].GetNewValue(), should.ContainSubstring("rename-rack-0-new"))
 
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/rename-host-0")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// The first is the registration of the machineLSE, the second is the rack change.
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse.rack")
-			So(changes[1].GetOldValue(), ShouldEqual, "rename-rack-0-old")
-			So(changes[1].GetNewValue(), ShouldEqual, "rename-rack-0-new")
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine_lse.rack"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("rename-rack-0-old"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("rename-rack-0-new"))
 
 		})
-		Convey("RenameRack - permission denied", func() {
+		t.Run("RenameRack - permission denied", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = RenameRack(ctx, "rename-rack", "rename-rack-new")
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
-		Convey("RenameRack - old rack doesn't exist", func() {
+		t.Run("RenameRack - old rack doesn't exist", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = RenameRack(ctx, "rename-rack-non-existing", "rename-rack-0-new")
-			So(util.IsNotFoundError(err), ShouldBeTrue)
+			assert.Loosely(t, util.IsNotFoundError(err), should.BeTrue)
 		})
-		Convey("RenameRack - it's ok that the new rack already exists", func() {
+		t.Run("RenameRack - it's ok that the new rack already exists", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = RenameRack(ctx, "rename-rack", "rename-rack")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

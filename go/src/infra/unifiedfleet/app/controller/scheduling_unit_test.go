@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/genproto/protobuf/field_mask"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -29,71 +29,71 @@ func mockSchedulingUnit(name string) *ufspb.SchedulingUnit {
 func TestCreateSchedulingUnit(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("CreateSchedulingUnit", t, func() {
-		Convey("Create new SchedulingUnit - happy path", func() {
+	ftt.Run("CreateSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Create new SchedulingUnit - happy path", func(t *ftt.Test) {
 			su := mockSchedulingUnit("su-1")
 			resp, err := CreateSchedulingUnit(ctx, su)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, su)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(su))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "schedulingunit")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Create new SchedulingUnit - already existing", func() {
+		t.Run("Create new SchedulingUnit - already existing", func(t *ftt.Test) {
 			su1 := mockSchedulingUnit("su-2")
 			inventory.CreateSchedulingUnit(ctx, su1)
 
 			su2 := mockSchedulingUnit("su-2")
 			_, err := CreateSchedulingUnit(ctx, su2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already exists")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already exists"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new SchedulingUnit - DUT non-existing", func() {
+		t.Run("Create new SchedulingUnit - DUT non-existing", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su2 := mockSchedulingUnit("su-3")
 			su2.MachineLSEs = []string{"dut-1", "dut-2"}
 			_, err = CreateSchedulingUnit(ctx, su2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no MachineLSE with MachineLSEID dut-2 in the system.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no MachineLSE with MachineLSEID dut-2 in the system."))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new SchedulingUnit - DUT already associated", func() {
+		t.Run("Create new SchedulingUnit - DUT already associated", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-2",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-4")
 			su1.MachineLSEs = []string{"dut-2"}
@@ -102,40 +102,40 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			su2 := mockSchedulingUnit("su-5")
 			su2.MachineLSEs = []string{"dut-2"}
 			_, err = CreateSchedulingUnit(ctx, su2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already associated")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already associated"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-5")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new SchedulingUnit - DUT specified more than once", func() {
+		t.Run("Create new SchedulingUnit - DUT specified more than once", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-3",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-6")
 			su1.MachineLSEs = []string{"dut-3", "dut-3"}
 			_, err = CreateSchedulingUnit(ctx, su1)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "specified more than once")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("specified more than once"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-6")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-6")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new SchedulingUnit - DUTs do not share the same hive", func() {
+		t.Run("Create new SchedulingUnit - DUTs do not share the same hive", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-4",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
@@ -152,7 +152,7 @@ func TestCreateSchedulingUnit(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-5",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
@@ -169,21 +169,21 @@ func TestCreateSchedulingUnit(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-7")
 			su1.MachineLSEs = []string{"dut-4", "dut-5"}
 			_, err = CreateSchedulingUnit(ctx, su1)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "have different hives")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("have different hives"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-7")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-7")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 	})
 }
@@ -191,8 +191,8 @@ func TestCreateSchedulingUnit(t *testing.T) {
 func TestUpdateSchedulingUnit(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateSchedulingUnit", t, func() {
-		Convey("Update SchedulingUnit for existing SchedulingUnit - happy path", func() {
+	ftt.Run("UpdateSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Update SchedulingUnit for existing SchedulingUnit - happy path", func(t *ftt.Test) {
 			su1 := mockSchedulingUnit("su-1")
 			su1.Tags = []string{"Dell"}
 			inventory.CreateSchedulingUnit(ctx, su1)
@@ -200,65 +200,65 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			su2 := mockSchedulingUnit("su-1")
 			su2.Tags = []string{"Apple"}
 			resp, _ := UpdateSchedulingUnit(ctx, su2, nil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, su2)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(su2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "schedulingunit.tags")
-			So(changes[0].GetOldValue(), ShouldResemble, "[Dell]")
-			So(changes[0].GetNewValue(), ShouldResemble, "[Apple]")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit.tags"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Match("[Dell]"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Match("[Apple]"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Update SchedulingUnit for non-existing SchedulingUnit", func() {
+		t.Run("Update SchedulingUnit for non-existing SchedulingUnit", func(t *ftt.Test) {
 			su := mockSchedulingUnit("su-2")
 			resp, err := UpdateSchedulingUnit(ctx, su, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("UpdateSchedulingUnit - DUT non-existing", func() {
+		t.Run("UpdateSchedulingUnit - DUT non-existing", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-3",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su := mockSchedulingUnit("su-3")
 			su.MachineLSEs = []string{"dut-3"}
 			_, err = inventory.CreateSchedulingUnit(ctx, su)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-3")
 			su1.MachineLSEs = []string{"dut-3", "dut-4"}
 			_, err = UpdateSchedulingUnit(ctx, su1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no MachineLSE with MachineLSEID dut-4 in the system.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no MachineLSE with MachineLSEID dut-4 in the system."))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-3")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("UpdateSchedulingUnit - DUT already associated", func() {
+		t.Run("UpdateSchedulingUnit - DUT already associated", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-4",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-4")
 			su1.MachineLSEs = []string{"dut-4"}
@@ -266,49 +266,49 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 
 			su2 := mockSchedulingUnit("su-5")
 			_, err = inventory.CreateSchedulingUnit(ctx, su2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su3 := mockSchedulingUnit("su-5")
 			su3.MachineLSEs = []string{"dut-4"}
 			_, err = UpdateSchedulingUnit(ctx, su3, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already associated")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already associated"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-5")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("UpdateSchedulingUnit - DUT specified more than once", func() {
+		t.Run("UpdateSchedulingUnit - DUT specified more than once", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-5",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-8")
 			_, err = inventory.CreateSchedulingUnit(ctx, su1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su2 := mockSchedulingUnit("su-8")
 			su2.MachineLSEs = []string{"dut-5", "dut-5"}
 			_, err = UpdateSchedulingUnit(ctx, su2, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "specified more than once")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("specified more than once"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-8")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-8")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("UpdateSchedulingUnit - DUTs do not share the same hive", func() {
+		t.Run("UpdateSchedulingUnit - DUTs do not share the same hive", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-7",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
@@ -325,7 +325,7 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-8",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
@@ -342,33 +342,33 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-9")
 			su1.MachineLSEs = []string{"dut-7", "dut-8"}
 			_, err = CreateSchedulingUnit(ctx, su1)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "have different hives")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("have different hives"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-9")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-9")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Update SchedulingUnit for existing SchedulingUnit - partial update(append) machinelses", func() {
+		t.Run("Update SchedulingUnit for existing SchedulingUnit - partial update(append) machinelses", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-2",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-7")
 			su1.MachineLSEs = []string{"dut-1"}
@@ -377,28 +377,28 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			su2 := mockSchedulingUnit("su-7")
 			su2.MachineLSEs = []string{"dut-2"}
 			resp, _ := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses"}})
-			So(resp, ShouldNotBeNil)
-			So(resp.GetName(), ShouldEqual, su2.GetName())
-			So(resp.GetMachineLSEs(), ShouldResemble, []string{"dut-1", "dut-2"})
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
+			assert.Loosely(t, resp.GetMachineLSEs(), should.Resemble([]string{"dut-1", "dut-2"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-7")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "schedulingunit.machinelses")
-			So(changes[0].GetOldValue(), ShouldEqual, "[dut-1]")
-			So(changes[0].GetNewValue(), ShouldEqual, "[dut-1 dut-2]")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit.machinelses"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("[dut-1]"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("[dut-1 dut-2]"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-7")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Update SchedulingUnit for existing SchedulingUnit - partial update(remove) machinelses", func() {
+		t.Run("Update SchedulingUnit for existing SchedulingUnit - partial update(remove) machinelses", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-6",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-6")
 			su1.MachineLSEs = []string{"dut-6"}
@@ -407,21 +407,21 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			su2 := mockSchedulingUnit("su-6")
 			su2.MachineLSEs = []string{"dut-6"}
 			resp, err := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses.remove"}})
-			So(err, ShouldBeNil)
-			So(resp.GetName(), ShouldEqual, su2.GetName())
-			So(resp.GetMachineLSEs(), ShouldResemble, []string{})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
+			assert.Loosely(t, resp.GetMachineLSEs(), should.Resemble([]string{}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-6")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "schedulingunit.machinelses")
-			So(changes[0].GetOldValue(), ShouldEqual, "[dut-6]")
-			So(changes[0].GetNewValue(), ShouldEqual, "[]")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit.machinelses"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("[dut-6]"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("[]"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-6")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 	})
 }
@@ -432,17 +432,17 @@ func TestGetSchedulingUnit(t *testing.T) {
 	su, _ := inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
 		Name: "su-1",
 	})
-	Convey("GetSchedulingUnit", t, func() {
-		Convey("Get SchedulingUnit by existing ID - happy path", func() {
+	ftt.Run("GetSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Get SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			resp, _ := GetSchedulingUnit(ctx, "su-1")
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, su)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(su))
 		})
 
-		Convey("Get SchedulingUnit by non-existing ID", func() {
+		t.Run("Get SchedulingUnit by non-existing ID", func(t *ftt.Test) {
 			_, err := GetSchedulingUnit(ctx, "su-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -453,33 +453,33 @@ func TestDeleteSchedulingUnit(t *testing.T) {
 	inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
 		Name: "su-1",
 	})
-	Convey("DeleteSchedulingUnit", t, func() {
-		Convey("Delete SchedulingUnit by existing ID - happy path", func() {
+	ftt.Run("DeleteSchedulingUnit", t, func(t *ftt.Test) {
+		t.Run("Delete SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			err := DeleteSchedulingUnit(ctx, "su-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetSchedulingUnit(ctx, "su-1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "schedulingunit")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Delete SchedulingUnit by non-existing ID", func() {
+		t.Run("Delete SchedulingUnit by non-existing ID", func(t *ftt.Test) {
 			err := DeleteSchedulingUnit(ctx, "su-2")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -500,23 +500,23 @@ func TestListSchedulingUnits(t *testing.T) {
 		}
 		schedulingUnits = append(schedulingUnits, resp)
 	}
-	Convey("ListSchedulingUnits", t, func() {
-		Convey("List SchedulingUnits - filter invalid - error", func() {
+	ftt.Run("ListSchedulingUnits", t, func(t *ftt.Test) {
+		t.Run("List SchedulingUnits - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListSchedulingUnits(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List SchedulingUnits - filter switch - happy path", func() {
+		t.Run("List SchedulingUnits - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListSchedulingUnits(ctx, 5, "", "pools=DUT_QUOTA", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, schedulingUnitsWithPools)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(schedulingUnitsWithPools))
 		})
 
-		Convey("ListSchedulingUnits - Full listing - happy path", func() {
+		t.Run("ListSchedulingUnits - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListSchedulingUnits(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, schedulingUnits)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(schedulingUnits))
 		})
 	})
 }
