@@ -99575,6 +99575,18 @@ plans:
               exec_name: cros_ping
         - name: Update state (time:'30s')
           exec_name: dolos_determine_and_set_dolos_state
+    - name: amt_manager (Allow to fail)
+      criticalactions:
+        - name: Set AMT state to BROKEN
+          exec_name: amt_manager_set_state
+          exec_args:
+            - state:BROKEN
+        - name: Intel AMT is working (time:'15s')
+          exec_name: amt_manager_is_healthy
+        - name: Set AMT state to WORKING
+          exec_name: amt_manager_set_state
+          exec_args:
+            - state:WORKING
     - name: close (Allow to fail)
       criticalactions:
         - name: Update peripheral wifi state (Allow to fail)

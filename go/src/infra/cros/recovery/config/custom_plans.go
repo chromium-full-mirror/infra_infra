@@ -113,6 +113,7 @@ func FixBatteryCutOffConfig() *Configuration {
 			PlanBluetoothPeer,
 			PlanWifiRouter,
 			PlanHMR,
+			PlanAMT,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -134,6 +135,7 @@ func FixBatteryCutOffConfig() *Configuration {
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
 			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
+			PlanAMT:           setAllowFail(amtRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
