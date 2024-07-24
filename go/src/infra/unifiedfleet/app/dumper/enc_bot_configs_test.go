@@ -8,11 +8,12 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/unifiedfleet/app/config"
@@ -55,10 +56,10 @@ func encTestingContext() context.Context {
 func TestGetEncBotConfigs(t *testing.T) {
 	t.Parallel()
 
-	Convey("Read Bot Configs", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Read Bot Configs", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			err := getBotConfigs(encTestingContext())
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

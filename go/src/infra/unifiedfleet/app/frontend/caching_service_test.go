@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/caching"
@@ -30,8 +29,8 @@ func TestCreateCachingService(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("CreateCachingService", t, func() {
-		Convey("Create new CachingService with cachingServiceId - happy path", func() {
+	ftt.Run("CreateCachingService", t, func(t *ftt.Test) {
+		t.Run("Create new CachingService with cachingServiceId - happy path", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.PrimaryNode = "127.0.0.2"
 			cs.SecondaryNode = "127.0.0.3"
@@ -41,32 +40,32 @@ func TestCreateCachingService(t *testing.T) {
 				CachingServiceId: "127.0.0.1",
 			}
 			resp, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cs))
 		})
 
-		Convey("Create new CachingService with nil entity", func() {
+		t.Run("Create new CachingService with nil entity", func(t *ftt.Test) {
 			req := &ufsAPI.CreateCachingServiceRequest{
 				CachingService:   nil,
 				CachingServiceId: "128.0.0.1",
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Create new CachingService without cachingServiceId", func() {
+		t.Run("Create new CachingService without cachingServiceId", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.ServingSubnets = []string{"1.1.1.0/24"}
 			req := &ufsAPI.CreateCachingServiceRequest{
 				CachingService: cs,
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyID)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
 
-		Convey("Create new CachingService with empty primary node", func() {
+		t.Run("Create new CachingService with empty primary node", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.PrimaryNode = ""
 			cs.ServingSubnets = []string{"1.1.1.0/24"}
@@ -75,11 +74,11 @@ func TestCreateCachingService(t *testing.T) {
 				CachingServiceId: "id",
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Empty primary node name.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Empty primary node name."))
 		})
 
-		Convey("Create new CachingService with empty secondary node", func() {
+		t.Run("Create new CachingService with empty secondary node", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.PrimaryNode = "primary-node-name"
 			cs.SecondaryNode = ""
@@ -89,11 +88,11 @@ func TestCreateCachingService(t *testing.T) {
 				CachingServiceId: "id",
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Empty secondary node name.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Empty secondary node name."))
 		})
 
-		Convey("Create new CachingService with both subnets and zones", func() {
+		t.Run("Create new CachingService with both subnets and zones", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.PrimaryNode = "primary-node-name"
 			cs.SecondaryNode = "secondary-node-name"
@@ -104,8 +103,8 @@ func TestCreateCachingService(t *testing.T) {
 				CachingServiceId: "id",
 			}
 			_, err := tf.Fleet.CreateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Cannot specify both subnets and zones")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot specify both subnets and zones"))
 		})
 	})
 }
@@ -115,8 +114,8 @@ func TestUpdateCachingService(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("UpdateCachingService", t, func() {
-		Convey("Update existing CachingService - happy path", func() {
+	ftt.Run("UpdateCachingService", t, func(t *ftt.Test) {
+		t.Run("Update existing CachingService - happy path", func(t *ftt.Test) {
 			caching.CreateCachingService(ctx, &ufspb.CachingService{
 				Name: "127.0.0.1",
 			})
@@ -127,63 +126,63 @@ func TestUpdateCachingService(t *testing.T) {
 				CachingService: cs1,
 			}
 			resp, err := tf.Fleet.UpdateCachingService(tf.C, ureq)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, cs1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(cs1))
 		})
 
-		Convey("Update CachingService - Invalid input nil", func() {
+		t.Run("Update CachingService - Invalid input nil", func(t *ftt.Test) {
 			req := &ufsAPI.UpdateCachingServiceRequest{
 				CachingService: nil,
 			}
 			resp, err := tf.Fleet.UpdateCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.NilEntity)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.NilEntity))
 		})
 
-		Convey("Update CachingService - Invalid input empty name", func() {
+		t.Run("Update CachingService - Invalid input empty name", func(t *ftt.Test) {
 			cs := mockCachingService("")
 			cs.Name = ""
 			req := &ufsAPI.UpdateCachingServiceRequest{
 				CachingService: cs,
 			}
 			resp, err := tf.Fleet.UpdateCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Update CachingService - Invalid input invalid name", func() {
+		t.Run("Update CachingService - Invalid input invalid name", func(t *ftt.Test) {
 			cs := mockCachingService("a.b)7&")
 			req := &ufsAPI.UpdateCachingServiceRequest{
 				CachingService: cs,
 			}
 			resp, err := tf.Fleet.UpdateCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.CachingServiceNameFormat)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.CachingServiceNameFormat))
 		})
 
-		Convey("Update new CachingService with invalid primary node", func() {
+		t.Run("Update new CachingService with invalid primary node", func(t *ftt.Test) {
 			cs := mockCachingService("128.0.0.1")
 			cs.PrimaryNode = "invalid name"
 			req := &ufsAPI.UpdateCachingServiceRequest{
 				CachingService: cs,
 			}
 			_, err := tf.Fleet.UpdateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidHostname)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidHostname))
 		})
 
-		Convey("Update new CachingService with invalid secondary node", func() {
+		t.Run("Update new CachingService with invalid secondary node", func(t *ftt.Test) {
 			cs := mockCachingService("129.0.0.1")
 			cs.SecondaryNode = "invalid name"
 			req := &ufsAPI.UpdateCachingServiceRequest{
 				CachingService: cs,
 			}
 			_, err := tf.Fleet.UpdateCachingService(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidHostname)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidHostname))
 		})
 
 	})
@@ -197,35 +196,35 @@ func TestGetCachingService(t *testing.T) {
 	cs, _ := caching.CreateCachingService(ctx, &ufspb.CachingService{
 		Name: "127.0.0.1",
 	})
-	Convey("GetCachingService", t, func() {
-		Convey("Get CachingService by existing ID - happy path", func() {
+	ftt.Run("GetCachingService", t, func(t *ftt.Test) {
+		t.Run("Get CachingService by existing ID - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.GetCachingServiceRequest{
 				Name: util.AddPrefix(util.CachingServiceCollection, "127.0.0.1"),
 			}
 			resp, _ := tf.Fleet.GetCachingService(tf.C, req)
-			So(resp, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			So(resp, ShouldResembleProto, cs)
+			assert.Loosely(t, resp, should.Resemble(cs))
 		})
 
-		Convey("Get CachingService - Invalid input empty name", func() {
+		t.Run("Get CachingService - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetCachingServiceRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.GetCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Get CachingService - Invalid input invalid characters", func() {
+		t.Run("Get CachingService - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.GetCachingServiceRequest{
 				Name: util.AddPrefix(util.CachingServiceCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.GetCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.CachingServiceNameFormat)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.CachingServiceNameFormat))
 		})
 	})
 }
@@ -238,38 +237,38 @@ func TestDeleteCachingService(t *testing.T) {
 	caching.CreateCachingService(ctx, &ufspb.CachingService{
 		Name: "127.0.0.1",
 	})
-	Convey("DeleteCachingService", t, func() {
-		Convey("Delete CachingService by existing ID - happy path", func() {
+	ftt.Run("DeleteCachingService", t, func(t *ftt.Test) {
+		t.Run("Delete CachingService by existing ID - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteCachingServiceRequest{
 				Name: util.AddPrefix(util.CachingServiceCollection, "127.0.0.1"),
 			}
 			_, err := tf.Fleet.DeleteCachingService(tf.C, req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := caching.GetCachingService(tf.C, "127.0.0.1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete CachingService - Invalid input empty name", func() {
+		t.Run("Delete CachingService - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteCachingServiceRequest{
 				Name: "",
 			}
 			resp, err := tf.Fleet.DeleteCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyName))
 		})
 
-		Convey("Delete CachingService - Invalid input invalid characters", func() {
+		t.Run("Delete CachingService - Invalid input invalid characters", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteCachingServiceRequest{
 				Name: util.AddPrefix(util.CachingServiceCollection, "a.b)7&"),
 			}
 			resp, err := tf.Fleet.DeleteCachingService(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.CachingServiceNameFormat)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.CachingServiceNameFormat))
 		})
 	})
 }
@@ -287,32 +286,32 @@ func TestListCachingServices(t *testing.T) {
 		resp.Name = util.AddPrefix(util.CachingServiceCollection, resp.Name)
 		cachingServices = append(cachingServices, resp)
 	}
-	Convey("ListCachingServices", t, func() {
-		Convey("ListCachingServices - page_size negative - error", func() {
+	ftt.Run("ListCachingServices", t, func(t *ftt.Test) {
+		t.Run("ListCachingServices - page_size negative - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListCachingServicesRequest{
 				PageSize: -5,
 			}
 			resp, err := tf.Fleet.ListCachingServices(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidPageSize)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidPageSize))
 		})
 
-		Convey("ListCachingServices - Full listing with no pagination - happy path", func() {
+		t.Run("ListCachingServices - Full listing with no pagination - happy path", func(t *ftt.Test) {
 			req := &ufsAPI.ListCachingServicesRequest{}
 			resp, err := tf.Fleet.ListCachingServices(tf.C, req)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.CachingServices, ShouldResembleProto, cachingServices)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.CachingServices, should.Resemble(cachingServices))
 		})
 
-		Convey("ListCachingServices - filter format invalid format OR - error", func() {
+		t.Run("ListCachingServices - filter format invalid format OR - error", func(t *ftt.Test) {
 			req := &ufsAPI.ListCachingServicesRequest{
 				Filter: "state=x|state=y",
 			}
 			_, err := tf.Fleet.ListCachingServices(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidFilterFormat)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidFilterFormat))
 		})
 	})
 }

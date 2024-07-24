@@ -9,11 +9,12 @@ import (
 	"sync/atomic"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -62,34 +63,34 @@ func TestGetOwnershipData(t *testing.T) {
 	ctx := encTestingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("Get Ownership Data for Bots", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Get Ownership Data for Bots", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: "testing-1"})
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = controller.ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req := &api.GetOwnershipDataRequest{
 				Hostname: "testing-1",
 			}
 
 			res, err := tf.Fleet.GetOwnershipData(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res.Pools, ShouldContain, "test")
-			So(res.SwarmingInstance, ShouldEqual, "testSwarming")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res.Pools, should.Contain("test"))
+			assert.Loosely(t, res.SwarmingInstance, should.Equal("testSwarming"))
 		})
-		Convey("Missing host - returns error", func() {
+		t.Run("Missing host - returns error", func(t *ftt.Test) {
 			req := &api.GetOwnershipDataRequest{
 				Hostname: "blah-1",
 			}
 			res, err := tf.Fleet.GetOwnershipData(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(res, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("not found"))
 		})
 	})
 }
@@ -100,20 +101,20 @@ func TestListOwnershipData(t *testing.T) {
 	ctx := encTestingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	Convey("List Ownership Data for Bots", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("List Ownership Data for Bots", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			err := controller.ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req := &api.ListOwnershipDataRequest{
 				PageSize: 10,
 			}
 
 			res, err := tf.Fleet.ListOwnershipData(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(len(res.OwnershipData), ShouldEqual, 10)
-			So(res.NextPageToken, ShouldNotBeBlank)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, len(res.OwnershipData), should.Equal(10))
+			assert.Loosely(t, res.NextPageToken, should.NotBeBlank)
 
 			// Get next set of entities
 			req = &api.ListOwnershipDataRequest{
@@ -123,10 +124,10 @@ func TestListOwnershipData(t *testing.T) {
 
 			res, err = tf.Fleet.ListOwnershipData(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(len(res.OwnershipData), ShouldEqual, 4)
-			So(res.NextPageToken, ShouldBeBlank)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, len(res.OwnershipData), should.Equal(4))
+			assert.Loosely(t, res.NextPageToken, should.Equal(""))
 		})
 	})
 }

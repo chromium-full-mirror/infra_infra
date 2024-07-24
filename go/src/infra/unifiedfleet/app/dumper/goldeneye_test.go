@@ -7,34 +7,35 @@ package dumper
 import (
 	"bufio"
 	"context"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"os"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestParseGoldenEyeJsonData(t *testing.T) {
 	t.Parallel()
 
-	Convey("Parse Data", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Parse Data", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			file, err := os.Open("test.json")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			reader := bufio.NewReader(file)
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)
-			So(err, ShouldEqual, nil)
-			So(devices.Devices, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devices.Devices, should.NotBeNil)
 		})
-		Convey("parse for non existent file", func() {
+		t.Run("parse for non existent file", func(t *ftt.Test) {
 			file, err := os.Open("test2.json")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 			reader := bufio.NewReader(file)
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldEqual, "unmarshal chunk failed while reading golden eye data for devices: invalid argument")
-			So(devices, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.Equal("unmarshal chunk failed while reading golden eye data for devices: invalid argument"))
+			assert.Loosely(t, devices, should.BeNil)
 		})
 	})
 }

@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 )
@@ -110,18 +112,18 @@ func TestCompare(t *testing.T) {
 		UpdateTime: tp3,
 	}
 
-	Convey("Compare Machine", t, func() {
-		Convey("Comparing same machine", func() {
+	ftt.Run("Compare Machine", t, func(t *ftt.Test) {
+		t.Run("Comparing same machine", func(t *ftt.Test) {
 			res := Compare(machine1, machine1)
-			So(res, ShouldEqual, true)
+			assert.Loosely(t, res, should.Equal(true))
 		})
-		Convey("Comparing same machine with diff timestamp", func() {
+		t.Run("Comparing same machine with diff timestamp", func(t *ftt.Test) {
 			res := Compare(machine1, machine2)
-			So(res, ShouldEqual, true)
+			assert.Loosely(t, res, should.Equal(true))
 		})
-		Convey("Comparing different machines", func() {
+		t.Run("Comparing different machines", func(t *ftt.Test) {
 			res := Compare(machine1, machine3)
-			So(res, ShouldEqual, false)
+			assert.Loosely(t, res, should.Equal(false))
 		})
 	})
 }
