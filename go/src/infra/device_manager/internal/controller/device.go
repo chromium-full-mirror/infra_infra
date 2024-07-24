@@ -238,6 +238,11 @@ func updateWorker(
 		if len(pendingUpdates) == 0 {
 			return
 		}
+		defer func() {
+			wg.Add(-len(pendingUpdates))
+			pendingUpdates = pendingUpdates[:0]
+		}()
+
 		query := `
 			UPDATE "Devices"
 			SET
@@ -246,13 +251,14 @@ func updateWorker(
 				id IN (%s);`
 		query = fmt.Sprintf(query, strings.Join(pendingUpdates, ", "))
 		row, err := db.QueryContext(ctx, query, updateTime)
-		row.Close()
+		if row != nil {
+			row.Close()
+		}
 		if err != nil {
 			logging.Errorf(ctx, "Failed to update notification time for devices with query %s: %v", query, err)
+			return
 		}
 		logging.Debugf(ctx, "Query ran with %d updates", len(pendingUpdates))
-		wg.Add(-len(pendingUpdates))
-		pendingUpdates = pendingUpdates[:0]
 	}
 	defer updateDevices()
 
