@@ -8,9 +8,11 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -808,40 +810,40 @@ common {
 func TestAdaptToV1DutSpec(t *testing.T) {
 	t.Parallel()
 
-	Convey("Verify V2 => V1", t, func() {
+	ftt.Run("Verify V2 => V1", t, func(t *ftt.Test) {
 		var d1 inventory.DeviceUnderTest
 		err := proto.UnmarshalText(dutTextProto, &d1)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		s1, err := inventory.WriteLabToString(&inventory.Lab{
 			Duts: []*inventory.DeviceUnderTest{&d1},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		dataCopy := proto.Clone(&data).(*ufspb.ChromeOSDeviceData)
 
-		Convey("empty input", func() {
+		t.Run("empty input", func(t *ftt.Test) {
 			_, err := AdaptToV1DutSpec(&ufspb.ChromeOSDeviceData{})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "chromeosdevicedata is nil to adapt")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("chromeosdevicedata is nil to adapt"))
 		})
-		Convey("empty hwid data", func() {
+		t.Run("empty hwid data", func(t *ftt.Test) {
 			dataCopy.HwidData = nil
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(d.GetCommon().GetHostname(), ShouldEqual, "test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
-		Convey("empty device config", func() {
+		t.Run("empty device config", func(t *ftt.Test) {
 			dataCopy.DeviceConfig = nil
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(d.GetCommon().GetHostname(), ShouldEqual, "test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
-		Convey("empty manufacturing config", func() {
+		t.Run("empty manufacturing config", func(t *ftt.Test) {
 			dataCopy.ManufacturingConfig = nil
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(d.GetCommon().GetHostname(), ShouldEqual, "test_host")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
-		Convey("may os_type", func() {
+		t.Run("may os_type", func(t *ftt.Test) {
 			board := "fizz-moblab"
 			osType := inventory.SchedulableLabels_OS_TYPE_MOBLAB
 			d := proto.Clone(&d1).(*inventory.DeviceUnderTest)
@@ -852,79 +854,79 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			s1, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{d},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			//dataCopy.LabConfig = proto.Clone(data.LabConfig).(*ufspb.MachineLSE)
 			dataCopy.GetMachine().GetChromeosMachine().BuildTarget = board
 			d2, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			s2, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{d2},
 			})
-			So(err, ShouldBeNil)
-			So(s1, ShouldEqual, s2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s1, should.Equal(s2))
 		})
-		Convey("servo_state is UNKNOWN/false by default", func() {
+		t.Run("servo_state is UNKNOWN/false by default", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState, ShouldEqual, inventory.PeripheralState_UNKNOWN)
-			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState, should.Equal(inventory.PeripheralState_UNKNOWN))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.BeFalse)
 		})
-		Convey("servo_state is broken", func() {
+		t.Run("servo_state is broken", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_BROKEN
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
-				ShouldEqual,
-				inventory.PeripheralState_BROKEN)
-			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				should.Equal(
+					inventory.PeripheralState_BROKEN))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(true))
 		})
-		Convey("servo_state is wrong_config", func() {
+		t.Run("servo_state is wrong_config", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_WRONG_CONFIG
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
-				ShouldEqual,
-				inventory.PeripheralState_WRONG_CONFIG)
-			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				should.Equal(
+					inventory.PeripheralState_WRONG_CONFIG))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(true))
 		})
-		Convey("servo_state is working", func() {
+		t.Run("servo_state is working", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_WORKING
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
-				ShouldEqual,
-				inventory.PeripheralState_WORKING)
-			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				should.Equal(
+					inventory.PeripheralState_WORKING))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(true))
 		})
-		Convey("servo_state is not_connected", func() {
+		t.Run("servo_state is not_connected", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_NOT_CONNECTED
 			d, err := AdaptToV1DutSpec(dataCopy)
-			So(err, ShouldBeNil)
-			So(*d.GetCommon().GetLabels().GetPeripherals().ServoState,
-				ShouldEqual,
-				inventory.PeripheralState_NOT_CONNECTED)
-			So(*d.GetCommon().GetLabels().GetPeripherals().Servo, ShouldEqual, false)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
+				should.Equal(
+					inventory.PeripheralState_NOT_CONNECTED))
+			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(false))
 		})
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			d, err := AdaptToV1DutSpec(&data)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			s, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{d},
 			})
-			So(err, ShouldBeNil)
-			So(proto.Equal(&d1, d), ShouldBeTrue)
-			So(s1, ShouldEqual, s)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, proto.Equal(&d1, d), should.BeTrue)
+			assert.Loosely(t, s1, should.Equal(s))
 		})
 	})
 
-	Convey("Verify labstation v2 => v1", t, func() {
-		Convey("DutState is not set", func() {
+	ftt.Run("Verify labstation v2 => v1", t, func(t *ftt.Test) {
+		t.Run("DutState is not set", func(t *ftt.Test) {
 			extLabstaion := ufspb.ChromeOSDeviceData{
 				LabConfig:           &labstationLSE,
 				Machine:             &labstationMachine,
@@ -933,17 +935,17 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 				DutState:            nil,
 			}
 			d, err := AdaptToV1DutSpec(&extLabstaion)
-			So(err, ShouldBeNil)
-			So(d.GetCommon().GetLabels().GetPeripherals().GetServo(), ShouldEqual, false)
-			So(d.GetCommon().GetLabels().GetPeripherals().GetServoState(), ShouldEqual, invServoStateUnknown)
-			So(d.GetCommon().GetLabels().GetPeripherals().GetWifiState(), ShouldEqual, inventory.HardwareState_HARDWARE_UNKNOWN)
-			So(d.GetCommon().GetLabels().GetCr50Phase(), ShouldEqual, inventory.SchedulableLabels_CR50_PHASE_INVALID)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.GetCommon().GetLabels().GetPeripherals().GetServo(), should.Equal(false))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetPeripherals().GetServoState(), should.Equal(invServoStateUnknown))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetPeripherals().GetWifiState(), should.Equal(inventory.HardwareState_HARDWARE_UNKNOWN))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetCr50Phase(), should.Equal(inventory.SchedulableLabels_CR50_PHASE_INVALID))
 		})
 
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			var labstation inventory.DeviceUnderTest
 			err := proto.UnmarshalText(labstationProtoFromV2WithDutState, &labstation)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			extLabstaion := ufspb.ChromeOSDeviceData{
 				LabConfig:           &labstationLSE,
@@ -953,22 +955,22 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 				DutState:            &devUFSState,
 			}
 			d, err := AdaptToV1DutSpec(&extLabstaion)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			s, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{d},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			strLabstation, err := inventory.WriteLabToString(&inventory.Lab{
 				Duts: []*inventory.DeviceUnderTest{&labstation},
 			})
-			So(err, ShouldBeNil)
-			So(s, ShouldEqual, strLabstation)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s, should.Equal(strLabstation))
 		})
 	})
 
-	Convey("Verify devboard v2 => v1", t, func() {
-		Convey("Pool is set", func() {
+	ftt.Run("Verify devboard v2 => v1", t, func(t *ftt.Test) {
+		t.Run("Pool is set", func(t *ftt.Test) {
 			extDevboard := ufspb.ChromeOSDeviceData{
 				LabConfig:           &devboardLSE,
 				Machine:             &devboardMachine,
@@ -977,10 +979,10 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 				DutState:            nil,
 			}
 			d, err := AdaptToV1DutSpec(&extDevboard)
-			So(err, ShouldBeNil)
-			So(d.GetCommon().GetLabels().GetSelfServePools(), ShouldResemble, []string{"devboard_main"})
-			So(d.GetCommon().GetLabels().GetBoard(), ShouldEqual, "andreiboard-devboard")
-			So(d.GetCommon().GetLabels().GetModel(), ShouldEqual, "andreiboard-devboard")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.GetCommon().GetLabels().GetSelfServePools(), should.Resemble([]string{"devboard_main"}))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetBoard(), should.Equal("andreiboard-devboard"))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetModel(), should.Equal("andreiboard-devboard"))
 		})
 
 	})

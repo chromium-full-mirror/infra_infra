@@ -10,8 +10,10 @@ import (
 	"testing/quick"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -19,43 +21,43 @@ import (
 )
 
 func TestParseVlan(t *testing.T) {
-	Convey("ParseVlan - happy path", t, func() {
+	ftt.Run("ParseVlan - happy path", t, func(t *ftt.Test) {
 		ips, l, freeStartIP, freeEndIP, reservedNum, err := ParseVlan("fake_vlan", "192.168.40.0/22", "", "")
-		So(err, ShouldBeNil)
-		So(l, ShouldEqual, 1024)
-		So(ips, ShouldHaveLength, 1024)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, l, should.Equal(1024))
+		assert.Loosely(t, ips, should.HaveLength(1024))
 		for i, ip := range ips {
 			if i >= 0 && i < 11 {
-				So(ip.GetReserve(), ShouldBeTrue)
+				assert.Loosely(t, ip.GetReserve(), should.BeTrue)
 			} else if i >= 1023 {
-				So(ip.GetReserve(), ShouldBeTrue)
+				assert.Loosely(t, ip.GetReserve(), should.BeTrue)
 			} else {
-				So(ip.GetReserve(), ShouldBeFalse)
+				assert.Loosely(t, ip.GetReserve(), should.BeFalse)
 			}
 		}
-		So(freeStartIP, ShouldEqual, "192.168.40.11")
-		So(freeEndIP, ShouldEqual, "192.168.43.254")
+		assert.Loosely(t, freeStartIP, should.Equal("192.168.40.11"))
+		assert.Loosely(t, freeEndIP, should.Equal("192.168.43.254"))
 		// 12 = util.reserveFirst (11) + util.reserveLast (1)
-		So(reservedNum, ShouldEqual, 12)
+		assert.Loosely(t, reservedNum, should.Equal(12))
 	})
 
-	Convey("ParseVlan - happy path with free start/end ip", t, func() {
+	ftt.Run("ParseVlan - happy path with free start/end ip", t, func(t *ftt.Test) {
 		ips, l, freeStartIP, freeEndIP, reservedNum, err := ParseVlan("fake_vlan", "192.168.40.0/22", "192.168.40.100", "192.168.40.200")
-		So(err, ShouldBeNil)
-		So(l, ShouldEqual, 1024)
-		So(ips, ShouldHaveLength, 1024)
-		So(freeStartIP, ShouldEqual, "192.168.40.100")
-		So(freeEndIP, ShouldEqual, "192.168.40.200")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, l, should.Equal(1024))
+		assert.Loosely(t, ips, should.HaveLength(1024))
+		assert.Loosely(t, freeStartIP, should.Equal("192.168.40.100"))
+		assert.Loosely(t, freeEndIP, should.Equal("192.168.40.200"))
 		// 2 ^ (32-22) - 101 (101 IPs available between 192.168.40.100 & 192.168.40.200 )
 		expectedReservedIPs := 923
-		So(reservedNum, ShouldEqual, expectedReservedIPs)
+		assert.Loosely(t, reservedNum, should.Equal(expectedReservedIPs))
 		for i, ip := range ips {
 			if i < 100 {
-				So(ip.GetReserve(), ShouldBeTrue)
+				assert.Loosely(t, ip.GetReserve(), should.BeTrue)
 			} else if i > 200 {
-				So(ip.GetReserve(), ShouldBeTrue)
+				assert.Loosely(t, ip.GetReserve(), should.BeTrue)
 			} else {
-				So(ip.GetReserve(), ShouldBeFalse)
+				assert.Loosely(t, ip.GetReserve(), should.BeFalse)
 			}
 		}
 	})
@@ -188,19 +190,19 @@ func TestParseVlanTableTest(t *testing.T) {
 }
 
 func TestParseMac(t *testing.T) {
-	Convey("ParseMac - happy path", t, func() {
+	ftt.Run("ParseMac - happy path", t, func(t *ftt.Test) {
 		mac, err := ParseMac("12:34:56:78:90:ab")
-		So(err, ShouldBeNil)
-		So(mac, ShouldEqual, "12:34:56:78:90:ab")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, mac, should.Equal("12:34:56:78:90:ab"))
 	})
 
-	Convey("ParseMac - happy path without colon separators", t, func() {
+	ftt.Run("ParseMac - happy path without colon separators", t, func(t *ftt.Test) {
 		mac, err := ParseMac("1234567890ab")
-		So(err, ShouldBeNil)
-		So(mac, ShouldEqual, "12:34:56:78:90:ab")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, mac, should.Equal("12:34:56:78:90:ab"))
 	})
 
-	Convey("ParseMac - invalid characters", t, func() {
+	ftt.Run("ParseMac - invalid characters", t, func(t *ftt.Test) {
 		invalidMacs := []string{
 			"1234567890,b",
 			"hello world",
@@ -208,29 +210,29 @@ func TestParseMac(t *testing.T) {
 		}
 		for _, userMac := range invalidMacs {
 			mac, err := ParseMac(userMac)
-			So(err, ShouldNotBeNil)
-			So(mac, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, mac, should.BeEmpty)
 		}
 	})
 }
 
 func TestFormatMac(t *testing.T) {
-	Convey("formatMac - happy path with colon separators", t, func() {
-		So(formatMac("12:34:56:78:90:ab"), ShouldEqual, "12:34:56:78:90:ab")
+	ftt.Run("formatMac - happy path with colon separators", t, func(t *ftt.Test) {
+		assert.Loosely(t, formatMac("12:34:56:78:90:ab"), should.Equal("12:34:56:78:90:ab"))
 	})
 
-	Convey("formatMac - happy path without colon separators", t, func() {
-		So(formatMac("1234567890ab"), ShouldEqual, "12:34:56:78:90:ab")
+	ftt.Run("formatMac - happy path without colon separators", t, func(t *ftt.Test) {
+		assert.Loosely(t, formatMac("1234567890ab"), should.Equal("12:34:56:78:90:ab"))
 	})
 
-	Convey("formatMac - odd length", t, func() {
-		So(formatMac("1234567890abcde"), ShouldEqual, "12:34:56:78:90:ab:cd:e")
+	ftt.Run("formatMac - odd length", t, func(t *ftt.Test) {
+		assert.Loosely(t, formatMac("1234567890abcde"), should.Equal("12:34:56:78:90:ab:cd:e"))
 	})
 }
 
 // TestUint32Iter tests that we, by iterating, add the correct number of things to an array.
 func TestUint32Iter(t *testing.T) {
-	Convey("test uint32 iteration", t, func() {
+	ftt.Run("test uint32 iteration", t, func(t *ftt.Test) {
 		var data []uint32
 
 		err := Uint32Iter(0, 1000, func(x uint32) error {
@@ -238,8 +240,8 @@ func TestUint32Iter(t *testing.T) {
 			return nil
 		})
 
-		So(err, ShouldBeNil)
-		So(len(data), ShouldEqual, 1001)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(data), should.Equal(1001))
 	})
 }
 

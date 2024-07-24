@@ -8,61 +8,63 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/frontend/fake"
 )
 
 func TestCopyDUT(t *testing.T) {
-	Convey("Verify copyDUT", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Verify copyDUT", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			mockLabConfig := fake.GetMockDUT()
 			newDUT := copyDUT(mockLabConfig.GetConfig().GetDut())
 			nb, err := proto.Marshal(newDUT)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ob, err := proto.Marshal(mockLabConfig.Config.GetDut())
-			So(err, ShouldBeNil)
-			So(nb, ShouldResemble, ob)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nb, should.Resemble(ob))
 		})
 	})
 }
 
 func TestCopyLabstation(t *testing.T) {
-	Convey("Verify copyLabstation", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Verify copyLabstation", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			mockLabConfig := fake.GetMockLabstation()
 			newL := copyLabstation(mockLabConfig.GetConfig().GetLabstation())
 			nb, err := proto.Marshal(newL)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ob, err := proto.Marshal(mockLabConfig.GetConfig().GetLabstation())
-			So(err, ShouldBeNil)
-			So(nb, ShouldResemble, ob)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nb, should.Resemble(ob))
 		})
 	})
 }
 
 func TestParseATLTopology(t *testing.T) {
-	Convey("Verify ParseATLTopology", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Verify ParseATLTopology", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := fake.SheetData("../frontend/fake/sheet_data.json")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			topology, _ := ParseATLTopology(resp)
-			So(topology, ShouldHaveLength, 2)
-			So(topology, ShouldContainKey, "100.115.224.0")
-			So(topology, ShouldContainKey, "100.115.226.0")
+			assert.Loosely(t, topology, should.HaveLength(2))
+			assert.Loosely(t, topology, should.ContainKey("100.115.224.0"))
+			assert.Loosely(t, topology, should.ContainKey("100.115.226.0"))
 			for k, vlan := range topology {
 				switch k {
 				case "100.115.224.0":
-					So(vlan.GetName(), ShouldEqual, "atl:201")
-					So(vlan.GetCapacityIp(), ShouldEqual, 510)
-					So(vlan.GetVlanAddress(), ShouldEqual, "100.115.224.0/23")
-					So(vlan.GetDescription(), ShouldEqual, "ATL-DUT-Row1_2")
+					assert.Loosely(t, vlan.GetName(), should.Equal("atl:201"))
+					assert.Loosely(t, vlan.GetCapacityIp(), should.Equal(510))
+					assert.Loosely(t, vlan.GetVlanAddress(), should.Equal("100.115.224.0/23"))
+					assert.Loosely(t, vlan.GetDescription(), should.Equal("ATL-DUT-Row1_2"))
 				case "100.115.226.0":
-					So(vlan.GetName(), ShouldEqual, "atl:202")
-					So(vlan.GetCapacityIp(), ShouldEqual, 510)
-					So(vlan.GetVlanAddress(), ShouldEqual, "100.115.226.0/23")
-					So(vlan.GetDescription(), ShouldEqual, "ATL-DUT-Row3_4")
+					assert.Loosely(t, vlan.GetName(), should.Equal("atl:202"))
+					assert.Loosely(t, vlan.GetCapacityIp(), should.Equal(510))
+					assert.Loosely(t, vlan.GetVlanAddress(), should.Equal("100.115.226.0/23"))
+					assert.Loosely(t, vlan.GetDescription(), should.Equal("ATL-DUT-Row3_4"))
 				}
 			}
 
@@ -71,49 +73,49 @@ func TestParseATLTopology(t *testing.T) {
 }
 
 func TestParseOSDhcpdConf(t *testing.T) {
-	Convey("Verify ParseOSDhcpdConf", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Verify ParseOSDhcpdConf", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := fake.SheetData("../frontend/fake/sheet_data.json")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			topology, _ := ParseATLTopology(resp)
 			b, err := fake.GitData("../frontend/fake/dhcp_test.conf")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			parsed, err := ParseOSDhcpdConf(string(b), topology)
-			So(err, ShouldBeNil)
-			So(parsed.ValidVlans, ShouldHaveLength, 2)
-			So(parsed.ValidIPs, ShouldHaveLength, 510)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, parsed.ValidVlans, should.HaveLength(2))
+			assert.Loosely(t, parsed.ValidIPs, should.HaveLength(510))
 			ipMaps := make(map[string]*ufspb.IP, 0)
 			for _, ip := range parsed.ValidIPs {
 				ipMaps[ip.GetId()] = ip
 			}
-			So(len(ipMaps), ShouldEqual, 510)
+			assert.Loosely(t, len(ipMaps), should.Equal(510))
 			ip, ok := ipMaps["atl:201/100.115.224.1"]
-			So(ok, ShouldBeTrue)
-			So(ip.GetOccupied(), ShouldBeTrue)
-			So(ip.GetVlan(), ShouldEqual, "atl:201")
+			assert.Loosely(t, ok, should.BeTrue)
+			assert.Loosely(t, ip.GetOccupied(), should.BeTrue)
+			assert.Loosely(t, ip.GetVlan(), should.Equal("atl:201"))
 			ip2, ok := ipMaps["atl:201/100.115.224.2"]
-			So(ok, ShouldBeTrue)
-			So(ip2.GetOccupied(), ShouldBeTrue)
-			So(ip2.GetVlan(), ShouldEqual, "atl:201")
+			assert.Loosely(t, ok, should.BeTrue)
+			assert.Loosely(t, ip2.GetOccupied(), should.BeTrue)
+			assert.Loosely(t, ip2.GetVlan(), should.Equal("atl:201"))
 			ip3, ok := ipMaps["atl:201/100.115.224.3"]
-			So(ok, ShouldBeTrue)
-			So(ip3.GetOccupied(), ShouldBeTrue)
-			So(ip3.GetVlan(), ShouldEqual, "atl:201")
+			assert.Loosely(t, ok, should.BeTrue)
+			assert.Loosely(t, ip3.GetOccupied(), should.BeTrue)
+			assert.Loosely(t, ip3.GetVlan(), should.Equal("atl:201"))
 
-			So(parsed.ValidDHCPs, ShouldHaveLength, 3)
+			assert.Loosely(t, parsed.ValidDHCPs, should.HaveLength(3))
 			for _, dhcp := range parsed.ValidDHCPs {
-				So([]string{"host1", "host2", "host3"}, ShouldContain, dhcp.GetHostname())
+				assert.Loosely(t, []string{"host1", "host2", "host3"}, should.Contain(dhcp.GetHostname()))
 				switch dhcp.GetHostname() {
 				case "host1":
-					So(dhcp.GetIp(), ShouldEqual, "100.115.224.1")
-					So(dhcp.GetMacAddress(), ShouldEqual, "aa:00:00:00:00:00")
+					assert.Loosely(t, dhcp.GetIp(), should.Equal("100.115.224.1"))
+					assert.Loosely(t, dhcp.GetMacAddress(), should.Equal("aa:00:00:00:00:00"))
 				case "host2":
-					So(dhcp.GetIp(), ShouldEqual, "100.115.224.2")
-					So(dhcp.GetMacAddress(), ShouldEqual, "")
+					assert.Loosely(t, dhcp.GetIp(), should.Equal("100.115.224.2"))
+					assert.Loosely(t, dhcp.GetMacAddress(), should.BeEmpty)
 				case "host3":
-					So(dhcp.GetIp(), ShouldEqual, "100.115.224.3")
-					So(dhcp.GetMacAddress(), ShouldEqual, "")
+					assert.Loosely(t, dhcp.GetIp(), should.Equal("100.115.224.3"))
+					assert.Loosely(t, dhcp.GetMacAddress(), should.BeEmpty)
 				}
 			}
 		})

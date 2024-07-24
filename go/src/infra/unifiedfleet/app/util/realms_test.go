@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/auth/realms"
@@ -43,24 +44,24 @@ func TestCheckPermission(t *testing.T) {
 		})
 		err := CheckPermission(ctx, permission, realm)
 		if expected {
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		} else {
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		}
 	}
-	Convey("TestCheckPermission - Read/Write permission check admin", t, func() {
+	ftt.Run("TestCheckPermission - Read/Write permission check admin", t, func(t *ftt.Test) {
 		check(admin, readPermission, realmID, true)
 		check(admin, writePermission, realmID, true)
 	})
-	Convey("TestCheckPermission - Read only permission check for reader", t, func() {
+	ftt.Run("TestCheckPermission - Read only permission check for reader", t, func(t *ftt.Test) {
 		check(reader, readPermission, realmID, true)
 		check(reader, writePermission, realmID, false)
 	})
-	Convey("TestCheckPermission - Write only permission check for writer", t, func() {
+	ftt.Run("TestCheckPermission - Write only permission check for writer", t, func(t *ftt.Test) {
 		check(writer, readPermission, realmID, false)
 		check(writer, writePermission, realmID, true)
 	})
-	Convey("TestCheckPermission - Empty realm", t, func() {
+	ftt.Run("TestCheckPermission - Empty realm", t, func(t *ftt.Test) {
 		check(writer, readPermission, "", true)
 		check(writer, writePermission, "", true)
 	})

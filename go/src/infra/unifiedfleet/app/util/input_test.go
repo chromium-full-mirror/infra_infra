@@ -8,7 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/grpc/metadata"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -16,7 +18,7 @@ import (
 )
 
 func TestUFSStateCoverage(t *testing.T) {
-	Convey("test the ufs state mapping covers all UFS state enum", t, func() {
+	ftt.Run("test the ufs state mapping covers all UFS state enum", t, func(t *ftt.Test) {
 		got := make(map[string]bool, len(StrToUFSState))
 		for _, v := range StrToUFSState {
 			got[v] = true
@@ -26,104 +28,104 @@ func TestUFSStateCoverage(t *testing.T) {
 				continue
 			}
 			_, ok := got[l]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 		}
 	})
 
-	Convey("test the ufs state mapping doesn't cover any non-UFS state enum", t, func() {
+	ftt.Run("test the ufs state mapping doesn't cover any non-UFS state enum", t, func(t *ftt.Test) {
 		for _, v := range StrToUFSState {
 			_, ok := ufspb.State_value[v]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 		}
 	})
 }
 
 func TestGetResourcePrefix(t *testing.T) {
-	Convey("Test various proto message", t, func() {
-		Convey("Test machine proto", func() {
+	ftt.Run("Test various proto message", t, func(t *ftt.Test) {
+		t.Run("Test machine proto", func(t *ftt.Test) {
 			machine := &ufspb.Machine{}
 			res, err := GetResourcePrefix(machine)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "machines")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("machines"))
 		})
-		Convey("Test asset proto", func() {
+		t.Run("Test asset proto", func(t *ftt.Test) {
 			asset := &ufspb.Asset{}
 			res, err := GetResourcePrefix(asset)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "assets")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("assets"))
 		})
-		Convey("Test event proto", func() {
+		t.Run("Test event proto", func(t *ftt.Test) {
 			event := &ufspb.ChangeEvent{}
 			res, err := GetResourcePrefix(event)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "events")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("events"))
 		})
-		Convey("Test chrome platform proto", func() {
+		t.Run("Test chrome platform proto", func(t *ftt.Test) {
 			platform := &ufspb.ChromePlatform{}
 			res, err := GetResourcePrefix(platform)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "chromePlatforms")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("chromePlatforms"))
 		})
-		Convey("Test nic proto", func() {
+		t.Run("Test nic proto", func(t *ftt.Test) {
 			nic := &ufspb.Nic{}
 			res, err := GetResourcePrefix(nic)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "nics")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("nics"))
 		})
-		Convey("Test vlan proto", func() {
+		t.Run("Test vlan proto", func(t *ftt.Test) {
 			vlan := &ufspb.Vlan{}
 			res, err := GetResourcePrefix(vlan)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "vlans")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("vlans"))
 		})
-		Convey("Test kvm proto", func() {
+		t.Run("Test kvm proto", func(t *ftt.Test) {
 			kvm := &ufspb.KVM{}
 			res, err := GetResourcePrefix(kvm)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "kvms")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("kvms"))
 		})
-		Convey("Test rpm proto", func() {
+		t.Run("Test rpm proto", func(t *ftt.Test) {
 			rpm := &ufspb.RPM{}
 			res, err := GetResourcePrefix(rpm)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "rpms")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("rpms"))
 		})
-		Convey("Test switch proto", func() {
+		t.Run("Test switch proto", func(t *ftt.Test) {
 			swch := &ufspb.Switch{}
 			res, err := GetResourcePrefix(swch)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "switches")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("switches"))
 		})
-		Convey("Test rack proto", func() {
+		t.Run("Test rack proto", func(t *ftt.Test) {
 			rack := &ufspb.Rack{}
 			res, err := GetResourcePrefix(rack)
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "racks")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("racks"))
 		})
 	})
 }
 
 func TestGetIncomingCtxNamespace(t *testing.T) {
 	ctx := context.Background()
-	Convey("Test no metadata set up", t, func() {
-		So(GetIncomingCtxNamespace(ctx), ShouldEqual, BrowserNamespace)
+	ftt.Run("Test no metadata set up", t, func(t *ftt.Test) {
+		assert.Loosely(t, GetIncomingCtxNamespace(ctx), should.Equal(BrowserNamespace))
 	})
-	Convey("Test no namespace is setup", t, func() {
+	ftt.Run("Test no namespace is setup", t, func(t *ftt.Test) {
 		md := metadata.Pairs("is_test", "true")
-		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, BrowserNamespace)
+		assert.Loosely(t, GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), should.Equal(BrowserNamespace))
 	})
-	Convey("Test OSNamespace is set up", t, func() {
+	ftt.Run("Test OSNamespace is set up", t, func(t *ftt.Test) {
 		md := metadata.Pairs(Namespace, OSNamespace)
-		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, OSNamespace)
+		assert.Loosely(t, GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), should.Equal(OSNamespace))
 	})
-	Convey("Test PartnerNamespace is set up", t, func() {
+	ftt.Run("Test PartnerNamespace is set up", t, func(t *ftt.Test) {
 		md := metadata.Pairs(Namespace, OSPartnerNamespace)
-		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, OSPartnerNamespace)
+		assert.Loosely(t, GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), should.Equal(OSPartnerNamespace))
 	})
 }
 
 func TestDevicePhaseCoverage(t *testing.T) {
-	Convey("test the UFS ManufacturingConfig Phase mapping covers all UFS ManufacturingConfig Phase enum", t, func() {
+	ftt.Run("test the UFS ManufacturingConfig Phase mapping covers all UFS ManufacturingConfig Phase enum", t, func(t *ftt.Test) {
 		got := make(map[string]bool, len(StrToDevicePhase))
 		for _, v := range StrToDevicePhase {
 			got[v] = true
@@ -133,46 +135,46 @@ func TestDevicePhaseCoverage(t *testing.T) {
 				continue
 			}
 			_, ok := got[l]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 		}
 	})
 
-	Convey("test the UFS ManufacturingConfig Phase mapping doesn't cover any non-UFS ManufacturingConfig Phase enum", t, func() {
+	ftt.Run("test the UFS ManufacturingConfig Phase mapping doesn't cover any non-UFS ManufacturingConfig Phase enum", t, func(t *ftt.Test) {
 		for _, v := range StrToDevicePhase {
 			_, ok := ufsmfg.ManufacturingConfig_Phase_value[v]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 		}
 	})
 
-	Convey("test ToUFSDevicePhase", t, func() {
-		Convey("Test lowercase conversion", func() {
+	ftt.Run("test ToUFSDevicePhase", t, func(t *ftt.Test) {
+		t.Run("Test lowercase conversion", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("evt")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_EVT)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_EVT))
 		})
 
-		Convey("Test uppercase conversion", func() {
+		t.Run("Test uppercase conversion", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("PVT")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_PVT))
 		})
 
-		Convey("Test phase with extended name", func() {
+		t.Run("Test phase with extended name", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("PVT_EXTENDED")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_PVT))
 		})
 
-		Convey("Test phase with actual value in the middle", func() {
+		t.Run("Test phase with actual value in the middle", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("IN_THE_MID_PVT_PHASE")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_PVT))
 		})
 
-		Convey("Test multiple phases matched - take first matching phase", func() {
+		t.Run("Test multiple phases matched - take first matching phase", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("PVT_DVT2")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_PVT)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_PVT))
 		})
 
-		Convey("Test invalid conversion", func() {
+		t.Run("Test invalid conversion", func(t *ftt.Test) {
 			phase := ToUFSDevicePhase("something-wrong")
-			So(phase, ShouldEqual, ufsmfg.ManufacturingConfig_PHASE_INVALID)
+			assert.Loosely(t, phase, should.Equal(ufsmfg.ManufacturingConfig_PHASE_INVALID))
 		})
 	})
 }
