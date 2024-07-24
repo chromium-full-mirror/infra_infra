@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -40,23 +41,23 @@ func TestCreateDrac(t *testing.T) {
 		},
 	}
 	registration.CreateMachine(ctx, machine1)
-	Convey("CreateDrac", t, func() {
-		Convey("Create new drac with non existing machine", func() {
+	ftt.Run("CreateDrac", t, func(t *ftt.Test) {
+		t.Run("Create new drac with non existing machine", func(t *ftt.Test) {
 			drac1 := &ufspb.Drac{
 				Name:    "drac-1",
 				Machine: "machine-5",
 			}
 			resp, err := CreateDrac(ctx, drac1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Create drac - duplicated switch ports", func() {
+		t.Run("Create drac - duplicated switch ports", func(t *ftt.Test) {
 			drac := &ufspb.Drac{
 				Name: "drac-create-1",
 				SwitchInterface: &ufspb.SwitchInterface{
@@ -65,12 +66,12 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			switch1 := &ufspb.Switch{
 				Name: "drac-create-switch-1",
 			}
 			_, err = registration.CreateSwitch(ctx, switch1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := &ufspb.Drac{
 				Name:    "drac-create-2",
@@ -81,11 +82,11 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err = CreateDrac(ctx, drac2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "switch port 25 of drac-create-switch-1 is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("switch port 25 of drac-create-switch-1 is already occupied"))
 		})
 
-		Convey("Create new drac with existing machine with drac", func() {
+		t.Run("Create new drac with existing machine with drac", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-10",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -96,13 +97,13 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.CreateDrac(ctx, &ufspb.Drac{
 				Name:    "drac-5",
 				Machine: "machine-10",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-20",
@@ -110,15 +111,15 @@ func TestCreateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			_, err = CreateDrac(ctx, drac)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is already a drac drac-5 associated with machine machine-10")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is already a drac drac-5 associated with machine machine-10"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-20")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Create new drac with existing machine without drac", func() {
+		t.Run("Create new drac with existing machine without drac", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-15",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -126,25 +127,25 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-25",
 				Machine: "machine-15",
 			}
 			resp, err := CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-25")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac"))
 		})
 
-		Convey("Create new drac with non existing switch", func() {
+		t.Run("Create new drac with non existing switch", func(t *ftt.Test) {
 			drac1 := &ufspb.Drac{
 				Name:    "drac-1",
 				Machine: "machine-1",
@@ -153,21 +154,21 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			resp, err := CreateDrac(ctx, drac1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no Switch with SwitchID switch-1")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no Switch with SwitchID switch-1"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Create new drac with existing switch", func() {
+		t.Run("Create new drac with existing switch", func(t *ftt.Test) {
 			switch2 := &ufspb.Switch{
 				Name: "switch-2",
 			}
 			_, err := registration.CreateSwitch(ctx, switch2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := &ufspb.Drac{
 				Name:    "drac-2",
@@ -177,15 +178,15 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			resp, err := CreateDrac(ctx, drac2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac2))
 
 			s, err := state.GetStateRecord(ctx, "dracs/drac-2")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_SERVING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
 		})
 
-		Convey("Create new drac - Permission denied: same realm and no create permission", func() {
+		t.Run("Create new drac - Permission denied: same realm and no create permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-16",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -196,7 +197,7 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := &ufspb.Drac{
 				Name:    "drac-16",
@@ -204,11 +205,11 @@ func TestCreateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = CreateDrac(ctx, drac2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Create new drac - Permission denied: different realm", func() {
+		t.Run("Create new drac - Permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-17",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -219,7 +220,7 @@ func TestCreateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := &ufspb.Drac{
 				Name:    "drac-17",
@@ -227,8 +228,8 @@ func TestCreateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			_, err = CreateDrac(ctx, drac2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -236,8 +237,8 @@ func TestCreateDrac(t *testing.T) {
 func TestUpdateDrac(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateDrac", t, func() {
-		Convey("Update drac with non-existing drac", func() {
+	ftt.Run("UpdateDrac", t, func(t *ftt.Test) {
+		t.Run("Update drac with non-existing drac", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-1",
 			}
@@ -247,16 +248,16 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-1",
 			}
 			resp, err := UpdateDrac(ctx, drac, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update drac with non existing switch", func() {
+		t.Run("Update drac with non existing switch", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-2",
 			}
@@ -266,7 +267,7 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-2",
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac2 := &ufspb.Drac{
 				Name:    "drac-2",
@@ -276,16 +277,16 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			resp, err := UpdateDrac(ctx, drac2, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no Switch with SwitchID switch-1")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no Switch with SwitchID switch-1"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update drac with new machine(already associated with drac) - failure", func() {
+		t.Run("Update drac with new machine(already associated with drac) - failure", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -293,7 +294,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-4",
@@ -302,33 +303,33 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-3",
 				Machine: "machine-3",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.CreateDrac(ctx, &ufspb.Drac{
 				Name:    "drac-4",
 				Machine: "machine-4",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac.Machine = "machine-4"
 			_, err = UpdateDrac(ctx, drac, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is already a drac drac-4 associated with machine machine-4")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is already a drac drac-4 associated with machine machine-4"))
 
 			// Verify the changes - update fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update drac with same machine", func() {
+		t.Run("Update drac with same machine", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-5",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -339,14 +340,14 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-5",
 				Machine: "machine-5",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac = &ufspb.Drac{
 				Name:       "drac-5",
@@ -355,20 +356,20 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateDrac(ctx, drac, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, drac)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(drac))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, "ab:cd:ef")
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac.mac_address")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("ab:cd:ef"))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac.mac_address"))
 		})
 
-		Convey("Update drac with non existing machine", func() {
+		t.Run("Update drac with non existing machine", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-6.1",
 			}
@@ -378,23 +379,23 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-6.1",
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac = &ufspb.Drac{
 				Name:    "drac-6",
 				Machine: "machine-6",
 			}
 			resp, err := UpdateDrac(ctx, drac, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no Machine with MachineID machine-6 in the system.")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no Machine with MachineID machine-6 in the system."))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-6")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Partial Update drac", func() {
+		t.Run("Partial Update drac", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-7.1",
 			}
@@ -408,7 +409,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac1 := &ufspb.Drac{
 				Name:       "drac-7",
@@ -418,14 +419,14 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSwitchInterface().GetSwitch(), ShouldResemble, "switch-7")
-			So(resp.GetMacAddress(), ShouldResemble, "drac-7-macaddress")
-			So(resp.GetSwitchInterface().GetPortName(), ShouldEqual, "75")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSwitchInterface().GetSwitch(), should.Match("switch-7"))
+			assert.Loosely(t, resp.GetMacAddress(), should.Match("drac-7-macaddress"))
+			assert.Loosely(t, resp.GetSwitchInterface().GetPortName(), should.Equal("75"))
 		})
 
-		Convey("Partial Update drac mac address and new machine(same realm and not associated to any drac) - succeed", func() {
+		t.Run("Partial Update drac mac address and new machine(same realm and not associated to any drac) - succeed", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-8.1",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -446,7 +447,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 = &ufspb.Machine{
 				Name: "machine-8.1-1",
@@ -465,12 +466,12 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			drac, err = UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"macAddress", "machine"}})
-			So(err, ShouldBeNil)
-			So(drac.GetMacAddress(), ShouldEqual, "drac-8-address")
-			So(drac.GetMachine(), ShouldEqual, "machine-8.1-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, drac.GetMacAddress(), should.Equal("drac-8-address"))
+			assert.Loosely(t, drac.GetMachine(), should.Equal("machine-8.1-1"))
 		})
 
-		Convey("Partial Update drac mac address - duplicated mac address", func() {
+		t.Run("Partial Update drac mac address - duplicated mac address", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-8.1.1",
 			}
@@ -485,7 +486,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			drac2 := &ufspb.Drac{
 				Name:       "drac-8.2",
 				MacAddress: "drac-8.2-address",
@@ -495,18 +496,18 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateDrac(ctx, drac2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac1 := &ufspb.Drac{
 				Name:       "drac-8.1",
 				MacAddress: "drac-8.2-address",
 			}
 			_, err = UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"macAddress"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "mac_address drac-8.2-address is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("mac_address drac-8.2-address is already occupied"))
 		})
 
-		Convey("Partial Update drac mac address - no update at all", func() {
+		t.Run("Partial Update drac mac address - no update at all", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-9",
 			}
@@ -521,17 +522,17 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac1 := &ufspb.Drac{
 				Name:       "drac-9",
 				MacAddress: "drac-9-address",
 			}
 			_, err = UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"macAddress"}})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Fully Update drac mac address - duplicated mac address", func() {
+		t.Run("Fully Update drac mac address - duplicated mac address", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-10",
 			}
@@ -546,7 +547,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine2 := &ufspb.Machine{
 				Name: "machine-11",
 			}
@@ -561,18 +562,18 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateDrac(ctx, drac2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac1 := &ufspb.Drac{
 				Name:       "drac-full",
 				MacAddress: "drac-full-address-2",
 			}
 			_, err = UpdateDrac(ctx, drac1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "mac_address drac-full-address-2 is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("mac_address drac-full-address-2 is already occupied"))
 		})
 
-		Convey("Update drac -  Permission denied: same realm and no update permission", func() {
+		t.Run("Update drac -  Permission denied: same realm and no update permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-12",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -583,14 +584,14 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-12",
 				Machine: "machine-12",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac = &ufspb.Drac{
 				Name:       "drac-12",
@@ -599,11 +600,11 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = UpdateDrac(ctx, drac, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update drac -  Permission denied: different realm", func() {
+		t.Run("Update drac -  Permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-13",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -614,14 +615,14 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-13",
 				Machine: "machine-13",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac = &ufspb.Drac{
 				Name:       "drac-13",
@@ -630,11 +631,11 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateDrac(ctx, drac, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update drac with new machine(same realm and not associated to any drac) - pass", func() {
+		t.Run("Update drac with new machine(same realm and not associated to any drac) - pass", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-14",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -645,7 +646,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-15",
@@ -657,31 +658,31 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-14",
 				Machine: "machine-14",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac.Machine = "machine-15"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateDrac(ctx, drac, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, drac)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(drac))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-14")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, "machine-14")
-			So(changes[0].GetNewValue(), ShouldEqual, "machine-15")
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac.machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("machine-14"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("machine-15"))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac.machine"))
 		})
 
-		Convey("Update drac with new machine(different realm without permission and not associated to any drac) - fail", func() {
+		t.Run("Update drac with new machine(different realm without permission and not associated to any drac) - fail", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-16",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -692,7 +693,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-17",
@@ -704,28 +705,28 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-16",
 				Machine: "machine-16",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac.Machine = "machine-17"
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateDrac(ctx, drac, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 
 			// Verify the changes - update fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-16")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Partial Update drac with new machine(different realm without permission and not associated to any drac) - fail", func() {
+		t.Run("Partial Update drac with new machine(different realm without permission and not associated to any drac) - fail", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-18",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -741,7 +742,7 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-18",
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 = &ufspb.Machine{
 				Name: "machine-19",
@@ -759,11 +760,11 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"machine"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update drac with new machine(different realm with permission and not associated to any drac) - pass", func() {
+		t.Run("Update drac with new machine(different realm with permission and not associated to any drac) - pass", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-20",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -774,7 +775,7 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-21",
@@ -786,14 +787,14 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-20",
 				Machine: "machine-20",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac.Machine = "machine-21"
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -805,12 +806,12 @@ func TestUpdateDrac(t *testing.T) {
 				),
 			})
 			resp, err := UpdateDrac(ctx, drac, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetMachine(), ShouldEqual, "machine-21")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachine(), should.Equal("machine-21"))
 		})
 
-		Convey("Partial Update drac with new machine(different realm with permission and not associated to any drac) - pass", func() {
+		t.Run("Partial Update drac with new machine(different realm with permission and not associated to any drac) - pass", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-22",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -826,7 +827,7 @@ func TestUpdateDrac(t *testing.T) {
 				Machine: "machine-22",
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 = &ufspb.Machine{
 				Name: "machine-23",
@@ -852,12 +853,12 @@ func TestUpdateDrac(t *testing.T) {
 				),
 			})
 			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"machine"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetMachine(), ShouldEqual, "machine-23")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachine(), should.Equal("machine-23"))
 		})
 
-		Convey("Update drac with new resource state", func() {
+		t.Run("Update drac with new resource state", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-24",
 			}
@@ -871,19 +872,19 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac1 := &ufspb.Drac{
 				Name:          "drac-24",
 				ResourceState: ufspb.State_STATE_SERVING,
 			}
 			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"resourceState"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetResourceState(), ShouldEqual, ufspb.State_STATE_SERVING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Equal(ufspb.State_STATE_SERVING))
 		})
 
-		Convey("Update drac with new display name", func() {
+		t.Run("Update drac with new display name", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-26",
 			}
@@ -898,18 +899,18 @@ func TestUpdateDrac(t *testing.T) {
 				},
 			}
 			d, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
-			So(d, ShouldNotBeNil)
-			So(d.GetDisplayName(), ShouldEqual, "64d1c223-afe6-45a0-b2d9-96c6f8884181")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d, should.NotBeNil)
+			assert.Loosely(t, d.GetDisplayName(), should.Equal("64d1c223-afe6-45a0-b2d9-96c6f8884181"))
 
 			drac1 := &ufspb.Drac{
 				Name:        "drac-26",
 				DisplayName: "e08c1cf7-020c-4ca1-874b-4d41e65f85d5",
 			}
 			resp, err := UpdateDrac(ctx, drac1, &field_mask.FieldMask{Paths: []string{"displayName"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetDisplayName(), ShouldEqual, "e08c1cf7-020c-4ca1-874b-4d41e65f85d5")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetDisplayName(), should.Equal("e08c1cf7-020c-4ca1-874b-4d41e65f85d5"))
 		})
 	})
 }
@@ -917,18 +918,18 @@ func TestUpdateDrac(t *testing.T) {
 func TestDeleteDrac(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("DeleteDrac", t, func() {
-		Convey("Delete drac error by non-existing ID", func() {
+	ftt.Run("DeleteDrac", t, func(t *ftt.Test) {
+		t.Run("Delete drac error by non-existing ID", func(t *ftt.Test) {
 			err := DeleteDrac(ctx, "drac-10")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Delete drac successfully by existing ID without references", func() {
+		t.Run("Delete drac successfully by existing ID without references", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-2",
 				Location: &ufspb.Location{
@@ -940,36 +941,36 @@ func TestDeleteDrac(t *testing.T) {
 			drac := mockDrac("drac-2")
 			drac.Machine = "machine-2"
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = state.BatchUpdateStates(ctx, []*ufspb.StateRecord{
 				{
 					ResourceName: "dracs/drac-2",
 					State:        ufspb.State_STATE_SERVING,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteDrac(ctx, "drac-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := registration.GetDrac(ctx, "drac-2")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = state.GetStateRecord(ctx, "dracs/drac-2")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac"))
 		})
 
-		Convey("Delete drac successfully together with deleting ip", func() {
+		t.Run("Delete drac successfully together with deleting ip", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-3",
 			}
@@ -977,14 +978,14 @@ func TestDeleteDrac(t *testing.T) {
 			drac := mockDrac("drac-ip")
 			drac.Machine = "machine-3"
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
 				{
 					Hostname: "drac-ip",
 					Ip:       "1.2.3.4",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.ImportIPs(ctx, []*ufspb.IP{
 				{
 					Id:       "vlan-1:123",
@@ -994,40 +995,40 @@ func TestDeleteDrac(t *testing.T) {
 					Ipv4:     123,
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteDrac(ctx, "drac-ip")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.4"})
-			So(err, ShouldBeNil)
-			So(ip, ShouldHaveLength, 1)
-			So(ip[0].GetOccupied(), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ip, should.HaveLength(1))
+			assert.Loosely(t, ip[0].GetOccupied(), should.BeFalse)
 			_, err = configuration.GetDHCPConfig(ctx, "drac-ip")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			resp, err := registration.GetDrac(ctx, "drac-ip")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-ip")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dracs/drac-ip")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/drac-ip")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Delete drac - permission denied: same realm and no delete permission", func() {
+		t.Run("Delete drac - permission denied: same realm and no delete permission", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-4",
 				Location: &ufspb.Location{
@@ -1039,15 +1040,15 @@ func TestDeleteDrac(t *testing.T) {
 			drac := mockDrac("drac-4")
 			drac.Machine = "machine-4"
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.AtlLabAdminRealm)
 			err = DeleteDrac(ctx, "drac-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Delete drac - permission denied: different realm", func() {
+		t.Run("Delete drac - permission denied: different realm", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-5",
 				Location: &ufspb.Location{
@@ -1059,12 +1060,12 @@ func TestDeleteDrac(t *testing.T) {
 			drac := mockDrac("drac-5")
 			drac.Machine = "machine-5"
 			_, err := registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteDrac(ctx, "drac-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -1085,23 +1086,23 @@ func TestListDracs(t *testing.T) {
 		}
 		dracs = append(dracs, resp)
 	}
-	Convey("ListDracs", t, func() {
-		Convey("List Dracs - filter invalid - error", func() {
+	ftt.Run("ListDracs", t, func(t *ftt.Test) {
+		t.Run("List Dracs - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListDracs(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List Dracs - filter switch - happy path", func() {
+		t.Run("List Dracs - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDracs(ctx, 5, "", "switch=switch-12", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, dracsWithSwitch)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(dracsWithSwitch))
 		})
 
-		Convey("ListDracs - Full listing - happy path", func() {
+		t.Run("ListDracs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDracs(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, dracs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(dracs))
 		})
 	})
 }
@@ -1109,8 +1110,8 @@ func TestListDracs(t *testing.T) {
 func TestBatchGetDracs(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetDracs", t, func() {
-		Convey("Batch get dracs - happy path", func() {
+	ftt.Run("BatchGetDracs", t, func(t *ftt.Test) {
+		t.Run("Batch get dracs - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Drac, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.Drac{
@@ -1118,27 +1119,27 @@ func TestBatchGetDracs(t *testing.T) {
 				}
 			}
 			_, err := registration.BatchUpdateDracs(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := registration.BatchGetDracs(ctx, []string{"drac-batchGet-0", "drac-batchGet-1", "drac-batchGet-2", "drac-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get dracs  - missing id", func() {
+		t.Run("Batch get dracs  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetDracs(ctx, []string{"drac-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "drac-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("drac-batchGet-non-existing"))
 		})
-		Convey("Batch get dracs  - empty input", func() {
+		t.Run("Batch get dracs  - empty input", func(t *ftt.Test) {
 			resp, err := registration.BatchGetDracs(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = registration.BatchGetDracs(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }

@@ -6,10 +6,10 @@ package controller
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/genproto/protobuf/field_mask"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	. "infra/unifiedfleet/app/model/datastore"
@@ -19,22 +19,22 @@ import (
 func TestCreateDefaultWifi(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("CreateDefaultWifi", t, func() {
-		Convey("Create new DefaultWifi - happy path", func() {
+	ftt.Run("CreateDefaultWifi", t, func(t *ftt.Test) {
+		t.Run("Create new DefaultWifi - happy path", func(t *ftt.Test) {
 			wifi := &ufspb.DefaultWifi{Name: "zone_sfo36_os"}
 			resp, err := CreateDefaultWifi(ctx, wifi)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, wifi)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(wifi))
 		})
-		Convey("Create new DefaultWifi - already existing", func() {
+		t.Run("Create new DefaultWifi - already existing", func(t *ftt.Test) {
 			w1 := &ufspb.DefaultWifi{Name: "pool1"}
 			_, _ = CreateDefaultWifi(ctx, w1)
 
 			dup := &ufspb.DefaultWifi{Name: "pool1"}
 			_, err := CreateDefaultWifi(ctx, dup)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already exists")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already exists"))
 		})
 	})
 }
@@ -43,21 +43,21 @@ func TestDeleteDefaultWifi(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	CreateDefaultWifi(ctx, &ufspb.DefaultWifi{Name: "pool"})
-	Convey("DeleteDefaultWifi", t, func() {
-		Convey("Delete DefaultWifi by existing ID - happy path", func() {
+	ftt.Run("DeleteDefaultWifi", t, func(t *ftt.Test) {
+		t.Run("Delete DefaultWifi by existing ID - happy path", func(t *ftt.Test) {
 			err := DeleteDefaultWifi(ctx, "pool")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := GetDefaultWifi(ctx, "pool")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete DefaultWifi by non-existing ID", func() {
+		t.Run("Delete DefaultWifi by non-existing ID", func(t *ftt.Test) {
 			err := DeleteDefaultWifi(ctx, "non-existing")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -65,8 +65,8 @@ func TestDeleteDefaultWifi(t *testing.T) {
 func TestUpdateDefaultWifi(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateDefaultWifi", t, func() {
-		Convey("Update DefaultWifi for existing DefaultWifi - happy path", func() {
+	ftt.Run("UpdateDefaultWifi", t, func(t *ftt.Test) {
+		t.Run("Update DefaultWifi for existing DefaultWifi - happy path", func(t *ftt.Test) {
 			CreateDefaultWifi(ctx, &ufspb.DefaultWifi{
 				Name: "zone_sfo36_os",
 				WifiSecret: &ufspb.Secret{
@@ -81,29 +81,29 @@ func TestUpdateDefaultWifi(t *testing.T) {
 					SecretName: "s2",
 				}}
 			resp, err := UpdateDefaultWifi(ctx, w2, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, w2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(w2))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/zone_sfo36_os")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[1].GetEventLabel(), ShouldEqual, "defaultwifi.secret.secret_name")
-			So(changes[1].GetOldValue(), ShouldEqual, "s1")
-			So(changes[1].GetNewValue(), ShouldEqual, "s2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("defaultwifi.secret.secret_name"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("s1"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("s2"))
 		})
 
-		Convey("Update DefaultWifi for non-existing DefaultWifi", func() {
+		t.Run("Update DefaultWifi for non-existing DefaultWifi", func(t *ftt.Test) {
 			resp, err := UpdateDefaultWifi(ctx, &ufspb.DefaultWifi{Name: "pool3"}, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/pool3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update DefaultWifi for existing DefaultWifi with field mask - happy path", func() {
+		t.Run("Update DefaultWifi for existing DefaultWifi with field mask - happy path", func(t *ftt.Test) {
 			w3 := &ufspb.DefaultWifi{
 				Name: "zone_sfo36_os",
 				WifiSecret: &ufspb.Secret{
@@ -111,12 +111,12 @@ func TestUpdateDefaultWifi(t *testing.T) {
 					SecretName: "s3",
 				}}
 			resp, _ := UpdateDefaultWifi(ctx, w3, &field_mask.FieldMask{Paths: []string{"wifi_secret.secret_name"}})
-			So(resp, ShouldNotBeNil)
-			So(resp.GetWifiSecret().GetProjectId(), ShouldEqual, "p1")
-			So(resp.GetWifiSecret().GetSecretName(), ShouldEqual, "s3")
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetWifiSecret().GetProjectId(), should.Equal("p1"))
+			assert.Loosely(t, resp.GetWifiSecret().GetSecretName(), should.Equal("s3"))
 		})
 
-		Convey("Update DefaultWifi for existing DefaultWifi with field mask - failure", func() {
+		t.Run("Update DefaultWifi for existing DefaultWifi with field mask - failure", func(t *ftt.Test) {
 			w4 := &ufspb.DefaultWifi{
 				Name: "zone_sfo36_os",
 				WifiSecret: &ufspb.Secret{
@@ -124,8 +124,8 @@ func TestUpdateDefaultWifi(t *testing.T) {
 					SecretName: "s4",
 				}}
 			resp, err := UpdateDefaultWifi(ctx, w4, &field_mask.FieldMask{Paths: []string{"wifi_secret.non-existing-field"}})
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/configuration"
 )
@@ -19,8 +18,8 @@ import (
 func TestBatchGetDHCPs(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetDHCPs", t, func() {
-		Convey("Batch get dhcps - happy path", func() {
+	ftt.Run("BatchGetDHCPs", t, func(t *ftt.Test) {
+		t.Run("Batch get dhcps - happy path", func(t *ftt.Test) {
 			dhcps := make([]*ufspb.DHCPConfig, 4)
 			for i := 0; i < 4; i++ {
 				dhcp := &ufspb.DHCPConfig{
@@ -30,27 +29,27 @@ func TestBatchGetDHCPs(t *testing.T) {
 				dhcps[i] = dhcp
 			}
 			_, err := configuration.BatchUpdateDHCPs(ctx, dhcps)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := configuration.BatchGetDHCPConfigs(ctx, []string{"dhcp-batchGet-0", "dhcp-batchGet-1", "dhcp-batchGet-2", "dhcp-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, dhcps)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(dhcps))
 		})
-		Convey("Batch get dhcps - missing id", func() {
+		t.Run("Batch get dhcps - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetDHCPConfigs(ctx, []string{"dhcp-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "dhcp-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("dhcp-batchGet-non-existing"))
 		})
-		Convey("Batch get dhcps - empty input", func() {
+		t.Run("Batch get dhcps - empty input", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetDHCPConfigs(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = configuration.BatchGetDHCPConfigs(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }

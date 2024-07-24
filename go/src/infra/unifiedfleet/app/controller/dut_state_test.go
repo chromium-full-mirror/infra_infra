@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/model/history"
@@ -26,19 +25,19 @@ func TestUpdateDutState(t *testing.T) {
 	ctx, _ = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	osCtx := withAuthorizedAtlUser(ctx)
 	noPermsCtx := withAuthorizedNoPermsUser(ctx)
-	Convey("UpdateDutState", t, func() {
-		Convey("Update dut state - missing state", func() {
+	ftt.Run("UpdateDutState", t, func(t *ftt.Test) {
+		t.Run("Update dut state - missing state", func(t *ftt.Test) {
 			_, err := UpdateDutState(ctx, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "dut state must not be null")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("dut state must not be null"))
 		})
-		Convey("Update dut state with non-existing host in dut state storage", func() {
+		t.Run("Update dut state with non-existing host in dut state storage", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-id1", "update-dutstate-hostname1")
 			_, err := UpdateDutState(ctx, ds1)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Entity not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Entity not found"))
 		})
-		Convey("Update dut state - happy path with existing dut state", func() {
+		t.Run("Update dut state - happy path with existing dut state", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-id2", "update-dutstate-hostname2")
 			ds1.Servo = chromeosLab.PeripheralState_WORKING
 			ds1.Chameleon = chromeosLab.PeripheralState_WORKING
@@ -53,15 +52,15 @@ func TestUpdateDutState(t *testing.T) {
 				},
 				Realm: util.AtlLabAdminRealm,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = state.UpdateDutStates(osCtx, []*chromeosLab.DutState{ds1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			oldDS, err := state.GetDutState(osCtx, "update-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(oldDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, oldDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
 
 			// Use osCtx in testing, as in prod, ctx is forced to include namespace.
 			ds2 := mockDutState("update-dutstate-id2", "update-dutstate-hostname2")
@@ -69,33 +68,33 @@ func TestUpdateDutState(t *testing.T) {
 			ds2.Chameleon = chromeosLab.PeripheralState_BROKEN
 			ds2.StorageState = chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT
 			_, err = UpdateDutState(osCtx, ds2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Verify with osCtx
 			newDS, err := state.GetDutState(osCtx, "update-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(newDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_BROKEN)
-			So(newDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_BROKEN)
-			So(newDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_BROKEN))
+			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_BROKEN))
+			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT))
 			// Verify changes
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "dutstates/update-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 4)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dut_state.servo")
-			So(changes[0].GetOldValue(), ShouldEqual, chromeosLab.PeripheralState_WORKING.String())
-			So(changes[0].GetNewValue(), ShouldEqual, chromeosLab.PeripheralState_BROKEN.String())
-			So(changes[1].GetEventLabel(), ShouldEqual, "dut_state.chameleon")
-			So(changes[1].GetOldValue(), ShouldEqual, chromeosLab.PeripheralState_WORKING.String())
-			So(changes[1].GetNewValue(), ShouldEqual, chromeosLab.PeripheralState_BROKEN.String())
-			So(changes[2].GetEventLabel(), ShouldEqual, "dut_state.storage_state")
-			So(changes[2].GetOldValue(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE.String())
-			So(changes[2].GetNewValue(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(4))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dut_state.servo"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(chromeosLab.PeripheralState_WORKING.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(chromeosLab.PeripheralState_BROKEN.String()))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("dut_state.chameleon"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(chromeosLab.PeripheralState_WORKING.String()))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(chromeosLab.PeripheralState_BROKEN.String()))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("dut_state.storage_state"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE.String()))
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal(chromeosLab.HardwareState_HARDWARE_NEED_REPLACEMENT.String()))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "dutstates/update-dutstate-id2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Update dut state - no perms", func() {
+		t.Run("Update dut state - no perms", func(t *ftt.Test) {
 			ds3 := mockDutState("update-dutstate-id3", "update-dutstate-hostname3")
 			ds3.Servo = chromeosLab.PeripheralState_WORKING
 			ds3.Chameleon = chromeosLab.PeripheralState_WORKING
@@ -110,11 +109,11 @@ func TestUpdateDutState(t *testing.T) {
 				},
 				Realm: util.AtlLabAdminRealm,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = UpdateDutState(noPermsCtx, ds3)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Permission")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Permission"))
 		})
 	})
 }
@@ -142,33 +141,33 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 				ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = state.UpdateDutStates(osCtx, []*chromeosLab.DutState{ds1})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		oldDS, err := state.GetDutState(osCtx, idString)
-		So(err, ShouldBeNil)
-		So(oldDS.GetDutStateReason(), ShouldEqual, "Haha")
-		So(oldDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-		So(oldDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-		So(oldDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
-		So(oldDS.GetRepairRequests(), ShouldResemble, []chromeosLab.DutState_RepairRequest{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, oldDS.GetDutStateReason(), should.Equal("Haha"))
+		assert.Loosely(t, oldDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+		assert.Loosely(t, oldDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+		assert.Loosely(t, oldDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
+		assert.Loosely(t, oldDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
 			chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
-		})
+		}))
 		return
 	}
-	Convey("UpdateDutStateWithMasks", t, func() {
-		Convey("Update dut state - missing state", func() {
+	ftt.Run("UpdateDutStateWithMasks", t, func(t *ftt.Test) {
+		t.Run("Update dut state - missing state", func(t *ftt.Test) {
 			_, err := UpdateDutStateWithMasks(ctx, nil, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "dut state must not be null")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("dut state must not be null"))
 		})
-		Convey("Update dut state with non-existing host in dut state storage", func() {
+		t.Run("Update dut state with non-existing host in dut state storage", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-id1", "update-dutstate-hostname1")
 			_, err := UpdateDutStateWithMasks(ctx, nil, ds1)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Entity not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Entity not found"))
 		})
-		Convey("Update dut state - happy path with no masks", func() {
+		t.Run("Update dut state - happy path with no masks", func(t *ftt.Test) {
 			id, hostname := createNewState(2)
 			// Use osCtx in testing, as in prod, ctx is forced to include namespace.
 			ds2 := mockDutState(id, hostname)
@@ -181,28 +180,28 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 			}
 			var maskSet map[string]bool
 			_, err := UpdateDutStateWithMasks(osCtx, maskSet, ds2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Verify with osCtx
 			newDS, err := state.GetDutState(osCtx, id)
-			So(err, ShouldBeNil)
-			So(newDS.GetDutStateReason(), ShouldEqual, "Haha")
-			So(newDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(newDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(newDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
-			So(newDS.GetRepairRequests(), ShouldResemble, []chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newDS.GetDutStateReason(), should.Equal("Haha"))
+			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
-			})
+			}))
 			// Verify changes
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Update dut state - happy path with servo masks", func() {
+		t.Run("Update dut state - happy path with servo masks", func(t *ftt.Test) {
 			id, hostname := createNewState(3)
 			// Use osCtx in testing, as in prod, ctx is forced to include namespace.
 			ds2 := mockDutState(id, hostname)
@@ -217,31 +216,31 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 				"dut_state.servo": true,
 			}
 			_, err := UpdateDutStateWithMasks(osCtx, maskSet, ds2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Verify with osCtx
 			newDS, err := state.GetDutState(osCtx, id)
-			So(err, ShouldBeNil)
-			So(newDS.GetDutStateReason(), ShouldEqual, "Haha")
-			So(newDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_BROKEN) // only value to apply
-			So(newDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(newDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
-			So(newDS.GetRepairRequests(), ShouldResemble, []chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newDS.GetDutStateReason(), should.Equal("Haha"))
+			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_BROKEN)) // only value to apply
+			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
-			})
+			}))
 			// Verify changes
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dut_state.servo")
-			So(changes[0].GetOldValue(), ShouldEqual, chromeosLab.PeripheralState_WORKING.String())
-			So(changes[0].GetNewValue(), ShouldEqual, chromeosLab.PeripheralState_BROKEN.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dut_state.servo"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(chromeosLab.PeripheralState_WORKING.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(chromeosLab.PeripheralState_BROKEN.String()))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Update dut state - happy path with state reason and repair_requests masks", func() {
+		t.Run("Update dut state - happy path with state reason and repair_requests masks", func(t *ftt.Test) {
 			id, hostname := createNewState(4)
 			// Use osCtx in testing, as in prod, ctx is forced to include namespace.
 			ds2 := mockDutState(id, hostname)
@@ -258,34 +257,34 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 				"dut_state.repair_requests": true,
 			}
 			_, err := UpdateDutStateWithMasks(osCtx, maskSet, ds2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Verify with osCtx
 			newDS, err := state.GetDutState(osCtx, id)
-			So(err, ShouldBeNil)
-			So(newDS.GetDutStateReason(), ShouldEqual, "new-reason")
-			So(newDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING) // only value to apply
-			So(newDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(newDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
-			So(newDS.GetRepairRequests(), ShouldResemble, []chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newDS.GetDutStateReason(), should.Equal("new-reason"))
+			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING)) // only value to apply
+			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY,
 				chromeosLab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE,
-			})
+			}))
 			// Verify changes
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dut_state.reason")
-			So(changes[0].GetOldValue(), ShouldEqual, "Haha")
-			So(changes[0].GetNewValue(), ShouldEqual, "new-reason")
-			So(changes[1].GetEventLabel(), ShouldEqual, "dut_state.repair_requests")
-			So(changes[1].GetOldValue(), ShouldEqual, "[REPAIR_REQUEST_PROVISION]")
-			So(changes[1].GetNewValue(), ShouldEqual, "[REPAIR_REQUEST_REIMAGE_BY_USBKEY REPAIR_REQUEST_UPDATE_USBKEY_IMAGE]")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dut_state.reason"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("Haha"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("new-reason"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("dut_state.repair_requests"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("[REPAIR_REQUEST_PROVISION]"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("[REPAIR_REQUEST_REIMAGE_BY_USBKEY REPAIR_REQUEST_UPDATE_USBKEY_IMAGE]"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", fmt.Sprintf("dutstates/%s", id))
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 	})
 }
@@ -294,49 +293,49 @@ func TestGetDutState(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
-	Convey("GetDutState", t, func() {
-		Convey("Get dut state by id with non-existing host in dut state storage", func() {
+	ftt.Run("GetDutState", t, func(t *ftt.Test) {
+		t.Run("Get dut state by id with non-existing host in dut state storage", func(t *ftt.Test) {
 			_, err := GetDutState(ctx, "id1", "")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Entity not found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Entity not found"))
 		})
 
-		Convey("Get dut state by hostname with non-existing host in dut state storage", func() {
+		t.Run("Get dut state by hostname with non-existing host in dut state storage", func(t *ftt.Test) {
 			_, err := GetDutState(ctx, "", "hostname1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Dut State not found for hostname1.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Dut State not found for hostname1."))
 		})
 
-		Convey("Get dut state by id - happy path with existing dut state", func() {
+		t.Run("Get dut state by id - happy path with existing dut state", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-id2", "update-dutstate-hostname2")
 			ds1.Servo = chromeosLab.PeripheralState_WORKING
 			ds1.Chameleon = chromeosLab.PeripheralState_WORKING
 			ds1.StorageState = chromeosLab.HardwareState_HARDWARE_ACCEPTABLE
 
 			_, err := state.UpdateDutStates(osCtx, []*chromeosLab.DutState{ds1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			oldDS, err := GetDutState(osCtx, "update-dutstate-id2", "")
-			So(err, ShouldBeNil)
-			So(oldDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, oldDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
 		})
 
-		Convey("Get dut state by hostname - happy path with existing dut state", func() {
+		t.Run("Get dut state by hostname - happy path with existing dut state", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-id3", "update-dutstate-hostname3")
 			ds1.Servo = chromeosLab.PeripheralState_WORKING
 			ds1.Chameleon = chromeosLab.PeripheralState_WORKING
 			ds1.StorageState = chromeosLab.HardwareState_HARDWARE_ACCEPTABLE
 
 			_, err := state.UpdateDutStates(osCtx, []*chromeosLab.DutState{ds1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			oldDS, err := GetDutState(osCtx, "", "update-dutstate-hostname3")
-			So(err, ShouldBeNil)
-			So(oldDS.GetServo(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetChameleon(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
-			So(oldDS.GetStorageState(), ShouldEqual, chromeosLab.HardwareState_HARDWARE_ACCEPTABLE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, oldDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
+			assert.Loosely(t, oldDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
 		})
 	})
 }
@@ -350,11 +349,11 @@ func TestListDutStates(t *testing.T) {
 		dutStates = append(dutStates, cs)
 	}
 	dutStates, _ = state.UpdateDutStates(ctx, dutStates)
-	Convey("ListDutStates", t, func() {
-		Convey("ListDutStates - Full listing - happy path", func() {
+	ftt.Run("ListDutStates", t, func(t *ftt.Test) {
+		t.Run("ListDutStates - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDutStates(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, dutStates)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(dutStates))
 		})
 	})
 }
