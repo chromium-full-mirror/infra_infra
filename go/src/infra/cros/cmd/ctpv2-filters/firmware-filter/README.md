@@ -47,7 +47,7 @@ Be sure to note the digest printed by this command.
 3) Run
 
 ```shell
-firmware-filter server -port 0 -serviceAccountCred ~/.config/gcloud/legacy_credentials/jbettis@google.com/adc.json -ro firmwareBoardBranch
+firmware-filter server -port 0 -serviceAccountCred ~/.config/gcloud/legacy_credentials/*/adc.json -ro firmwareBoardBranch
 ```
 
 4) In another window make an RPC call

@@ -69,7 +69,8 @@ func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger)
 		AND builder NOT LIKE 'firmware-quiche-%'
 		AND builder NOT LIKE 'firmware-servo-%'
 		AND builder NOT LIKE 'firmware-cr50-%'
-		AND builder NOT LIKE 'firmware-hps-%'`)
+		AND builder NOT LIKE 'firmware-hps-%'
+		AND NOT REGEXP_CONTAINS(builder, '^firmware-R[0-9]+-[0-9]+\\.B-branch')`)
 
 		iter, err := bqQ.Read(ctx)
 		if err != nil {
