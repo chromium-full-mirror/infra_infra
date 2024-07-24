@@ -15,11 +15,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // FirmwareSpecs contains the flags necessary for the
@@ -29,12 +28,17 @@ type FirmwareSpecs struct {
 	Ro             string
 	Rw             string
 	FirmwareBuilds map[string]FirmwareBranchBuild
+	FallbackToCros bool
 }
 
 const (
-	LATEST_FIRMWARE_BRANCH string = "firmwareBoardBranch"
+	// LatestFirmwareBranch pulls the firmware from the latest successful build of the board's firmware branch.
+	LatestFirmwareBranch string = "firmwareBoardBranch"
+	// OSSource pulls the firmware from the firmware that was build from the ChromeOS source, aka tip-of-tree.
+	OSSource string = "cros"
 )
 
+// FirmwareBranchBuild holds information about a specific branch build.
 type FirmwareBranchBuild struct {
 	Builder         string    `bigquery:"builder"`
 	FirmwareByBoard string    `bigquery:"firmware_by_board"`
@@ -109,9 +113,8 @@ func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger)
 					continue
 				}
 				return nil, fmt.Errorf("ambiguous firmware branch build for %q: %+v != %+v", board, r.Builder, existing.Builder)
-			} else {
-				boardMap[board] = r
 			}
+			boardMap[board] = r
 		}
 		specs.FirmwareBuilds = boardMap
 	}
@@ -131,6 +134,8 @@ func main() {
 	fs.StringVar(&firmwareSpecs.Ro, "ro", "", "Spec for firmare RO")
 	fs.StringVar(&firmwareSpecs.Rw, "rw", "", "Spec for firmare RW")
 	fs.StringVar(&saFile, "serviceAccountCred", "/creds/service_accounts/service-account-chromeos.json", "Path to service account credential json file")
+	fs.BoolVar(&firmwareSpecs.FallbackToCros, "fallbackToCros", false,
+		"Fallback to the OS firmware_from_source archive if there is no branch build.")
 
 	err := server.ServerWithFlagSet(fs, firmwareSpecs.executor, "fw_filter")
 	if err != nil {

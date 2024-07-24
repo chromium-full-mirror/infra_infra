@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
@@ -94,8 +95,8 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 	return nil
 }
 
-func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition) string {
-	if spec == LATEST_FIRMWARE_BRANCH {
+func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition, fallbackToOSSource bool) string {
+	if spec == LatestFirmwareBranch {
 		dutModel := swarmingDef.GetDutInfo().GetChromeos().GetDutModel()
 		board := dutModel.GetBuildTarget()
 		// Remove suffix
@@ -108,14 +109,28 @@ func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDef
 			}
 		}
 		build, ok := specs.FirmwareBuilds[board]
-		if !ok {
+		if ok {
+			url, err := url.JoinPath(build.ArtifactLink, build.FirmwareByBoard)
+			if err != nil {
+				panic(err)
+			}
+			return url
+		}
+		if !fallbackToOSSource {
 			return "gs://invalid_path/no branch build for board " + board
 		}
-		url, err := url.JoinPath(build.ArtifactLink, build.FirmwareByBoard)
-		if err != nil {
-			panic(err)
+		spec = OSSource
+	}
+	if spec == OSSource {
+		if len(swarmingDef.GetProvisionInfo()) > 0 {
+			osPath := swarmingDef.GetProvisionInfo()[0].GetInstallRequest()
+			url, err := url.JoinPath(osPath.GetImagePath().GetPath(), "/firmware_from_source.tar.bz2")
+			if err != nil {
+				panic(err)
+			}
+			return url
 		}
-		return url
+		return "gs://invalid_path/no install request"
 	}
 	if strings.HasPrefix(spec, "gs://") {
 		return spec
@@ -133,14 +148,14 @@ func addFwProvisionValuesToLookup(
 	swarmingDef *api.SwarmingDefinition,
 	dynamicHelper *DynamicFirmwareProvisionHelper,
 	specs *FirmwareSpecs,
-	log *log.Logger) {
+	_ *log.Logger) {
 
 	switch swarmingDef.GetDutInfo().GetDutType().(type) {
 	case *dut_api.Dut_Chromeos:
 		lookupValues := &FirmwareProvisionLookupValues{}
 
-		lookupValues.Ro = resolveSpec(specs.Ro, specs, swarmingDef)
-		lookupValues.Rw = resolveSpec(specs.Rw, specs, swarmingDef)
+		lookupValues.Ro = resolveSpec(specs.Ro, specs, swarmingDef, specs.FallbackToCros)
+		lookupValues.Rw = resolveSpec(specs.Rw, specs, swarmingDef, specs.FallbackToCros)
 
 		dynamicHelper.ApplyFirmwareProvisionToLookup(lookup, lookupValues)
 	}
