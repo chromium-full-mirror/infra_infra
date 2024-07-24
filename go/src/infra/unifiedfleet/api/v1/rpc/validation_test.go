@@ -7,39 +7,40 @@ package ufspb
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestValidateHostnames(t *testing.T) {
-	Convey("ValidateHostnames", t, func() {
-		Convey("Different hostnames - successful path", func() {
+	ftt.Run("ValidateHostnames", t, func(t *ftt.Test) {
+		t.Run("Different hostnames - successful path", func(t *ftt.Test) {
 			const h1, h2 = "h1", "h2"
 			err := validateHostnames([]string{h1, h2}, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Duplicated hostnames - returns error", func() {
+		t.Run("Duplicated hostnames - returns error", func(t *ftt.Test) {
 			const h1, h2 = "h1", "h1"
 			err := validateHostnames([]string{h1, h2}, "")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Empty hostname - returns error", func() {
+		t.Run("Empty hostname - returns error", func(t *ftt.Test) {
 			const h1, h2 = "", "h1"
 			err := validateHostnames([]string{h1, h2}, "")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Nil input - successful path", func() {
+		t.Run("Nil input - successful path", func(t *ftt.Test) {
 			err := validateHostnames(nil, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
-	Convey("ValidateDutId", t, func() {
-		Convey("ChromeOS device - successful path", func() {
+	ftt.Run("ValidateDutId", t, func(t *ftt.Test) {
+		t.Run("ChromeOS device - successful path", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "deviceId-1",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
@@ -54,9 +55,9 @@ func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 				},
 			}
 			err := req.validateDutId()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("ChromeOS device - empty device Id - returns error", func() {
+		t.Run("ChromeOS device - empty device Id - returns error", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
@@ -71,9 +72,9 @@ func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 				},
 			}
 			err := req.validateDutId()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("ChromeOS device - invalid device Id - returns error", func() {
+		t.Run("ChromeOS device - invalid device Id - returns error", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
@@ -88,9 +89,9 @@ func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 				},
 			}
 			err := req.validateDutId()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("ChromeOS device - missing dut state - returns error", func() {
+		t.Run("ChromeOS device - missing dut state - returns error", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
@@ -99,9 +100,9 @@ func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 				},
 			}
 			err := req.validateDutId()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("ChromeOS device - mismatching device and dut stats Ids - returns error", func() {
+		t.Run("ChromeOS device - mismatching device and dut stats Ids - returns error", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "deviceId-1",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
@@ -116,29 +117,29 @@ func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 				},
 			}
 			err := req.validateDutId()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Attached device - successful path", func() {
+		t.Run("Attached device - successful path", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "deviceId-1",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE,
 			}
 			err := req.validateDutId()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Attached device - invalid device Id - returns error", func() {
+		t.Run("Attached device - invalid device Id - returns error", func(t *ftt.Test) {
 			req := &UpdateDeviceRecoveryDataRequest{
 				DeviceId:     "deviceId-***",
 				ResourceType: UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE,
 			}
 			err := req.validateDutId()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
 func TestValidateUpdateTestDataRequest(t *testing.T) {
-	Convey("ValidateDutId", t, func() {
-		Convey("ChromeOS device - successful path", func() {
+	ftt.Run("ValidateDutId", t, func(t *ftt.Test) {
+		t.Run("ChromeOS device - successful path", func(t *ftt.Test) {
 			req := &UpdateTestDataRequest{
 				DeviceId: "deviceId-1",
 				Hostname: "hostname_1",
@@ -153,28 +154,28 @@ func TestValidateUpdateTestDataRequest(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldBeNil)
-			So(req.GetDeviceId(), ShouldEqual, req.GetChromeosData().GetDutState().GetId().GetValue())
-			So(req.GetHostname(), ShouldEqual, req.GetChromeosData().GetDutState().GetHostname())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetDeviceId(), should.Equal(req.GetChromeosData().GetDutState().GetId().GetValue()))
+			assert.Loosely(t, req.GetHostname(), should.Equal(req.GetChromeosData().GetDutState().GetHostname()))
 
 		})
-		Convey("ChromeOS device - empty device Id - returns error", func() {
+		t.Run("ChromeOS device - empty device Id - returns error", func(t *ftt.Test) {
 			req := &UpdateTestDataRequest{
 				DeviceId: "",
 				Hostname: "",
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("ChromeOS device - empty hostname - returns error", func() {
+		t.Run("ChromeOS device - empty hostname - returns error", func(t *ftt.Test) {
 			req := &UpdateTestDataRequest{
 				DeviceId: "device-1",
 				Hostname: "",
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("ChromeOS device - missing dut state - returns error", func() {
+		t.Run("ChromeOS device - missing dut state - returns error", func(t *ftt.Test) {
 			req := &UpdateTestDataRequest{
 				DeviceId: "device-1",
 				Hostname: "hostname-1",
@@ -183,9 +184,9 @@ func TestValidateUpdateTestDataRequest(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Android device - successful path", func() {
+		t.Run("Android device - successful path", func(t *ftt.Test) {
 			req := &UpdateTestDataRequest{
 				DeviceId: "device-1",
 				Hostname: "hostname-1",
@@ -194,14 +195,14 @@ func TestValidateUpdateTestDataRequest(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestCreateAssetValidate(t *testing.T) {
-	Convey("CreateAssetRequest Validate", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("CreateAssetRequest Validate", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "assets/asset-1",
@@ -212,14 +213,14 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Empty asset - returns error", func() {
+		t.Run("Empty asset - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Empty asset name - returns error", func() {
+		t.Run("Empty asset name - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Location: &ufspb.Location{
@@ -229,9 +230,9 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Invalid asset name format - returns error", func() {
+		t.Run("Invalid asset name format - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "asset-1",
@@ -242,9 +243,9 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Invalid asset name characters - returns error", func() {
+		t.Run("Invalid asset name characters - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "assets/asset-@#%^&",
@@ -255,18 +256,18 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Missing location - returns error", func() {
+		t.Run("Missing location - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "assets/asset-1",
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Location zone unspecified - returns error", func() {
+		t.Run("Location zone unspecified - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "assets/asset-1",
@@ -277,9 +278,9 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("Location rack empty - returns error", func() {
+		t.Run("Location rack empty - returns error", func(t *ftt.Test) {
 			req := &CreateAssetRequest{
 				Asset: &ufspb.Asset{
 					Name: "assets/asset-1",
@@ -290,7 +291,7 @@ func TestCreateAssetValidate(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

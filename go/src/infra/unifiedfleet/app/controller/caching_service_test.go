@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/genproto/protobuf/field_mask"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/caching"
@@ -29,48 +29,48 @@ func mockCachingService(name string) *ufspb.CachingService {
 func TestCreateCachingService(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("CreateCachingService", t, func() {
-		Convey("Create new CachingService - happy path", func() {
+	ftt.Run("CreateCachingService", t, func(t *ftt.Test) {
+		t.Run("Create new CachingService - happy path", func(t *ftt.Test) {
 			cs := mockCachingService("127.0.0.1")
 			cs.State = ufspb.State_STATE_SERVING
 			resp, err := CreateCachingService(ctx, cs)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, cs)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(cs))
 
 			s, err := state.GetStateRecord(ctx, "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_SERVING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "cachingservice")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("cachingservice"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Create new CachingService - already existing", func() {
+		t.Run("Create new CachingService - already existing", func(t *ftt.Test) {
 			cs1 := mockCachingService("128.0.0.1")
 			caching.CreateCachingService(ctx, cs1)
 
 			cs2 := mockCachingService("128.0.0.1")
 			_, err := CreateCachingService(ctx, cs2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "already exists")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("already exists"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/128.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "cachingservices/128.0.0.1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 	})
 }
@@ -78,8 +78,8 @@ func TestCreateCachingService(t *testing.T) {
 func TestUpdateCachingService(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateCachingService", t, func() {
-		Convey("Update CachingService for existing CachingService - happy path", func() {
+	ftt.Run("UpdateCachingService", t, func(t *ftt.Test) {
+		t.Run("Update CachingService for existing CachingService - happy path", func(t *ftt.Test) {
 			cs1 := mockCachingService("127.0.0.1")
 			cs1.Port = 43560
 			caching.CreateCachingService(ctx, cs1)
@@ -87,35 +87,35 @@ func TestUpdateCachingService(t *testing.T) {
 			cs2 := mockCachingService("127.0.0.1")
 			cs2.Port = 25653
 			resp, _ := UpdateCachingService(ctx, cs2, nil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, cs2)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(cs2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "cachingservice.port")
-			So(changes[0].GetOldValue(), ShouldEqual, "43560")
-			So(changes[0].GetNewValue(), ShouldEqual, "25653")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("cachingservice.port"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("43560"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("25653"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Update CachingService for non-existing CachingService", func() {
+		t.Run("Update CachingService for non-existing CachingService", func(t *ftt.Test) {
 			cs := mockCachingService("128.0.0.1")
 			resp, err := UpdateCachingService(ctx, cs, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/128.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update CachingService for existing CachingService - partial update state", func() {
+		t.Run("Update CachingService for existing CachingService - partial update state", func(t *ftt.Test) {
 			cs1 := mockCachingService("129.0.0.1")
 			cs1.Port = 10101
 			cs1.PrimaryNode = "0.0.0.0"
@@ -125,27 +125,27 @@ func TestUpdateCachingService(t *testing.T) {
 			cs2 := mockCachingService("129.0.0.1")
 			cs2.State = ufspb.State_STATE_DISABLED
 			resp, _ := UpdateCachingService(ctx, cs2, &field_mask.FieldMask{Paths: []string{"state"}})
-			So(resp, ShouldNotBeNil)
-			So(resp.GetName(), ShouldEqual, cs2.GetName())
-			So(resp.GetPort(), ShouldEqual, 10101)
-			So(resp.GetPrimaryNode(), ShouldEqual, "0.0.0.0")
-			So(resp.GetState(), ShouldEqual, ufspb.State_STATE_DISABLED)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(cs2.GetName()))
+			assert.Loosely(t, resp.GetPort(), should.Equal(10101))
+			assert.Loosely(t, resp.GetPrimaryNode(), should.Equal("0.0.0.0"))
+			assert.Loosely(t, resp.GetState(), should.Equal(ufspb.State_STATE_DISABLED))
 
 			s, err := state.GetStateRecord(ctx, "cachingservices/129.0.0.1")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_DISABLED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DISABLED))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/129.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "cachingservice.state")
-			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_SERVING.String())
-			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_DISABLED.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("cachingservice.state"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_SERVING.String()))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_DISABLED.String()))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "cachingservices/129.0.0.1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 	})
 }
@@ -156,17 +156,17 @@ func TestGetCachingService(t *testing.T) {
 	cs, _ := caching.CreateCachingService(ctx, &ufspb.CachingService{
 		Name: "127.0.0.1",
 	})
-	Convey("GetCachingService", t, func() {
-		Convey("Get CachingService by existing ID - happy path", func() {
+	ftt.Run("GetCachingService", t, func(t *ftt.Test) {
+		t.Run("Get CachingService by existing ID - happy path", func(t *ftt.Test) {
 			resp, _ := GetCachingService(ctx, "127.0.0.1")
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, cs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(cs))
 		})
 
-		Convey("Get CachingService by non-existing ID", func() {
+		t.Run("Get CachingService by non-existing ID", func(t *ftt.Test) {
 			_, err := GetCachingService(ctx, "128.0.0.1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -177,36 +177,36 @@ func TestDeleteCachingService(t *testing.T) {
 	caching.CreateCachingService(ctx, &ufspb.CachingService{
 		Name: "127.0.0.1",
 	})
-	Convey("DeleteCachingService", t, func() {
-		Convey("Delete CachingService by existing ID - happy path", func() {
+	ftt.Run("DeleteCachingService", t, func(t *ftt.Test) {
+		t.Run("Delete CachingService by existing ID - happy path", func(t *ftt.Test) {
 			err := DeleteCachingService(ctx, "127.0.0.1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := caching.GetCachingService(ctx, "127.0.0.1")
-			So(res, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = state.GetStateRecord(ctx, "cachingservices/127.0.0.1")
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "cachingservice")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("cachingservice"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "cachingservices/127.0.0.1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Delete CachingService by non-existing ID", func() {
+		t.Run("Delete CachingService by non-existing ID", func(t *ftt.Test) {
 			err := DeleteCachingService(ctx, "128.0.0.1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -227,23 +227,23 @@ func TestListCachingServices(t *testing.T) {
 		}
 		cachingServices = append(cachingServices, resp)
 	}
-	Convey("ListCachingServices", t, func() {
-		Convey("List CachingServices - filter invalid - error", func() {
+	ftt.Run("ListCachingServices", t, func(t *ftt.Test) {
+		t.Run("List CachingServices - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListCachingServices(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List CachingServices - filter switch - happy path", func() {
+		t.Run("List CachingServices - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListCachingServices(ctx, 5, "", "state=serving", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, cachingServicesWithState)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(cachingServicesWithState))
 		})
 
-		Convey("ListCachingServices - Full listing - happy path", func() {
+		t.Run("ListCachingServices - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListCachingServices(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, cachingServices)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(cachingServices))
 		})
 	})
 }

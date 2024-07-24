@@ -7,17 +7,19 @@ package controller
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync/atomic"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	configpb "go.chromium.org/luci/swarming/proto/config"
 
@@ -113,39 +115,39 @@ func mockMachineLSE(id string) *ufspb.MachineLSE {
 // TODO(b/265826661): Fix hang/panic with accessing test context and re-enable parallelization
 func TestImportBotConfigs(t *testing.T) {
 	ctx := encTestingContext()
-	Convey("Import Bot Configs", t, func() {
+	ftt.Run("Import Bot Configs", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.GetMachine(ctx, "test1-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			botResp, err := inventory.GetOwnershipData(ctx, "test1-1")
-			So(err, ShouldBeNil)
-			So(botResp, ShouldNotBeNil)
-			So(botResp.OwnershipData, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, botResp, should.NotBeNil)
+			assert.Loosely(t, botResp.OwnershipData, should.NotBeNil)
 			p, err := botResp.GetProto()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pm := p.(*ufspb.OwnershipData)
-			So(pm, ShouldResembleProto, resp.Ownership)
+			assert.Loosely(t, pm, should.Resemble(resp.Ownership))
 
 			// Import Again, should not update the Asset
 			err = ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp2, err := registration.GetMachine(ctx, "test1-1")
-			So(resp2, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp2.Ownership, ShouldNotBeNil)
-			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+			assert.Loosely(t, resp2, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
 		})
 	})
 }
@@ -154,24 +156,24 @@ func TestImportBotConfigs(t *testing.T) {
 func TestGetBotConfigsForCommitSh(t *testing.T) {
 	ctx := encTestingContext()
 	t.Parallel()
-	Convey("Get Bot Configs For CommitSh", t, func() {
+	ftt.Run("Get Bot Configs For CommitSh", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			ownerships, err := GetBotConfigsForCommitSh(ctx, "5201756875e0405c5c44d0e6d97de653b0d6cfca")
-			So(err, ShouldBeNil)
-			So(ownerships, ShouldNotBeNil)
-			So(len(ownerships), ShouldNotBeZeroValue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownerships, should.NotBeNil)
+			assert.Loosely(t, len(ownerships), should.NotEqual(0))
 		})
-		Convey("unknown commitsh", func() {
+		t.Run("unknown commitsh", func(t *ftt.Test) {
 			ownerships, err := GetBotConfigsForCommitSh(ctx, "blah")
-			So(err, ShouldNotBeNil)
-			So(ownerships, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ownerships, should.BeNil)
 		})
-		Convey("empty commitsh", func() {
+		t.Run("empty commitsh", func(t *ftt.Test) {
 			ownerships, err := GetBotConfigsForCommitSh(ctx, "")
-			So(err, ShouldNotBeNil)
-			So(ownerships, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ownerships, should.BeNil)
 		})
 	})
 }
@@ -181,27 +183,27 @@ func TestGetBotConfigsForCommitSh(t *testing.T) {
 // A race condition arises in which another test can modify this variable before the test finishes.
 func TestGetConfigAndGitClient(t *testing.T) {
 	ctx := encTestingContext()
-	Convey("Get Ownership Config and Git Client", t, func() {
+	ftt.Run("Get Ownership Config and Git Client", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
-			So(ownershipConfig, ShouldNotBeNil)
-			So(gitClient, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownershipConfig, should.NotBeNil)
+			assert.Loosely(t, gitClient, should.NotBeNil)
 
 			// Fetch Again, should not return ownership config
 			ownershipConfig, gitClient, err = GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
-			So(ownershipConfig, ShouldBeNil)
-			So(gitClient, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownershipConfig, should.BeNil)
+			assert.Loosely(t, gitClient, should.BeNil)
 		})
-		Convey("No Ownership Config - Ownership not updated", func() {
+		t.Run("No Ownership Config - Ownership not updated", func(t *ftt.Test) {
 			ctx = config.Use(ctx, &config.Config{})
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldNotBeNil)
-			So(ownershipConfig, ShouldBeNil)
-			So(gitClient, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ownershipConfig, should.BeNil)
+			assert.Loosely(t, gitClient, should.BeNil)
 		})
 	})
 }
@@ -210,18 +212,18 @@ func TestGetConfigAndGitClient(t *testing.T) {
 func TestGetAllOwnershipConfigs(t *testing.T) {
 	t.Parallel()
 	ctx := encTestingContext()
-	Convey("Get all ownership Configs", t, func() {
+	ftt.Run("Get all ownership Configs", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
 		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-		So(err, ShouldBeNil)
-		Convey("happy path", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("happy path", func(t *ftt.Test) {
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ownerships, _, err := ListOwnershipConfigs(ctx, 20, "", "", false)
-			So(err, ShouldBeNil)
-			So(ownerships, ShouldNotBeNil)
-			So(len(ownerships), ShouldEqual, 14)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownerships, should.NotBeNil)
+			assert.Loosely(t, len(ownerships), should.Equal(14))
 		})
 	})
 }
@@ -229,133 +231,133 @@ func TestGetAllOwnershipConfigs(t *testing.T) {
 // Tests the functionality for importing security configs from the config files
 func TestImportSecurityConfig(t *testing.T) {
 	t.Parallel()
-	Convey("Import Security Config", t, func() {
+	ftt.Run("Import Security Config", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.GetMachine(ctx, "test1-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			botResp, err := inventory.GetOwnershipData(ctx, "test1-1")
-			So(err, ShouldBeNil)
-			So(botResp, ShouldNotBeNil)
-			So(botResp.OwnershipData, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, botResp, should.NotBeNil)
+			assert.Loosely(t, botResp.OwnershipData, should.NotBeNil)
 			p, err := botResp.GetProto()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pm := p.(*ufspb.OwnershipData)
-			So(pm, ShouldResembleProto, resp.Ownership)
-			So(pm.GetPools(), ShouldResemble, []string{"abc"})
+			assert.Loosely(t, pm, should.Resemble(resp.Ownership))
+			assert.Loosely(t, pm.GetPools(), should.Resemble([]string{"abc"}))
 
 			// Update ownership and Import Again, should update the ownership to the original value
 			pm.Pools = []string{"dummy"}
 			registration.UpdateMachineOwnership(ctx, "test1-1", pm)
 			entity, err := inventory.PutOwnershipData(ctx, pm, "test1-1", inventory.AssetTypeMachine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			p, err = entity.GetProto()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pm = p.(*ufspb.OwnershipData)
-			So(pm.Pools, ShouldNotResemble, resp.Ownership.Pools)
+			assert.Loosely(t, strings.Join(pm.Pools, ";"), should.NotEqual(strings.Join(resp.Ownership.Pools, ";")))
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp2, err := registration.GetMachine(ctx, "test1-1")
 
-			So(resp2, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp2.Ownership, ShouldNotBeNil)
-			So(resp2.Ownership, ShouldResembleProto, resp.Ownership)
+			assert.Loosely(t, resp2, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp2.Ownership, should.Resemble(resp.Ownership))
 		})
-		Convey("happy path - Bot ID Prefix", func() {
+		t.Run("happy path - Bot ID Prefix", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.CreateMachine(ctx, mockChromeBrowserMachine("tester-1", "tester1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.GetMachine(ctx, "testing-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			resp, err = registration.GetMachine(ctx, "tester-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.BeNil)
 		})
-		Convey("happy path - Bot ID Prefix for MachineLSE", func() {
+		t.Run("happy path - Bot ID Prefix for MachineLSE", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = inventory.GetMachineLSE(ctx, "testLSE1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			// Import Again, should not update the Asset
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp2, err := inventory.GetMachineLSE(ctx, "testLSE1")
-			So(resp2, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp2.Ownership, ShouldNotBeNil)
-			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+			assert.Loosely(t, resp2, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
 		})
-		Convey("happy path - Bot ID Prefix for VM", func() {
+		t.Run("happy path - Bot ID Prefix for VM", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			vm1 := &ufspb.VM{
 				Name: "vm-1",
 			}
 			_, err = inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := inventory.GetVM(ctx, "vm-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			// Import Again, should not update the Asset
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp2, err := inventory.GetVM(ctx, "vm-1")
-			So(resp2, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp2.Ownership, ShouldNotBeNil)
-			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
+			assert.Loosely(t, resp2, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
 		})
 	})
 }
@@ -364,104 +366,104 @@ func TestImportSecurityConfig(t *testing.T) {
 func TestParseSecurityConfig(t *testing.T) {
 	t.Parallel()
 	ctx := encTestingContext()
-	Convey("Parse Security Config", t, func() {
+	ftt.Run("Parse Security Config", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
 		ctx = config.Use(ctx, contextConfig)
-		Convey("happy path", func() {
+		t.Run("happy path", func(t *ftt.Test) {
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			resp, err = registration.GetMachine(ctx, "test1-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
-			So(resp.Ownership.Pools, ShouldContain, "abc")
-			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
-			So(resp.Ownership.Customer, ShouldEqual, "customer")
-			So(resp.Ownership.SecurityLevel, ShouldEqual, "trusted")
-			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp.Ownership.Pools, should.Contain("abc"))
+			assert.Loosely(t, resp.Ownership.SwarmingInstance, should.Equal("testSwarming"))
+			assert.Loosely(t, resp.Ownership.Customer, should.Equal("customer"))
+			assert.Loosely(t, resp.Ownership.SecurityLevel, should.Equal("trusted"))
+			assert.Loosely(t, resp.Ownership.Builders, should.Resemble([]string{"builder"}))
 		})
-		Convey("Does not update non existent bots", func() {
+		t.Run("Does not update non existent bots", func(t *ftt.Test) {
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			resp, err := registration.GetMachine(ctx, "test2-1")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "NotFound")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("NotFound"))
 		})
-		Convey("Cleans up stale configs", func() {
+		t.Run("Cleans up stale configs", func(t *ftt.Test) {
 			ownership := &ufspb.OwnershipData{PoolName: "pool1"}
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test10-1", "test1"))
-			So(resp, ShouldNotBeNil)
-			So(resp.Ownership, ShouldBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.Ownership, should.BeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.UpdateMachineOwnership(ctx, "test10-1", ownership)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 
 			_, err = inventory.PutOwnershipData(ctx, ownership, "test10-1", inventory.AssetTypeMachine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{5,6}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			configResp, err := inventory.GetOwnershipData(ctx, "test10-1")
-			So(configResp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "NotFound")
+			assert.Loosely(t, configResp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("NotFound"))
 			resp, err = registration.GetMachine(ctx, "test10-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.BeNil)
 		})
-		Convey("updates asset tables on subsequent runs", func() {
+		t.Run("updates asset tables on subsequent runs", func(t *ftt.Test) {
 			// First parse security configs
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			// Add a machine entry after parsing security configs
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test100-1", "test100"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Machine entry should not have ownership data
 			resp, err = registration.GetMachine(ctx, "test100-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.BeNil)
 
 			// Prase security configs again as a subsequent dumper job
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			// Machine entry should now have ownership data
 			resp, err = registration.GetMachine(ctx, "test100-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
-			So(resp.Ownership.Pools, ShouldContain, "abc")
-			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
-			So(resp.Ownership.Customer, ShouldEqual, "customer")
-			So(resp.Ownership.SecurityLevel, ShouldEqual, "trusted")
-			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
+			assert.Loosely(t, resp.Ownership.Pools, should.Contain("abc"))
+			assert.Loosely(t, resp.Ownership.SwarmingInstance, should.Equal("testSwarming"))
+			assert.Loosely(t, resp.Ownership.Customer, should.Equal("customer"))
+			assert.Loosely(t, resp.Ownership.SecurityLevel, should.Equal("trusted"))
+			assert.Loosely(t, resp.Ownership.Builders, should.Resemble([]string{"builder"}))
 
 			// Clear machine entry ownership data
 			registration.UpdateMachineOwnership(ctx, "test100-1", nil)
 			resp, err = registration.GetMachine(ctx, "test100-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.BeNil)
 
 			// Prase security configs again as a subsequent dumper job
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{100,102}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
 
 			// Machine entry should again have ownership data
 			resp, err = registration.GetMachine(ctx, "test100-1")
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp.Ownership, ShouldNotBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Ownership, should.NotBeNil)
 		})
 	})
 }
@@ -469,26 +471,26 @@ func TestParseSecurityConfig(t *testing.T) {
 // Tests the functionality for parsing botId strings
 func TestParseBotIds(t *testing.T) {
 	t.Parallel()
-	Convey("Parse ENC Bot Config", t, func() {
-		Convey("Parse comma separated and ranges", func() {
+	ftt.Run("Parse ENC Bot Config", t, func(t *ftt.Test) {
+		t.Run("Parse comma separated and ranges", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,12}-483")
-			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483", "mac11-483", "mac12-483"})
+			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483", "mac12-483"}))
 		})
-		Convey("Parse multiple ranges", func() {
+		t.Run("Parse multiple ranges", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,18..20}-483")
-			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483", "mac11-483", "mac18-483", "mac19-483", "mac20-483"})
+			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483", "mac18-483", "mac19-483", "mac20-483"}))
 		})
-		Convey("Parse invalid range - ignores invalid range", func() {
+		t.Run("Parse invalid range - ignores invalid range", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,22..20}-483")
-			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483", "mac11-483"})
+			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483"}))
 		})
-		Convey("Parse mal formed range - ignores malformed range", func() {
+		t.Run("Parse mal formed range - ignores malformed range", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,..20}-483")
-			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483", "mac11-483"})
+			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483"}))
 		})
-		Convey("Parse non digit characters in range - ignores", func() {
+		t.Run("Parse non digit characters in range - ignores", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10,11..a}-483")
-			So(ids, ShouldResemble, []string{"mac9-483", "mac10-483"})
+			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483"}))
 		})
 	})
 }
@@ -496,68 +498,68 @@ func TestParseBotIds(t *testing.T) {
 // Tests the functionality for getting ownership data for a machine/vm/machineLSE
 func TestGetOwnershipData(t *testing.T) {
 	t.Parallel()
-	Convey("GetOwnership Data", t, func() {
+	ftt.Run("GetOwnership Data", t, func(t *ftt.Test) {
 		contextConfig := mockOwnershipConfig()
-		Convey("happy path - machine", func() {
+		t.Run("happy path - machine", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ownership, err := GetOwnershipData(ctx, "testing-1")
 
-			So(err, ShouldBeNil)
-			So(ownership, ShouldNotBeNil)
-			So(ownership.Pools, ShouldContain, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownership, should.NotBeNil)
+			assert.Loosely(t, ownership.Pools, should.Contain("test"))
+			assert.Loosely(t, ownership.SwarmingInstance, should.Equal("testSwarming"))
 		})
-		Convey("happy path - vm", func() {
+		t.Run("happy path - vm", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			vm1 := &ufspb.VM{
 				Name: "vm-1",
 			}
 			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ownership, err := GetOwnershipData(ctx, "vm-1")
 
-			So(ownership, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(ownership.Pools, ShouldContain, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			assert.Loosely(t, ownership, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownership.Pools, should.Contain("test"))
+			assert.Loosely(t, ownership.SwarmingInstance, should.Equal("testSwarming"))
 		})
-		Convey("happy path - machineLSE", func() {
+		t.Run("happy path - machineLSE", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = ImportBotConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ownership, err := GetOwnershipData(ctx, "testLSE1")
 
-			So(ownership, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(ownership.Pools, ShouldContain, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			assert.Loosely(t, ownership, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, ownership.Pools, should.Contain("test"))
+			assert.Loosely(t, ownership.SwarmingInstance, should.Equal("testSwarming"))
 		})
-		Convey("missing host in inventory", func() {
+		t.Run("missing host in inventory", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "trusted", "customer", "builder"))
 			ownership, err := GetOwnershipData(ctx, "blah4-1")
 			s, _ := status.FromError(err)
 
-			So(ownership, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, ownership, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
 	})
 }
