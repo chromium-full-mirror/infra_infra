@@ -25,7 +25,9 @@ _CHROMIUM_SOURCE_BUILDERS = [
     'linux-chromeos-code-coverage_unit', 'linux-lacros-code-coverage',
     'linux-lacros-code-coverage_unit', 'mac-code-coverage',
     'mac-code-coverage_unit', 'android-code-coverage-native',
-    'android-code-coverage-native_unit', 'android-cronet-code-coverage-native',
+    'android-code-coverage-native_unit', 'android-cronet-code-coverage-java',
+    'android-cronet-code-coverage-java_unit',
+    'android-cronet-code-coverage-native',
     'android-cronet-code-coverage-native_unit'
 ]
 
