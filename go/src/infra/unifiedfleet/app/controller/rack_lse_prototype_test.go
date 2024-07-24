@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/configuration"
 	. "infra/unifiedfleet/app/model/datastore"
@@ -34,17 +33,17 @@ func TestListRackLSEPrototypes(t *testing.T) {
 		resp, _ := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 		rackLSEPrototypes = append(rackLSEPrototypes, resp)
 	}
-	Convey("ListRackLSEPrototypes", t, func() {
-		Convey("List RackLSEPrototypes - filter invalid", func() {
+	ftt.Run("ListRackLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("List RackLSEPrototypes - filter invalid", func(t *ftt.Test) {
 			_, _, err := ListRackLSEPrototypes(ctx, 5, "", "machine=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Failed to read filter for listing racklseprototypes")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Failed to read filter for listing racklseprototypes"))
 		})
 
-		Convey("ListRackLSEPrototypes - Full listing - happy path", func() {
+		t.Run("ListRackLSEPrototypes - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRackLSEPrototypes(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototypes)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes))
 		})
 	})
 }
@@ -54,41 +53,41 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 	ctx := testingContext()
 	rackLSEPrototype1 := mockRackLSEPrototype("rackLSEPrototype-1")
 	rackLSEPrototype2 := mockRackLSEPrototype("rackLSEPrototype-2")
-	Convey("DeleteRackLSEPrototype", t, func() {
-		Convey("Delete rackLSEPrototype by existing ID with racklse reference", func() {
+	ftt.Run("DeleteRackLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Delete rackLSEPrototype by existing ID with racklse reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype1)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 
 			rackLSE1 := &ufspb.RackLSE{
 				Name:             "racklse-1",
 				RackLsePrototype: "rackLSEPrototype-1",
 			}
 			mresp, merr := inventory.CreateRackLSE(ctx, rackLSE1)
-			So(merr, ShouldBeNil)
-			So(mresp, ShouldResembleProto, rackLSE1)
+			assert.Loosely(t, merr, should.BeNil)
+			assert.Loosely(t, mresp, should.Resemble(rackLSE1))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, CannotDelete)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(CannotDelete))
 
 			resp, cerr = configuration.GetRackLSEPrototype(ctx, "rackLSEPrototype-1")
-			So(resp, ShouldNotBeNil)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype1)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
 		})
-		Convey("Delete rackLSEPrototype successfully by existing ID without references", func() {
+		t.Run("Delete rackLSEPrototype successfully by existing ID without references", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, rackLSEPrototype2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = configuration.GetRackLSEPrototype(ctx, "rackLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -96,8 +95,8 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 func TestBatchGetRackLSEPrototypes(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetRackLSEPrototypes", t, func() {
-		Convey("Batch get rack lse prototypes - happy path", func() {
+	ftt.Run("BatchGetRackLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("Batch get rack lse prototypes - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.RackLSEPrototype, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.RackLSEPrototype{
@@ -105,27 +104,27 @@ func TestBatchGetRackLSEPrototypes(t *testing.T) {
 				}
 			}
 			_, err := configuration.BatchUpdateRackLSEPrototypes(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := configuration.BatchGetRackLSEPrototypes(ctx, []string{"racklseprototype-batchGet-0", "racklseprototype-batchGet-1", "racklseprototype-batchGet-2", "racklseprototype-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get rack lse prototypes  - missing id", func() {
+		t.Run("Batch get rack lse prototypes  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetRackLSEPrototypes(ctx, []string{"racklseprototype-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "racklseprototype-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("racklseprototype-batchGet-non-existing"))
 		})
-		Convey("Batch get rack lse prototypes  - empty input", func() {
+		t.Run("Batch get rack lse prototypes  - empty input", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetRackLSEPrototypes(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = configuration.BatchGetRackLSEPrototypes(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }

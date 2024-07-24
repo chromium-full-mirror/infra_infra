@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -40,23 +41,23 @@ func TestCreateNic(t *testing.T) {
 		},
 	}
 	registration.CreateMachine(ctx, machine1)
-	Convey("CreateNics", t, func() {
-		Convey("Create new nic with non existing machine", func() {
+	ftt.Run("CreateNics", t, func(t *ftt.Test) {
+		t.Run("Create new nic with non existing machine", func(t *ftt.Test) {
 			nic1 := &ufspb.Nic{
 				Name:    "nic-1",
 				Machine: "machine-5",
 			}
 			resp, err := CreateNic(ctx, nic1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Create nic - duplicated switch ports", func() {
+		t.Run("Create nic - duplicated switch ports", func(t *ftt.Test) {
 			nic := &ufspb.Nic{
 				Name: "nic-create-1",
 				SwitchInterface: &ufspb.SwitchInterface{
@@ -65,12 +66,12 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			switch1 := &ufspb.Switch{
 				Name: "nic-create-switch-1",
 			}
 			_, err = registration.CreateSwitch(ctx, switch1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := &ufspb.Nic{
 				Name:    "nic-create-2",
@@ -81,11 +82,11 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err = CreateNic(ctx, nic2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "switch port 25 of nic-create-switch-1 is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("switch port 25 of nic-create-switch-1 is already occupied"))
 		})
 
-		Convey("Create new nic with existing machine with nics", func() {
+		t.Run("Create new nic with existing machine with nics", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-10",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -93,39 +94,39 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-20",
 				Machine: "machine-10",
 			}
 			resp, err := CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			mresp, err := GetMachine(ctx, "machine-10")
-			So(err, ShouldBeNil)
-			So(mresp.GetChromeBrowserMachine().GetNicObjects()[0].GetName(), ShouldResemble, "nic-20")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, mresp.GetChromeBrowserMachine().GetNicObjects()[0].GetName(), should.Match("nic-20"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-20")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/machine-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/nic-20")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new nic with existing machine without nics", func() {
+		t.Run("Create new nic with existing machine without nics", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-15",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -136,7 +137,7 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-25",
@@ -144,18 +145,18 @@ func TestCreateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			resp, err := CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-25")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
 		})
 
-		Convey("Create new nic with non existing switch", func() {
+		t.Run("Create new nic with non existing switch", func(t *ftt.Test) {
 			nic1 := &ufspb.Nic{
 				Name:    "nic-1",
 				Machine: "machine-1",
@@ -164,24 +165,24 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			resp, err := CreateNic(ctx, nic1)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no Switch with SwitchID switch-1")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no Switch with SwitchID switch-1"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(0))
 		})
 
-		Convey("Create new nic with existing switch", func() {
+		t.Run("Create new nic with existing switch", func(t *ftt.Test) {
 			switch2 := &ufspb.Switch{
 				Name: "switch-2",
 			}
 			_, err := registration.CreateSwitch(ctx, switch2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := &ufspb.Nic{
 				Name:    "nic-2",
@@ -191,18 +192,18 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			resp, err := CreateNic(ctx, nic2)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
 		})
 
-		Convey("Create new nic - permission denied: same realm and no create permission", func() {
+		t.Run("Create new nic - permission denied: same realm and no create permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-16",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -213,7 +214,7 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-26",
@@ -221,11 +222,11 @@ func TestCreateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = CreateNic(ctx, nic)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Create new nic - permission denied: different realm", func() {
+		t.Run("Create new nic - permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-17",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -236,7 +237,7 @@ func TestCreateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-27",
@@ -244,8 +245,8 @@ func TestCreateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			_, err = CreateNic(ctx, nic)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -253,8 +254,8 @@ func TestCreateNic(t *testing.T) {
 func TestUpdateNic(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateNics", t, func() {
-		Convey("Update nic with non-existing nic", func() {
+	ftt.Run("UpdateNics", t, func(t *ftt.Test) {
+		t.Run("Update nic with non-existing nic", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-1",
 			}
@@ -265,16 +266,16 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-1",
 			}
 			resp, err := UpdateNic(ctx, nic, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update nic with non existing switch", func() {
+		t.Run("Update nic with non existing switch", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-2",
 			}
@@ -285,7 +286,7 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-2",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := &ufspb.Nic{
 				Name:    "nic-2",
@@ -295,16 +296,16 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			resp, err := UpdateNic(ctx, nic2, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "here is no Switch with SwitchID switch-1")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("here is no Switch with SwitchID switch-1"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Update nic with new machine(same realm) - success", func() {
+		t.Run("Update nic with new machine(same realm) - success", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -315,7 +316,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-4",
@@ -327,14 +328,14 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-3",
 				Machine: "machine-3",
 			}
 			_, err = registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic = &ufspb.Nic{
 				Name:    "nic-3",
@@ -342,17 +343,17 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateNic(ctx, nic, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
 		})
 
-		Convey("Update nic with non existing machine", func() {
+		t.Run("Update nic with non existing machine", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-5",
 			}
@@ -363,23 +364,23 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-5",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic = &ufspb.Nic{
 				Name:    "nic-6",
 				Machine: "machine-6",
 			}
 			resp, err := UpdateNic(ctx, nic, nil)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "There is no Machine with MachineID machine-6 in the system")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("There is no Machine with MachineID machine-6 in the system"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-6")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Partial Update nic", func() {
+		t.Run("Partial Update nic", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-7.1",
 			}
@@ -394,8 +395,8 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			resp, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_UNSPECIFIED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_UNSPECIFIED))
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-7",
@@ -406,16 +407,16 @@ func TestUpdateNic(t *testing.T) {
 				ResourceState: ufspb.State_STATE_NEEDS_REPAIR,
 			}
 			resp, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress", "resourceState"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetMachine(), ShouldResemble, "machine-7.1")
-			So(resp.GetSwitchInterface().GetSwitch(), ShouldResemble, "switch-7")
-			So(resp.GetSwitchInterface().GetPortName(), ShouldEqual, "75")
-			So(resp.GetMacAddress(), ShouldResemble, "efgh")
-			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachine(), should.Match("machine-7.1"))
+			assert.Loosely(t, resp.GetSwitchInterface().GetSwitch(), should.Match("switch-7"))
+			assert.Loosely(t, resp.GetSwitchInterface().GetPortName(), should.Equal("75"))
+			assert.Loosely(t, resp.GetMacAddress(), should.Match("efgh"))
+			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_NEEDS_REPAIR))
 		})
 
-		Convey("Partial update - nic state", func() {
+		t.Run("Partial update - nic state", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-7.2",
 			}
@@ -429,8 +430,8 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			resp, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_UNSPECIFIED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_UNSPECIFIED))
 
 			nic1 := &ufspb.Nic{
 				Name:          "nic-7.2",
@@ -440,13 +441,13 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			resp, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"portName", "macAddress", "resourceState"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetMachine(), ShouldResemble, "machine-7.2")
-			So(resp.GetResourceState(), ShouldResemble, ufspb.State_STATE_NEEDS_REPAIR)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachine(), should.Match("machine-7.2"))
+			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_NEEDS_REPAIR))
 		})
 
-		Convey("Partial Update nic mac address and machine(same realm) - succeed", func() {
+		t.Run("Partial Update nic mac address and machine(same realm) - succeed", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-8",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -468,7 +469,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			lse, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "lse-partial-update-mac",
@@ -476,14 +477,14 @@ func TestUpdateNic(t *testing.T) {
 				Machines: []string{"machine-8"},
 				Nic:      "nic-8",
 			})
-			So(lse, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, lse, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "lse-partial-update-mac2",
 				Hostname: "lse-partial-update-mac2",
 				Machines: []string{"machine-8-8"},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			dhcp := &ufspb.DHCPConfig{
 				Hostname:   lse.GetName(),
 				Ip:         "fake_ip",
@@ -491,7 +492,7 @@ func TestUpdateNic(t *testing.T) {
 				MacAddress: nic.GetMacAddress(),
 			}
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{dhcp})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 = &ufspb.Machine{
 				Name: "machine-8-8",
@@ -511,51 +512,51 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeMockAuthDB(ctx, "user:user@example.com", util.BrowserLabAdminRealm, util.RegistrationsUpdate, util.InventoriesUpdate)
 			nic, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"macAddress", "machine"}})
-			So(err, ShouldBeNil)
-			So(nic.GetMacAddress(), ShouldEqual, "nic-8-address")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nic.GetMacAddress(), should.Equal("nic-8-address"))
 			// new machine's corresponding host has new dhcp record, new nic
 			lse, err = inventory.GetMachineLSE(ctx, "lse-partial-update-mac2")
-			So(err, ShouldBeNil)
-			So(lse.GetNic(), ShouldEqual, "nic-8")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetNic(), should.Equal("nic-8"))
 			dhcp, err = configuration.GetDHCPConfig(ctx, "lse-partial-update-mac2")
-			So(err, ShouldBeNil)
-			So(dhcp.GetMacAddress(), ShouldEqual, "nic-8-address")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dhcp.GetMacAddress(), should.Equal("nic-8-address"))
 			// old machine's corresponding host has empty dhcp record, empty nic
 			dhcp, err = configuration.GetDHCPConfig(ctx, "lse-partial-update-mac")
-			So(err, ShouldNotBeNil)
-			So(dhcp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, dhcp, should.BeNil)
 			lse, err = inventory.GetMachineLSE(ctx, "lse-partial-update-mac")
-			So(err, ShouldBeNil)
-			So(lse.GetNic(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetNic(), should.BeEmpty)
 
 			// verify change events
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/lse-partial-update-mac")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.nic")
-			So(changes[0].GetOldValue(), ShouldEqual, "nic-8")
-			So(changes[0].GetNewValue(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.nic"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("nic-8"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.BeEmpty)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/lse-partial-update-mac2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.nic")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, "nic-8")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.nic"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("nic-8"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/lse-partial-update-mac")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "fake_ip")
-			So(changes[0].GetNewValue(), ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("fake_ip"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.BeEmpty)
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/lse-partial-update-mac2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.ip")
-			So(changes[0].GetOldValue(), ShouldEqual, "")
-			So(changes[0].GetNewValue(), ShouldEqual, "fake_ip")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.ip"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.BeEmpty)
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("fake_ip"))
 		})
 
-		Convey("Partial Update nic mac address - duplicated mac address", func() {
+		t.Run("Partial Update nic mac address - duplicated mac address", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-8.1",
 			}
@@ -571,7 +572,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			nic2 := &ufspb.Nic{
 				Name:       "nic-8.2",
 				MacAddress: "nic-8.2-address",
@@ -581,18 +582,18 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateNic(ctx, nic2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-8.1",
 				MacAddress: "nic-8.2-address",
 			}
 			_, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"macAddress"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "mac_address nic-8.2-address is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("mac_address nic-8.2-address is already occupied"))
 		})
 
-		Convey("Partial Update nic mac address - no update at all", func() {
+		t.Run("Partial Update nic mac address - no update at all", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-9",
 			}
@@ -608,17 +609,17 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-9",
 				MacAddress: "nic-9-address",
 			}
 			_, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"macAddress"}})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Update nic mac address - duplicated mac address", func() {
+		t.Run("Update nic mac address - duplicated mac address", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-10",
 			}
@@ -633,7 +634,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-11",
@@ -649,18 +650,18 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateNic(ctx, nic2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-full-update",
 				MacAddress: "nic-full-update-address2",
 			}
 			_, err = UpdateNic(ctx, nic1, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "mac_address nic-full-update-address2 is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("mac_address nic-full-update-address2 is already occupied"))
 		})
 
-		Convey("Update nic mac address - happy path", func() {
+		t.Run("Update nic mac address - happy path", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-7",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -668,7 +669,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:       "nic-10",
@@ -676,7 +677,7 @@ func TestUpdateNic(t *testing.T) {
 				MacAddress: "nic-10-address-old",
 			}
 			_, err = registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			lse, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "lse-update-mac",
@@ -684,7 +685,7 @@ func TestUpdateNic(t *testing.T) {
 				Machines: []string{"machine-7"},
 				Nic:      "nic-10",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			dhcp := &ufspb.DHCPConfig{
 				Hostname:   lse.GetName(),
 				Ip:         "fake_ip",
@@ -692,7 +693,7 @@ func TestUpdateNic(t *testing.T) {
 				MacAddress: nic.GetMacAddress(),
 			}
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{dhcp})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-10",
@@ -700,27 +701,27 @@ func TestUpdateNic(t *testing.T) {
 				MacAddress: "nic-10-address",
 			}
 			res, _ := UpdateNic(ctx, nic1, nil)
-			So(res, ShouldNotBeNil)
-			So(res, ShouldResembleProto, nic1)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.Resemble(nic1))
 
 			// new machine's corresponding host has new dhcp record
 			dhcp, err = configuration.GetDHCPConfig(ctx, "lse-update-mac")
-			So(err, ShouldBeNil)
-			So(dhcp.GetMacAddress(), ShouldEqual, "nic-10-address")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dhcp.GetMacAddress(), should.Equal("nic-10-address"))
 			// no change event for lse as nic name is not changed
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/lse-update-mac")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			// verify dhcp change events
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/lse-update-mac")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "dhcp_config.mac_address")
-			So(changes[0].GetOldValue(), ShouldEqual, "nic-10-address-old")
-			So(changes[0].GetNewValue(), ShouldEqual, "nic-10-address")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("dhcp_config.mac_address"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("nic-10-address-old"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("nic-10-address"))
 		})
 
-		Convey("Update nic - permission denied: same realm and no update permission", func() {
+		t.Run("Update nic - permission denied: same realm and no update permission", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-12",
 				Location: &ufspb.Location{
@@ -734,7 +735,7 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-12",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := &ufspb.Nic{
 				Name:       "nic-12",
@@ -743,11 +744,11 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.AtlLabAdminRealm)
 			_, err = UpdateNic(ctx, nic2, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update nic - permission denied: different realm", func() {
+		t.Run("Update nic - permission denied: different realm", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-13",
 				Location: &ufspb.Location{
@@ -761,7 +762,7 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-13",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic2 := &ufspb.Nic{
 				Name:       "nic-13",
@@ -770,11 +771,11 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateNic(ctx, nic2, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update nic with new machine(different realm with no permission) - Permission denied", func() {
+		t.Run("Update nic with new machine(different realm with no permission) - Permission denied", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-14",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -785,7 +786,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-15",
@@ -797,14 +798,14 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-14",
 				Machine: "machine-14",
 			}
 			_, err = registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic = &ufspb.Nic{
 				Name:    "nic-14",
@@ -812,11 +813,11 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateNic(ctx, nic, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Partial Update nic with new machine(different realm with no permission) - Permission denied", func() {
+		t.Run("Partial Update nic with new machine(different realm with no permission) - Permission denied", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-16",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -833,7 +834,7 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-16",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-17",
@@ -852,11 +853,11 @@ func TestUpdateNic(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateNic(ctx, nic1, &field_mask.FieldMask{Paths: []string{"machine"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update nic with new machine(different realm with permission) - Pass", func() {
+		t.Run("Update nic with new machine(different realm with permission) - Pass", func(t *ftt.Test) {
 			machine3 := &ufspb.Machine{
 				Name: "machine-18",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -867,7 +868,7 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine4 := &ufspb.Machine{
 				Name: "machine-19",
@@ -879,14 +880,14 @@ func TestUpdateNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic := &ufspb.Nic{
 				Name:    "nic-18",
 				Machine: "machine-18",
 			}
 			_, err = registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			nic.Machine = "machine-19"
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -898,12 +899,12 @@ func TestUpdateNic(t *testing.T) {
 				),
 			})
 			resp, err := UpdateNic(ctx, nic, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 		})
 
-		Convey("Partial Update nic with new machine(different realm with permission) - Pass", func() {
+		t.Run("Partial Update nic with new machine(different realm with permission) - Pass", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-20",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -920,7 +921,7 @@ func TestUpdateNic(t *testing.T) {
 				Machine: "machine-20",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-21",
@@ -943,9 +944,9 @@ func TestUpdateNic(t *testing.T) {
 				),
 			})
 			resp, err := UpdateNic(ctx, nic, &field_mask.FieldMask{Paths: []string{"machine"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetMachine(), ShouldEqual, "machine-21")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetMachine(), should.Equal("machine-21"))
 		})
 	})
 }
@@ -953,18 +954,18 @@ func TestUpdateNic(t *testing.T) {
 func TestDeleteNic(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("DeleteNic", t, func() {
-		Convey("Delete nic error by non-existing ID", func() {
+	ftt.Run("DeleteNic", t, func(t *ftt.Test) {
+		t.Run("Delete nic error by non-existing ID", func(t *ftt.Test) {
 			err := DeleteNic(ctx, "nic-10")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Delete nic successfully by existing ID", func() {
+		t.Run("Delete nic successfully by existing ID", func(t *ftt.Test) {
 			nic := mockNic("nic-1")
 			machine1 := &ufspb.Machine{
 				Name: "machine-1",
@@ -975,31 +976,31 @@ func TestDeleteNic(t *testing.T) {
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-1"
 			resp, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteNic(ctx, "nic-1")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err = registration.GetNic(ctx, "nic-1")
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
 		})
 
-		Convey("Delete nic error as it's used by a host", func() {
+		t.Run("Delete nic error as it's used by a host", func(t *ftt.Test) {
 			nic := mockNic("nic-ip")
 			nic.Machine = "machine-ip"
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			chromeBrowserMachine1 := &ufspb.Machine{
 				Name: "machine-ip",
@@ -1008,7 +1009,7 @@ func TestDeleteNic(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, chromeBrowserMachine1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "lse-ip",
@@ -1016,18 +1017,18 @@ func TestDeleteNic(t *testing.T) {
 				Machines: []string{"machine-ip"},
 				Nic:      "nic-ip",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteNic(ctx, "nic-ip")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "nic nic-ip is used by host lse-ip")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("nic nic-ip is used by host lse-ip"))
 
 			resp, err := registration.GetNic(ctx, "nic-ip")
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 		})
 
-		Convey("Delete nic - permission denied: same realm and no delete permission", func() {
+		t.Run("Delete nic - permission denied: same realm and no delete permission", func(t *ftt.Test) {
 			nic := mockNic("nic-3")
 			machine1 := &ufspb.Machine{
 				Name: "machine-3",
@@ -1038,16 +1039,16 @@ func TestDeleteNic(t *testing.T) {
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-3"
 			resp, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.AtlLabAdminRealm)
 			err = DeleteNic(ctx, "nic-3")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Delete nic - permission denied: different realm", func() {
+		t.Run("Delete nic - permission denied: different realm", func(t *ftt.Test) {
 			nic := mockNic("nic-4")
 			machine1 := &ufspb.Machine{
 				Name: "machine-4",
@@ -1058,13 +1059,13 @@ func TestDeleteNic(t *testing.T) {
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-4"
 			resp, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, nic)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteNic(ctx, "nic-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -1085,23 +1086,23 @@ func TestListNics(t *testing.T) {
 		}
 		nics = append(nics, resp)
 	}
-	Convey("ListNics", t, func() {
-		Convey("List Nics - filter invalid - error", func() {
+	ftt.Run("ListNics", t, func(t *ftt.Test) {
+		t.Run("List Nics - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListNics(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List Nics - filter switch - happy path", func() {
+		t.Run("List Nics - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListNics(ctx, 5, "", "switch=switch-12", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, nicsWithSwitch)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(nicsWithSwitch))
 		})
 
-		Convey("ListNics - Full listing - happy path", func() {
+		t.Run("ListNics - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListNics(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, nics)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(nics))
 		})
 	})
 }
@@ -1109,8 +1110,8 @@ func TestListNics(t *testing.T) {
 func TestBatchGetNics(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetNics", t, func() {
-		Convey("Batch get nics - happy path", func() {
+	ftt.Run("BatchGetNics", t, func(t *ftt.Test) {
+		t.Run("Batch get nics - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Nic, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.Nic{
@@ -1118,27 +1119,27 @@ func TestBatchGetNics(t *testing.T) {
 				}
 			}
 			_, err := registration.BatchUpdateNics(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := registration.BatchGetNics(ctx, []string{"nic-batchGet-0", "nic-batchGet-1", "nic-batchGet-2", "nic-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get nics  - missing id", func() {
+		t.Run("Batch get nics  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetNics(ctx, []string{"nic-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "nic-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("nic-batchGet-non-existing"))
 		})
-		Convey("Batch get nics  - empty input", func() {
+		t.Run("Batch get nics  - empty input", func(t *ftt.Test) {
 			resp, err := registration.BatchGetNics(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = registration.BatchGetNics(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }
@@ -1155,126 +1156,126 @@ func TestRenameNic(t *testing.T) {
 			Zone: ufspb.Zone_ZONE_ATL97,
 		},
 	})
-	Convey("RenameNic", t, func() {
+	ftt.Run("RenameNic", t, func(t *ftt.Test) {
 
-		Convey("Rename a Nic with new nic name", func() {
+		t.Run("Rename a Nic with new nic name", func(t *ftt.Test) {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "machine-ren-1:nic-1",
 				Machine: "machine-ren-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Machines: []string{"machine-ren-1"},
 				Nic:      "machine-ren-1:nic-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			res, err := RenameNic(ctx, "machine-ren-1:nic-1", "machine-ren-1:nic-2")
-			So(err, ShouldBeNil)
-			So(res.Name, ShouldEqual, "machine-ren-1:nic-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.Name, should.Equal("machine-ren-1:nic-2"))
 			machine, err := GetMachine(ctx, "machine-ren-1")
-			So(err, ShouldBeNil)
-			So(machine, ShouldNotBeNil)
-			So(machine.GetChromeBrowserMachine().GetNicObjects()[0].GetName(), ShouldEqual, "machine-ren-1:nic-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, machine, should.NotBeNil)
+			assert.Loosely(t, machine.GetChromeBrowserMachine().GetNicObjects()[0].GetName(), should.Equal("machine-ren-1:nic-2"))
 			_, err = registration.GetNic(ctx, "machine-ren-1:nic-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			nic, err := registration.GetNic(ctx, "machine-ren-1:nic-2")
-			So(err, ShouldBeNil)
-			So(nic, ShouldNotBeNil)
-			So(nic.GetName(), ShouldEqual, "machine-ren-1:nic-2")
-			So(nic.GetMachine(), ShouldEqual, "machine-ren-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nic, should.NotBeNil)
+			assert.Loosely(t, nic.GetName(), should.Equal("machine-ren-1:nic-2"))
+			assert.Loosely(t, nic.GetMachine(), should.Equal("machine-ren-1"))
 			host, err := inventory.GetMachineLSE(ctx, "machinelse-1")
-			So(err, ShouldBeNil)
-			So(host, ShouldNotBeNil)
-			So(host.GetNic(), ShouldResemble, "machine-ren-1:nic-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, host, should.NotBeNil)
+			assert.Loosely(t, host.GetNic(), should.Match("machine-ren-1:nic-2"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/machine-ren-1:nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-ren-1:nic-1")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-ren-1:nic-2")
-			So(changes[1].GetEventLabel(), ShouldEqual, "nic.name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-ren-1:nic-1"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-ren-1:nic-2"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("nic.name"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/machine-ren-1:nic-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-ren-1:nic-1")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-ren-1:nic-2")
-			So(changes[1].GetEventLabel(), ShouldEqual, "nic.name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-ren-1:nic-1"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-ren-1:nic-2"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("nic.name"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, "machine-ren-1:nic-1")
-			So(changes[0].GetNewValue(), ShouldEqual, "machine-ren-1:nic-2")
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("machine-ren-1:nic-1"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("machine-ren-1:nic-2"))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.nic"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/machine-ren-1:nic-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/machine-ren-1:nic-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/machinelse-1")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Rename a non-existing Nic", func() {
+		t.Run("Rename a non-existing Nic", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err := RenameNic(ctx, "machine-ren-1:nic-3", "machine-ren-1:nic-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Rename a Nic to an already existing nic name", func() {
+		t.Run("Rename a Nic to an already existing nic name", func(t *ftt.Test) {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "machine-ren-1:nic-5",
 				Machine: "machine-ren-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "machine-ren-1:nic-6",
 				Machine: "machine-ren-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = RenameNic(ctx, "machine-ren-1:nic-5", "machine-ren-1:nic-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Nic machine-ren-1:nic-6 already exists in the system")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Nic machine-ren-1:nic-6 already exists in the system"))
 		})
-		Convey("Rename a Machine - permission denied: same realm and no update permission", func() {
+		t.Run("Rename a Machine - permission denied: same realm and no update permission", func(t *ftt.Test) {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "machine-ren-1:nic-7",
 				Machine: "machine-ren-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = RenameNic(ctx, "machine-ren-1:nic-7", "machine-ren-1:nic-8")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
-		Convey("Rename a Nic - permission denied: different realm", func() {
+		t.Run("Rename a Nic - permission denied: different realm", func(t *ftt.Test) {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "machine-ren-1:nic-9",
 				Machine: "machine-ren-1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = RenameNic(ctx, "machine-ren-1:nic-9", "machine-ren-1:nic-10")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }

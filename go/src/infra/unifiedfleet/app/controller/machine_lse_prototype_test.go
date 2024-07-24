@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/configuration"
 	. "infra/unifiedfleet/app/model/datastore"
@@ -34,17 +33,17 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 		resp, _ := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 		machineLSEPrototypes = append(machineLSEPrototypes, resp)
 	}
-	Convey("ListMachineLSEPrototypes", t, func() {
-		Convey("List MachineLSEPrototypes - filter invalid", func() {
+	ftt.Run("ListMachineLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("List MachineLSEPrototypes - filter invalid", func(t *ftt.Test) {
 			_, _, err := ListMachineLSEPrototypes(ctx, 5, "", "machine=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Failed to read filter for listing machinelseprototypes")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Failed to read filter for listing machinelseprototypes"))
 		})
 
-		Convey("ListMachineLSEPrototypes - Full listing - happy path", func() {
+		t.Run("ListMachineLSEPrototypes - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEPrototypes(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototypes)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes))
 		})
 	})
 }
@@ -54,41 +53,41 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 	ctx := testingContext()
 	machineLSEPrototype1 := mockMachineLSEPrototype("machineLSEPrototype-1")
 	machineLSEPrototype2 := mockMachineLSEPrototype("machineLSEPrototype-2")
-	Convey("DeleteMachineLSEPrototype", t, func() {
-		Convey("Delete machineLSEPrototype by existing ID with machinelse reference", func() {
+	ftt.Run("DeleteMachineLSEPrototype", t, func(t *ftt.Test) {
+		t.Run("Delete machineLSEPrototype by existing ID with machinelse reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:                "machinelse-1",
 				MachineLsePrototype: "machineLSEPrototype-1",
 			}
 			mresp, merr := inventory.CreateMachineLSE(ctx, machineLSE1)
-			So(merr, ShouldBeNil)
-			So(mresp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, merr, should.BeNil)
+			assert.Loosely(t, mresp, should.Resemble(machineLSE1))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, CannotDelete)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(CannotDelete))
 
 			resp, cerr = configuration.GetMachineLSEPrototype(ctx, "machineLSEPrototype-1")
-			So(resp, ShouldNotBeNil)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype1)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
 		})
-		Convey("Delete machineLSEPrototype successfully by existing ID without references", func() {
+		t.Run("Delete machineLSEPrototype successfully by existing ID without references", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype2)
-			So(cerr, ShouldBeNil)
-			So(resp, ShouldResembleProto, machineLSEPrototype2)
+			assert.Loosely(t, cerr, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, cerr = configuration.GetMachineLSEPrototype(ctx, "machineLSEPrototype-2")
-			So(resp, ShouldBeNil)
-			So(cerr, ShouldNotBeNil)
-			So(cerr.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, cerr, should.NotBeNil)
+			assert.Loosely(t, cerr.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }
@@ -96,8 +95,8 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 func TestBatchGetMachineLSEPrototypes(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("BatchGetMachineLSEPrototypes", t, func() {
-		Convey("Batch get machine lse prototypes - happy path", func() {
+	ftt.Run("BatchGetMachineLSEPrototypes", t, func(t *ftt.Test) {
+		t.Run("Batch get machine lse prototypes - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.MachineLSEPrototype, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.MachineLSEPrototype{
@@ -105,27 +104,27 @@ func TestBatchGetMachineLSEPrototypes(t *testing.T) {
 				}
 			}
 			_, err := configuration.BatchUpdateMachineLSEPrototypes(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := configuration.BatchGetMachineLSEPrototypes(ctx, []string{"machinelseprototype-batchGet-0", "machinelseprototype-batchGet-1", "machinelseprototype-batchGet-2", "machinelseprototype-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get machine lse prototypes  - missing id", func() {
+		t.Run("Batch get machine lse prototypes  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetMachineLSEPrototypes(ctx, []string{"machinelseprototype-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "machinelseprototype-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("machinelseprototype-batchGet-non-existing"))
 		})
-		Convey("Batch get machine lse prototypes  - empty input", func() {
+		t.Run("Batch get machine lse prototypes  - empty input", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetMachineLSEPrototypes(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = configuration.BatchGetMachineLSEPrototypes(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }

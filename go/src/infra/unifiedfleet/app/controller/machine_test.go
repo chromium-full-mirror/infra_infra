@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -30,21 +31,21 @@ import (
 func TestMachineRegistration(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("TestMachineRegistration", t, func() {
-		Convey("Register machine with already existing machine, nic and drac", func() {
+	ftt.Run("TestMachineRegistration", t, func(t *ftt.Test) {
+		t.Run("Register machine with already existing machine, nic and drac", func(t *ftt.Test) {
 			nic := &ufspb.Nic{
 				Name:    "nic-1",
 				Machine: "machine-1",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-1",
 				Machine: "machine-1",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine := &ufspb.Machine{
 				Name: "machine-1",
@@ -62,28 +63,28 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring,
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(
 				"Machine machine-1 already exists in the system.\n"+
 					"Nic nic-1 already exists in the system.\n"+
-					"Drac drac-1 already exists in the system.\n")
+					"Drac drac-1 already exists in the system.\n"))
 
 			// No changes are recorded as the registration fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/nic-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-1")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Register browser machine with duplicated serial number", func() {
+		t.Run("Register browser machine with duplicated serial number", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			existingMachine := &ufspb.Machine{
 				Name:         "machine-with-duplicated-serial",
@@ -93,7 +94,7 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := MachineRegistration(ctx, existingMachine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine := &ufspb.Machine{
 				Name:         "machine-3",
@@ -103,19 +104,19 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err = MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "contains the same serial number")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("contains the same serial number"))
 
 			// No changes are recorded as the registration fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/nic-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Register machine with invalid machine(referencing non existing resources)", func() {
+		t.Run("Register machine with invalid machine(referencing non existing resources)", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -131,19 +132,19 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Cannot create machine machine-3:\n"+
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot create machine machine-3:\n"+
 				"There is no KVM with KVMID kvm-3 in the system.\n"+
 				"There is no RPM with RPMID rpm-3 in the system.\n"+
-				"There is no ChromePlatform with ChromePlatformID chromePlatform-3 in the system.")
+				"There is no ChromePlatform with ChromePlatformID chromePlatform-3 in the system."))
 
 			// No changes are recorded as the registration fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Register browser machine with invalid nic(referencing non existing resources)", func() {
+		t.Run("Register browser machine with invalid nic(referencing non existing resources)", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -158,20 +159,20 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Cannot create machine machine-3:\n"+
-				"There is no Switch with SwitchID switch-1 in the system.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot create machine machine-3:\n"+
+				"There is no Switch with SwitchID switch-1 in the system."))
 
 			// No changes are recorded as the registration fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/nic-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Register browser machine with invalid drac(referencing non existing resources)", func() {
+		t.Run("Register browser machine with invalid drac(referencing non existing resources)", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -186,24 +187,24 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err := MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Cannot create machine machine-3:\n"+
-				"There is no Switch with SwitchID switch-1 in the system.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot create machine machine-3:\n"+
+				"There is no Switch with SwitchID switch-1 in the system."))
 
 			// No changes are recorded as the registration fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-2")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Register browser machine - duplicated kvm interface", func() {
+		t.Run("Register browser machine - duplicated kvm interface", func(t *ftt.Test) {
 			_, err := registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-browser-duplicate",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine := &ufspb.Machine{
 				Name: "machine-browser-duplicate1",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -216,8 +217,8 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			m, err := MachineRegistration(ctx, machine)
-			So(err, ShouldBeNil)
-			So(m, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m, should.Resemble(machine))
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-browser-duplicate2",
@@ -231,15 +232,15 @@ func TestMachineRegistration(t *testing.T) {
 				},
 			}
 			_, err = MachineRegistration(ctx, machine2)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "kvm port A1 of kvm-browser-duplicate is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("kvm port A1 of kvm-browser-duplicate is already occupied"))
 		})
 
-		Convey("Register browser machine happy path", func() {
+		t.Run("Register browser machine happy path", func(t *ftt.Test) {
 			_, err := registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-browser-3",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			nics := []*ufspb.Nic{{
 				Name: "nic-browser-3",
 			}}
@@ -263,48 +264,48 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			m, err := MachineRegistration(ctx, machine)
-			So(err, ShouldBeNil)
-			So(m, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m, should.Resemble(machine))
 			s, err := state.GetStateRecord(ctx, "machines/machine-browser-3")
-			So(err, ShouldBeNil)
-			So(s.GetState(), ShouldEqual, ufspb.State_STATE_REGISTERED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 			dr, err := inventory.GetMachineLSEDeployment(ctx, m.GetSerialNumber())
-			So(err, ShouldBeNil)
-			So(dr.GetHostname(), ShouldEqual, util.GetHostnameWithNoHostPrefix(m.GetSerialNumber()))
-			So(dr.GetDeploymentIdentifier(), ShouldBeEmpty)
-			So(dr.GetConfigsToPush(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dr.GetHostname(), should.Equal(util.GetHostnameWithNoHostPrefix(m.GetSerialNumber())))
+			assert.Loosely(t, dr.GetDeploymentIdentifier(), should.BeEmpty)
+			assert.Loosely(t, dr.GetConfigsToPush(), should.BeNil)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-browser-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/nic-browser-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-browser-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/machine-browser-3-serial-number")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/machine-browser-3-serial-number")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Register OS machine happy path", func() {
+		t.Run("Register OS machine happy path", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-3",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -320,23 +321,23 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			r := mockRack("chromeos6-test", "2", ufspb.Zone_ZONE_CHROMEOS6)
 			_, err := registration.CreateRack(ctx, r)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = AssetRegistration(ctx, asset)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			m, err := MachineRegistration(ctx, machine)
-			So(err, ShouldBeNil)
-			So(m, ShouldNotBeNil)
-			So(m, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m, should.NotBeNil)
+			assert.Loosely(t, m, should.Resemble(machine))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-os-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 		})
 
-		Convey("Register machine - permission denied: same realm and no create permission", func() {
+		t.Run("Register machine - permission denied: same realm and no create permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-4",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -346,11 +347,11 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.AtlLabAdminRealm)
 			_, err := MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Register machine - permission denied: different realm", func() {
+		t.Run("Register machine - permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-5",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -360,8 +361,8 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			_, err := MachineRegistration(ctx, machine)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -369,21 +370,21 @@ func TestMachineRegistration(t *testing.T) {
 func TestUpdateMachine(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateMachines", t, func() {
-		Convey("Update a non-existing machine", func() {
+	ftt.Run("UpdateMachines", t, func(t *ftt.Test) {
+		t.Run("Update a non-existing machine", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-10",
 			}
 			_, err := UpdateMachine(ctx, machine, nil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Update new machine with non existing resource", func() {
+		t.Run("Update new machine with non existing resource", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-1",
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine = &ufspb.Machine{
 				Name: "machine-1",
@@ -394,11 +395,11 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = UpdateMachine(ctx, machine, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Cannot update machine machine-1")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot update machine machine-1"))
 		})
 
-		Convey("Update machine with existing resources, but duplicated serial", func() {
+		t.Run("Update machine with existing resources, but duplicated serial", func(t *ftt.Test) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			machine1 := &ufspb.Machine{
 				Name:         "machine-update-with-duplicated-serial-1",
@@ -409,7 +410,7 @@ func TestUpdateMachine(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err := registration.CreateMachine(ctx, machine1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine2 := &ufspb.Machine{
 				Name:         "machine-update-with-duplicated-serial-2",
@@ -420,7 +421,7 @@ func TestUpdateMachine(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err = registration.CreateMachine(ctx, machine2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machineToUpdate := &ufspb.Machine{
 				Name:         "machine-update-with-duplicated-serial-1",
@@ -431,11 +432,11 @@ func TestUpdateMachine(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err = UpdateMachine(ctx, machineToUpdate, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "contains the same serial number")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("contains the same serial number"))
 		})
 
-		Convey("Update machine with existing resources", func() {
+		t.Run("Update machine with existing resources", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-2",
 				Location: &ufspb.Location{
@@ -446,8 +447,8 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := registration.CreateMachine(ctx, machine)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "nic-update-zone",
 				Zone:    ufspb.Zone_ZONE_CHROMEOS3.String(),
@@ -480,7 +481,7 @@ func TestUpdateMachine(t *testing.T) {
 				Name: "chromePlatform-2",
 			}
 			_, err = configuration.CreateChromePlatform(ctx, chromePlatform2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine = &ufspb.Machine{
 				Name: "machine-2",
@@ -495,23 +496,23 @@ func TestUpdateMachine(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err = UpdateMachine(ctx, machine, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machine))
 			lse, err := inventory.GetMachineLSE(ctx, "lse-update-zone")
-			So(err, ShouldBeNil)
-			So(lse.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS2.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lse.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS2.String()))
 			nic, err := registration.GetNic(ctx, "nic-update-zone")
-			So(err, ShouldBeNil)
-			So(nic.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS2.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nic.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS2.String()))
 			drac, err := registration.GetDrac(ctx, "drac-update-zone")
-			So(err, ShouldBeNil)
-			So(drac.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS2.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, drac.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS2.String()))
 			vm, err := inventory.GetVM(ctx, "vm-update-zone")
-			So(err, ShouldBeNil)
-			So(vm.GetZone(), ShouldEqual, ufspb.Zone_ZONE_CHROMEOS2.String())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, vm.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS2.String()))
 		})
 
-		Convey("Update machine kvm", func() {
+		t.Run("Update machine kvm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-update-kvm",
 				Location: &ufspb.Location{
@@ -522,12 +523,12 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-update",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine = &ufspb.Machine{
 				Name: "machine-update-kvm",
@@ -545,11 +546,11 @@ func TestUpdateMachine(t *testing.T) {
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err := UpdateMachine(ctx, machine, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machine))
 		})
 
-		Convey("Update machine serial number", func() {
+		t.Run("Update machine serial number", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name:         "machine-full-update-serial",
 				SerialNumber: "old-serial-full-update",
@@ -558,9 +559,9 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = inventory.UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{util.FormatDeploymentRecord("", machine.GetSerialNumber())})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 := &ufspb.Machine{
 				Name:         "machine-full-update-serial",
@@ -570,39 +571,39 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := UpdateMachine(ctx, machine1, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-full-update")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-full-update"))
 			dr, err := inventory.GetMachineLSEDeployment(ctx, "serial-full-update")
-			So(err, ShouldBeNil)
-			So(dr.GetHostname(), ShouldEqual, util.GetHostnameWithNoHostPrefix("serial-full-update"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dr.GetHostname(), should.Equal(util.GetHostnameWithNoHostPrefix("serial-full-update")))
 			_, err = inventory.GetMachineLSEDeployment(ctx, "old-serial-full-update")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 
 			// Verify the change events of deployment records
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-full-update")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/old-serial-full-update")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/serial-full-update")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/old-serial-full-update")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Partial Update machine", func() {
+		t.Run("Partial Update machine", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-3",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -616,17 +617,17 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			chromePlatform := &ufspb.ChromePlatform{
 				Name: "chromePlatform-4",
 			}
 			_, err = configuration.CreateChromePlatform(ctx, chromePlatform)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-4",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 := &ufspb.Machine{
 				Name: "machine-3",
@@ -641,14 +642,14 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"platform", "kvm"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetChromeBrowserMachine().GetChromePlatform(), ShouldResemble, "chromePlatform-4")
-			So(resp.GetChromeBrowserMachine().GetKvmInterface().GetKvm(), ShouldResemble, "kvm-4")
-			So(resp.GetChromeBrowserMachine().GetKvmInterface().GetPortName(), ShouldResemble, "A1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeBrowserMachine().GetChromePlatform(), should.Match("chromePlatform-4"))
+			assert.Loosely(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetKvm(), should.Match("kvm-4"))
+			assert.Loosely(t, resp.GetChromeBrowserMachine().GetKvmInterface().GetPortName(), should.Match("A1"))
 		})
 
-		Convey("Partial Update machine - update serial number", func() {
+		t.Run("Partial Update machine - update serial number", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-update-serial",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -656,7 +657,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine1 := &ufspb.Machine{
 				Name:         "machine-update-serial",
 				SerialNumber: "serial-update",
@@ -665,27 +666,27 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"serialNumber"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-update")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-update"))
 			dr, err := inventory.GetMachineLSEDeployment(ctx, "serial-update")
-			So(err, ShouldBeNil)
-			So(dr.GetHostname(), ShouldEqual, util.GetHostnameWithNoHostPrefix("serial-update"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dr.GetHostname(), should.Equal(util.GetHostnameWithNoHostPrefix("serial-update")))
 
 			// Verify the change events of deployment records
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-update")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/serial-update")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Partial Update machine - update serial number, machine has a corresponding lse", func() {
+		t.Run("Partial Update machine - update serial number, machine has a corresponding lse", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-update-serial-with-lse",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -693,7 +694,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:     "machinelse-update-serial-with-lse",
 				Hostname: "machinelse-update-serial-with-lse",
@@ -703,7 +704,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = inventory.CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Partial update
 			machine1 := &ufspb.Machine{
@@ -714,26 +715,26 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"serialNumber"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-update-with-lse"))
 			dr, err := inventory.GetMachineLSEDeployment(ctx, "serial-update-with-lse")
-			So(err, ShouldBeNil)
-			So(dr.GetHostname(), ShouldEqual, "machinelse-update-serial-with-lse")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, dr.GetHostname(), should.Equal("machinelse-update-serial-with-lse"))
 
 			// Verify the change events of deployment records
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-update-with-lse")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/serial-update-with-lse")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Restore stricted fields - serial number, sku, hwid", func() {
+		t.Run("Restore stricted fields - serial number, sku, hwid", func(t *ftt.Test) {
 			name := "machine-update-serial-hwid-skuwith-lse"
 			machine := &ufspb.Machine{
 				Name:         name,
@@ -746,11 +747,11 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			respMachine, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
-			So(respMachine, ShouldNotBeNil)
-			So(respMachine.GetSerialNumber(), ShouldResemble, "serial-update-with-lse1")
-			So(respMachine.GetChromeosMachine().GetSku(), ShouldResemble, "Sku1")
-			So(respMachine.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, respMachine, should.NotBeNil)
+			assert.Loosely(t, respMachine.GetSerialNumber(), should.Match("serial-update-with-lse1"))
+			assert.Loosely(t, respMachine.GetChromeosMachine().GetSku(), should.Match("Sku1"))
+			assert.Loosely(t, respMachine.GetChromeosMachine().GetHwid(), should.Match("hwid1"))
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:     name,
 				Hostname: name,
@@ -760,7 +761,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = inventory.CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// No update
 			machine1 := &ufspb.Machine{
@@ -770,11 +771,11 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err := UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse1")
-			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku1")
-			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-update-with-lse1"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetSku(), should.Match("Sku1"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetHwid(), should.Match("hwid1"))
 
 			// Update fields
 			machine1 = &ufspb.Machine{
@@ -788,11 +789,11 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err = UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse2")
-			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid2")
-			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-update-with-lse2"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetHwid(), should.Match("hwid2"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetSku(), should.Match("Sku2"))
 
 			// Do not update if use paths.
 			machine1 = &ufspb.Machine{
@@ -806,18 +807,18 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			resp, err = UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"resourceState"}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetSerialNumber(), ShouldResemble, "serial-update-with-lse2")
-			So(resp.GetChromeosMachine().GetHwid(), ShouldResemble, "hwid2")
-			So(resp.GetChromeosMachine().GetSku(), ShouldResemble, "Sku2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Match("serial-update-with-lse2"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetHwid(), should.Match("hwid2"))
+			assert.Loosely(t, resp.GetChromeosMachine().GetSku(), should.Match("Sku2"))
 		})
 
-		Convey("Partial Update machine - duplicated kvm", func() {
+		t.Run("Partial Update machine - duplicated kvm", func(t *ftt.Test) {
 			_, err := registration.CreateKVM(ctx, &ufspb.KVM{
 				Name: "kvm-update-duplicate1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine := &ufspb.Machine{
 				Name: "machine-update-duplicate1",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -830,7 +831,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine2 := &ufspb.Machine{
 				Name: "machine-update-duplicate2",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -843,7 +844,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 := &ufspb.Machine{
 				Name: "machine-update-duplicate2",
@@ -857,11 +858,11 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err = UpdateMachine(ctx, machine1, &field_mask.FieldMask{Paths: []string{"kvm"}})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "kvm port A1 of kvm-update-duplicate1 is already occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("kvm port A1 of kvm-update-duplicate1 is already occupied"))
 		})
 
-		Convey("Update machine - permission denied: same realm and no update permission", func() {
+		t.Run("Update machine - permission denied: same realm and no update permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-4",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -872,15 +873,15 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			_, err = UpdateMachine(ctx, machine, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update machine - permission denied: different realm", func() {
+		t.Run("Update machine - permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-5",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -891,15 +892,15 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			_, err = UpdateMachine(ctx, machine, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Update machine(realm name) - different realm with permission success", func() {
+		t.Run("Update machine(realm name) - different realm with permission success", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-6",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -908,7 +909,7 @@ func TestUpdateMachine(t *testing.T) {
 				Realm: util.AtlLabAdminRealm,
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine.Realm = util.BrowserLabAdminRealm
 			ctx := auth.WithState(ctx, &authtest.FakeState{
@@ -920,11 +921,11 @@ func TestUpdateMachine(t *testing.T) {
 				),
 			})
 			resp, err := UpdateMachine(ctx, machine, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, machine)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(machine))
 		})
 
-		Convey("Update machine(realm name) - permission denied: different realm without permission", func() {
+		t.Run("Update machine(realm name) - permission denied: different realm without permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-os-7",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -933,16 +934,16 @@ func TestUpdateMachine(t *testing.T) {
 				Realm: util.AtlLabAdminRealm,
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine.Realm = util.BrowserLabAdminRealm
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = UpdateMachine(ctx, machine, nil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Partial Update attached device machine", func() {
+		t.Run("Partial Update attached device machine", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "adm-1",
 				Device: &ufspb.Machine_AttachedDevice{
@@ -955,7 +956,7 @@ func TestUpdateMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine1 := &ufspb.Machine{
 				Name: "adm-1",
@@ -974,12 +975,12 @@ func TestUpdateMachine(t *testing.T) {
 				"admBuildTarget",
 				"admModel",
 			}})
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.GetAttachedDevice().GetDeviceType(), ShouldEqual, ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE)
-			So(resp.GetAttachedDevice().GetManufacturer(), ShouldEqual, "test-man-1")
-			So(resp.GetAttachedDevice().GetBuildTarget(), ShouldEqual, "test-target-1")
-			So(resp.GetAttachedDevice().GetModel(), ShouldEqual, "test-model-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetAttachedDevice().GetDeviceType(), should.Equal(ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE))
+			assert.Loosely(t, resp.GetAttachedDevice().GetManufacturer(), should.Equal("test-man-1"))
+			assert.Loosely(t, resp.GetAttachedDevice().GetBuildTarget(), should.Equal("test-target-1"))
+			assert.Loosely(t, resp.GetAttachedDevice().GetModel(), should.Equal("test-model-1"))
 		})
 	})
 }
@@ -987,15 +988,15 @@ func TestUpdateMachine(t *testing.T) {
 func TestUpdateDutMeta(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateDutLab for an OS machine", t, func() {
-		Convey("Update a non-OS machine", func() {
+	ftt.Run("UpdateDutLab for an OS machine", t, func(t *ftt.Test) {
+		t.Run("Update a non-OS machine", func(t *ftt.Test) {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: "machine-dutmeta-1",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = UpdateDutMeta(ctx, &ufspb.DutMeta{
 				ChromeosDeviceId: "machine-dutmeta-1",
@@ -1003,10 +1004,10 @@ func TestUpdateDutMeta(t *testing.T) {
 				SerialNumber:     "fake-serial",
 			})
 			// Update is skipped without error
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Update a OS machine - happy path", func() {
+		t.Run("Update a OS machine - happy path", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-dutmeta-2",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -1014,10 +1015,10 @@ func TestUpdateDutMeta(t *testing.T) {
 				},
 			}
 			req, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.BeEmpty)
 
 			err = UpdateDutMeta(ctx, &ufspb.DutMeta{
 				ChromeosDeviceId: "machine-dutmeta-2",
@@ -1026,12 +1027,12 @@ func TestUpdateDutMeta(t *testing.T) {
 				HwID:             "fake-hwid",
 				DeviceSku:        "fake-devicesku",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req, err = registration.GetMachine(ctx, "machine-dutmeta-2")
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldEqual, "fake-serial")
-			So(req.GetChromeosMachine().GetHwid(), ShouldEqual, "fake-hwid")
-			So(req.GetChromeosMachine().GetSku(), ShouldEqual, "fake-devicesku")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetSerialNumber(), should.Equal("fake-serial"))
+			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.Equal("fake-hwid"))
+			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.Equal("fake-devicesku"))
 		})
 	})
 }
@@ -1049,8 +1050,8 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 		DeviceSku:    deviceSku,
 		DlmSkuId:     dlmSkuId,
 	}
-	Convey("UpdateRecoveryDutData for an OS machine", t, func() {
-		Convey("Update a non-OS machine", func() {
+	ftt.Run("UpdateRecoveryDutData for an OS machine", t, func(t *ftt.Test) {
+		t.Run("Update a non-OS machine", func(t *ftt.Test) {
 			const machineName = "machine-dutdata-1"
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: machineName,
@@ -1058,7 +1059,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			asset := &ufspb.Asset{
 				Name: machineName,
 				Info: &ufspb.AssetInfo{
@@ -1068,28 +1069,28 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 				Location: &ufspb.Location{},
 			}
 			asset, err = registration.CreateAsset(ctx, asset)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, asset.GetInfo().GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetSku(), should.BeEmpty)
 
 			err = updateRecoveryDutData(ctx, machineName, dutData)
 			// Update is skipped without error
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req, err := registration.GetMachine(ctx, machineName)
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetDlmSkuId(), should.BeEmpty)
 
 			asset, err = registration.GetAsset(ctx, machineName)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, asset.GetInfo().GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetSku(), should.BeEmpty)
 		})
-		Convey("Update a OS machine - successful path", func() {
+		t.Run("Update a OS machine - successful path", func(t *ftt.Test) {
 			const machineName = "machine-dutdata-2"
 			const assetTag = "machine-testassetdata-2"
 			machine := &ufspb.Machine{
@@ -1099,11 +1100,11 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 				},
 			}
 			req, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetSku(), ShouldBeEmpty)
-			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetDlmSkuId(), should.BeEmpty)
 			asset := &ufspb.Asset{
 				Name: machineName,
 				Info: &ufspb.AssetInfo{
@@ -1113,25 +1114,25 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 				Location: &ufspb.Location{},
 			}
 			asset, err = registration.CreateAsset(ctx, asset)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, asset.GetInfo().GetSerialNumber(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetHwid(), should.BeEmpty)
+			assert.Loosely(t, asset.GetInfo().GetSku(), should.BeEmpty)
 
 			err = updateRecoveryDutData(ctx, machineName, dutData)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			req, err = registration.GetMachine(ctx, machineName)
-			So(err, ShouldBeNil)
-			So(req.GetSerialNumber(), ShouldEqual, serialNumber)
-			So(req.GetChromeosMachine().GetHwid(), ShouldEqual, hwID)
-			So(req.GetChromeosMachine().GetSku(), ShouldEqual, deviceSku)
-			So(req.GetChromeosMachine().GetDlmSkuId(), ShouldEqual, dlmSkuId)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req.GetSerialNumber(), should.Equal(serialNumber))
+			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.Equal(hwID))
+			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.Equal(deviceSku))
+			assert.Loosely(t, req.GetChromeosMachine().GetDlmSkuId(), should.Equal(dlmSkuId))
 
 			asset, err = registration.GetAsset(ctx, machineName)
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldEqual, serialNumber)
-			So(asset.GetInfo().GetHwid(), ShouldEqual, hwID)
-			So(asset.GetInfo().GetSku(), ShouldEqual, deviceSku)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, asset.GetInfo().GetSerialNumber(), should.Equal(serialNumber))
+			assert.Loosely(t, asset.GetInfo().GetHwid(), should.Equal(hwID))
+			assert.Loosely(t, asset.GetInfo().GetSku(), should.Equal(deviceSku))
 		})
 	})
 }
@@ -1139,66 +1140,66 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 func TestDeleteMachine(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("DeleteMachine", t, func() {
-		Convey("Delete machine by existing ID with machineLSE reference", func() {
+	ftt.Run("DeleteMachine", t, func(t *ftt.Test) {
+		t.Run("Delete machine by existing ID with machineLSE reference", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name:  "machine-3",
 				Realm: util.AtlLabAdminRealm,
 			}
 			_, err := registration.CreateMachine(ctx, machine1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Machines: []string{"machine-3"},
 			}
 			_, err = inventory.CreateMachineLSE(ctx, machineLSE1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteMachine(ctx, "machine-3")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "is occupied")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("is occupied"))
 
 			resp, _ := registration.GetMachine(ctx, "machine-3")
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machine1)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machine1))
 
 			// No changes are recorded as the deletion fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 
-		Convey("Delete machine by existing ID without references", func() {
+		t.Run("Delete machine by existing ID without references", func(t *ftt.Test) {
 			machine2 := &ufspb.Machine{
 				Name: "machine-4",
 			}
 			_, err := registration.CreateMachine(ctx, machine2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteMachine(ctx, "machine-4")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetMachine(ctx, "machine-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 
-		Convey("Delete machine with nics and drac - happy path", func() {
+		t.Run("Delete machine with nics and drac - happy path", func(t *ftt.Test) {
 			nic := &ufspb.Nic{
 				Name:    "nic-5",
 				Machine: "machine-5",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			drac := &ufspb.Drac{
 				Name:    "drac-5",
 				Machine: "machine-5",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = configuration.BatchUpdateDHCPs(ctx, []*ufspb.DHCPConfig{
 				{
@@ -1206,7 +1207,7 @@ func TestDeleteMachine(t *testing.T) {
 					Ip:       "1.2.3.5",
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = configuration.BatchUpdateIPs(ctx, []*ufspb.IP{
 				{
 					Id:       "ip3",
@@ -1216,7 +1217,7 @@ func TestDeleteMachine(t *testing.T) {
 					Ipv4:     uint32(100),
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine := &ufspb.Machine{
 				Name: "machine-5",
@@ -1225,44 +1226,44 @@ func TestDeleteMachine(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = DeleteMachine(ctx, "machine-5")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = registration.GetMachine(ctx, "machine-4")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = registration.GetNic(ctx, "nic-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 
 			_, err = registration.GetDrac(ctx, "drac-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = configuration.GetDHCPConfig(ctx, "drac-5")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			resIPs, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "1.2.3.5"})
-			So(err, ShouldBeNil)
-			So(resIPs, ShouldHaveLength, 1)
-			So(resIPs[0].Occupied, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resIPs, should.HaveLength(1))
+			assert.Loosely(t, resIPs[0].Occupied, should.BeFalse)
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetName(), ShouldEqual, "machines/machine-4")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetName(), should.Equal("machines/machine-4"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-4")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 		})
 
-		Convey("Delete machine - Permission denied: same realm with no delete permission", func() {
+		t.Run("Delete machine - Permission denied: same realm with no delete permission", func(t *ftt.Test) {
 			machine2 := &ufspb.Machine{
 				Name: "machine-6",
 				Location: &ufspb.Location{
@@ -1270,16 +1271,16 @@ func TestDeleteMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// same realm different permission
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AtlLabAdminRealm)
 			err = DeleteMachine(ctx, "machine-6")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 
-		Convey("Delete machine - Permission denied: different realm", func() {
+		t.Run("Delete machine - Permission denied: different realm", func(t *ftt.Test) {
 			machine2 := &ufspb.Machine{
 				Name: "machine-7",
 				Location: &ufspb.Location{
@@ -1287,13 +1288,13 @@ func TestDeleteMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// different realm
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteMachine(ctx, "machine-7")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -1301,83 +1302,83 @@ func TestDeleteMachine(t *testing.T) {
 func TestReplaceMachine(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("ReplaceMachines", t, func() {
-		Convey("Repalce an old Machine with new machine with MachineLSE reference", func() {
+	ftt.Run("ReplaceMachines", t, func(t *ftt.Test) {
+		t.Run("Repalce an old Machine with new machine with MachineLSE reference", func(t *ftt.Test) {
 			oldMachine1 := &ufspb.Machine{
 				Name: "machine-4",
 			}
 			_, cerr := registration.CreateMachine(ctx, oldMachine1)
-			So(cerr, ShouldBeNil)
+			assert.Loosely(t, cerr, should.BeNil)
 
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Machines: []string{"machine-0", "machine-50", "machine-4", "machine-7"},
 			}
 			mresp, merr := inventory.CreateMachineLSE(ctx, machineLSE1)
-			So(merr, ShouldBeNil)
-			So(mresp, ShouldResembleProto, machineLSE1)
+			assert.Loosely(t, merr, should.BeNil)
+			assert.Loosely(t, mresp, should.Resemble(machineLSE1))
 
 			newMachine2 := &ufspb.Machine{
 				Name: "machine-100",
 			}
 			rresp, rerr := ReplaceMachine(ctx, oldMachine1, newMachine2)
-			So(rerr, ShouldBeNil)
-			So(rresp, ShouldResembleProto, newMachine2)
+			assert.Loosely(t, rerr, should.BeNil)
+			assert.Loosely(t, rresp, should.Resemble(newMachine2))
 
 			mresp, merr = inventory.GetMachineLSE(ctx, "machinelse-1")
-			So(merr, ShouldBeNil)
-			So(mresp.GetMachines(), ShouldResemble, []string{"machine-0", "machine-50", "machine-100", "machine-7"})
+			assert.Loosely(t, merr, should.BeNil)
+			assert.Loosely(t, mresp.GetMachines(), should.Resemble([]string{"machine-0", "machine-50", "machine-100", "machine-7"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-4")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRetire)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/machine-100")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-4")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-100")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 
-		Convey("Repalce an old Machine with already existing machine", func() {
+		t.Run("Repalce an old Machine with already existing machine", func(t *ftt.Test) {
 			existingMachine1 := &ufspb.Machine{
 				Name: "machine-105",
 			}
 			_, cerr := registration.CreateMachine(ctx, existingMachine1)
-			So(cerr, ShouldBeNil)
+			assert.Loosely(t, cerr, should.BeNil)
 
 			oldMachine1 := &ufspb.Machine{
 				Name: "machine-5",
 			}
 			_, cerr = registration.CreateMachine(ctx, oldMachine1)
-			So(cerr, ShouldBeNil)
+			assert.Loosely(t, cerr, should.BeNil)
 
 			newMachine2 := &ufspb.Machine{
 				Name: "machine-105",
 			}
 			rresp, rerr := ReplaceMachine(ctx, oldMachine1, newMachine2)
-			So(rerr, ShouldNotBeNil)
-			So(rresp, ShouldBeNil)
-			So(rerr.Error(), ShouldContainSubstring, AlreadyExists)
+			assert.Loosely(t, rerr, should.NotBeNil)
+			assert.Loosely(t, rresp, should.BeNil)
+			assert.Loosely(t, rerr.Error(), should.ContainSubstring(AlreadyExists))
 
 			// No change are recorded as the replacement fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-5")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/machine-105")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(0))
 		})
 	})
 }
@@ -1385,27 +1386,27 @@ func TestReplaceMachine(t *testing.T) {
 func TestRenameMachine(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("RenameMachine", t, func() {
-		Convey("Rename a Machine with new machine name", func() {
+	ftt.Run("RenameMachine", t, func(t *ftt.Test) {
+		t.Run("Rename a Machine with new machine name", func(t *ftt.Test) {
 			nic := &ufspb.Nic{
 				Name:    "machine-10:nic-10",
 				Machine: "machine-10",
 			}
 			_, err := registration.CreateNic(ctx, nic)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			drac := &ufspb.Drac{
 				Name:    "drac-10",
 				Machine: "machine-10",
 			}
 			_, err = registration.CreateDrac(ctx, drac)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			host := &ufspb.MachineLSE{
 				Name:     "machinelse-10",
 				Machines: []string{"machine-10"},
 				Nic:      "machine-10:nic-10",
 			}
 			_, err = inventory.CreateMachineLSE(ctx, host)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine := &ufspb.Machine{
 				Name: "machine-10",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -1414,119 +1415,119 @@ func TestRenameMachine(t *testing.T) {
 				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err = registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			res, err := RenameMachine(ctx, "machine-10", "machine-202")
-			So(err, ShouldBeNil)
-			So(res.Name, ShouldEqual, "machine-202")
-			So(res.GetChromeBrowserMachine().GetDisplayName(), ShouldEqual, "machine-202")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.Name, should.Equal("machine-202"))
+			assert.Loosely(t, res.GetChromeBrowserMachine().GetDisplayName(), should.Equal("machine-202"))
 
 			_, err = registration.GetMachine(ctx, "machine-10")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			_, err = registration.GetNic(ctx, "machine-10:nic-10")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 			nic, err = registration.GetNic(ctx, "machine-202:nic-10")
-			So(err, ShouldBeNil)
-			So(nic.GetMachine(), ShouldEqual, "machine-202")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nic.GetMachine(), should.Equal("machine-202"))
 			drac, err = registration.GetDrac(ctx, "drac-10")
-			So(err, ShouldBeNil)
-			So(drac.GetMachine(), ShouldEqual, "machine-202")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, drac.GetMachine(), should.Equal("machine-202"))
 			host, err = inventory.GetMachineLSE(ctx, "machinelse-10")
-			So(err, ShouldBeNil)
-			So(host.GetMachines(), ShouldResemble, []string{"machine-202"})
-			So(host.GetNic(), ShouldResemble, "machine-202:nic-10")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, host.GetMachines(), should.Resemble([]string{"machine-202"}))
+			assert.Loosely(t, host.GetNic(), should.Match("machine-202:nic-10"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-10")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-202")
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine.name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-10"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-202"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine.name"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "machines/machine-202")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-10")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-202")
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine.name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-10"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-202"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine.name"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/machine-10:nic-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 3)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-10:nic-10")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-202:nic-10")
-			So(changes[1].GetEventLabel(), ShouldEqual, "nic.name")
-			So(changes[2].GetOldValue(), ShouldEqual, "machine-10")
-			So(changes[2].GetNewValue(), ShouldEqual, "machine-202")
-			So(changes[2].GetEventLabel(), ShouldEqual, "nic.machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-10:nic-10"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-202:nic-10"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("nic.name"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.Equal("machine-10"))
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("machine-202"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("nic.machine"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "nics/machine-202:nic-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 3)
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRename)
-			So(changes[0].GetEventLabel(), ShouldEqual, "nic")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-10:nic-10")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-202:nic-10")
-			So(changes[1].GetEventLabel(), ShouldEqual, "nic.name")
-			So(changes[2].GetOldValue(), ShouldEqual, "machine-10")
-			So(changes[2].GetNewValue(), ShouldEqual, "machine-202")
-			So(changes[2].GetEventLabel(), ShouldEqual, "nic.machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRename))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("nic"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-10:nic-10"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-202:nic-10"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("nic.name"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.Equal("machine-10"))
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal("machine-202"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("nic.machine"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetOldValue(), ShouldEqual, "machine-10")
-			So(changes[0].GetNewValue(), ShouldEqual, "machine-202")
-			So(changes[0].GetEventLabel(), ShouldEqual, "drac.machine")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("machine-10"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("machine-202"))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("drac.machine"))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-10")
-			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetOldValue(), ShouldEqual, "[machine-10]")
-			So(changes[0].GetNewValue(), ShouldEqual, "[machine-202]")
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse.machines")
-			So(changes[1].GetOldValue(), ShouldEqual, "machine-10:nic-10")
-			So(changes[1].GetNewValue(), ShouldEqual, "machine-202:nic-10")
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse.nic")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("[machine-10]"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("[machine-202]"))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.machines"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("machine-10:nic-10"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("machine-202:nic-10"))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine_lse.nic"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machines/machine-202")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/machine-10:nic-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "nics/machine-202:nic-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dracs/drac-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/machinelse-10")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 1)
-			So(msgs[0].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
-		Convey("Rename a non-existing Machine", func() {
+		t.Run("Rename a non-existing Machine", func(t *ftt.Test) {
 			_, err := RenameMachine(ctx, "machine-11", "machine-211")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, NotFound)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
-		Convey("Rename a Machine to an already existing machine name", func() {
+		t.Run("Rename a Machine to an already existing machine name", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-12",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -1534,7 +1535,7 @@ func TestRenameMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine = &ufspb.Machine{
 				Name: "machine-212",
@@ -1543,13 +1544,13 @@ func TestRenameMachine(t *testing.T) {
 				},
 			}
 			_, err = registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, err = RenameMachine(ctx, "machine-12", "machine-212")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Machine machine-212 already exists in the system")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Machine machine-212 already exists in the system"))
 		})
-		Convey("Rename a Machine - permission denied: same realm and no update permission", func() {
+		t.Run("Rename a Machine - permission denied: same realm and no update permission", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-13",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -1560,14 +1561,14 @@ func TestRenameMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.BrowserLabAdminRealm)
 			_, err = RenameMachine(ctx, "machine-13", "machine-313")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
-		Convey("Rename a Machine - permission denied: different realm", func() {
+		t.Run("Rename a Machine - permission denied: different realm", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-14",
 				Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -1578,12 +1579,12 @@ func TestRenameMachine(t *testing.T) {
 				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			_, err = RenameMachine(ctx, "machine-13", "machine-313")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, PermissionDenied)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
 		})
 	})
 }
@@ -1609,23 +1610,23 @@ func TestListMachines(t *testing.T) {
 		}
 		machines = append(machines, resp)
 	}
-	Convey("ListMachines", t, func() {
-		Convey("List Machines - filter invalid - error", func() {
+	ftt.Run("ListMachines", t, func(t *ftt.Test) {
+		t.Run("List Machines - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListMachines(ctx, 5, "", "invalid=mx-1", false, false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List Machines - filter chromeplatform - happy path", func() {
+		t.Run("List Machines - filter chromeplatform - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachines(ctx, 5, "", "platform=cp-12", false, false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machinesWithChromeplatform)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machinesWithChromeplatform))
 		})
 
-		Convey("ListMachines - Full listing - happy path", func() {
+		t.Run("ListMachines - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachines(ctx, 5, "", "", false, false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, machines)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(machines))
 		})
 	})
 }
@@ -1650,8 +1651,8 @@ func TestBatchGetMachines(t *testing.T) {
 		},
 	})
 
-	Convey("BatchGetMachines", t, func() {
-		Convey("Batch get machine - happy path", func() {
+	ftt.Run("BatchGetMachines", t, func(t *ftt.Test) {
+		t.Run("Batch get machine - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Machine, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.Machine{
@@ -1662,27 +1663,27 @@ func TestBatchGetMachines(t *testing.T) {
 				}
 			}
 			_, err := registration.BatchUpdateMachines(ctx, entities)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-0", "machine-batchGet-1", "machine-batchGet-2", "machine-batchGet-3"})
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 4)
-			So(resp, ShouldResembleProto, entities)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(4))
+			assert.Loosely(t, resp, should.Resemble(entities))
 		})
-		Convey("Batch get machines  - missing id", func() {
+		t.Run("Batch get machines  - missing id", func(t *ftt.Test) {
 			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-non-existing"})
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "machine-batchGet-non-existing")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("machine-batchGet-non-existing"))
 		})
-		Convey("Batch get machines  - empty input", func() {
+		t.Run("Batch get machines  - empty input", func(t *ftt.Test) {
 			resp, err := BatchGetMachines(ctx, nil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 
 			input := make([]string, 0)
 			resp, err = BatchGetMachines(ctx, input)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(0))
 		})
 	})
 }
@@ -1700,13 +1701,13 @@ func TestUpdateIndexInMachine(t *testing.T) {
 			ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 		},
 	})
-	Convey("Testing updateIndexInMachine", t, func() {
-		Convey("updateIndexInMachine - update index rack", func() {
+	ftt.Run("Testing updateIndexInMachine", t, func(t *ftt.Test) {
+		t.Run("updateIndexInMachine - update index rack", func(t *ftt.Test) {
 			err := updateIndexInMachine(ctx, "rack", "index-rack-old", "index-rack-new", &HistoryClient{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			machine, err := registration.GetMachine(ctx, "machine-update-index")
-			So(err, ShouldBeNil)
-			So(machine.GetLocation().GetRack(), ShouldEqual, "index-rack-new")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, machine.GetLocation().GetRack(), should.Equal("index-rack-new"))
 		})
 	})
 }
