@@ -13,14 +13,15 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/errors"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -459,34 +460,34 @@ func TestListHwidData(t *testing.T) {
 		}
 		hds = append(hds, respProto.(*ufspb.HwidData))
 	}
-	Convey("ListHwidData", t, func() {
-		Convey("ListHwidData - page_token invalid", func() {
+	ftt.Run("ListHwidData", t, func(t *ftt.Test) {
+		t.Run("ListHwidData - page_token invalid", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListHwidData(ctx, 5, "abc", "", false)
-			So(resp, ShouldBeNil)
-			So(nextPageToken, ShouldBeEmpty)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, ufsds.InvalidPageToken)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.BeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsds.InvalidPageToken))
 		})
 
-		Convey("ListHwidData - full listing with no pagination", func() {
+		t.Run("ListHwidData - full listing with no pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListHwidData(ctx, 4, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, hds)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(hds))
 		})
 
-		Convey("ListHwidData - listing with pagination", func() {
+		t.Run("ListHwidData - listing with pagination", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListHwidData(ctx, 3, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(nextPageToken, ShouldNotBeEmpty)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, hds[:3])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(hds[:3]))
 
 			resp, _, err = ListHwidData(ctx, 2, nextPageToken, "", false)
-			So(resp, ShouldNotBeNil)
-			So(err, ShouldBeNil)
-			So(resp, ShouldResembleProto, hds[3:])
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.Resemble(hds[3:]))
 		})
 	})
 }

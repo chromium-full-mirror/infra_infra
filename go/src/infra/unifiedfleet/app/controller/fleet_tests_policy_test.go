@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
@@ -34,8 +35,8 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 		IdentityGroups: []string{"public-chromium-in-chromeos-builders"},
 	})
 	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"}, false)
-	Convey("Is Valid Public Chromium Test", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Is Valid Public Chromium Test", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:  "tast.lacros",
 				Board:     "eve",
@@ -46,9 +47,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Private test name and public auth group member", func() {
+		t.Run("Private test name and public auth group member", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "private",
 				Board:    "eve",
@@ -59,10 +60,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			err := IsValidTest(ctx, req)
 			err, ok := err.(*InvalidTestError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Public test name and not a public auth group member", func() {
+		t.Run("Public test name and not a public auth group member", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -75,9 +76,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(newCtx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Private test name and not a public auth group member", func() {
+		t.Run("Private test name and not a public auth group member", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "private",
 				Board:    "eve",
@@ -90,9 +91,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Public test and private board", func() {
+		t.Run("Public test and private board", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "private",
@@ -103,10 +104,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			err := IsValidTest(ctx, req)
 			err, ok := err.(*InvalidBoardError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Public test and private model", func() {
+		t.Run("Public test and private model", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -117,10 +118,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			err := IsValidTest(ctx, req)
 			err, ok := err.(*InvalidModelError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Public test and incorrect image", func() {
+		t.Run("Public test and incorrect image", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -131,10 +132,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			err := IsValidTest(ctx, req)
 			err, ok := err.(*InvalidImageError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Missing Test names", func() {
+		t.Run("Missing Test names", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "",
 				Board:    "eve",
@@ -144,10 +145,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Test name cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Test name cannot be empty"))
 		})
-		Convey("Missing Board", func() {
+		t.Run("Missing Board", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Model:    "eve",
@@ -156,10 +157,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Board cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Board cannot be empty"))
 		})
-		Convey("Missing Models - returns error if board has private models", func() {
+		t.Run("Missing Models - returns error if board has private models", func(t *ftt.Test) {
 			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
@@ -169,10 +170,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Model cannot be empty as the specified board has unlaunched models")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Model cannot be empty as the specified board has unlaunched models"))
 		})
-		Convey("Public Model and Public Board With Private Model - succeeds", func() {
+		t.Run("Public Model and Public Board With Private Model - succeeds", func(t *ftt.Test) {
 			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
@@ -183,9 +184,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Private Model and Public Board With Public Models - returns error", func() {
+		t.Run("Private Model and Public Board With Public Models - returns error", func(t *ftt.Test) {
 			configuration.AddPublicBoardModelData(ctx, "fakePrivateBoard", []string{"fakeModelLaunched"}, true)
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
@@ -196,10 +197,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "private model")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("private model"))
 		})
-		Convey("Missing Models - ok for public boards with only public models", func() {
+		t.Run("Missing Models - ok for public boards with only public models", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -208,9 +209,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Missing Image", func() {
+		t.Run("Missing Image", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -219,10 +220,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Image cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Image cannot be empty"))
 		})
-		Convey("Invalid QsAccount and public auth group member", func() {
+		t.Run("Invalid QsAccount and public auth group member", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:  "tast.lacros",
 				Board:     "eve",
@@ -234,10 +235,10 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 			err := IsValidTest(ctx, req)
 			err, ok := err.(*InvalidQsAccountError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Valid Image for Public Board", func() {
+		t.Run("Valid Image for Public Board", func(t *ftt.Test) {
 			configuration.AddPublicBoardModelData(ctx, "hana", []string{"hana"}, false)
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:  "tast.lacros",
@@ -249,9 +250,9 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid Image for Public Board", func() {
+		t.Run("Invalid Image for Public Board", func(t *ftt.Test) {
 			configuration.AddPublicBoardModelData(ctx, "hana", []string{"hana"}, false)
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:  "tast.lacros",
@@ -263,15 +264,15 @@ func TestIsValidPublicChromiumTest(t *testing.T) {
 
 			err := IsValidTest(ctx, req)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestIsPublicGroupMember(t *testing.T) {
 	t.Parallel()
-	Convey("Is Public Group Member", t, func() {
-		Convey("happy path", func() {
+	ftt.Run("Is Public Group Member", t, func(t *ftt.Test) {
+		t.Run("happy path", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -285,10 +286,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeTrue)
 		})
-		Convey("happy path - request with test service account", func() {
+		t.Run("happy path - request with test service account", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:           "tast.lacros",
 				Board:              "eve",
@@ -305,10 +306,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeTrue)
 		})
-		Convey("Test service account not a public auth group member - Returns false", func() {
+		t.Run("Test service account not a public auth group member - Returns false", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName:           "tast.lacros",
 				Board:              "eve",
@@ -322,10 +323,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeFalse)
 		})
-		Convey("No Test service account and empty context - Returns false", func() {
+		t.Run("No Test service account and empty context - Returns false", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -338,10 +339,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeFalse)
 		})
-		Convey("Not a public group member", func() {
+		t.Run("Not a public group member", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -354,10 +355,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeFalse)
 		})
-		Convey("Nil State - Returns false", func() {
+		t.Run("Nil State - Returns false", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -368,10 +369,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeFalse)
 		})
-		Convey("Nil State DB - Returns false", func() {
+		t.Run("Nil State DB - Returns false", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -383,10 +384,10 @@ func TestIsPublicGroupMember(t *testing.T) {
 			})
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeFalse)
 		})
-		Convey("Anonymous Identity - Returns true", func() {
+		t.Run("Anonymous Identity - Returns true", func(t *ftt.Test) {
 			req := &api.CheckFleetTestsPolicyRequest{
 				TestName: "tast.lacros",
 				Board:    "eve",
@@ -398,8 +399,8 @@ func TestIsPublicGroupMember(t *testing.T) {
 			})
 			publicGroupMember, err := isPublicGroupMember(ctx, req)
 
-			So(err, ShouldBeNil)
-			So(publicGroupMember, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, publicGroupMember, should.BeTrue)
 		})
 	})
 }
@@ -407,70 +408,70 @@ func TestIsPublicGroupMember(t *testing.T) {
 func TestImportPublicBoardsAndModels(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("Import Public Boards and Models", t, func() {
-		Convey("Happy Path", func() {
+	ftt.Run("Import Public Boards and Models", t, func(t *ftt.Test) {
+		t.Run("Happy Path", func(t *ftt.Test) {
 			mockDevice := mockDevices()
 
 			err := ImportPublicBoardsAndModels(ctx, mockDevice)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Happy Path Check DataStore", func() {
+		t.Run("Happy Path Check DataStore", func(t *ftt.Test) {
 			mockDevice := mockDevices()
 
 			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD)
 
-			So(dataerr, ShouldBeNil)
-			So(err, ShouldBeNil)
-			So(entity.Board, ShouldEqual, LAUNCHED_BOARD)
-			So(len(entity.Models), ShouldEqual, 4)
-			So(entity.BoardHasPrivateModels, ShouldBeFalse)
+			assert.Loosely(t, dataerr, should.BeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, entity.Board, should.Equal(LAUNCHED_BOARD))
+			assert.Loosely(t, len(entity.Models), should.Equal(4))
+			assert.Loosely(t, entity.BoardHasPrivateModels, should.BeFalse)
 		})
-		Convey("Empty Input", func() {
+		t.Run("Empty Input", func(t *ftt.Test) {
 			mockDevice := &ufspb.GoldenEyeDevices{}
 
 			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, "test")
 
-			So(dataerr, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(entity, ShouldBeNil)
+			assert.Loosely(t, dataerr, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, entity, should.BeNil)
 		})
-		Convey("Unlaunched Devices not saved to DataStore", func() {
+		t.Run("Unlaunched Devices not saved to DataStore", func(t *ftt.Test) {
 			mockDevice := mockDevices()
 
 			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, UNLAUNCHED_BOARD)
 
-			So(dataerr, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(entity, ShouldBeNil)
+			assert.Loosely(t, dataerr, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, entity, should.BeNil)
 		})
-		Convey("Unlaunched Models not saved to DataStore", func() {
+		t.Run("Unlaunched Models not saved to DataStore", func(t *ftt.Test) {
 			mockDevice := mockDevices()
 
 			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD_PRIVATE_MODELS)
 
-			So(dataerr, ShouldBeNil)
-			So(err, ShouldBeNil)
-			So(entity, ShouldNotBeNil)
-			So(len(entity.Models), ShouldEqual, 2)
-			So(entity.BoardHasPrivateModels, ShouldBeTrue)
+			assert.Loosely(t, dataerr, should.BeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, entity, should.NotBeNil)
+			assert.Loosely(t, len(entity.Models), should.Equal(2))
+			assert.Loosely(t, entity.BoardHasPrivateModels, should.BeTrue)
 		})
-		Convey("Launched board with no models", func() {
+		t.Run("Launched board with no models", func(t *ftt.Test) {
 			mockDevice := mockDevices()
 
 			dataerr := ImportPublicBoardsAndModels(ctx, mockDevice)
 			entity, err := configuration.GetPublicBoardModelData(ctx, LAUNCHED_BOARD_NO_MODELS)
 
-			So(dataerr, ShouldBeNil)
-			So(err, ShouldBeNil)
-			So(entity.Board, ShouldEqual, LAUNCHED_BOARD_NO_MODELS)
-			So(len(entity.Models), ShouldEqual, 1)
-			So(entity.Models, ShouldResemble, []string{LAUNCHED_BOARD_NO_MODELS})
-			So(entity.BoardHasPrivateModels, ShouldBeFalse)
+			assert.Loosely(t, dataerr, should.BeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, entity.Board, should.Equal(LAUNCHED_BOARD_NO_MODELS))
+			assert.Loosely(t, len(entity.Models), should.Equal(1))
+			assert.Loosely(t, entity.Models, should.Resemble([]string{LAUNCHED_BOARD_NO_MODELS}))
+			assert.Loosely(t, entity.BoardHasPrivateModels, should.BeFalse)
 		})
 	})
 }
@@ -479,24 +480,24 @@ func TestValidatePublicBoardModel(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	configuration.AddPublicBoardModelData(ctx, "eve", []string{"eve"}, false)
-	Convey("Validate Board and Model", t, func() {
-		Convey("Happy Path", func() {
+	ftt.Run("Validate Board and Model", t, func(t *ftt.Test) {
+		t.Run("Happy Path", func(t *ftt.Test) {
 			err := validatePublicBoardModel(ctx, "eve", "eve")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Private Board", func() {
+		t.Run("Private Board", func(t *ftt.Test) {
 			err := validatePublicBoardModel(ctx, "board", "eve")
 			err, ok := err.(*InvalidBoardError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
-		Convey("Private Model", func() {
+		t.Run("Private Model", func(t *ftt.Test) {
 			err := validatePublicBoardModel(ctx, "eve", "model")
 			err, ok := err.(*InvalidModelError)
 
-			So(err, ShouldNotBeNil)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
 	})
 }

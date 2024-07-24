@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/genproto/protobuf/field_mask"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/history"
@@ -27,94 +27,94 @@ func mockMachineLSEDeployment(serialNumber string) *ufspb.MachineLSEDeployment {
 func TestUpdateMachineLSEDeployment(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	Convey("UpdateMachineLSEDeployment", t, func() {
-		Convey("Update MachineLSEDeployment for non-existing MachineLSEDeployment - happy path", func() {
+	ftt.Run("UpdateMachineLSEDeployment", t, func(t *ftt.Test) {
+		t.Run("Update MachineLSEDeployment for non-existing MachineLSEDeployment - happy path", func(t *ftt.Test) {
 			dr1 := mockMachineLSEDeployment("serial-1")
 			resp, err := UpdateMachineLSEDeployment(ctx, dr1, nil)
-			So(err, ShouldBeNil)
-			So(resp.GetHostname(), ShouldEqual, "no-host-yet-serial-1")
-			So(resp.GetSerialNumber(), ShouldEqual, "serial-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetHostname(), should.Equal("no-host-yet-serial-1"))
+			assert.Loosely(t, resp.GetSerialNumber(), should.Equal("serial-1"))
 
 			resGet, err := inventory.GetMachineLSEDeployment(ctx, "serial-1")
-			So(err, ShouldBeNil)
-			So(resGet, ShouldResembleProto, resp)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resGet, should.Resemble(resp))
 		})
 
-		Convey("Update MachineLSEDeployment for existing MachineLSEDeployment - happy path", func() {
+		t.Run("Update MachineLSEDeployment for existing MachineLSEDeployment - happy path", func(t *ftt.Test) {
 			dr2 := mockMachineLSEDeployment("serial-2")
 			_, err := UpdateMachineLSEDeployment(ctx, dr2, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			dr2.Hostname = "hostname-2"
 			resp, err := UpdateMachineLSEDeployment(ctx, dr2, nil)
-			So(err, ShouldBeNil)
-			So(resp.GetHostname(), ShouldEqual, "hostname-2")
-			So(resp.GetSerialNumber(), ShouldEqual, "serial-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetHostname(), should.Equal("hostname-2"))
+			assert.Loosely(t, resp.GetSerialNumber(), should.Equal("serial-2"))
 
 			resGet, err := inventory.GetMachineLSEDeployment(ctx, "serial-2")
-			So(err, ShouldBeNil)
-			So(resGet, ShouldResembleProto, dr2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resGet, should.Resemble(dr2))
 
 			// Verify change events
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-2")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Record the first-time registration
-			So(changes, ShouldHaveLength, 2)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			// Record the update
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse_deployment.hostname")
-			So(changes[1].GetOldValue(), ShouldEqual, "no-host-yet-serial-2")
-			So(changes[1].GetNewValue(), ShouldEqual, "hostname-2")
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine_lse_deployment.hostname"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("no-host-yet-serial-2"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("hostname-2"))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/serial-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[0].Delete, ShouldBeFalse)
-			So(msgs[1].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
+			assert.Loosely(t, msgs[1].Delete, should.BeFalse)
 		})
 
-		Convey("Update MachineLSEDeployment for existing MachineLSEDeployment - partial update hostname & deployment env", func() {
+		t.Run("Update MachineLSEDeployment for existing MachineLSEDeployment - partial update hostname & deployment env", func(t *ftt.Test) {
 			dr3 := mockMachineLSEDeployment("serial-3")
 			_, err := UpdateMachineLSEDeployment(ctx, dr3, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			dr3.Hostname = "hostname-3"
 			dr3.DeploymentIdentifier = "identifier-3"
 			dr3.DeploymentEnv = ufspb.DeploymentEnv_AUTOPUSH
 			resp, err := UpdateMachineLSEDeployment(ctx, dr3, &field_mask.FieldMask{Paths: []string{"hostname", "deployment_env"}})
-			So(err, ShouldBeNil)
-			So(resp.GetSerialNumber(), ShouldEqual, "serial-3")
-			So(resp.GetHostname(), ShouldEqual, "hostname-3")
-			So(resp.GetDeploymentIdentifier(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetSerialNumber(), should.Equal("serial-3"))
+			assert.Loosely(t, resp.GetHostname(), should.Equal("hostname-3"))
+			assert.Loosely(t, resp.GetDeploymentIdentifier(), should.BeEmpty)
 
 			resGet, err := inventory.GetMachineLSEDeployment(ctx, "serial-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			dr3.DeploymentIdentifier = ""
-			So(resGet.GetHostname(), ShouldEqual, "hostname-3")
-			So(resGet.GetDeploymentIdentifier(), ShouldBeEmpty)
-			So(resGet.GetDeploymentEnv(), ShouldEqual, ufspb.DeploymentEnv_AUTOPUSH)
+			assert.Loosely(t, resGet.GetHostname(), should.Equal("hostname-3"))
+			assert.Loosely(t, resGet.GetDeploymentIdentifier(), should.BeEmpty)
+			assert.Loosely(t, resGet.GetDeploymentEnv(), should.Equal(ufspb.DeploymentEnv_AUTOPUSH))
 
 			// Verify change events
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-3")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Record the first-time registration
-			So(changes, ShouldHaveLength, 3)
-			So(changes[0].GetEventLabel(), ShouldEqual, "machine_lse_deployment")
-			So(changes[0].GetOldValue(), ShouldEqual, LifeCycleRegistration)
-			So(changes[0].GetNewValue(), ShouldEqual, LifeCycleRegistration)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse_deployment"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			// Record the update
-			So(changes[1].GetEventLabel(), ShouldEqual, "machine_lse_deployment.hostname")
-			So(changes[1].GetOldValue(), ShouldEqual, "no-host-yet-serial-3")
-			So(changes[1].GetNewValue(), ShouldEqual, "hostname-3")
-			So(changes[2].GetEventLabel(), ShouldEqual, "machine_lse_deployment.deployment_env")
-			So(changes[2].GetOldValue(), ShouldEqual, ufspb.DeploymentEnv_DEPLOYMENTENV_UNDEFINED.String())
-			So(changes[2].GetNewValue(), ShouldEqual, ufspb.DeploymentEnv_AUTOPUSH.String())
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("machine_lse_deployment.hostname"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("no-host-yet-serial-3"))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("hostname-3"))
+			assert.Loosely(t, changes[2].GetEventLabel(), should.Equal("machine_lse_deployment.deployment_env"))
+			assert.Loosely(t, changes[2].GetOldValue(), should.Equal(ufspb.DeploymentEnv_DEPLOYMENTENV_UNDEFINED.String()))
+			assert.Loosely(t, changes[2].GetNewValue(), should.Equal(ufspb.DeploymentEnv_AUTOPUSH.String()))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "machineLSEDeployments/serial-2")
-			So(err, ShouldBeNil)
-			So(msgs, ShouldHaveLength, 2)
-			So(msgs[0].Delete, ShouldBeFalse)
-			So(msgs[1].Delete, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
+			assert.Loosely(t, msgs[1].Delete, should.BeFalse)
 		})
 	})
 }
@@ -131,29 +131,29 @@ func TestListMachineLSEDeployments(t *testing.T) {
 		drs = append(drs, dr)
 	}
 	updatedDrs, _ := inventory.UpdateMachineLSEDeployments(ctx, drs)
-	Convey("ListMachineLSEDeployments", t, func() {
-		Convey("List MachineLSEDeployments - filter invalid - error", func() {
+	ftt.Run("ListMachineLSEDeployments", t, func(t *ftt.Test) {
+		t.Run("List MachineLSEDeployments - filter invalid - error", func(t *ftt.Test) {
 			_, _, err := ListMachineLSEDeployments(ctx, 5, "", "invalid=mx-1", false)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Invalid field name invalid")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Invalid field name invalid"))
 		})
 
-		Convey("List MachineLSEDeployment - filter host - happy path", func() {
+		t.Run("List MachineLSEDeployment - filter host - happy path", func(t *ftt.Test) {
 			resp, _, err := ListMachineLSEDeployments(ctx, 5, "", "host=host-0", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0], ShouldResembleProto, updatedDrs[0])
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0], should.Resemble(updatedDrs[0]))
 
 			resp, _, err = ListMachineLSEDeployments(ctx, 5, "", "host=host-2", false)
-			So(err, ShouldBeNil)
-			So(resp, ShouldHaveLength, 1)
-			So(resp[0], ShouldResembleProto, updatedDrs[2])
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.HaveLength(1))
+			assert.Loosely(t, resp[0], should.Resemble(updatedDrs[2]))
 		})
 
-		Convey("List MachineLSEDeployment - Full listing - happy path", func() {
+		t.Run("List MachineLSEDeployment - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEDeployments(ctx, 5, "", "", false)
-			So(resp, ShouldNotBeNil)
-			So(resp, ShouldResembleProto, updatedDrs)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Resemble(updatedDrs))
 		})
 	})
 }
