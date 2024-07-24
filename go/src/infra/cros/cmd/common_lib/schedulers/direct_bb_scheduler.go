@@ -12,19 +12,23 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
 )
 
 // DirectBBScheduler defines scheduler that schedules request(s) directly
 // through buildbucket.
 type DirectBBScheduler struct {
-	*AbstractScheduler
+	schedulerType interfaces.SchedulerType
 
 	BBClient *buildbucketpb.BuildsClient
 }
 
-func NewDirectBBScheduler() *DirectBBScheduler {
-	absSched := NewAbstractScheduler(DirectBBSchedulerType)
-	return &DirectBBScheduler{AbstractScheduler: absSched}
+func NewDirectBBScheduler() interfaces.SchedulerInterface {
+	return &DirectBBScheduler{schedulerType: DirectBBSchedulerType}
+}
+
+func (sc *DirectBBScheduler) GetSchedulerType() interfaces.SchedulerType {
+	return sc.schedulerType
 }
 
 func (sc *DirectBBScheduler) Setup(_ string) error {
@@ -45,4 +49,19 @@ func (sc *DirectBBScheduler) ScheduleRequest(ctx context.Context, req *buildbuck
 		return nil, "", err
 	}
 	return scheduledBuild, "", nil
+}
+
+func (sc *DirectBBScheduler) GetStatus(requestID int64) (*buildbucketpb.Build, error) {
+	// no-op
+	return nil, nil
+}
+
+func (sc *DirectBBScheduler) GetResult(requestID int64) error {
+	// no-op
+	return nil
+}
+
+func (sc *DirectBBScheduler) CancelTask(requestID int64) error {
+	// no-op
+	return nil
 }

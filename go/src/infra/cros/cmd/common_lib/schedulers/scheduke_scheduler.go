@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
 )
 
 const schedukePollingWait = 30 * time.Second
@@ -22,14 +23,17 @@ const schedukePollingWait = 30 * time.Second
 // SchedukeScheduler defines a scheduler that schedules request(s) through
 // Scheduke.
 type SchedukeScheduler struct {
-	*AbstractScheduler
+	schedulerType interfaces.SchedulerType
 
 	schedukeClient *common.SchedukeClient
 }
 
-func NewSchedukeScheduler() *SchedukeScheduler {
-	absSched := NewAbstractScheduler(SchedukeSchedulerType)
-	return &SchedukeScheduler{AbstractScheduler: absSched}
+func NewSchedukeScheduler() interfaces.SchedulerInterface {
+	return &SchedukeScheduler{schedulerType: SchedukeSchedulerType}
+}
+
+func (s *SchedukeScheduler) GetSchedulerType() interfaces.SchedulerType {
+	return s.schedulerType
 }
 
 func (s *SchedukeScheduler) Setup(pool string) error {
@@ -89,4 +93,19 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 
 		time.Sleep(schedukePollingWait)
 	}
+}
+
+func (s *SchedukeScheduler) GetStatus(requestID int64) (*buildbucketpb.Build, error) {
+	// no-op
+	return nil, nil
+}
+
+func (s *SchedukeScheduler) GetResult(requestID int64) error {
+	// no-op
+	return nil
+}
+
+func (s *SchedukeScheduler) CancelTask(requestID int64) error {
+	// no-op
+	return nil
 }
