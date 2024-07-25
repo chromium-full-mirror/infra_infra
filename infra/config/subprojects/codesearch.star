@@ -29,7 +29,7 @@ luci.bucket(
     constraints = luci.bucket_constraints(
         pools = ["luci.infra.codesearch"],
         # See shadow_service_account set in builder().
-        service_accounts = ["chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com"],
+        service_accounts = ["infra-codesearch@chops-service-accounts.iam.gserviceaccount.com"],
     ),
     bindings = [
         luci.binding(
@@ -133,7 +133,7 @@ def builder(
         triggered_by = [triggered_by] if triggered_by else None,
         schedule = schedule,
         experiments = {"luci.recipes.use_python3": 100},
-        shadow_service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+        shadow_service_account = "infra-codesearch@chops-service-accounts.iam.gserviceaccount.com",
     )
 
     luci.console_view_entry(
