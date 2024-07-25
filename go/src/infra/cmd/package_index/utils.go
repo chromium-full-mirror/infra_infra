@@ -201,6 +201,14 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 		filepath = filepath[4:]
 	}
 
+	// Chromium puts its generated files under out/ and vname for generated files should have
+	// root set to separate them from other source files. See b/354949952 for more info.
+	var root string
+	if isProjectChrome(*projectFlag) && strings.HasPrefix(filepath, "out/") {
+		filepath = filepath[4:]
+		root = "out"
+	}
+
 	// By default for OS, generated files are in:
 	//   * ../../../../cache/cros_chroot/chroot/build/${board}/
 	//   * src/out/${board}/
@@ -225,6 +233,9 @@ func setVnameForFile(vnameProto *kpb.VName, filepath, defaultCorpus string) {
 
 	vnameProto.Corpus = defaultCorpus
 	vnameProto.Path = filepath
+	if root != "" {
+		vnameProto.Root = root
+	}
 	for _, prefix := range rootModifiers {
 		if strings.HasPrefix(filepath, prefix+"/") {
 			vnameProto.Path = filepath[len(prefix)+1:]
@@ -248,4 +259,9 @@ func isUnwantedWinArg(arg string) bool {
 // isProjectCros checks if the project string represents chromeos.
 func isProjectCros(proj string) bool {
 	return proj == "chromiumos" || proj == "chromeos"
+}
+
+// isProjectChrome checks if the project string represents chrome.
+func isProjectChrome(proj string) bool {
+	return proj == "chromium" || proj == "chrome"
 }

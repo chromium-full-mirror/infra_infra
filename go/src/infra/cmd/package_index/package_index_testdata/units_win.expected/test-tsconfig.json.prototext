@@ -8,7 +8,8 @@ unit {
     required_input: {
         v_name {
             corpus: "chromium-test"
-            path: "out/Debug/gen/third_party/devtools-frontend/src/test-tsconfig.json"
+            path: "Debug/gen/third_party/devtools-frontend/src/test-tsconfig.json"
+            root: "out"
         }
         info {
             path: "src/out/Debug/gen/third_party/devtools-frontend/src/test-tsconfig.json"

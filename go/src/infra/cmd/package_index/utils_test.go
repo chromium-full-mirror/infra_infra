@@ -277,6 +277,17 @@ func TestSetVname(t *testing.T) {
 					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
 				})
 			})
+			Convey("Root is set for out/ generated files", func() {
+				p := "out/Debug/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("root should be out", func() {
+					So(vnameProto.Path, ShouldEqual, "Debug/rest/of/path")
+					So(vnameProto.Root, ShouldEqual, "out")
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
+			})
+
 		})
 
 		Convey("With Chrome", func() {
@@ -310,6 +321,17 @@ func TestSetVname(t *testing.T) {
 				Convey("Should not modify path", func() {
 					So(vnameProto.Path, ShouldEqual, p)
 					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
+					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				})
+			})
+
+			Convey("Root is set for out/ generated files", func() {
+				p := "out/Debug/rest/of/path"
+				setVnameForFile(&vnameProto, p, defaultCorpus)
+
+				Convey("root should be out", func() {
+					So(vnameProto.Path, ShouldEqual, "Debug/rest/of/path")
+					So(vnameProto.Root, ShouldEqual, "out")
 					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
 				})
 			})

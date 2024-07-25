@@ -6,7 +6,8 @@ unit {
   required_input: {
     v_name: {
       corpus: "chromium-test"
-      path: "out/Debug/gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+      path: "Debug/gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+      root: "out"
     }
     info: {
       path: "gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
