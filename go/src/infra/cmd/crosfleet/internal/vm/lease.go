@@ -160,6 +160,10 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 }
 
 // getLatestImage retrieves the latest VM image for a specific board.
+//
+// This function gets the latest VM image in terms of build number. This is
+// because previous builds may be rebuilt after a newer build is released. We
+// want to always use the latest released image instead.
 func getLatestImage(iapi vmapi.ImageApi, board string) (string, error) {
 	images, err := iapi.ListImages(fmt.Sprintf("(labels.build-type:release AND labels.board:%s)", board))
 	if err != nil {
@@ -169,7 +173,7 @@ func getLatestImage(iapi vmapi.ImageApi, board string) (string, error) {
 		return "", fmt.Errorf("Cannot find any images for board %s", board)
 	}
 	sort.SliceStable(images, func(i, j int) bool {
-		return images[i].GetTimeCreated().AsTime().After(images[j].GetTimeCreated().AsTime())
+		return images[i].GetName() > images[j].GetName()
 	})
 	return images[0].GetName(), nil
 }

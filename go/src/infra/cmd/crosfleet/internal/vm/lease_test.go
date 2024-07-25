@@ -33,7 +33,7 @@ func (m mockImageApi) DeleteImage(imageName string, wait bool) error {
 
 func TestGetLatestImage(t *testing.T) {
 	expectedFilter := "(labels.build-type:release AND labels.board:betty-arc-r)"
-	expectedName := "image-latest"
+	expectedName := "test-120--15662-114-0--release"
 	iapi := mockImageApi{
 		listImagesFunc: func(filter string) ([]*vmapi.GceImage, error) {
 			if filter != expectedFilter {
@@ -41,15 +41,19 @@ func TestGetLatestImage(t *testing.T) {
 			}
 			return []*vmapi.GceImage{
 				{
-					Name:        "image-1",
+					Name:        "test-119--15662-112-0--release",
+					TimeCreated: &timestamppb.Timestamp{Seconds: 4},
+				},
+				{
+					Name:        "test-120--15662-112-0--release",
 					TimeCreated: &timestamppb.Timestamp{Seconds: 1},
 				},
 				{
-					Name:        expectedName,
+					Name:        "test-120--15662-113-0--release",
 					TimeCreated: &timestamppb.Timestamp{Seconds: 3},
 				},
 				{
-					Name:        "image-2",
+					Name:        "test-120--15662-114-0--release",
 					TimeCreated: &timestamppb.Timestamp{Seconds: 2},
 				},
 			}, nil
