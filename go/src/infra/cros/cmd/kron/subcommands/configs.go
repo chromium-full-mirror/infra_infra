@@ -32,6 +32,7 @@ type CLIConfigList = map[time.Time]configparser.ConfigList
 type configParserCommand struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
+	authOpts  *auth.Options
 
 	searchAllConfigs     bool
 	commandExecutionTime time.Time
@@ -139,6 +140,7 @@ func GetConfigParserCommand(authOpts auth.Options) *subcommands.Command {
 			cmd.authFlags = authcli.Flags{}
 			cmd.authFlags.Register(cmd.GetFlags(), authOpts)
 			cmd.setFlags()
+			cmd.authOpts = &authOpts
 			return cmd
 		},
 	}
@@ -247,13 +249,13 @@ func (c *configParserCommand) validate() error {
 // fetchConfigs reads the lab and scheduler configs into memory. If a local path
 // is given then it will read from there otherwise it will read from the ToT
 // configs.
-func fetchConfigs(labPath, scheduleConfigsPath string) (*configparser.LabConfigs, *configparser.SuiteSchedulerConfigs, error) {
-	labConfigs, err := configparser.FetchLabConfigs(labPath)
+func fetchConfigs(labPath, scheduleConfigsPath string, authOpts *auth.Options) (*configparser.LabConfigs, *configparser.SuiteSchedulerConfigs, error) {
+	labConfigs, err := configparser.FetchLabConfigs(labPath, authOpts)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	schedulerConfigs, err := configparser.FetchSchedulerConfigs(scheduleConfigsPath, labConfigs)
+	schedulerConfigs, err := configparser.FetchSchedulerConfigs(scheduleConfigsPath, labConfigs, authOpts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -697,7 +699,7 @@ func (c *configParserCommand) Run(a subcommands.Application, args []string, env 
 	}
 
 	// Fetch and ingest the configurations.
-	_, schedulerConfigs, err := fetchConfigs(c.labCFGInputPath, c.configCFGInputPath)
+	_, schedulerConfigs, err := fetchConfigs(c.labCFGInputPath, c.configCFGInputPath, c.authOpts)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1

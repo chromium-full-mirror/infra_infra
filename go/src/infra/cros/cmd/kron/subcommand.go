@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	"infra/cros/cmd/kron/common"
@@ -42,6 +44,24 @@ type kronApplication struct {
 
 func main() {
 	opts := chromeinfra.DefaultAuthOptions()
+	// Introduce gerrit scopes for accessing the config files
+	gerritScopes := []string{
+		gerrit.OAuthScope,
+		auth.OAuthScopeEmail,
+		auth.OAuthScopeIAM,
+		// This scope is needed to access an internal repo. It does not mean
+		// that the user is authenticated but it is the scope that is needed.
+		"https://www.googleapis.com/auth/gerritcodereview",
+	}
+	opts.Scopes = append(opts.Scopes, gerritScopes...)
+
+	authenticator := auth.NewAuthenticator(context.Background(), auth.SilentLogin, opts)
+	_, err := authenticator.Client()
+	if err != nil {
+		common.Stderr.Println("please run kron auth-login")
+		os.Exit(1)
+	}
+
 	s := &kronApplication{
 		getApplication(opts),
 		common.Stdout,

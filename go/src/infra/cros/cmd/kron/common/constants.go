@@ -37,10 +37,10 @@ const (
 	FortnightlySecondSaturday  = 12
 	FortnightlySecondSunday    = 13
 
-	SuiteSchedulerCfgURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.cfg?format=text"
-	LabCfgURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.cfg?format=text"
-	SuiteSchedulerIniURL = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/suite_scheduler.ini?format=text"
-	LabIniURL            = "https://chromium.googlesource.com/chromiumos/infra/suite_scheduler/+/refs/heads/main/generated_configs/lab_config.ini?format=text"
+	SuiteSchedulerCfgURL = "https://chrome-internal.googlesource.com/chromeos/config-internal/+/refs/heads/main/test/suite_scheduler/generated/suite_scheduler.cfg?format=text"
+	LabCfgURL            = "https://chrome-internal.googlesource.com/chromeos/config-internal/+/refs/heads/main/test/suite_scheduler/generated/lab_config.cfg?format=text"
+	SuiteSchedulerIniURL = "https://chrome-internal.googlesource.com/chromeos/config-internal/+/refs/heads/main/test/suite_scheduler/generated/suite_scheduler.ini?format=text"
+	LabIniURL            = "https://chrome-internal.googlesource.com/chromeos/config-internal/+/refs/heads/main/test/suite_scheduler/generated/lab_config.ini?format=text"
 
 	TotFileURL = "https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/chromeos/config/chromeos_version.sh?format=text"
 

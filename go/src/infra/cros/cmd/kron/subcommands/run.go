@@ -28,7 +28,9 @@ import (
 
 type runCommand struct {
 	subcommands.CommandRunBase
-	authFlags          authcli.Flags
+	authFlags authcli.Flags
+	authOpts  *auth.Options
+
 	runID              string
 	buildBucketID      string
 	configCFGInputPath string
@@ -135,7 +137,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 
 	// Ingest lab configs into memory.
 	common.Stdout.Println("Fetch lab configs")
-	labConfigs, err := configparser.FetchLabConfigs(c.labCFGInputPath)
+	labConfigs, err := configparser.FetchLabConfigs(c.labCFGInputPath, c.authOpts)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
@@ -143,7 +145,7 @@ func (c *runCommand) Run(a subcommands.Application, args []string, env subcomman
 
 	// Ingest SuiteScheduler configs into memory.
 	common.Stdout.Println("Fetch SuSch configs")
-	suiteSchedulerConfigs, err := configparser.FetchSchedulerConfigs(c.configCFGInputPath, labConfigs)
+	suiteSchedulerConfigs, err := configparser.FetchSchedulerConfigs(c.configCFGInputPath, labConfigs, c.authOpts)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
@@ -298,6 +300,7 @@ func GetRunCommand(authOpts auth.Options) *subcommands.Command {
 			cmd.authFlags = authcli.Flags{}
 			cmd.authFlags.Register(cmd.GetFlags(), authOpts)
 			cmd.setFlags()
+			cmd.authOpts = &authOpts
 			return cmd
 		},
 	}

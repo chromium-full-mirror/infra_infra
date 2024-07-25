@@ -23,8 +23,8 @@ import (
 type firestoreCommand struct {
 	subcommands.CommandRunBase
 	authFlags authcli.Flags
-
-	isProd bool
+	authOpts  *auth.Options
+	isProd    bool
 }
 
 // setFlags creates the flags that the user can set.
@@ -43,15 +43,16 @@ func GetFirestoreCommand(authOpts auth.Options) *subcommands.Command {
 			cmd.authFlags = authcli.Flags{}
 			cmd.authFlags.Register(cmd.GetFlags(), authOpts)
 			cmd.setFlags()
+			cmd.authOpts = &authOpts
 			return cmd
 		},
 	}
 }
 
 // fetchToTConfigs fetches the ToT configs and returns the config list.
-func fetchToTConfigs() ([]*suschpb.SchedulerConfig, error) {
+func fetchToTConfigs(authOpts *auth.Options) ([]*suschpb.SchedulerConfig, error) {
 	// Ingest the ToT Configs
-	configBytes, err := common.FetchFileFromURL(common.SuiteSchedulerCfgURL)
+	configBytes, err := common.FetchFileFromInternalURL(common.SuiteSchedulerCfgURL, authOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +117,7 @@ func (c *firestoreCommand) Run(a subcommands.Application, args []string, env sub
 	common.Stdout.Printf("Received connection to %s\n", common.FirestoreConfigCollectionName)
 
 	common.Stdout.Println("Fetching ToT suite scheduler configs.")
-	configs, err := fetchToTConfigs()
+	configs, err := fetchToTConfigs(c.authOpts)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1

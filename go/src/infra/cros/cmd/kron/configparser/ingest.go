@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	"go.chromium.org/luci/auth"
 
 	"infra/cros/cmd/kron/common"
 )
@@ -175,7 +176,7 @@ func BytesToSchedulerProto(configsBuffer []byte) (*suschpb.SchedulerCfg, error) 
 
 // FetchLabConfigs fetches and ingests the lab configs. It will
 // determine where to read the configs from based on the user provided flags.
-func FetchLabConfigs(path string) (*LabConfigs, error) {
+func FetchLabConfigs(path string, authOpts *auth.Options) (*LabConfigs, error) {
 	var err error
 	var labBytes []byte
 
@@ -187,7 +188,7 @@ func FetchLabConfigs(path string) (*LabConfigs, error) {
 			return nil, err
 		}
 	} else {
-		labBytes, err = common.FetchFileFromURL(common.LabCfgURL)
+		labBytes, err = common.FetchFileFromInternalURL(common.LabCfgURL, authOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -206,7 +207,7 @@ func FetchLabConfigs(path string) (*LabConfigs, error) {
 
 // FetchSchedulerConfigs fetches and ingests the SuiteScheduler configs. It will
 // determine where to read the configs from based on the user provided flags.
-func FetchSchedulerConfigs(path string, labConfigs *LabConfigs) (*SuiteSchedulerConfigs, error) {
+func FetchSchedulerConfigs(path string, labConfigs *LabConfigs, authOpts *auth.Options) (*SuiteSchedulerConfigs, error) {
 	var err error
 	var schedulerBytes []byte
 
@@ -219,7 +220,7 @@ func FetchSchedulerConfigs(path string, labConfigs *LabConfigs) (*SuiteScheduler
 		}
 
 	} else {
-		schedulerBytes, err = common.FetchFileFromURL(common.SuiteSchedulerCfgURL)
+		schedulerBytes, err = common.FetchFileFromInternalURL(common.SuiteSchedulerCfgURL, authOpts)
 		if err != nil {
 			return nil, err
 		}

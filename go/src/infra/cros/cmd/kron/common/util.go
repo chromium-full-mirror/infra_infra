@@ -7,6 +7,7 @@
 package common
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -22,6 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+	"go.chromium.org/luci/auth"
 )
 
 // Create a common STDOUT/ERR type so that the full project can standardize
@@ -95,7 +97,44 @@ func ReadLocalFile(path string) ([]byte, error) {
 // FetchFileFromURL retrieves text from the given URL. It assumes the text received
 // will be base64 encoded.
 func FetchFileFromURL(url string) ([]byte, error) {
+	Stdout.Printf("Fetching file from %s", url)
+
 	resp, err := http.Get(url)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	fileText, err := base64.StdEncoding.DecodeString(string(data))
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return fileText, nil
+}
+
+// FetchFileFromInternalURL retrieves text from the given internal URL, LUCI
+// auth must be provided. It assumes the text received
+// will be base64 encoded.
+func FetchFileFromInternalURL(url string, authOpts *auth.Options) ([]byte, error) {
+	// NOTE: If the user running this CLI tool is being given authentication
+	// issues it is because they are not on the authentication list for the
+	// config internal repo. See https://crbug.com/1519973 for an authentication
+	// request example.
+	authenticator := auth.NewAuthenticator(context.Background(), auth.SilentLogin, *authOpts)
+	httpClient, err := authenticator.Client()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	Stdout.Printf("Fetching file from %s", url)
+
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -125,18 +164,6 @@ func WriteToFile(path string, data []byte) error {
 	}
 
 	return os.WriteFile(path, data, 0664)
-}
-
-// FetchAndWriteFile retrieves a text file from the specified URL and writes
-// into into the given path. The function will automatically create the
-// directory structure if it does not exist at the time of calling.
-func FetchAndWriteFile(url, path string) error {
-	data, err := FetchFileFromURL(url)
-	if err != nil {
-		return err
-	}
-
-	return WriteToFile(path, data)
 }
 
 // HasString checks to see if the given string array has the target string in
