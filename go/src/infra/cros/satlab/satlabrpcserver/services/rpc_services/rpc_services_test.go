@@ -1914,9 +1914,9 @@ func Test_RepairDutsShouldWork(t *testing.T) {
 			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("satlab-id"), nil
 			} else if c.Args[0] == paths.ShivasCLI && c.Args[1] == "repair-duts" && c.Args[len(c.Args)-1] == "satlab-satlab-id-dut1" {
-				return []byte(`Build Link: https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id
+				return []byte(`Build Link: https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id1
 ### Batch tasks URL ###
-Task Link: https://chromeos-swarming.appspot.com/`), nil
+Task Link: https://chromeos-swarming.appspot.com/1`), nil
 			} else if c.Args[0] == paths.ShivasCLI && c.Args[1] == "repair-duts" && c.Args[len(c.Args)-1] == "satlab-satlab-id-dut2" {
 				return nil, errors.New("Not found")
 			}
@@ -1940,8 +1940,8 @@ Task Link: https://chromeos-swarming.appspot.com/`), nil
 		Result: []*pb.RepairDutsResponse_RepairResult{
 			{
 				Hostname:  "dut1",
-				BuildLink: "https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id",
-				TaskLink:  "https://chromeos-swarming.appspot.com/",
+				BuildLink: "https://ci.chromium.org/p/chromeos/builders/external-cienet/repair/build-id1",
+				TaskLink:  "https://chromeos-swarming.appspot.com/1",
 				IsSuccess: true,
 			},
 			{

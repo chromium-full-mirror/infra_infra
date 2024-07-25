@@ -40,7 +40,7 @@ type DUTRepairResponse struct {
 	TaskLink  string
 }
 
-var linkRe = regexp.MustCompile(`(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+`)
+var linkRe = regexp.MustCompile(`(?:https?:\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+[\d]`)
 
 // repair invokes shivas with the required arguments to repair a DUT.
 func (u *DUTRepairer) Repair(
