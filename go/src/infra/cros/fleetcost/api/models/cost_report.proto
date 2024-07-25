@@ -73,7 +73,9 @@ message CostReportExpr {
 //
 // It is a double. Nothing fancy like a matrix or a quaternion.
 message CostReportScalar {
-    CostReportScalar label = 1;
+    reserved "label";
+    reserved 1;
+    CostReportLabel report_label = 3;
     double value = 2;
 }
 
