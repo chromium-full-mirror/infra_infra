@@ -75,7 +75,7 @@ func (ex *CrosDutVmExecutor) vmGetImageCommandExecution(
 		return err
 	}
 
-	buildPath := common.GetValueFromRequestKeyvals(ctx, cmd.CftTestRequest, nil, "build")
+	buildPath := cmd.Build
 	logging.Infof(ctx, "call VMLab to get GCE image based on build path in CftTestRequest: %s, ", buildPath)
 	// For MVP, this call may take minutes: If image doesn't exist, GetImage
 	// will create an image on the fly.

@@ -233,7 +233,17 @@ func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *ap
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
-	// TODO(cdelagarza): provide check for whether platform is VM and handle how DUTs get loaded.
+	// Overwrite configs that don't apply to VM test
+	if platform == common.BotProviderGce {
+		if cftHwStepsConfig == nil {
+			cftHwStepsConfig = &tpcommon.HwTestConfig{}
+		}
+		// Skip DutTopology and Provision steps, as those are done in the
+		// non-skippable Starting Dut Service step
+		cftHwStepsConfig.SkipLoadingDutTopology = true
+		cftHwStepsConfig.SkipProvision = true
+		cftHwStepsConfig.SkipStartingDutService = false
+	}
 
 	mainConfigs = append(mainConfigs,
 		InputValidation_NoExecutor,
@@ -253,16 +263,28 @@ func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *ap
 		GcloudAuth_CtrExecutor,
 		ContainerReadLogs_ContainerExecutor)
 
+	if !cftHwStepsConfig.GetSkipStartingDutService() && platform == common.BotProviderGce {
+		mainConfigs = append(mainConfigs,
+			DutVmGetImage_CrosDutVmExecutor,
+			VMProvisionServerStart_CrosVMProvisionExecutor,
+			VMProvisionLease_CrosVMProvisionExecutor,
+			ParseDutTopology_NoExecutor)
+	}
+
 	// Add task configs
-	mainConfigs = append(mainConfigs, generateTaskConfigs(inputV2).MainConfigs...)
+	mainConfigs = append(mainConfigs, generateTaskConfigs(inputV2, platform).MainConfigs...)
 
 	// Stop CTR and result processing commands
 	mainConfigs = append(mainConfigs,
 		ContainerCloseLogs_ContainerExecutor.WithRequired(true),
 		CtrStop_CtrExecutor.WithRequired(true),
-		UpdateDutState_NoExecutor.WithRequired(true),
-		ProcessResults_NoExecutor.WithRequired(true))
+	)
 
+	if platform != common.BotProviderGce {
+		mainConfigs = append(mainConfigs, UpdateDutState_NoExecutor.WithRequired(true))
+	}
+
+	mainConfigs = append(mainConfigs, ProcessResults_NoExecutor.WithRequired(true))
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
@@ -339,8 +361,9 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *c
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
-func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest) *common_configs.Configs {
+func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	vmReleased := false
 
 	for _, task := range inputV2.GetOrderedTasks() {
 		for range task.GetOrderedContainerRequests() {
@@ -360,6 +383,11 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest) *common_conf
 				GcloudAuth_CtrExecutor.WithRequired(task.Required),
 				GenericPostProcess_GenericPostProcessExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_Publish:
+			if platform == common.BotProviderGce && !vmReleased {
+				vmReleased = true
+				mainConfigs = append(mainConfigs,
+					VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true))
+			}
 			mainConfigs = append(mainConfigs,
 				GcloudAuth_CtrExecutor.WithRequired(task.Required),
 				GenericPublish_GenericPublishExecutor.WithRequired(task.Required))

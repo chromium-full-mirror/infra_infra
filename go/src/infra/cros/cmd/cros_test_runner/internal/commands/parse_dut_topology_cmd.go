@@ -276,6 +276,9 @@ func parseDut(dut *labapi.Dut) (*testapi.CrosTestRequest_Device, *skylab_test_ru
 		}
 	default:
 	}
+	if dut.CacheServer == nil {
+		dut.CacheServer = &labapi.CacheServer{}
+	}
 	device = &api.CrosTestRequest_Device{
 		Dut:       dut,
 		DutServer: ssh,

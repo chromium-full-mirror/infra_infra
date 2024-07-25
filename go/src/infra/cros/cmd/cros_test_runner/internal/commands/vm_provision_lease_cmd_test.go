@@ -11,6 +11,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -67,7 +68,16 @@ func TestVMProvisionLeaseCmd_Updates(t *testing.T) {
 		exec := executors.NewCrosVMProvisionExecutor(cont)
 		cmd := commands.NewVMProvisionLeaseCmd(exec)
 		cmd.LeaseVMResponse = &api.LeaseVMResponse{}
-		sk := &data.HwTestStateKeeper{DutVmGceImage: &vmlabapi.GceImage{Name: "name", Project: "project"}}
+		sk := &data.HwTestStateKeeper{
+			DutVmGceImage: &vmlabapi.GceImage{Name: "name", Project: "project"},
+			CrosTestRunnerRequest: &api.CrosTestRunnerDynamicRequest{
+				Params: &api.CrosTestRunnerParams{
+					PrimaryDut: &labapi.DutModel{
+						BuildTarget: "betty",
+					},
+				},
+			},
+		}
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
 		So(sk.DutTopology, ShouldNotBeNil)

@@ -100,6 +100,8 @@ const (
 	TestRequestCompanions               = "testRequest.companions"
 	RequestTestSuites                   = "req.params.testSuites"
 	CacheServer                         = "cache-server"
+	TestDynamicDeps                     = "test.dynamicDeps"
+	HostIp                              = "host-ip"
 )
 
 var (

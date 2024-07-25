@@ -68,6 +68,7 @@ type HwTestStateKeeper struct {
 	DutVmGceImage   *vmlabapi.GceImage
 	DutVm           *vmlabapi.VmInstance
 	LeaseVMResponse *testapi.LeaseVMResponse
+	HostIp          string
 
 	// Provision related
 	InstallMetadata    *anypb.Any

@@ -10,7 +10,6 @@ import (
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
@@ -25,9 +24,8 @@ type VMProvisionLeaseCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	DutVmGceImage  *vmlabapi.GceImage
-	CftTestRequest *skylab_test_runner.CFTTestRequest
-	BuildState     *build.State
+	DutVmGceImage *vmlabapi.GceImage
+	BuildState    *build.State
 	// Updates
 	LeaseVMResponse *testapi.LeaseVMResponse
 }
@@ -51,16 +49,6 @@ func (cmd *VMProvisionLeaseCmd) ExtractDependencies(
 			return fmt.Errorf("cmd %q missing dependency: DutVmGceImage.Project", cmd.GetCommandType())
 		}
 		cmd.DutVmGceImage = sk.DutVmGceImage
-		if sk.CftTestRequest == nil {
-			return fmt.Errorf("cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
-		}
-		if sk.CftTestRequest.GetPrimaryDut() == nil {
-			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.PrimaryDut", cmd.GetCommandType())
-		}
-		if sk.CftTestRequest.GetPrimaryDut().GetDutModel() == nil {
-			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.PrimaryDut.DutModel", cmd.GetCommandType())
-		}
-		cmd.CftTestRequest = sk.CftTestRequest
 	default:
 		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
@@ -99,6 +87,19 @@ func (cmd *VMProvisionLeaseCmd) updateVMTestStateKeeper(
 		return fmt.Errorf("empty lease vm response %s", cmd.LeaseVMResponse)
 	}
 	sk.LeaseVMResponse = cmd.LeaseVMResponse
+
+	var dutModel *labapi.DutModel
+
+	if sk.CftTestRequest != nil {
+		dutModel = sk.CftTestRequest.GetPrimaryDut().GetDutModel()
+	} else if sk.CrosTestRunnerRequest != nil {
+		dutModel = sk.CrosTestRunnerRequest.GetParams().GetPrimaryDut()
+	}
+
+	if dutModel == nil {
+		return fmt.Errorf("missing dutModel")
+	}
+
 	duts := []*labapi.Dut{{
 		Id: &labapi.Dut_Id{Value: common.VmLabDutHostName},
 		DutType: &labapi.Dut_Chromeos{
@@ -107,7 +108,7 @@ func (cmd *VMProvisionLeaseCmd) updateVMTestStateKeeper(
 					Address: cmd.LeaseVMResponse.GetVm().GetAddress().GetHost(),
 					Port:    cmd.LeaseVMResponse.GetVm().GetAddress().GetPort(),
 				},
-				DutModel: cmd.CftTestRequest.GetPrimaryDut().GetDutModel(),
+				DutModel: dutModel,
 			},
 		}}}
 	sk.DutTopology = &labapi.DutTopology{

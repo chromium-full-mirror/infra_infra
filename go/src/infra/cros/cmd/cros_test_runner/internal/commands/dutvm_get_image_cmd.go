@@ -8,8 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -20,7 +18,7 @@ import (
 type DutVmGetImageCmd struct {
 	*interfaces.SingleCmdByExecutor
 	// Deps
-	CftTestRequest *skylab_test_runner.CFTTestRequest
+	Build string
 
 	// Updates
 	DutVmGceImage *vmlabapi.GceImage
@@ -33,14 +31,11 @@ func (cmd *DutVmGetImageCmd) ExtractDependencies(
 
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
-		if sk.CftTestRequest == nil {
-			return fmt.Errorf("cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
-		}
 		buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build")
 		if buildName == "" {
-			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.AutotestKeyvals['build']", cmd.GetCommandType())
+			return fmt.Errorf("cmd %q missing dependency: AutotestKeyvals['build']", cmd.GetCommandType())
 		}
-		cmd.CftTestRequest = sk.CftTestRequest
+		cmd.Build = buildName
 	default:
 		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}

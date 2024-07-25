@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -36,11 +35,7 @@ func TestCrosDutVmExecutor_GetImage(t *testing.T) {
 
 	getCmd := func(exec interfaces.ExecutorInterface) *commands.DutVmGetImageCmd {
 		cmd := commands.NewDutVmGetImageCmd(exec)
-		keyVals := make(map[string]string, 0)
-		keyVals["build"] = "betty/R101"
-		cmd.CftTestRequest = &skylab_test_runner.CFTTestRequest{
-			AutotestKeyvals: keyVals,
-		}
+		cmd.Build = "betty/R101"
 		return cmd
 	}
 

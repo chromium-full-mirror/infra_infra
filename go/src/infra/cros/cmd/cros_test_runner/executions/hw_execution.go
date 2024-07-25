@@ -220,7 +220,12 @@ func executeHwTestsV2(
 	}
 	containerImagesMap := metadataMap.GetImages()
 	common.PatchContainerMetadata(containerImagesMap, req.GetParams().GetKeyvals()["build"])
-	executorCfg := configs.NewExecutorConfig(ctr, nil)
+	// containerCfg only exists to support VM flow.
+	// If we containerize the DutTopology fetching/parsing
+	// then VM could use its own logic for fetching DutTopology
+	// and this can go away.
+	containerCfg := configs.NewContainerConfig(ctr, containerImagesMap, false)
+	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper
@@ -240,11 +245,13 @@ func executeHwTestsV2(
 	sk.ContainerImages = containerImagesMap
 	sk.PrimaryDutModel = req.GetParams().GetPrimaryDut()
 	sk.CompanionDutModels = req.GetParams().GetCompanionDuts()
+	sk.HostIp, _ = common.GetHostIp()
 
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("host-ip", sk.HostIp))
 
 	populateRequestQueues(sk, req)
 
