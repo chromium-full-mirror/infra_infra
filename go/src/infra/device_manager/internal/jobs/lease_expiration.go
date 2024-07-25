@@ -49,7 +49,7 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 	// Try to pull updated dimensions for devices; mark as inactive if not found.
 	// NOTE: this is not a batch operation as we serialize the requests to UFS, so
 	// large batches of devices may lock up rows for a long time.
-	updatedDevices, err := constructUpdatedDevices(ctx, deviceIDs, readTime)
+	updatedDevices, err := constructUpdatedDevices(ctx, deviceIDs)
 	if err != nil {
 		err = errors.Annotate(err, "ExpireLeases: pulling dimensions for released devices").Err()
 		logging.Errorf(ctx, err.Error())
@@ -79,7 +79,7 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 }
 
 // constructUpdatedDevices constructs Devices using updated information.
-func constructUpdatedDevices(ctx context.Context, deviceIDs []string, updateTime time.Time) ([]model.Device, error) {
+func constructUpdatedDevices(ctx context.Context, deviceIDs []string) ([]model.Device, error) {
 	// Skip if no devices to update.
 	if len(deviceIDs) == 0 {
 		return nil, nil
@@ -101,8 +101,6 @@ func constructUpdatedDevices(ctx context.Context, deviceIDs []string, updateTime
 			ID:          id,
 			DeviceState: "DEVICE_STATE_AVAILABLE",
 			IsActive:    true,
-			// Use current time to guard against lease updates during this operation.
-			LastUpdatedTime: updateTime,
 		}
 		dims, err := device.GetOSResourceDims(ctx, client, reportFunc, id)
 		if err != nil {
@@ -169,9 +167,10 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 	var valueStrings []string
 	var valueArgs []interface{}
 	for _, device := range updatedDevices {
+		l := len(valueArgs)
 		valueStrings = append(
 			valueStrings,
-			fmt.Sprintf("($%d, $%d, $%d, $%d, $%d)", len(valueArgs)+1, len(valueArgs)+2, len(valueArgs)+3, len(valueArgs)+4, len(valueArgs)+5),
+			fmt.Sprintf("($%d, $%d, $%d, $%d, NOW())", l+1, l+2, l+3, l+4),
 		)
 		valueArgs = append(
 			valueArgs,
@@ -179,7 +178,6 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 			device.DeviceState,
 			device.IsActive,
 			device.SchedulableLabels,
-			device.LastUpdatedTime,
 		)
 	}
 

@@ -226,8 +226,8 @@ func ExpireLeases(ctx context.Context, tx *sql.Tx, t time.Time) (leaseIDs, devic
 	query := `
 		UPDATE "DeviceLeaseRecords"
 		SET
-		    released_time = $1,
-		    last_updated_time = $1
+		    released_time = NOW(),
+		    last_updated_time = NOW()
 		WHERE
 		    expiration_time <= $1 AND
 		    released_time IS NULL
