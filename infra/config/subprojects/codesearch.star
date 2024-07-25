@@ -28,6 +28,8 @@ luci.bucket(
     shadows = "codesearch",
     constraints = luci.bucket_constraints(
         pools = ["luci.infra.codesearch"],
+        # See shadow_service_account set in builder().
+        service_accounts = ["chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com"],
     ),
     bindings = [
         luci.binding(
