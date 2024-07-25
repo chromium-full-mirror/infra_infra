@@ -24,7 +24,7 @@ import (
 
 var (
 	poolsDisallowed = []string{
-		"satlab_internal_automation_test",
+		"foilTest",
 	}
 )
 
