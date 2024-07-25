@@ -73,11 +73,15 @@ func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, s
 	}
 }
 
-func addMockDolosToDUT(machinelse *ufspb.MachineLSE, dolosHost, dolosSerialCable, DolosSerialUsb string) {
+func addMockDolosToDUT(machinelse *ufspb.MachineLSE, dolosHost, dolosSerialCable, rpm, rpmOutlet string, DolosSerialUsb string) {
 	machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Dolos = &chromeosLab.Dolos{
 		Hostname:    dolosHost,
 		SerialCable: dolosSerialCable,
 		SerialUsb:   DolosSerialUsb,
+		Rpm: &chromeosLab.OSRPM{
+			PowerunitName:   rpm,
+			PowerunitOutlet: rpmOutlet,
+		},
 	}
 }
 
@@ -204,7 +208,7 @@ func createValidDUTWithDolos(ctx context.Context, t *ftt.Test, dutName, dutMachi
 		return err
 	}
 	dut1 := mockDUT(dutName, dutMachine, labstationName, "serial-dolos", dutName+"-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-	addMockDolosToDUT(dut1, labstationName, "dolos-serial-cable", "dolos-serial-usb")
+	addMockDolosToDUT(dut1, labstationName, "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 	_, err = CreateDUT(ctx, dut1)
 	if err != nil {
 		return err
@@ -380,7 +384,7 @@ func TestCreateDUT(t *testing.T) {
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-520", "machine-520", "labstation-520", "serial-520", "dut-520-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "labstation-521", "dolos-serial-cable", "dolos-serial-usb")
+			addMockDolosToDUT(dut1, "labstation-521", "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 			_, err = CreateDUT(ctx, dut1)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("labstation-521 not found in the system"))
@@ -418,7 +422,7 @@ func TestCreateDUT(t *testing.T) {
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-7", "machine-00", "labstation-5", "serial-1", "dut-7-power-3", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "labstation-5", "dolos-serial-cable", "dolos-serial-usb")
+			addMockDolosToDUT(dut1, "labstation-5", "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 			_, err = CreateDUT(ctx, dut1)
 			assert.Loosely(t, err, should.BeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-7")
@@ -2872,7 +2876,7 @@ func TestUpdateDUT(t *testing.T) {
 			err := createValidDUTWithDolos(ctx, t, "dut-dolos-1", "machine-dolos-1", "labstation-dolos-1", "machine-dolos-host1")
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-dolos-1", "machine-dolos-1", "labstation-dolos-1", "serial-dolos", "dut-dolos-1-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-serial-usb")
+			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.cable"))
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot update dolos serial cable. Dolos host is being reset"))
@@ -2890,6 +2894,10 @@ func TestUpdateDUT(t *testing.T) {
 				Hostname:    "labstation-dolos-1",
 				SerialCable: "dolos-serial-cable",
 				SerialUsb:   "dolos-serial-usb",
+				Rpm: &chromeosLab.OSRPM{
+					PowerunitName:   "dolos-power1",
+					PowerunitOutlet: ".A2",
+				},
 			}))
 			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -2901,7 +2909,7 @@ func TestUpdateDUT(t *testing.T) {
 			err := createValidDUTWithDolos(ctx, t, "dut-dolos-2", "machine-dolos-2", "labstation-dolos-2", "machine-dolos-host2")
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-dolos-2", "machine-dolos-2", "labstation-dolos-2", "serial-dolos", "dut-dolos-2-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-serial-usb")
+			addMockDolosToDUT(dut1, "", "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.usb"))
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot update dolos serial usb. Dolos host is being reset"))
@@ -2919,6 +2927,10 @@ func TestUpdateDUT(t *testing.T) {
 				Hostname:    "labstation-dolos-2",
 				SerialCable: "dolos-serial-cable",
 				SerialUsb:   "dolos-serial-usb",
+				Rpm: &chromeosLab.OSRPM{
+					PowerunitName:   "dolos-power1",
+					PowerunitOutlet: ".A2",
+				},
 			}))
 			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -2930,12 +2942,12 @@ func TestUpdateDUT(t *testing.T) {
 			err := createValidDUTWithLabstation(ctx, t, "dut-dolos-3", "machine-dolos-3", "labstation-dolos-3", "machine-dolos-host3")
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-dolos-3", "machine-dolos-3", "labstation-dolos-3", "serial-dolos", "dut-dolos-3-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "labstation-dolos-3", "dolos-serial-cable", "dolos-serial-usb")
+			addMockDolosToDUT(dut1, "labstation-dolos-3", "dolos-serial-cable", "dolos-power1", ".A2", "dolos-serial-usb")
 			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname", "dut.dolos.serial.usb", "dut.dolos.serial.cable"))
 			assert.Loosely(t, err, should.BeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-3")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes, should.HaveLength(4))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-3")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(2))
@@ -2958,12 +2970,12 @@ func TestUpdateDUT(t *testing.T) {
 			err := createValidDUTWithDolos(ctx, t, "dut-dolos-4", "machine-dolos-4", "labstation-dolos-4", "machine-dolos-host4")
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-dolos-4", "machine-dolos-4", "labstation-dolos-4", "serial-dolos", "dut-dolos-4-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
-			addMockDolosToDUT(dut1, "", "", "")
+			addMockDolosToDUT(dut1, "", "", "", "", "")
 			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.hostname"))
 			assert.Loosely(t, err, should.BeNil)
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-4")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes, should.HaveLength(6))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-4")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(2))
@@ -2977,6 +2989,90 @@ func TestUpdateDUT(t *testing.T) {
 			// State should be set to registered. No change.
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 		})
+
+		t.Run("UpdateDolosDUT - With invalid rpm outlet mask", func(t *ftt.Test) {
+			err := createValidDUTWithDolos(ctx, t, "dut-dolos-5", "machine-dolos-5", "labstation-dolos-5", "machine-dolos-host5")
+			assert.Loosely(t, err, should.BeNil)
+			// Update with rpm outlet mask and no rpm outlet.
+			dut1 := mockDUT("dut-dolos-5", "machine-dolos-5", "labstation-dolos-5", "serial-dolos", "dut-dolos-5-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "", "", "", "", "")
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.rpm.outlet"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Cannot remove dolos rpm outlet. Please delete dolos rpm"))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-5")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-5")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-5")
+			assert.Loosely(t, err, should.BeNil)
+			// State should be set to registered.
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+		})
+
+		t.Run("UpdateDUT - With valid dolos rpm mask", func(t *ftt.Test) {
+			err := createValidDUTWithDolos(ctx, t, "dut-dolos-6", "machine-dolos-6", "labstation-dolos-6", "machine-dolos-host6")
+			assert.Loosely(t, err, should.BeNil)
+			dut1 := mockDUT("dut-dolos-6", "machine-dolos-6", "labstation-dolos-6", "serial-dolos", "dut-dolos-6-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "labstation-dolos-6", "dolos-serial-cable", "dolos-power2", ".A3", "dolos-serial-usb")
+			resp, err := UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.rpm.host", "dut.dolos.rpm.outlet"))
+			assert.Loosely(t, err, should.BeNil)
+			// Remove update time to compare proto
+			resp.UpdateTime = nil
+			assert.Loosely(t, resp, should.Resemble(dut1))
+			dut2, err := GetMachineLSE(ctx, "dut-dolos-6")
+			assert.Loosely(t, err, should.BeNil)
+			dut2.UpdateTime = nil
+			// Remove update time to compare proto
+			assert.Loosely(t, dut2, should.Resemble(dut1))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-6")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[1].OldValue, should.Equal("dolos-power1"))
+			assert.Loosely(t, changes[1].NewValue, should.Equal("dolos-power2"))
+			assert.Loosely(t, changes[2].OldValue, should.Equal(".A2"))
+			assert.Loosely(t, changes[2].NewValue, should.Equal(".A3"))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-6")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-6")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+		})
+
+		t.Run("UpdateDolosDUT - With valid rpm mask to delete rpm", func(t *ftt.Test) {
+			err := createValidDUTWithDolos(ctx, t, "dut-dolos-7", "machine-dolos-7", "labstation-dolos-7", "machine-dolos-host7")
+			assert.Loosely(t, err, should.BeNil)
+			// Update with rpm host mask and no rpm.
+			dut1 := mockDUT("dut-dolos-7", "machine-dolos-7", "labstation-dolos-7", "serial-dolos", "dut-dolos-7-power-dolos", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
+			addMockDolosToDUT(dut1, "labstation-dolos-7", "dolos-serial-cable", "", ".A2", "dolos-serial-usb")
+			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetDolos().Rpm = nil
+			resp, err := UpdateDUT(ctx, dut1, mockFieldMask("dut.dolos.rpm.host"))
+			assert.Loosely(t, err, should.BeNil)
+			// Remove update time to compare proto
+			resp.UpdateTime = nil
+			assert.Loosely(t, resp, should.Resemble(dut1))
+			dut2, err := GetMachineLSE(ctx, "dut-dolos-7")
+			assert.Loosely(t, err, should.BeNil)
+			// Remove update time to compare proto
+			dut2.UpdateTime = nil
+			assert.Loosely(t, dut2, should.Resemble(dut1))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-dolos-7")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[1].OldValue, should.Equal("dolos-power1"))
+			assert.Loosely(t, changes[1].NewValue, should.Equal(""))
+			assert.Loosely(t, changes[2].OldValue, should.Equal(".A2"))
+			assert.Loosely(t, changes[2].NewValue, should.Equal(""))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-dolos-7")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			s, err := state.GetStateRecord(ctx, "hosts/dut-dolos-7")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
+		})
+
 	})
 }
 

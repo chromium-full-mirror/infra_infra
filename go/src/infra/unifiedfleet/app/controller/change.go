@@ -817,6 +817,32 @@ func logDut(resourceName string, oldData, newData *chromeosLab.DeviceUnderTest) 
 		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.camerabox.facing", oldCameraboxInfo.GetFacing(), newCameraboxInfo.GetFacing())...)
 		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.camerabox.light", oldCameraboxInfo.GetLight(), newCameraboxInfo.GetLight())...)
 	}
+	// Log dolos box if either of them contains one.
+	if oldData.GetPeripherals().GetDolos() != nil || newData.GetPeripherals().GetDolos() != nil {
+		oldDolosInfo := oldData.GetPeripherals().GetDolos()
+		newDolosInfo := newData.GetPeripherals().GetDolos()
+		if oldDolosInfo == nil {
+			oldDolosInfo = &chromeosLab.Dolos{}
+		}
+		if newDolosInfo == nil {
+			newDolosInfo = &chromeosLab.Dolos{}
+		}
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.dolos.hostname", oldDolosInfo.GetHostname(), newDolosInfo.GetHostname())...)
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.dolos.serial.cable", oldDolosInfo.GetSerialCable(), newDolosInfo.GetSerialCable())...)
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.dolos.serial.usb", oldDolosInfo.GetSerialUsb(), newDolosInfo.GetSerialUsb())...)
+
+		oldDolosRpmInfo := oldData.GetPeripherals().GetDolos().GetRpm()
+		newDolosRpmInfo := newData.GetPeripherals().GetDolos().GetRpm()
+
+		if oldDolosRpmInfo == nil {
+			oldDolosRpmInfo = &chromeosLab.OSRPM{}
+		}
+		if newDolosRpmInfo == nil {
+			newDolosRpmInfo = &chromeosLab.OSRPM{}
+		}
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.dolos.rpm.host", oldDolosRpmInfo.GetPowerunitName(), newDolosRpmInfo.GetPowerunitName())...)
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.dolos.rpm.outlet", oldDolosRpmInfo.GetPowerunitOutlet(), newDolosRpmInfo.GetPowerunitOutlet())...)
+	}
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.camerabox", oldData.GetPeripherals().GetCamerabox(), newData.GetPeripherals().GetCamerabox())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.carrier", oldData.GetPeripherals().GetCarrier(), newData.GetPeripherals().GetCarrier())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.starfishSlotMapping", oldData.GetPeripherals().GetStarfishSlotMapping(), newData.GetPeripherals().GetStarfishSlotMapping())...)

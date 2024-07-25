@@ -358,6 +358,8 @@ func dolosHostValidation(ctx context.Context, newMachineLse *ufspb.MachineLSE, m
 		"dut.dolos.hostname",
 		"dut.dolos.serial.cable",
 		"dut.dolos.serial.usb",
+		"dut.dolos.rpm.host",
+		"dut.dolos.rpm.outlet",
 	}
 	// We do not need to perform validation when any masks exist but no Dolos specific masks found in there.
 	if mask != nil && len(mask.Paths) > 0 && !util.ContainsAnyStrings(mask.Paths, dolosMasks...) {
@@ -556,6 +558,21 @@ func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.Field
 			if _, ok := maskSet["dut.dolos.serial.usb"]; dolos.GetHostname() == "" && ok && dolos.GetSerialUsb() != "" {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos serial usb. Dolos host is being reset.")
 			}
+			if _, ok := maskSet["dut.dolos.rpm.outlet"]; dolos.GetHostname() == "" && ok && dolos.GetRpm().GetPowerunitOutlet() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos rpm outlet. Dolos host is being reset.")
+			}
+			if _, ok := maskSet["dut.dolos.rpm.host"]; dolos.GetHostname() == "" && ok && dolos.GetRpm().GetPowerunitName() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos rpm host. Dolos host is being reset.")
+			}
+		case "dut.dolos.rpm.host":
+			if _, ok := maskSet["dut.rpm.rpm.outlet"]; ok && dolos.GetRpm().GetPowerunitName() == "" && dolos.GetRpm().GetPowerunitOutlet() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Deleting rpm host deletes everything. Cannot update outlet.")
+			}
+		case "dut.dolos.rpm.outlet":
+			if _, ok := maskSet["dut.dolos.rpm.host"]; dolos.GetRpm().GetPowerunitOutlet() == "" && (!ok || (ok && dolos.GetRpm().GetPowerunitName() != "")) {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot remove dolos rpm outlet. Please delete dolos rpm.")
+			}
+
 		case "deploymentTicket":
 		case "tags":
 		case "description":
@@ -689,6 +706,7 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 				}
 				if strings.HasPrefix(path, "dut.dolos") {
 					processUpdateMachineLSEDolosMask(oldDolos, newDolos, path)
+					continue
 				}
 				processUpdateMachineLSEDUTMask(oldDut, newDut, path)
 			}
@@ -707,7 +725,17 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 	if oldDolos.GetHostname() != "" {
 		oldDut.GetPeripherals().Dolos = oldDolos
 	} else { // Reset Dolos if the dolos host is reset.
+		if oldDut.GetPeripherals().GetDolos() != nil {
+			oldDut.GetPeripherals().GetDolos().Rpm = nil
+		}
 		oldDut.GetPeripherals().Dolos = nil
+	}
+	if oldDut.GetPeripherals().GetDolos() != nil {
+		if oldDolos.GetRpm().GetPowerunitName() != "" {
+			oldDut.GetPeripherals().GetDolos().Rpm = oldDolos.GetRpm()
+		} else {
+			oldDut.GetPeripherals().GetDolos().Rpm = nil
+		}
 	}
 	// return existing/old machinelse with new updated values.
 	return oldMachineLse, nil
@@ -928,6 +956,10 @@ func processUpdateMachineLSEDolosMask(oldDolos, newDolos *chromeosLab.Dolos, pat
 		oldDolos.SerialCable = newDolos.GetSerialCable()
 	case "dut.dolos.serial.usb":
 		oldDolos.SerialUsb = newDolos.GetSerialUsb()
+	case "dut.dolos.rpm.host":
+		oldDolos.GetRpm().PowerunitName = newDolos.GetRpm().GetPowerunitName()
+	case "dut.dolos.rpm.outlet":
+		oldDolos.GetRpm().PowerunitOutlet = newDolos.GetRpm().GetPowerunitOutlet()
 	}
 }
 
