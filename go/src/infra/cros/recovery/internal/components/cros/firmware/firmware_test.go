@@ -13,7 +13,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/recovery/internal/components/mocks"
 	"infra/cros/recovery/logger"
@@ -33,7 +36,7 @@ func TestExtractECImage(t *testing.T) {
 	logger := logger.NewLogger()
 	ctrl := gomock.NewController(t)
 	tarballPath := "/some/folder/my_folder/tarbar.tr"
-	Convey("Happy path", t, func() {
+	ftt.Run("Happy path", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
@@ -46,11 +49,11 @@ my-board/ec.bin`,
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/EC/ec.bin")
-		So(fwBoard, ShouldEqual, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/EC/ec.bin"))
+		assert.Loosely(t, fwBoard, should.BeEmpty)
 	})
-	Convey("Happy path with board file", t, func() {
+	ftt.Run("Happy path with board file", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
@@ -64,11 +67,11 @@ my-board/ec.bin`,
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
-		So(fwBoard, ShouldEqual, "my-board")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/EC/my-board/ec.bin"))
+		assert.Loosely(t, fwBoard, should.Equal("my-board"))
 	})
-	Convey("Happy path with board file with monitor", t, func() {
+	ftt.Run("Happy path with board file with monitor", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
@@ -83,11 +86,11 @@ npcx_monitor.bin`,
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
-		So(fwBoard, ShouldEqual, "my-board")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/EC/my-board/ec.bin"))
+		assert.Loosely(t, fwBoard, should.Equal("my-board"))
 	})
-	Convey("Happy path without servod", t, func() {
+	ftt.Run("Happy path without servod", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
@@ -99,11 +102,11 @@ npcx_monitor.bin`,
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
-		So(fwBoard, ShouldEqual, "my-board")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/EC/my-board/ec.bin"))
+		assert.Loosely(t, fwBoard, should.Equal("my-board"))
 	})
-	Convey("Happy path run from DUT", t, func() {
+	ftt.Run("Happy path run from DUT", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(false)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/EC": "",
@@ -115,9 +118,9 @@ npcx_monitor.bin`,
 		}
 		req.DutRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/EC/my-board/ec.bin")
-		So(fwBoard, ShouldEqual, "my-board")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/EC/my-board/ec.bin"))
+		assert.Loosely(t, fwBoard, should.Equal("my-board"))
 	})
 }
 
@@ -128,7 +131,7 @@ func TestExtractAPImage(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	tarballPath := "/some/folder/my_folder/tarbar2.tr"
-	Convey("Happy path", t, func() {
+	ftt.Run("Happy path", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
@@ -141,10 +144,10 @@ image-my-model.bin`,
 		req.Servod = servod
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/AP/image.bin")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/AP/image.bin"))
 	})
-	Convey("Happy path with board file", t, func() {
+	ftt.Run("Happy path with board file", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
@@ -157,10 +160,10 @@ image-my-model.bin`,
 		req.Servod = servod
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.bin")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/AP/image-my-model.bin"))
 	})
-	Convey("Happy path with serial", t, func() {
+	ftt.Run("Happy path with serial", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		req.UseSerialTargets = true
 		runRequest := map[string]string{
@@ -174,10 +177,10 @@ image-my-model.serial.bin`,
 		req.Servod = servod
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.serial.bin")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/AP/image-my-model.serial.bin"))
 	})
-	Convey("Happy path without servod", t, func() {
+	ftt.Run("Happy path without servod", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
@@ -187,10 +190,10 @@ image-my-model.bin`,
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.bin")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/AP/image-my-model.bin"))
 	})
-	Convey("Happy path run from DUT", t, func() {
+	ftt.Run("Happy path run from DUT", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(false)
 		runRequest := map[string]string{
 			"mkdir -p /some/folder/my_folder/AP": "",
@@ -200,8 +203,8 @@ image-my-model.bin`,
 		}
 		req.DutRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
-		So(err, ShouldBeNil)
-		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.bin")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, image, should.Equal("/some/folder/my_folder/AP/image-my-model.bin"))
 	})
 }
 

@@ -8,43 +8,45 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // Testing param methods.
 func TestConfigScope(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Happy case", t, func() {
+	ftt.Run("Happy case", t, func(t *ftt.Test) {
 		ctx := WithConfigScope(ctx)
 		PutConfigParam(ctx, "key1", "hello")
 		v, ok := ReadConfigParam(ctx, "key1")
-		So(ok, ShouldBeTrue)
-		So(v, ShouldEqual, "hello")
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, v, should.Equal("hello"))
 	})
-	Convey("Read non existent key", t, func() {
+	ftt.Run("Read non existent key", t, func(t *ftt.Test) {
 		ctx := WithConfigScope(ctx)
 		_, ok := ReadConfigParam(ctx, "key1")
-		So(ok, ShouldBeFalse)
+		assert.Loosely(t, ok, should.BeFalse)
 	})
-	Convey("Read all keys", t, func() {
+	ftt.Run("Read all keys", t, func(t *ftt.Test) {
 		ctx := WithConfigScope(ctx)
 		PutConfigParam(ctx, "key1", "hello1")
 		PutConfigParam(ctx, "key2", "hello2")
 		PutConfigParam(ctx, "key3", "hello3")
 		v, ok := ReadConfigParam(ctx, "key1")
-		So(ok, ShouldBeTrue)
-		So(v, ShouldEqual, "hello1")
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, v, should.Equal("hello1"))
 		v, ok = ReadConfigParam(ctx, "key2")
-		So(ok, ShouldBeTrue)
-		So(v, ShouldEqual, "hello2")
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, v, should.Equal("hello2"))
 		v, ok = ReadConfigParam(ctx, "key3")
-		So(ok, ShouldBeTrue)
-		So(v, ShouldEqual, "hello3")
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, v, should.Equal("hello3"))
 	})
-	Convey("Try to put before initilize", t, func() {
+	ftt.Run("Try to put before initilize", t, func(t *ftt.Test) {
 		PutConfigParam(ctx, "key1", "hello")
 		_, ok := ReadConfigParam(ctx, "key1")
-		So(ok, ShouldBeFalse)
+		assert.Loosely(t, ok, should.BeFalse)
 	})
 }

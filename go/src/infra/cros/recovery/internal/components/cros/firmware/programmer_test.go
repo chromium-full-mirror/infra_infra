@@ -11,10 +11,12 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/mocks"
@@ -27,41 +29,41 @@ func TestNewProgrammer(t *testing.T) {
 	defer ctrl.Finish()
 	ctx := context.Background()
 	logger := logger.NewLogger()
-	Convey("Fail if servod fail to respond to servod", t, func() {
+	ftt.Run("Fail if servod fail to respond to servod", t, func(t *ftt.Test) {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(nil, errors.Reason("fail to get servo_type!").Err()).Times(1)
 		run, runCounter := mockRunnerWithCheck(nil)
 		p, err := NewProgrammer(ctx, run, servod, logger)
-		So(p, ShouldBeNil)
-		So(err, ShouldNotBeNil)
-		So(runCounter(), ShouldEqual, 0)
+		assert.Loosely(t, p, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, runCounter(), should.BeZero)
 	})
-	Convey("Fail as servo_v2 is not supported", t, func() {
+	ftt.Run("Fail as servo_v2 is not supported", t, func(t *ftt.Test) {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v2"), nil).Times(1)
 		run, runCounter := mockRunnerWithCheck(nil)
 		p, err := NewProgrammer(ctx, run, servod, logger)
-		So(p, ShouldBeNil)
-		So(err, ShouldNotBeNil)
-		So(runCounter(), ShouldEqual, 0)
+		assert.Loosely(t, p, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, runCounter(), should.BeZero)
 	})
-	Convey("Creates programmer for servo_v3", t, func() {
+	ftt.Run("Creates programmer for servo_v3", t, func(t *ftt.Test) {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v3"), nil).Times(1)
 		run, runCounter := mockRunnerWithCheck(nil)
 		p, err := NewProgrammer(ctx, run, servod, logger)
-		So(p, ShouldNotBeNil)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, 0)
+		assert.Loosely(t, p, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.BeZero)
 	})
-	Convey("Creates programmer for servo_v4", t, func() {
+	ftt.Run("Creates programmer for servo_v4", t, func(t *ftt.Test) {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4"), nil).Times(1)
 		run, runCounter := mockRunnerWithCheck(nil)
 		p, err := NewProgrammer(ctx, run, servod, logger)
-		So(p, ShouldNotBeNil)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, 0)
+		assert.Loosely(t, p, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.BeZero)
 	})
 }
 

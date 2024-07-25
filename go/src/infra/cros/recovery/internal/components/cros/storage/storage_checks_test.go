@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
 
 	"infra/cros/recovery/tlw"
 )
@@ -181,7 +181,7 @@ func TestStorageSMARTFieldValue(t *testing.T) {
 func TestExtractStorageType(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("SSD Type, no error", t, func() {
+	ftt.Run("SSD Type, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"SATA Version is: SATA 3.1, 6.0 Gb/s (current: 6.0 Gb/s)",
@@ -195,7 +195,7 @@ func TestExtractStorageType(t *testing.T) {
 			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_SSD, typeOfStorage)
 		}
 	})
-	Convey("MMC Type, no error", t, func() {
+	ftt.Run("MMC Type, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"Extended CSD rev 1.7 (MMC 5.0)",
@@ -209,7 +209,7 @@ func TestExtractStorageType(t *testing.T) {
 			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_MMC, typeOfStorage)
 		}
 	})
-	Convey("NVME Type, no error", t, func() {
+	ftt.Run("NVME Type, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"SMART/Health Information (NVMe Log 0x02, NSID 0xffffffff)",
@@ -223,7 +223,7 @@ func TestExtractStorageType(t *testing.T) {
 			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_NVME, typeOfStorage)
 		}
 	})
-	Convey("Undefined Type, no error", t, func() {
+	ftt.Run("Undefined Type, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"?????",
 		}
@@ -240,7 +240,7 @@ func TestExtractStorageType(t *testing.T) {
 func TestDetectSSDState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("storageStateCritical, no error", t, func() {
+	ftt.Run("storageStateCritical, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"184 End-to-End_Error   PO--CK   001   001   097    NOW  135",
@@ -254,7 +254,7 @@ func TestDetectSSDState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateCritical, stateOfStorage)
 		}
 	})
-	Convey("storageStateWarning, no error", t, func() {
+	ftt.Run("storageStateWarning, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"7 Reallocated_Sector_Ct   PO--CK   101   001   097",
 			"xxxxxx",
@@ -267,7 +267,7 @@ func TestDetectSSDState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
-	Convey("storageStateNormal, no error", t, func() {
+	ftt.Run("storageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"yyyyyy",
 			"xxxxxx",
@@ -285,7 +285,7 @@ func TestDetectSSDState(t *testing.T) {
 func TestDetectMMCState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("StorageStateCritical, no error", t, func() {
+	ftt.Run("StorageStateCritical, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"PRE_EOL_INFO: 0x03",
@@ -300,7 +300,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateCritical, stateOfStorage)
 		}
 	})
-	Convey("StorageStateWarning, no error", t, func() {
+	ftt.Run("StorageStateWarning, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"PRE_EOL_INFO: 0x02",
@@ -315,7 +315,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"PRE_EOL_INFO: 0x01",
@@ -330,7 +330,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateNormal, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"PRE_EOL_INFO: 0x00",
@@ -345,7 +345,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateNormal, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"DEVICE_LIFE_TIME_EST_TYP_A: 0x02",
@@ -359,7 +359,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateNormal, stateOfStorage)
 		}
 	})
-	Convey("StorageStateWarning, no error", t, func() {
+	ftt.Run("StorageStateWarning, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"DEVICE_LIFE_TIME_EST_TYP_A: 0x09",
@@ -373,7 +373,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
-	Convey("StorageStateCritical, no error", t, func() {
+	ftt.Run("StorageStateCritical, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"DEVICE_LIFE_TIME_EST_TYP_A: 0x0a",
@@ -387,7 +387,7 @@ func TestDetectMMCState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
-	Convey("StorageStateCritical, no error", t, func() {
+	ftt.Run("StorageStateCritical, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"DEVICE_LIFE_TIME_EST_TYP_A: 0x0b",
@@ -406,7 +406,7 @@ func TestDetectMMCState(t *testing.T) {
 func TestDetectNVMEState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("StorageStateWarning, no error", t, func() {
+	ftt.Run("StorageStateWarning, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"Percentage Used:         100%",
@@ -420,7 +420,7 @@ func TestDetectNVMEState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"Percentage Used:         90%",
@@ -434,7 +434,7 @@ func TestDetectNVMEState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateNormal, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"Percentage Used:         0%",
@@ -448,7 +448,7 @@ func TestDetectNVMEState(t *testing.T) {
 			t.Errorf("Expected storage state: %q, got: %q", StorageStateNormal, stateOfStorage)
 		}
 	})
-	Convey("StorageStateNormal, no error", t, func() {
+	ftt.Run("StorageStateNormal, no error", t, func(t *ftt.Test) {
 		storageInfoSlice := []string{
 			"xxxxxx",
 			"xxxxxx",

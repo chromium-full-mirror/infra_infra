@@ -7,28 +7,30 @@ package docker
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // Tests the function which escapes special characters(ex: $, ` etc`) for a command input in the form of a string array
 func TestEscapeSpecialCharacters(t *testing.T) {
 	t.Parallel()
-	Convey("Excape Special Characters", t, func() {
-		Convey("Escapes $, \\, ` and double quote", func() {
+	ftt.Run("Excape Special Characters", t, func(t *ftt.Test) {
+		t.Run("Escapes $, \\, ` and double quote", func(t *ftt.Test) {
 			err := escapeSpecialChars([]string{"\\hello$", "`testString\""})
-			So(err[0], ShouldEqual, "\\\\hello\\$")
-			So(err[1], ShouldEqual, "\\`testString\\\"")
+			assert.Loosely(t, err[0], should.Equal("\\\\hello\\$"))
+			assert.Loosely(t, err[1], should.Equal("\\`testString\\\""))
 		})
 
-		Convey("Does not escape anything other than $, \\, ` and double quote", func() {
+		t.Run("Does not escape anything other than $, \\, ` and double quote", func(t *ftt.Test) {
 			err := escapeSpecialChars([]string{"\\hello$^", "%`testString\""})
-			So(err[0], ShouldEqual, "\\\\hello\\$^")
-			So(err[1], ShouldEqual, "%\\`testString\\\"")
+			assert.Loosely(t, err[0], should.Equal("\\\\hello\\$^"))
+			assert.Loosely(t, err[1], should.Equal("%\\`testString\\\""))
 		})
 
-		Convey("Empty array input - return empty array", func() {
+		t.Run("Empty array input - return empty array", func(t *ftt.Test) {
 			err := escapeSpecialChars([]string{})
-			So(err, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.HaveLength(0))
 		})
 	})
 }

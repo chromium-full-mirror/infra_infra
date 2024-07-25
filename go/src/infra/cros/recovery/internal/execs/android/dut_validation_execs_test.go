@@ -8,7 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/tlw"
@@ -17,8 +19,8 @@ import (
 func TestHasDutBoardExec(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("hasDutBoardExec", t, func() {
-		Convey("Attached DUT board is present - no error", func() {
+	ftt.Run("hasDutBoardExec", t, func(t *ftt.Test) {
+		t.Run("Attached DUT board is present - no error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -30,9 +32,9 @@ func TestHasDutBoardExec(t *testing.T) {
 						},
 					},
 				}, "some name", nil, 0, nil)
-			So(hasDutBoardExec(ctx, info), ShouldBeNil)
+			assert.Loosely(t, hasDutBoardExec(ctx, info), should.BeNil)
 		})
-		Convey("Missing attached DUT board - returns error", func() {
+		t.Run("Missing attached DUT board - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -43,9 +45,9 @@ func TestHasDutBoardExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutBoardExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutBoardExec(ctx, info), should.NotBeNil)
 		})
-		Convey("ChromeOs DUT  with board - returns error", func() {
+		t.Run("ChromeOs DUT  with board - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -56,7 +58,7 @@ func TestHasDutBoardExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutBoardExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutBoardExec(ctx, info), should.NotBeNil)
 		})
 	})
 }
@@ -64,8 +66,8 @@ func TestHasDutBoardExec(t *testing.T) {
 func TestHasDutModelExec(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("hasDutModelExec", t, func() {
-		Convey("Attached DUT model is present - no error", func() {
+	ftt.Run("hasDutModelExec", t, func(t *ftt.Test) {
+		t.Run("Attached DUT model is present - no error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -77,9 +79,9 @@ func TestHasDutModelExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutModelExec(ctx, info), ShouldBeNil)
+			assert.Loosely(t, hasDutModelExec(ctx, info), should.BeNil)
 		})
-		Convey("Missing attached DUT model - returns error", func() {
+		t.Run("Missing attached DUT model - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -90,9 +92,9 @@ func TestHasDutModelExec(t *testing.T) {
 						},
 					},
 				}, "name", nil, 0, nil)
-			So(hasDutModelExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutModelExec(ctx, info), should.NotBeNil)
 		})
-		Convey("ChromeOs DUT with model - returns error", func() {
+		t.Run("ChromeOs DUT with model - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -103,7 +105,7 @@ func TestHasDutModelExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutModelExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutModelExec(ctx, info), should.NotBeNil)
 		})
 	})
 }
@@ -111,8 +113,8 @@ func TestHasDutModelExec(t *testing.T) {
 func TestHasDutSerialNumberExec(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("hasDutSerialNumberExec", t, func() {
-		Convey("Attached DUT serial number is present - no error", func() {
+	ftt.Run("hasDutSerialNumberExec", t, func(t *ftt.Test) {
+		t.Run("Attached DUT serial number is present - no error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -124,9 +126,9 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutSerialNumberExec(ctx, info), ShouldBeNil)
+			assert.Loosely(t, hasDutSerialNumberExec(ctx, info), should.BeNil)
 		})
-		Convey("Missing attached DUT serial number - returns error", func() {
+		t.Run("Missing attached DUT serial number - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -137,9 +139,9 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutSerialNumberExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutSerialNumberExec(ctx, info), should.NotBeNil)
 		})
-		Convey("ChromeOs DUT with serial number - returns error", func() {
+		t.Run("ChromeOs DUT with serial number - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -150,7 +152,7 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutSerialNumberExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutSerialNumberExec(ctx, info), should.NotBeNil)
 		})
 	})
 }
@@ -158,8 +160,8 @@ func TestHasDutSerialNumberExec(t *testing.T) {
 func TestHasDutAssociatedHostExec(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("hasDutAssociatedHostExec", t, func() {
-		Convey("Attached DUT associated hostname is present - no error", func() {
+	ftt.Run("hasDutAssociatedHostExec", t, func(t *ftt.Test) {
+		t.Run("Attached DUT associated hostname is present - no error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -171,9 +173,9 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutAssociatedHostExec(ctx, info), ShouldBeNil)
+			assert.Loosely(t, hasDutAssociatedHostExec(ctx, info), should.BeNil)
 		})
-		Convey("Missing attached DUT associated hostname - returns error", func() {
+		t.Run("Missing attached DUT associated hostname - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -184,9 +186,9 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutAssociatedHostExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutAssociatedHostExec(ctx, info), should.NotBeNil)
 		})
-		Convey("ChromeOs DUT - returns error", func() {
+		t.Run("ChromeOs DUT - returns error", func(t *ftt.Test) {
 			info := execs.NewExecInfo(
 				&execs.RunArgs{
 					DUT: &tlw.Dut{
@@ -197,7 +199,7 @@ func TestHasDutAssociatedHostExec(t *testing.T) {
 						},
 					},
 				}, "", nil, 0, nil)
-			So(hasDutAssociatedHostExec(ctx, info), ShouldNotBeNil)
+			assert.Loosely(t, hasDutAssociatedHostExec(ctx, info), should.NotBeNil)
 		})
 	})
 }

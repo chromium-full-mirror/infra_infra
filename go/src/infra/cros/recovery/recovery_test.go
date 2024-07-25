@@ -12,7 +12,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/recovery/config"
 	"infra/cros/recovery/internal/execs"
@@ -380,7 +383,7 @@ func TestParsedDefaultConfiguration(t *testing.T) {
 
 func TestRunDUTPlan(t *testing.T) {
 	t.Parallel()
-	Convey("bad cases", t, func() {
+	ftt.Run("bad cases", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		dut := &tlw.Dut{
 			Name: "test_dut",
@@ -398,7 +401,7 @@ func TestRunDUTPlan(t *testing.T) {
 			Logger: args.Logger,
 		}
 		c := &config.Configuration{}
-		Convey("fail when no plans in config", func() {
+		t.Run("fail when no plans in config", func(t *ftt.Test) {
 			c.Plans = map[string]*config.Plan{
 				"something": nil,
 			}
@@ -407,11 +410,11 @@ func TestRunDUTPlan(t *testing.T) {
 			if err == nil {
 				t.Errorf("Expected fail but passed")
 			} else {
-				So(err.Error(), ShouldContainSubstring, "run dut \"test_dut\" plans:")
-				So(err.Error(), ShouldContainSubstring, "not found in configuration")
+				assert.Loosely(t, err.Error(), should.ContainSubstring("run dut \"test_dut\" plans:"))
+				assert.Loosely(t, err.Error(), should.ContainSubstring("not found in configuration"))
 			}
 		})
-		Convey("fail when one plan fail of plans fail", func() {
+		t.Run("fail when one plan fail of plans fail", func(t *ftt.Test) {
 			c.Plans = map[string]*config.Plan{
 				config.PlanServo: {
 					CriticalActions: []string{"sample_fail"},
@@ -435,11 +438,11 @@ func TestRunDUTPlan(t *testing.T) {
 			if err == nil {
 				t.Errorf("Expected fail but passed")
 			} else {
-				So(err.Error(), ShouldContainSubstring, "run plan \"servo\" for \"servo_host\":")
-				So(err.Error(), ShouldContainSubstring, "failed")
+				assert.Loosely(t, err.Error(), should.ContainSubstring("run plan \"servo\" for \"servo_host\":"))
+				assert.Loosely(t, err.Error(), should.ContainSubstring("failed"))
 			}
 		})
-		Convey("fail when bad action in the plan", func() {
+		t.Run("fail when bad action in the plan", func(t *ftt.Test) {
 			plan := &config.Plan{
 				CriticalActions: []string{"sample_fail"},
 				Actions: map[string]*config.Action{
@@ -452,12 +455,12 @@ func TestRunDUTPlan(t *testing.T) {
 			if err == nil {
 				t.Errorf("Expected fail but passed")
 			} else {
-				So(err.Error(), ShouldContainSubstring, "run plan \"cros\" for \"test_dut\":")
-				So(err.Error(), ShouldContainSubstring, ": failed")
+				assert.Loosely(t, err.Error(), should.ContainSubstring("run plan \"cros\" for \"test_dut\":"))
+				assert.Loosely(t, err.Error(), should.ContainSubstring(": failed"))
 			}
 		})
 	})
-	Convey("Happy path", t, func() {
+	ftt.Run("Happy path", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		dut := &tlw.Dut{
 			Name: "test_dut",
@@ -473,7 +476,7 @@ func TestRunDUTPlan(t *testing.T) {
 		execArgs := &execs.RunArgs{
 			DUT: dut,
 		}
-		Convey("Run good plan", func() {
+		t.Run("Run good plan", func(t *ftt.Test) {
 			plan := &config.Plan{
 				CriticalActions: []string{"sample_pass"},
 				Actions: map[string]*config.Action{
@@ -486,7 +489,7 @@ func TestRunDUTPlan(t *testing.T) {
 				t.Errorf("Expected pass but failed: %s", err)
 			}
 		})
-		Convey("Run all good plans", func() {
+		t.Run("Run all good plans", func(t *ftt.Test) {
 			c := &config.Configuration{
 				Plans: map[string]*config.Plan{
 					config.PlanCrOS: {
@@ -511,7 +514,7 @@ func TestRunDUTPlan(t *testing.T) {
 				t.Errorf("Expected pass but failed: %s", err)
 			}
 		})
-		Convey("Run all plans even one allow to fail", func() {
+		t.Run("Run all plans even one allow to fail", func(t *ftt.Test) {
 			c := &config.Configuration{
 				Plans: map[string]*config.Plan{
 					config.PlanCrOS: {
@@ -537,7 +540,7 @@ func TestRunDUTPlan(t *testing.T) {
 				t.Errorf("Expected pass but failed: %s", err)
 			}
 		})
-		Convey("Do not fail even if closing plan failed", func() {
+		t.Run("Do not fail even if closing plan failed", func(t *ftt.Test) {
 			c := &config.Configuration{
 				Plans: map[string]*config.Plan{
 					config.PlanCrOS: {

@@ -9,9 +9,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/recovery/internal/components/mocks"
 	"infra/cros/recovery/logger"
@@ -23,7 +25,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	logger := logger.NewLogger()
 	imagePath := "ec_image.bin"
 	fwBoard := ""
-	Convey("Happy path for stm32 chip", t, func() {
+	ftt.Run("Happy path for stm32 chip", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -46,10 +48,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("Happy path for other chips", t, func() {
+	ftt.Run("Happy path for other chips", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -72,10 +74,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("Happy path for ite chip on ccd", t, func() {
+	ftt.Run("Happy path for ite chip on ccd", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -98,10 +100,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("Happy path for ite chip on servo_micro", t, func() {
+	ftt.Run("Happy path for ite chip on servo_micro", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -124,10 +126,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func() {
+	ftt.Run("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -150,10 +152,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func() {
+	ftt.Run("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -177,10 +179,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("do not use try_apshutdown if controls are not present", t, func() {
+	ftt.Run("do not use try_apshutdown if controls are not present", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		runRequest := map[string]string{
@@ -203,10 +205,10 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("set try_apshutdown and board when fun flash", t, func() {
+	ftt.Run("set try_apshutdown and board when fun flash", t, func(t *ftt.Test) {
 		fwBoard = "reef"
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
@@ -231,8 +233,8 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		}
 
 		err := p.programEC(ctx, fwBoard, imagePath)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
 }
 
@@ -243,7 +245,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 	ctx := context.Background()
 	logger := logger.NewLogger()
 	imagePath := "image-board.bin"
-	Convey("Happy path", t, func() {
+	ftt.Run("Happy path", t, func(t *ftt.Test) {
 		runRequest := map[string]string{
 			"which futility": "",
 			"futility update -i image-board.bin --servo_port=97": "",
@@ -258,10 +260,10 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 
 		err := p.programAP(ctx, imagePath, "", false)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("Happy path with GBB 0x18", t, func() {
+	ftt.Run("Happy path with GBB 0x18", t, func(t *ftt.Test) {
 		runRequest := map[string]string{
 			"which futility": "",
 			"futility update -i image-board.bin --servo_port=91 --gbb_flags=0x18": "",
@@ -276,10 +278,10 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 
 		err := p.programAP(ctx, imagePath, "0x18", false)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
-	Convey("Happy path with force update", t, func() {
+	ftt.Run("Happy path with force update", t, func(t *ftt.Test) {
 		runRequest := map[string]string{
 			"which futility": "",
 			"futility update -i image-board.bin --servo_port=97 --force": "",
@@ -294,8 +296,8 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		}
 
 		err := p.programAP(ctx, imagePath, "", true)
-		So(err, ShouldBeNil)
-		So(runCounter(), ShouldEqual, len(runRequest))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
 }
 
