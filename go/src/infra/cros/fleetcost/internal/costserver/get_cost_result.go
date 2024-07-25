@@ -28,16 +28,21 @@ import (
 //		 Include "missing entries forgiveness" disposition in the cache.
 //	         We don't want strict and lax cache entries interfering with each other.
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
+	logging.Infof(ctx, "Begin GetCostResult for hostname=%q", req.GetHostname())
 	if req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
 	}
 	readResult, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
 	if readErr == nil && readResult != nil {
+		logging.Infof(ctx, "Return GetCostResult result from cache for hostname=%q", req.GetHostname())
 		return &fleetcostAPI.GetCostResultResponse{Result: readResult}, nil
 	}
-	if !datastore.IsErrNoSuchEntity(readErr) {
+	if readErr != nil && !datastore.IsErrNoSuchEntity(readErr) {
+		logging.Errorf(ctx, "Unexpected error while reading from cache for hostname=%q: %s", req.GetHostname(), readErr)
 		return nil, errors.Annotate(readErr, "get cost result").Err()
 	}
+
+	logging.Infof(ctx, "really compute cost for hostname=%q", req.GetHostname())
 	return f.getCostResultImpl(ctx, req)
 }
 

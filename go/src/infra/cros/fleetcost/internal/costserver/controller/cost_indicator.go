@@ -38,7 +38,7 @@ func normalizeToHourlyCost(ent *entities.CostIndicatorEntity, forgiveMissingEntr
 	case fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME:
 		costPerHour, err := utils.SafeDivide(rawCost, amortizationTimeInYears*hourToYear)
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("bad cost per hour for %w", err)
 		}
 		return BurnoutRateLinearPenalty(costPerHour, annualBurnoutRate, amortizationTimeInYears)
 	case fleetcostpb.CostCadence_COST_CADENCE_ANNUALLY:
