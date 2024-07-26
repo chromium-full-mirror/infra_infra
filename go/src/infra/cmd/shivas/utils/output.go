@@ -1533,6 +1533,8 @@ func PrintDutsFull(duts []*ufspb.MachineLSE, machineMap map[string]*ufspb.Machin
 			fmt.Fprintf(tw, "\tserial usb:\t%s\n", dolos.GetSerialUsb())
 			fmt.Fprintf(tw, "\thardware major revision:\t%s\n", dolos.GetHwMajorRevision())
 			fmt.Fprintf(tw, "\tfirmware version:\t%s\n", dolos.GetFwVersion())
+			fmt.Fprintf(tw, "\trpm host\t%s\n", dolos.GetRpm().GetPowerunitName())
+			fmt.Fprintf(tw, "\trpm outlet\t%s\n", dolos.GetRpm().GetPowerunitOutlet())
 		} else {
 			fmt.Fprintf(tw, "Dolos: None\n")
 		}

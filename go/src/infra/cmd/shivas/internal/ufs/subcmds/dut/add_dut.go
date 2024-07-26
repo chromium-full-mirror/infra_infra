@@ -113,6 +113,8 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.smartUSBHub, "smartusbhub", false, "adding this flag will specify if smartusbhub is present")
 		c.Flags.StringVar(&c.dolosHost, "dolos-host", "", "Hostname of the host machine of the Dolos device, usually it's a labstation.")
 		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
+		c.Flags.StringVar(&c.dolosRpmHost, "dolos-rpm-host", "", "RPM host for the Dolos A/C power.")
+		c.Flags.StringVar(&c.dolosRpmOutlet, "dolos-rpm-outlet", "", "RPM outlet for the Dolos A/C power.")
 
 		// Machine fields
 		// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
@@ -199,6 +201,8 @@ type addDUT struct {
 	// Dolos
 	dolosHost        string
 	dolosSerialCable string
+	dolosRpmHost     string
+	dolosRpmOutlet   string
 }
 
 var mcsvFields = []string{
@@ -408,10 +412,16 @@ func (c addDUT) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid logical zone name, please check help info for '-logicalzone'.", c.logicalZone)
 		}
 		if c.dolosSerialCable != "" && c.dolosHost == "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong useage!!\nDolos serial cable is provided but dolos host is empty, need both information.")
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos serial cable is provided but dolos host is empty, need both information.")
 		}
 		if c.dolosSerialCable == "" && c.dolosHost != "" {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong useage!!\nDolos host is provided but dolos serial cable is empty, need both information.")
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos host is provided but dolos serial cable is empty, need both information.")
+		}
+		if c.dolosRpmHost != "" && c.dolosHost == "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos rpm host is provided but dolos host is empty, need both information.")
+		}
+		if c.dolosRpmOutlet != "" && c.dolosHost == "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos rpm outlet is provided but dolos host is empty, need both information.")
 		}
 	}
 	if c.newSpecsFile == "" && c.hostname == "" {
@@ -720,6 +730,8 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	if c.dolosHost != "" {
 		peripherals.GetDolos().Hostname = c.dolosHost
 		peripherals.GetDolos().SerialCable = c.dolosSerialCable
+		peripherals.GetDolos().GetRpm().PowerunitName = c.dolosRpmHost
+		peripherals.GetDolos().GetRpm().PowerunitOutlet = c.dolosRpmOutlet
 	}
 	// Get the updated asset and update paths
 	asset, paths := utils.GenerateAssetUpdate(machines[0], model, board, c.zone, c.rack)
