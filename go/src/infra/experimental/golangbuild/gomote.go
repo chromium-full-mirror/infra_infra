@@ -79,6 +79,30 @@ func gomoteSetup(ctx context.Context, builderName string, args []string) error {
 	base := environ.System()
 	log.Printf("environment changes:\n%s", diffEnv(base, want))
 
+	// Check if we want to fetch an extra project for the user out of convenience.
+	var extraProject, extraDir string
+	if !isGoProject(inputs.Project) {
+		extraProject = inputs.Project
+		// Put it in $PWD/x_${inputs.Project}, which is not where the builders put it, but makes so much
+		// more sense for humans than whatever random temp directory we create. Simultaneously, we add the
+		// "x_" prefix to reduce the chance of directory collisions.
+		extraDir = filepath.Join(cwd, "x_"+inputs.Project)
+	} else if isGoProject(inputs.Project) && inputs.GetMode() == golangbuildpb.Mode_MODE_PERF {
+		extraProject = "benchmarks"
+		extraDir = filepath.Join(cwd, "benchmarks") // Match the perf builder's behavior.
+	}
+	if extraProject != "" {
+		// Fetch the subrepo at tip on behalf of the user.
+		authenticator := createAuthenticator(ctx)
+		subrepoSrc, err := sourceForBranch(ctx, authenticator, publicGoHost, extraProject, mainBranch)
+		if err != nil {
+			return fmt.Errorf("sourceForBranch: %w", err)
+		}
+		if err := fetchRepo(ctx, subrepoSrc, extraDir, inputs); err != nil {
+			return err
+		}
+	}
+
 	// Execute the command in args.
 	cmd := command(ctx, args[0], args[1:]...)
 	cmd.Stdin = os.Stdin
