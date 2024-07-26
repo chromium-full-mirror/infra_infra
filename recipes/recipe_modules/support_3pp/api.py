@@ -893,7 +893,7 @@ class Support3ppApi(recipe_api.RecipeApi):
         go_version_variant='bleeding_edge')
     co.gclient_runhooks()
 
-    exe_suffix = '.exe' if platform_for_host(self.m).startswith('windows') else ''
+    exe_suffix = '.exe' if self.m.platform.is_win else ''
     with run_script.get_sdk(self.m, platform_for_host(self.m)), \
          co.go_env(), self.m.context(cwd=co.path / 'infra/go/src/infra'):
       self.m.step('build pkgbuild', [
