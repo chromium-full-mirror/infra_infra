@@ -7,15 +7,15 @@ package api
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestValidate_ScheduleTaskRequest(t *testing.T) {
-	Convey("ScheduleTaskRequest Validate", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("ScheduleTaskRequest Validate", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &ScheduleTaskRequest{
 				DeviceName: "foo-device",
 				BuildbucketRequest: &buildbucketpb.ScheduleBuildRequest{
@@ -27,17 +27,17 @@ func TestValidate_ScheduleTaskRequest(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - nil BB request", func() {
+		t.Run("Invalid request - nil BB request", func(t *ftt.Test) {
 			req := &ScheduleTaskRequest{
 				DeviceName: "foo-device",
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: no builder specified in BB request")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: no builder specified in BB request"))
 		})
-		Convey("Invalid request - empty BB request", func() {
+		t.Run("Invalid request - empty BB request", func(t *ftt.Test) {
 			req := &ScheduleTaskRequest{
 				BuildbucketRequest: &buildbucketpb.ScheduleBuildRequest{
 					Builder: &buildbucketpb.BuilderID{},
@@ -45,10 +45,10 @@ func TestValidate_ScheduleTaskRequest(t *testing.T) {
 				DeviceName: "foo-device",
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: no builder specified in BB request")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: no builder specified in BB request"))
 		})
-		Convey("Invalid request - empty device name", func() {
+		t.Run("Invalid request - empty device name", func(t *ftt.Test) {
 			req := &ScheduleTaskRequest{
 				BuildbucketRequest: &buildbucketpb.ScheduleBuildRequest{
 					Builder: &buildbucketpb.BuilderID{
@@ -59,34 +59,34 @@ func TestValidate_ScheduleTaskRequest(t *testing.T) {
 				},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid format: no device name")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid format: no device name"))
 		})
 	})
 }
 
 func TestValidate_CancelTasksRequest(t *testing.T) {
-	Convey("CancelTasksRequest Validate", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("CancelTasksRequest Validate", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &CancelTasksRequest{
 				TaskIds: []int64{1, 2},
 			}
 			err := req.Validate()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - nil task IDs", func() {
+		t.Run("Invalid request - nil task IDs", func(t *ftt.Test) {
 			req := &CancelTasksRequest{}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: no task IDs")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: no task IDs"))
 		})
-		Convey("Invalid request - no task IDs", func() {
+		t.Run("Invalid request - no task IDs", func(t *ftt.Test) {
 			req := &CancelTasksRequest{
 				TaskIds: []int64{},
 			}
 			err := req.Validate()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: no task IDs")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: no task IDs"))
 		})
 	})
 }
