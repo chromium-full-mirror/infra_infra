@@ -56,8 +56,11 @@ func newTestRunner(props *golangbuildpb.TestMode, gotShard *golangbuildpb.TestSh
 
 // Run implements the runner interface for testRunner.
 func (r *testRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
-	// Get a built Go toolchain and require it to be prebuilt.
-	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, true); err != nil {
+	// Get a built Go toolchain and require it to be prebuilt if we're not in fetchOnly mode.
+	// In fetchOnly mode, there's likely a human involved, and they could be debugging something
+	// old that doesn't have a prebuilt binary for it anymore. In that case, we want to build it
+	// on behalf of the human involved.
+	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, !opts.fetchOnly()); err != nil {
 		return err
 	}
 	// Determine what ports to test.

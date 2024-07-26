@@ -183,11 +183,6 @@ func gomoteRepro(ctx context.Context, buildID string, args []string) error {
 		return err
 	}
 
-	// Get a built Go toolchain or build it if necessary.
-	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, false); err != nil {
-		return err
-	}
-
 	// Select a runner based on the mode, then initialize and invoke it.
 	var rn runner
 	switch inputs.GetMode() {
