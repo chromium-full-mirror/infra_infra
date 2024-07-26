@@ -12,7 +12,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -51,7 +50,6 @@ type SchedukeClient struct {
 	baseURL                          string
 	gerritClient, schedukeHTTPClient *http.Client
 	ctx                              context.Context
-	local                            bool
 }
 
 // NewSchedukeClientForCLI returns a Scheduke client that can be called from a
@@ -70,33 +68,15 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 		baseURL = schedukeDevURL
 	}
 
-	// Determine whether CLI is being run by a human or not.
-	userEmail, err := getUserEmail(ctx, authOpts)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: getting user email").Err()
-	}
-	local := strings.HasSuffix(userEmail, "@google.com")
-
 	// Set up Scheduke client.
 	var sc *http.Client
-	if local {
-		if err := confirmGcloudLogin(); err != nil {
-			return nil, errors.Annotate(err, "NewSchedukeClientForCLI: confirming gcloud login").Err()
-		}
-		// Scheduke doesn't require an authenticated HTTP transport if the CLI is
-		// being used by a human, since we add the user's gcloud token as a header
-		// on each request.
-		sc = &http.Client{}
-	} else {
-		sc, err = SilentLoginHTTPClientForAudience(ctx, baseURL)
-		if err != nil {
-			return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Scheduke HTTP client").Err()
-		}
+	sc, err = SilentLoginHTTPClientForAudience(ctx, baseURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Scheduke HTTP client").Err()
 	}
 
 	s := SchedukeClient{
 		ctx:                ctx,
-		local:              local,
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
@@ -137,7 +117,6 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 
 	return &SchedukeClient{
 		ctx:                ctx,
-		local:              false,
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
@@ -167,44 +146,10 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 
 	return &SchedukeClient{
 		ctx:                ctx,
-		local:              false,
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
 	}, nil
-}
-
-// token generates the user's Gcloud auth token.
-// TODO: Use Google auth libs to generate this.
-func token() (string, error) {
-	args := []string{"auth", "print-identity-token"}
-	out, err := exec.Command("gcloud", args...).Output()
-	if err != nil {
-		return "", errors.Annotate(err, "error generating user token via gcloud auth").Err()
-	}
-	o := string(out)
-	fmted := strings.ReplaceAll(o, "\n", "")
-
-	return fmted, nil
-}
-
-// confirmGcloudLogin confirms the user is logged into gcloud.
-// TODO: Use Google auth libs to confirm this.
-func confirmGcloudLogin() error {
-	args := []string{"auth", "list", "--filter", "status:Active", "--format", "value(account)"}
-	cmd := exec.Command("gcloud", args...)
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	err := cmd.Run()
-	if err != nil {
-		return errors.Annotate(err, "error confirming user is logged in to gcloud: %s", stderr.String()).Err()
-	}
-	if out.String() == "" {
-		return fmt.Errorf("no gcloud credentials detected; please run `gcloud auth login`")
-	}
-	return nil
 }
 
 func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (*schedukeapi.CreateTaskStatesResponse, error) {
@@ -281,14 +226,6 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader, 
 		return nil, errors.Annotate(err, "creating new HTTP request").Err()
 	}
 
-	if s.local {
-		t, err := token()
-		if err != nil {
-			return nil, err
-		}
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", t))
-	}
-
 	if method == http.MethodPost {
 		req.Header.Set("Content-Type", "application/json")
 	}
@@ -299,7 +236,7 @@ func (s *SchedukeClient) makeRequest(method string, url string, body io.Reader, 
 	}
 	if r.StatusCode != 200 {
 		if r.StatusCode == 400 || r.StatusCode == 401 || r.StatusCode == 403 {
-			return nil, fmt.Errorf("scheduke returned %d; make sure you ran `gcloud auth login`, and if this error persists, see http://go/crosfleet#obtaining-access)", r.StatusCode)
+			return nil, fmt.Errorf("scheduke returned %d; if this error persists, see http://go/crosfleet#obtaining-access)", r.StatusCode)
 		}
 		return nil, fmt.Errorf("scheduke returned %d", r.StatusCode)
 	}
