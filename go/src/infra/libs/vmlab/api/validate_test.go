@@ -8,18 +8,19 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestValidateVmLeaserBackend(t *testing.T) {
-	Convey("CreateVmInstanceRequest Validate", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("CreateVmInstanceRequest Validate", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			d, err := time.ParseDuration("60s")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			req := &CreateVmInstanceRequest{
 				Config: &Config{
@@ -39,23 +40,23 @@ func TestValidateVmLeaserBackend(t *testing.T) {
 				},
 			}
 			err = req.ValidateVmLeaserBackend()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - empty request", func() {
+		t.Run("Invalid request - empty request", func(t *ftt.Test) {
 			req := &CreateVmInstanceRequest{}
 			err := req.ValidateVmLeaserBackend()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: no config found")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: no config found"))
 		})
-		Convey("Invalid request - empty VmLeaserBackend", func() {
+		t.Run("Invalid request - empty VmLeaserBackend", func(t *ftt.Test) {
 			req := &CreateVmInstanceRequest{
 				Config: &Config{},
 			}
 			err := req.ValidateVmLeaserBackend()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: bad backend: want vmleaser")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: bad backend: want vmleaser"))
 		})
-		Convey("Invalid request - wrong backend", func() {
+		t.Run("Invalid request - wrong backend", func(t *ftt.Test) {
 			req := &CreateVmInstanceRequest{
 				Config: &Config{
 					Backend: &Config_GcloudBackend{
@@ -64,8 +65,8 @@ func TestValidateVmLeaserBackend(t *testing.T) {
 				},
 			}
 			err := req.ValidateVmLeaserBackend()
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: bad backend: want vmleaser")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: bad backend: want vmleaser"))
 		})
 	})
 }
