@@ -47,7 +47,12 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) e
 		}
 		return runGoTests(ctx, spec, noSharding, ports)
 	}
-	repoDir, err := fetchSubrepo(ctx, spec)
+	// N.B. If we're going to run subrepo tests, then randomize the name of
+	// the directory we fetch into. This helps prevent tests from relying on
+	// specific paths into the repo on the builder. If we're only fetching,
+	// then it's very likely there's a human involved, and we'd actually like
+	// a nice deterministic name.
+	repoDir, err := fetchSubrepo(ctx, spec, !opts.fetchOnly())
 	if err != nil {
 		return err
 	}

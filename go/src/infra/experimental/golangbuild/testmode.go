@@ -78,7 +78,12 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) 
 		}
 		return runGoTests(ctx, spec, r.shard, ports)
 	}
-	repoDir, err := fetchSubrepo(ctx, spec)
+	// N.B. If we're going to run subrepo tests, then randomize the name of
+	// the directory we fetch into. This helps prevent tests from relying on
+	// specific paths into the repo on the builder. If we're only fetching,
+	// then it's very likely there's a human involved, and we'd actually like
+	// a nice deterministic name.
+	repoDir, err := fetchSubrepo(ctx, spec, !opts.fetchOnly())
 	if err != nil {
 		return err
 	}
@@ -255,13 +260,17 @@ func shardTestsByWeight(tests []string, shard testShard) []string {
 // fetchSubrepo fetches a target golang.org/x repository.
 //
 // It returns an infrastructure error if used on the main Go repository.
-func fetchSubrepo(ctx context.Context, spec *buildSpec) (repoDir string, err error) {
+func fetchSubrepo(ctx context.Context, spec *buildSpec, randomizeDir bool) (repoDir string, err error) {
 	if isGoProject(spec.inputs.Project) {
 		return "", infraErrorf("fetchSubrepo called for a main Go repo builder")
 	}
-	repoDir, err = os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
-	if err != nil {
-		return "", err
+	if randomizeDir {
+		repoDir, err = os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
+		if err != nil {
+			return "", err
+		}
+	} else {
+		repoDir = "x_" + spec.inputs.Project
 	}
 	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
 		return "", err
