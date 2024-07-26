@@ -11,13 +11,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	vmlabpb "infra/libs/vmlab/api"
 )
@@ -46,15 +47,15 @@ func (m *mockVMLeaserClient) ListLeases(context.Context, *api.ListLeasesRequest,
 
 func TestCreate(t *testing.T) {
 	t.Parallel()
-	Convey("Test Create", t, func() {
-		Convey("Create - error: empty request", func() {
+	ftt.Run("Test Create", t, func(t *ftt.Test) {
+		t.Run("Create - error: empty request", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ins, err := vmLeaser.Create(context.Background(), &vmlabpb.CreateVmInstanceRequest{})
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "no config found")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("no config found"))
 		})
 	})
 }
@@ -63,8 +64,8 @@ func TestLeaseVM(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("Test leaseVM", t, func() {
-		Convey("leaseVM - success", func() {
+	ftt.Run("Test leaseVM", t, func(t *ftt.Test) {
+		t.Run("leaseVM - success", func(t *ftt.Test) {
 			client := &mockVMLeaserClient{
 				leaseVM: func() (*api.LeaseVMResponse, error) {
 					return &api.LeaseVMResponse{
@@ -83,7 +84,7 @@ func TestLeaseVM(t *testing.T) {
 			}
 
 			d, err := time.ParseDuration("60s")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vmLeaser := &vmLeaserInstanceApi{}
 			cfg := vmlabpb.Config{
@@ -104,17 +105,17 @@ func TestLeaseVM(t *testing.T) {
 			ins, err := vmLeaser.leaseVM(ctx, client, &vmlabpb.CreateVmInstanceRequest{
 				Config: &cfg,
 			})
-			So(ins, ShouldResembleProto, &vmlabpb.VmInstance{
+			assert.Loosely(t, ins, should.Resemble(&vmlabpb.VmInstance{
 				Name: "vm-test-id",
 				Ssh: &vmlabpb.AddressPort{
 					Address: "1.2.3.4",
 					Port:    99,
 				},
 				Config: &cfg,
-			})
-			So(err, ShouldBeNil)
+			}))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("leaseVM - error: failed to lease VM", func() {
+		t.Run("leaseVM - error: failed to lease VM", func(t *ftt.Test) {
 			client := &mockVMLeaserClient{
 				leaseVM: func() (*api.LeaseVMResponse, error) {
 					return nil, errors.New("leasing error")
@@ -122,7 +123,7 @@ func TestLeaseVM(t *testing.T) {
 			}
 
 			d, err := time.ParseDuration("60s")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			vmLeaser := &vmLeaserInstanceApi{}
 			cfg := vmlabpb.Config{
@@ -143,9 +144,9 @@ func TestLeaseVM(t *testing.T) {
 			ins, err := vmLeaser.leaseVM(ctx, client, &vmlabpb.CreateVmInstanceRequest{
 				Config: &cfg,
 			})
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "failed to lease VM: leasing error")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("failed to lease VM: leasing error"))
 		})
 	})
 }
@@ -154,18 +155,18 @@ func TestDelete(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("Test Delete", t, func() {
-		Convey("Delete - error when deleting; no backend", func() {
+	ftt.Run("Test Delete", t, func(t *ftt.Test) {
+		t.Run("Delete - error when deleting; no backend", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = vmLeaser.Delete(ctx, &vmlabpb.VmInstance{})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: bad backend: want vm leaser")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: bad backend: want vm leaser"))
 		})
-		Convey("Delete - error when deleting; no instance name", func() {
+		t.Run("Delete - error when deleting; no instance name", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
@@ -181,12 +182,12 @@ func TestDelete(t *testing.T) {
 			err = vmLeaser.Delete(ctx, &vmlabpb.VmInstance{
 				Config: &cfg,
 			})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "instance name must be set")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("instance name must be set"))
 		})
-		Convey("Delete - error when deleting; no gce project", func() {
+		t.Run("Delete - error when deleting; no gce project", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
@@ -203,8 +204,8 @@ func TestDelete(t *testing.T) {
 				Name:   "test-name",
 				Config: &cfg,
 			})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "project must be set")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("project must be set"))
 		})
 	})
 }
@@ -213,19 +214,19 @@ func TestList(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("Test List", t, func() {
-		Convey("List - error when listing; no backend", func() {
+	ftt.Run("Test List", t, func(t *ftt.Test) {
+		t.Run("List - error when listing; no backend", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ins, err := vmLeaser.List(ctx, &vmlabpb.ListVmInstancesRequest{})
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "invalid argument: bad backend: want vm leaser")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("invalid argument: bad backend: want vm leaser"))
 		})
-		Convey("List - error when listing; no gce project", func() {
+		t.Run("List - error when listing; no gce project", func(t *ftt.Test) {
 			vmLeaser, err := New()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
@@ -241,9 +242,9 @@ func TestList(t *testing.T) {
 			ins, err := vmLeaser.List(ctx, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "project must be set")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("project must be set"))
 		})
 	})
 }
@@ -252,8 +253,8 @@ func TestListLeases(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("Test listLeases", t, func() {
-		Convey("listLeases - success", func() {
+	ftt.Run("Test listLeases", t, func(t *ftt.Test) {
+		t.Run("listLeases - success", func(t *ftt.Test) {
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
 					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
@@ -297,7 +298,7 @@ func TestListLeases(t *testing.T) {
 			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			So(ins, ShouldResembleProto, []*vmlabpb.VmInstance{
+			assert.Loosely(t, ins, should.Resemble([]*vmlabpb.VmInstance{
 				{
 					Name: "vm-test-id",
 					Ssh: &vmlabpb.AddressPort{
@@ -316,10 +317,10 @@ func TestListLeases(t *testing.T) {
 					Config:    &cfg,
 					GceRegion: "test-region",
 				},
-			})
-			So(err, ShouldBeNil)
+			}))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("listLeases - no results", func() {
+		t.Run("listLeases - no results", func(t *ftt.Test) {
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
 					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
@@ -344,10 +345,10 @@ func TestListLeases(t *testing.T) {
 			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			So(ins, ShouldResembleProto, []*vmlabpb.VmInstance{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, ins, should.Resemble([]*vmlabpb.VmInstance{}))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("listLeases - error when listing", func() {
+		t.Run("listLeases - error when listing", func(t *ftt.Test) {
 			cfg := vmlabpb.Config{
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
 					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
@@ -370,8 +371,8 @@ func TestListLeases(t *testing.T) {
 			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			So(err, ShouldErrLike, "failed to list VMs")
-			So(ins, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("failed to list VMs"))
+			assert.Loosely(t, ins, should.BeNil)
 		})
 	})
 }
