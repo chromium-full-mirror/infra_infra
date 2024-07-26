@@ -11,10 +11,12 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // TODO (justinsuen): jsonpb throws an error when working with the
@@ -23,7 +25,7 @@ import (
 // but should not affect the functionality of the library as the protos will be
 // directly unmarshaled from the datastore instead of a string representation.
 
-func parseDutAttribute(t *testing.T, protoText string) api.DutAttribute {
+func parseDutAttribute(t *ftt.Test, protoText string) api.DutAttribute {
 	var da api.DutAttribute
 	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
 		t.Fatalf("Error unmarshalling example text: %s", err)
@@ -62,7 +64,7 @@ func TestConvertAll(t *testing.T) {
 				]
 			}
 		}`
-		da := parseDutAttribute(t, daText)
+		da := parseDutAttribute(&ftt.Test{T: t}, daText)
 		want := Dimensions{
 			"attr-design": {"Test"},
 			"attr-model":  {"Test"},
@@ -93,7 +95,7 @@ func TestConvertAll(t *testing.T) {
         ]
       }
     }`
-		da := parseDutAttribute(t, daText)
+		da := parseDutAttribute(&ftt.Test{T: t}, daText)
 		got, err := ConvertAll(&da, &fc)
 		if err == nil {
 			t.Fatalf("ConvertAll passed without failures")
@@ -120,7 +122,7 @@ func TestConvertAll(t *testing.T) {
 				]
 			}
 		}`
-		da := parseDutAttribute(t, daText)
+		da := parseDutAttribute(&ftt.Test{T: t}, daText)
 		want := Dimensions{
 			"hw-wireless":     {"wireless_test1"},
 			"label-wifi_chip": {"wireless_test1"},
@@ -151,7 +153,7 @@ func TestConvertAll(t *testing.T) {
 				]
 			}
 		}`
-		da := parseDutAttribute(t, daText)
+		da := parseDutAttribute(&ftt.Test{T: t}, daText)
 		want := Dimensions{
 			"hw-storage":    {"storage_test1", "storage_test2", "storage_test3"},
 			"label-storage": {"storage_test1", "storage_test2", "storage_test3"},
@@ -181,7 +183,7 @@ func TestConvertAll(t *testing.T) {
 				]
 			}
 		}`
-		da := parseDutAttribute(t, daText)
+		da := parseDutAttribute(&ftt.Test{T: t}, daText)
 		got, err := ConvertAll(&da, &fc)
 		if err == nil {
 			t.Fatalf("ConvertAll passed without failures")
@@ -206,45 +208,45 @@ func TestGetLabelValues(t *testing.T) {
 		t.Fatalf("Error unmarshalling test FlatConfig: %s", err)
 	}
 
-	Convey("TestGetLabelValues", t, func() {
-		Convey("get label values from a null jsonpath", func() {
+	ftt.Run("TestGetLabelValues", t, func(t *ftt.Test) {
+		t.Run("get label values from a null jsonpath", func(t *ftt.Test) {
 			got, err := GetLabelValues("", &fc)
-			So(err, ShouldNotBeNil)
-			So(got, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "jsonpath cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, got, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("jsonpath cannot be empty"))
 		})
 
-		Convey("get label values from a null proto message", func() {
+		t.Run("get label values from a null proto message", func(t *ftt.Test) {
 			var nilConfig *payload.FlatConfig
 			got, err := GetLabelValues("$.test-path", nilConfig)
-			So(err, ShouldNotBeNil)
-			So(got, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "proto message cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, got, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("proto message cannot be empty"))
 		})
 
-		Convey("get label values with a field path - single value", func() {
+		t.Run("get label values with a field path - single value", func(t *ftt.Test) {
 			got, err := GetLabelValues("$.hw_design.id.value", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"Test"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"Test"}))
 		})
 
-		Convey("get label values with a field path - multiple values", func() {
+		t.Run("get label values with a field path - multiple values", func(t *ftt.Test) {
 			got, err := GetLabelValues("$.hw_design.configs[:].hardware_features.camera.devices[:].ids[:]", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{
 				"test-camera-id-1",
 				"test-camera-id-2",
 				"test-camera-id-3",
-			})
+			}))
 		})
 
-		Convey("get label values with a field path - no matching value", func() {
+		t.Run("get label values with a field path - no matching value", func(t *ftt.Test) {
 			got, err := GetLabelValues("$.hw_design_config.hardware_features.embedded_controller.ec_type", &fc)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unsupported value type")
-			So(got, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unsupported value type"))
+			assert.Loosely(t, got, should.BeNil)
 		})
 	})
 }
@@ -269,21 +271,21 @@ func TestGetLabelNames(t *testing.T) {
 		}
 	}`
 
-	Convey("TestGetLabelNames", t, func() {
-		Convey("get label names from a normal DutAttribute", func() {
+	ftt.Run("TestGetLabelNames", t, func(t *ftt.Test) {
+		t.Run("get label names from a normal DutAttribute", func(t *ftt.Test) {
 			da := parseDutAttribute(t, daText)
 			got, err := GetLabelNames(&da)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"attr-design", "attr-model", "label-model"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"attr-design", "attr-model", "label-model"}))
 		})
 
-		Convey("get label names from a DutAttribute with no ID", func() {
+		t.Run("get label names from a DutAttribute with no ID", func(t *ftt.Test) {
 			da := parseDutAttribute(t, daText)
 			da.Id.Value = ""
 			got, err := GetLabelNames(&da)
-			So(err, ShouldNotBeNil)
-			So(got, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, got, should.BeNil)
 		})
 	})
 }
@@ -291,28 +293,28 @@ func TestGetLabelNames(t *testing.T) {
 func TestParseLabelValuesToArray(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestParseLabelValuesToArray", t, func() {
-		Convey("get label names values from []interface{} - string castable", func() {
+	ftt.Run("TestParseLabelValuesToArray", t, func(t *ftt.Test) {
+		t.Run("get label names values from []interface{} - string castable", func(t *ftt.Test) {
 			var labelVals []interface{}
 			labelVals = append(labelVals, "label-1", "label-2")
 
 			got, err := ParseLabelValuesToArray(labelVals)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"label-1", "label-2"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"label-1", "label-2"}))
 		})
 
-		Convey("get label names values from []interface{} - string not castable", func() {
+		t.Run("get label names values from []interface{} - string not castable", func(t *ftt.Test) {
 			var labelVals []interface{}
 			labelVals = append(labelVals, []string{"label-1"}, []string{"label-2"})
 
 			got, err := ParseLabelValuesToArray(labelVals)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "cannot cast to string")
-			So(got, ShouldResemble, []string(nil))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("cannot cast to string"))
+			assert.Loosely(t, got, should.Resemble([]string(nil)))
 		})
 
-		Convey("get label names values from struct - string not castable", func() {
+		t.Run("get label names values from struct - string not castable", func(t *ftt.Test) {
 			type testStruct struct {
 				val1 float64
 				val2 string
@@ -320,29 +322,29 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			labelVals := testStruct{10, "test"}
 
 			got, err := ParseLabelValuesToArray(labelVals)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "cannot cast to string")
-			So(got, ShouldResemble, []string(nil))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("cannot cast to string"))
+			assert.Loosely(t, got, should.Resemble([]string(nil)))
 		})
 
-		Convey("get label names values from []interface{} - boolean castable", func() {
+		t.Run("get label names values from []interface{} - boolean castable", func(t *ftt.Test) {
 			var labelVals interface{}
 			labelVals = true
 
 			got, err := ParseLabelValuesToArray(labelVals)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"true"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"true"}))
 		})
 
-		Convey("get label names values from []interface{} - float64 castable", func() {
+		t.Run("get label names values from []interface{} - float64 castable", func(t *ftt.Test) {
 			var labelVals interface{}
 			labelVals = 1238764.987
 
 			got, err := ParseLabelValuesToArray(labelVals)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"1238764.987"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"1238764.987"}))
 		})
 	})
 }
@@ -361,12 +363,12 @@ func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 		t.Fatalf("Error unmarshalling test FlatConfig: %s", err)
 	}
 
-	Convey("GetLabelValues", t, func() {
-		Convey("convert label with existing correct field path - single value", func() {
+	ftt.Run("GetLabelValues", t, func(t *ftt.Test) {
+		t.Run("convert label with existing correct field path - single value", func(t *ftt.Test) {
 			got, err := GetLabelValues("$.hw_design.id.value", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldNotBeNil)
-			So(got, ShouldResemble, []string{"Test"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.NotBeNil)
+			assert.Loosely(t, got, should.Resemble([]string{"Test"}))
 		})
 	})
 }
@@ -385,50 +387,50 @@ func TestGetProtoExistence(t *testing.T) {
 		t.Fatalf("Error unmarshalling test FlatConfig: %s", err)
 	}
 
-	Convey("TestGetProtoExistence", t, func() {
-		Convey("get proto existence using a null jsonpath", func() {
+	ftt.Run("TestGetProtoExistence", t, func(t *ftt.Test) {
+		t.Run("get proto existence using a null jsonpath", func(t *ftt.Test) {
 			got, err := GetProtoExistence("", &fc)
-			So(err, ShouldNotBeNil)
-			So(got, ShouldBeFalse)
-			So(err.Error(), ShouldContainSubstring, "jsonpath cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, got, should.BeFalse)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("jsonpath cannot be empty"))
 		})
 
-		Convey("get proto existence using a null proto message", func() {
+		t.Run("get proto existence using a null proto message", func(t *ftt.Test) {
 			var nilConfig *payload.FlatConfig
 			got, err := GetProtoExistence("test-path", nilConfig)
-			So(err, ShouldNotBeNil)
-			So(got, ShouldBeFalse)
-			So(err.Error(), ShouldContainSubstring, "proto message cannot be empty")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, got, should.BeFalse)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("proto message cannot be empty"))
 		})
 
-		Convey("get proto existence with a field path - single value", func() {
+		t.Run("get proto existence with a field path - single value", func(t *ftt.Test) {
 			got, err := GetProtoExistence("hw_design.id.value", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.BeTrue)
 		})
 
-		Convey("get proto existence with a non-terminal field path", func() {
+		t.Run("get proto existence with a non-terminal field path", func(t *ftt.Test) {
 			// $.hw_components[?(@.soc) != null] specifies all objects inside
 			// hw_components that contains the field "soc". This exists in the cfg.
 			got, err := GetProtoExistence("$.hw_components[?(@.soc != null)]", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.BeTrue)
 		})
 
-		Convey("get proto existence with a non-terminal field path with no match", func() {
+		t.Run("get proto existence with a non-terminal field path with no match", func(t *ftt.Test) {
 			// $.hw_components[?(@.soc) != null] specifies all objects inside
 			// hw_components that contains the field "society". This does not exist
 			// and should evaluate to an empty slice.
 			got, err := GetProtoExistence("$.hw_components[?(@.society != null)]", &fc)
-			So(err, ShouldBeNil)
-			So(got, ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got, should.BeFalse)
 		})
 
-		Convey("get proto existence with a field path - no matching value", func() {
+		t.Run("get proto existence with a field path - no matching value", func(t *ftt.Test) {
 			got, err := GetProtoExistence("hw_design_config.hardware_features.embedded_controller.ec_type", &fc)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unknown parameter")
-			So(got, ShouldBeFalse)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unknown parameter"))
+			assert.Loosely(t, got, should.BeFalse)
 		})
 	})
 }
@@ -436,8 +438,8 @@ func TestGetProtoExistence(t *testing.T) {
 func TestCombineDims(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestCombineDims", t, func() {
-		Convey("happy path - combine dimensions", func() {
+	ftt.Run("TestCombineDims", t, func(t *ftt.Test) {
+		t.Run("happy path - combine dimensions", func(t *ftt.Test) {
 			d1 := Dimensions{
 				"attr-design": {"Test"},
 				"attr-model":  {"Test"},
@@ -448,14 +450,14 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			So(got, ShouldResemble, Dimensions{
+			assert.Loosely(t, got, should.Resemble(Dimensions{
 				"attr-design": {"Test"},
 				"attr-model":  {"Test"},
 				"label-model": {"Test"},
-			})
+			}))
 		})
 
-		Convey("one is empty", func() {
+		t.Run("one is empty", func(t *ftt.Test) {
 			d1 := Dimensions{}
 
 			d2 := Dimensions{
@@ -463,12 +465,12 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			So(got, ShouldResemble, Dimensions{
+			assert.Loosely(t, got, should.Resemble(Dimensions{
 				"label-model": {"Test"},
-			})
+			}))
 		})
 
-		Convey("overwrite with second list of dimensions", func() {
+		t.Run("overwrite with second list of dimensions", func(t *ftt.Test) {
 			d1 := Dimensions{
 				"attr-model":  {"Test"},
 				"label-model": {"Test"},
@@ -479,10 +481,10 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			So(got, ShouldResemble, Dimensions{
+			assert.Loosely(t, got, should.Resemble(Dimensions{
 				"attr-model":  {"Test"},
 				"label-model": {"Test2"},
-			})
+			}))
 		})
 	})
 }
