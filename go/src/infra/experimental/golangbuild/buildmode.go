@@ -31,7 +31,9 @@ func newBuildRunner(props *golangbuildpb.BuildMode) *buildRunner {
 }
 
 // Run implements the runner interface for buildRunner.
-func (r *buildRunner) Run(ctx context.Context, spec *buildSpec) error {
+func (r *buildRunner) Run(ctx context.Context, spec *buildSpec, _ runOptions) error {
+	// N.B. We ignore the fetchOnly run option becauase the only thing Run does is fetch.
+
 	// Grab a prebuilt toolchain or build one and upload it.
 	return getGo(ctx, spec, "", spec.goroot, spec.goSrc, false)
 }

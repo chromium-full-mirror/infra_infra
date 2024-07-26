@@ -63,7 +63,7 @@ func casInstanceFromEnv(ctx context.Context) (context.Context, error) {
 	// by whoever changes it.
 	server := os.Getenv(swarming.ServerEnvVar)
 	if server == "" {
-		return ctx, fmt.Errorf("no CAS instance found")
+		return ctx, fmt.Errorf("no CAS instance found; SWARMING_SERVER is not set (set it to a URL like https://chromium-swarm.appspot.com)")
 	}
 	u, err := url.Parse(server)
 	if err != nil {

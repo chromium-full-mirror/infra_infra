@@ -173,6 +173,13 @@ func main() {
 		}
 		return
 	}
+	if buildID := os.Getenv("GOMOTE_REPRO"); buildID != "" {
+		if err := gomoteRepro(context.Background(), buildID, os.Args[1:]); err != nil {
+			fmt.Fprintf(os.Stderr, "error: gomote repro: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
 	inputs := new(golangbuildpb.Inputs)
 	var writeOutputProps func(*golangbuildpb.Outputs)
@@ -286,7 +293,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		return nil, infraErrorf("get CWD")
 	}
 
-	spec, err = deriveBuildSpec(ctx, cwd, experiments, st, inputs)
+	spec, err = deriveBuildSpec(ctx, cwd, experiments, st.Build(), inputs)
 	if err != nil {
 		return nil, infraWrap(err)
 	}
@@ -315,7 +322,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	if err != nil {
 		return nil, infraErrorf("initializing runner: %w", err)
 	}
-	return spec, rn.Run(ctx, spec)
+	return spec, rn.Run(ctx, spec, noOptions)
 }
 
 // runner is an interface that provides an abstraction over golangbuild's various modes.
@@ -323,5 +330,22 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 // Every mode basically requires the same setup at the beginning of the build; runner
 // determines what to do once we have all that.
 type runner interface {
-	Run(ctx context.Context, spec *buildSpec) error
+	Run(ctx context.Context, spec *buildSpec, opts runOptions) error
+}
+
+// runOptions are a set of options to pass to Run.
+type runOptions uint64
+
+const (
+	noOptions runOptions = 0
+
+	// fetchOnly indicates that Run should stop after fetching and constructing all
+	// necessary dependencies. Generally this just means cloning repositories, but it's
+	// also in this spirit of this option to run make.bash, for example. More concretely,
+	// the runner must not run any tests or trigger any downstream builds.
+	fetchOnly runOptions = 1 << iota
+)
+
+func (o runOptions) fetchOnly() bool {
+	return o&fetchOnly != 0
 }

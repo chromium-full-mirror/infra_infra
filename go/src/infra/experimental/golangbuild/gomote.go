@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -20,41 +21,24 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )
 
-// gomoteSetup sets up the environment for a gomote then invokes the command
-// in args. This path must closely, if not identically, match the setup path
-// before calling into one of the mode-specific runners.
+// gomoteSetup sets up a basic environment for a gomote from a builder name
+// then invokes the command in args. This path must closely, if not identically,
+// match the setup path before calling into one of the mode-specific runners.
 func gomoteSetup(ctx context.Context, builderName string, args []string) error {
-	// Define working directory.
-	cwd, err := os.Getwd()
+	if len(args) == 0 {
+		return fmt.Errorf("no command to run specified")
+	}
+
+	// Set up basic LUCI env.
+	ctx, cwd, err := setupBasicLUCIEnv(ctx)
 	if err != nil {
-		return infraErrorf("get CWD")
-	}
-
-	log.Printf("setting up build environment for gomote at %s...", cwd)
-
-	// Set up the basic parts of the environment first.
-	tmpDir := filepath.Join(cwd, "tmp")
-	if err := os.MkdirAll(tmpDir, os.ModePerm); err != nil {
 		return err
 	}
-	cacheDir := filepath.Join(cwd, "cache")
-	if err := os.MkdirAll(cacheDir, os.ModePerm); err != nil {
-		return err
-	}
-
-	// Set all luciexe temporary directories as well.
-	for _, key := range luciexe.TempDirEnvVars {
-		ctx = addEnv(ctx, fmt.Sprintf("%s=%s", key, tmpDir))
-	}
-
-	// Set up LUCI_CONTEXT.
-	ctx = lucictx.SetLUCIExe(ctx, &lucictx.LUCIExe{
-		CacheDir: cacheDir,
-	})
 
 	log.Printf("obtaining builder info for %s...", builderName)
 
@@ -77,7 +61,7 @@ func gomoteSetup(ctx context.Context, builderName string, args []string) error {
 	// Install tools in context.
 	ctx = withToolsRoot(ctx, toolsRoot)
 
-	// Get the CAS instance.
+	// Get the CAS instance and set it in the environment.
 	ctx, err = casInstanceFromEnv(ctx)
 	if err != nil {
 		return infraErrorf("casInstanceFromEnv: %w", err)
@@ -103,6 +87,152 @@ func gomoteSetup(ctx context.Context, builderName string, args []string) error {
 
 	log.Printf("invoking %s...", cmd.String())
 	return cmd.Run()
+}
+
+// gomoteRepro sets up the full environment for a gomote that matches a specific
+// build, then invokes the command in args. This path must closely, if not
+// identically, match the setup path for a specific build.
+func gomoteRepro(ctx context.Context, buildID string, args []string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("no command to run specified")
+	}
+
+	// Set up basic LUCI env.
+	ctx, cwd, err := setupBasicLUCIEnv(ctx)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("obtaining build info for %s...", buildID)
+
+	// Get build info. In this context, we have to contact buildbucket,
+	// since we're assuming that we're not participating in the luciexe
+	// protocol.
+	build, inputs, experiments, err := getBuildInfo(ctx, buildID)
+	if err != nil {
+		return infraErrorf("obtaining builder info: %w", err)
+	}
+
+	// If we're looking at a coordinator build, print a helpful message in case someone
+	// was led astray. We can consider having picking a child build on the user's behalf
+	// automatically, but it also seems wrong to surprise those working on the infra.
+	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
+		log.Printf("***********************************************************************")
+		log.Printf("Warning: running repro for coordinator build!")
+		log.Printf("***********************************************************************")
+		log.Printf("Unless you're debugging the infrastructure, this is likely in error.")
+		log.Printf("If your intent is to debug a failing test, try re-running this")
+		log.Printf("command with one of the following builds:")
+		children, err := getChildBuilds(ctx, buildID)
+		if err != nil {
+			return err
+		}
+		for _, id := range children {
+			log.Printf("\t * %s", id)
+		}
+		log.Printf("***********************************************************************")
+	}
+
+	log.Printf("installing tools...")
+
+	// Install some tools we'll need, including a bootstrap toolchain.
+	toolsRoot, err := installTools(ctx, inputs, experiments)
+	if err != nil {
+		return infraErrorf("installing tools: %w", err)
+	}
+
+	// Install tools in context.
+	ctx = withToolsRoot(ctx, toolsRoot)
+
+	// Get the CAS instance and set it in the environment.
+	ctx, err = casInstanceFromEnv(ctx)
+	if err != nil {
+		return infraErrorf("casInstanceFromEnv: %w", err)
+	}
+
+	// Create a build spec, since we'll be fetching code.
+	spec, err := deriveBuildSpec(ctx, cwd, experiments, build, inputs)
+	if err != nil {
+		return infraWrap(err)
+	}
+
+	// Set up Go project specific env.
+	ctx = spec.setEnv(ctx)
+	ctx, err = spec.installDatastoreClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Get a built Go toolchain or build it if necessary.
+	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, false); err != nil {
+		return err
+	}
+
+	// Select a runner based on the mode, then initialize and invoke it.
+	var rn runner
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_ALL:
+		rn = newAllRunner(inputs.GetAllMode())
+	case golangbuildpb.Mode_MODE_COORDINATOR:
+		rn = newCoordRunner(inputs.GetCoordMode())
+	case golangbuildpb.Mode_MODE_BUILD:
+		rn = newBuildRunner(inputs.GetBuildMode())
+	case golangbuildpb.Mode_MODE_TEST:
+		rn, err = newTestRunner(inputs.GetTestMode(), inputs.GetTestShard())
+	case golangbuildpb.Mode_MODE_PERF:
+		rn = newPerfRunner(inputs.GetPerfMode())
+	}
+	if err != nil {
+		return infraErrorf("initializing runner: %w", err)
+	}
+	if err := rn.Run(ctx, spec, fetchOnly); err != nil {
+		return err
+	}
+
+	// Log the environment changes.
+	want := environ.FromCtx(ctx)
+	base := environ.System()
+	log.Printf("environment changes:\n%s", diffEnv(base, want))
+
+	// Execute the command in args.
+	cmd := command(ctx, args[0], args[1:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	log.Printf("invoking %s...", cmd.String())
+	return cmd.Run()
+}
+
+func setupBasicLUCIEnv(ctx context.Context) (context.Context, string, error) {
+	// Define working directory.
+	cwd, err := os.Getwd()
+	if err != nil {
+		return ctx, "", infraErrorf("get CWD: %v", err)
+	}
+
+	log.Printf("setting up build environment for gomote at %s...", cwd)
+
+	// Set up the basic parts of the environment first.
+	tmpDir := filepath.Join(cwd, "tmp")
+	if err := os.MkdirAll(tmpDir, os.ModePerm); err != nil {
+		return ctx, cwd, err
+	}
+	cacheDir := filepath.Join(cwd, "cache")
+	if err := os.MkdirAll(cacheDir, os.ModePerm); err != nil {
+		return ctx, cwd, err
+	}
+
+	// Set all luciexe temporary directories as well.
+	for _, key := range luciexe.TempDirEnvVars {
+		ctx = addEnv(ctx, fmt.Sprintf("%s=%s", key, tmpDir))
+	}
+
+	// Set up LUCI_CONTEXT.
+	ctx = lucictx.SetLUCIExe(ctx, &lucictx.LUCIExe{
+		CacheDir: cacheDir,
+	})
+	return ctx, cwd, nil
 }
 
 func getBuilderInfo(ctx context.Context, builderName string) (*golangbuildpb.Inputs, map[string]struct{}, error) {
@@ -147,6 +277,81 @@ func getBuilderInfo(ctx context.Context, builderName string) (*golangbuildpb.Inp
 		experiments[name] = struct{}{}
 	}
 	return inputs, experiments, nil
+}
+
+func getBuildInfo(ctx context.Context, buildID string) (*bbpb.Build, *golangbuildpb.Inputs, map[string]struct{}, error) {
+	// Contact buildbucket to obtain information about the builder.
+	host := chromeinfra.BuildbucketHost
+	if bbCtx := lucictx.GetBuildbucket(ctx); bbCtx != nil {
+		if bbCtx.GetHostname() != "" {
+			host = bbCtx.Hostname
+		}
+	}
+	hc, err := createAuthenticator(ctx).Client()
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("authenticator.Client: %w", err)
+	}
+	bc := bbpb.NewBuildsPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    host,
+		Options: prpc.DefaultOptions(),
+	})
+	id, err := strconv.ParseInt(buildID, 10, 64)
+	if err != nil {
+		return nil, nil, nil, infraErrorf("converting build ID %s to integer: %v", buildID, err)
+	}
+	b, err := bc.GetBuild(ctx, &bbpb.GetBuildRequest{Id: id, Mask: &bbpb.BuildMask{AllFields: true}})
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("getting build info for %q: %w", buildID, err)
+	}
+
+	// Parse the properties out of the proto in the build definition.
+	inputs := new(golangbuildpb.Inputs)
+	json, err := protojson.Marshal(b.GetInput().GetProperties())
+	if err != nil {
+		panic(err) // This should be impossible.
+	}
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(json, inputs); err != nil {
+		return nil, nil, nil, err
+	}
+
+	// Collect all experiments, but only pass through those that are on 100% of the time.
+	experiments := make(map[string]struct{})
+	for _, name := range b.GetInput().GetExperiments() {
+		experiments[name] = struct{}{}
+	}
+	return b, inputs, experiments, nil
+}
+
+func getChildBuilds(ctx context.Context, buildID string) ([]string, error) {
+	host := chromeinfra.BuildbucketHost
+	if bbCtx := lucictx.GetBuildbucket(ctx); bbCtx != nil {
+		if bbCtx.GetHostname() != "" {
+			host = bbCtx.Hostname
+		}
+	}
+	hc, err := createAuthenticator(ctx).Client()
+	if err != nil {
+		return nil, fmt.Errorf("authenticator.Client: %w", err)
+	}
+	bc := bbpb.NewBuildsPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    host,
+		Options: prpc.DefaultOptions(),
+	})
+	id, err := strconv.ParseInt(buildID, 10, 64)
+	if err != nil {
+		return nil, infraErrorf("converting build ID %s to integer: %v", buildID, err)
+	}
+	resp, err := bc.SearchBuilds(ctx, &bbpb.SearchBuildsRequest{Predicate: &bbpb.BuildPredicate{ChildOf: id}})
+	if err != nil {
+		return nil, fmt.Errorf("getting children for %s: %v", buildID, err)
+	}
+	var children []string
+	for _, b := range resp.Builds {
+		children = append(children, fmt.Sprintf("%d", b.Id))
+	}
+	return children, nil
 }
 
 func parseBuilderID(builderName string) (*bbpb.BuilderID, error) {

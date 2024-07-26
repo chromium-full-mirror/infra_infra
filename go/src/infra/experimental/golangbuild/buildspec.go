@@ -26,7 +26,6 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/gae/impl/cloud"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"go.chromium.org/luci/luciexe/build"
 	sauth "go.chromium.org/luci/server/auth"
 
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -57,13 +56,13 @@ type buildSpec struct {
 	experiments map[string]struct{}
 }
 
-func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
+func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]struct{}, build *bbpb.Build, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
 	authenticator := createAuthenticator(ctx)
 
 	// Build the sourceSpec we were invoked with.
-	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
+	gitilesCommit := build.GetInput().GetGitilesCommit()
 	var gerritChange *bbpb.GerritChange
-	if changes := st.Build().GetInput().GetGerritChanges(); len(changes) > 1 {
+	if changes := build.GetInput().GetGerritChanges(); len(changes) > 1 {
 		return nil, fmt.Errorf("no support for multiple GerritChanges")
 	} else if len(changes) != 0 {
 		gerritChange = changes[0]
@@ -174,9 +173,9 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		}
 	}
 
-	priority := st.Build().GetInfra().GetSwarming().GetPriority()
+	priority := build.GetInfra().GetSwarming().GetPriority()
 	if priority == 0 {
-		beCfg := st.Build().GetInfra().GetBackend().GetConfig()
+		beCfg := build.GetInfra().GetBackend().GetConfig()
 		if beCfg != nil {
 			for k, v := range beCfg.AsMap() {
 				if k == "priority" {
@@ -190,17 +189,17 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 
 	return &buildSpec{
 		auth:               authenticator,
-		builderName:        st.Build().GetBuilder().GetBuilder(),
-		bucket:             st.Build().GetBuilder().GetBucket(),
+		builderName:        build.GetBuilder().GetBuilder(),
+		bucket:             build.GetBuilder().GetBucket(),
 		workdir:            cwd,
 		goroot:             filepath.Join(cwd, "goroot"),
 		gopath:             filepath.Join(cwd, "gopath"),
 		gocacheDir:         filepath.Join(cwd, "gocache"),
 		goplscacheDir:      filepath.Join(cwd, "goplscache"),
 		priority:           priority,
-		golangbuildVersion: st.Build().GetExe().GetCipdVersion(),
+		golangbuildVersion: build.GetExe().GetCipdVersion(),
 		inputs:             inputs,
-		invocation:         st.Build().GetInfra().GetResultdb().GetInvocation(),
+		invocation:         build.GetInfra().GetResultdb().GetInvocation(),
 		goSrc:              goSrc,
 		subrepoSrc:         subrepoSrc,
 		invokedSrc:         invokedSrc,

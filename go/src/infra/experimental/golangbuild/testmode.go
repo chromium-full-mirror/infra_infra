@@ -55,7 +55,7 @@ func newTestRunner(props *golangbuildpb.TestMode, gotShard *golangbuildpb.TestSh
 }
 
 // Run implements the runner interface for testRunner.
-func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
+func (r *testRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
 	// Get a built Go toolchain and require it to be prebuilt.
 	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, true); err != nil {
 		return err
@@ -73,9 +73,19 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 	}
 	// Run tests. (Also fetch dependencies if applicable.)
 	if spec.inputs.Project == "go" {
+		if opts.fetchOnly() {
+			return nil
+		}
 		return runGoTests(ctx, spec, r.shard, ports)
 	}
-	return fetchSubrepoAndRunTests(ctx, spec, ports)
+	repoDir, err := fetchSubrepo(ctx, spec)
+	if err != nil {
+		return err
+	}
+	if opts.fetchOnly() {
+		return nil
+	}
+	return runSubrepoTests(ctx, spec, repoDir, ports)
 }
 
 // testShard is a test shard identity that can be used to deterministically filter tests.
@@ -242,26 +252,33 @@ func shardTestsByWeight(tests []string, shard testShard) []string {
 	return append(shardBucket, shardTestsByHash(shortTests, shard)...)
 }
 
-// fetchSubrepoAndRunTests fetches a target golang.org/x repository,
-// discovers modules inside to test,
-// fetches their dependencies and tests the modules.
+// fetchSubrepo fetches a target golang.org/x repository.
 //
 // It returns an infrastructure error if used on the main Go repository.
-func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []*golangbuildpb.Port) (err error) {
+func fetchSubrepo(ctx context.Context, spec *buildSpec) (repoDir string, err error) {
+	if isGoProject(spec.inputs.Project) {
+		return "", infraErrorf("fetchSubrepo called for a main Go repo builder")
+	}
+	repoDir, err = os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
+	if err != nil {
+		return "", err
+	}
+	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
+		return "", err
+	}
+	return repoDir, nil
+}
+
+// runSubrepoTests discovers modules inside repoDir to test,
+// fetches their dependencies, and tests the modules.
+//
+// It returns an infrastructure error if used on the main Go repository.
+func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports []*golangbuildpb.Port) (err error) {
 	step, ctx := build.StartStep(ctx, "run tests")
 	defer endStep(step, &err)
 
 	if isGoProject(spec.inputs.Project) {
-		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
-	}
-
-	// Fetch the target repository.
-	repoDir, err := os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
-	if err != nil {
-		return err
-	}
-	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
-		return err
+		return infraErrorf("runSubrepoTests called for a main Go repo builder")
 	}
 
 	// Test this specific subrepo.

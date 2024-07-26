@@ -24,7 +24,7 @@ func newAllRunner(props *golangbuildpb.AllMode) *allRunner {
 }
 
 // Run implements the runner interface for allRunner.
-func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
+func (r *allRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
 	// Get a built Go toolchain or build it if necessary.
 	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, false); err != nil {
 		return err
@@ -42,7 +42,17 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 	}
 	// Run tests. (Also fetch dependencies if applicable.)
 	if isGoProject(spec.inputs.Project) {
+		if opts.fetchOnly() {
+			return nil
+		}
 		return runGoTests(ctx, spec, noSharding, ports)
 	}
-	return fetchSubrepoAndRunTests(ctx, spec, ports)
+	repoDir, err := fetchSubrepo(ctx, spec)
+	if err != nil {
+		return err
+	}
+	if opts.fetchOnly() {
+		return nil
+	}
+	return runSubrepoTests(ctx, spec, repoDir, ports)
 }

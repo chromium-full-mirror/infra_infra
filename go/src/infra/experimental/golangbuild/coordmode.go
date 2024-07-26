@@ -40,7 +40,13 @@ func newCoordRunner(props *golangbuildpb.CoordinatorMode) *coordRunner {
 }
 
 // Run implements the runner interface for coordRunner.
-func (r *coordRunner) Run(ctx context.Context, spec *buildSpec) error {
+func (r *coordRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
+	// If we only want to fetch, there's nothing else to do. "fetchOnly" is a bit strange
+	// to interpret for the coordinator builder, but a reasonable interpretation (and in
+	// the spirit of the option) we definitely shouldn't trigger downstream builds.
+	if opts.fetchOnly() {
+		return nil
+	}
 	// Ensure prebuilt Go exists.
 	if err := ensurePrebuiltGoExists(ctx, spec, r.props.BuildBuilder); err != nil {
 		return err

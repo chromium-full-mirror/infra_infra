@@ -39,19 +39,22 @@ func newPerfRunner(props *golangbuildpb.PerfMode) *perfRunner {
 }
 
 // Run implements the runner interface for perfRunner.
-func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
+func (r *perfRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) error {
 	var (
 		results    []byte
 		extraAttrs map[string]string
 		err        error
 	)
 	if isGoProject(spec.inputs.Project) {
-		results, extraAttrs, err = runGoBenchmarks(ctx, spec, r.props)
+		results, extraAttrs, err = runGoBenchmarks(ctx, spec, r.props, opts)
 	} else {
-		results, extraAttrs, err = runSubrepoBenchmarks(ctx, spec, r.props)
+		results, extraAttrs, err = runSubrepoBenchmarks(ctx, spec, r.props, opts)
 	}
 	if err != nil {
 		return err
+	}
+	if opts.fetchOnly() {
+		return nil
 	}
 
 	// Summarize results with benchstat.
@@ -76,7 +79,7 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec) error {
 	return uploadBenchmarkResults(ctx, spec.auth, buf.Bytes())
 }
 
-func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, map[string]string, error) {
+func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode, opts runOptions) ([]byte, map[string]string, error) {
 	// Get a built Go toolchain or build it if necessary. This will be
 	// our experiment toolchain.
 	if err := getGo(ctx, spec, "", spec.goroot, spec.goSrc, false); err != nil {
@@ -103,6 +106,11 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 	benchmarksRoot := filepath.Join(spec.workdir, "benchmarks")
 	if err := fetchRepo(ctx, benchmarksSrc, benchmarksRoot, spec.inputs); err != nil {
 		return nil, nil, err
+	}
+
+	// If we only want to fetch, we're done.
+	if opts.fetchOnly() {
+		return nil, nil, nil
 	}
 
 	// Construct benchmark command.
@@ -134,7 +142,7 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 	return results, extraAttrs, err
 }
 
-func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode) ([]byte, map[string]string, error) {
+func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode, opts runOptions) ([]byte, map[string]string, error) {
 	// Fetch the subrepo at whatever we were triggered on.
 	subrepoExperimentDir := filepath.Join(spec.workdir, spec.inputs.Project)
 	if err := fetchRepo(ctx, spec.subrepoSrc, subrepoExperimentDir, spec.inputs); err != nil {
@@ -174,6 +182,11 @@ func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golan
 	benchmarksRoot := filepath.Join(spec.workdir, "benchmarks")
 	if err := fetchRepo(ctx, benchmarksSrc, benchmarksRoot, spec.inputs); err != nil {
 		return nil, nil, err
+	}
+
+	// If we only want to fetch, we're done.
+	if opts.fetchOnly() {
+		return nil, nil, nil
 	}
 
 	// Construct benchmark command.
