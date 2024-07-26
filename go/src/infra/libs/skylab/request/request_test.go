@@ -13,8 +13,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/build/api"
@@ -24,15 +22,18 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
 )
 
 func TestBuilderID(t *testing.T) {
-	Convey("Given request arguments that specify a builder ID", t, func() {
+	ftt.Run("Given request arguments that specify a builder ID", t, func(t *ftt.Test) {
 		id := buildbucket_pb.BuilderID{
 			Project: "foo-project",
 			Bucket:  "foo-bucket",
@@ -41,19 +42,19 @@ func TestBuilderID(t *testing.T) {
 		args := request.Args{
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(&id)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have a builder ID.", func() {
-				So(req.Builder, ShouldResembleProto, &id)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have a builder ID.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Builder, should.Resemble(&id))
 			})
 		})
 	})
 }
 
 func TestDimensionsBB(t *testing.T) {
-	Convey("Given request arguments that specify provisionable and regular dimenisons and inventory labels", t, func() {
+	ftt.Run("Given request arguments that specify provisionable and regular dimenisons and inventory labels", t, func(t *ftt.Test) {
 		model := "foo-model"
 		args := request.Args{
 			Dimensions:                       []string{"k1:v1"},
@@ -65,12 +66,12 @@ func TestDimensionsBB(t *testing.T) {
 			},
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct dimensions.", func() {
-				So(req.Dimensions, ShouldHaveLength, 5)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct dimensions.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Dimensions, should.HaveLength(5))
 
 				want := []*buildbucket_pb.RequestedDimension{
 					{
@@ -97,14 +98,14 @@ func TestDimensionsBB(t *testing.T) {
 					},
 				}
 
-				So(sortBBDimensions(req.Dimensions), ShouldResembleProto, sortBBDimensions(want))
+				assert.Loosely(t, sortBBDimensions(req.Dimensions), should.Resemble(sortBBDimensions(want)))
 			})
 		})
 	})
 }
 
 func TestPropertiesBB(t *testing.T) {
-	Convey("Given request arguments that specify a test runner request", t, func() {
+	ftt.Run("Given request arguments that specify a test runner request", t, func(t *ftt.Test) {
 		want := skylab_test_runner.Request{
 			Prejob: &skylab_test_runner.Request_Prejob{
 				SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
@@ -136,32 +137,32 @@ func TestPropertiesBB(t *testing.T) {
 		args := request.Args{
 			TestRunnerRequest: &want,
 		}
-		Convey("when a BB request is formed", func() {
+		t.Run("when a BB request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("it should contain the test runner request.", func() {
-				So(req.Properties, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("it should contain the test runner request.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Properties, should.NotBeNil)
 
 				reqStruct, ok := req.Properties.Fields["request"]
-				So(ok, ShouldBeTrue)
+				assert.Loosely(t, ok, should.BeTrue)
 
 				m := jsonpb.Marshaler{}
 				s, err := m.MarshalToString(reqStruct)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				var got skylab_test_runner.Request
 				err = jsonpb.UnmarshalString(s, &got)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(&got, ShouldResembleProto, &want)
+				assert.Loosely(t, &got, should.Resemble(&want))
 			})
 		})
 	})
 }
 
 func TestCFTPropertiesBB(t *testing.T) {
-	Convey("Given request arguments that specify a cft test runner request", t, func() {
+	ftt.Run("Given request arguments that specify a cft test runner request", t, func(t *ftt.Test) {
 		want := skylab_test_runner.CFTTestRequest{
 			Deadline:         &timestamppb.Timestamp{Seconds: timestamppb.Now().Seconds},
 			ParentRequestUid: "foo-parentRequestUid",
@@ -223,64 +224,64 @@ func TestCFTPropertiesBB(t *testing.T) {
 			CFTIsEnabled:         true,
 			CFTTestRunnerRequest: &want,
 		}
-		Convey("when a BB request is formed", func() {
+		t.Run("when a BB request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("it should contain the cft test runner request.", func() {
-				So(req.Properties, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("it should contain the cft test runner request.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Properties, should.NotBeNil)
 
 				cftReqStruct, ok := req.Properties.Fields["cft_test_request"]
-				So(ok, ShouldBeTrue)
+				assert.Loosely(t, ok, should.BeTrue)
 
 				m := jsonpb.Marshaler{}
 				s, err := m.MarshalToString(cftReqStruct)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				var got skylab_test_runner.CFTTestRequest
 				err = jsonpb.UnmarshalString(s, &got)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(&got, ShouldResembleProto, &want)
+				assert.Loosely(t, &got, should.Resemble(&want))
 			})
 		})
 	})
 }
 
 func TestExperimentsBB(t *testing.T) {
-	Convey("Given request arguments that specify experiments", t, func() {
+	ftt.Run("Given request arguments that specify experiments", t, func(t *ftt.Test) {
 		args := request.Args{
 			Experiments:       []string{"chromeos.a.b", "chromeos.c.d"},
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct experiments.", func() {
-				So(req.Experiments, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct experiments.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Experiments, should.HaveLength(2))
 				want := map[string]bool{
 					"chromeos.a.b": true,
 					"chromeos.c.d": true,
 				}
-				So(req.Experiments, ShouldResemble, want)
+				assert.Loosely(t, req.Experiments, should.Resemble(want))
 			})
 		})
 	})
 }
 
 func TestTagsBB(t *testing.T) {
-	Convey("Given request arguments that specify tags", t, func() {
+	ftt.Run("Given request arguments that specify tags", t, func(t *ftt.Test) {
 		args := request.Args{
 			SwarmingTags:      []string{"k1:v1", "k2:v2"},
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct tags.", func() {
-				So(req.Tags, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct tags.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Tags, should.HaveLength(2))
 
 				want := []*buildbucket_pb.StringPair{
 					{
@@ -293,14 +294,14 @@ func TestTagsBB(t *testing.T) {
 					},
 				}
 
-				So(sortBBStringPairs(req.Tags), ShouldResembleProto, sortBBStringPairs(want))
+				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Resemble(sortBBStringPairs(want)))
 			})
 		})
 	})
 }
 
 func TestGerritChangesBB(t *testing.T) {
-	Convey("Given request arguments that specify Gerrit Changes", t, func() {
+	ftt.Run("Given request arguments that specify Gerrit Changes", t, func(t *ftt.Test) {
 		gc := &buildbucket_pb.GerritChange{
 			Host:     "a",
 			Project:  "b",
@@ -312,16 +313,16 @@ func TestGerritChangesBB(t *testing.T) {
 			TestRunnerRequest: &skylab_test_runner.Request{},
 			GerritChanges:     []*buildbucket_pb.GerritChange{gc},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have the correct Gerrit Changes", func() {
-				So(req.GerritChanges, ShouldHaveLength, 1)
-				So(req.GerritChanges, ShouldResemble, []*buildbucket_pb.GerritChange{gc})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have the correct Gerrit Changes", func(t *ftt.Test) {
+				assert.Loosely(t, req.GerritChanges, should.HaveLength(1))
+				assert.Loosely(t, req.GerritChanges, should.Resemble([]*buildbucket_pb.GerritChange{gc}))
 			})
-			Convey("and the hide-in-gerrit tag", func() {
-				So(req.Tags, ShouldHaveLength, 3)
+			t.Run("and the hide-in-gerrit tag", func(t *ftt.Test) {
+				assert.Loosely(t, req.Tags, should.HaveLength(3))
 
 				want := []*buildbucket_pb.StringPair{
 					{
@@ -338,65 +339,65 @@ func TestGerritChangesBB(t *testing.T) {
 					},
 				}
 
-				So(sortBBStringPairs(req.Tags), ShouldResembleProto, sortBBStringPairs(want))
+				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Resemble(sortBBStringPairs(want)))
 			})
 		})
 	})
 }
 
 func TestPriorityBB(t *testing.T) {
-	Convey("Given request arguments that specify tags", t, func() {
+	ftt.Run("Given request arguments that specify tags", t, func(t *ftt.Test) {
 		args := request.Args{
 			Priority:          42,
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct priority.", func() {
-				So(req.Priority, ShouldEqual, 42)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct priority.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Priority, should.Equal(42))
 			})
 		})
 	})
 }
 
 func TestStatusTopicBB(t *testing.T) {
-	Convey("Given request arguments that specify a Pubsub topic for status updates", t, func() {
+	ftt.Run("Given request arguments that specify a Pubsub topic for status updates", t, func(t *ftt.Test) {
 		args := request.Args{
 			StatusTopic:       "a topic name",
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have the Pubsub topic assigned.", func() {
-				So(req.Notify, ShouldNotBeNil)
-				So(req.Notify.PubsubTopic, ShouldEqual, "a topic name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have the Pubsub topic assigned.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Notify, should.NotBeNil)
+				assert.Loosely(t, req.Notify.PubsubTopic, should.Equal("a topic name"))
 			})
 		})
 	})
 }
 
 func TestNoStatusTopicBB(t *testing.T) {
-	Convey("Given request arguments that specify a Pubsub topic for status updates", t, func() {
+	ftt.Run("Given request arguments that specify a Pubsub topic for status updates", t, func(t *ftt.Test) {
 		args := request.Args{
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have no notify field.", func() {
-				So(req.Notify, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have no notify field.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Notify, should.BeNil)
 			})
 		})
 	})
 }
 
 func TestResultsConfigBB(t *testing.T) {
-	Convey("Given request arguments that specify ResultsConfig", t, func() {
+	ftt.Run("Given request arguments that specify ResultsConfig", t, func(t *ftt.Test) {
 		want := test_platform.Request_Params_ResultsUploadConfig{
 			Mode: test_platform.Request_Params_ResultsUploadConfig_TEST_RESULTS_VISIBILITY_CUSTOM_REALM,
 		}
@@ -404,68 +405,68 @@ func TestResultsConfigBB(t *testing.T) {
 			ResultsConfig:     &want,
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct results_upload_config.", func() {
-				So(req.Properties, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct results_upload_config.", func(t *ftt.Test) {
+				assert.Loosely(t, req.Properties, should.NotBeNil)
 
 				resultsCfg, ok := req.Properties.Fields["results_upload_config"]
-				So(ok, ShouldBeTrue)
+				assert.Loosely(t, ok, should.BeTrue)
 
 				m := jsonpb.Marshaler{}
 				s, err := m.MarshalToString(resultsCfg)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				var got test_platform.Request_Params_ResultsUploadConfig
 				err = jsonpb.UnmarshalString(s, &got)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(&got, ShouldResembleProto, &want)
+				assert.Loosely(t, &got, should.Resemble(&want))
 			})
 		})
 	})
 
-	Convey("Given request arguments that do NOT specify ResultsConfig", t, func() {
+	ftt.Run("Given request arguments that do NOT specify ResultsConfig", t, func(t *ftt.Test) {
 		args := request.Args{
 			TestRunnerRequest: &skylab_test_runner.Request{},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.NewBBRequest(nil)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should not have a results_upload_config", func() {
-				So(req.Properties, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should not have a results_upload_config", func(t *ftt.Test) {
+				assert.Loosely(t, req.Properties, should.NotBeNil)
 
 				_, ok := req.Properties.Fields["results_upload_config"]
-				So(ok, ShouldBeFalse)
+				assert.Loosely(t, ok, should.BeFalse)
 			})
 		})
 	})
 }
 
 func TestProvisionableDimensions(t *testing.T) {
-	Convey("Given request arguments that specify provisionable and regular dimenisons and inventory labels", t, func() {
+	ftt.Run("Given request arguments that specify provisionable and regular dimenisons and inventory labels", t, func(t *ftt.Test) {
 		model := "foo-model"
 		args := request.Args{
 			Dimensions:              []string{"k1:v1"},
 			ProvisionableDimensions: []string{"k2:v2", "k3:v3"},
 			SchedulableLabels:       &inventory.SchedulableLabels{Model: &model},
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.SwarmingNewTaskRequest()
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have correct slice structure.", func() {
-				So(req.TaskSlices, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have correct slice structure.", func(t *ftt.Test) {
+				assert.Loosely(t, req.TaskSlices, should.HaveLength(2))
 
 				// First slice requires all dimensions.
 				// Second slice (fallback) requires only non-provisionable dimensions.
 				s0 := req.TaskSlices[0]
 				s1 := req.TaskSlices[1]
-				So(s0.Properties.Dimensions, ShouldHaveLength, 6)
-				So(s1.Properties.Dimensions, ShouldHaveLength, 4)
+				assert.Loosely(t, s0.Properties.Dimensions, should.HaveLength(6))
+				assert.Loosely(t, s1.Properties.Dimensions, should.HaveLength(4))
 
 				s1Expect := toStringPairs([]string{
 					"pool:ChromeOSSkylab",
@@ -474,35 +475,35 @@ func TestProvisionableDimensions(t *testing.T) {
 					"k1:v1",
 				})
 				diff := typed.Got(sortDimensions(s1.Properties.Dimensions)).Want(sortDimensions(s1Expect)).Diff()
-				So(diff, ShouldBeEmpty)
+				assert.Loosely(t, diff, should.BeEmpty)
 
 				s0Expect := append(s1Expect, toStringPairs([]string{"k2:v2", "k3:v3"})...)
 				diff = typed.Got(sortDimensions(s0.Properties.Dimensions)).Want(sortDimensions(s0Expect)).Diff()
-				So(diff, ShouldBeEmpty)
+				assert.Loosely(t, diff, should.BeEmpty)
 
 				// First slice command doesn't include provisioning.
 				// Second slice (fallback) does.
 				s0FlatCmd := strings.Join(s0.Properties.Command, " ")
 				s1FlatCmd := strings.Join(s1.Properties.Command, " ")
 				provString := "-provision-labels k2:v2,k3:v3"
-				So(s0FlatCmd, ShouldNotContainSubstring, provString)
-				So(s1FlatCmd, ShouldContainSubstring, provString)
+				assert.Loosely(t, s0FlatCmd, should.NotContainSubstring(provString))
+				assert.Loosely(t, s1FlatCmd, should.ContainSubstring(provString))
 			})
 		})
 	})
 }
 
 func TestStatusTopicSwarming(t *testing.T) {
-	Convey("Given request arguments that specify a Pubsub topic for status updates", t, func() {
+	ftt.Run("Given request arguments that specify a Pubsub topic for status updates", t, func(t *ftt.Test) {
 		args := request.Args{
 			StatusTopic: "a topic name",
 		}
-		Convey("when a request is formed", func() {
+		t.Run("when a request is formed", func(t *ftt.Test) {
 			req, err := args.SwarmingNewTaskRequest()
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			Convey("then request should have the Pubsub topic assigned.", func() {
-				So(req.PubsubTopic, ShouldEqual, "a topic name")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			t.Run("then request should have the Pubsub topic assigned.", func(t *ftt.Test) {
+				assert.Loosely(t, req.PubsubTopic, should.Equal("a topic name"))
 			})
 		})
 	})
@@ -510,30 +511,30 @@ func TestStatusTopicSwarming(t *testing.T) {
 
 func TestSliceExpiration(t *testing.T) {
 	timeout := 11 * time.Minute
-	Convey("Given a request arguments with no provisionable dimensions", t, func() {
+	ftt.Run("Given a request arguments with no provisionable dimensions", t, func(t *ftt.Test) {
 		args := request.Args{
 			Timeout: timeout,
 		}
 		req, err := args.SwarmingNewTaskRequest()
-		So(req, ShouldNotBeNil)
-		So(err, ShouldBeNil)
-		Convey("request should have a single slice with provided timeout.", func() {
-			So(req.TaskSlices, ShouldHaveLength, 1)
-			So(req.TaskSlices[0].ExpirationSecs, ShouldEqual, 60*11)
+		assert.Loosely(t, req, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("request should have a single slice with provided timeout.", func(t *ftt.Test) {
+			assert.Loosely(t, req.TaskSlices, should.HaveLength(1))
+			assert.Loosely(t, req.TaskSlices[0].ExpirationSecs, should.Equal(60*11))
 		})
 	})
-	Convey("Given a request arguments with provisionable dimensions", t, func() {
+	ftt.Run("Given a request arguments with provisionable dimensions", t, func(t *ftt.Test) {
 		args := request.Args{
 			Timeout:                 timeout,
 			ProvisionableDimensions: []string{"k1:v1"},
 		}
 		req, err := args.SwarmingNewTaskRequest()
-		So(req, ShouldNotBeNil)
-		So(err, ShouldBeNil)
-		Convey("request should have 2 slices, with provided timeout on only the second.", func() {
-			So(req.TaskSlices, ShouldHaveLength, 2)
-			So(req.TaskSlices[0].ExpirationSecs, ShouldBeLessThan, 60*5)
-			So(req.TaskSlices[1].ExpirationSecs, ShouldEqual, 60*11)
+		assert.Loosely(t, req, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("request should have 2 slices, with provided timeout on only the second.", func(t *ftt.Test) {
+			assert.Loosely(t, req.TaskSlices, should.HaveLength(2))
+			assert.Loosely(t, req.TaskSlices[0].ExpirationSecs, should.BeLessThan(60*5))
+			assert.Loosely(t, req.TaskSlices[1].ExpirationSecs, should.Equal(60*11))
 		})
 	})
 }
