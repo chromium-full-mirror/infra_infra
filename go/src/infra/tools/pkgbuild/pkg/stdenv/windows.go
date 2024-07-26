@@ -5,10 +5,8 @@ package stdenv
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
-	"path/filepath"
 
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/base/workflow"
@@ -22,20 +20,36 @@ func importWindows(cfg *Config) (gs []generators.Generator, err error) {
 		if vsDir == "" {
 			return nil, fmt.Errorf("failed to find visual studio: VSINSTALLDIR not set")
 		}
-		mf, err := os.Open(filepath.Join(vsDir, "win_sdk", "SDKManifest.xml"))
-		if err != nil {
-			return nil, fmt.Errorf("failed to open sdk manifest: %w", err)
-		}
-		defer mf.Close()
-		ver, err := io.ReadAll(mf)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read sdk manifest: %w", err)
+
+		var ver string
+		vsDirFS := os.DirFS(vsDir)
+		if err := fs.WalkDir(vsDirFS, ".", func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+
+			// Any SetEnv file contains versions we want. Always assuming x64 variant
+			// is available to simplify implementation.
+			if d.Name() == "SetEnv.x64.json" {
+				b, err := fs.ReadFile(vsDirFS, path)
+				if err != nil {
+					return err
+				}
+				ver = string(b)
+				return fs.SkipAll
+			}
+
+			return nil
+		}); err != nil {
+			return nil, err
+		} else if ver == "" {
+			return nil, fmt.Errorf("failed to find version file SetEnv.x64.json")
 		}
 
 		winSDK = &generators.ImportTargets{
 			Name: "winsdk_files",
 			Targets: map[string]generators.ImportTarget{
-				"/": {Source: vsDir, Version: string(ver), Mode: fs.ModeDir},
+				"/": {Source: vsDir, Version: ver, Mode: fs.ModeDir},
 			},
 		}
 	}
