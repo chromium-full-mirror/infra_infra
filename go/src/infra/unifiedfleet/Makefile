@@ -16,7 +16,6 @@ Helpers for managing ufs project in $(PROJECT_PATH):
   build-dumper: build the dumper service
   dev: run the main ufs service locally
   dev-dumper: run the dumper service locally
-  up-dev: upload the ufs service to dev appengine service
 endef
 
 .PHONY: default
@@ -61,9 +60,3 @@ dev: build
 .PHONY: dev-dumper
 dev-dumper: build-dumper
 	./dumper --cloud-project="unified-fleet-system-dev" -http-addr="127.0.0.1:8800" -admin-addr="127.0.0.1:8889"
-
-# Uploading & Switching
-.PHONY: up-dev
-up-dev: build
-	gae.py upload -A $(GCP_PROJECT_DEV) --app-dir $(APP_PATH) -f
-	gae.py switch -A $(GCP_PROJECT_DEV) --app-dir $(APP_PATH) -f
