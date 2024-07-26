@@ -114,13 +114,9 @@ func gomoteSetup(ctx context.Context, builderName string, args []string) error {
 }
 
 // gomoteRepro sets up the full environment for a gomote that matches a specific
-// build, then invokes the command in args. This path must closely, if not
+// build, then invokes the command in args, if any. This path must closely, if not
 // identically, match the setup path for a specific build.
 func gomoteRepro(ctx context.Context, buildID string, args []string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("no command to run specified")
-	}
-
 	// Set up basic LUCI env.
 	ctx, cwd, err := setupBasicLUCIEnv(ctx)
 	if err != nil {
@@ -217,6 +213,11 @@ func gomoteRepro(ctx context.Context, buildID string, args []string) error {
 	want := environ.FromCtx(ctx)
 	base := environ.System()
 	log.Printf("environment changes:\n%s", diffEnv(base, want))
+
+	if len(args) == 0 {
+		// No command to run.
+		return nil
+	}
 
 	// Execute the command in args.
 	cmd := command(ctx, args[0], args[1:]...)
