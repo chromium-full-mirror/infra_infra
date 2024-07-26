@@ -9,13 +9,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/libs/skylab/autotest/proxy"
 )
 
 func TestRunSuite(t *testing.T) {
-	Convey("When creating a request for a set of RunSuite arguments", t, func() {
+	ftt.Run("When creating a request for a set of RunSuite arguments", t, func(t *ftt.Test) {
 		args := proxy.RunSuiteArgs{
 			Board:           "foo-board",
 			Build:           "foo-build",
@@ -29,31 +30,31 @@ func TestRunSuite(t *testing.T) {
 			Timeout:         2 * time.Hour,
 		}
 		req, err := proxy.NewRunSuite(args)
-		So(err, ShouldBeNil)
-		So(req, ShouldNotBeNil)
-		So(req.TaskSlices, ShouldHaveLength, 1)
-		Convey("the correct commandline args and slice properties are present.", func() {
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req, should.NotBeNil)
+		assert.Loosely(t, req.TaskSlices, should.HaveLength(1))
+		t.Run("the correct commandline args and slice properties are present.", func(t *ftt.Test) {
 			slice := req.TaskSlices[0]
 			flatCmd := strings.Join(slice.Properties.Command, " ")
-			So(flatCmd, ShouldContainSubstring, "--board foo-board")
-			So(flatCmd, ShouldContainSubstring, "--build foo-build")
-			So(flatCmd, ShouldContainSubstring, "--firmware_rw_build foo-rw-build")
-			So(flatCmd, ShouldContainSubstring, "--firmware_ro_build foo-ro-build")
-			So(flatCmd, ShouldContainSubstring, "--model foo-model")
-			So(flatCmd, ShouldContainSubstring, "--pool foo-pool")
-			So(flatCmd, ShouldContainSubstring, "--priority 11")
-			So(flatCmd, ShouldContainSubstring, "--suite_name foo-suite")
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--board foo-board"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--build foo-build"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--firmware_rw_build foo-rw-build"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--firmware_ro_build foo-ro-build"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--model foo-model"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--pool foo-pool"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--priority 11"))
+			assert.Loosely(t, flatCmd, should.ContainSubstring("--suite_name foo-suite"))
 
-			So(slice.Properties.Command, ShouldContain, "--suite_args_json")
+			assert.Loosely(t, slice.Properties.Command, should.Contain("--suite_args_json"))
 			for i, v := range slice.Properties.Command {
 				if v == "--suite_args_json" {
-					So(slice.Properties.Command[i+1], ShouldEqual, "{\"arg1\":1}")
+					assert.Loosely(t, slice.Properties.Command[i+1], should.Equal("{\"arg1\":1}"))
 					break
 				}
 			}
 
-			So(slice.ExpirationSecs, ShouldEqual, 7800)
-			So(slice.Properties.ExecutionTimeoutSecs, ShouldEqual, 7800)
+			assert.Loosely(t, slice.ExpirationSecs, should.Equal(7800))
+			assert.Loosely(t, slice.Properties.ExecutionTimeoutSecs, should.Equal(7800))
 		})
 	})
 }
