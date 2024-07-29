@@ -27,6 +27,15 @@ func TestCachedCostResultEntitySimple(t *testing.T) {
 		CostResult: &fleetcostpb.CostResult{
 			SharedCost: 34.00,
 		},
+		CostReport: &fleetcostpb.CostReport{
+			Total: 34.00,
+			Expr: &fleetcostpb.CostReportExpr{
+				Operation: fleetcostpb.CostReportExpr_SUM,
+				Number: []*fleetcostpb.CostReportScalar{{
+					Value: 34.0,
+				}},
+			},
+		},
 		ExpirationTime: time.Unix(1, 4).UTC(),
 	}); err != nil {
 		t.Errorf("unexpected error: %s", err)
