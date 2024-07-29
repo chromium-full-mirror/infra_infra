@@ -58,6 +58,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	if buildID == 0 {
 		// Set random number if buildID is not set.
 		// This is mainly for ninjalog from chromium developer.
+		// TODO: b/355127782 - Null BuildID should be fine?
 		err := binary.Read(rand.Reader, binary.BigEndian, &buildID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get random build id: %w", err)
@@ -104,6 +105,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	return map[string]interface{}{
 		"targets":       info.Metadata.getTargets(),
 		"build_id":      buildID,
+		"invocation_id": info.Metadata.InvocationID,
 		"os":            os,
 		"step_name":     info.Metadata.StepName,
 		"jobs":          info.Metadata.Jobs,

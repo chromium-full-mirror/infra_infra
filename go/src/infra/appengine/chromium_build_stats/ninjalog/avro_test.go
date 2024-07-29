@@ -58,6 +58,7 @@ func TestToAVRO(t *testing.T) {
 	if diff := cmp.Diff(map[string]interface{}{
 		"build_configs": []map[string]interface{}{},
 		"build_id":      int64(12345),
+		"invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d",
 		"cpu_core":      int(0),
 		"created_at":    createdTime,
 		"jobs":          int(50),
