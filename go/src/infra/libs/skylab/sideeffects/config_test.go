@@ -16,10 +16,11 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/uuid"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func basicConfig() *side_effects.Config {
@@ -42,17 +43,17 @@ func tempFile() string {
 }
 
 func TestSuccess(t *testing.T) {
-	Convey("Given a complete config pointing to existing files", t, func() {
+	ftt.Run("Given a complete config pointing to existing files", t, func(t *ftt.Test) {
 		cfg := basicConfig()
 		err := ValidateConfig(cfg)
-		Convey("no error is returned.", func() {
-			So(err, ShouldBeNil)
+		t.Run("no error is returned.", func(t *ftt.Test) {
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestMissingArgs(t *testing.T) {
-	Convey("Given a side_effects.Config with a missing", t, func() {
+	ftt.Run("Given a side_effects.Config with a missing", t, func(t *ftt.Test) {
 		cases := []struct {
 			name         string
 			fieldDropper func(*side_effects.Config)
@@ -83,13 +84,13 @@ func TestMissingArgs(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.name, func() {
+			t.Run(c.name, func(t *ftt.Test) {
 				cfg := basicConfig()
 				c.fieldDropper(cfg)
 				err := ValidateConfig(cfg)
-				Convey("then the correct error is returned.", func() {
-					So(err, ShouldNotBeNil)
-					So(err.Error(), ShouldContainSubstring, c.name)
+				t.Run("then the correct error is returned.", func(t *ftt.Test) {
+					assert.Loosely(t, err, should.NotBeNil)
+					assert.Loosely(t, err.Error(), should.ContainSubstring(c.name))
 				})
 			})
 		}
@@ -97,7 +98,7 @@ func TestMissingArgs(t *testing.T) {
 }
 
 func TestMissingFiles(t *testing.T) {
-	Convey("Given a missing", t, func() {
+	ftt.Run("Given a missing", t, func(t *ftt.Test) {
 		cases := []struct {
 			name        string
 			fileDropper func(c *side_effects.Config)
@@ -110,13 +111,13 @@ func TestMissingFiles(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.name, func() {
+			t.Run(c.name, func(t *ftt.Test) {
 				cfg := basicConfig()
 				c.fileDropper(cfg)
 				err := ValidateConfig(cfg)
-				Convey("then the correct error is returned.", func() {
-					So(err, ShouldNotBeNil)
-					So(err.Error(), ShouldContainSubstring, c.name)
+				t.Run("then the correct error is returned.", func(t *ftt.Test) {
+					assert.Loosely(t, err, should.NotBeNil)
+					assert.Loosely(t, err.Error(), should.ContainSubstring(c.name))
 				})
 			})
 		}
@@ -124,7 +125,7 @@ func TestMissingFiles(t *testing.T) {
 }
 
 func TestWriteConfigToDisk(t *testing.T) {
-	Convey("Given side_effects.Config object", t, func() {
+	ftt.Run("Given side_effects.Config object", t, func(t *ftt.Test) {
 		want := &side_effects.Config{
 			Tko: &side_effects.TKOConfig{
 				ProxySocket:       "foo-socket",
@@ -136,20 +137,20 @@ func TestWriteConfigToDisk(t *testing.T) {
 				CredentialsFile: "foo-creds",
 			},
 		}
-		Convey("when WriteConfigToDisk is called", func() {
+		t.Run("when WriteConfigToDisk is called", func(t *ftt.Test) {
 			dir, _ := ioutil.TempDir("", "")
 			err := WriteConfigToDisk(dir, want)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("then the side_effects_config.json file contains the original object", func() {
+			t.Run("then the side_effects_config.json file contains the original object", func(t *ftt.Test) {
 				f, fileErr := os.Open(filepath.Join(dir, "side_effects_config.json"))
-				So(fileErr, ShouldBeNil)
+				assert.Loosely(t, fileErr, should.BeNil)
 
 				got := &side_effects.Config{}
 				um := jsonpb.Unmarshaler{}
 				unmarshalErr := um.Unmarshal(f, got)
-				So(unmarshalErr, ShouldBeNil)
-				So(got, ShouldResembleProto, want)
+				assert.Loosely(t, unmarshalErr, should.BeNil)
+				assert.Loosely(t, got, should.Resemble(want))
 			})
 		})
 	})
@@ -166,21 +167,21 @@ func (c *fakeCloudKMSClient) Decrypt(_ context.Context, _ string) ([]byte, error
 }
 
 func TestPopulateTKOPasswordFile(t *testing.T) {
-	Convey("Given side_effects.Config with an encrypted password", t, func() {
+	ftt.Run("Given side_effects.Config with an encrypted password", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		cfg := basicConfig()
 		fc := newFakeCloudKMSClient()
-		Convey("when PopulateTKOPasswordFile is called", func() {
+		t.Run("when PopulateTKOPasswordFile is called", func(t *ftt.Test) {
 			err := PopulateTKOPasswordFile(ctx, fc, cfg)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("then side_effects.Config is populated with the password file path", func() {
-				So(cfg.GetTko().GetMysqlPasswordFile(), ShouldNotBeBlank)
+			t.Run("then side_effects.Config is populated with the password file path", func(t *ftt.Test) {
+				assert.Loosely(t, cfg.GetTko().GetMysqlPasswordFile(), should.NotBeEmpty)
 
-				Convey("which points to a file populated with right contents", func() {
+				t.Run("which points to a file populated with right contents", func(t *ftt.Test) {
 					got, err := ioutil.ReadFile(cfg.GetTko().GetMysqlPasswordFile())
-					So(err, ShouldBeNil)
-					So(string(got), ShouldEqual, "decrypted-password")
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, string(got), should.Equal("decrypted-password"))
 
 					os.Remove(cfg.GetTko().GetMysqlPasswordFile())
 				})
@@ -190,36 +191,36 @@ func TestPopulateTKOPasswordFile(t *testing.T) {
 }
 
 func TestCleanupExistingFiles(t *testing.T) {
-	Convey("Given side_effects.Config pointing to an existing MySQL password file", t, func() {
+	ftt.Run("Given side_effects.Config pointing to an existing MySQL password file", t, func(t *ftt.Test) {
 		f := tempFile()
 		cfg := &side_effects.Config{
 			Tko: &side_effects.TKOConfig{
 				MysqlPasswordFile: f,
 			},
 		}
-		Convey("when CleanupTempFiles is called", func() {
+		t.Run("when CleanupTempFiles is called", func(t *ftt.Test) {
 			err := CleanupTempFiles(cfg)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("then the password file is removed from both disk and config", func() {
+			t.Run("then the password file is removed from both disk and config", func(t *ftt.Test) {
 				_, err := os.Stat(f)
-				So(err, ShouldNotBeNil)
-				So(os.IsNotExist(err), ShouldBeTrue)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, os.IsNotExist(err), should.BeTrue)
 			})
 		})
 	})
 }
 
 func TestCleanupNonExistingFiles(t *testing.T) {
-	Convey("Given side_effects.Config pointing to a non existing MySQL password file", t, func() {
+	ftt.Run("Given side_effects.Config pointing to a non existing MySQL password file", t, func(t *ftt.Test) {
 		cfg := &side_effects.Config{
 			Tko: &side_effects.TKOConfig{
 				MysqlPasswordFile: uuid.New().String(),
 			},
 		}
-		Convey("when CleanupTempFiles is called it does not return an error", func() {
+		t.Run("when CleanupTempFiles is called it does not return an error", func(t *ftt.Test) {
 			err := CleanupTempFiles(cfg)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

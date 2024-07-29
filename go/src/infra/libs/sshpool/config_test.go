@@ -9,13 +9,15 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"golang.org/x/crypto/ssh"
 )
 
 func TestFromClientConfig(t *testing.T) {
 	t.Parallel()
-	Convey("FromClientConfig", t, func() {
+	ftt.Run("FromClientConfig", t, func(t *ftt.Test) {
 		originalClientConfig := &ssh.ClientConfig{
 			Config: ssh.Config{
 				Ciphers: []string{"aes128-ctr"},
@@ -24,18 +26,18 @@ func TestFromClientConfig(t *testing.T) {
 			User:    "user",
 		}
 		c, err := FromClientConfig(originalClientConfig)
-		Convey("Returns SSH client config with populated values", func() {
-			So(err, ShouldBeNil)
+		t.Run("Returns SSH client config with populated values", func(t *ftt.Test) {
+			assert.Loosely(t, err, should.BeNil)
 			clientConfig := c.GetSSHConfig("")
-			So(clientConfig, ShouldNotBeNil)
-			So(clientConfig.Auth, ShouldResemble, c.(*config).auth)
-			So(reflect.TypeOf(clientConfig.HostKeyCallback), ShouldEqual, reflect.TypeOf(ssh.InsecureIgnoreHostKey()))
-			So(clientConfig.Ciphers, ShouldResemble, []string{"aes128-ctr"})
-			So(clientConfig.Timeout, ShouldEqual, 5*time.Second)
-			So(clientConfig.User, ShouldEqual, "user")
+			assert.Loosely(t, clientConfig, should.NotBeNil)
+			assert.Loosely(t, clientConfig.Auth, should.Resemble(c.(*config).auth))
+			assert.Loosely(t, reflect.TypeOf(clientConfig.HostKeyCallback), should.Equal(reflect.TypeOf(ssh.InsecureIgnoreHostKey())))
+			assert.Loosely(t, clientConfig.Ciphers, should.Resemble([]string{"aes128-ctr"}))
+			assert.Loosely(t, clientConfig.Timeout, should.Equal(5*time.Second))
+			assert.Loosely(t, clientConfig.User, should.Equal("user"))
 		})
-		Convey("Returns nil ProxyConfig", func() {
-			So(c.GetProxy(""), ShouldBeNil)
+		t.Run("Returns nil ProxyConfig", func(t *ftt.Test) {
+			assert.Loosely(t, c.GetProxy(""), should.BeNil)
 		})
 	})
 }
