@@ -8,7 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestSrcConfig(t *testing.T) {
@@ -158,7 +160,7 @@ func TestSrcConfig(t *testing.T) {
 		},
 	}
 
-	Convey("Healthy builder is healthy, default thresholds", t, func() {
+	ftt.Run("Healthy builder is healthy, default thresholds", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -175,14 +177,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
-		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(HEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldBeEmpty)
+		assert.Loosely(t, explanation, should.BeEmpty)
 	})
-	Convey("P50 percentile above threshold, default thresholds", t, func() {
+	ftt.Run("P50 percentile above threshold, default thresholds", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -194,15 +196,15 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "build_mins_p50")
+		assert.Loosely(t, explanation, should.ContainSubstring("build_mins_p50"))
 	})
-	Convey("P95 percentile above thresholds, default thresholds", t, func() {
+	ftt.Run("P95 percentile above thresholds, default thresholds", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -214,14 +216,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "pending_mins_p95")
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, explanation, should.ContainSubstring("pending_mins_p95"))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Fail rate above thresholds, default thresholds", t, func() {
+	ftt.Run("Fail rate above thresholds, default thresholds", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -233,14 +235,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "fail_rate")
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, explanation, should.ContainSubstring("fail_rate"))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("P50 build time below thresholds, slow builder", t, func() {
+	ftt.Run("P50 build time below thresholds, slow builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -252,14 +254,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(HEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldBeEmpty)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, explanation, should.BeEmpty)
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Infra fail rate above thresholds, slow builder", t, func() {
+	ftt.Run("Infra fail rate above thresholds, slow builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -271,14 +273,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "infra_fail_rate")
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, explanation, should.ContainSubstring("infra_fail_rate"))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Default thresholds with custom thresholds error", t, func() {
+	ftt.Run("Default thresholds with custom thresholds error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -290,14 +292,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "infra_fail_rate")
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, explanation, should.ContainSubstring("infra_fail_rate"))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Multiple healthy builders", t, func() {
+	ftt.Run("Multiple healthy builders", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{
 			{
@@ -329,17 +331,17 @@ func TestSrcConfig(t *testing.T) {
 		}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 2)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
-		So(outputRows[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(2))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(HEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldBeEmpty)
-		So(outputRows[1].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, explanation, should.BeEmpty)
+		assert.Loosely(t, outputRows[1].HealthScore, should.Equal(HEALTHY_SCORE))
 		explanation = scoreExplanation(outputRows[1], savedThresholds)
-		So(explanation, ShouldBeEmpty)
+		assert.Loosely(t, explanation, should.BeEmpty)
 	})
-	Convey("One healthy, one unhealthy builder", t, func() {
+	ftt.Run("One healthy, one unhealthy builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{
 			{
@@ -371,18 +373,18 @@ func TestSrcConfig(t *testing.T) {
 		}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 2)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
-		So(outputRows[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(2))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "build_mins")
-		So(explanation, ShouldContainSubstring, "infra_fail_rate")
-		So(outputRows[1].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, explanation, should.ContainSubstring("build_mins"))
+		assert.Loosely(t, explanation, should.ContainSubstring("infra_fail_rate"))
+		assert.Loosely(t, outputRows[1].HealthScore, should.Equal(HEALTHY_SCORE))
 		explanation = scoreExplanation(outputRows[1], savedThresholds)
-		So(explanation, ShouldBeEmpty)
+		assert.Loosely(t, explanation, should.BeEmpty)
 	})
-	Convey("One low value, one unhealthy", t, func() {
+	ftt.Run("One low value, one unhealthy", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{
 			{
@@ -414,17 +416,17 @@ func TestSrcConfig(t *testing.T) {
 		}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 2)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
-		So(outputRows[0].HealthScore, ShouldEqual, LOW_VALUE_SCORE)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(2))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(LOW_VALUE_SCORE))
 		explanation := scoreExplanation(outputRows[0], savedThresholds)
-		So(explanation, ShouldContainSubstring, "fail_rate")
-		So(outputRows[1].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, explanation, should.ContainSubstring("fail_rate"))
+		assert.Loosely(t, outputRows[1].HealthScore, should.Equal(UNHEALTHY_SCORE))
 		explanation = scoreExplanation(outputRows[1], savedThresholds)
-		So(explanation, ShouldContainSubstring, "fail_rate")
+		assert.Loosely(t, explanation, should.ContainSubstring("fail_rate"))
 	})
-	Convey("Improper threshold config, both default and custom thresholds", t, func() {
+	ftt.Run("Improper threshold config, both default and custom thresholds", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -433,14 +435,14 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldNotBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "default")
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "custom")
-		So(outputRows[0].HealthScore, ShouldEqual, UNSET_SCORE)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].ScoreExplanation, should.ContainSubstring("default"))
+		assert.Loosely(t, outputRows[0].ScoreExplanation, should.ContainSubstring("custom"))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNSET_SCORE))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Improper threshold config, Default set to unknown sentinel value", t, func() {
+	ftt.Run("Improper threshold config, Default set to unknown sentinel value", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -449,13 +451,13 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldNotBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "unknown sentinel")
-		So(outputRows[0].HealthScore, ShouldEqual, UNSET_SCORE)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].ScoreExplanation, should.ContainSubstring("unknown sentinel"))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNSET_SCORE))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Improper ProblemSpecs, no ProblemSpecs", t, func() {
+	ftt.Run("Improper ProblemSpecs, no ProblemSpecs", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -464,13 +466,13 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldNotBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "no ProblemSpecs")
-		So(outputRows[0].HealthScore, ShouldEqual, UNSET_SCORE)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].ScoreExplanation, should.ContainSubstring("no ProblemSpecs"))
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNSET_SCORE))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Unconfigured builder", t, func() {
+	ftt.Run("Unconfigured builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rows := []Row{{
 			Project: "project",
@@ -479,13 +481,13 @@ func TestSrcConfig(t *testing.T) {
 		}}
 		savedThresholds := testSrcConfig
 		outputRows, err := calculateIntermediateHealthScores(ctx, rows, testSrcConfig)
-		So(err, ShouldBeNil)
-		So(len(outputRows), ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldBeBlank)
-		So(outputRows[0].HealthScore, ShouldEqual, UNSET_SCORE)
-		So(savedThresholds, ShouldResemble, testSrcConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(outputRows), should.Equal(1))
+		assert.Loosely(t, outputRows[0].ScoreExplanation, should.BeBlank)
+		assert.Loosely(t, outputRows[0].HealthScore, should.Equal(UNSET_SCORE))
+		assert.Loosely(t, savedThresholds, should.Resemble(testSrcConfig))
 	})
-	Convey("Sort ProblemSpecs", t, func() {
+	ftt.Run("Sort ProblemSpecs", t, func(t *ftt.Test) {
 		ps := []ProblemSpec{
 			{
 				Name:  "Low Value",
@@ -503,9 +505,9 @@ func TestSrcConfig(t *testing.T) {
 			},
 		}
 		sortProblemSpecs(ps)
-		So(ps[0].Score, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, ps[0].Score, should.Equal(UNHEALTHY_SCORE))
 	})
-	Convey("Compare Thresholds Helper", t, func() {
+	ftt.Run("Compare Thresholds Helper", t, func(t *ftt.Test) {
 		const unhealthyIndex = 0
 		const lowValueIndex = 1
 		row := Row{
@@ -519,9 +521,9 @@ func TestSrcConfig(t *testing.T) {
 		ps := testSrcConfig["project"].BucketSpecs[row.Bucket][row.Builder].ProblemSpecs
 
 		compareThresholdsHelper(&row, &ps[unhealthyIndex], row.Metrics[0], ps[unhealthyIndex].Thresholds.FailRate.Average)
-		So(row.HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, row.HealthScore, should.Equal(UNHEALTHY_SCORE))
 
 		compareThresholdsHelper(&row, &ps[lowValueIndex], row.Metrics[0], ps[lowValueIndex].Thresholds.FailRate.Average)
-		So(row.HealthScore, ShouldEqual, LOW_VALUE_SCORE)
+		assert.Loosely(t, row.HealthScore, should.Equal(LOW_VALUE_SCORE))
 	})
 }

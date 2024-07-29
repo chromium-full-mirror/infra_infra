@@ -10,12 +10,14 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cr_builder_health/healthpb"
 )
@@ -55,7 +57,7 @@ func (c *bbClientMock) SetBuilderHealth(ctx context.Context, in *buildbucketpb.S
 
 func TestIsWeekend(t *testing.T) {
 	t.Parallel()
-	Convey("Test isWeekend function", t, func() {
+	ftt.Run("Test isWeekend function", t, func(t *ftt.Test) {
 		date1 := civil.Date{
 			Year:  2023,
 			Month: time.December,
@@ -76,18 +78,18 @@ func TestIsWeekend(t *testing.T) {
 			Month: time.December,
 			Day:   4,
 		}
-		So(isWeekend(date1), ShouldEqual, false)
-		So(isWeekend(date2), ShouldEqual, true)
-		So(isWeekend(date3), ShouldEqual, true)
-		So(isWeekend(date4), ShouldEqual, false)
+		assert.Loosely(t, isWeekend(date1), should.Equal(false))
+		assert.Loosely(t, isWeekend(date2), should.Equal(true))
+		assert.Loosely(t, isWeekend(date3), should.Equal(true))
+		assert.Loosely(t, isWeekend(date4), should.Equal(false))
 	})
 }
 
 func TestBuilderID(t *testing.T) {
 	t.Parallel()
-	Convey("Test BuilderID function", t, func() {
-		So(builderID("chromium", "ci", "builder1"), ShouldEqual, "chromium/ci/builder1")
-		So(builderID("chrome", "try", "builder2"), ShouldEqual, "chrome/try/builder2")
+	ftt.Run("Test BuilderID function", t, func(t *ftt.Test) {
+		assert.Loosely(t, builderID("chromium", "ci", "builder1"), should.Equal("chromium/ci/builder1"))
+		assert.Loosely(t, builderID("chrome", "try", "builder2"), should.Equal("chrome/try/builder2"))
 	})
 }
 
@@ -127,7 +129,7 @@ func TestCalculateIndicators(t *testing.T) {
 		Date: timestamppb.New(time.Date(2024, 1, 7, 0, 0, 0, 0, time.UTC)),
 	}
 
-	Convey("Weekend score is discarded", t, func() {
+	ftt.Run("Weekend score is discarded", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -152,15 +154,15 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
 		// As 2024/01/06, being a Saturday, is excluded from the health score calculation, the final health score should be UNHEALTHY_SCORE
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 	},
 	)
 
-	Convey("Score in out-of-period date is discarded", t, func() {
+	ftt.Run("Score in out-of-period date is discarded", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -185,14 +187,14 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 	},
 	)
 
-	Convey("Healthy & Healthy --> Healthy builder", t, func() {
+	ftt.Run("Healthy & Healthy --> Healthy builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -217,14 +219,14 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(HEALTHY_SCORE))
 	},
 	)
 
-	Convey("Healthy & Unhealthy --> Healthy builder", t, func() {
+	ftt.Run("Healthy & Unhealthy --> Healthy builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -249,14 +251,14 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, HEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(HEALTHY_SCORE))
 	},
 	)
 
-	Convey("Unhealthy & Unhealthy --> Unhealthy builder", t, func() {
+	ftt.Run("Unhealthy & Unhealthy --> Unhealthy builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -281,14 +283,14 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 	},
 	)
 
-	Convey("Unhealthy & Low-value --> Unhealthy builder", t, func() {
+	ftt.Run("Unhealthy & Low-value --> Unhealthy builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -313,14 +315,14 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, UNHEALTHY_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
 	},
 	)
 
-	Convey("Low-value & Low-value --> Low-value builder", t, func() {
+	ftt.Run("Low-value & Low-value --> Low-value builder", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rowsWithHealthScores := []Row{{
 			Project:     "project",
@@ -345,10 +347,10 @@ func TestCalculateIndicators(t *testing.T) {
 		}}
 
 		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
-		So(err, ShouldBeNil)
-		So(len(rowsWithIndicators), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
 
-		So(rowsWithIndicators[0].HealthScore, ShouldEqual, LOW_VALUE_SCORE)
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(LOW_VALUE_SCORE))
 	},
 	)
 }
@@ -356,7 +358,7 @@ func TestCalculateIndicators(t *testing.T) {
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
-	Convey("RPC Buildbucket is called ok", t, func() {
+	ftt.Run("RPC Buildbucket is called ok", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		client := &bbClientMock{}
 		rows := []Row{{
@@ -373,12 +375,12 @@ func TestGenerate(t *testing.T) {
 			},
 		}}
 		err := rpcBuildbucket(ctx, rows, client)
-		So(client.setHealthCalls, ShouldEqual, 1)
-		So(ctx.Err(), ShouldBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, client.setHealthCalls, should.Equal(1))
+		assert.Loosely(t, ctx.Err(), should.BeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("RPC Buildbucket is called error", t, func() {
+	ftt.Run("RPC Buildbucket is called error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		client := &bbClientMock{}
 		rows := []Row{
@@ -410,8 +412,8 @@ func TestGenerate(t *testing.T) {
 			},
 		}
 		err := rpcBuildbucket(ctx, rows, client)
-		So(client.setHealthCalls, ShouldEqual, 1)
-		So(ctx.Err(), ShouldBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, client.setHealthCalls, should.Equal(1))
+		assert.Loosely(t, ctx.Err(), should.BeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
