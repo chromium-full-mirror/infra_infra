@@ -393,6 +393,11 @@ def send_to_git(dest_repo: str,
 
   check_call(['git', 'commit', '-m', commit_message], cwd=dest_repo)
 
+  # Other codesearch builds may have updated the remote, so fetch the latest
+  # changes before pushing to prevent issues like b/354245899.
+  check_call(['git', 'fetch'], cwd=dest_repo)
+  check_call(['git', 'rebase', f"origin/{dest_branch}"], cwd=dest_repo)
+
   cmd = ['git', 'push']
   if nokeycheck:
     cmd.extend(['-o', 'nokeycheck'])
