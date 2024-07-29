@@ -12,6 +12,7 @@ import (
 	"google.golang.org/api/compute/v1"
 
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
@@ -80,6 +81,10 @@ func main() {
 			&auth.GoogleOAuth2Method{
 				Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
 			},
+		})
+
+		srv.ConfigurePRPC(func(p *prpc.Server) {
+			p.AccessControl = prpc.AllowOriginAll
 		})
 
 		logging.Debugf(srv.Context, "main: installing services")
