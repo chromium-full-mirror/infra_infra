@@ -28,6 +28,10 @@ var bqSchema = bigquery.Schema{
 		Type: bigquery.IntegerFieldType,
 	},
 	{
+		Name: "invocation_id",
+		Type: bigquery.StringFieldType,
+	},
+	{
 		Name:     "targets",
 		Type:     bigquery.StringFieldType,
 		Repeated: true,
@@ -223,7 +227,6 @@ func CreateTransferConfig(ctx context.Context, project, table string) (tc *datat
 	if err != nil {
 		return nil, err
 	}
-
 	return client.CreateTransferConfig(ctx, &datatransferpb.CreateTransferConfigRequest{
 		Parent: "projects/" + project,
 		TransferConfig: &datatransferpb.TransferConfig{
@@ -240,6 +243,7 @@ func CreateTransferConfig(ctx context.Context, project, table string) (tc *datat
 				EnableFailureEmail: true,
 			},
 		},
+		ServiceAccountName: project + "@appspot.gserviceaccount.com",
 	})
 
 }
