@@ -640,6 +640,9 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 			if oldDolos == nil {
 				oldDolos = &chromeosLab.Dolos{}
 			}
+			if oldDolos.GetRpm() == nil {
+				oldDolos.Rpm = &chromeosLab.OSRPM{}
+			}
 		}
 	}
 	if newDut != nil {
