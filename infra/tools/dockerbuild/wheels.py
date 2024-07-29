@@ -348,6 +348,17 @@ SPECS.update({
             ],
         ),
         SourceOrPrebuilt(
+            'aioquic',
+            '1.2.0',
+            packaged=(),
+            pyversions=['py3'],
+            patch_version='chromium.1',
+            tpp_libs_cb=lambda w: [
+                TppLib('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1t.chromium.2')
+            ],
+        ),
+        SourceOrPrebuilt(
             'bcrypt',
             '3.1.4',
             packaged=(),
