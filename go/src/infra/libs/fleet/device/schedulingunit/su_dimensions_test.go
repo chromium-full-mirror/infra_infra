@@ -9,7 +9,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory"
@@ -18,19 +20,19 @@ import (
 )
 
 func TestJoinSingleValueLabel(t *testing.T) {
-	Convey("Test with no repeat labels", t, func() {
+	ftt.Run("Test with no repeat labels", t, func(t *ftt.Test) {
 		l := []string{"eve", "nami", "coral"}
-		So(differentiateLabelValues(l), ShouldResemble, []string{"eve", "nami", "coral"})
+		assert.Loosely(t, differentiateLabelValues(l), should.Resemble([]string{"eve", "nami", "coral"}))
 	})
 
-	Convey("Test with repeat labels", t, func() {
+	ftt.Run("Test with repeat labels", t, func(t *ftt.Test) {
 		l := []string{"nami", "coral", "nami", "nami"}
-		So(differentiateLabelValues(l), ShouldResemble, []string{"nami", "coral", "nami_2", "nami_3"})
+		assert.Loosely(t, differentiateLabelValues(l), should.Resemble([]string{"nami", "coral", "nami_2", "nami_3"}))
 	})
 }
 
 func TestDutLabelValues(t *testing.T) {
-	Convey("Test get DUT's label values.", t, func() {
+	ftt.Run("Test get DUT's label values.", t, func(t *ftt.Test) {
 		dims := []swarming.Dimensions{
 			{
 				"dut_name":    {"host1"},
@@ -51,16 +53,16 @@ func TestDutLabelValues(t *testing.T) {
 				"dut_state":   {"ready"},
 			},
 		}
-		So(dutLabelValues("dut_name", dims), ShouldResemble, []string{"host1", "host2", "host3"})
-		So(dutLabelValues("label-board", dims), ShouldResemble, []string{"coral", "nami", "eve"})
-		So(dutLabelValues("label-model", dims), ShouldResemble, []string{"babytiger", "bard", "eve"})
-		So(dutLabelValues("dut_state", dims), ShouldResemble, []string{"ready", "repair_failed", "ready"})
-		So(dutLabelValues("IM_NOT_EXIST", dims), ShouldResemble, []string(nil))
+		assert.Loosely(t, dutLabelValues("dut_name", dims), should.Resemble([]string{"host1", "host2", "host3"}))
+		assert.Loosely(t, dutLabelValues("label-board", dims), should.Resemble([]string{"coral", "nami", "eve"}))
+		assert.Loosely(t, dutLabelValues("label-model", dims), should.Resemble([]string{"babytiger", "bard", "eve"}))
+		assert.Loosely(t, dutLabelValues("dut_state", dims), should.Resemble([]string{"ready", "repair_failed", "ready"}))
+		assert.Loosely(t, dutLabelValues("IM_NOT_EXIST", dims), should.Resemble([]string(nil)))
 	})
 }
 
 func TestLabelIntersection(t *testing.T) {
-	Convey("Test find intersection from a given label name.", t, func() {
+	ftt.Run("Test find intersection from a given label name.", t, func(t *ftt.Test) {
 		dims := []swarming.Dimensions{
 			{
 				"label-device-stable": {"True"},
@@ -77,14 +79,14 @@ func TestLabelIntersection(t *testing.T) {
 				"label-foo":           {"common_value1", "common_value2", "common_value3", "special_value3"},
 			},
 		}
-		So(labelIntersection("label-device-stable", dims), ShouldResemble, []string{"True"})
-		So(labelIntersection("label-foo", dims), ShouldResemble, []string{"common_value1", "common_value2", "common_value3"})
-		So(labelIntersection("label-foo2", dims), ShouldResemble, []string(nil))
+		assert.Loosely(t, labelIntersection("label-device-stable", dims), should.Resemble([]string{"True"}))
+		assert.Loosely(t, labelIntersection("label-foo", dims), should.Resemble([]string{"common_value1", "common_value2", "common_value3"}))
+		assert.Loosely(t, labelIntersection("label-foo2", dims), should.Resemble([]string(nil)))
 	})
 }
 
 func TestGetSchedulingUnitDimensions(t *testing.T) {
-	Convey("Test with a non-empty scheduling unit with all devices are stable.", t, func() {
+	ftt.Run("Test with a non-empty scheduling unit with all devices are stable.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -156,10 +158,10 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 				"OPENWRT[Ubiquiti_Unifi_6_Lite]",
 			},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
 
-	Convey("Test with an empty scheduling unit.", t, func() {
+	ftt.Run("Test with an empty scheduling unit.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -176,10 +178,10 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
 
-	Convey("Test with an scheduling unit that include non-stable device.", t, func() {
+	ftt.Run("Test with an scheduling unit that include non-stable device.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -223,9 +225,9 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
-	Convey("Test with a strict primary dut dimensions", t, func() {
+	ftt.Run("Test with a strict primary dut dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -274,9 +276,9 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
-	Convey("Test with a primary dut default dimensions", t, func() {
+	ftt.Run("Test with a primary dut default dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -324,9 +326,9 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
-	Convey("Test with a default_plus_primary dimensions", t, func() {
+	ftt.Run("Test with a default_plus_primary dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -375,9 +377,9 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
-	Convey("Test schedulingunit with wificell label.", t, func() {
+	ftt.Run("Test schedulingunit with wificell label.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -396,9 +398,9 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
-	Convey("Test schedulingunit with carrier label.", t, func() {
+	ftt.Run("Test schedulingunit with carrier label.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
 			Pools:      []string{"nearby_sharing"},
@@ -419,21 +421,21 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		So(GetSchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
 	})
 }
 
 func TestGetSchedulingUnitBotState(t *testing.T) {
-	Convey("Test scheduling unit bot state.", t, func() {
-		t, _ := time.Parse(time.RFC3339, "2021-05-07T11:54:36.225Z")
+	ftt.Run("Test scheduling unit bot state.", t, func(t *ftt.Test) {
+		tm, _ := time.Parse(time.RFC3339, "2021-05-07T11:54:36.225Z")
 		su := &ufspb.SchedulingUnit{
 			Name:       "schedulingunit/test-unit1",
-			UpdateTime: timestamppb.New(t),
+			UpdateTime: timestamppb.New(tm),
 		}
 		expectedResult := map[string][]string{
 			"scheduling_unit_version_index": {"2021-05-07 11:54:36.225 UTC"},
 		}
-		So(GetSchedulingUnitBotState(su), ShouldResemble, expectedResult)
+		assert.Loosely(t, GetSchedulingUnitBotState(su), should.Resemble(expectedResult))
 	})
 }
 
