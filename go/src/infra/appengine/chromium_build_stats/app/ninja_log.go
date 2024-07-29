@@ -290,7 +290,11 @@ func uploadNinjaLogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ninjalog.WriteNinjaLogToGCS(ctx, info, appengine.AppID(ctx)+".appspot.com", "ninjalog_users_avro/"+uuid.NewString()); err != nil {
+	// TODO: jwata - Use the timestamp of the build.
+	datePrefix := time.Now().Format("2006_01_02")
+	fileName := fmt.Sprintf("%s.%s", datePrefix, uuid.NewString())
+
+	if err := ninjalog.WriteNinjaLogToGCS(ctx, info, appengine.AppID(ctx)+".appspot.com", "ninjalog_users_avro/"+fileName); err != nil {
 		http.Error(w, "failed to write to GCS", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to write to GCS: %v", err)
 		return

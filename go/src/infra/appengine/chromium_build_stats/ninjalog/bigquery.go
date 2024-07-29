@@ -218,7 +218,9 @@ func CreateTransferConfig(ctx context.Context, project, table string) (tc *datat
 
 	// ref: https://cloud.google.com/bigquery-transfer/docs/cloud-storage-transfer#bq
 	params, err := structpb.NewStruct(map[string]interface{}{
-		"data_path_template":              fmt.Sprintf("gs://%s.appspot.com/ninjalog_%s_avro/*", project, table),
+		// Filter by runtime date prefix, otherwise it may exceeds the max number of files to transfer in a batch.
+		// https://cloud.google.com/bigquery/docs/gcs-transfer-parameters#load_a_snapshot_of_all_data_into_an_ingestion-time_partitioned_table
+		"data_path_template":              fmt.Sprintf(`gs://%s.appspot.com/ninjalog_%s_avro/{run_time|"%%Y_%%m_%%d"}*`, project, table),
 		"destination_table_name_template": table,
 		"file_format":                     "AVRO",
 		"delete_source_files":             true,
