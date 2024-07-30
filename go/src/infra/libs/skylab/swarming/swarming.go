@@ -380,7 +380,9 @@ func TaskListURLForTags(swarmingService string, tags []string) string {
 	for _, t := range tags {
 		q.Add("f", t)
 	}
-	q.Add("st", strconv.FormatInt(time.Now().UnixMilli(), 10))
+	// Set the start time filter to 10 minutes before now to ensure we includes all tasks created
+	// in a batch schedule scenario.
+	q.Add("st", strconv.FormatInt(time.Now().Add(-10*time.Minute).UnixMilli(), 10))
 	u.RawQuery = q.Encode()
 	return u.String()
 }
