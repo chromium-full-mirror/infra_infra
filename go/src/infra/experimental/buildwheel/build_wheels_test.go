@@ -7,14 +7,15 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/time/rate"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 	"go.chromium.org/luci/logdog/common/types"
 	"go.chromium.org/luci/luciexe/build"
@@ -102,7 +103,7 @@ type testParams struct {
 func TestBuildWheelsLuciExe(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Build wheels`, t, func() {
+	ftt.Run(`Build wheels`, t, func(t *ftt.Test) {
 		scFake, lc := streamclient.NewUnregisteredFake("fakeNS")
 		ctx, _ := testclock.UseTime(context.Background(), testclock.TestRecentTimeUTC)
 		nowpb := timestamppb.New(testclock.TestRecentTimeUTC)
@@ -129,11 +130,11 @@ func TestBuildWheelsLuciExe(t *testing.T) {
 		}
 
 		for _, param := range testSets {
-			Convey(param.desc, func() {
+			t.Run(param.desc, func(t *ftt.Test) {
 				err = RunDockerBuild(ictx, param.args, state, param.executor)
 				state.End(err)
 
-				So(bbpbUpdates[len(bbpbUpdates)-1], ShouldResembleProto, param.expectedPb)
+				assert.That(t, bbpbUpdates[len(bbpbUpdates)-1], should.Resemble(param.expectedPb))
 
 				// Workaround to print error on test failure.
 				// Convey.SoMsg() seemed to only print the assertion diff.
