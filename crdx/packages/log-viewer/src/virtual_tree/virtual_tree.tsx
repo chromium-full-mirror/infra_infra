@@ -174,9 +174,7 @@ export function VirtualTree<T extends TreeNodeData>({
     }
 
     return { allTreeDataList, idToTreeDataMap, deepLinkIndex };
-    // run once on initial render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [root, setActiveSelectionFn]);
 
   // Figure out the first visible index within the search matches.
   // If none is visible in the current window, reset to 0.

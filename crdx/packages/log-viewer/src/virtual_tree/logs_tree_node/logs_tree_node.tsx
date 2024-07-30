@@ -120,6 +120,7 @@ export function LogsTreeNode({
           treeIndentBorder ? 0 : treeNodeData.level * treeNodeIndentation!
         }px`,
         width: '100%',
+        boxSizing: 'border-box',
         cursor: treeNodeData.data.size === 0 ? 'default' : 'pointer',
         ...selectedNodeStyle,
         ...highlightOnHover,
