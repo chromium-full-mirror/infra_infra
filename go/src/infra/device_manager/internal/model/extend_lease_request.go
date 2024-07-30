@@ -30,12 +30,11 @@ func CreateExtendLeaseRequest(ctx context.Context, tx *sql.Tx, request ExtendLea
 			(id, lease_id, idempotency_key, extend_duration, request_time,
 				expiration_time)
 		VALUES
-			($1, $2, $3, $4, $5, $6);`,
+			($1, $2, $3, $4, NOW(), $5);`,
 		request.ID,
 		request.LeaseID,
 		request.IdempotencyKey,
 		request.ExtendDuration,
-		request.RequestTime,
 		request.ExpirationTime,
 	)
 	if err != nil {

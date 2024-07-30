@@ -125,7 +125,6 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 		LeaseID:        r.GetLeaseId(),
 		IdempotencyKey: r.GetIdempotencyKey(),
 		ExtendDuration: extendDur,
-		RequestTime:    timeNow,
 		ExpirationTime: newExpirationTime,
 	}
 
@@ -137,12 +136,11 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 
 	// Update DeviceLeaseRecord with new expiration time
 	updatedRec := model.DeviceLeaseRecord{
-		ID:              r.GetLeaseId(),
-		ExpirationTime:  newExpirationTime,
-		LastUpdatedTime: timeNow,
+		ID:             r.GetLeaseId(),
+		ExpirationTime: newExpirationTime,
 	}
 
-	err = model.UpdateDeviceLeaseRecord(ctx, tx, updatedRec)
+	err = model.ExtendLease(ctx, tx, updatedRec)
 	if err != nil {
 		logging.Errorf(ctx, "ExtendLease: failed to update DeviceLeaseRecord %s: %s", updatedRec.ID, err)
 		return nil, err
@@ -189,11 +187,9 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 
 	// Update lease record to mark released time
 	releaseRec := model.DeviceLeaseRecord{
-		ID:              r.GetLeaseId(),
-		ReleasedTime:    timeNow,
-		LastUpdatedTime: timeNow,
+		ID: r.GetLeaseId(),
 	}
-	err = model.UpdateDeviceLeaseRecord(ctx, tx, releaseRec)
+	err = model.ReleaseLease(ctx, tx, releaseRec)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", releaseRec.ID, err)
 		return nil, err
@@ -208,10 +204,9 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 
 	// Update device and device lease state to available after release
 	updatedDevice := model.Device{
-		ID:              record.DeviceID,
-		DeviceState:     "DEVICE_STATE_AVAILABLE",
-		IsActive:        true,
-		LastUpdatedTime: timeNow,
+		ID:          record.DeviceID,
+		DeviceState: "DEVICE_STATE_AVAILABLE",
+		IsActive:    true,
 	}
 
 	// Try to pull dimensions from Device. Mark as inactive if not found.

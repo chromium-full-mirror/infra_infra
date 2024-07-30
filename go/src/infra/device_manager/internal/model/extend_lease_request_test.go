@@ -49,13 +49,12 @@ func TestCreateExtendLeaseRequest(t *testing.T) {
 					(id, lease_id, idempotency_key, extend_duration, request_time,
 						expiration_time)
 				VALUES
-					($1, $2, $3, $4, $5, $6);`)).
+					($1, $2, $3, $4, NOW(), $5);`)).
 				WithArgs(
 					"test-extend-request-1",
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
 					600,
-					timeNow,
 					timeNow,
 				).
 				WillReturnResult(sqlmock.NewResult(1, 1))
@@ -65,7 +64,6 @@ func TestCreateExtendLeaseRequest(t *testing.T) {
 				LeaseID:        "test-lease-record-1",
 				IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				ExtendDuration: 600,
-				RequestTime:    timeNow,
 				ExpirationTime: timeNow,
 			})
 			So(err, ShouldBeNil)

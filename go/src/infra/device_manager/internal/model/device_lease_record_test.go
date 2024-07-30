@@ -327,12 +327,12 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 	})
 }
 
-func TestUpdateDeviceLeaseRecord(t *testing.T) {
+func TestExtendLease(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("UpdateDeviceLeaseRecord", t, func() {
-		Convey("UpdateDeviceLeaseRecord: valid update", func() {
+	Convey("ExtendLease", t, func() {
+		Convey("ExtendLease: valid extend", func() {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -359,19 +359,65 @@ func TestUpdateDeviceLeaseRecord(t *testing.T) {
 				UPDATE
 					"DeviceLeaseRecords"
 				SET
-					released_time=COALESCE($2, released_time),
-					expiration_time=COALESCE($3, expiration_time),
-					last_updated_time=COALESCE($4, last_updated_time)
+					expiration_time=COALESCE($2, expiration_time),
+					last_updated_time=NOW()
 				WHERE
 					id=$1;`)).
 				WithArgs(
 					"test-lease-record-1",
-					timeNow.Add(time.Second*600),
-					timeNow.Add(time.Second*600),
-					timeNow).
+					timeNow.Add(time.Second*600)).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
-			err = UpdateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
+			err = ExtendLease(ctx, tx, DeviceLeaseRecord{
+				ID:             "test-lease-record-1",
+				ExpirationTime: timeNow.Add(time.Second * 600),
+			})
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestReleaseLease(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("ReleaseLease", t, func() {
+		Convey("ReleaseLease: valid release", func() {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			timeNow := time.Now()
+
+			mock.ExpectExec(regexp.QuoteMeta(`
+				UPDATE
+					"DeviceLeaseRecords"
+				SET
+					released_time=NOW(),
+					last_updated_time=NOW()
+				WHERE
+					id=$1;`)).
+				WithArgs(
+					"test-lease-record-1").
+				WillReturnResult(sqlmock.NewResult(1, 1))
+
+			err = ReleaseLease(ctx, tx, DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				ReleasedTime:    timeNow.Add(time.Second * 600),
 				ExpirationTime:  timeNow.Add(time.Second * 600),

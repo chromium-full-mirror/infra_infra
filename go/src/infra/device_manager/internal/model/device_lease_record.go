@@ -303,59 +303,72 @@ func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pag
 	return query, filterArgs, nil
 }
 
-// UpdateDeviceLeaseRecord updates a lease record in a transaction.
+// ExtendLease updates a lease record in a transaction.
 //
-// UpdateDeviceLeaseRecord uses COALESCE to only update fields with provided
-// values. If there is no value provided, then it will use the current value of
-// the device field in the db.
-func UpdateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, updatedRec DeviceLeaseRecord) error {
-	var (
-		releasedTime    sql.NullTime
-		expirationTime  sql.NullTime
-		lastUpdatedTime sql.NullTime
-	)
-
+// ExtendLease uses COALESCE to only update fields with provided values. If
+// there is no value provided, then it will use the current value of the device
+// field in the db.
+func ExtendLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) error {
 	// Handle possible null times
-	if !updatedRec.ReleasedTime.IsZero() {
-		releasedTime.Time = updatedRec.ReleasedTime
-		releasedTime.Valid = true
-	}
-	if !updatedRec.ExpirationTime.IsZero() {
-		expirationTime.Time = updatedRec.ExpirationTime
+	var expirationTime sql.NullTime
+	if !leaseRec.ExpirationTime.IsZero() {
+		expirationTime.Time = leaseRec.ExpirationTime
 		expirationTime.Valid = true
-	}
-	if !updatedRec.LastUpdatedTime.IsZero() {
-		lastUpdatedTime.Time = updatedRec.LastUpdatedTime
-		lastUpdatedTime.Valid = true
 	}
 
 	result, err := tx.ExecContext(ctx, `
 		UPDATE
 			"DeviceLeaseRecords"
 		SET
-			released_time=COALESCE($2, released_time),
-			expiration_time=COALESCE($3, expiration_time),
-			last_updated_time=COALESCE($4, last_updated_time)
+			expiration_time=COALESCE($2, expiration_time),
+			last_updated_time=NOW()
 		WHERE
 			id=$1;`,
-		updatedRec.ID,
-		releasedTime,
+		leaseRec.ID,
 		expirationTime,
-		lastUpdatedTime,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDeviceLeaseRecord: failed to update DeviceLeaseRecord %s: %s", updatedRec.ID, err)
+		logging.Errorf(ctx, "ExtendLease: failed to extend DeviceLeaseRecord %s: %s", leaseRec.ID, err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "UpdateDeviceLeaseRecord: unable to rollback: %v", rollbackErr)
+			logging.Errorf(ctx, "ExtendLease: unable to rollback: %v", rollbackErr)
 		}
 		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDeviceLeaseRecord: error getting rows affected: %s", err)
+		logging.Errorf(ctx, "ExtendLease: error getting rows affected: %s", err)
 	}
 
-	logging.Debugf(ctx, "UpdateDeviceLeaseRecord: DeviceLeaseRecord %s updated successfully (%d row affected)", updatedRec.ID, rowsAffected)
+	logging.Debugf(ctx, "ExtendLease: DeviceLeaseRecord %s extended successfully (%d row affected)", leaseRec.ID, rowsAffected)
+	return nil
+}
+
+// ReleaseLease releases a lease record in a transaction.
+func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) error {
+	result, err := tx.ExecContext(ctx, `
+		UPDATE
+			"DeviceLeaseRecords"
+		SET
+			released_time=NOW(),
+			last_updated_time=NOW()
+		WHERE
+			id=$1;`,
+		leaseRec.ID,
+	)
+	if err != nil {
+		logging.Errorf(ctx, "ReleaseLease: failed to release DeviceLeaseRecord %s: %s", leaseRec.ID, err)
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "ReleaseLease: unable to rollback: %v", rollbackErr)
+		}
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		logging.Errorf(ctx, "ReleaseLease: error getting rows affected: %s", err)
+	}
+
+	logging.Debugf(ctx, "ReleaseLease: DeviceLeaseRecord %s released successfully (%d row affected)", leaseRec.ID, rowsAffected)
 	return nil
 }
