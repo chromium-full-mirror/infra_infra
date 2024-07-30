@@ -1,5 +1,5 @@
 create {
-  platform_re: "windows-386"
+  platform_re: "windows-(386|arm64)"
   unsupported: true
 }
 
