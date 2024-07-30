@@ -8,6 +8,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/pubsub"
@@ -175,8 +176,10 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	if !record.ReleasedTime.IsZero() && record.ReleasedTime.Before(timeNow) {
 		logging.Debugf(ctx, "ReleaseDevice: leased device was already released")
 		return &api.ReleaseDeviceResponse{
-			LeaseId: r.GetLeaseId(),
-		}, errors.New("ReleaseDevice: lease is already released")
+			LeaseId:     r.GetLeaseId(),
+			ErrorType:   api.ReleaseDeviceResponseErrorType_ERROR_TYPE_DEVICE_ALREADY_RELEASED,
+			ErrorString: fmt.Sprintf("Lease %s for device %s was already released", r.GetLeaseId(), record.DeviceID),
+		}, nil
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
