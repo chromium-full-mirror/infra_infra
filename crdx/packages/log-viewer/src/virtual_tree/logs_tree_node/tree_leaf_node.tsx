@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import {
+  InsertDriveFileOutlined as InsertDriveFileOutlinedIcon,
+  InfoOutlined as InfoOutlinedIcon,
+} from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import prettyBytes from 'pretty-bytes';

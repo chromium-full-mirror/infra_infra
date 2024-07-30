@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  ChevronRight as ChevronRightIcon,
+  ExpandMore as ExpandMoreIcon,
+} from '@mui/icons-material';
 import { Stack, Typography } from '@mui/material';
 import { deepOrange, lightBlue, yellow } from '@mui/material/colors';
 import React, { useEffect, useState } from 'react';
