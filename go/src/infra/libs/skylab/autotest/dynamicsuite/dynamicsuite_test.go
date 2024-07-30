@@ -7,13 +7,14 @@ package dynamicsuite_test
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/libs/skylab/autotest/dynamicsuite"
 )
 
 func TestRequest(t *testing.T) {
-	Convey("Given a set of arguments", t, func() {
+	ftt.Run("Given a set of arguments", t, func(t *ftt.Test) {
 		args := dynamicsuite.Args{
 			Board: "board",
 			Build: "build",
@@ -24,11 +25,11 @@ func TestRequest(t *testing.T) {
 				"arg_2": []string{"v1", "v2"},
 			},
 		}
-		Convey("a new request has correct properties", func() {
+		t.Run("a new request has correct properties", func(t *ftt.Test) {
 			req, err := dynamicsuite.NewRequest(args)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			So(req.TaskSlices, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			assert.Loosely(t, req.TaskSlices, should.HaveLength(1))
 			expected := []string{
 				"/usr/local/autotest/site_utils/run_suite.py",
 				"--json_dump_postfix",
@@ -39,13 +40,13 @@ func TestRequest(t *testing.T) {
 				"--pool", "pool",
 				"--suite_args_json", `{"args_dict_json":"{\"arg_1\":1,\"arg_2\":[\"v1\",\"v2\"]}"}`,
 			}
-			So(req.TaskSlices[0].Properties.Command, ShouldResemble, expected)
+			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Resemble(expected))
 		})
 	})
 }
 
 func TestLegacyRequest(t *testing.T) {
-	Convey("Given a set of arguments with a legacy suite", t, func() {
+	ftt.Run("Given a set of arguments with a legacy suite", t, func(t *ftt.Test) {
 		args := dynamicsuite.Args{
 			Board: "board",
 			Build: "build",
@@ -57,11 +58,11 @@ func TestLegacyRequest(t *testing.T) {
 			},
 			LegacySuite: "legacy_suite",
 		}
-		Convey("a new request has correct properties", func() {
+		t.Run("a new request has correct properties", func(t *ftt.Test) {
 			req, err := dynamicsuite.NewRequest(args)
-			So(err, ShouldBeNil)
-			So(req, ShouldNotBeNil)
-			So(req.TaskSlices, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, req, should.NotBeNil)
+			assert.Loosely(t, req.TaskSlices, should.HaveLength(1))
 			expected := []string{
 				"/usr/local/autotest/site_utils/run_suite.py",
 				"--json_dump_postfix",
@@ -72,7 +73,7 @@ func TestLegacyRequest(t *testing.T) {
 				"--pool", "pool",
 				"--suite_args_json", "{}",
 			}
-			So(req.TaskSlices[0].Properties.Command, ShouldResemble, expected)
+			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Resemble(expected))
 		})
 	})
 }
