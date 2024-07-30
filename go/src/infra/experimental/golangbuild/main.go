@@ -241,6 +241,7 @@ func main() {
 			testsFailed := errorTestsFailed(runErr)
 			if testsFailed {
 				fmt.Fprintf(&sb, "[Build or test failure, click here for results.](%s)\n\n", testResultsURL(st.Build().Id))
+				fmt.Fprintf(&sb, "To reproduce, try `gomote repro %d`.\n\n", st.Build().Id)
 			} else {
 				if e := runErr.Error(); !strings.ContainsAny(e, "\n`") {
 					// Simple error, viable to put it in a Markdown code span.
