@@ -395,7 +395,7 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 			device_type=COALESCE(NULLIF(EXCLUDED.device_type, ''), d.device_type),
 			device_state=COALESCE(NULLIF(EXCLUDED.device_state, ''), NULLIF(d.device_state, ''), 'DEVICE_STATE_AVAILABLE'),
 			schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
-			last_updated_time=COALESCE(EXCLUDED.last_updated_time, d.last_updated_time),
+			last_updated_time=NOW(),
 			is_active=COALESCE(EXCLUDED.is_active, d.is_active);`,
 		device.ID,
 		device.DeviceAddress,

@@ -251,16 +251,10 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		wg.Done()
 	}()
 
-	var (
-		deviceModel model.Device
-		updateTime  = time.Now()
-	)
-
-	deviceModel = model.Device{
-		ID:              ufsUtil.RemovePrefix(name),
-		DeviceType:      "DEVICE_TYPE_PHYSICAL",
-		LastUpdatedTime: updateTime,
-		IsActive:        active,
+	deviceModel := model.Device{
+		ID:         ufsUtil.RemovePrefix(name),
+		DeviceType: "DEVICE_TYPE_PHYSICAL",
+		IsActive:   active,
 	}
 
 	r := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }

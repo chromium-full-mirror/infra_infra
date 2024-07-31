@@ -235,7 +235,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 		return nil, err
 	}
 
-	logging.Debugf(ctx, "ReleaseDevice: released lease %v", releaseRec)
+	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s", r.GetLeaseId(), record.DeviceID)
 	return &api.ReleaseDeviceResponse{
 		LeaseId: r.GetLeaseId(),
 	}, nil
