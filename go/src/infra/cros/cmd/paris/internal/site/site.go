@@ -11,8 +11,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
-
 	"go.chromium.org/luci/auth"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gitiles"
@@ -25,19 +23,8 @@ const CloudOAuthScope = "https://www.googleapis.com/auth/cloud-platform"
 
 // Environment contains environment specific values.
 type Environment struct {
-	LUCIProject      string
-	SwarmingService  string
-	LogDogHost       string
-	InventoryService string
-	AdminService     string
-	QueenService     string
-	// QueenDroneHostname is only used by queen-push-duts.
-	QueenDroneHostname string
-	ServiceAccount     string
-
-	// Buildbucket-specific values.
-	CTPBuilderInfo       BuildbucketBuilderInfo
-	DUTLeaserBuilderInfo BuildbucketBuilderInfo
+	AdminService   string
+	ServiceAccount string
 
 	// UFS-specific values
 	UFSService string
@@ -62,45 +49,18 @@ type EnvWrapper struct {
 	e Environment
 }
 
-// LUCIProject implements worker.Environment.
-func (e EnvWrapper) LUCIProject() string {
-	return e.e.LUCIProject
-}
-
-// LogDogHost implements worker.Environment.
-func (e EnvWrapper) LogDogHost() string {
-	return e.e.LogDogHost
-}
-
-// GenerateLogPrefix implements worker.Environment.
-func (e EnvWrapper) GenerateLogPrefix() string {
-	return "paris/" + uuid.New().String()
-}
-
 // Prod is the environment for prod.
 var Prod = Environment{
-	LUCIProject:        "chromeos",
-	SwarmingService:    "https://chromeos-swarming.appspot.com/",
-	LogDogHost:         "luci-logdog.appspot.com",
-	InventoryService:   "cros-lab-inventory.appspot.com",
-	AdminService:       "chromeos-skylab-bot-fleet.appspot.com",
-	QueenService:       "drone-queen-prod.appspot.com",
-	QueenDroneHostname: "drone-queen-ENVIRONMENT_PROD",
-	ServiceAccount:     "skylab-admin-task@chromeos-service-accounts.iam.gserviceaccount.com",
+	AdminService:   "chromeos-skylab-bot-fleet.appspot.com",
+	ServiceAccount: "skylab-admin-task@chromeos-service-accounts.iam.gserviceaccount.com",
 
 	UFSService: "ufs.api.cr.dev",
 }
 
 // Dev is the environment for dev.
 var Dev = Environment{
-	LUCIProject:        "chromeos",
-	SwarmingService:    "https://chromium-swarm-dev.appspot.com/",
-	LogDogHost:         "luci-logdog-dev.appspot.com",
-	InventoryService:   "cros-lab-inventory-dev.appspot.com",
-	AdminService:       "chromeos-skylab-bot-fleet.appspot.com",
-	QueenService:       "drone-queen-dev.appspot.com",
-	QueenDroneHostname: "drone-queen-ENVIRONMENT_STAGING",
-	ServiceAccount:     "skylab-admin-task@chromeos-service-accounts-dev.iam.gserviceaccount.com",
+	AdminService:   "chromeos-skylab-bot-fleet.appspot.com",
+	ServiceAccount: "skylab-admin-task@chromeos-service-accounts-dev.iam.gserviceaccount.com",
 
 	UFSService: "staging.ufs.api.cr.dev",
 }

@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/recovery/config"
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/engine"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/localtlw/localproxy"
@@ -29,12 +30,6 @@ import (
 	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 	"infra/libs/skylab/buildbucket"
-)
-
-const (
-	// Specify if we want to print the DUT info to the logs.
-	// In some cases DUT info is too big and to avoid noise in the log you can block it.
-	logDutInfo = true
 )
 
 // Run runs the recovery tasks against the provided unit.
@@ -347,7 +342,7 @@ func readInventory(ctx context.Context, resource string, args *RunArgs) (dut *tl
 	if err != nil {
 		return nil, errors.Annotate(err, "read inventory %q", resource).Err()
 	}
-	if logDutInfo {
+	if dev.PrintDUTProtos(ctx) {
 		logDUTInfo(ctx, resource, dut, "DUT info from inventory")
 	}
 	return dut, nil
@@ -367,7 +362,7 @@ func updateInventory(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rErr err
 		i.Indent()
 		defer func() { i.Dedent() }()
 	}
-	if logDutInfo {
+	if dev.PrintDUTProtos(ctx) {
 		logDUTInfo(ctx, dut.Name, dut, "updated DUT info")
 	}
 	if args.EnableUpdateInventory {

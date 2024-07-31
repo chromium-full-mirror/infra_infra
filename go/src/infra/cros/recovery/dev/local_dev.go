@@ -27,13 +27,30 @@ func WithDevOptions(ctx context.Context, devOptions any) context.Context {
 // ActiveLocalDevOption represent interface to tell if local development is active.
 type ActiveLocalDevOption interface {
 	// Specify if client is active.
+	PrintDUTProtos() bool
+	// Specify if client is active.
 	IsActive() bool
 }
 
+// HasDevOptions tells if dev options specified.
+func HasDevOptions(ctx context.Context) bool {
+	return ctx.Value(localDevOptionsKey) != nil
+}
+
 // IsActive specifies if local dev option is active.
+// Default: No.
 func IsActive(ctx context.Context) bool {
 	if o, ok := ctx.Value(localDevOptionsKey).(ActiveLocalDevOption); ok {
 		return o.IsActive()
 	}
 	return false
+}
+
+// PrintDUTProtos specifies if printing DUT protos is expected.
+// Default: Yes.
+func PrintDUTProtos(ctx context.Context) bool {
+	if o, ok := ctx.Value(localDevOptionsKey).(ActiveLocalDevOption); ok {
+		return o.PrintDUTProtos()
+	}
+	return true
 }

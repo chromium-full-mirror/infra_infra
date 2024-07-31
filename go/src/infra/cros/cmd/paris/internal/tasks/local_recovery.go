@@ -80,6 +80,7 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.generateLogFiles, "generate-log-files", false, "Generate log files. Default is no.")
 
 		c.Flags.BoolVar(&c.onlyVerify, "only-verify", false, "Block recovery actions and run only verifiers. Default is no.")
+		c.Flags.BoolVar(&c.devPrintProto, "log-proto", false, "Print proto data of dut. Default is no.")
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
@@ -104,6 +105,8 @@ type localRecoveryRun struct {
 	showSteps             bool
 	generateLogFiles      bool
 	taskName              string
+
+	devPrintProto bool
 }
 
 // Run initiates execution of local recovery.
@@ -189,7 +192,10 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	params[scopes.ParamKeySwarmingTaskID] = ""
 	params[scopes.ParamKeyBuildbucketID] = ""
 	ctx = scopes.WithParams(ctx, params)
-	ctx = setDevOptions(ctx)
+	ctx = setDevOptions(ctx, &devOptions{
+		active:         true,
+		printDUTProtos: c.devPrintProto,
+	})
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create tlw access").Err()
@@ -334,13 +340,20 @@ func (l *recoveryLogger) indentString(v string) string {
 }
 
 // Local implementation of devOptions.
-type devOptions struct{}
+type devOptions struct {
+	active         bool
+	printDUTProtos bool
+}
 
-func (_ *devOptions) IsActive() bool {
-	return true
+func (d *devOptions) IsActive() bool {
+	return d.active
+}
+
+func (d *devOptions) PrintDUTProtos() bool {
+	return d.printDUTProtos
 }
 
 // setDevOptions sets local development options.
-func setDevOptions(ctx context.Context) context.Context {
-	return dev.WithDevOptions(ctx, &devOptions{})
+func setDevOptions(ctx context.Context, option dev.ActiveLocalDevOption) context.Context {
+	return dev.WithDevOptions(ctx, option)
 }
