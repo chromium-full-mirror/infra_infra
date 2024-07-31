@@ -313,8 +313,8 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				device_type=COALESCE(NULLIF($3, ''), device_type),
 				device_state=COALESCE(NULLIF($4, ''), device_state),
 				schedulable_labels=COALESCE($5, schedulable_labels),
-				last_updated_time=COALESCE($6, last_updated_time),
-				is_active=COALESCE($7, is_active)
+				last_updated_time=NOW(),
+				is_active=COALESCE($6, is_active)
 			WHERE
 				id=$1
 			RETURNING
@@ -336,7 +336,6 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 		device.DeviceType,
 		device.DeviceState,
 		device.SchedulableLabels,
-		device.LastUpdatedTime,
 		device.IsActive,
 	).Scan(
 		&updatedDevice.ID,
@@ -389,7 +388,7 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 				last_updated_time,
 				is_active
 			)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		VALUES ($1, $2, $3, $4, $5, NOW(), $6)
 		ON CONFLICT(id)
 		DO UPDATE SET
 			device_address=COALESCE(NULLIF(EXCLUDED.device_address, ''), d.device_address),
@@ -403,7 +402,6 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 		device.DeviceType,
 		device.DeviceState,
 		device.SchedulableLabels,
-		device.LastUpdatedTime,
 		device.IsActive,
 	)
 	if err != nil {

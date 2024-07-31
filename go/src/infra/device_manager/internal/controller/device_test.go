@@ -630,8 +630,8 @@ func TestUpdateDevice(t *testing.T) {
 					device_type=COALESCE(NULLIF($3, ''), device_type),
 					device_state=COALESCE(NULLIF($4, ''), device_state),
 					schedulable_labels=COALESCE($5, schedulable_labels),
-					last_updated_time=COALESCE($6, last_updated_time),
-					is_active=COALESCE($7, is_active)
+					last_updated_time=NOW(),
+					is_active=COALESCE($6, is_active)
 				WHERE
 					id=$1
 				RETURNING
@@ -650,7 +650,6 @@ func TestUpdateDevice(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"dut_id":{"Values":["test-dut-id-1"]}}`,
-					timeNow,
 					false).
 				WillReturnRows(rows)
 
@@ -664,8 +663,7 @@ func TestUpdateDevice(t *testing.T) {
 						Values: []string{"test-dut-id-1"},
 					},
 				},
-				LastUpdatedTime: timeNow,
-				IsActive:        false,
+				IsActive: false,
 			})
 			So(err, ShouldBeNil)
 		})

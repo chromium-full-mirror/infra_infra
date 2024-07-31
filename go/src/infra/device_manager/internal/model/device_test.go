@@ -648,8 +648,8 @@ func TestUpdateDevice(t *testing.T) {
 					device_type=COALESCE(NULLIF($3, ''), device_type),
 					device_state=COALESCE(NULLIF($4, ''), device_state),
 					schedulable_labels=COALESCE($5, schedulable_labels),
-					last_updated_time=COALESCE($6, last_updated_time),
-					is_active=COALESCE($7, is_active)
+					last_updated_time=NOW(),
+					is_active=COALESCE($6, is_active)
 				WHERE
 					id=$1
 				RETURNING
@@ -668,7 +668,6 @@ func TestUpdateDevice(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-1"]}}`,
-					timeNow,
 					false).
 				WillReturnRows(rows)
 
@@ -682,8 +681,7 @@ func TestUpdateDevice(t *testing.T) {
 						Values: []string{"test-value-1"},
 					},
 				},
-				IsActive:        false,
-				LastUpdatedTime: timeNow,
+				IsActive: false,
 			})
 			So(err, ShouldBeNil)
 			So(updatedDevice, ShouldEqual, Device{
@@ -723,7 +721,6 @@ func TestUpsertDevice(t *testing.T) {
 				}
 			}()
 
-			timeNow := time.Now()
 			mock.ExpectExec(regexp.QuoteMeta(`
 				INSERT INTO "Devices" AS d
 					(
@@ -735,7 +732,7 @@ func TestUpsertDevice(t *testing.T) {
 						last_updated_time,
 						is_active
 					)
-				VALUES ($1, $2, $3, $4, $5, $6, $7)
+				VALUES ($1, $2, $3, $4, $5, NOW(), $6)
 				ON CONFLICT(id)
 				DO UPDATE SET
 					device_address=COALESCE(NULLIF(EXCLUDED.device_address, ''), d.device_address),
@@ -750,7 +747,6 @@ func TestUpsertDevice(t *testing.T) {
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
 					`{"label-test":{"Values":["test-value-1"]}}`,
-					timeNow,
 					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -764,8 +760,7 @@ func TestUpsertDevice(t *testing.T) {
 						Values: []string{"test-value-1"},
 					},
 				},
-				LastUpdatedTime: timeNow,
-				IsActive:        false,
+				IsActive: false,
 			})
 			So(err, ShouldBeNil)
 		})
