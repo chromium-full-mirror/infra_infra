@@ -294,3 +294,41 @@ func FriendlyString(indicator *fleetcostpb.CostIndicator) string {
 	)
 	return message
 }
+
+func MakeCostReportItem(subtotalName string, rawFigure float64, perDeviceFigure float64, category string) *fleetcostpb.CostReportItem {
+	return &fleetcostpb.CostReportItem{
+		SubtotalName:    subtotalName,
+		RawFigure:       rawFigure,
+		PerDeviceFigure: perDeviceFigure,
+		Category:        category,
+	}
+}
+
+func MakeCostReportScalar(label string, value float64) *fleetcostpb.CostReportScalar {
+	return &fleetcostpb.CostReportScalar{
+		ReportLabel: &fleetcostpb.CostReportLabel{Name: label},
+		Value:       value,
+	}
+}
+
+func MakeCostReportExpr(label string, operation string) *fleetcostpb.CostReportExpr {
+	return &fleetcostpb.CostReportExpr{
+		Label:     &fleetcostpb.CostReportLabel{Name: label},
+		Operation: fleetcostpb.CostReportExpr_Operation(fleetcostpb.CostReportExpr_Operation_value[operation]),
+		Number:    nil,
+		Item:      nil,
+		Expr:      nil,
+	}
+}
+
+func AppendCostReportItem(haystack *fleetcostpb.CostReportExpr, needles ...*fleetcostpb.CostReportItem) {
+	haystack.Item = append(haystack.GetItem(), needles...)
+}
+
+func SumCostReportItem(items ...*fleetcostpb.CostReportItem) float64 {
+	out := .0
+	for _, item := range items {
+		out += item.GetPerDeviceFigure()
+	}
+	return out
+}

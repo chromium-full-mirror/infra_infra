@@ -77,30 +77,30 @@ func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 // CalculateCostForOsResource calculates the cost for an OS resource.
 //
 // So far, only ChromeOS devices are supported.
-func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string, forgiveMissingEntries bool) (*fleetcostpb.CostResult, error) {
+func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string, forgiveMissingEntries bool) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
 	logging.Infof(ctx, "getting device data for hostname %q with forgive=%b", hostname, forgiveMissingEntries)
 	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
 	if err != nil {
 		err := errors.Annotate(err, "calculate cost for os resource %q", hostname).Err()
 		logging.Errorf(ctx, "%s\n", err)
-		return nil, err
+		return nil, nil, err
 	}
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
 		logging.Infof(ctx, "detected that %q is a ChromeOS device", hostname)
-		resp, err := calculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData(), forgiveMissingEntries)
-		return resp, errors.Annotate(err, "calculate ChromeOS device cost").Err()
+		resp, rep, err := calculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData(), forgiveMissingEntries)
+		return resp, rep, errors.Annotate(err, "calculate ChromeOS device cost").Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
-		return nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
+		return nil, nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
-		return nil, errors.Reason("%s is an scheduling unit, support is not implemented yet.", hostname).Err()
+		return nil, nil, errors.Reason("%s is an scheduling unit, support is not implemented yet.", hostname).Err()
 	default:
-		return nil, errors.Reason("Cannot find a valid resource type for %s: %s", hostname, res.GetResourceType()).Err()
+		return nil, nil, errors.Reason("Cannot find a valid resource type for %s: %s", hostname, res.GetResourceType()).Err()
 	}
 }
 
 // calculateCostForSingleChromeosDut calculates the cost of a ChromeOS DUT.
-func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData, forgiveMissingEntries bool) (*fleetcostpb.CostResult, error) {
+func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClient, data *ufspb.ChromeOSDeviceData, forgiveMissingEntries bool) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
 	logging.Infof(ctx, "calculating cost for %q with forgive=%v", data.GetMachine().GetName(), forgiveMissingEntries)
 	dut := data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut()
 	peripherals := dut.GetPeripherals()
@@ -109,38 +109,52 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	// TODO: add a map that convert UFS location to cost indicator location. Hardcode to all for now.
 	location := fleetcostpb.Location_LOCATION_ALL
 	if dut == nil {
-		return nil, utils.MaybeErrorf(ctx, errors.Reason("%s is not a valid ChromeOS DUT", data.GetLabConfig().GetHostname()).Err())
+		return nil, nil, utils.MaybeErrorf(ctx, errors.Reason("%s is not a valid ChromeOS DUT", data.GetLabConfig().GetHostname()).Err())
 	}
 
 	m := data.GetMachine().GetChromeosMachine()
 
 	sharedCost, err := getSharedCost(ctx, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: shared").Err()
+		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: shared").Err()
 	}
 
 	dedicatedCost, err := getDUTDedicatedHardwareCost(ctx, m, servo, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: dedicated").Err()
+		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: dedicated").Err()
 	}
 	cloudCost, err := getCloudCost(ctx, location, forgiveMissingEntries)
 	if err != nil {
-		return nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: cloud").Err()
+		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: cloud").Err()
 	}
 
 	// Cost for labstation, which is special
 	if servo.GetServoHostname() != "" {
 		labstationCost, err := getLabstationHardwareCost(ctx, ic, servo.GetServoHostname(), location, forgiveMissingEntries)
 		if err != nil {
-			return nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
+			return nil, nil, utils.MaybeErrorf(ctx, errors.Annotate(err, "calculate cost for single chromeos dut").Err())
 		}
-		sharedCost += labstationCost
+		sharedCost = append(sharedCost, utils.MakeCostReportItem("labstation", labstationCost, labstationCost, "shared"))
 	}
+
+	out := utils.MakeCostReportExpr("total", "add")
+	utils.AppendCostReportItem(out, dedicatedCost...)
+	utils.AppendCostReportItem(out, sharedCost...)
+	utils.AppendCostReportItem(out, cloudCost)
+
+	dedicatedCostTotal := utils.SumCostReportItem(dedicatedCost...)
+	sharedCostTotal := utils.SumCostReportItem(sharedCost...)
+	cloudCostTotal := utils.SumCostReportItem(cloudCost)
+	total := dedicatedCostTotal + sharedCostTotal + cloudCostTotal
+
 	return &fleetcostpb.CostResult{
-		DedicatedCost:    dedicatedCost,
-		SharedCost:       sharedCost,
-		CloudServiceCost: cloudCost,
-	}, nil
+			DedicatedCost:    dedicatedCostTotal,
+			SharedCost:       sharedCostTotal,
+			CloudServiceCost: cloudCostTotal,
+		}, &fleetcostpb.CostReport{
+			Total: total,
+			Expr:  out,
+		}, nil
 }
 
 // getLabstationHardwareCost gets the hardware cost of a labstation
@@ -210,8 +224,8 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 // - quota-faft-rack-setup                 rack-setup
 // - quota-faft-phase-deployments          phase-deployments
 // - quota-faft-annual-maintenance         annual-maintenance
-func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
-	sharedCost := 0.0
+func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) ([]*fleetcostpb.CostReportItem, error) {
+	var sharedCost []*fleetcostpb.CostReportItem
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "server acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
@@ -221,9 +235,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("server acquisition", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "server maintenance",
@@ -234,9 +248,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("server maintenance", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "network infra acquisition",
@@ -247,9 +261,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("network infra acquisition", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "network infra maintenance",
@@ -260,9 +274,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("network infra maintenance", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "quota faft opex",
@@ -273,9 +287,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("quota faft opex", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "connectivity and misc testbeds",
@@ -286,9 +300,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("connectivity and misc testbeds", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "control network racks",
@@ -299,9 +313,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("control network racks", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "rack setup",
@@ -312,9 +326,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("rack setup", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "phase deployments",
@@ -325,9 +339,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("phase deployments", v, v, "shared"))
 
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "annual maintenance",
@@ -338,17 +352,17 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	sharedCost += v
+	sharedCost = append(sharedCost, utils.MakeCostReportItem("annual maintenance", v, v, "shared"))
 
 	return sharedCost, nil
 }
 
 // getDUTDedicatedHardwareCost gets the acquisition cost of a DUT and servo, which are the only two
 // resources that are DUT-specific
-func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
-	out := 0.0
+func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool) ([]*fleetcostpb.CostReportItem, error) {
+	var out []*fleetcostpb.CostReportItem
 	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "DUT cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
@@ -358,13 +372,13 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0, errors.Annotate(err, "dut hardware cost for %q %q %v", m.GetBuildTarget(), location.String(), forgiveMissingEntries).Err()
+		return nil, errors.Annotate(err, "dut hardware cost for %q %q %v", m.GetBuildTarget(), location.String(), forgiveMissingEntries).Err()
 	}
 	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
 	if err != nil {
-		return 0.0, errors.Annotate(err, "get shared cost").Err()
+		return nil, errors.Annotate(err, "get shared cost").Err()
 	}
-	out += v
+	out = append(out, utils.MakeCostReportItem("dut cost", v, v, "dedicated"))
 	if servo != nil {
 		servoCost, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 			ErrorHint:     "servo cost",
@@ -376,15 +390,15 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		}, true, forgiveMissingEntries)
 
 		if err != nil {
-			return 0, errors.Annotate(err, "servo cost for %q %q %v", servo.GetServoType(), location.String(), forgiveMissingEntries).Err()
+			return nil, errors.Annotate(err, "servo cost for %q %q %v", servo.GetServoType(), location.String(), forgiveMissingEntries).Err()
 		}
 
-		out += servoCost
+		out = append(out, utils.MakeCostReportItem("servo cost", servoCost, servoCost, "dedicated"))
 	}
 	return out, nil
 }
 
-func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (float64, error) {
+func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) (*fleetcostpb.CostReportItem, error) {
 	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "annual cloud cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
@@ -394,11 +408,11 @@ func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMis
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	v, err := normalizeToHourlyCost(ent, forgiveMissingEntries)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return v, nil
+	return utils.MakeCostReportItem("cloud", v, v, "cloud"), nil
 }

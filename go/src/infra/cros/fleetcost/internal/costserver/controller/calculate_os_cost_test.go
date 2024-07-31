@@ -71,7 +71,7 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 		panic(err)
 	}
 
-	resp, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true)
+	resp, _, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}

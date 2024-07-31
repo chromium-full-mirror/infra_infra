@@ -56,12 +56,15 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 	if f.fleetClient == nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Internal, errors.New("fleet client must exist"))
 	}
-	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname(), req.GetForgiveMissingEntries())
+	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname(), req.GetForgiveMissingEntries())
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}
 	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res); err != nil {
 		logging.Errorf(ctx, "%s\n", errors.Annotate(err, "caching get cost result").Err())
 	}
-	return &fleetcostAPI.GetCostResultResponse{Result: res}, nil
+	return &fleetcostAPI.GetCostResultResponse{
+		Result: res,
+		Report: rep,
+	}, nil
 }

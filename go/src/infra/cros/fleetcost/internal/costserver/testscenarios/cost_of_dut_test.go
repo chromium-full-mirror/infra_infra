@@ -46,11 +46,107 @@ func TestTotalCostOfDUT(t *testing.T) {
 	// All numbers are quoted in cost per hour
 	const hoursPerYear = 365 * 24
 
+	dedicatedCost := (dutCost + servoV4P1) / amortizationTimeYears / hoursPerYear
+	sharedCost := (rackNetworking + droneServer + rackSetup + labstationCost + usbHub) / amortizationTimeYears / hoursPerYear
+	cloudServiceCost := cloudCosts / hoursPerYear
+	totalCost := dedicatedCost + sharedCost + cloudServiceCost
 	expected := &fleetcostAPI.GetCostResultResponse{
 		Result: &fleetcostpb.CostResult{
-			DedicatedCost:    (dutCost + servoV4P1) / amortizationTimeYears / hoursPerYear,
-			SharedCost:       (rackNetworking + droneServer + rackSetup + labstationCost + usbHub) / amortizationTimeYears / hoursPerYear,
-			CloudServiceCost: cloudCosts / hoursPerYear,
+			DedicatedCost:    dedicatedCost,
+			SharedCost:       sharedCost,
+			CloudServiceCost: cloudServiceCost,
+		},
+		Report: &fleetcostpb.CostReport{
+			Total: totalCost,
+			Expr: &fleetcostpb.CostReportExpr{
+				Label: &fleetcostpb.CostReportLabel{Name: "total"},
+				Item: []*fleetcostpb.CostReportItem{
+					{
+						SubtotalName:    "dut cost",
+						RawFigure:       dutCost / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: dutCost / amortizationTimeYears / hoursPerYear,
+						Category:        "dedicated",
+					},
+					{
+						SubtotalName:    "servo cost",
+						RawFigure:       servoV4P1 / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: servoV4P1 / amortizationTimeYears / hoursPerYear,
+						Category:        "dedicated",
+					},
+					{
+						SubtotalName:    "server acquisition",
+						RawFigure:       droneServer / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: droneServer / amortizationTimeYears / hoursPerYear,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "server maintenance",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "network infra acquisition",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "network infra maintenance",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "quota faft opex",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "connectivity and misc testbeds",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "control network racks",
+						RawFigure:       rackNetworking / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: rackNetworking / amortizationTimeYears / hoursPerYear,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "rack setup",
+						RawFigure:       rackSetup / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: rackSetup / amortizationTimeYears / hoursPerYear,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "phase deployments",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "annual maintenance",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "labstation",
+						RawFigure:       (labstationCost + usbHub) / amortizationTimeYears / hoursPerYear,
+						PerDeviceFigure: (labstationCost + usbHub) / amortizationTimeYears / hoursPerYear,
+						Category:        "shared",
+					},
+					{
+						SubtotalName:    "cloud",
+						RawFigure:       cloudServiceCost,
+						PerDeviceFigure: cloudServiceCost,
+						Category:        "cloud",
+					},
+				},
+			},
 		},
 	}
 
