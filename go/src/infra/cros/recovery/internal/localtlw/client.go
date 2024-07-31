@@ -23,7 +23,9 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/rpm"
 	"infra/cros/recovery/internal/tls"
+	tlw_server "infra/cros/recovery/internal/tlw"
 	"infra/cros/recovery/tlw"
+	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -33,6 +35,9 @@ type UFSClient interface {
 	GetDeviceData(ctx context.Context, req *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (rsp *ufsAPI.GetDeviceDataResponse, err error)
 	// UpdateDeviceRecoveryData updates the labdata, dutdata, resource state, dut states for a DUT
 	UpdateDeviceRecoveryData(ctx context.Context, in *ufsAPI.UpdateDeviceRecoveryDataRequest, opts ...grpc.CallOption) (*ufsAPI.UpdateDeviceRecoveryDataResponse, error)
+	GetMachineLSE(ctx context.Context, req *ufsAPI.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error)
+	GetMachine(ctx context.Context, req *ufsAPI.GetMachineRequest, opts ...grpc.CallOption) (*ufsModels.Machine, error)
+	ListCachingServices(ctx context.Context, req *ufsAPI.ListCachingServicesRequest, opts ...grpc.CallOption) (*ufsAPI.ListCachingServicesResponse, error)
 }
 
 // CSAClient is a client that knows how to respond to the GetStableVersion RPC call.
@@ -57,6 +62,8 @@ const (
 type tlwClient struct {
 	csaClient   CSAClient
 	ufsClient   UFSClient
+	tlwServer   tlw_server.Server
+	tlsServer   tls.Server
 	sshProvider ssh.SSHProvider
 	// Cache received devices from inventory
 	devices   map[string]*tlw.Dut
@@ -75,6 +82,14 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "new tlw client").Err()
 	}
+	tlwServer, err := tlw_server.New(ufs)
+	if err != nil {
+		return nil, errors.Annotate(err, "new tlw client").Err()
+	}
+	tlsServer, err := tls.New(tlwServer)
+	if err != nil {
+		return nil, errors.Annotate(err, "new tlw client").Err()
+	}
 	isCloudBot := env.IsCloudBot()
 	if isCloudBot {
 		if err = config.Load(env.DefaultSSHConfigPathOnCloudBot); err != nil {
@@ -90,6 +105,8 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 		hostToParents: make(map[string]string),
 		versionMap:    make(map[string]*tlw.VersionResponse),
 		isCloudBot:    isCloudBot,
+		tlwServer:     tlwServer,
+		tlsServer:     tlsServer,
 	}
 	return c, nil
 }
@@ -327,13 +344,12 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 // GetCacheUrl provides URL to download requested path to file.
 // URL will use to download image to USB-drive and provisioning.
 func (c *tlwClient) GetCacheUrl(ctx context.Context, dutName, filePath string) (string, error) {
-	// TODO(otabek@): Add logic to understand local file and just return it back.
-	bt, err := tls.NewBackgroundTLS()
+	url, err := c.tlsServer.CacheForDut(ctx, filePath, dutName)
 	if err != nil {
 		return "", errors.Annotate(err, "get cache URL").Err()
 	}
-	defer func() { _ = bt.Close() }()
-	return bt.CacheForDut(ctx, filePath, dutName)
+	log.Debugf(ctx, "Get cache URL: %s", url)
+	return url, nil
 }
 
 // Provision triggers provisioning of the device.
@@ -348,13 +364,9 @@ func (c *tlwClient) Provision(ctx context.Context, req *tlw.ProvisionRequest) er
 		return errors.Reason("provision: system image path is not specified").Err()
 	}
 	log.Debugf(ctx, "Started provisioning by TLS: %s", req)
-	bt, err := tls.NewBackgroundTLS()
-	if err != nil {
-		return errors.Annotate(err, "tls provision").Err()
-	}
-	defer func() { _ = bt.Close() }()
-	if err := bt.Provision(ctx, req); err != nil {
+	if err := c.tlsServer.Provision(ctx, c.sshProvider, req); err != nil {
 		return errors.Annotate(err, "provision").Err()
 	}
+	log.Debugf(ctx, "Finished provisioning by TLS!")
 	return nil
 }
