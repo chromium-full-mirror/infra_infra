@@ -134,12 +134,30 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	}
 	defer func() { session.Close() }()
 
-	// Read the input path on the local machine and create a
-	// compressed tar archive. Then write it to stdout. Here, the '-C'
-	// flag changes the working directory to the location where the
-	// input exists. This ensures that the archive includes paths only
-	// relative to this directory.
-	createTarCmd := exec.CommandContext(ctx, tarCmd, "-c", "--gzip", "-C", filepath.Dir(req.PathSource), filepath.Base(req.PathSource))
+	// If file is already compressed then don't run it through tar again as it can add
+	// a lot of extra time with little benefit, instead just cat its contents.
+	var createTarCmd *exec.Cmd
+	var remoteTarReadCmd string
+	if strings.HasSuffix(req.PathSource, ".gz") {
+		// Read the file contents to stdout.
+		createTarCmd = exec.CommandContext(ctx, "cat", req.PathSource)
+		// Cat the stdin pipe to the requested destination.
+		remoteTarReadCmd = fmt.Sprintf("cat > %q", req.PathDestination)
+	} else {
+		// Read the input path on the local machine and create a
+		// compressed tar archive. Then write it to stdout. Here, the '-C'
+		// flag changes the working directory to the location where the
+		// input exists. This ensures that the archive includes paths only
+		// relative to this directory.
+		createTarCmd = exec.CommandContext(ctx, tarCmd, "-c", "--gzip", "-C", filepath.Dir(req.PathSource), filepath.Base(req.PathSource))
+		// the tar-archive that was created above has been written to the
+		// stdout of the process on local machine. Now, we copy this to
+		// the stdin of the ssh session so that the tar extraction process
+		// on the remote machine can read the archive off its stdin and
+		// extract it to the file system on the remote machine.
+		remoteTarReadCmd = fmt.Sprintf("%s -x --gzip -C %s", tarCmd, req.PathDestination)
+	}
+
 	createTarPipe, err := createTarCmd.StdoutPipe()
 	if err != nil {
 		return errors.Annotate(err, "copy to helper: could not obtain the stdout pipe").Err()
@@ -154,11 +172,6 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	}
 	uploadErrors := make(chan error)
 	var wg sync.WaitGroup
-	// the tar-archive that was created above has been written to the
-	// stdout of the process on local machine. Now, we copy this to
-	// the stdin of the ssh session so that the tar extraction process
-	// on the remote machine can read the archive off its stdin and
-	// extract it to the file system on the remote machine.
 	wg.Add(1)
 	go func() {
 		defer func() { wg.Done() }()
@@ -168,11 +181,6 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 		}
 	}()
 
-	// Read the stdin on the remote device and extract to the
-	// destination path. The '-C' flag changes the current directory
-	// to the destination path, and ensures that the output is placed
-	// there.
-	remoteTarReadCmd := fmt.Sprintf("%s -x --gzip -C %s", tarCmd, req.PathDestination)
 	wg.Add(1)
 	go func() {
 		defer func() { wg.Done() }()
