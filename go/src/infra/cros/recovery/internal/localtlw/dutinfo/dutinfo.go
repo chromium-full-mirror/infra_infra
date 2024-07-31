@@ -499,15 +499,24 @@ func createDUTAudioLatencyToolkit(p *ufslab.Peripherals, ds *ufslab.DutState) *t
 }
 
 func createDUTDolos(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Dolos {
-	dolos := p.GetDolos()
-	return &tlw.Dolos{
-		Hostname:        dolos.GetHostname(),
-		SerialCable:     dolos.GetSerialCable(),
-		SerialUsb:       dolos.GetSerialUsb(),
-		FwVersion:       dolos.GetFwVersion(),
-		HwMajorRevision: convertDolosHWMajorRevision(dolos.GetHwMajorRevision()),
+	pDolos := p.GetDolos()
+	dolosData := &tlw.Dolos{
+		Hostname:        pDolos.GetHostname(),
+		SerialCable:     pDolos.GetSerialCable(),
+		SerialUsb:       pDolos.GetSerialUsb(),
+		FwVersion:       pDolos.GetFwVersion(),
+		HwMajorRevision: convertDolosHWMajorRevision(pDolos.GetHwMajorRevision()),
 		State:           convertDolosState(ds.GetDolosState()),
 	}
+
+	if rpm := pDolos.GetRpm(); rpm != nil {
+		dolosData.RpmOutlet = &tlw.RPMOutlet{
+			Hostname: rpm.GetPowerunitName(),
+			Outlet:   rpm.GetPowerunitOutlet(),
+		}
+	}
+
+	return dolosData
 }
 
 func createDUTAMTManager(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.AMTManager {

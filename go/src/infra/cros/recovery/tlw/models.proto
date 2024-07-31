@@ -757,6 +757,9 @@ message Dolos {
 
   // State of the device.
   State state = 6;
+
+  // RPMOutlet of the Dolos setup.
+  RPMOutlet rpm_outlet = 7;
 }
 
 // AudioLatencyToolkit holds info about Teensy audio latency toolkit on the DUT

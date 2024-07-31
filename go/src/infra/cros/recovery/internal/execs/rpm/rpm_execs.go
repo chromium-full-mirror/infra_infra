@@ -166,6 +166,16 @@ func deviceHostnameAndRPMOutlet(info *execs.ExecInfo, deviceType string) (string
 			return "", nil, errors.Reason("device hostname and rpmoutlet for %q: not specified", deviceType).Err()
 		}
 		return c.GetName(), c.GetRPMOutlet(), nil
+	case "dolos":
+		dolos := info.GetChromeos().GetDolos()
+		if dolos == nil {
+			return "", nil, errors.Reason("no dolos information found %q:", deviceType).Err()
+		}
+		if dolos.GetRpmOutlet() == nil {
+			return "", nil, errors.Reason("device hostname and rpmoutlet for %q: not specified", deviceType).Err()
+		}
+		// Return serial cable number as it is the only unique identifier for dolos there is no hostname.
+		return dolos.GetSerialCable(), dolos.GetRpmOutlet(), nil
 	default:
 		return "", nil, errors.Reason("device hostname and rpmoutlet: %q incorrect device type", deviceType).Err()
 	}
