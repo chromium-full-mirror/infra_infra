@@ -13,13 +13,16 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/components/btpeer"
 	"infra/cros/recovery/internal/components/btpeer/image"
 	"infra/cros/recovery/internal/components/cache"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
+	"infra/cros/recovery/tlw"
 )
 
 const (
@@ -37,7 +40,8 @@ const (
 	rootBLabel = "ROOT_B"
 
 	// The GCS bucket and folder which all btpeer images are stored under.
-	imageBaseGCSPath = "gs://chromeos-connectivity-test-artifacts/btpeer/raspios-cros-btpeer/"
+	imageBaseGCSPath     = "gs://chromeos-connectivity-test-artifacts/btpeer/raspios-cros-btpeer/"
+	localImagePathPrefix = "file://"
 )
 
 // enableInitrdExec enables initrd on the btpeer.
@@ -292,9 +296,7 @@ func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 		)
 		externalDownloadURL = expectedImageConfig.GetPath()
 	}
-	if !strings.HasPrefix(externalDownloadURL, imageBaseGCSPath) {
-		return errors.Reason("download image: image_path expected to be located in GCS under %q, got %q", imageBaseGCSPath, externalDownloadURL).Err()
-	}
+
 	var xzCompression bool
 	downloadDst := localOSImageStorePath
 	if strings.HasSuffix(externalDownloadURL, ".img.xz") {
@@ -307,13 +309,34 @@ func downloadImageExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("download image: image %q not identified as having xz or gz compression", externalDownloadURL).Err()
 	}
 
-	// Download compressed image through cache server.
-	cacheDownloadURL, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, externalDownloadURL)
-	if err != nil {
-		return errors.Annotate(err, "failed to get download URL from cache server for file path %q", externalDownloadURL).Err()
-	}
-	if _, err := cache.CurlFile(ctx, runner, cacheDownloadURL, downloadDst, downloadTimeout); err != nil {
-		return errors.Annotate(err, "failed to download image %q to btpeer at %q", externalDownloadURL, downloadDst).Err()
+	switch {
+	case strings.HasPrefix(externalDownloadURL, localImagePathPrefix):
+		log.Infof(ctx, "Using image from local system, path: %q", externalDownloadURL)
+		if !dev.IsActive(ctx) {
+			return errors.Reason("download image: can only use local images when running in dev mode").Err()
+		}
+		// Local file, copy it to the device.
+		req := &tlw.CopyRequest{
+			PathSource:      strings.TrimPrefix(externalDownloadURL, localImagePathPrefix),
+			Resource:        localproxy.BuildAddr(info.GetActiveResource()),
+			PathDestination: downloadDst,
+		}
+		if err := info.GetAccess().CopyFileTo(ctx, req); err != nil {
+			return errors.Annotate(err, "download image: failed to copy local image to device").Err()
+		}
+	case strings.HasPrefix(externalDownloadURL, imageBaseGCSPath):
+		log.Infof(ctx, "Using image from GCS bucket, path: %q", externalDownloadURL)
+		// Download compressed image through cache server.
+		cacheDownloadURL, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, externalDownloadURL)
+		if err != nil {
+			return errors.Annotate(err, "failed to get download URL from cache server for file path %q", externalDownloadURL).Err()
+		}
+		if _, err := cache.CurlFile(ctx, runner, cacheDownloadURL, downloadDst, downloadTimeout); err != nil {
+			return errors.Annotate(err, "failed to download image %q to btpeer at %q", externalDownloadURL, downloadDst).Err()
+		}
+	default:
+		return errors.Reason("download image: image_path expected to be located in: %q or %q, got %q",
+			imageBaseGCSPath, localImagePathPrefix, externalDownloadURL).Err()
 	}
 
 	// Decompress image in-place (removes compression file extension).
