@@ -70,7 +70,8 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 
 	// Set up Scheduke client.
 	var sc *http.Client
-	sc, err = SilentLoginHTTPClientForAudience(ctx, baseURL)
+	schedukeAuthOpts := withIDTokenAudience(baseURL, authOpts)
+	sc, err = SilentLoginHTTPClient(ctx, schedukeAuthOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Scheduke HTTP client").Err()
 	}
@@ -95,10 +96,10 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 // luciexe code running on a Buildbucket build.
 func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeClient, error) {
 	// Set up Gerrit client.
-	gc, err := SilentLoginHTTPClient(ctx, chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Method: auth.AutoSelectMethod,
+	gerritAuthOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
 		Scopes: GerritAuthScopes,
-	}))
+	})
+	gc, err := SilentLoginHTTPClient(ctx, gerritAuthOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Gerrit client").Err()
 	}
@@ -110,7 +111,11 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 	}
 
 	// Set up Scheduke client.
-	sc, err := SilentLoginHTTPClientForAudience(ctx, baseURL)
+	schedukeAuthOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
+		UseIDTokens: true,
+		Audience:    baseURL,
+	})
+	sc, err := SilentLoginHTTPClient(ctx, schedukeAuthOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Scheduke HTTP client").Err()
 	}
@@ -127,7 +132,8 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 // GCP environment.
 func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient, error) {
 	// Set Up Gerrit client.
-	gc, err := GCPHTTPClient(ctx, luciauth.WithScopes(GerritAuthScopes...))
+	gerritRPCOpts := luciauth.WithScopes(GerritAuthScopes...)
+	gc, err := GCPHTTPClient(ctx, gerritRPCOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: seeting up Gerrit client").Err()
 	}
@@ -139,7 +145,8 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 	}
 
 	// Set up Scheduke client.
-	sc, err := GCPHTTPClientForAudience(ctx, baseURL)
+	schedukeRPCOpts := luciauth.WithIDTokenAudience(baseURL)
+	sc, err := GCPHTTPClient(ctx, schedukeRPCOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: setting up Scheduke HTTP client").Err()
 	}

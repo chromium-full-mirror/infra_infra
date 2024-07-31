@@ -16,7 +16,6 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	luciauth "go.chromium.org/luci/server/auth"
 )
 
@@ -94,6 +93,13 @@ func sendHTTPRequestWithRetries(c clientThatSendsRequests, req *http.Request, ba
 	return resp, nil
 }
 
+// withIDTokenAudience adds the given audience to the given auth options.
+func withIDTokenAudience(audience string, authOpts auth.Options) auth.Options {
+	authOpts.Audience = audience
+	authOpts.UseIDTokens = true
+	return authOpts
+}
+
 // SilentLoginHTTPClient initializes a silent-login HTTP client with the given
 // auth options. It is not compatible with code running in an App Engine
 // environment.
@@ -106,17 +112,6 @@ func SilentLoginHTTPClient(ctx context.Context, authOpts auth.Options) (*http.Cl
 	return c, nil
 }
 
-// SilentLoginHTTPClientForAudience initializes an HTTP client for use with the
-// given audience, by service accounts that can use SilentLogin. It is not
-// compatible with code running in an App Engine environment.
-func SilentLoginHTTPClientForAudience(ctx context.Context, audience string) (*http.Client, error) {
-	a := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		UseIDTokens: true,
-		Audience:    audience,
-	})
-	return SilentLoginHTTPClient(ctx, a)
-}
-
 // GCPHTTPClient initializes an HTTP client for use in a GCP environment.
 func GCPHTTPClient(ctx context.Context, rpcOpts ...luciauth.RPCOption) (*http.Client, error) {
 	t, err := luciauth.GetRPCTransport(ctx, luciauth.AsSelf, rpcOpts...)
@@ -124,11 +119,4 @@ func GCPHTTPClient(ctx context.Context, rpcOpts ...luciauth.RPCOption) (*http.Cl
 		return nil, errors.Annotate(err, "creating transport for GAE HTTP client").Err()
 	}
 	return &http.Client{Transport: t}, nil
-}
-
-// GCPHTTPClientForAudience initializes an HTTP client for use in a GCP
-// environment with the given audience.
-func GCPHTTPClientForAudience(ctx context.Context, audience string) (*http.Client, error) {
-	opts := luciauth.WithIDTokenAudience(audience)
-	return GCPHTTPClient(ctx, opts)
 }
