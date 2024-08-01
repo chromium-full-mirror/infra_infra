@@ -76,7 +76,7 @@ var (
 )
 
 type archiveServer struct {
-	gsClient       gsClient
+	gsClient       downloadClient
 	cacheServerURL string
 	httpClient     *http.Client
 }
@@ -214,7 +214,7 @@ func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotat
 	c.gsClient = client
 
 	go func() {
-		var oldClient gsClient
+		var oldClient downloadClient
 		t := time.NewTimer(rotationPeriod)
 		for {
 			select {
@@ -302,8 +302,9 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 
 // handleDownloadHEAD handles download HEAD request.
 // It writes file stat to ResponseWriter.
-// It returns gsObject which is used by handleDownloadGET to send file content.
-func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) (gsObject, metricData, error) {
+// It returns storageObject which is used by handleDownloadGET to send file
+// content.
+func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient downloadClient, br *byteRange, reqID string) (storageObject, metricData, error) {
 	objectName, err := parseURL(r.URL.Path)
 	if err != nil {
 		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
@@ -329,7 +330,7 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 
 // handleDownloadGET handles download GET request.
 // It writes file stat to ResponseWriter header, and content to body.
-func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient gsClient, br *byteRange, reqID string) metricData {
+func handleDownloadGET(ctx context.Context, w http.ResponseWriter, r *http.Request, gsClient downloadClient, br *byteRange, reqID string) metricData {
 	gsObject, md, err := handleDownloadHEAD(ctx, w, r, gsClient, br, reqID)
 	if err != nil {
 		return md
@@ -395,7 +396,7 @@ func convertCRC32CToString(i uint32) string {
 // ["", RPC, bucket, ...object-path].
 // Example: url = "/download/release/build/image.tar"
 // bucket = "release", objectPath = "build/image.tar"
-func parseURL(url string) (*gsObjectName, error) {
+func parseURL(url string) (*storageObjectName, error) {
 	fields := strings.Split(url, "/")
 	if len(fields) < 4 {
 		return nil, fmt.Errorf("the URL doesn't have all of RPC, bucket and object path")
@@ -407,7 +408,7 @@ func parseURL(url string) (*gsObjectName, error) {
 	if path == "" {
 		return nil, fmt.Errorf("object cannot be empty")
 	}
-	return &gsObjectName{bucket: fields[2], path: path}, nil
+	return &storageObjectName{bucket: fields[2], path: path}, nil
 }
 
 // parseRange parse range value and return range start, end bytes.

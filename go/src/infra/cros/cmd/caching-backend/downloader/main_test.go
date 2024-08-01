@@ -588,7 +588,7 @@ type fakeGSClient struct {
 	objects map[string]*fakeGSObject
 }
 
-func (c *fakeGSClient) getObject(name *gsObjectName) gsObject {
+func (c *fakeGSClient) getObject(name *storageObjectName) storageObject {
 	key := name.bucket + "/" + name.path
 	if _, ok := c.objects[key]; !ok {
 		c.objects[key] = &fakeGSObject{}
