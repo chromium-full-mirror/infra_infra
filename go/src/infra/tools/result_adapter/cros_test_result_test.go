@@ -66,6 +66,11 @@ func TestCrosTestResultConversions(t *testing.T) {
 	testResult := &artifactpb.TestResult{
 		Version: 1,
 		TestInvocation: &artifactpb.TestInvocation{
+			DutTopology: &labpb.DutTopology{
+				Id: &labpb.DutTopology_Id{
+					Value: "chromeos15-row4-rack5-host1",
+				},
+			},
 			PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
 				BuildInfo: &artifactpb.BuildInfo{
 					Name:            "hatch-cq/R106-15048.0.0",
@@ -538,7 +543,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("cbx", "false"),
-						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("hostname", "chromeos1-sinclair-callbox2-unit1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("is_cft_run", "True"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),

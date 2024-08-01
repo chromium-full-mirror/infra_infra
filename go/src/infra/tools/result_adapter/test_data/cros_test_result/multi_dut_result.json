@@ -1,5 +1,10 @@
 {
     "test_invocation": {
+        "dut_topology": {
+            "id": {
+                "value": "chromeos1-sinclair-callbox2-unit1"
+            }
+        },
         "primary_execution_info":{
             "build_info":{
                 "name":"hatch-cq/R106-15048.0.0",

@@ -210,6 +210,15 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 	tags = AppendTags(tags, "is_cft_run", "True")
 
 	if testInvocation != nil {
+		dutTopology := testInvocation.GetDutTopology()
+		if dutTopology != nil {
+			// Populates the hostname by the DUT topology ID which captures
+			// the correct ID of the scheduling unit for multi-dut testing.
+			// For single-dut testing, the DUT topology ID is the same as the
+			// primary DUT ID.
+			tags = AppendTags(tags, "hostname", dutTopology.GetId().GetValue())
+		}
+
 		// For Testhaus MVP parity.
 		// Refer to `_generate_resultdb_base_tags` in test_runner recipe:
 		// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:infra/recipes/recipes/test_platform/test_runner.py;l=472?q=test_platform%2Ftest_runner.py
@@ -232,7 +241,6 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 				if chromeOSInfo != nil {
 					tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
 					tags = AppendTags(tags, "phase", chromeOSInfo.GetPhase().String())
-					tags = AppendTags(tags, "hostname", dut.GetId().GetValue())
 				}
 
 				tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))

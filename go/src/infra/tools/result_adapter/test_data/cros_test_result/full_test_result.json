@@ -1,5 +1,10 @@
 {
     "test_invocation": {
+        "dut_topology": {
+            "id": {
+                "value": "chromeos15-row4-rack5-host1"
+            }
+        },
         "primary_execution_info":{
             "build_info":{
                 "name":"hatch-cq/R106-15048.0.0",
