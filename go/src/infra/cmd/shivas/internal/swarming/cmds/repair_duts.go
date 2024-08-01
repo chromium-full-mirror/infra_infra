@@ -100,7 +100,8 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	for _, host := range args {
 		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
 		if err != nil {
-			return errors.Annotate(err, "creating Scheduke client").Err()
+			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", host, err)
+			continue
 		}
 		taskURL, err := scheduleRepairBuilder(ctx, bc, sc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, c.bbBuilder, c.bbBucket, ns, sessionTag)
 		if err != nil {

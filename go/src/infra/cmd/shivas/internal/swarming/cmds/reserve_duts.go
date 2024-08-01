@@ -108,7 +108,8 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	for _, host := range args {
 		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
 		if err != nil {
-			return errors.Annotate(err, "creating Scheduke client").Err()
+			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", host, err)
+			continue
 		}
 		if url, _, err := c.scheduleReserveBuilder(ctx, bc, sc, e, host, ns); err != nil {
 			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
