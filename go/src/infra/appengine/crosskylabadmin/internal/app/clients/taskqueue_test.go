@@ -49,7 +49,7 @@ func TestSuccessfulPushLabstations(t *testing.T) {
 		qn := "repair-labstations"
 		tqt.CreateQueue(qn)
 		hosts := []string{"host1", "host2"}
-		err := PushRepairLabstations(ctx, hosts)
+		err := PushRepairLabstations(ctx, hosts, "my-pool2")
 		So(err, ShouldBeNil)
 		tasks := tqt.GetScheduledTasks()
 		t, ok := tasks[qn]
@@ -62,7 +62,7 @@ func TestSuccessfulPushLabstations(t *testing.T) {
 		sort.Strings(taskPaths)
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/labstation_repair/host1", "/internal/task/labstation_repair/host2"}
-		expectedParams := []string{"botID=host1", "botID=host2"}
+		expectedParams := []string{"botID=host1&swarmingPool=my-pool2", "botID=host2&swarmingPool=my-pool2"}
 		So(taskPaths, ShouldResemble, expectedPaths)
 		So(taskParams, ShouldResemble, expectedParams)
 	})
@@ -76,7 +76,7 @@ func TestSuccessfulPushAuditTasks(t *testing.T) {
 		tqt.CreateQueue(qn)
 		hosts := []string{"host1", "host2"}
 		actions := []string{"action1", "action2"}
-		err := PushAuditDUTs(ctx, hosts, actions, "Storage")
+		err := PushAuditDUTs(ctx, hosts, actions, "Storage", "my-pool")
 		So(err, ShouldBeNil)
 		tasks := tqt.GetScheduledTasks()
 		t, ok := tasks[qn]
@@ -89,7 +89,7 @@ func TestSuccessfulPushAuditTasks(t *testing.T) {
 		sort.Strings(taskPaths)
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/audit/host1/action1-action2", "/internal/task/audit/host2/action1-action2"}
-		expectedParams := []string{"actions=action1%2Caction2&botID=host1&taskname=Storage", "actions=action1%2Caction2&botID=host2&taskname=Storage"}
+		expectedParams := []string{"actions=action1%2Caction2&botID=host1&swarmingPool=my-pool&taskname=Storage", "actions=action1%2Caction2&botID=host2&swarmingPool=my-pool&taskname=Storage"}
 		So(taskPaths, ShouldResemble, expectedPaths)
 		So(taskParams, ShouldResemble, expectedParams)
 	})

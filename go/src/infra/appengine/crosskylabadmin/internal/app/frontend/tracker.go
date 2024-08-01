@@ -159,7 +159,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
 		botIDs := identifyBotsForAudit(ctx, bots, dutStates, req.Task)
 
-		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname)
+		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname, swarmingPool)
 		if err != nil {
 			logging.Infof(ctx, "failed push audit bots: %v", err)
 			return errors.Reason("failed to push audit bots").Err()
@@ -202,7 +202,8 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	// and rebooting labstations to ensure they're in good state.
 	dims := make(strpair.Map)
 	dims[clients.DutOSDimensionKey] = []string{"OS_TYPE_LABSTATION"}
-	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.GetSwarming().GetBotPool(), dims)
+	swarmingPool := cfg.GetSwarming().GetBotPool()
+	bots, err := sc.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to list alive idle labstation bots").Err()
 	}
@@ -211,7 +212,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	// Parse BOT id to schedule tasks for readability.
 	botIDs := identifyLabstationsForRepair(ctx, bots)
 
-	err = clients.PushRepairLabstations(ctx, botIDs)
+	err = clients.PushRepairLabstations(ctx, botIDs, swarmingPool)
 	if err != nil {
 		logging.Infof(ctx, "push repair labstations: %v", err)
 		return nil, errors.New("failed to push repair labstations")

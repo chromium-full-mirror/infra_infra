@@ -22,7 +22,7 @@ import (
 // RouteTaskParams deliberately excludes the context and randFloat, the entropy required.
 type RouteTaskParams struct {
 	taskType      string
-	botID         string
+	dutName       string
 	expectedState string
 	pools         []string
 }
@@ -40,20 +40,17 @@ func RouteTask(ctx context.Context, p RouteTaskParams, randFloat float64) (heuri
 	}
 	switch p.taskType {
 	case "repair":
-		return routeRepairTask(ctx, p.botID, p.expectedState, p.pools, randFloat)
+		return routeRepairTask(ctx, p.dutName, p.expectedState, p.pools, randFloat)
 	case "audit_rpm":
-		return routeAuditRPMTask(ctx, p.botID, randFloat)
+		return routeAuditRPMTask(ctx, p.dutName, randFloat)
 	}
 	return heuristics.ProdTaskType, fmt.Errorf("route task: unrecognized task name %q", p.taskType)
 }
 
 // routeAuditRPMTask routes an audit RPM task to a specific implementation: legacy, paris, or latest.
-func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (heuristics.TaskType, error) {
-	provider, reason := routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), heuristics.NormalizeBotNameToDeviceName(botID), randFloat)
-	logging.Infof(ctx, "Routing audit RPM task for bot %q with random input %f using provider %q for reason %d", botID, randFloat, provider, reason)
-	if reason == routing.NotImplemented {
-		return heuristics.ProdTaskType, errors.New("route audit rpm task: not yet implemented")
-	}
+func routeAuditRPMTask(ctx context.Context, dutName string, randFloat float64) (heuristics.TaskType, error) {
+	provider, reason := routeAuditTaskImpl(ctx, config.Get(ctx).GetParis().GetAuditRpm(), dutName, randFloat)
+	logging.Infof(ctx, "Routing audit RPM task for dut %q with random input %f using provider %q for reason %d", dutName, randFloat, provider, reason)
 	return provider, nil
 }
 
@@ -69,11 +66,11 @@ func routeAuditRPMTask(ctx context.Context, botID string, randFloat float64) (he
 // This argument is, by design, all the entropy that randFloat will need. Taking this as an argument allows
 // routeRepairTask itself to be deterministic because the caller is responsible for generating the random
 // value.
-func routeRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
+func routeRepairTask(ctx context.Context, dutName string, expectedState string, pools []string, randFloat float64) (heuristics.TaskType, error) {
 	if !(0.0 <= randFloat && randFloat <= 1.0) {
 		return heuristics.ProdTaskType, fmt.Errorf("Route repair task: randfloat %f is not in [0, 1]", randFloat)
 	}
-	isLabstation := heuristics.LooksLikeLabstation(botID)
+	isLabstation := heuristics.LooksLikeLabstation(dutName)
 	rolloutConfig, err := getRolloutConfig(ctx, "repair", isLabstation, expectedState)
 	if err != nil {
 		return heuristics.ProdTaskType, errors.Annotate(err, "route repair task").Err()
@@ -82,7 +79,7 @@ func routeRepairTask(ctx context.Context, botID string, expectedState string, po
 		ctx,
 		rolloutConfig,
 		&dutRoutingInfo{
-			hostname:   heuristics.NormalizeBotNameToDeviceName(botID),
+			hostname:   dutName,
 			labstation: isLabstation,
 			pools:      pools,
 		},

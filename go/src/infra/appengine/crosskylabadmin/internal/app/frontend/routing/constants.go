@@ -29,7 +29,6 @@ const (
 	NilArgument
 	NotALabstation
 	ErrorExtractingPermilleInfo
-	NotImplemented
 	InvalidRangeArgument
 	RepairOnlyField
 )

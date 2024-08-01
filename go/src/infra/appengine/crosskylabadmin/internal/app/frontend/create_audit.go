@@ -19,11 +19,11 @@ import (
 )
 
 // CreateAuditTask kicks off an audit job.
-func CreateAuditTask(ctx context.Context, botID, pool, taskname, actions string, randFloat float64) (string, error) {
+func CreateAuditTask(ctx context.Context, dutName, pool, taskname, actions string, randFloat float64) (string, error) {
 	// The actions field is a little bit tricky and consists of a comma-delimited list of actions.
 	// We're also using Paris in a slightly different way than legacy.
 	// Each audit action will correspond to one paris job, always.
-	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q taskname %q", botID, randFloat, actions, taskname)
+	logging.Infof(ctx, "Creating audit task for %q with random input %f and actions %q taskname %q", dutName, randFloat, actions, taskname)
 	tn, err := buildbucket.NormalizeTaskName(taskname)
 	if err != nil {
 		logging.Errorf(ctx, "error when normalizing task name: %q", err)
@@ -39,13 +39,13 @@ func CreateAuditTask(ctx context.Context, botID, pool, taskname, actions string,
 	bbURL, cErr := createBuildbucketTask(ctx, sc, createBuildbucketTaskRequest{
 		taskName: tn,
 		taskType: buildbucket.CIPDProd,
-		botID:    botID,
+		dutName:  dutName,
 	})
 	if cErr != nil {
 		return "", errors.Annotate(cErr, "create audit task").Err()
 	}
 
-	logging.Infof(ctx, "Successfully launched audit task %q for bot %q", bbURL, botID)
+	logging.Infof(ctx, "Successfully launched audit task %q for dut %q", bbURL, dutName)
 	return bbURL, nil
 }
 

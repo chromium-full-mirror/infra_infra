@@ -1,26 +1,20 @@
-// Copyright 2018 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package config
 
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/server/router"
+
+	"infra/libs/skylab/common/heuristics"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // unique type to prevent assignment.
@@ -65,4 +59,20 @@ func Middleware(c *router.Context, next router.Handler) {
 // Use installs cfg into c.
 func Use(c context.Context, cfg *Config) context.Context {
 	return context.WithValue(c, contextKey, cfg)
+}
+
+// BotIDToDUTName converts botID to DUT-name populated on swarming.
+func (x *Swarming_PoolCfg) BotIDToDUTName(botId string) string {
+	if x != nil && x.BotPrefix != "" {
+		return strings.TrimPrefix(botId, x.BotPrefix)
+	}
+	return heuristics.NormalizeBotNameToDeviceName(botId)
+}
+
+// UFSCtxNamespace provides namespace value to connect with UFS for device in particular swarming-pool.
+func (x *Swarming_PoolCfg) UFSCtxNamespace() string {
+	if x != nil && x.GetUfsNamespace() != "" {
+		return x.GetUfsNamespace()
+	}
+	return ufsUtil.OSNamespace
 }

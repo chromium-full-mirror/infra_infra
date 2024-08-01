@@ -22,8 +22,8 @@ const auditBotsQueue = "audit-bots"
 
 // PushRepairLabstations pushes BOT ids to taskqueue repairLabstationQueue for
 // upcoming repair jobs.
-func PushRepairLabstations(ctx context.Context, botIDs []string) error {
-	return pushDUTs(ctx, repairLabstationQueue, createTasks(botIDs, "", "", labstationRepairTask))
+func PushRepairLabstations(ctx context.Context, botIDs []string, swarmingPool string) error {
+	return pushDUTs(ctx, repairLabstationQueue, createTasks(botIDs, "", swarmingPool, labstationRepairTask))
 }
 
 // PushRepairDUTs pushes BOT ids to taskqueue repairBotsQueue for upcoming repair
@@ -33,7 +33,7 @@ func PushRepairDUTs(ctx context.Context, botIDs []string, expectedState string, 
 }
 
 // PushAuditDUTs pushes BOT ids to taskqueue auditBotsQueue for upcoming audit jobs.
-func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname string) error {
+func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname, swarmingPool string) error {
 	actionsCSV := strings.Join(actions, ",")
 	actionsStr := strings.Join(actions, "-")
 	tasks := make([]*tq.Task, 0, len(botIDs))
@@ -42,7 +42,7 @@ func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname strin
 			logging.Infof(ctx, fmt.Sprintf("Skipping audit for satlab device %q", id))
 			continue
 		}
-		tasks = append(tasks, crosAuditTask(id, taskname, actionsCSV, actionsStr))
+		tasks = append(tasks, crosAuditTask(id, taskname, actionsCSV, actionsStr, swarmingPool))
 	}
 	return pushDUTs(ctx, auditBotsQueue, tasks)
 }
@@ -67,17 +67,19 @@ func crosRepairTask(botID string, expectedState string, swarmingPool string) *tq
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/cros_repair/%s", botID), values)
 }
 
-func labstationRepairTask(botID, expectedState string, pool string) *tq.Task {
+func labstationRepairTask(botID, expectedState string, swarmingPool string) *tq.Task {
 	values := url.Values{}
 	values.Set("botID", botID)
+	values.Set("swarmingPool", swarmingPool)
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/labstation_repair/%s", botID), values)
 }
 
-func crosAuditTask(botID, taskname, actionsCSV, actionsStr string) *tq.Task {
+func crosAuditTask(botID, taskname, actionsCSV, actionsStr, swarmingPool string) *tq.Task {
 	values := url.Values{}
 	values.Set("botID", botID)
 	values.Set("taskname", taskname)
 	values.Set("actions", actionsCSV)
+	values.Set("swarmingPool", swarmingPool)
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/audit/%s/%s", botID, actionsStr), values)
 }
 

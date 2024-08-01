@@ -19,7 +19,6 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/site"
 	shivasUtils "infra/cmd/shivas/utils"
-	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/inventory"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -87,16 +86,12 @@ type GetPoolsClient interface {
 }
 
 // getPoolsForGenericDevice gets the pools for the generic device.
-func getPoolsForGenericDevice(ctx context.Context, client Client, botID string, namespace string) ([]string, error) {
-	if namespace == "" {
-		return nil, errors.Reason(`get pools for generic device %q: namespace cannot be ""`, namespace).Err()
-	}
-	ctx = shivasUtils.SetupContext(ctx, namespace)
+func getPoolsForGenericDevice(ctx context.Context, client Client, hostname string) ([]string, error) {
 	res, err := client.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
-		Hostname: heuristics.NormalizeBotNameToDeviceName(botID),
+		Hostname: hostname,
 	})
 	if err != nil {
-		return nil, errors.Annotate(err, "get pools for generic device %q", botID).Err()
+		return nil, errors.Annotate(err, "get pools for generic device %q", hostname).Err()
 	}
 	switch res.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
@@ -112,30 +107,21 @@ func getPoolsForGenericDevice(ctx context.Context, client Client, botID string, 
 		// We have a labstation DUT.
 		return d.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), nil
 	}
-	return nil, errors.Reason("get pools for generic device %q: unsupported device type %q", botID, res.GetResourceType().String()).Err()
+	return nil, errors.Reason("get pools for generic device %q: unsupported device type %q", hostname, res.GetResourceType().String()).Err()
 }
 
 // GetPools gets the pools associated with a particular bot or dut.
 // UFSClient may be nil.
-func GetPools(ctx context.Context, client Client, botID string) ([]string, error) {
+func GetPools(ctx context.Context, client Client, hostname string) ([]string, error) {
 	if client == nil {
 		return nil, errors.Reason("get pools: client cannot be nil").Err()
 	}
-	// Namespace Anyone who call it need to set namespase, if not then we will use default os.
-	namespace := ufsUtil.OSNamespace
-	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
-		// we found a namespace already set in the context, so should just use that
-		if ns, ok := existingMetadata[ufsUtil.Namespace]; ok && len(ns) != 0 {
-			namespace = ns[0]
-		}
-	}
-	logging.Infof(ctx, "Using namespace %q for %q", namespace, botID)
-	pools, err := getPoolsForGenericDevice(ctx, client, botID, namespace)
+	pools, err := getPoolsForGenericDevice(ctx, client, hostname)
 	if err != nil {
-		logging.Infof(ctx, "Encountered error for bot %q and namespace %q: %s", botID, namespace, err)
+		logging.Infof(ctx, "Encountered error for bot %q: %s", hostname, err)
 		return nil, err
 	}
-	logging.Infof(ctx, "Successfully got pools for generic device %q in namespace %q", botID, namespace)
+	logging.Infof(ctx, "Successfully got pools for generic device %q", hostname)
 	return pools, err
 }
 

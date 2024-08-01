@@ -129,14 +129,14 @@ func GetPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
-func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
-	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
+func CreateRepairTask(ctx context.Context, dutName string, expectedState string, pools []string, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
+	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", dutName, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
 	taskType, err := RouteTask(
 		ctx,
 		RouteTaskParams{
 			taskType:      "repair",
-			botID:         botID,
+			dutName:       dutName,
 			expectedState: expectedState,
 			pools:         pools,
 		},
@@ -152,21 +152,20 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 	}
 
 	r := createBuildbucketTaskRequest{
-		taskName: buildbucket.Recovery,
-		taskType: cipdVersion,
-		// Trim the bot prefix when it is set in the PoolCfg for a given swarming pool.
-		botID:         strings.TrimPrefix(botID, poolCfg.GetBotPrefix()),
+		taskName:      buildbucket.Recovery,
+		taskType:      cipdVersion,
+		dutName:       dutName,
 		expectedState: expectedState,
 		builderBucket: poolCfg.GetBuilderBucket(),
 		botPrefix:     poolCfg.GetBotPrefix(),
-		ufsNamespace:  poolCfg.GetUfsNamespace(),
+		ufsNamespace:  poolCfg.UFSCtxNamespace(),
 	}
 
 	karteC, err := createKarteClient(ctx)
 	if err != nil {
 		logging.Infof(ctx, "Fail to create karte client, skip stats checking")
 	} else {
-		r.taskName = findProperRecoveryTask(ctx, expectedState, heuristics.NormalizeBotNameToDeviceName(r.botID), karteC)
+		r.taskName = findProperRecoveryTask(ctx, expectedState, dutName, karteC)
 	}
 	sc, err := schedulers.NewSchedukeClientForAutomation(ctx, pools[0])
 	if err != nil {
@@ -241,10 +240,9 @@ func routeRepairTaskImpl(ctx context.Context, r *config.RolloutConfig, info *dut
 // createBuildbucketTaskRequest consists of the parameters needed to schedule a buildbucket repair task.
 type createBuildbucketTaskRequest struct {
 	// taskName is the name of the task, e.g. taskname.Recovery
-	taskName buildbucket.TaskName
-	taskType buildbucket.CIPDVersion
-	// botID is the ID of the bot, for example, "crossk-chromeos...".
-	botID         string
+	taskName      buildbucket.TaskName
+	taskType      buildbucket.CIPDVersion
+	dutName       string
 	expectedState string
 	// Build bucket to be used to schedule swarming task
 	builderBucket string
@@ -267,7 +265,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 	if err := params.taskType.Validate(); err != nil {
 		return "", errors.Annotate(err, "create buildbucket repair task: invalid task type %v", params.taskType).Err()
 	}
-	logging.Infof(ctx, "Using new repair flow for bot %q with expected state %q", params.botID, params.expectedState)
+	logging.Infof(ctx, "Using new repair flow for dut %q with expected state %q", params.dutName, params.expectedState)
 	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 	if err != nil {
 		return "", errors.Annotate(err, "failed to get RPC transport").Err()
@@ -281,7 +279,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	p := &buildbucket.Params{
-		UnitName:    heuristics.NormalizeBotNameToDeviceName(params.botID),
+		UnitName:    params.dutName,
 		TaskName:    params.taskName.String(),
 		BuilderName: buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType),
 		// Set the build bucket information to the swarming task
