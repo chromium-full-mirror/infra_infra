@@ -87,6 +87,12 @@ message CostReportItem {
     string subtotal_name = 1;
     double raw_figure = 2;
     double per_device_figure = 3;
+    // indicator name is the friendly name of the indicator used to
+    // construct a cost report item.
+    //
+    // E.g.
+    //  "type=INDICATOR_TYPE_CLOUD board= model= sku= loc="
+    string indicator_name = 5;
     // categories are:
     // - "dedicated"
     // - "shared"
