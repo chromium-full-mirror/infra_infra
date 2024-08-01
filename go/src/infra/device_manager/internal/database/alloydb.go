@@ -17,12 +17,6 @@ import (
 	"infra/device_manager/internal/config"
 )
 
-const (
-	connMaxLifetime = time.Minute
-	maxIdleConns    = 50
-	maxOpenConns    = 50
-)
-
 type DatabaseConfig struct {
 	DBHost string
 	DBPort string
@@ -31,6 +25,11 @@ type DatabaseConfig struct {
 
 	// Not the actual password but just the secret string used by SecretStore.
 	DBPasswordSecret string
+
+	// Database connection pool configs.
+	ConnMaxLifetime time.Duration
+	MaxIdleConns    int
+	MaxOpenConns    int
 }
 
 type Client struct {
@@ -67,9 +66,9 @@ func connectTCPSocket(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, er
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %w", err)
 	}
-	dbPool.SetConnMaxLifetime(connMaxLifetime)
-	dbPool.SetMaxIdleConns(maxIdleConns)
-	dbPool.SetMaxOpenConns(maxOpenConns)
+	dbPool.SetConnMaxLifetime(dbConfig.ConnMaxLifetime)
+	dbPool.SetMaxIdleConns(dbConfig.MaxIdleConns)
+	dbPool.SetMaxOpenConns(dbConfig.MaxOpenConns)
 
 	return dbPool, nil
 }

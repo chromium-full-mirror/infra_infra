@@ -22,6 +22,9 @@ services:
       "-db-name", "device_manager_db",
       "-db-user", "postgres",
       "-db-password-secret", "devsecret://cGFzc3dvcmQ",
+      "-db-conn-max-lifetime", "1m",
+      "-db-max-idle-conns", "50",
+      "-db-max-open-conns", "50",
       "-token-cache-dir", "/tokens"]
     user: ${CURRENT_UID}
     environment:
@@ -53,6 +56,9 @@ services:
       "-db-name", "device_manager_db",
       "-db-user", "postgres",
       "-db-password-secret", "devsecret://cGFzc3dvcmQ",
+      "-db-conn-max-lifetime", "1m",
+      "-db-max-idle-conns", "50",
+      "-db-max-open-conns", "50",
       "-publish-workers", "50",
       "-update-batch-size", "1000",
       "-max-update-wait", "100",

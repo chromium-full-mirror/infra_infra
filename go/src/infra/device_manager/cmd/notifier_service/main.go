@@ -54,6 +54,24 @@ func main() {
 		"The DB password location for Secret Store to use.",
 	)
 
+	connMaxLifetime := *flag.Duration(
+		"db-conn-max-lifetime",
+		time.Minute,
+		"The maximum amount of time a connection may be reused. Use Duration formatting i.e. 1m, 120s, etc.",
+	)
+
+	maxIdleConns := *flag.Int(
+		"db-max-idle-conns",
+		50,
+		"The maximum number of connections in the idle connection pool.",
+	)
+
+	maxOpenConns := *flag.Int(
+		"db-max-open-conns",
+		50,
+		"The maximum number of open connections to the database.",
+	)
+
 	publishWorkersN := flag.Int(
 		"publish-workers",
 		50,
@@ -81,6 +99,9 @@ func main() {
 			DBName:           *dbName,
 			DBUser:           *dbUser,
 			DBPasswordSecret: *dbPasswordSecret,
+			ConnMaxLifetime:  connMaxLifetime,
+			MaxIdleConns:     maxIdleConns,
+			MaxOpenConns:     maxOpenConns,
 		}
 
 		err := frontend.SetUpDBClient(srv.Context, deviceLeaseServer, dbConfig)
