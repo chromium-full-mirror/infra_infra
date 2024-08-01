@@ -152,8 +152,8 @@ func innerMain() error {
 	}
 	defer c.gsClient.close()
 
-	log.Println("starting archive-server...")
-	if err = svr.ListenAndServe(); err != http.ErrServerClosed {
+	log.Printf("starting archive-server on %s...", *archiveServerAddress)
+	if err = svr.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("HTTP server ListenAndServe: %v", err)
 	}
 	<-idleConnsClosed
