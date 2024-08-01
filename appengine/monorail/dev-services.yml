@@ -12,7 +12,7 @@ services:
   cloud-tasks-emulator:
     # As of 9/18/2020 latest tag is built from source at
     # https://github.com/aertje/cloud-tasks-emulator/commit/ff9a1afc8f3aeedbc6ca1f468b2c53b74c18a6e6
-    image: 'us.gcr.io/monorail-dev/cloud-tasks-emulator:latest'
+    image: 'gcr.io/chops-public-images-prod/monorail/cloud-tasks-emulator:latest'
     container_name: 'cloud-tasks-emulator'
     ports:
       - '9090:9090'
