@@ -484,6 +484,14 @@ SPECS.update({
             ],
         ),
         SourceOrPrebuilt(
+            'cryptography',
+            '43.0.0',
+            pyversions=['py3'],
+            packaged=(),
+            patch_version='chromium.1',
+            default=False,
+        ),
+        SourceOrPrebuilt(
             'debugpy',
             '1.5.1',
             only_plat=[
