@@ -38,31 +38,25 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 		return nil, errors.New("LeaseDevice: failed to start database transaction")
 	}
 
-	timeNow := time.Now()
 	newRecord := model.DeviceLeaseRecord{
-		ID:              uuid.New().String(),
-		IdempotencyKey:  r.GetIdempotencyKey(),
-		DeviceID:        device.ID,
-		DeviceAddress:   device.DeviceAddress,
-		DeviceType:      device.DeviceType,
-		LeasedTime:      timeNow,
-		ExpirationTime:  timeNow.Add(r.GetLeaseDuration().AsDuration()),
-		LastUpdatedTime: timeNow,
+		ID:             uuid.New().String(),
+		IdempotencyKey: r.GetIdempotencyKey(),
+		DeviceID:       device.ID,
+		DeviceAddress:  device.DeviceAddress,
+		DeviceType:     device.DeviceType,
 	}
-
-	err = model.CreateDeviceLeaseRecord(ctx, tx, newRecord)
+	createdRecord, err := model.CreateDeviceLeaseRecord(ctx, tx, newRecord, r.GetLeaseDuration().AsDuration())
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to create DeviceLeaseRecord %s", err)
 		return nil, err
 	}
 
 	updatedDevice := model.Device{
-		ID:              device.ID,
-		DeviceAddress:   device.DeviceAddress,
-		DeviceType:      device.DeviceType,
-		DeviceState:     api.DeviceState_DEVICE_STATE_LEASED.String(),
-		IsActive:        device.IsActive,
-		LastUpdatedTime: timeNow,
+		ID:            device.ID,
+		DeviceAddress: device.DeviceAddress,
+		DeviceType:    device.DeviceType,
+		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
+		IsActive:      device.IsActive,
 	}
 	err = UpdateDevice(ctx, tx, updatedDevice)
 	if err != nil {
@@ -77,17 +71,17 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 	logging.Debugf(ctx, "LeaseDevice: created DeviceLeaseRecord %v", newRecord)
 	return &api.LeaseDeviceResponse{
 		DeviceLease: &api.DeviceLeaseRecord{
-			Id:             newRecord.ID,
-			IdempotencyKey: newRecord.IdempotencyKey,
-			DeviceId:       newRecord.DeviceID,
+			Id:             createdRecord.ID,
+			IdempotencyKey: createdRecord.IdempotencyKey,
+			DeviceId:       createdRecord.DeviceID,
 			DeviceAddress: &api.DeviceAddress{
-				Host: newRecord.DeviceAddress,
+				Host: createdRecord.DeviceAddress,
 			},
-			DeviceType:      api.DeviceType_DEVICE_TYPE_PHYSICAL,
-			LeasedTime:      timestamppb.New(newRecord.LeasedTime),
-			ReleasedTime:    timestamppb.New(newRecord.ReleasedTime),
-			ExpirationTime:  timestamppb.New(newRecord.ExpirationTime),
-			LastUpdatedTime: timestamppb.New(newRecord.LastUpdatedTime),
+			DeviceType:      stringToDeviceType(ctx, createdRecord.DeviceType),
+			LeasedTime:      timestamppb.New(createdRecord.LeasedTime),
+			ReleasedTime:    timestamppb.New(createdRecord.ReleasedTime),
+			ExpirationTime:  timestamppb.New(createdRecord.ExpirationTime),
+			LastUpdatedTime: timestamppb.New(createdRecord.LastUpdatedTime),
 		},
 	}, nil
 }

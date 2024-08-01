@@ -36,38 +36,77 @@ type DeviceLeaseRecord struct {
 }
 
 // CreateDeviceLeaseRecord creates a DeviceLeaseRecord in the database.
-func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLeaseRecord) error {
-	result, err := tx.ExecContext(ctx, `
+func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLeaseRecord, leaseDur time.Duration) (DeviceLeaseRecord, error) {
+	var (
+		newRecord       DeviceLeaseRecord
+		leasedTime      sql.NullTime
+		expirationTime  sql.NullTime
+		lastUpdatedTime sql.NullTime
+	)
+	err := tx.QueryRowContext(ctx, `
 		INSERT INTO "DeviceLeaseRecords"
-			(id, idempotency_key, device_id, device_address, device_type, owner_id,
-			 leased_time, expiration_time, last_updated_time)
+			(
+				id,
+				idempotency_key,
+				device_id,
+				device_address,
+				device_type,
+				owner_id,
+			 	leased_time,
+				expiration_time,
+				last_updated_time
+			)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+			($1, $2, $3, $4, $5, $6, NOW(), NOW() + $7, NOW())
+		RETURNING
+			id,
+			idempotency_key,
+			device_id,
+			device_address,
+			device_type,
+			owner_id,
+			leased_time,
+			expiration_time,
+			last_updated_time;`,
 		record.ID,
 		record.IdempotencyKey,
 		record.DeviceID,
 		record.DeviceAddress,
 		record.DeviceType,
 		record.OwnerID,
-		record.LeasedTime,
-		record.ExpirationTime,
-		record.LastUpdatedTime,
+		leaseDur,
+	).Scan(
+		&newRecord.ID,
+		&newRecord.IdempotencyKey,
+		&newRecord.DeviceID,
+		&newRecord.DeviceAddress,
+		&newRecord.DeviceType,
+		&newRecord.OwnerID,
+		&leasedTime,
+		&expirationTime,
+		&lastUpdatedTime,
 	)
 	if err != nil {
 		logging.Errorf(ctx, "CreateDeviceLeaseRecord: error inserting into DeviceLeaseRecords: %s", err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logging.Errorf(ctx, "CreateDeviceLeaseRecord: unable to rollback: %v", rollbackErr)
 		}
-		return err
+		return DeviceLeaseRecord{}, err
 	}
 
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		logging.Errorf(ctx, "CreateDeviceLeaseRecord: error getting rows affected: %s", err)
+	// Handle possible null times
+	if leasedTime.Valid {
+		newRecord.LeasedTime = leasedTime.Time
+	}
+	if expirationTime.Valid {
+		newRecord.ExpirationTime = expirationTime.Time
+	}
+	if lastUpdatedTime.Valid {
+		newRecord.LastUpdatedTime = lastUpdatedTime.Time
 	}
 
-	logging.Debugf(ctx, "CreateDeviceLeaseRecord: DeviceLeaseRecord %s for Device %s created successfully (%d row affected)", record.ID, record.DeviceID, rowsAffected)
-	return nil
+	logging.Debugf(ctx, "CreateDeviceLeaseRecord: DeviceLeaseRecord %s for Device %s created successfully", newRecord.ID, newRecord.DeviceID)
+	return newRecord, nil
 }
 
 // GetDeviceLeaseRecordByID gets a DeviceLeaseRecord from the database by name.

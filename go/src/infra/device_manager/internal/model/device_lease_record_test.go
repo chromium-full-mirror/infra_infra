@@ -44,13 +44,17 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 			}
 
 			timeNow := time.Now()
-			mock.ExpectExec(regexp.QuoteMeta(`
-				INSERT INTO "DeviceLeaseRecords"
-					(id, idempotency_key, device_id, device_address, device_type, owner_id,
-					leased_time, expiration_time, last_updated_time)
-				VALUES
-					($1, $2, $3, $4, $5, $6, $7, $8, $9);`)).
-				WithArgs(
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"idempotency_key",
+				"device_id",
+				"device_address",
+				"device_type",
+				"owner_id",
+				"leased_time",
+				"expiration_time",
+				"last_updated_time"}).
+				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
 					"test-device-1",
@@ -58,12 +62,56 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 					"DEVICE_TYPE_PHYSICAL",
 					"test-owner-id-1",
 					timeNow,
+					timeNow.Add(time.Minute),
 					timeNow,
-					timeNow,
-				).
-				WillReturnResult(sqlmock.NewResult(1, 1))
+				)
 
-			err = CreateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				INSERT INTO "DeviceLeaseRecords"
+					(
+						id,
+						idempotency_key,
+						device_id,
+						device_address,
+						device_type,
+						owner_id,
+						leased_time,
+						expiration_time,
+						last_updated_time
+					)
+				VALUES
+					($1, $2, $3, $4, $5, $6, NOW(), NOW() + $7, NOW())
+				RETURNING
+					id,
+					idempotency_key,
+					device_id,
+					device_address,
+					device_type,
+					owner_id,
+					leased_time,
+					expiration_time,
+					last_updated_time;`)).
+				WithArgs(
+					"test-lease-record-1",
+					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-device-1",
+					"1.1.1.1:1",
+					"DEVICE_TYPE_PHYSICAL",
+					"test-owner-id-1",
+					time.Minute,
+				).
+				WillReturnRows(rows)
+
+			newRec, err := CreateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
+				ID:             "test-lease-record-1",
+				IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+				DeviceID:       "test-device-1",
+				DeviceAddress:  "1.1.1.1:1",
+				DeviceType:     "DEVICE_TYPE_PHYSICAL",
+				OwnerID:        "test-owner-id-1",
+			}, time.Minute)
+			So(err, ShouldBeNil)
+			So(newRec, ShouldEqual, DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DeviceID:        "test-device-1",
@@ -71,10 +119,9 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				DeviceType:      "DEVICE_TYPE_PHYSICAL",
 				OwnerID:         "test-owner-id-1",
 				LeasedTime:      timeNow,
-				ExpirationTime:  timeNow,
+				ExpirationTime:  timeNow.Add(time.Minute),
 				LastUpdatedTime: timeNow,
 			})
-			So(err, ShouldBeNil)
 		})
 	})
 }
