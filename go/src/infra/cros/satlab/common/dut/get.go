@@ -17,6 +17,7 @@ import (
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 )
@@ -131,7 +132,7 @@ func (g *GetDUT) TriggerRun(
 	out, err := executor.Output(command)
 
 	if err != nil {
-		return nil, errors.Annotate(err, "get dut - exec command failed").Err()
+		return nil, errors.Annotate(e.HandleExitError(err), "get dut").Err()
 	}
 
 	res := []*ufsModels.MachineLSE{}

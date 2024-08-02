@@ -3,8 +3,20 @@
 // found in the LICENSE file.
 package errors
 
-import "errors"
+import (
+	"errors"
+	"os/exec"
+)
 
 var (
 	NotMatch = errors.New("can't match the value")
 )
+
+// HandleExitError extracts and passes downstream stderr from CLI call.
+func HandleExitError(err error) error {
+	var xerr *exec.ExitError
+	if errors.As(err, &xerr) {
+		err = errors.New(string(xerr.Stderr))
+	}
+	return err
+}

@@ -13,6 +13,7 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -69,7 +70,7 @@ func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, err
 	stdout, err := executor.Output(command)
 
 	if err != nil {
-		return false, errors.Annotate(err, "add asset").Err()
+		return false, errors.Annotate(e.HandleExitError(err), "add asset").Err()
 	}
 
 	// if asset not found, shivas returns output in stderr, stdout is empty.
@@ -103,5 +104,5 @@ func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
 	out, err := executor.CombinedOutput(command)
 	fmt.Fprintln(w, misc.TrimOutput(out))
 
-	return err
+	return e.HandleExitError(err)
 }

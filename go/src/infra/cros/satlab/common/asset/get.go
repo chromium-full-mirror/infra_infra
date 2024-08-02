@@ -16,6 +16,7 @@ import (
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 )
@@ -80,7 +81,7 @@ func (g *GetAsset) TriggerRun(
 	command := exec.CommandContext(ctx, args[0], args[1:]...)
 	out, err := executor.CombinedOutput(command)
 	if err != nil {
-		return nil, errors.Annotate(err, "get asset - exec command failed").Err()
+		return nil, errors.Annotate(e.HandleExitError(err), "get asset").Err()
 	}
 
 	var res []*ufsModels.Asset

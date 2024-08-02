@@ -14,6 +14,7 @@ import (
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -65,7 +66,7 @@ func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error)
 	stdout, err := executor.Output(command)
 
 	if err != nil {
-		return false, errors.Annotate(err, "add dut").Err()
+		return false, errors.Annotate(e.HandleExitError(err), "add dut").Err()
 	}
 
 	// if DUT not found, shivas returns output in stderr, and stdout is empty.
@@ -108,5 +109,5 @@ func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 
-	return err
+	return e.HandleExitError(err)
 }

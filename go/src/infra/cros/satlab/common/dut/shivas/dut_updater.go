@@ -10,6 +10,7 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 )
 
@@ -40,5 +41,5 @@ func (u *DUTUpdater) Update(ctx context.Context, args map[string][]string) error
 	// We ignore the output here because we don't need any information from
 	// the output now.
 	_, err := u.Executor.CombinedOutput(exec.CommandContext(ctx, command_args[0], command_args[1:]...))
-	return err
+	return e.HandleExitError(err)
 }

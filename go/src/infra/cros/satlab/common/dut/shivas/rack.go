@@ -13,6 +13,7 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -59,7 +60,7 @@ func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists boo
 	stdout, err := executor.Output(cmd)
 
 	if err != nil {
-		return false, errors.Annotate(err, "add rack").Err()
+		return false, errors.Annotate(e.HandleExitError(err), "add rack").Err()
 	}
 
 	// if rack not found, shivas returns output in stderr, and stdout is empty.
@@ -90,5 +91,5 @@ func (r *Rack) add(executor executor.IExecCommander, w io.Writer) error {
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 
-	return err
+	return e.HandleExitError(err)
 }

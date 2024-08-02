@@ -14,6 +14,7 @@ import (
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
+	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 )
 
@@ -64,7 +65,7 @@ func (u *DUTRepairer) Repair(
 	// "anonymous:anonymous" does not have permission to view it.
 	out, err := u.Executor.Output(command)
 	if err != nil {
-		return nil, err
+		return nil, e.HandleExitError(err)
 	}
 
 	rawData := string(out)
