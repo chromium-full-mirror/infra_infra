@@ -9,12 +9,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
 
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
@@ -51,7 +52,11 @@ func NewServer() *Server {
 
 // InstallServices takes a DeviceLeaseServiceServer and exposes it to a LUCI
 // prpc.Server.
-func InstallServices(s *Server, srv grpc.ServiceRegistrar) {
+func InstallServices(s *Server, srv *server.Server) {
+	srv.ConfigurePRPC(func(p *prpc.Server) {
+		p.AccessControl = prpc.AllowOriginAll
+	})
+
 	api.RegisterDeviceLeaseServiceServer(srv, s)
 }
 
