@@ -81,7 +81,21 @@ func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("set dolos state: state is %q not found", newState).Err()
 }
 
+// dolosDoesNotNeedsRebootExec look at status and decide if Dolos needs to be rebooted.
+func dolosDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetDolos() == nil {
+		return errors.Reason("dolos is not supported").Err()
+	}
+	log.Debugf(ctx, "Dolos state: %s", info.GetChromeos().GetDolos().GetState())
+	if info.GetChromeos().GetDolos().GetState() != tlw.Dolos_DOLOS_OK {
+		return errors.Reason("dolos does need reboot").Err()
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("dolos_determine_and_set_dolos_state", determineAndSetDolosStateExec)
 	execs.Register("dolos_set_dolos_state", setDolosStateExec)
+	execs.Register("dolos_does_not_need_reboot", dolosDoesNotNeedsRebootExec)
 }
