@@ -6,10 +6,14 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io"
+	"net/http"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 // downloadClient specifies the APIs between archive-server and storage client.
@@ -43,30 +47,44 @@ func (c *gsObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error) {
 
 func (c *gsObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
 	r, err := c.object.NewReader(ctx)
-	return r, err
+	if err != nil {
+		return nil, fmt.Errorf("new GS reader: %w", err)
+	}
+	return r, nil
 }
 
 func (c *gsObject) NewRangeReader(ctx context.Context, offset, length int64) (io.ReadCloser, error) {
 	return c.object.NewRangeReader(ctx, offset, length)
 }
 
-func newRealClient(ctx context.Context, creds string) (downloadClient, error) {
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(creds))
+func newRealClient(ctx context.Context, androidServer string, opts ...option.ClientOption) (downloadClient, error) {
+	gs, err := storage.NewClient(ctx, opts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("new client for GS: %w", err)
 	}
-	return &realDownloadClient{gsClient: client}, nil
+	hc, _, err := transport.NewHTTPClient(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("new client for android: %w", err)
+	}
+	return &realDownloadClient{gsClient: gs, androidClient: &androidClient{hc: hc, server: androidServer}}, nil
 }
 
 type realDownloadClient struct {
-	gsClient *storage.Client
+	gsClient      *storage.Client
+	androidClient *androidClient
 }
 
+// We use "android-build" as a magic string to indicate the object is from a
+// general GS bucket or from android build API server.
 func (c *realDownloadClient) getObject(name *storageObjectName) storageObject {
+	if name.bucket == "android-build" {
+		return &androidObject{client: c.androidClient, path: name.path}
+	}
 	return &gsObject{c.gsClient.Bucket(name.bucket).Object(name.path)}
 }
 
 func (c *realDownloadClient) close() error {
+	// There's no need to close androidClient as it's a basic http client.
 	return c.gsClient.Close()
 }
 
@@ -74,4 +92,78 @@ func (c *realDownloadClient) close() error {
 type storageObjectName struct {
 	bucket string
 	path   string
+}
+
+type androidClient struct {
+	hc     *http.Client
+	server string
+}
+
+// request requests to the Android build API server.
+func (c *androidClient) request(ctx context.Context, path string) (*http.Response, error) {
+	url := fmt.Sprintf("%s/%s", c.server, path)
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("android client request: %w", err)
+	}
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("android client request: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		info, _ := io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		return nil, fmt.Errorf("android client request: %d: %s", resp.StatusCode, info)
+	}
+	return resp, nil
+}
+
+type androidObject struct {
+	client *androidClient
+	path   string
+}
+
+func (c *androidObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error) {
+	resp, err := c.client.request(ctx, c.metadataPath())
+	if err != nil {
+		return nil, fmt.Errorf("attrs: %w", err)
+	}
+	content, _ := io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+
+	// The response is json encoded metadata, and we need to parse them and
+	// convert to the target type.
+	data := struct {
+		Name        string `json:"name"`
+		Size        int64  `json:"size,string"`
+		ContentType string `json:"contentType"`
+	}{}
+	if err := json.Unmarshal(content, &data); err != nil {
+		return nil, fmt.Errorf("attrs: %w", err)
+	}
+	return &storage.ObjectAttrs{Name: data.Name, Size: data.Size, ContentType: data.ContentType}, nil
+}
+
+func (c *androidObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
+	resp, err := c.client.request(ctx, c.rawContentPath())
+	if err != nil {
+		return nil, fmt.Errorf("new android reader: %w", err)
+	}
+	return resp.Body, nil
+}
+
+func (c *androidObject) NewRangeReader(context.Context, int64, int64) (io.ReadCloser, error) {
+	// Android build API server doesn't support range requests.
+	return nil, nil
+}
+
+func (c *androidObject) metadataPath() string {
+	// Android build API server returns the file metadata in json format when
+	// 'alt=media'.
+	return c.path + "?alt=json"
+}
+
+func (c *androidObject) rawContentPath() string {
+	// Android build API server returns the whole file content when 'alt=media'.
+	return c.path + "?alt=media"
 }

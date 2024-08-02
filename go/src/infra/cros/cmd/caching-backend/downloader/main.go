@@ -51,6 +51,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -65,6 +66,7 @@ import (
 
 var (
 	credentialFile       = flag.String("credential-file", "", "credential json file. Example: ./service-credential.json")
+	authScopes           = flag.String("auth-scopes", "", "Comma-separated list of OAuth scope for the credential")
 	archiveServerAddress = flag.String("address", ":8080", "archive server address with listening port.")
 	cacheServerURL       = flag.String("cache-server-url", "http://127.0.0.1:8082", "cache-server url.")
 	shutdownGracePeriod  = flag.Duration("shutdown-grace-period", 30*time.Minute, "The time duration allowed for tasks to complete before completely shutdown archive-server.")
@@ -73,6 +75,7 @@ var (
 	tsmonEndpoint        = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to.")
 	tsmonCredentialPath  = flag.String("tsmon-credential", "", "The credentail file for tsmon client")
 	traceEndpoint        = flag.String("trace-endpoint", "", "URL (including file://, http://) to post trace logs to.")
+	androidBuildAPI      = flag.String("android-build", "", "URL of the Android build API server")
 )
 
 type archiveServer struct {
@@ -147,8 +150,13 @@ func innerMain() error {
 	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: otelMux}
 	ctx = cancelOnSignals(ctx, idleConnsClosed, &svr, *shutdownGracePeriod)
-	if err := c.rotateClient(ctx, *credentialFile, *clientRotationPeriod, *shutdownGracePeriod); err != nil {
-		log.Fatalf("Failed to initiate GCS client: %s", err)
+
+	opts := []option.ClientOption{option.WithCredentialsFile(*credentialFile)}
+	if *authScopes != "" {
+		opts = append(opts, option.WithScopes(strings.Split(*authScopes, ",")...))
+	}
+	if err := c.rotateClient(ctx, *clientRotationPeriod, *shutdownGracePeriod, *androidBuildAPI, opts...); err != nil {
+		log.Fatalf("Failed to initiate download client: %s", err)
 	}
 	defer c.gsClient.close()
 
@@ -206,8 +214,8 @@ func newResource(ctx context.Context) (*resource.Resource, error) {
 
 // rotateClient updates client every rotationPeriod. It loads credPath file.
 // It will then close the old client after oldClientGracePeriod duration.
-func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotationPeriod, oldClientGracePeriod time.Duration) error {
-	client, err := newRealClient(ctx, *credentialFile)
+func (c *archiveServer) rotateClient(ctx context.Context, rotationPeriod, oldClientGracePeriod time.Duration, androidBuildAPI string, opts ...option.ClientOption) error {
+	client, err := newRealClient(ctx, androidBuildAPI, opts...)
 	if err != nil {
 		return fmt.Errorf("google storage client error: %w", err)
 	}
@@ -220,7 +228,7 @@ func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotat
 			select {
 			case <-t.C:
 				if oldClient == nil {
-					gsClient, err := newRealClient(ctx, credPath)
+					gsClient, err := newRealClient(ctx, androidBuildAPI, opts...)
 					if err != nil {
 						log.Printf("Rotating new client failed, will retry in 10min: %s", err)
 						t.Reset(10 * time.Minute)
