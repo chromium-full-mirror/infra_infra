@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
@@ -146,8 +147,12 @@ func (ei *ExecInfo) GetAccess() tlw.Access {
 
 // Run runs exec function provided by this package by name.
 func Run(ctx context.Context, ei *ExecInfo) (rErr error) {
+
 	defer func() {
-		// Recovery from panic if it happened.
+		// Do not recove from panic only in dev mode.
+		if dev.IsActive(ctx) {
+			return
+		}
 		if r := recover(); r != nil {
 			log.Debugf(ctx, "Received panic: %v", r)
 			rErr = errors.Reason("panic: %v", r).Err()

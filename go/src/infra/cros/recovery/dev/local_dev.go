@@ -26,7 +26,7 @@ func WithDevOptions(ctx context.Context, devOptions any) context.Context {
 
 // ActiveLocalDevOption represent interface to tell if local development is active.
 type ActiveLocalDevOption interface {
-	// Specify if client is active.
+	// Specify if expected to print DUT proto at the start/end of execution.
 	PrintDUTProtos() bool
 	// Specify if client is active.
 	IsActive() bool

@@ -66,7 +66,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		defer (func() {
 			taskMetric.UpdateStatus(rErr)
 			if mErr := args.metricSaver(taskMetric); mErr != nil {
-				args.Logger.Errorf("Fail to save task metric: %s", err)
+				args.Logger.Errorf("Fail to save task metric: %s", mErr)
 			}
 		})()
 	}

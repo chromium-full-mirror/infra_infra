@@ -28,24 +28,35 @@ type Server interface {
 	CacheForDut(ctx context.Context, rawURL, dutName string) (string, error)
 }
 
+// New creates new TLW Server.
 func New(ufs cache.UFSClient) (Server, error) {
-	ce, err := cache.NewEnv(preferredCachingServices, ufs)
-	if err != nil {
-		return nil, errors.Reason("newTLWServer: %s", err).Err()
-	}
 	return &tlwServer{
-		cFrontend: cache.NewFrontend(ce),
+		cFrontend: nil,
 		ufsClient: ufs,
 	}, nil
 }
 
 type tlwServer struct {
+	// delay initialization as can be not used over the time.
 	cFrontend *cache.Frontend
 	ufsClient cache.UFSClient
 }
 
 // Close closes all open server resources.
 func (s *tlwServer) Close() {
+}
+
+func (s *tlwServer) initialize() error {
+	if s.cFrontend != nil {
+		return nil
+	}
+	ce, err := cache.NewEnv(preferredCachingServices, s.ufsClient)
+	if err != nil {
+		return errors.Annotate(err, "initialize: cFrontend for tlw").Err()
+	}
+	s.cFrontend = cache.NewFrontend(ce)
+	log.Printf("TLW: cFrontend initialized!")
+	return nil
 }
 
 func (s *tlwServer) CacheForDut(ctx context.Context, rawURL, dutName string) (string, error) {
@@ -94,7 +105,9 @@ func extractDutName(name string) string {
 // cache implements the logic for the CacheForDut method and runs as a goroutine.
 func (s *tlwServer) cache(ctx context.Context, parsedURL *url.URL, dutName string) (string, error) {
 	log.Printf("CacheForDut: Started Operation")
-
+	if err := s.initialize(); err != nil {
+		return "", errors.Annotate(err, "cache").Err()
+	}
 	path := fmt.Sprintf("%s%s", parsedURL.Host, parsedURL.Path)
 	// TODO (guocb): return a url.URL instead of string.
 	cs, err := s.cFrontend.AssignBackend(dutName, path)
