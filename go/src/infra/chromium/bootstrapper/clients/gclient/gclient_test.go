@@ -27,21 +27,10 @@ func TestGetDep(t *testing.T) {
 				'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
 			}`
 
-			revision, err := client.GetDep(ctx, depsContents, "foo", []string{})
+			revision, err := client.GetDep(ctx, depsContents, "foo")
 
 			So(err, ShouldBeNil)
 			So(revision, ShouldEqual, "foo-revision")
-		})
-
-		Convey("returns revision from fallback paths if specified path is not present", func() {
-			depsContents := `deps = {
-				'bar': 'https://chromium.googlesource.com/foo.git@bar-revision',
-			}`
-
-			revision, err := client.GetDep(ctx, depsContents, "foo", []string{"bar"})
-
-			So(err, ShouldBeNil)
-			So(revision, ShouldEqual, "bar-revision")
 		})
 
 		Convey("fails for unknown path", func() {
@@ -49,7 +38,7 @@ func TestGetDep(t *testing.T) {
 				'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
 			}`
 
-			revision, err := client.GetDep(ctx, depsContents, "bar", []string{"baz"})
+			revision, err := client.GetDep(ctx, depsContents, "bar")
 
 			So(err, ShouldErrLike, "Could not find any dependency called bar")
 			So(revision, ShouldBeEmpty)

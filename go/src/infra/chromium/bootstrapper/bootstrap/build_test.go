@@ -516,10 +516,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 							"host": "chromium.googlesource.com",
 							"project": "dependency"
 						},
-						"config_repo_path": "config/repo/path",
-						"fallback_config_repo_paths": [
-							"config/repo/old-path"
-						]
+						"config_repo_path": "config/repo/path"
 					},
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
@@ -994,76 +991,6 @@ func TestGetBootstrapConfig(t *testing.T) {
 						"test_property": "dependency-value"
 					}`)
 					So(config.skipAnalysisReasons, ShouldBeEmpty)
-				})
-
-				Convey("uses fallback config repo paths when DEPS file does not contain config repo path", func() {
-					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
-						Host:     "chromium-review.googlesource.com",
-						Project:  "top/level",
-						Change:   2345,
-						Patchset: 1,
-					})
-					topLevelGerrit.Changes[2345] = &fakegerrit.Change{
-						Ref: "refs/heads/some-branch",
-						Patchsets: map[int32]*fakegerrit.Patchset{
-							1: {
-								Revision: "cl-revision",
-							},
-						},
-					}
-					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
-					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
-						Files: map[string]*string{
-							"DEPS": strPtr(`deps = {
-								'config/repo/path': 'https://chromium.googlesource.com/dependency.git@new-dependency-revision',
-								'other/repo/path': 'https://chromium.googlesource.com/other.git@new-other-revision',
-							}`),
-						},
-					}
-					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
-						Files: map[string]*string{
-							"DEPS": strPtr(`deps = {
-								'config/repo/old-path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
-								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
-							}`),
-						},
-					}
-					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
-						Parent: "cl-base",
-						Files: map[string]*string{
-							"DEPS": strPtr(`deps = {
-								'config/repo/old-path': 'https://chromium.googlesource.com/dependency.git@old-dependency-revision',
-								'other/repo/path': 'https://chromium.googlesource.com/other.git@old-other-revision',
-							}`),
-						},
-					}
-					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
-						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
-								"test_property": "new-dependency-revision-value"
-							}`),
-						},
-					}
-					input := getInput(build)
-
-					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
-
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
-						"host": "chromium.googlesource.com",
-						"project": "dependency",
-						"id": "new-dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
-						"host": "chromium.googlesource.com",
-						"project": "top/level",
-						"ref": "refs/heads/some-branch",
-						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
-						"test_property": "new-dependency-revision-value"
-					}`)
 				})
 
 				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {

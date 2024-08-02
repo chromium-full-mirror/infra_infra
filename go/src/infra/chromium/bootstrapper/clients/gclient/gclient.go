@@ -37,7 +37,7 @@ func NewClientForTesting() (*Client, error) {
 	return &Client{gclientPath}, nil
 }
 
-func (c *Client) GetDep(ctx context.Context, depsContents, depPath string, fallbackDepPaths []string) (string, error) {
+func (c *Client) GetDep(ctx context.Context, depsContents, depPath string) (string, error) {
 	d, err := ioutil.TempDir("", "")
 	if err != nil {
 		return "", err
@@ -48,36 +48,21 @@ func (c *Client) GetDep(ctx context.Context, depsContents, depPath string, fallb
 		return "", err
 	}
 
-	getdep := func(path string) (string, bool, error) {
-		// --deps-file: The DEPS file to get dependency from
-		// -r: get revision information about the dep at the given path
-		cmd := exec.CommandContext(ctx, c.gclientPath, "getdep", "--deps-file", f, "-r", path)
-		// Set DEPOT_TOOLS_UPDATE environment variable to 0 to prevent gclient from attempting to
-		// update depot tools; just use the recipe bundle as-is (the recipe bundle also doesn't
-		// contain the necessary update_depot_tools script)
-		cmd.Env = append(os.Environ(), "DEPOT_TOOLS_UPDATE=0")
-		output, err := cmd.Output()
-		if err != nil {
-			var exitErr *exec.ExitError
-			if stderrors.As(err, &exitErr) {
-				// 2 signals that there is no entry for the specified path
-				fallback := exitErr.ExitCode() == 2
-				return "", fallback, errors.Annotate(err, "gclient failed with output:\n%s", exitErr.Stderr).Err()
-			}
-			return "", false, err
+	// --deps-file: The DEPS file to get dependency from
+	// -r: get revision information about the dep at the given path
+	cmd := exec.CommandContext(ctx, c.gclientPath, "getdep", "--deps-file", f, "-r", depPath)
+	// Set DEPOT_TOOLS_UPDATE environment variable to 0 to prevent gclient from attempting to
+	// update depot tools; just use the recipe bundle as-is (the recipe bundle also doesn't
+	// contain the necessary update_depot_tools script)
+	cmd.Env = append(os.Environ(), "DEPOT_TOOLS_UPDATE=0")
+	output, err := cmd.Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if stderrors.As(err, &exitErr) {
+			return "", errors.Annotate(err, "gclient failed with output:\n%s", exitErr.Stderr).Err()
 		}
-
-		return strings.TrimSpace(string(output)), false, nil
+		return "", err
 	}
 
-	out, fallback, err := getdep(depPath)
-	if fallback {
-		for _, path := range fallbackDepPaths {
-			out, fallback, fallbackErr := getdep(path)
-			if !fallback {
-				return out, fallbackErr
-			}
-		}
-	}
-	return out, err
+	return strings.TrimSpace(string(output)), nil
 }

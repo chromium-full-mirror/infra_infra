@@ -47,7 +47,12 @@ message BootstrapPropertiesProperties {
 
   // A project where the builder property files are retrieved from a repository
   // whose revision is determined by the DEPS of another repository
+  //
+  // Next ID: 6
   message DependencyProject {
+    reserved 5;
+    reserved "fallback_config_repo_paths";
+
     // Required, the gitiles repo that contains the DEPS file that will
     // determine the revision of the config repository to retrieve the builder
     // property files from
@@ -66,15 +71,6 @@ message BootstrapPropertiesProperties {
     GitilesRepo config_repo = 3;
     // Required, the path that the config repository is checked out to
     string config_repo_path = 4;
-    // Optional, additional paths to check if the DEPS file does not have an
-    // entry for config_repo_path
-    //
-    // When getting the dependency revision, if the DEPS file does not contain
-    // an entry for the path specified in config_repo_path (as determined by an
-    // exit code of 2 from gclient getdep), then the paths specified in
-    // fallback_config_repo_paths will be tried in order. This enables safely
-    // changing where a dependency repo is checked out.
-    repeated string fallback_config_repo_paths = 5;
   }
 
   // Details to find the repo and revision containing the builder property

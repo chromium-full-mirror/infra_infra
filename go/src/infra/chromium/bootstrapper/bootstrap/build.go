@@ -188,7 +188,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		return nil, err
 	}
 
-	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, dependency.ConfigRepoPath, dependency.FallbackConfigRepoPaths, commit, change)
+	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, dependency.ConfigRepoPath, commit, change)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get dependency revision for %s", dependency.ConfigRepoPath).Err()
 	}
@@ -226,7 +226,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	}, nil
 }
 
-func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRepoPath string, fallbackConfigRepoPaths []string, topLevelRepoCommit *gitilesCommit, topLevelRepoChange *gerritChange) (string, string, error) {
+func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRepoPath string, topLevelRepoCommit *gitilesCommit, topLevelRepoChange *gerritChange) (string, string, error) {
 	gclient, err := b.gclientGetter(ctx)
 	if err != nil {
 		return "", "", errors.Annotate(err, "failed to get gclient").Err()
@@ -237,7 +237,7 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRep
 		if err != nil {
 			return "", err
 		}
-		return gclient.GetDep(ctx, contents, configRepoPath, fallbackConfigRepoPaths)
+		return gclient.GetDep(ctx, contents, configRepoPath)
 	}
 
 	// If there is a change for the top-level repo, get the revision for the dependency repo
