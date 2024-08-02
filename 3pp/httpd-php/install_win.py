@@ -267,6 +267,9 @@ def get_tools_prefix():
     if path_dir.endswith("tools_prefix"):
       return path_dir
 
+  # pkgbuild doesn't have tools_prefix
+  return os.environ.get("mingw")
+
 
 def add_mingw_to_path():
   tools_prefix = get_tools_prefix()
@@ -397,6 +400,9 @@ def nmake_php(out_dir):
 
 
 def main():
+
+  # Remove the "perl" env which will confuse nmake when picking perl.
+  os.environ.pop('perl', None)
 
   os.mkdir("./src")
   os.chdir("./src")

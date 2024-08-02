@@ -59,8 +59,10 @@ func importWindows(cfg *Config) (gs []generators.Generator, err error) {
 	g, err := generators.FromPathBatch("windows_import", cfg.FindBinary,
 		"attrib",
 		"cmd",
+		"cscript",
 		"fc",
 		"where",
+		"xcopy",
 	)
 	// Bat shim is preferable for executables in most cases because mingw symlink
 	// won't work with standard windows executables (e.g nmake, python...).
@@ -95,6 +97,7 @@ func (g *Generator) generateWindows(plats generators.Platforms, tmpl *workflow.G
 	}
 
 	tmpl.Env.Set("PROCESSOR_ARCHITECTURE", procArch)
+	tmpl.Env.Set("OS", "Windows_NT")
 	tmpl.Env.Set("winsdk_root", "{{.winsdk_files}}")
 	tmpl.Env.Set("sdk_arch", sdk_arch)
 	return nil
