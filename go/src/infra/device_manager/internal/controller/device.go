@@ -220,7 +220,7 @@ func publishDeviceWorker(
 			"chromium-chromeos8-row29-rack2-host34": true,
 		}
 		if !muteDUTs[device.ID] {
-			logging.Errorf(ctx, "Failed to publish notification for device %s (%X): %v", device.ID, device.ID, err)
+			logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
 		}
 	}
 }
