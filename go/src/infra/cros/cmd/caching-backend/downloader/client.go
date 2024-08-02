@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
@@ -160,10 +162,28 @@ func (c *androidObject) NewRangeReader(context.Context, int64, int64) (io.ReadCl
 func (c *androidObject) metadataPath() string {
 	// Android build API server returns the file metadata in json format when
 	// 'alt=media'.
-	return c.path + "?alt=json"
+	return c.escapeArtifactPath() + "?alt=json"
 }
 
 func (c *androidObject) rawContentPath() string {
 	// Android build API server returns the whole file content when 'alt=media'.
-	return c.path + "?alt=media"
+	return c.escapeArtifactPath() + "?alt=media"
+}
+
+// escapeArtifactPath escapes the "/" in the artifact name.
+//
+// For an artifact name including "/", we need to replace it with "%2F" before
+// we request the Android build API server.
+func (c *androidObject) escapeArtifactPath() string {
+	// The path is in format of
+	// {rpc}/{bid}/{target}/attempts/{attemptsid}/artifacts/{artifactid}
+	// The {artifactid} part (7th) needs to be escaped.
+	parts := strings.SplitN(c.path, "/", 7)
+	if len(parts) < 7 {
+		// The path is in wrong format. Do nothing here and pass it to the caller
+		// to handle it.
+		return c.path
+	}
+	parts[6] = url.QueryEscape(parts[6])
+	return strings.Join(parts, "/")
 }
