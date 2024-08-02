@@ -9,7 +9,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net"
-	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -215,13 +214,13 @@ func publishDeviceWorker(
 		// On success updateWorker will handle updating wg.
 		wg.Done()
 
-		badDUTs := []string{
-			"chromium-chromeos8-row29-rack2-host10",
-			"chromium-chromeos8-row29-rack2-host34",
-		}
 		// TODO: While we debug in the immediate next few days do not want unnecessary noise and cost
-		if !slices.Contains(badDUTs, device.ID) {
-			logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
+		muteDUTs := map[string]bool{
+			"chromium-chromeos8-row29-rack2-host10": true,
+			"chromium-chromeos8-row29-rack2-host34": true,
+		}
+		if !muteDUTs[device.ID] {
+			logging.Errorf(ctx, "Failed to publish notification for device %s (%X): %v", device.ID, device.ID, err)
 		}
 	}
 }
