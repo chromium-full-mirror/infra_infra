@@ -100,5 +100,11 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/firmware-filter/${platform}"),
 			},
 		},
+		{
+			Name: "foil-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/foil-filter/${platform}"),
+			},
+		},
 	}
 }
