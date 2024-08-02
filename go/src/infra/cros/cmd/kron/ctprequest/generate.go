@@ -136,7 +136,8 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 				Name: config.GetSuite(),
 			},
 		},
-		TagCriteria: config.GetRunOptions().GetTagCriteria(),
+		EnableAutotestSharding: config.GetEnableAutotestSharding(),
+		TagCriteria:            config.GetRunOptions().GetTagCriteria(),
 	}
 
 	if config.GetTestArgs() != "" && len(testPlan.GetSuite()) > 0 {
