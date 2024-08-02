@@ -189,6 +189,13 @@ http {
       proxy_pass            http://downloader;
       proxy_cache_key       $request_method$uri$is_args$args;
     }
+    # Android build doesn't support slice downloading.
+    location ~ ^/download/android-build/ {
+        proxy_pass            http://downloader;
+        proxy_cache_valid     200 720h;
+        proxy_cache_key       $request_method$uri$is_args$args;
+        proxy_force_ranges    on;
+      }
     location ~ ^/download/ {
         slice 30m;
         proxy_pass            http://downloader;
