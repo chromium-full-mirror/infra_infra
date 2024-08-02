@@ -6,19 +6,20 @@ package buildbucket
 
 import (
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 // TestValidateTaskName tests that task names are validated correctly.
 func TestValidateTaskName(t *testing.T) {
 	t.Parallel()
-	Convey("validate", t, func() {
-		So(ValidateTaskName(""), ShouldNotBeNil)
-		So(ValidateTaskName("audit_rpm"), ShouldBeNil)
-		So(ValidateTaskName("deep_recovery"), ShouldBeNil)
-		So(ValidateTaskName("audit____"), ShouldNotBeNil)
+	ftt.Run("validate", t, func(t *ftt.Test) {
+		assert.Loosely(t, ValidateTaskName(""), should.NotBeNil)
+		assert.Loosely(t, ValidateTaskName("audit_rpm"), should.BeNil)
+		assert.Loosely(t, ValidateTaskName("deep_recovery"), should.BeNil)
+		assert.Loosely(t, ValidateTaskName("audit____"), should.NotBeNil)
 	})
 }
 

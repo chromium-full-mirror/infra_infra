@@ -10,8 +10,9 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/prpc"
 
 	schedulingapi "infra/libs/fleet/scheduling/api"
@@ -87,19 +88,19 @@ func (s *FakeSchedulingAPI) ShouldUseDM(_ context.Context) (bool, error) {
 // TestScheduleTask tests whether schedule task accepts or rejects its arguments, basically.
 func TestScheduleTask(t *testing.T) {
 	t.Parallel()
-	Convey("test schedule task with stubbed BB wrapper and stubbed inactive scheduling API", t, func() {
+	ftt.Run("test schedule task with stubbed BB wrapper and stubbed inactive scheduling API", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey("nil params", func() {
+		t.Run("nil params", func(t *ftt.Test) {
 			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil, "fake service")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "schedule task")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("schedule task"))
 		})
-		Convey("audit-rpm", func() {
+		t.Run("audit-rpm", func(t *ftt.Test) {
 			_, bbid, err := ScheduleTask(ctx, &FakeClient{startID: 3}, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
 			}, "fake service")
-			So(err, ShouldBeNil)
-			So(bbid, ShouldEqual, 3)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bbid, should.Equal(3))
 		})
 	})
 }
@@ -107,22 +108,22 @@ func TestScheduleTask(t *testing.T) {
 // CreateTask tests whether schedule task accepts or rejects its arguments, basically.
 func TestCreateTask(t *testing.T) {
 	t.Parallel()
-	Convey("test schedule task with real BB wrapper and stubbed active scheduling API", t, func() {
+	ftt.Run("test schedule task with real BB wrapper and stubbed active scheduling API", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		hc := &http.Client{}
 		bc, err := NewClient(ctx, hc, prpc.DefaultOptions())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		sc := &FakeSchedulingAPI{
 			shouldUseDM: true,
 		}
-		Convey("audit-rpm", func() {
+		t.Run("audit-rpm", func(t *ftt.Test) {
 			url, bbid, err := CreateTask(ctx, bc, sc, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
 			}, "fake service")
-			So(err, ShouldBeNil)
-			So(url, ShouldEqual, "test-url-from-scheduke")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, url, should.Equal("test-url-from-scheduke"))
 			// No BBID returned since Scheduke doesn't generate them immediately.
-			So(bbid, ShouldEqual, 0)
+			assert.Loosely(t, bbid, should.BeZero)
 		})
 	})
 }
