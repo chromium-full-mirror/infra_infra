@@ -77,6 +77,9 @@ message DeviceUnderTest{
   // Provide DUT/drone affinity
   // Example: satlab-abc123
   string hive = 11;
+
+  // Power subrail config file
+  string subrail_config = 12;
 }
 
 // Next Tag: 5

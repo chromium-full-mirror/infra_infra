@@ -89,52 +89,52 @@ func TestStartServodCmd(t *testing.T) {
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board"},
 			"ufsDockerContainerName",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "ufsModel", "ufsSerial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "ufsModel", "ufsSerial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli"},
 			"ufsDockerContainerName",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "ufsBoard", "ufsModel", "ufsSerial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "ufsBoard", "ufsModel", "ufsSerial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: true},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: true},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", false, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "regular"},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "dual_v4"},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, false, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, "", false, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "dual_v4", useRecMode: true},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, true, ""}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, "", true, ""}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "dual_v4", dockerTag: "beta"},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, false, "beta"}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, "", false, "beta"}),
 		},
 		{
 			&startServodRun{host: "eli", board: "board", model: "model", servoSerial: "serial", servodContainerName: "docker_servod", noServodProcess: false, servoSetup: "dual_v4", useRecMode: true, dockerTag: "beta"},
 			"docker_servod",
-			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, true, "beta"}),
+			*buildServodContainerArgs(ServodContainerOptions{"docker_servod", "board", "model", "serial", true, ufsCros.ServoSetupType_SERVO_SETUP_DUAL_V4, "", true, "beta"}),
 		},
 	}
 

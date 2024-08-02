@@ -60,9 +60,10 @@ const (
 	rpmTypePath   = "dut.rpm.type"
 
 	// DUT related UpdateMask paths.
-	poolsPath   = "dut.pools"
-	licensePath = "dut.licenses"
-	hivePath    = "dut.hive"
+	poolsPath         = "dut.pools"
+	licensePath       = "dut.licenses"
+	hivePath          = "dut.hive"
+	subrailConfigPath = "dut.subrailConfig"
 
 	// ACS related UpdateMask paths.
 	chameleonsPath           = "dut.chameleon.type"
@@ -124,6 +125,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.servoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+".")
 		c.Flags.StringVar(&c.servoFwChannel, "servo-fw-channel", "", "servo firmware channel. Allowed values are "+cmdhelp.ServoFwChannelAllowedValuesString()+".")
 		c.Flags.StringVar(&c.servoDockerContainerName, "servod-docker", "", "servo docker container name. Required if servod is running in docker.")
+		c.Flags.StringVar(&c.subrailConfig, "subrail-config", "", "power subrail config file")
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma seperated pools. These will be appended to existing pools. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(utils.CSVString(&c.licenseTypes), "licensetype", cmdhelp.LicenseTypeHelpText)
 		c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values. "+cmdhelp.ClearFieldHelpText)
@@ -188,6 +190,7 @@ type updateDUT struct {
 	servoSetupType           string
 	servoFwChannel           string
 	servoDockerContainerName string
+	subrailConfig            string
 	pools                    []string
 	licenseTypes             []string
 	licenseIds               []string
@@ -702,6 +705,15 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
+		}
+	}
+
+	if c.subrailConfig != "" {
+		mask.Paths = append(mask.Paths, subrailConfigPath)
+		if c.subrailConfig != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = c.subrailConfig
+		} else {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = ""
 		}
 	}
 

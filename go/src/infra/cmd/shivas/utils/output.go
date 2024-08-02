@@ -1510,6 +1510,12 @@ func PrintDutsFull(duts []*ufspb.MachineLSE, machineMap map[string]*ufspb.Machin
 		} else {
 			fmt.Fprintf(tw, "Servo: None\n")
 		}
+		subrailConfig := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig
+		if subrailConfig != "" {
+			fmt.Fprintf(tw, "Subrail Config: %+q\n", subrailConfig)
+		} else {
+			fmt.Fprintf(tw, "Subrail Config: None\n")
+		}
 
 		var rpm *chromeoslab.OSRPM
 		if dut.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
@@ -1565,6 +1571,10 @@ func PrintDutsShort(res []proto.Message, keysOnly bool) {
 			fmt.Fprintf(tw, "\tsetup\t%s\n", servo.GetServoSetup())
 		} else {
 			fmt.Fprintf(tw, "Servo: None\n")
+		}
+		subrailConfig := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig
+		if subrailConfig != "" {
+			fmt.Fprintf(tw, "Subrail Config: %+q\n", subrailConfig)
 		}
 
 		var rpm *chromeoslab.OSRPM

@@ -139,6 +139,10 @@ func (s *SatlabRpcServiceServer) fillDutServoInfo(in *api.StartServodRequest) er
 	if in.GetModel() == "" {
 		in.Model = machine.GetChromeosMachine().GetModel()
 	}
+	// Fill in config if missing from the request.
+	if in.GetConfig() == "" {
+		in.Config = dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSubrailConfig()
+	}
 	return nil
 }
 
@@ -190,6 +194,9 @@ func generateEnvVars(in *api.StartServodRequest) []string {
 		fmt.Sprintf("MODEL=%s", in.GetModel()),
 		fmt.Sprintf("SERIAL=%s", in.GetSerialName()),
 		fmt.Sprintf("PORT=%d", in.GetServodPort()),
+	}
+	if in.GetConfig() != "" {
+		containerEnvVars = append(containerEnvVars, fmt.Sprintf("CONFIG=%s", in.GetConfig()))
 	}
 	if in.GetAllowDualV4() != "" {
 		containerEnvVars = append(containerEnvVars, fmt.Sprintf("DUAL_V4=%s", in.GetAllowDualV4()))

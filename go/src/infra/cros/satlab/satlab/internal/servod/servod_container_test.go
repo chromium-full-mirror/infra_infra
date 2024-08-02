@@ -36,7 +36,7 @@ func TestStartServodContainerStartsContainer(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		dockerArgs := buildServodContainerArgs(ServodContainerOptions{tc.containerName, "board", "model", "serial", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, false, ""})
+		dockerArgs := buildServodContainerArgs(ServodContainerOptions{tc.containerName, "board", "model", "serial", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""})
 
 		startServodContainer(context.Background(), &tc.fc, tc.containerName, dockerArgs)
 		if tc.fc.containerLaunched != tc.expectContainerLaunch {
@@ -62,7 +62,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 	}
 
 	tests := []test{
-		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, false, ""},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -75,7 +75,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Exec:         []string{"tail", "-f", "/dev/null"},
 			},
 		},
-		{ServodContainerOptions{"test_container", "board2", "model2", "serial2", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, false, ""},
+		{ServodContainerOptions{"test_container", "board2", "model2", "serial2", true, ufspb.ServoSetupType_SERVO_SETUP_REGULAR, "", false, ""},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -88,7 +88,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Exec:         []string{"bash", "/start_servod.sh"},
 			},
 		},
-		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, false, ""},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, "", false, ""},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -101,7 +101,7 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Exec:         []string{"tail", "-f", "/dev/null"},
 			},
 		},
-		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, true, ""},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, "", true, ""},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:latest",
@@ -114,13 +114,26 @@ func TestBuildServodDockerArgs(t *testing.T) {
 				Exec:         []string{"tail", "-f", "/dev/null"},
 			},
 		},
-		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, true, "hello"},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, "", true, "hello"},
 			&docker.ContainerArgs{
 				Detached:     true,
 				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:hello",
 				PublishPorts: nil,
 				ExposePorts:  nil,
 				EnvVar:       []string{"BOARD=board", "MODEL=model", "SERIAL=serial", "PORT=9999", "DUAL_V4=1", "REC_MODE=1"},
+				Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
+				Network:      "default_satlab",
+				Privileged:   true,
+				Exec:         []string{"tail", "-f", "/dev/null"},
+			},
+		},
+		{ServodContainerOptions{"test_container", "board", "model", "serial", false, ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4, "rex.xml", true, "hello"},
+			&docker.ContainerArgs{
+				Detached:     true,
+				ImageName:    "us-docker.pkg.dev/chromeos-partner-moblab/common-core/servod:hello",
+				PublishPorts: nil,
+				ExposePorts:  nil,
+				EnvVar:       []string{"BOARD=board", "MODEL=model", "SERIAL=serial", "PORT=9999", "CONFIG=rex.xml", "DUAL_V4=1", "REC_MODE=1"},
 				Volumes:      []string{"/dev:/dev", "serial_log:/var/log/servod_9999/"},
 				Network:      "default_satlab",
 				Privileged:   true,

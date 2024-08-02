@@ -39,6 +39,7 @@ var StartServodCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.model, "model", "", "Model of DUT")
 		c.Flags.StringVar(&c.servoSerial, "servo-serial", "", "Servo Serial of DUT")
 		c.Flags.StringVar(&c.servodContainerName, "servod-container-name", "", "Container name to run servod in; likely <host>-docker_servod")
+		c.Flags.StringVar(&c.subrailConfig, "subrail-config", "", "power subrail config file")
 		c.Flags.BoolVar(&c.noServodProcess, "no-servod", false, "Start container without the servod process running")
 		c.Flags.StringVar(&c.servoSetup, "servo-setup", "", "Servo setup of DUT; Should not have 'SERVO_SETUP' prefix (ex. use 'dual_v4' rather than 'SERVO_SETUP_DUAL_V4'")
 		c.Flags.BoolVar(&c.useRecMode, "rec-mode", false, "Start servod with REC_MODE=1 which allowed to sart servod without CCD/OCD.")
@@ -66,6 +67,7 @@ type startServodRun struct {
 	model               string
 	servoSerial         string
 	servodContainerName string
+	subrailConfig       string
 	noServodProcess     bool
 	servoSetup          string
 	useRecMode          bool
@@ -160,6 +162,9 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 		if opts.containerName == "" {
 			opts.containerName = ufsMetadata.servodContainerName
 		}
+		if opts.subrailConfig == "" {
+			opts.subrailConfig = ufsMetadata.subrailConfig
+		}
 		// checking against the command itself rather than options because we always have a value in opts
 		// and we only want to replace with UFS if the user passes nothing
 		if c.servoSetup == "" {
@@ -195,6 +200,7 @@ func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host str
 	}
 
 	servo := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
+	subrailConfig := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetSubrailConfig()
 	servoSerial := servo.GetServoSerial()
 	servodContainerName := servo.GetDockerContainerName()
 	servoSetup := servo.GetServoSetup()
@@ -214,7 +220,7 @@ func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host str
 	model := machine.GetChromeosMachine().GetModel()
 	board := machine.GetChromeosMachine().GetBuildTarget()
 
-	return ufsMetadata{board: board, model: model, servoSerial: servoSerial, servodContainerName: servodContainerName, servoSetup: servoSetup}, nil
+	return ufsMetadata{board: board, model: model, servoSerial: servoSerial, servodContainerName: servodContainerName, subrailConfig: subrailConfig, servoSetup: servoSetup}, nil
 }
 
 // ufsMetadata is bag of data for fields we want to extract from UFS
@@ -223,6 +229,7 @@ type ufsMetadata struct {
 	model               string
 	servoSerial         string
 	servodContainerName string
+	subrailConfig       string
 	servoSetup          ufspb.ServoSetupType
 }
 

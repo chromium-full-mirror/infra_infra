@@ -78,6 +78,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.servoSerial, "servo-serial", "", "serial number for the servo. Can skip for Servo V3.")
 		c.Flags.StringVar(&c.servoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+", UFS assigns REGULAR if unassigned.")
 		c.Flags.StringVar(&c.servoDockerContainerName, "servod-docker", "", "servod docker container name. Required if serovd is running on docker")
+		c.Flags.StringVar(&c.subrailConfig, "subrail-config", "", "power subrail config")
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma separated pools assigned to the DUT. 'DUT_POOL_QUOTA' is used if nothing is specified")
 		c.Flags.Var(utils.CSVString(&c.licenseTypes), "licensetype", cmdhelp.LicenseTypeHelpText)
 		c.Flags.Var(utils.CSVString(&c.licenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
@@ -146,6 +147,7 @@ type addDUT struct {
 	servoSerial              string
 	servoSetupType           string
 	servoDockerContainerName string
+	subrailConfig            string
 	licenseTypes             []string
 	licenseIds               []string
 	pools                    []string
@@ -581,7 +583,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 			},
 		},
 	}
-	var name, servoHost, servoSerial, rpmHost, rpmOutlet, rpmType, model, board string
+	var name, servoHost, servoSerial, subrailConfig, rpmHost, rpmOutlet, rpmType, model, board string
 	var pools, machines []string
 	var servoPort int32
 	var servoSetup chromeosLab.ServoSetupType
@@ -632,11 +634,13 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		pools = c.pools
 		model = c.model
 		board = c.board
+		subrailConfig = c.subrailConfig
 	}
 	lse.Name = name
 	lse.Hostname = name
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = name
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
+	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
 	lse.Machines = machines
 
 	// Use the input params if available for all the options.

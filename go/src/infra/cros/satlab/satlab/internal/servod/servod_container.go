@@ -31,6 +31,7 @@ type ServodContainerOptions struct {
 	servoSerial   string
 	withServod    bool
 	servoSetup    ufspb.ServoSetupType
+	subrailConfig string
 	useRecMode    bool
 	dockerTag     string
 }
@@ -72,7 +73,7 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 	return &docker.ContainerArgs{
 		Detached:   true,
 		ImageName:  dockerServodImageName(opts.dockerTag),
-		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial, opts.servoSetup, opts.useRecMode),
+		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial, opts.servoSetup, opts.subrailConfig, opts.useRecMode),
 		Volumes:    generateVols(opts.servoSerial),
 		Network:    "default_satlab",
 		Privileged: true,
@@ -81,7 +82,7 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 }
 
 // generateEnvVars builds a string array of env vars needed to launch servod in docker
-func generateEnvVars(board string, model string, servoSerial string, servoSetup ufspb.ServoSetupType, useRecMode bool) []string {
+func generateEnvVars(board string, model string, servoSerial string, servoSetup ufspb.ServoSetupType, subrailConfig string, useRecMode bool) []string {
 	port := 9999
 	var envVars []string
 
@@ -90,6 +91,9 @@ func generateEnvVars(board string, model string, servoSerial string, servoSetup 
 	envVars = append(envVars, fmt.Sprintf("SERIAL=%s", servoSerial))
 	envVars = append(envVars, fmt.Sprintf("PORT=%d", port))
 
+	if subrailConfig != "" {
+		envVars = append(envVars, fmt.Sprintf("CONFIG=%s", subrailConfig))
+	}
 	if servoSetup == ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		envVars = append(envVars, "DUAL_V4=1")
 	}
