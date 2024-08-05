@@ -12,6 +12,8 @@ name: ninjalog
 fields:
   - name: build_id
     type: long
+  - name: invocation_id
+    type: string
   - name: targets
     type:
       type: array
