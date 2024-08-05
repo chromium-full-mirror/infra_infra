@@ -61,7 +61,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 	}
 	log.Infof(ctx, "Unit %q contains resources: %v", args.UnitName, resources)
 	args.initMetricSaver(ctx)
-	if args != nil && args.metricSaver != nil {
+	if args.metricSaver != nil {
 		taskMetric := args.newMetric(args.UnitName, metrics.RunLibraryKind)
 		defer (func() {
 			taskMetric.UpdateStatus(rErr)
