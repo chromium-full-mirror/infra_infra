@@ -20,12 +20,8 @@ import (
 func executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
 	// Will be the map of hardware which we can make provisionInfo for directly
 	foundHW := make(map[string]bool)
-	// Milestone which the task is being run from.
-	milestone := int64(0)
 
 	var swRequirements *api.LegacySW
-
-	var err error
 
 	for _, target := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits() {
 		swRequirements = target.GetPrimaryTarget().GetSwReq()
@@ -48,17 +44,6 @@ func executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan
 			addToFoundCache(innerTarget, foundHW)
 
 		}
-	}
-
-	if dddSuite(req) {
-		// For DDD suites, we need to create the targets for all found boards on the milestone.
-		milestone, err = milestoneFromGcs(swRequirements.GetGcsPath())
-		if err != nil {
-			return req, fmt.Errorf("unable to determine milestone for provision builder: %s", err)
-		}
-
-		req, err := createTargetsForBoards(log, req, swRequirements.GetBuild(), foundHW, milestone)
-		return req, err
 	}
 
 	// Create Dynamic Updates and lookup information.
@@ -116,57 +101,6 @@ func boardOnly(targ string) (string, error) {
 	return f[0], nil
 }
 
-func createTargetsForBoards(log *log.Logger, req *api.InternalTestplan, channel string, foundHW map[string]bool, milestone int64) (*api.InternalTestplan, error) {
-	build, targets, err := getBuildsForMilestone(log, milestone)
-	if err != nil {
-		return req, fmt.Errorf("unable to determine provision info for 3d suite")
-	}
-
-	for _, targ := range targets {
-		found, ok := foundHW[targ]
-		// If we already have provision info provided, don't overwrite that.
-		if found && ok {
-			log.Println(fmt.Sprintf("FOUND: %s", targ))
-
-			continue
-		}
-		log.Println(fmt.Sprintf("NOT FOUND: %s", targ))
-
-		board, err := boardOnly(targ)
-		if err != nil {
-			return nil, err
-		}
-		gcsPath := createGcsPath(targ, channel, build, milestone)
-		// TODO (oldProto-azrahman): remove old proto stuffs when schedulingUnits are fully rolled in.
-		if len(req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements()) > 0 {
-			hwTarget := &api.HWRequirements{
-				HwDefinition: buildHWTargetOld(board, getVariantFromBuildTarg(targ), generateProvisionInfoOld(nil, gcsPath)),
-				// the OPTIONAL mark indicates to HW filters this board does not need to be added to the test request
-				State: api.HWRequirements_OPTIONAL,
-			}
-
-			targRequirements := &api.TargetRequirements{
-				HwRequirements: hwTarget,
-				SwRequirement:  &api.LegacySW{GcsPath: gcsPath},
-			}
-			req.GetSuiteInfo().GetSuiteMetadata().TargetRequirements = append(req.GetSuiteInfo().GetSuiteMetadata().TargetRequirements, targRequirements)
-		} else {
-			targ := &api.Target{
-				SwarmingDef: buildHWTarget(board, getVariantFromBuildTarg(targ)),
-				SwReq:       &api.LegacySW{GcsPath: gcsPath},
-			}
-			generateProvisionInfo(targ.SwarmingDef, targ.SwReq, log)
-
-			SU := &api.SchedulingUnit{
-				PrimaryTarget: targ,
-			}
-			req.GetSuiteInfo().GetSuiteMetadata().SchedulingUnits = append(req.GetSuiteInfo().GetSuiteMetadata().SchedulingUnits, SU)
-		}
-	}
-	return req, nil
-
-}
-
 func getVariantFromBuildTarg(board string) string {
 	// foo-bar --> bar
 	parts := strings.Split(board, "-")
@@ -180,10 +114,6 @@ func getVariantFromBuildTarg(board string) string {
 // format a GCS path using the standard string base.
 func createGcsPath(board string, channel string, build string, milestone int64) string {
 	return fmt.Sprintf("gs://chromeos-image-archive/%s-%s/R%v-%s", board, channel, milestone, build)
-}
-
-func dddSuite(req *api.InternalTestplan) bool {
-	return req.GetSuiteInfo().GetSuiteRequest().GetDddSuite()
 }
 
 func generateCrosImageProvisionInfo(target *api.SwarmingDefinition, swReq *api.LegacySW, log *log.Logger) {
