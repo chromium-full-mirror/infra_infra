@@ -402,6 +402,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		"tools":     true, // A local replace directive in x/tools/gopls as of 2023-06-08.
 		"telemetry": true, // A local replace directive in x/telemetry/godev as of 2023-06-08.
 		"exp":       true, // A local replace directive in x/exp/slog/benchmarks/{zap,zerolog}_benchmarks as of 2023-06-08.
+		"oscar":     true, // A local module reference via go.work in x/oscar as of 2024-08-05.
 	}
 	if !keepNestedModsInsideRepo[spec.inputs.Project] || spec.experiment("golang.force_test_outside_repository") {
 		// Move nested modules to directories that aren't predictably-relative to each other
