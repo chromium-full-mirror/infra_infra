@@ -6,7 +6,13 @@
 package rpm
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
 	"time"
 
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
@@ -14,6 +20,7 @@ import (
 
 	"infra/cros/internal/env"
 	"infra/cros/recovery/internal/localtlw/xmlrpc"
+	"infra/cros/recovery/internal/log"
 )
 
 const (
@@ -24,6 +31,11 @@ const (
 	rpmServiceHost = "rpm-service"
 	// The service port of rpm frontend server.
 	rpmServicePort = 9999
+)
+
+const (
+	// The username for Sentry CDU
+	sentryUsername = "admn"
 )
 
 // PowerState indicates a state we want to set for a outlet on powerunit.
@@ -116,7 +128,81 @@ func SetPowerStateHTTP(ctx context.Context, req *RPMPowerRequest) error {
 // http://www.servertech.com/products/switched-pdus/
 // https://cdn10.servertech.com/assets/documents/documents/968/original/JSON_API_Web_Service_%28JAWS%29_V1.06.pdf?1641867726
 func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
-	return errors.Reason("Not implemented").Err()
+	httpClient := &http.Client{
+		Timeout: setPowerTimeout,
+	}
+	serverURL := fmt.Sprintf("https://%s/jaws/control/outlets/%s", r.PowerUnitHostname, r.PowerunitOutlet)
+	body := map[string]string{
+		"control_action": sentryStateMap[r.State],
+	}
+	var jsonBody []byte
+	var err error
+	if jsonBody, err = json.Marshal(body); err != nil {
+		return errors.Annotate(err, "Error constructing request JSON body").Err()
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, serverURL, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return errors.Annotate(err, "setPowerStateSentry: Error creating HTTP request").Err()
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if err := setSentryRPMAuthHeader(req); err != nil {
+		return errors.Annotate(err, "setPowerStateSentry: Error setting Authorization header").Err()
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return errors.Annotate(err, "setPowerStateSentry: Error sending HTTP request").Err()
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Debugf(ctx, "setPowerStateSentry: error %s while closing response body", err)
+		}
+	}()
+	switch resp.StatusCode {
+	case http.StatusNoContent:
+		// Success
+	case http.StatusBadRequest:
+		return errors.Reason("setPowerStateSentry: Malformed patch request body").Err()
+	case http.StatusNotFound:
+		return errors.Reason("setPowerStateSentry: Requested outlet %s not found for RPM %s", r.PowerunitOutlet, r.PowerUnitHostname).Err()
+	case http.StatusServiceUnavailable:
+		return errors.Reason("setPowerStateSentry: Server is too busy").Err()
+	// The following cases should never be reached during normal operation
+	case http.StatusMethodNotAllowed:
+		return errors.Reason("setPowerStateSentry: PATCH not allowed on %s", req.URL.Path).Err()
+	case http.StatusConflict:
+		return errors.Reason("setPowerStateSentry: Malformed patch request body. Field does not exist.").Err()
+	default:
+		return errors.Reason("setPowerStateSentry: Got HTTP response %d", resp.StatusCode).Err()
+	}
+	return nil
+}
+
+// setSentryRPMAuthHeader fetches the RPM password based on the file in the
+// environment variable and sets the appropriate authorization header in the
+// request.
+func setSentryRPMAuthHeader(req *http.Request) error {
+	passwordFile := os.Getenv("RPM_PASSWORD")
+	if passwordFile == "" {
+		return errors.Reason("setSentryRPMAuthHeader: Could not get Sentry RPM password file path").Err()
+	}
+	passwordJSON, err := os.ReadFile(passwordFile)
+	if err != nil {
+		return errors.Annotate(err, "setSentryRPMAuthHeader: Could not read Sentry RPM password file").Err()
+	}
+	var fileContents map[string]string
+	err = json.Unmarshal(passwordJSON, &fileContents)
+	if err != nil {
+		return errors.Annotate(err, "setSentryRPMAuthHeader: Error while parsing file contents from %s", passwordFile).Err()
+	}
+	password, ok := fileContents["SENTRY"]
+	if !ok {
+		return errors.Reason("setSentryRPMAuthHeader: Could not find Sentry RPM password within %s", passwordFile).Err()
+	}
+	auth := sentryUsername + ":" + password
+	val := base64.StdEncoding.EncodeToString([]byte(auth))
+	req.Header.Set("Authorization", "Basic "+val)
+	return nil
 }
 
 // setPowerStateSentry sets power state for IPPower 9850 RPM over HTTP based on RPMPowerRequest.
