@@ -357,7 +357,7 @@ function getCulpritDisplayUrl(c: Culprit) {
 }
 
 function generateAnalysisUrl(bbid: string) {
-  return 'https://luci-bisection.appspot.com/analysis/b/' + bbid;
+  return 'https://ci.chromium.org/ui/bisection/analysis/b/' + bbid;
 }
 
 export class SomLuciBisectionResult extends HTMLElement {

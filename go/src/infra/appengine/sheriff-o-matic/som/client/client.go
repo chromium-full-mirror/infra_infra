@@ -270,7 +270,7 @@ func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection
 	crBugs := &CrBugs{}
 
 	var bisectionClient *BisectionClient
-	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "luci-bisection.appspot.com")
+	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "bisection.api.luci.app")
 	// As LUCI Bisection client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {
@@ -291,7 +291,7 @@ func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisect
 	crBugs := &CrBugs{}
 
 	var bisectionClient *BisectionClient
-	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "luci-bisection-dev.appspot.com")
+	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "staging.bisection.api.luci.app")
 	// As LUCI Bisection client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {
