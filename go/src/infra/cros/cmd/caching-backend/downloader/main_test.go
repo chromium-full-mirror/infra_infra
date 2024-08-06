@@ -599,3 +599,55 @@ func (c *fakeGSClient) getObject(name *storageObjectName) storageObject {
 func (*fakeGSClient) close() error {
 	return nil
 }
+
+func TestAndroidObjectNonExisting(t *testing.T) {
+	t.Parallel()
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		rw.WriteHeader(404)
+		_, _ = rw.Write([]byte(`{"error": {"code": 404}}`))
+	}))
+	defer server.Close()
+	client := &androidClient{hc: server.Client(), server: server.URL}
+	obj := &androidObject{client: client, path: "url"}
+	_, err := obj.Attrs(context.Background())
+	if err == nil {
+		t.Errorf("androidObject.Attrs(non-exist) got nil, want not nil")
+	}
+}
+
+func TestAndroidObject(t *testing.T) {
+	t.Parallel()
+
+	filename := "filename"
+	content := "file content"
+	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		url := req.URL.String()
+		if strings.HasSuffix(url, "?alt=media") {
+			_, _ = rw.Write([]byte(content))
+		} else {
+			_, _ = rw.Write([]byte(fmt.Sprintf(`{"name": %q, "size": "%d", "contentType": "application/octet-stream"}`, filename, len(content))))
+		}
+	}))
+	defer server.Close()
+
+	client := &androidClient{hc: server.Client(), server: server.URL}
+	obj := &androidObject{client: client, path: "url"}
+	ctx := context.Background()
+	attr, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Errorf("androidObject.Attrs() got %s, want nil", err)
+	}
+	if attr.Name != filename {
+		t.Errorf("androidObject.Attrs() = %s, want %q", attr.Name, filename)
+	}
+	if l := int64(len(content)); attr.Size != l {
+		t.Errorf("androidObject.Attrs() = %d, want %q", attr.Size, l)
+	}
+	rc, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Errorf("androidObject.NewReader() got %s, want nil", err)
+	}
+	if c, _ := io.ReadAll(rc); string(c) != content {
+		t.Errorf("androidObject.NewReader() = %q, want %q", c, content)
+	}
+}

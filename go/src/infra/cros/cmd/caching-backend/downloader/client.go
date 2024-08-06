@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
 )
@@ -113,10 +114,21 @@ func (c *androidClient) request(ctx context.Context, path string) (*http.Respons
 		return nil, fmt.Errorf("android client request: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		info, _ := io.ReadAll(resp.Body)
+		// The response from Android build API server is a JSON encoded
+		// googleapi.Error.
+		content, _ := io.ReadAll(resp.Body)
 		_ = resp.Body.Close()
-		return nil, fmt.Errorf("android client request: %d: %s", resp.StatusCode, info)
+
+		e := struct {
+			Error googleapi.Error `json:"error"`
+		}{}
+		err = json.Unmarshal(content, &e)
+		if err != nil {
+			return nil, fmt.Errorf("android client request: json %q: %w", content, err)
+		}
+		return nil, &e.Error
 	}
+
 	return resp, nil
 }
 
@@ -141,7 +153,7 @@ func (c *androidObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error)
 		ContentType string `json:"contentType"`
 	}{}
 	if err := json.Unmarshal(content, &data); err != nil {
-		return nil, fmt.Errorf("attrs: %w", err)
+		return nil, fmt.Errorf("attrs: json %q: %w", content, err)
 	}
 	return &storage.ObjectAttrs{Name: data.Name, Size: data.Size, ContentType: data.ContentType}, nil
 }
