@@ -635,7 +635,7 @@ type RunArgs struct {
 	metricSaver metrics.MetricSaver
 }
 
-// EnableRecovery returns whether recovery is enabled.
+// GetEnableRecovery returns whether recovery is enabled.
 func (a RunArgs) GetEnableRecovery() bool {
 	return a.EnableRecovery
 }

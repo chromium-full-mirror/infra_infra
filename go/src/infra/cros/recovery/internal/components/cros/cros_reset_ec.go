@@ -15,7 +15,7 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
-// Finds the command to reboot ec and executes it.
+// RebootECByEcTool finds the command to reboot ec and executes it.
 func RebootECByEcTool(ctx context.Context, r components.Runner) error {
 	ecRebootCmds := []string{"ec_reboot", "reboot_ec"}
 

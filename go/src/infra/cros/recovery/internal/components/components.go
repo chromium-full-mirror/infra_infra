@@ -28,7 +28,7 @@ type SSHRunResponse interface {
 	GetStderr() string
 }
 
-// Provide access to the host to run commands by SSH or ping it.
+// HostAccess provides access to the host to run commands by SSH or ping it.
 type HostAccess interface {
 	// Run executes command by SSH and wait to receive results of the execution.
 	//
