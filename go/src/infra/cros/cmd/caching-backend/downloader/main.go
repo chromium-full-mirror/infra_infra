@@ -93,6 +93,9 @@ func main() {
 
 func innerMain() error {
 	flag.Parse()
+	if a := flag.Args(); len(a) > 0 {
+		return fmt.Errorf("unknown command args: %s", a)
+	}
 	if *clientRotationPeriod < *shutdownGracePeriod {
 		return fmt.Errorf("client-rotation-period '%v' cannot be less than shutdown-grace-period '%v'", *clientRotationPeriod, *shutdownGracePeriod)
 	}
