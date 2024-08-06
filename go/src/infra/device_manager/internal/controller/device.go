@@ -214,14 +214,7 @@ func publishDeviceWorker(
 		// On success updateWorker will handle updating wg.
 		wg.Done()
 
-		// TODO: While we debug in the immediate next few days do not want unnecessary noise and cost
-		muteDUTs := map[string]bool{
-			"chromium-chromeos8-row29-rack2-host10": true,
-			"chromium-chromeos8-row29-rack2-host34": true,
-		}
-		if !muteDUTs[device.ID] {
-			logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
-		}
+		logging.Errorf(ctx, "Failed to publish notification for device %s: %v", device.ID, err)
 	}
 }
 
