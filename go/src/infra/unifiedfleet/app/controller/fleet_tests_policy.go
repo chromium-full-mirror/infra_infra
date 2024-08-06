@@ -235,7 +235,7 @@ func getValidPublicImagePrefixes() []string {
 
 func getValidQuotaSchedulerAccounts() []string {
 	// Lacros FYI is temporary enabled till chromium and chromium_fyi qs accounts are created
-	return []string{"chromium", "chromium_fyi", "lacros_fyi", "lacros"}
+	return []string{"chromium", "chromium_fyi", "lacros_fyi", "lacros", "tauto.chromium"}
 }
 
 func contains(listItems []string, name string) bool {
