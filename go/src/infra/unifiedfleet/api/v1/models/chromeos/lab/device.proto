@@ -82,12 +82,13 @@ message DeviceUnderTest{
   string subrail_config = 12;
 }
 
-// Next Tag: 5
+// Next Tag: 6
 message Labstation {
   string hostname = 1;
   repeated Servo servos = 2;
   OSRPM rpm = 3;
   repeated string pools = 4;
+  string hive = 5;
 }
 
 // Next Tag: 3
