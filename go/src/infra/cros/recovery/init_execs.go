@@ -11,6 +11,7 @@ import (
 	_ "infra/cros/recovery/internal/execs/btpeer"
 	_ "infra/cros/recovery/internal/execs/chameleon"
 	_ "infra/cros/recovery/internal/execs/cros"
+	_ "infra/cros/recovery/internal/execs/ctr"
 	_ "infra/cros/recovery/internal/execs/dolos"
 	_ "infra/cros/recovery/internal/execs/dut"
 	_ "infra/cros/recovery/internal/execs/human_motion_robot"
