@@ -26,12 +26,15 @@ import (
 )
 
 const (
+	// leaseCmdName is the name of the `crosfleet vm lease` command.
+	leaseCmdName = "lease"
+
+	// defaultDiskSize is the default disk size used for leasing (in GB).
+	defaultDiskSize = 25
 	// maxLeaseLengthMinutes is 24 hours in minutes.
 	maxLeaseLengthMinutes = 24 * 60
 	// maxDiskSize to protect GCE resources (in GB).
 	maxDiskSize = 200
-	// leaseCmdName is the name of the `crosfleet vm lease` command.
-	leaseCmdName = "lease"
 )
 
 // leaseFlags contains parameters for the "vm lease" subcommand.
@@ -47,7 +50,7 @@ func (c *leaseFlags) register(f *flag.FlagSet) {
 	f.Int64Var(&c.durationMins, "minutes", 60, "Duration of lease in minutes.")
 	f.StringVar(&c.board, "board", "", "Board name for the VM image, for example betty-arc-r, the latest release image will be used")
 	f.StringVar(&c.build, "build", "", "Build path of the VM image, for example betty-arc-r-release/R119-15626.0.0, should not be used with -board")
-	f.Int64Var(&c.diskSize, "disk-size", 13, "Disk size of VM in GB.")
+	f.Int64Var(&c.diskSize, "disk-size", defaultDiskSize, "Disk size of VM in GB.")
 }
 
 var lease = &subcommands.Command{
