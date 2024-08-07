@@ -680,6 +680,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		Keyvals:              keyvals,
 		OrderedTaskBuilders: []common_builders.DynamicTaskBuilder{
 			common_builders.DefaultDynamicTestTaskWrapper(common.CrosTest),
+			common_builders.DefaultDynamicPostProcessTaskWrapper(),
 			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false),
 			common_builders.DefaultDynamicGcsPublishTask,
 		},

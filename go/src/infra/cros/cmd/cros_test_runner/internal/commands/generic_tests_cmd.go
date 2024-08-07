@@ -12,6 +12,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
@@ -142,6 +143,14 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 		sk.TestResultForRdb = rdbTestResult
 		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
 			logging.Infof(ctx, "Warning: failed to set %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResult"), err)
+		}
+
+		// TODO(b/358005080): Remove the any proto version of test result once
+		// the dynamic dependency injection allows to assign a concrete proto
+		// to the "google.protobuf.Any" field.
+		testResultAnyProto, _ := anypb.New(sk.TestResultForRdb)
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResultAnyProto"), testResultAnyProto); err != nil {
+			logging.Infof(ctx, "Warning: failed to set %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResultAnyProto"), err)
 		}
 	}
 
