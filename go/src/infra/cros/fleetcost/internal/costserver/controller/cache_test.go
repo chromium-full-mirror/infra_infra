@@ -34,15 +34,15 @@ func TestStoreCachedCostResult(t *testing.T) {
 
 	if err := controller.StoreCachedCostResult(tf.Ctx, "fake-hostname", &models.CostResult{
 		DedicatedCost: 30,
-	}); err != nil {
+	}, nil); err != nil {
 		t.Errorf("unexpected error when filling cache: %s", err)
 	}
 
-	result, readErr := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
+	ent, readErr := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
 	if readErr != nil {
 		t.Errorf("error writing cache record: %s", readErr)
 	}
-	if cost := result.GetDedicatedCost(); cost != 30 {
+	if cost := ent.CostResult.GetDedicatedCost(); cost != 30 {
 		t.Errorf("unexpected dedicated cost %f != 30", cost)
 	}
 }
@@ -56,13 +56,13 @@ func TestReadOldCachedResultIsNotFailure(t *testing.T) {
 	tf := testsupport.NewFixture(context.Background(), t)
 	if err := controller.StoreCachedCostResult(tf.Ctx, "fake-hostname", &models.CostResult{
 		DedicatedCost: 30,
-	}); err != nil {
+	}, nil); err != nil {
 		t.Errorf("unexpected error when filling cache: %s", err)
 	}
 	tf.AdvanceClock(5 * time.Hour)
-	result, err := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
-	if result != nil {
-		t.Errorf("expected result to be nil not %v", result)
+	ent, err := controller.ReadValidCachedCostResult(tf.Ctx, "fake-hostname")
+	if ent != nil {
+		t.Errorf("expected ent to be nil not %v", ent)
 	}
 	if err != nil {
 		t.Errorf("expected error to be nil not %v", err)

@@ -32,10 +32,13 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 	if req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
 	}
-	readResult, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
-	if readErr == nil && readResult != nil {
+	ent, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
+	if readErr == nil && ent.CostResult != nil {
 		logging.Infof(ctx, "Return GetCostResult result from cache for hostname=%q", req.GetHostname())
-		return &fleetcostAPI.GetCostResultResponse{Result: readResult}, nil
+		return &fleetcostAPI.GetCostResultResponse{
+			Result: ent.CostResult,
+			Report: ent.CostReport,
+		}, nil
 	}
 	if readErr != nil && !datastore.IsErrNoSuchEntity(readErr) {
 		logging.Errorf(ctx, "Unexpected error while reading from cache for hostname=%q: %s", req.GetHostname(), readErr)
@@ -60,8 +63,11 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}
-	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res); err != nil {
+	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res, rep); err != nil {
 		logging.Errorf(ctx, "%s\n", errors.Annotate(err, "caching get cost result").Err())
+	}
+	if rep == nil {
+		logging.Infof(ctx, "cost result request for dut %q produced an empty report\n")
 	}
 	return &fleetcostAPI.GetCostResultResponse{
 		Result: res,

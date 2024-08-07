@@ -21,16 +21,17 @@ import (
 var cacheTTL = 4 * time.Hour
 
 // StoreCachedCostResult stores a cached cost result.
-func StoreCachedCostResult(ctx context.Context, hostname string, result *models.CostResult) error {
+func StoreCachedCostResult(ctx context.Context, hostname string, result *models.CostResult, report *models.CostReport) error {
 	return datastore.Put(ctx, &entities.CachedCostResultEntity{
 		Hostname:       hostname,
 		CostResult:     result,
+		CostReport:     report,
 		ExpirationTime: clock.Get(ctx).Now().UTC().Add(cacheTTL),
 	})
 }
 
 // ReadValidCachedCostResult reads a cached cost result if it's before the deadline.
-func ReadValidCachedCostResult(ctx context.Context, hostname string) (*models.CostResult, error) {
+func ReadValidCachedCostResult(ctx context.Context, hostname string) (*entities.CachedCostResultEntity, error) {
 	now := clock.Get(ctx).Now().UTC()
 	entity := &entities.CachedCostResultEntity{
 		Hostname: hostname,
@@ -41,10 +42,10 @@ func ReadValidCachedCostResult(ctx context.Context, hostname string) (*models.Co
 	// > fleet cost: get cost result: rpc error: code = FailedPrecondition desc = The query requires an ASC or DESC index for kind CachedCostResultKind and property hostname.
 	//
 	if err := datastore.Get(ctx, entity); err != nil {
-		return nil, errors.Annotate(err, "error looking up cached cost result").Err()
+		return entity, errors.Annotate(err, "error looking up cached cost result").Err()
 	}
 	if entity.ExpirationTime.After(now) {
-		return entity.CostResult, nil
+		return entity, nil
 	}
 	// In cases where the entry is too old, just successfully return nothing, but log that we found an entry
 	// that is indeed too old.

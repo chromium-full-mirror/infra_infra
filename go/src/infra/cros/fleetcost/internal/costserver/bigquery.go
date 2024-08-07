@@ -66,11 +66,11 @@ func (f *FleetCostFrontend) RepopulateCache(ctx context.Context, request *fleetc
 		return processCostResult(ctx, item, f, request.ForgiveMissingEntries, &tally)
 	}
 
-	// utils.ConsumeChannel will block until machineNameChannel is closed. MachineChannel
+	// utils.ConsumeChannel will block until machineNameChannel is closed.
 	err := utils.ConsumeChannel(ctx, nil, machineNameChannel, consumer)
 	if err != nil {
-		// Here we swallow up rErr if it is non-nil.
-		// I know, I know.
+		// If we execute this path, then rErr is not reported anywhere.
+		// This is intentional, I think the drawbacks are limited.
 		return nil, errors.Annotate(err, "repopulate cache").Err()
 	}
 
