@@ -83,15 +83,18 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 		}
 		taskWithState := states[0]
 		switch s := taskWithState.GetState(); s {
-		case schedukepb.TaskState_LAUNCHED:
+		case schedukepb.TaskState_PENDING, schedukepb.TaskState_REQUESTED:
+		case schedukepb.TaskState_LAUNCHED, schedukepb.TaskState_COMPLETED:
 			// Step status will be updated by the caller (CTPv2).
 			return &buildbucketpb.Build{Id: taskWithState.GetBbid()}, taskWithState.GetLeaseId(), nil
 		case schedukepb.TaskState_EXPIRED:
-			step.SetSummaryMarkdown(fmt.Sprintf("task %d expired while pending in Scheduke", taskID))
-			return nil, "", fmt.Errorf("scheduke task %d expired without launching", taskID)
-		case schedukepb.TaskState_CANCELED:
-			step.SetSummaryMarkdown(fmt.Sprintf("task %d was canceled while pending in Scheduke", taskID))
-			return nil, "", fmt.Errorf("scheduke task %d was canceled without launching", taskID)
+			summary := fmt.Sprintf("task %d expired while pending in Scheduke", taskID)
+			step.SetSummaryMarkdown(summary)
+			return nil, "", fmt.Errorf(summary)
+		default:
+			summary := fmt.Sprintf("task %d in unexpected state %s in Scheduke", taskID, s)
+			step.SetSummaryMarkdown(summary)
+			return nil, "", fmt.Errorf(summary)
 		}
 
 		time.Sleep(schedukePollingWait)
