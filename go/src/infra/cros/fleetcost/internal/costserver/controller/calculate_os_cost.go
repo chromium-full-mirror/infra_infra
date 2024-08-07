@@ -78,7 +78,7 @@ func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 //
 // So far, only ChromeOS devices are supported.
 func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string, forgiveMissingEntries bool) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
-	logging.Infof(ctx, "getting device data for hostname %q with forgive=%b", hostname, forgiveMissingEntries)
+	logging.Infof(ctx, "getting device data for hostname %q with forgive=%v", hostname, forgiveMissingEntries)
 	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
 	if err != nil {
 		err := errors.Annotate(err, "calculate cost for os resource %q", hostname).Err()
