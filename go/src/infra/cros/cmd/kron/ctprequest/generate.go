@@ -140,6 +140,14 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 		TagCriteria:            config.GetRunOptions().GetTagCriteria(),
 	}
 
+	if config.GetRunOptions().GetMaxInShard() > 0 {
+		testPlan.MaxInShard = config.GetRunOptions().GetMaxInShard()
+	}
+
+	if config.GetRunOptions().GetTotalShards() > 0 {
+		testPlan.TotalShards = config.GetRunOptions().GetTotalShards()
+	}
+
 	if config.GetTestArgs() != "" && len(testPlan.GetSuite()) > 0 {
 		testPlan.Suite[0].TestArgs = config.GetTestArgs()
 	}
