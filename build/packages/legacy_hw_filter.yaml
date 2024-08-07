@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2-filters/hardware_solvers/legacy_hw_filter/${platform}
+description: CTPv2 filter responsible for updating the
+  dynamic trv2 request for foil testing.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/hardware_solvers/legacy_hw_filter
+root: ../../go/bin
+data:
+  - file: legacy_hw_filter${exe_suffix}
+  - version_file: .versions/legacy_hw_filter${exe_suffix}.cipd_version

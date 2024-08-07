@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2-filters/use_flag_filter/${platform}
+description: CTPv2 filter responsible for updating the
+  scheduling units based on use flags.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/use_flag_filter
+root: ../../go/bin
+data:
+  - file: use_flag_filter${exe_suffix}
+  - version_file: .versions/use_flag_filter${exe_suffix}.cipd_version
