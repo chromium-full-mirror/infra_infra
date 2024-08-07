@@ -14,8 +14,11 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/cmd/labpack/cft"
 	"infra/cros/cmd/labpack/internal/site"
 	"infra/cros/recovery"
+	"infra/cros/recovery/logger"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -27,7 +30,7 @@ type AccessData struct {
 }
 
 // NewAccess creates TLW Access for recovery engine.
-func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData) (context.Context, tlw.Access, error) {
+func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoot string, metrics metrics.Metrics, lg logger.Logger) (context.Context, tlw.Access, error) {
 	hc, err := httpClient(ctx)
 	if err != nil {
 		return ctx, nil, errors.Annotate(err, "create tlw access: create http client").Err()
@@ -59,8 +62,20 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData) (conte
 	if ad != nil && len(ad.TaskTags) > 0 {
 		params[scopes.ParamKeySwarmingTaskTags] = ad.TaskTags
 	}
+	cftInfor := &cft.Info{
+		UnitName:       in.UnitName,
+		CreateStep:     !in.NoStepper,
+		RootDir:        logRoot,
+		SwarmingTaskID: in.SwarmingTaskId,
+		BBID:           in.Bbid,
+	}
+	// TODO(otabek): Make it critical after testing.
+	if cft, err := cft.Prepare(ctx, cftInfor, metrics, lg); err != nil {
+		lg.Infof("(NOT critical) Fail to prepare CFT containers!")
+	} else {
+		params[scopes.ParamKeyCTRClient] = cft
+	}
 	ctx = scopes.WithParams(ctx, params)
-	// TODO(otabek@): Replace with access to F20 services.
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
 	if err != nil {
 		return nil, nil, errors.Annotate(err, "create tlw access").Err()

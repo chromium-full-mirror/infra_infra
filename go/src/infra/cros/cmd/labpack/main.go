@@ -33,6 +33,7 @@ import (
 	"infra/cros/cmd/labpack/internal/tlw"
 	kclient "infra/cros/karte/client"
 	"infra/cros/recovery"
+	"infra/cros/recovery/ctr"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
@@ -406,11 +407,17 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metr
 		in.InventoryNamespace = ufsUtil.OSNamespace
 	}
 	ctx = setupContextNamespace(ctx, in.InventoryNamespace)
-	ctx, access, err := tlw.NewAccess(ctx, in, ad)
+	ctx, access, err := tlw.NewAccess(ctx, in, ad, logRoot, metrics, lg)
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
 	}
 	defer func() {
+		lg.Debugf("Stopping CTR service...")
+		if ctrInfo, ok := ctr.Get(ctx); ok {
+			if err := ctrInfo.Stop(ctx); err != nil {
+				lg.Debugf("(Not critical) Fail to stop CTR service: %s", err)
+			}
+		}
 		lg.Debugf("Close access point: starting...")
 		access.Close(ctx)
 		lg.Debugf("Close access point: finished!")

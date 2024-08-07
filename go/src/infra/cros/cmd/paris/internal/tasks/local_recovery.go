@@ -24,6 +24,7 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/cmd/labpack/cft"
 	"infra/cros/cmd/labpack/logger"
 	commonFlags "infra/cros/cmd/paris/internal/cmdlib"
 	"infra/cros/cmd/paris/internal/site"
@@ -107,6 +108,9 @@ type localRecoveryRun struct {
 	taskName              string
 
 	devPrintProto bool
+
+	swarmingID string
+	bbID       string
 }
 
 // Run initiates execution of local recovery.
@@ -166,42 +170,12 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		return errors.Annotate(err, "local recovery: create http client").Err()
 	}
 	e := c.envFlags.Env()
-	logger.Debugf("Init TLW with inventory: %s and csa: %s sources", e.UFSService, e.AdminService)
-	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
-		C:       hc,
-		Host:    e.UFSService,
-		Options: site.UFSPRPCOptions,
-	})
-	var csac fleet.InventoryClient
-	if c.csaServer {
-		csac = fleet.NewInventoryPRPCClient(
-			&prpc.Client{
-				C:       hc,
-				Host:    e.AdminService,
-				Options: site.DefaultPRPCOptions,
-			},
-		)
-	}
-	params := scopes.GetParamCopy(ctx)
-	if csac != nil {
-		params[scopes.ParamKeyStableVersionServicePath] = e.AdminService
-	}
-	if ic != nil {
-		params[scopes.ParamKeyInventoryServicePath] = e.UFSService
-	}
-	params[scopes.ParamKeySwarmingTaskID] = ""
-	params[scopes.ParamKeyBuildbucketID] = ""
-	ctx = scopes.WithParams(ctx, params)
+	logger.Debugf("Init DEV options!")
 	ctx = setDevOptions(ctx, &devOptions{
 		active:         true,
 		printDUTProtos: c.devPrintProto,
 	})
-	access, err := recovery.NewLocalTLWAccess(ic, csac)
-	if err != nil {
-		return errors.Annotate(err, "local recovery: create tlw access").Err()
-	}
-	defer access.Close(ctx)
-
+	logger.Debugf("Init Karte!")
 	var metrics metrics.Metrics
 	if c.karteServer != "" {
 		var err error
@@ -227,6 +201,50 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 			return errors.Annotate(err, "inner run: failed to instantiate karte client of server: %q", c.karteServer).Err()
 		}
 	}
+	logger.Debugf("Init TLW with inventory: %s and csa: %s sources", e.UFSService, e.AdminService)
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UFSService,
+		Options: site.UFSPRPCOptions,
+	})
+	var csac fleet.InventoryClient
+	if c.csaServer {
+		csac = fleet.NewInventoryPRPCClient(
+			&prpc.Client{
+				C:       hc,
+				Host:    e.AdminService,
+				Options: site.DefaultPRPCOptions,
+			},
+		)
+	}
+	params := scopes.GetParamCopy(ctx)
+	if csac != nil {
+		params[scopes.ParamKeyStableVersionServicePath] = e.AdminService
+	}
+	if ic != nil {
+		params[scopes.ParamKeyInventoryServicePath] = e.UFSService
+	}
+	params[scopes.ParamKeySwarmingTaskID] = c.swarmingID
+	params[scopes.ParamKeyBuildbucketID] = c.bbID
+	cftInfo := &cft.Info{
+		UnitName:       unit,
+		CreateStep:     c.showSteps,
+		RootDir:        logRoot,
+		SwarmingTaskID: c.swarmingID,
+		BBID:           c.bbID,
+	}
+	if ctr, err := cft.Prepare(ctx, cftInfo, metrics, logger); err != nil {
+		return errors.Annotate(err, "local recovery: start cft").Err()
+	} else {
+		params[scopes.ParamKeyCTRClient] = ctr
+		defer ctr.Stop(ctx)
+	}
+	ctx = scopes.WithParams(ctx, params)
+	access, err := recovery.NewLocalTLWAccess(ic, csac)
+	if err != nil {
+		return errors.Annotate(err, "local recovery: create tlw access").Err()
+	}
+	defer access.Close(ctx)
 
 	in := &recovery.RunArgs{
 		UnitName:              unit,
