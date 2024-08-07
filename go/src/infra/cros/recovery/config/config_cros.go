@@ -14,13 +14,13 @@ func setAllowFail(p *Plan, allowFail bool) *Plan {
 func CrosRepairConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanDolos,
 			PlanServo,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
 			PlanCrOS,
 			PlanChameleon,
 			PlanHMR,
-			PlanDolos,
 			PlanAMT,
 			PlanClosing,
 		},
@@ -41,6 +41,7 @@ func CrosRepairConfig() *Configuration {
 func CrosRepairWithDeepRepairConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanDolos,
 			PlanServoDeepRepair,
 			PlanCrOSDeepRepair,
 			PlanServo,
@@ -49,7 +50,6 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			PlanCrOS,
 			PlanChameleon,
 			PlanHMR,
-			PlanDolos,
 			PlanAMT,
 			PlanClosing,
 		},
@@ -73,13 +73,13 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 func CrosDeployConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanDolos,
 			PlanServo,
 			PlanCrOS,
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
 			PlanHMR,
-			PlanDolos,
 			PlanAMT,
 			PlanClosing,
 		},
