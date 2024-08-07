@@ -31,6 +31,7 @@ require (
 	github.com/bazelbuild/remote-apis v0.0.0-20240215191509-9ff14cecffe5
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240603203232-1716b7d0a075
 	github.com/beevik/etree v1.4.0
+	github.com/biogo/hts v1.4.5
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/containerd/cgroups v1.0.4
