@@ -109,3 +109,27 @@ var (
 	CompanionDevices         = NewCompanionDeviceIdentifier("all").GetDevice()
 	CompanionDevicesMetadata = NewCompanionDeviceIdentifier("all").GetDeviceMetadata()
 )
+
+// DockerEnvVarsToPreserve gets all env vars that are required
+// for hw test execution configs.
+func DockerEnvVarsToPreserve() []string {
+	return []string{
+		"LUCI_CONTEXT",
+		"GCE_METADATA_HOST",
+		"GCE_METADATA_IP",
+		"GCE_METADATA_ROOT",
+		"CONTAINER_CACHE_SERVICE_PORT",
+		"CONTAINER_CACHE_SERVICE_HOST",
+		"DRONE_AGENT_BOT_BLKIO_READ_BPS",
+		"DRONE_AGENT_BOT_BLKIO_WRITE_BPS",
+		"SWARMING_TASK_ID",
+		"SWARMING_BOT_ID",
+		"LOGDOG_STREAM_PREFIX",
+		"DOCKER_CONFIG",
+		"CLOUDBOTS_LAB_DOMAIN",
+		"CLOUDBOTS_CA_CERTIFICATE",
+		"CLOUDBOTS_PROXY_ADDRESS",
+		"DOCKER_CERT_PATH",
+		"DOCKER_HOST",
+		"DOCKER_TLS_VERIFY"}
+}

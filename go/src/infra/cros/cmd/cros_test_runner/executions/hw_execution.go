@@ -320,7 +320,7 @@ func setupCtr(ctrCipdVersion string) *crostoolrunner.CrosToolRunner {
 
 	return &crostoolrunner.CrosToolRunner{
 		CtrCipdInfo:       ctrCipdInfo,
-		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
+		EnvVarsToPreserve: common.DockerEnvVarsToPreserve(),
 	}
 }
 

@@ -85,7 +85,7 @@ func executeLocalTests(
 
 	ctr := &crostoolrunner.CrosToolRunner{
 		CtrCipdInfo:       ctrCipdInfo,
-		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
+		EnvVarsToPreserve: common.DockerEnvVarsToPreserve(),
 		NoSudo:            noSudo,
 	}
 

@@ -14,6 +14,7 @@ const (
 	ParamKeySwarmingTaskID           = "swarming_task_id"
 	ParamKeySwarmingTaskTags         = "swarming_task_tags"
 	ParamKeyBuildbucketID            = "buildbucket_id"
+	ParamKeyCTRClient                = "ctr_client"
 )
 
 // ParamsMap is a special type to describe mapping of params of context
