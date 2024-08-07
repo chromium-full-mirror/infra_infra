@@ -6,7 +6,6 @@ package gitiles
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"google.golang.org/grpc"
@@ -142,43 +141,6 @@ func (c *Client) GetParentRevision(ctx context.Context, host, project, revision 
 	return response.Log[1].GetId(), nil
 }
 
-// GetSubmoduleRevision returns the revision of a submodule at the given path at the given revision
-// of the given project on the given host.
-func (c *Client) GetSubmoduleRevision(ctx context.Context, host, project, revision, path string) (string, error) {
-	gitilesClient, err := c.gitilesClientForHost(ctx, host)
-	if err != nil {
-		return "", err
-	}
-	request := &gitilespb.DownloadFileRequest{
-		Project:    project,
-		Committish: revision,
-		Path:       path,
-		Format:     gitilespb.DownloadFileRequest_JSON,
-	}
-
-	var response *gitilespb.DownloadFileResponse
-	err = gob.Execute(ctx, "DownloadFile (JSON)", func() error {
-		var err error
-		response, err = gitilesClient.DownloadFile(ctx, request)
-		return err
-	})
-	if err != nil {
-		return "", err
-	}
-
-	s := struct {
-		Revision string `json:"revision"`
-	}{}
-	err = json.Unmarshal([]byte(response.Contents), &s)
-	if err != nil {
-		return "", err
-	}
-	if s.Revision == "" {
-		return "", errors.Reason("no revision found for %s/%s/+/%s/%s", host, project, revision, path).Err()
-	}
-	return s.Revision, nil
-}
-
 // DownloadFile returns the contents of the file at the given path at the given
 // revision of the given project on the given host.
 func (c *Client) DownloadFile(ctx context.Context, host, project, revision, path string) (string, error) {
@@ -190,7 +152,6 @@ func (c *Client) DownloadFile(ctx context.Context, host, project, revision, path
 		Project:    project,
 		Committish: revision,
 		Path:       path,
-		Format:     gitilespb.DownloadFileRequest_TEXT,
 	}
 
 	var response *gitilespb.DownloadFileResponse

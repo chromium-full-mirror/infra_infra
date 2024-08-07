@@ -275,16 +275,6 @@ func downloadFileRequest(project, revision, path string) *gitilespb.DownloadFile
 		Project:    project,
 		Committish: revision,
 		Path:       path,
-		Format:     gitilespb.DownloadFileRequest_TEXT,
-	}
-}
-
-func downloadFileJSONRequest(project, revision, path string) *gitilespb.DownloadFileRequest {
-	return &gitilespb.DownloadFileRequest{
-		Project:    project,
-		Committish: revision,
-		Path:       path,
-		Format:     gitilespb.DownloadFileRequest_JSON,
 	}
 }
 
@@ -336,162 +326,80 @@ func TestDownloadFile(t *testing.T) {
 
 			So(err, ShouldErrLike, `unknown revision "fake-revision" of project "fake/project" on host "fake-host"`)
 			So(response, ShouldBeNil)
-		})
-
-		Convey("TEXT format", func() {
-
-			Convey("returns contents for provided file at revision", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision": {
-										Files: map[string]*PathObject{
-											"fake/file": File("fake-contents"),
-										},
-									},
-								},
-							},
-						},
-					},
-				})(ctx, "fake-host")
-
-				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
-
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, "fake-contents")
-			})
-
-			Convey("returns contents for provided file at revision where file is not affected", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision-1": {
-										Files: map[string]*PathObject{
-											"fake/file": File("fake-contents"),
-										},
-									},
-									"fake-revision-2": {
-										Parent: "fake-revision-1",
-									},
-								},
-							},
-						},
-					},
-				})(ctx, "fake-host")
-
-				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision-2", "fake/file"))
-
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, "fake-contents")
-			})
-
-			Convey("fails for nil contents", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision": {
-										Files: map[string]*PathObject{
-											"fake/file": nil,
-										},
-									},
-								},
-							},
-						},
-					},
-				})(ctx, "fake-host")
-
-				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
-
-				So(err, ShouldErrLike, `unknown file "fake/file" at revision "fake-revision" of project "fake/project" on host "fake-host"`)
-				So(response, ShouldBeNil)
-			})
 
 		})
 
-		Convey("JSON format", func() {
-
-			Convey("returns contents for provided file at revision", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision": {
-										Files: map[string]*PathObject{
-											"fake/submodule": Submodule("fake-submodule-revision"),
-										},
+		Convey("returns contents for provided file at revision", func() {
+			client, _ := Factory(map[string]*Host{
+				"fake-host": {
+					Projects: map[string]*Project{
+						"fake/project": {
+							Revisions: map[string]*Revision{
+								"fake-revision": {
+									Files: map[string]*PathObject{
+										"fake/file": File("fake-contents"),
 									},
 								},
 							},
 						},
 					},
-				})(ctx, "fake-host")
+				},
+			})(ctx, "fake-host")
 
-				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision", "fake/submodule"))
+			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, `{"revision": "fake-submodule-revision"}`)
-			})
+			So(err, ShouldBeNil)
+			So(response, ShouldNotBeNil)
+			So(response.Contents, ShouldEqual, "fake-contents")
+		})
 
-			Convey("returns contents for provided file at revision where file is not affected", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision-1": {
-										Files: map[string]*PathObject{
-											"fake/submodule": Submodule("fake-submodule-revision"),
-										},
+		Convey("returns contents for provided file at revision where file is not affected", func() {
+			client, _ := Factory(map[string]*Host{
+				"fake-host": {
+					Projects: map[string]*Project{
+						"fake/project": {
+							Revisions: map[string]*Revision{
+								"fake-revision-1": {
+									Files: map[string]*PathObject{
+										"fake/file": File("fake-contents"),
 									},
-									"fake-revision-2": {
-										Parent: "fake-revision-1",
+								},
+								"fake-revision-2": {
+									Parent: "fake-revision-1",
+								},
+							},
+						},
+					},
+				},
+			})(ctx, "fake-host")
+
+			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision-2", "fake/file"))
+
+			So(err, ShouldBeNil)
+			So(response, ShouldNotBeNil)
+			So(response.Contents, ShouldEqual, "fake-contents")
+		})
+
+		Convey("fails for nil contents", func() {
+			client, _ := Factory(map[string]*Host{
+				"fake-host": {
+					Projects: map[string]*Project{
+						"fake/project": {
+							Revisions: map[string]*Revision{
+								"fake-revision": {
+									Files: map[string]*PathObject{
+										"fake/file": nil,
 									},
 								},
 							},
 						},
 					},
-				})(ctx, "fake-host")
+				},
+			})(ctx, "fake-host")
 
-				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision-2", "fake/submodule"))
-
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, `{"revision": "fake-submodule-revision"}`)
-			})
-
-			Convey("fails for nil contents", func() {
-				client, _ := Factory(map[string]*Host{
-					"fake-host": {
-						Projects: map[string]*Project{
-							"fake/project": {
-								Revisions: map[string]*Revision{
-									"fake-revision": {
-										Files: map[string]*PathObject{
-											"fake/submodule": nil,
-										},
-									},
-								},
-							},
-						},
-					},
-				})(ctx, "fake-host")
-
-				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision", "fake/submodule"))
-
-				So(err, ShouldErrLike, `unknown file "fake/submodule" at revision "fake-revision" of project "fake/project" on host "fake-host"`)
-				So(response, ShouldBeNil)
-			})
-
+			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
+			So(err, ShouldErrLike, `unknown file "fake/file" at revision "fake-revision" of project "fake/project" on host "fake-host"`)
+			So(response, ShouldBeNil)
 		})
 
 	})
@@ -743,31 +651,6 @@ func TestIntegration(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(revision, ShouldNotBeEmpty)
-		})
-
-		Convey("succeeds when calling GetSubmoduleRevision", func() {
-			ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
-				"fake-host": {
-					Projects: map[string]*Project{
-						"fake/project": {
-							Revisions: map[string]*Revision{
-								"fake-revision": {
-									Files: map[string]*PathObject{
-										"fake/submodule": Submodule("fake-submodule-revision"),
-									},
-								},
-							},
-						},
-					},
-				},
-			}))
-			client := gitiles.NewClient(ctx)
-
-			revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule")
-
-			So(err, ShouldBeNil)
-			So(revision, ShouldEqual, "fake-submodule-revision")
-
 		})
 
 		Convey("succeeds when calling DownloadFile", func() {

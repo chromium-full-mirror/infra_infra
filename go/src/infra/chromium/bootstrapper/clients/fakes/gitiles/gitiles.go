@@ -27,16 +27,11 @@ import (
 )
 
 type PathObject struct {
-	contents          string
-	submoduleRevision string
+	contents string
 }
 
 func File(contents string) *PathObject {
 	return &PathObject{contents: contents}
-}
-
-func Submodule(revision string) *PathObject {
-	return &PathObject{submoduleRevision: revision}
 }
 
 type Revision struct {
@@ -216,22 +211,9 @@ func (c *Client) DownloadFile(ctx context.Context, request *gitilespb.DownloadFi
 	if pathObject == nil {
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown file %#v at revision %#v of project %#v on host %#v", request.Path, request.Committish, request.Project, c.hostname))
 	}
-	var response *gitilespb.DownloadFileResponse
-	switch request.Format {
-	case gitilespb.DownloadFileRequest_JSON:
-		util.PanicIf(pathObject.submoduleRevision == "", "downloading JSON is only supported for submodules in the fake (path: %#v)", request.Path)
-		response = &gitilespb.DownloadFileResponse{
-			Contents: fmt.Sprintf(`{"revision": "%s"}`, pathObject.submoduleRevision),
-		}
-	case gitilespb.DownloadFileRequest_TEXT:
-		util.PanicIf(pathObject.submoduleRevision != "", "downloading submodule is not supported in the fake (path: %#v)", request.Path)
-		response = &gitilespb.DownloadFileResponse{
-			Contents: pathObject.contents,
-		}
-	default:
-		panic("format is not set in DownloadFileRequest")
-	}
-	return response, nil
+	return &gitilespb.DownloadFileResponse{
+		Contents: pathObject.contents,
+	}, nil
 }
 
 // DownloadDiff downloads the diff between a revision and its parent.
@@ -241,18 +223,18 @@ func (c *Client) DownloadFile(ctx context.Context, request *gitilespb.DownloadFi
 // instance is created and commits populated with the fake data. This git
 // instance then produces the diff.
 func (c *Client) DownloadDiff(ctx context.Context, request *gitilespb.DownloadDiffRequest, options ...grpc.CallOption) (*gitilespb.DownloadDiffResponse, error) {
-	getPathObjectsFromHistory := func(history []*commit) map[string]PathObject {
-		pathObjects := map[string]PathObject{}
+	getFilesFromHistory := func(history []*commit) map[string]string {
+		files := map[string]string{}
 		for i := len(history) - 1; i >= 0; i -= 1 {
 			for path, pathObject := range history[i].revision.Files {
 				if pathObject == nil {
-					delete(pathObjects, path)
+					delete(files, path)
 				} else {
-					pathObjects[path] = *pathObject
+					files[path] = pathObject.contents
 				}
 			}
 		}
-		return pathObjects
+		return files
 	}
 
 	history, err := c.getRevisionHistory(request.Project, request.Committish)
@@ -272,14 +254,6 @@ func (c *Client) DownloadDiff(ctx context.Context, request *gitilespb.DownloadDi
 	}
 	git("init")
 
-	writeFiles := func(pathObjects map[string]PathObject) {
-		files := map[string]string{}
-		for path, file := range pathObjects {
-			util.PanicIf(file.submoduleRevision != "", "attempting to create working tree with submodule %s", path)
-			files[path] = file.contents
-		}
-		util.PanicOnError(testfs.Build(tmp, files))
-	}
 	commit := func(message string) {
 		git("add", ".")
 		git("commit", "--allow-empty", "-m", message)
@@ -288,29 +262,29 @@ func (c *Client) DownloadDiff(ctx context.Context, request *gitilespb.DownloadDi
 	// For computing a diff, the relationship between the two commits isn't actually important.
 	// We'll just create a commit containing the files for the parent or base as appropriate,
 	// then create another commit with the files for committish and get a diff of HEAD vs HEAD^.
-	var basePathObjects map[string]PathObject
+	var baseFiles map[string]string
 	if request.Base == "" {
-		basePathObjects = getPathObjectsFromHistory(history[1:])
-		writeFiles(basePathObjects)
+		baseFiles = getFilesFromHistory(history[1:])
+		util.PanicOnError(testfs.Build(tmp, baseFiles))
 		commit(fmt.Sprintf("parent of committish %s", request.Committish))
 	} else {
 		baseHistory, err := c.getRevisionHistory(request.Project, request.Base)
 		if err != nil {
 			return nil, err
 		}
-		basePathObjects = getPathObjectsFromHistory(baseHistory)
-		writeFiles(basePathObjects)
+		baseFiles := getFilesFromHistory(baseHistory)
+		util.PanicOnError(testfs.Build(tmp, baseFiles))
 		commit(fmt.Sprintf("base %s", request.Base))
 	}
 
-	pathObjects := getPathObjectsFromHistory(history)
-	for path := range basePathObjects {
-		if _, ok := pathObjects[path]; !ok {
+	files := getFilesFromHistory(history)
+	for path := range baseFiles {
+		if _, ok := files[path]; !ok {
 			f := filepath.Join(tmp, filepath.FromSlash(path))
 			util.PanicOnError(os.Remove(f))
 		}
 	}
-	writeFiles(pathObjects)
+	util.PanicOnError(testfs.Build(tmp, files))
 	commit(fmt.Sprintf("committish %s", request.Committish))
 
 	args := []string{"diff", "HEAD^", "HEAD"}
