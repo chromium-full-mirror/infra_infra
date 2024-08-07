@@ -10,15 +10,17 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components"
 	bt "infra/cros/recovery/internal/components/cros/bluetooth"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/tlw"
 )
 
 // auditBluetoothExec will verify bluetooth on the host is detected correctly.
 //
-// Check if bluetooth on the host has been powered-on and is responding.
+// Check if bluetooth adapter on the host is responding to a status check.
 func auditBluetoothExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
 	bluetooth := info.GetChromeos().GetBluetooth()
@@ -29,13 +31,29 @@ func auditBluetoothExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	cmdTimeout := argsMap.AsDuration(ctx, "cmd_timeout", 30, time.Second)
 
+	var hasAdapterFunc func(context.Context, components.Runner, time.Duration) (bool, error)
 	var hasBluetooth bool
-	var err error
+
 	if bt.FlossEnabled(ctx, r, cmdTimeout) {
-		hasBluetooth, err = bt.HasAdapterFloss(ctx, r, cmdTimeout)
+		hasAdapterFunc = bt.HasAdapterFloss
 	} else {
-		hasBluetooth, err = bt.HasAdapterBlueZ(ctx, r, cmdTimeout)
+		hasAdapterFunc = bt.HasAdapterBlueZ
 	}
+
+	// Retry 8 times with timeout of 4 seconds.
+	err := retry.LimitCount(ctx, 8, 4*time.Second, func() error {
+		present, err := hasAdapterFunc(ctx, r, cmdTimeout)
+		if err != nil {
+			return err
+		}
+		if !present {
+			return errors.Reason("bluetooth adapter not found").Err()
+		}
+		// bluetooth adapter found. Stop retry.
+		hasBluetooth = present
+		return nil
+
+	}, "check bluetooth adapter status")
 
 	if err == nil && hasBluetooth {
 		bluetooth.State = tlw.HardwareState_HARDWARE_NORMAL
