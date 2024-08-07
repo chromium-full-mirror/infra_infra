@@ -252,7 +252,7 @@ type QueryResult struct {
 }
 
 // MetricSaver a function to provide contextless saver of metrics.
-type MetricSaver func(action *Action) error
+type MetricSaver func(action *Action)
 
 // Metrics is a simple interface for logging
 // structured events and metrics.

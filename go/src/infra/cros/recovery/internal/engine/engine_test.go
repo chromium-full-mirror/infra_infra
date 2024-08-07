@@ -723,8 +723,8 @@ func TestCallMetricsInEmptyPlan(t *testing.T) {
 	m := newFakeMetrics()
 	r := &recoveryEngine{
 		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
-		metricSaver: func(metric *metrics.Action) error {
-			return m.Create(ctx, metric)
+		metricSaver: func(metric *metrics.Action) {
+			m.Create(ctx, metric)
 		},
 	}
 	var zero time.Time
@@ -765,8 +765,8 @@ func TestCallMetricsWithNonexistentAction(t *testing.T) {
 	m := newFakeMetrics()
 	r := &recoveryEngine{
 		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
-		metricSaver: func(metric *metrics.Action) error {
-			return m.Create(ctx, metric)
+		metricSaver: func(metric *metrics.Action) {
+			m.Create(ctx, metric)
 		},
 	}
 	var zero time.Time
@@ -843,8 +843,8 @@ func TestCallMetricsWithExistentAction(t *testing.T) {
 	m := newFakeMetrics()
 	r := &recoveryEngine{
 		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
-		metricSaver: func(metric *metrics.Action) error {
-			return m.Create(ctx, metric)
+		metricSaver: func(metric *metrics.Action) {
+			m.Create(ctx, metric)
 		},
 	}
 	var zero time.Time
