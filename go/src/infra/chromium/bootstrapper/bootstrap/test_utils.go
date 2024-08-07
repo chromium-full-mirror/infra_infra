@@ -48,10 +48,6 @@ func setBootstrapTriggerProperties(build *buildbucketpb.Build, propsJson string)
 	})
 }
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func getInput(build *buildbucketpb.Build) *Input {
 	input, err := InputOptions{}.NewInput(build)
 	util.PanicOnError(err)

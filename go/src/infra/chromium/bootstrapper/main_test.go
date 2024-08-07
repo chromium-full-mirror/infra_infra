@@ -32,10 +32,6 @@ import (
 	. "infra/chromium/util"
 )
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func createInput(buildJson string) io.Reader {
 	build := &buildbucketpb.Build{}
 	PanicOnError(protojson.Unmarshal([]byte(buildJson), build))
@@ -148,8 +144,8 @@ func TestPerformBootstrap(t *testing.T) {
 		Convey("fails if determining executable fails", func() {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
-				Files: map[string]*string{
-					"fake-properties-file": strPtr(`{
+				Files: map[string]*fakegitiles.PathObject{
+					"fake-properties-file": fakegitiles.File(`{
 						"foo": "bar"
 					}`),
 				},
@@ -166,8 +162,8 @@ func TestPerformBootstrap(t *testing.T) {
 		Convey("succeeds for valid input", func() {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
-				Files: map[string]*string{
-					"fake-properties-file": strPtr(`{
+				Files: map[string]*fakegitiles.PathObject{
+					"fake-properties-file": fakegitiles.File(`{
 						"foo": "builder-value"
 					}`),
 				},
@@ -230,8 +226,8 @@ func TestPerformBootstrap(t *testing.T) {
 		Convey("succeeds for polymorphic with build properties prioritized over builder properties", func() {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
-				Files: map[string]*string{
-					"fake-properties-file": strPtr(`{
+				Files: map[string]*fakegitiles.PathObject{
+					"fake-properties-file": fakegitiles.File(`{
 						"foo": "builder-value"
 					}`),
 				},

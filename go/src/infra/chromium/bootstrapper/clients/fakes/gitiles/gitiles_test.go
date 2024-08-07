@@ -19,10 +19,6 @@ import (
 	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
-func strPtr(s string) *string {
-	return &s
-}
-
 func TestFactory(t *testing.T) {
 	t.Parallel()
 
@@ -221,32 +217,32 @@ func TestLog(t *testing.T) {
 								},
 								"fake-revision-touching-path": {
 									Parent: "fake-revision-not-touching-path-2",
-									Files: map[string]*string{
-										"fake/path/foo": strPtr("modified-foo-content"),
+									Files: map[string]*PathObject{
+										"fake/path/foo": File("modified-foo-content"),
 									},
 								},
 								"fake-revision-not-touching-path-2": {
 									Parent: "fake-revision-touching-path-2",
-									Files: map[string]*string{
-										"some/other/path": strPtr("some-other-content"),
+									Files: map[string]*PathObject{
+										"some/other/path": File("some-other-content"),
 									},
 								},
 								"fake-revision-touching-path-2": {
 									Parent: "fake-revision-touching-path-3",
-									Files: map[string]*string{
-										"fake/path/bar": strPtr("new-bar-content"),
+									Files: map[string]*PathObject{
+										"fake/path/bar": File("new-bar-content"),
 									},
 								},
 								"fake-revision-touching-path-3": {
 									Parent: "fake-revision-touching-path-4",
-									Files: map[string]*string{
+									Files: map[string]*PathObject{
 										"fake/path":     nil,
-										"fake/path/foo": strPtr("new-foo-content"),
+										"fake/path/foo": File("new-foo-content"),
 									},
 								},
 								"fake-revision-touching-path-4": {
-									Files: map[string]*string{
-										"fake/path": strPtr("new-fake-path-content"),
+									Files: map[string]*PathObject{
+										"fake/path": File("new-fake-path-content"),
 									},
 								},
 							},
@@ -340,8 +336,8 @@ func TestDownloadFile(t *testing.T) {
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision": {
-									Files: map[string]*string{
-										"fake/file": strPtr("fake-contents"),
+									Files: map[string]*PathObject{
+										"fake/file": File("fake-contents"),
 									},
 								},
 							},
@@ -364,8 +360,8 @@ func TestDownloadFile(t *testing.T) {
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision-1": {
-									Files: map[string]*string{
-										"fake/file": strPtr("fake-contents"),
+									Files: map[string]*PathObject{
+										"fake/file": File("fake-contents"),
 									},
 								},
 								"fake-revision-2": {
@@ -391,7 +387,7 @@ func TestDownloadFile(t *testing.T) {
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision": {
-									Files: map[string]*string{
+									Files: map[string]*PathObject{
 										"fake/file": nil,
 									},
 								},
@@ -476,28 +472,28 @@ func TestDownloadDiff(t *testing.T) {
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision-1": {
-									Files: map[string]*string{
-										"to-re-add": strPtr("fake-contents-to-be-re-added\n"),
+									Files: map[string]*PathObject{
+										"to-re-add": File("fake-contents-to-be-re-added\n"),
 									},
 								},
 								"fake-revision-2": {
-									Files: map[string]*string{
-										"to-modify":         strPtr("fake-contents-1\n"),
-										"to-make-non-empty": strPtr(""),
-										"to-clear":          strPtr("fake-contents-to-be-removed\n"),
-										"to-delete":         strPtr("fake-contents-for-file-to-be-deleted\n"),
+									Files: map[string]*PathObject{
+										"to-modify":         File("fake-contents-1\n"),
+										"to-make-non-empty": File(""),
+										"to-clear":          File("fake-contents-to-be-removed\n"),
+										"to-delete":         File("fake-contents-for-file-to-be-deleted\n"),
 										"to-re-add":         nil,
 									},
 									Parent: "fake-revision-1",
 								},
 								"fake-revision-3": {
-									Files: map[string]*string{
-										"to-modify":         strPtr("fake-contents-2\n"),
-										"to-make-non-empty": strPtr("fake-contents-added\n"),
-										"to-add":            strPtr("fake-contents-for-new-file\n"),
-										"to-clear":          strPtr(""),
+									Files: map[string]*PathObject{
+										"to-modify":         File("fake-contents-2\n"),
+										"to-make-non-empty": File("fake-contents-added\n"),
+										"to-add":            File("fake-contents-for-new-file\n"),
+										"to-clear":          File(""),
 										"to-delete":         nil,
-										"to-re-add":         strPtr("fake-contents-to-be-re-added\n"),
+										"to-re-add":         File("fake-contents-to-be-re-added\n"),
 									},
 									Parent: "fake-revision-2",
 								},
@@ -593,19 +589,19 @@ index A..B 100644
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision-1": {
-									Files: map[string]*string{
-										"to-modify": strPtr("fake-contents-A\n"),
+									Files: map[string]*PathObject{
+										"to-modify": File("fake-contents-A\n"),
 									},
 								},
 								"fake-revision-2": {
-									Files: map[string]*string{
-										"to-modify": strPtr("fake-contents-A\n"),
+									Files: map[string]*PathObject{
+										"to-modify": File("fake-contents-A\n"),
 									},
 									Parent: "fake-revision-1",
 								},
 								"fake-revision-3": {
-									Files: map[string]*string{
-										"to-modify": strPtr("fake-contents-B\n"),
+									Files: map[string]*PathObject{
+										"to-modify": File("fake-contents-B\n"),
 									},
 									Parent: "fake-revision-1",
 								},
@@ -664,8 +660,8 @@ func TestIntegration(t *testing.T) {
 						"fake/project": {
 							Revisions: map[string]*Revision{
 								"fake-revision": {
-									Files: map[string]*string{
-										"fake/file": strPtr("fake-contents"),
+									Files: map[string]*PathObject{
+										"fake/file": File("fake-contents"),
 									},
 								},
 							},
@@ -690,13 +686,13 @@ func TestIntegration(t *testing.T) {
 							"fake/project": {
 								Revisions: map[string]*Revision{
 									"fake-revision-1": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-1"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-1"),
 										},
 									},
 									"fake-revision-2": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-2"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-2"),
 										},
 										Parent: "fake-revision-1",
 									},
@@ -720,13 +716,13 @@ func TestIntegration(t *testing.T) {
 							"fake/project": {
 								Revisions: map[string]*Revision{
 									"fake-revision-1": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-1"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-1"),
 										},
 									},
 									"fake-revision-2": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-2"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-2"),
 										},
 										Parent: "fake-revision-1",
 									},
@@ -750,19 +746,19 @@ func TestIntegration(t *testing.T) {
 							"fake/project": {
 								Revisions: map[string]*Revision{
 									"fake-revision-1": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-A"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-A"),
 										},
 									},
 									"fake-revision-2": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-A"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-A"),
 										},
 										Parent: "fake-revision-1",
 									},
 									"fake-revision-3": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-B"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-B"),
 										},
 									},
 								},
@@ -785,19 +781,19 @@ func TestIntegration(t *testing.T) {
 							"fake/project": {
 								Revisions: map[string]*Revision{
 									"fake-revision-1": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-A"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-A"),
 										},
 									},
 									"fake-revision-2": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-B"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-B"),
 										},
 										Parent: "fake-revision-1",
 									},
 									"fake-revision-3": {
-										Files: map[string]*string{
-											"fake/file": strPtr("fake-contents-B"),
+										Files: map[string]*PathObject{
+											"fake/file": File("fake-contents-B"),
 										},
 									},
 								},

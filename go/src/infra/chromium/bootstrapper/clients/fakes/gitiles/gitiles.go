@@ -26,6 +26,14 @@ import (
 	"infra/chromium/util"
 )
 
+type PathObject struct {
+	contents string
+}
+
+func File(contents string) *PathObject {
+	return &PathObject{contents: contents}
+}
+
 type Revision struct {
 	// Parent is the commit ID of the parent revision.
 	Parent string
@@ -35,7 +43,7 @@ type Revision struct {
 	// Missing keys will have the same contents as in the parent revision,
 	// if there is one, otherwise the file does not exist at the revision. A
 	// nil value indicates the file does not exist at the revision.
-	Files map[string]*string
+	Files map[string]*PathObject
 }
 
 // Project is the fake data for a gitiles project.
@@ -192,19 +200,19 @@ func (c *Client) DownloadFile(ctx context.Context, request *gitilespb.DownloadFi
 	if err != nil {
 		return nil, err
 	}
-	var contents *string
+	var pathObject *PathObject
 	var ok bool
 	for _, commit := range history {
-		contents, ok = commit.revision.Files[request.Path]
+		pathObject, ok = commit.revision.Files[request.Path]
 		if ok {
 			break
 		}
 	}
-	if contents == nil {
+	if pathObject == nil {
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("unknown file %#v at revision %#v of project %#v on host %#v", request.Path, request.Committish, request.Project, c.hostname))
 	}
 	return &gitilespb.DownloadFileResponse{
-		Contents: *contents,
+		Contents: pathObject.contents,
 	}, nil
 }
 
@@ -218,11 +226,11 @@ func (c *Client) DownloadDiff(ctx context.Context, request *gitilespb.DownloadDi
 	getFilesFromHistory := func(history []*commit) map[string]string {
 		files := map[string]string{}
 		for i := len(history) - 1; i >= 0; i -= 1 {
-			for path, contents := range history[i].revision.Files {
-				if contents == nil {
+			for path, pathObject := range history[i].revision.Files {
+				if pathObject == nil {
 					delete(files, path)
 				} else {
-					files[path] = *contents
+					files[path] = pathObject.contents
 				}
 			}
 		}
