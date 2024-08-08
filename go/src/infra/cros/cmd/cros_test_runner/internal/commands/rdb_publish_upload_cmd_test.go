@@ -191,6 +191,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		createTime := timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z"))
 		startedTime := timestamppb.New(parseTime("2022-09-07T20:53:33.983328614Z"))
 		duration := &duration.Duration{Seconds: 60}
+		requester := "chrome-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
+		parentCreatedBy := "user:" + requester
 		primaryDUT := &labapi.Dut{
 			Id: &labapi.Dut_Id{Value: "0wgtfqin2033834d-ecghcra"},
 			DutType: &labapi.Dut_Chromeos{
@@ -307,6 +309,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						"parent_task_id":    "parentId1",
 						"branch-trigger":    "DEV",
 						"bug_id":            "1234",
+						"parent_created_by": parentCreatedBy,
 					},
 				},
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{
@@ -337,6 +340,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Branch:          "main",
 						MainBuilderName: "main-release",
 						Channel:         "DEV",
+						Requester:       requester,
 					},
 					LogsInfo: []*configpb.StoragePath{
 						{
@@ -377,6 +381,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "parent_task_id", Value: "parentId1"},
 				{Key: "branch-trigger", Value: "DEV"},
 				{Key: "bug_id", Value: "1234"},
+				{Key: "parent_created_by", Value: parentCreatedBy},
 			},
 			CreateTime: createTime,
 			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{

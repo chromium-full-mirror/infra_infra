@@ -647,20 +647,42 @@ func populateTestCaseInfo(
 ) {
 	testCaseInfo := &artifactpb.TestCaseInfo{}
 	testCaseInfo.TestCaseResult = testCaseResult
-	if suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite"); suite != "" {
+
+	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite")
+	if suite != "" {
 		testCaseInfo.Suite = suite
 	}
-	if branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch"); branch != "" {
+
+	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch")
+	if branch != "" {
 		testCaseInfo.Branch = branch
 	}
-	if mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config"); mainBuilderName != "" {
+
+	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config")
+	if mainBuilderName != "" {
 		testCaseInfo.MainBuilderName = mainBuilderName
 	}
-	if channel := getSingleTagValue(build.Tags, "branch-trigger"); channel != "" {
+
+	channel := getSingleTagValue(build.Tags, "branch-trigger")
+	if channel != "" {
 		testCaseInfo.Channel = channel
 	}
-	if displayName := getSingleTagValue(build.Tags, "display_name"); displayName != "" {
+
+	displayName := getSingleTagValue(build.Tags, "display_name")
+	if displayName != "" {
 		testCaseInfo.DisplayName = displayName
+	}
+
+	// Fetches the requester from the user tag of the current build first.
+	// If not existed, falls back to the parent_created_by tag which indicates
+	// the requester for the parent build.
+	requester := getSingleTagValue(build.Tags, "user")
+	if requester == "" {
+		requester = getSingleTagValue(build.Tags, "parent_created_by")
+	}
+	if requester != "" {
+		requester, _ = strings.CutPrefix(requester, "user:")
+		testCaseInfo.Requester = requester
 	}
 
 	testRun.TestCaseInfo = testCaseInfo
