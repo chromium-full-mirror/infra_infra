@@ -1,0 +1,58 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+enum ERROR_CODE {
+    OK = 0;
+    UNKNOWN_METHOD = 1;
+    WRONG_ARGS = 2;
+    INTERNAL = 3;
+    UNEXPECTED = 4;
+    NOT_FOUND = 5;
+}
+
+enum DOLOS_STATUS {
+    DOLOS_UNKNOWN = 0;
+    DOLOS_NO_POWER_SUPPLIED = 1;
+    DOLOS_OUTPUT_POWER_FAILED = 2;
+    DOLOS_BMS_STATE_INVALID = 3;
+    DOLOS_SMBUS_COMM_NOT_DETECTED = 4;
+    DOLOS_EEPROM_FAILURE = 5;
+    DOLOS_OK = 6;
+    DOLOS_NO_COMMUNICATION = 7;
+    DOLOS_NOT_PRESENT = 8;
+}
+
+message Response {
+    string msg = 2;
+    ERROR_CODE code = 3;
+}
+
+message FindUartNameResponse {
+    string uartname = 1;
+    Response response = 2;
+}
+
+message FirmwareUpdateResponse {
+    Response response = 1;
+}
+
+message GetStatusResponse {
+    DOLOS_STATUS status = 1;
+    Response response = 2;
+}
+
+message GetRepairResponse {
+    Response response = 1;
+}
+
+message GetVersionResponse {
+    string version = 1;
+    Response response = 2;
+}
+
+message GenericResponse {
+    Response response = 1;
+}

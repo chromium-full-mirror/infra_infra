@@ -6,9 +6,10 @@ package dolos
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strings"
+
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -19,49 +20,73 @@ import (
 
 const (
 	// User the doloscmd to query the Dolos status.
-	dolosGetStatusCmdGlob = "/usr/bin/doloscmd get-status --serial %s"
+	dolosFindUartCmdGlob  = "/usr/bin/doloscmd find-uartname --serial %s"
+	dolosGetStatusCmdGlob = "/usr/bin/doloscmd get-status --uartname %s"
 )
 
-// Eventually use the files generated from doloscmt.proto.
-type dolosStatusResponse struct {
-	Status string `json:"status"`
-}
-
-// determineAndSetDolosStateExec calculate the current Dolos state and update UFS.
-func determineAndSetDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
-
-	dolos := info.GetChromeos().GetDolos()
-	if dolos == nil {
+func isEnabledForTestbedExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetDolos() == nil {
 		return errors.Reason("dolos not enabled for this testbed.").Err()
 	}
-	previousState := info.GetChromeos().GetDolos().GetState()
-	info.GetChromeos().GetDolos().State = tlw.Dolos_DOLOS_UNKNOWN
+	return nil
+}
 
-	resource := dolos.GetHostname()
-	run := info.NewRunner(resource)
-	output, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf(dolosGetStatusCmdGlob, dolos.GetSerialCable()))
+func isUartnameCachedExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetDolos().GetSerialUsb() == "" {
+		return errors.Reason("dolos uart not cached for this device.").Err()
+	}
+	return nil
+}
+
+func updateUartNameExec(ctx context.Context, info *execs.ExecInfo) error {
+	dolos := info.GetChromeos().GetDolos()
+	run := info.NewRunner(dolos.GetHostname())
+	output, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf(dolosFindUartCmdGlob, dolos.GetSerialCable()))
 	if err != nil {
-		return errors.Annotate(err, "set dolos state").Err()
+		return errors.Annotate(err, "update dolos UART: fail to read data").Err()
 	}
 
-	var decoded dolosStatusResponse
-	err = json.Unmarshal([]byte(output), &decoded)
+	var decoded FindUartNameResponse
+	if err := protojson.Unmarshal([]byte(output), &decoded); err != nil {
+		return errors.Annotate(err, "update dolos UART: fail to parse results").Err()
+	}
+	log.Infof(ctx, "Found dolos uartname %s.", decoded.Uartname)
+	dolos.SerialUsb = decoded.Uartname
+
+	return nil
+}
+
+// determineAndSetStateExec calculate the current Dolos state and update UFS.
+func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
+
+	dolos := info.GetChromeos().GetDolos()
+
+	previousState := dolos.GetState()
+	dolos.State = tlw.Dolos_DOLOS_UNKNOWN
+
+	run := info.NewRunner(dolos.GetHostname())
+	output, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf(dolosGetStatusCmdGlob, dolos.GetSerialUsb()))
 	if err != nil {
-		return errors.Annotate(err, "set dolos state").Err()
+		return errors.Annotate(err, "determine dolos state").Err()
 	}
 
-	newState := decoded.Status
+	var decoded GetStatusResponse
+	err = protojson.Unmarshal([]byte(output), &decoded)
+	if err != nil {
+		return errors.Annotate(err, "determine dolos state").Err()
+	}
+
+	newState := decoded.Status.String()
 	log.Debugf(ctx, "Previous dolos state: %s", previousState)
 	if v, ok := tlw.Dolos_State_value[newState]; ok {
-		info.GetChromeos().GetDolos().State = tlw.Dolos_State(v)
+		dolos.State = tlw.Dolos_State(v)
 		log.Infof(ctx, "Set dolos state to be: %s", newState)
 		return nil
 	}
-	return errors.Reason("set dolos state: state is %q not found", newState).Err()
+	return errors.Reason("determine dolos state: state is %q not found", newState).Err()
 }
 
-// determineAndSetDolosStateExec calculate the current Dolos state and update UFS.
-func setDolosStateExec(ctx context.Context, info *execs.ExecInfo) error {
+func setStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
 	newState := strings.ToUpper(args.AsString(ctx, "state", ""))
 	if newState == "" {
@@ -95,7 +120,10 @@ func dolosDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) erro
 }
 
 func init() {
-	execs.Register("dolos_determine_and_set_dolos_state", determineAndSetDolosStateExec)
-	execs.Register("dolos_set_dolos_state", setDolosStateExec)
 	execs.Register("dolos_does_not_need_reboot", dolosDoesNotNeedsRebootExec)
+	execs.Register("dolos_determine_and_set_dolos_state", determineAndSetStateExec)
+	execs.Register("dolos_set_dolos_state", setStateExec)
+	execs.Register("dolos_is_uartname_cached", isUartnameCachedExec)
+	execs.Register("dolos_is_enabled", isEnabledForTestbedExec)
+	execs.Register("dolos_update_uartname_cache", updateUartNameExec)
 }

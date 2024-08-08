@@ -1,6 +1,12 @@
 plans:
     - name: dolos (Allow to fail)
       criticalactions:
+        - name: Set dolos state:DOLOS_NOT_PRESENT (ALWAYS_RUN)
+          exec_name: dolos_set_dolos_state
+          exec_args:
+            - state:DOLOS_NOT_PRESENT
+        - name: Is Dolos present
+          exec_name: dolos_is_enabled
         - name: Device is sshable (time:'30s')
           exec_name: cros_ssh
           dependencies:
@@ -10,6 +16,26 @@ plans:
                 - state:NO_SSH
             - name: Device is pingable (time:'15s')
               exec_name: cros_ping
+        - name: Uartname is known (Allow to fail)
+          exec_name: dolos_is_uartname_cached
+          dependencies:
+            - name: Is Dolos present
+              exec_name: dolos_is_enabled
+          recoveries:
+            - name: Discover uartname and save to cache
+              exec_name: dolos_update_uartname_cache
+              dependencies:
+                - name: Device is sshable (time:'30s')
+                  exec_name: cros_ssh
+                  dependencies:
+                    - name: Set dolos state:NO_SSH (ALWAYS_RUN)
+                      exec_name: dolos_set_dolos_state
+                      exec_args:
+                        - state:NO_SSH
+                    - name: Device is pingable (time:'15s')
+                      exec_name: cros_ping
+                - name: Is Dolos present
+                  exec_name: dolos_is_enabled
         - name: Update state (time:'30s')
           exec_name: dolos_determine_and_set_dolos_state
         - name: Dolos does not needs reboot

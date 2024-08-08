@@ -11,7 +11,10 @@ import (
 func dolosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Set dolos state:DOLOS_NOT_PRESENT",
+			"Is Dolos present",
 			"Device is sshable",
+			"Uartname is known",
 			"Update state",
 			"Dolos does not needs reboot",
 		},
@@ -28,6 +31,26 @@ func dolosRepairPlan() *Plan {
 				ExecName:    "cros_ssh",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
+			"Is Dolos present": {
+				ExecName: "dolos_is_enabled",
+			},
+			"Uartname is known": {
+				Dependencies: []string{
+					"Is Dolos present",
+				},
+				ExecName: "dolos_is_uartname_cached",
+				RecoveryActions: []string{
+					"Discover uartname and save to cache",
+				},
+				AllowFailAfterRecovery: true,
+			},
+			"Discover uartname and save to cache": {
+				Dependencies: []string{
+					"Device is sshable",
+					"Is Dolos present",
+				},
+				ExecName: "dolos_update_uartname_cache",
+			},
 			"Update state": {
 				ExecName:    "dolos_determine_and_set_dolos_state",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
@@ -36,6 +59,14 @@ func dolosRepairPlan() *Plan {
 				ExecName: "dolos_set_dolos_state",
 				ExecExtraArgs: []string{
 					"state:NO_SSH",
+				},
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Set dolos state:DOLOS_NOT_PRESENT": {
+				ExecName: "dolos_set_dolos_state",
+				ExecExtraArgs: []string{
+					"state:DOLOS_NOT_PRESENT",
 				},
 				RunControl:    RunControl_ALWAYS_RUN,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
