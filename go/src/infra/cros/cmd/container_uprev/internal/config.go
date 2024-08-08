@@ -106,5 +106,17 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/foil-filter/${platform}"),
 			},
 		},
+		{
+			Name: "cros-legacy-hw-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/hardware_solvers/legacy_hw_filter/${platform}"),
+			},
+		},
+		{
+			Name: "use_flag_filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/use_flag_filter/${platform}"),
+			},
+		},
 	}
 }

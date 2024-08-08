@@ -33,19 +33,13 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultLegacyHWSha      = "0d2d1b14940de10b4e1985065876357bf5bfe9d04f103892265d17e0b0b86350"
-	defaultTTCPSha          = "8f31523fcf887aeeacf92c5ed6198ace0bbe3ffc2eef31d242a22a06dd45c42e"
-	defaultUseFlagFilterSha = "9109345c742f5fc6c8575e6f41b36b480be70eb5f85b8098c04e3fa7398f0536"
-	prodShas                = map[string]string{
-		TtcpContainerName:          defaultTTCPSha,
-		LegacyHWContainerName:      defaultLegacyHWSha,
-		UseFlagFilterContainerName: defaultUseFlagFilterSha}
+	defaultTTCPSha = "8f31523fcf887aeeacf92c5ed6198ace0bbe3ffc2eef31d242a22a06dd45c42e"
+	prodShas       = map[string]string{
+		TtcpContainerName: defaultTTCPSha}
 
 	binaryLookup = map[string]string{
-		LegacyHWContainerName:      "legacy_hw_filter",
-		TtcpContainerName:          "solver_service",
-		TestFinderContainerName:    "test_finder_filter",
-		UseFlagFilterContainerName: "use_flag_filter",
+		TtcpContainerName:       "solver_service",
+		TestFinderContainerName: "test_finder_filter",
 	}
 )
 

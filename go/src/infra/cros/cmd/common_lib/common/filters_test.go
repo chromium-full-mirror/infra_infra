@@ -47,6 +47,12 @@ func TestGetDefaultFilters(t *testing.T) {
 		Digest:     "foo",
 		Tags:       []string{"tag1", "tag2"},
 	}
+	contMetadataMap[LegacyHWContainerName] = &buildapi.ContainerImageInfo{
+		Repository: nil,
+		Name:       LegacyHWContainerName,
+		Digest:     "foo",
+		Tags:       []string{"tag1", "tag2"},
+	}
 	fmt.Println(contMetadataMap)
 
 	filters, err := GetDefaultFilters(ctx, []string{"container1", TestFinderContainerName, LegacyHWContainerName}, contMetadataMap, 16005)
@@ -61,7 +67,7 @@ func TestGetDefaultFilters(t *testing.T) {
 	if filters[2].GetContainerInfo().GetContainer().GetName() != LegacyHWContainerName {
 		t.Fatal("No LegacyHWContainerName found in default filters (or is out of order).")
 	}
-	if filters[2].GetContainerInfo().GetContainer().GetDigest() != fmt.Sprintf("sha256:%s", defaultLegacyHWSha) {
+	if filters[2].GetContainerInfo().GetContainer().GetDigest() != fmt.Sprintf("foo") {
 		t.Fatal("LegacyHWContainerName default has incorrect sha")
 	}
 
