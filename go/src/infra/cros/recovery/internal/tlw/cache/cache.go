@@ -5,10 +5,12 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"hash/fnv"
 	"log"
 	"net"
+	"os"
 
 	ufsModels "infra/unifiedfleet/api/v1/models"
 )
@@ -41,11 +43,11 @@ type Subnet struct {
 	Backends []string
 }
 
-// NewEnv creates new instance of Environment according to inputs.
-func NewEnv(preferredCachingServices string, ufsClient UFSClient) (Environment, error) {
-	env, err := NewPreferredEnv(preferredCachingServices)
+// New creates new instance of Environment according to inputs.
+func New(ctx context.Context, ufsClient UFSClient) (Environment, error) {
+	env, err := NewPreferredEnv(ctx, getPreferedCachingServices())
 	if err == nil {
-		log.Printf("new cache env: created preferred env using %q", preferredCachingServices)
+		log.Printf("new cache")
 		return env, nil
 	}
 
@@ -139,4 +141,19 @@ func hash(s string) int {
 	h := fnv.New32a()
 	h.Write([]byte(s))
 	return int(h.Sum32())
+}
+
+func getPreferedCachingServices() string {
+	// TLW_CACHING_PREFERRED_SERVICES is a comma separated list of caching
+	// services (each in format of 'http://<server name or IP>:<port>'). When
+	// specified, it bypasses the normal cache server selection.
+	cachingServices := os.Getenv("TLW_CACHING_PREFERRED_SERVICES")
+	if cachingServices != "" {
+		return cachingServices
+	}
+	serviceIPAddr := os.Getenv("DOCKER_DRONE_CACHESERVER_IP")
+	if serviceIPAddr != "" {
+		return fmt.Sprintf("http://%s:8082", serviceIPAddr)
+	}
+	return ""
 }

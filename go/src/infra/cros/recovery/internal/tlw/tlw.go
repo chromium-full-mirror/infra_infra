@@ -7,21 +7,13 @@ package tlw
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/url"
-	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/tlw/cache"
-)
-
-var (
-	// TLW_CACHING_PREFERRED_SERVICES is a comma separated list of caching
-	// services (each in format of 'http://<server name or IP>:<port>'). When
-	// specified, it bypasses the normal cache server selection.
-	preferredCachingServices = os.Getenv("TLW_CACHING_PREFERRED_SERVICES")
 )
 
 type Server interface {
@@ -46,16 +38,16 @@ type tlwServer struct {
 func (s *tlwServer) Close() {
 }
 
-func (s *tlwServer) initialize() error {
+func (s *tlwServer) initialize(ctx context.Context) error {
 	if s.cFrontend != nil {
 		return nil
 	}
-	ce, err := cache.NewEnv(preferredCachingServices, s.ufsClient)
+	ce, err := cache.New(ctx, s.ufsClient)
 	if err != nil {
 		return errors.Annotate(err, "initialize: cFrontend for tlw").Err()
 	}
 	s.cFrontend = cache.NewFrontend(ce)
-	log.Printf("TLW: cFrontend initialized!")
+	log.Debugf(ctx, "TLW: cFrontend initialized!")
 	return nil
 }
 
@@ -104,19 +96,19 @@ func extractDutName(name string) string {
 
 // cache implements the logic for the CacheForDut method and runs as a goroutine.
 func (s *tlwServer) cache(ctx context.Context, parsedURL *url.URL, dutName string) (string, error) {
-	log.Printf("CacheForDut: Started Operation")
-	if err := s.initialize(); err != nil {
+	log.Debugf(ctx, "CacheForDut: Started Operation")
+	if err := s.initialize(ctx); err != nil {
 		return "", errors.Annotate(err, "cache").Err()
 	}
 	path := fmt.Sprintf("%s%s", parsedURL.Host, parsedURL.Path)
 	// TODO (guocb): return a url.URL instead of string.
 	cs, err := s.cFrontend.AssignBackend(dutName, path)
 	if err != nil {
-		log.Printf("CacheForDut: %s", err)
+		log.Debugf(ctx, "CacheForDut: %s", err)
 		return "", errors.Annotate(err, "cache").Err()
 	}
 
 	u := fmt.Sprintf("%s/download/%s", strings.TrimSuffix(cs, "/"), path)
-	log.Printf("CacheForDut: result URL: %s", u)
+	log.Debugf(ctx, "CacheForDut: result URL: %s", u)
 	return u, nil
 }

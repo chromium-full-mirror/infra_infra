@@ -5,9 +5,11 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"net"
+	"os"
 	"strings"
 	"testing"
 
@@ -188,8 +190,10 @@ func TestAssignBackend_dutNotInZoneOrSubnet(t *testing.T) {
 
 func TestAssignBackend_preferred(t *testing.T) {
 	t.Parallel()
+	ctx := context.Background()
 	want := "http://1.1.1.1:8000"
-	env, _ := NewEnv(want, nil)
+	_ = os.Setenv("TLW_CACHING_PREFERRED_SERVICES", want)
+	env, _ := New(ctx, nil)
 	fe := NewFrontend(env)
 	got, err := fe.AssignBackend("2.2.2.2", "path/to/file")
 	if err != nil {

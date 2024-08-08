@@ -5,17 +5,20 @@
 package cache
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
 
+	"infra/cros/recovery/internal/log"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 )
 
 // NewPreferredEnv creates a new preferred caching service environment.
 // In this environment, we skip further server selection based on either UFS
 // zone or subnets.
-func NewPreferredEnv(services string) (Environment, error) {
+func NewPreferredEnv(ctx context.Context, services string) (Environment, error) {
+	log.Debugf(ctx, "new preferred caching service environment: %s", services)
 	svc := parseCSVAndSort(services)
 	if len(svc) == 0 {
 		return nil, fmt.Errorf("new preferred caching service environment: no preferred service specified")
