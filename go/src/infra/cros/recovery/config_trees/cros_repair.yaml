@@ -36,7 +36,7 @@ plans:
                       exec_name: cros_ping
                 - name: Is Dolos present
                   exec_name: dolos_is_enabled
-        - name: Update state (time:'30s')
+        - name: Update state
           exec_name: dolos_determine_and_set_dolos_state
         - name: Dolos does not needs reboot
           exec_name: dolos_does_not_need_reboot
@@ -59,7 +59,7 @@ plans:
                   exec_name: sample_sleep
                   exec_args:
                     - sleep:5
-                - name: Power cycle root servo (ALWAYS_RUN) (time:'45s')
+                - name: Power cycle root servo (ALWAYS_RUN)
                   exec_name: servo_power_cycle_root_servo
                 - name: Set RPM ON (ALWAYS_RUN)
                   exec_name: device_rpm_power_on

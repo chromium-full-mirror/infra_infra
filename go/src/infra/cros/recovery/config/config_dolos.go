@@ -52,8 +52,7 @@ func dolosRepairPlan() *Plan {
 				ExecName: "dolos_update_uartname_cache",
 			},
 			"Update state": {
-				ExecName:    "dolos_determine_and_set_dolos_state",
-				ExecTimeout: &durationpb.Duration{Seconds: 30},
+				ExecName: "dolos_determine_and_set_dolos_state",
 			},
 			"Set dolos state:NO_SSH": {
 				ExecName: "dolos_set_dolos_state",
@@ -110,9 +109,8 @@ func dolosRepairPlan() *Plan {
 				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Power cycle root servo": {
-				ExecName:    "servo_power_cycle_root_servo",
-				RunControl:  RunControl_ALWAYS_RUN,
-				ExecTimeout: &durationpb.Duration{Seconds: 45},
+				ExecName:   "servo_power_cycle_root_servo",
+				RunControl: RunControl_ALWAYS_RUN,
 				RecoveryActions: []string{
 					"Set RPM ON",
 				},

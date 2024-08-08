@@ -18,14 +18,14 @@ plans:
                     - name: Set dolos state:NO_SSH ('dolos_set_dolos_state') (ALWAYS_RUN)
                     - name: Device is pingable ('cros_ping') (time:'15s')
                 - name: Is Dolos present ('dolos_is_enabled')
-        - name: Update state ('dolos_determine_and_set_dolos_state') (time:'30s')
+        - name: Update state ('dolos_determine_and_set_dolos_state')
         - name: Dolos does not needs reboot ('dolos_does_not_need_reboot')
           recoveries:
             - name: Reboot dolos ('sample_pass')
               dependencies:
                 - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
                 - name: Sleep 5s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Power cycle root servo ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'45s')
+                - name: Power cycle root servo ('servo_power_cycle_root_servo') (ALWAYS_RUN)
                 - name: Set RPM ON ('device_rpm_power_on') (ALWAYS_RUN)
                 - name: Sleep 20s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
     - name: servo
