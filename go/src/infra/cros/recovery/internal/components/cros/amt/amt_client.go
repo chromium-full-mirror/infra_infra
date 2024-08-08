@@ -68,14 +68,14 @@ func (c AMTClient) post(ctx context.Context, request string) (string, error) {
 	t := dac.NewTransport(c.username, c.password)
 	r, err := http.NewRequest("POST", c.uri, strings.NewReader(request))
 	if err != nil {
-		return "", errors.Reason("failed to create the request").Err()
+		return "", errors.Annotate(err, "failed to create the request").Err()
 	}
 	r.Header.Add("Content-Type", "application/soap+xml;charset=UTF-8")
 	resp, err := t.RoundTrip(r)
-	log.Debugf(ctx, "Received HTTP status code: %d", resp.StatusCode)
 	if err != nil {
-		return "", errors.Reason("failed to post the data").Err()
+		return "", errors.Annotate(err, "failed to post the data").Err()
 	}
+	log.Debugf(ctx, "Received HTTP status code: %d", resp.StatusCode)
 	// Work around the following linter error:
 	// Error return value of `resp.Body.Close` is not checked (errcheck)
 	defer func() { _ = resp.Body.Close() }()
