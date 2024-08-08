@@ -24,6 +24,7 @@ import (
 	"infra/cros/recovery/internal/rpm"
 	"infra/cros/recovery/internal/tls"
 	tlw_server "infra/cros/recovery/internal/tlw"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -335,9 +336,19 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 		State:             s,
 		Type:              t,
 	}
+	if err := rpm.SetPowerStateHTTP(ctx, rpmReq); err != nil {
+		log.Warningf(ctx, "SetPowerStateHTTP failed with %s", err.Error())
+		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("rpm_http_succeeded", "false"))
+	} else {
+		log.Infof(ctx, "SetPowerStateHTTP passed")
+		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("rpm_http_succeeded", "true"))
+		return nil
+	}
 	if err := rpm.SetPowerState(ctx, rpmReq); err != nil {
+		log.Warningf(ctx, "SetPowerState by RPM service failed with %s", err.Error())
 		return errors.Annotate(err, "run rpm action").Err()
 	}
+	log.Infof(ctx, "SetPowerState by RPM service passed")
 	return nil
 }
 
