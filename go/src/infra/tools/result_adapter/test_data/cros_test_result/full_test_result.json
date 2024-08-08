@@ -179,7 +179,8 @@
                 "main_builder_name":"main-release",
                 "contacts": ["user@google.com"],
                 "suite": "arc-cts-vm",
-                "channel": "DEV"
+                "channel": "DEV",
+                "requester": "ldap@google.com"
             },
             "logs_info":[
                 {

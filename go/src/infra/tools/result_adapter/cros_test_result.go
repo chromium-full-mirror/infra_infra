@@ -300,28 +300,29 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			tags = AppendTags(tags, "logs_url", logInfo.Path)
 		}
 
-		testCaseInfo := testRun.GetTestCaseInfo()
+		testCaseInfo := testRun.TestCaseInfo
 		if testCaseInfo != nil {
-			tags = AppendTags(tags, "declared_name", testCaseInfo.GetDisplayName())
-			tags = AppendTags(tags, "branch", testCaseInfo.GetBranch())
-			tags = AppendTags(tags, "main_builder_name", testCaseInfo.GetMainBuilderName())
-			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.GetContacts(), ","))
-			tags = AppendTags(tags, "suite", testCaseInfo.GetSuite())
-			tags = AppendTags(tags, "channel", testCaseInfo.GetChannel())
+			tags = AppendTags(tags, "declared_name", testCaseInfo.DisplayName)
+			tags = AppendTags(tags, "branch", testCaseInfo.Branch)
+			tags = AppendTags(tags, "main_builder_name", testCaseInfo.MainBuilderName)
+			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.Contacts, ","))
+			tags = AppendTags(tags, "suite", testCaseInfo.Suite)
+			tags = AppendTags(tags, "channel", testCaseInfo.Channel)
+			tags = AppendTags(tags, "requester", testCaseInfo.Requester)
 
 			tags = configTestMetadataTags(ctx, tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
 		}
 
-		timeInfo := testRun.GetTimeInfo()
+		timeInfo := testRun.TimeInfo
 		if timeInfo != nil {
 			if timeInfo.GetQueuedTime().CheckValid() == nil {
 				tags = AppendTags(tags, "queued_time", timeInfo.GetQueuedTime().AsTime().UTC().String())
 			}
 		}
 
-		execMetadata := testRun.GetExecutionMetadata()
+		execMetadata := testRun.ExecutionMetadata
 		if execMetadata != nil {
-			testArgs := convertTestArgsTag(execMetadata.GetTestArgs())
+			testArgs := convertTestArgsTag(execMetadata.TestArgs)
 			if testArgs != "" {
 				tags = AppendTags(tags, "test_args", testArgs)
 			}

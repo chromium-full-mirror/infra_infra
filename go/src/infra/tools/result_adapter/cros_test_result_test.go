@@ -502,6 +502,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("qs_account", "unmanaged_p2"),
 						pbutil.StringPair("qual_bug_id", "1234"),
 						pbutil.StringPair("queued_time", "2022-06-03 18:53:33.983328614 +0000 UTC"),
+						pbutil.StringPair("requester", "ldap@google.com"),
 						pbutil.StringPair("requirements", "requirement 1,requirement 2"),
 						pbutil.StringPair("ro_fwid", "Google_Voema.13672.224.0"),
 						pbutil.StringPair("rw_fwid", "Google_Voema.13672.224.0"),
