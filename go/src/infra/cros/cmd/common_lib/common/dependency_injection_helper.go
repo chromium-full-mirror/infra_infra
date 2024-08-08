@@ -6,7 +6,14 @@ package common
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
+
+	"go.chromium.org/luci/common/errors"
+)
+
+var (
+	AnyRegex = regexp.MustCompile(`^ANY\((?<type>.+)\)=`)
 )
 
 func boolHandler(value string) bool {
@@ -37,4 +44,27 @@ func fmtHandler(storage *InjectableStorage, value string) string {
 		storage: storage,
 	}
 	return ResolvePlaceholders(value, lookup)
+}
+
+// anyHandler attaches the @type field to the found object, setting it to
+// the provided type, essentially converting the object into a valid AnyProto.
+func anyHandler(storage *InjectableStorage, value string) (obj interface{}, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
+
+	matches := AnyRegex.FindStringSubmatch(value)
+	typeIndex := AnyRegex.SubexpIndex("type")
+	objType := matches[typeIndex]
+	objKey := strings.TrimPrefix(value, matches[0])
+	obj, err = storage.Get(objKey)
+	if err != nil {
+		err = errors.Annotate(err, "failed to get obj %s", objKey).Err()
+		return
+	}
+
+	obj.(map[string]interface{})["@type"] = objType
+	return
 }

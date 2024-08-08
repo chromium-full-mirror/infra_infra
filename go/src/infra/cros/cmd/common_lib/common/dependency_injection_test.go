@@ -13,10 +13,100 @@ import (
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/common_lib/common"
 )
+
+func TestDependencyInjectionAny(t *testing.T) {
+	Convey("Concrete -> Any", t, func() {
+		publishMetadata, _ := anypb.New(&artifact.TestResult{})
+		original_proto := &testapi.PublishRequest{
+			Metadata: publishMetadata,
+		}
+		testResult := &artifact.TestResult{
+			Version: 12,
+			TestInvocation: &artifact.TestInvocation{
+				IsCftRun: true,
+			},
+		}
+		storage := common.NewInjectableStorage()
+		So(storage.Set("testResult", testResult), ShouldBeNil)
+		So(storage.LoadInjectables(), ShouldBeNil)
+		So(common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), ShouldBeNil)
+
+		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		extractedTestResult := &artifact.TestResult{}
+		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
+		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
+		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+	})
+
+	Convey("Concrete -> Undefined Any", t, func() {
+		original_proto := &testapi.PublishRequest{}
+		testResult := &artifact.TestResult{
+			Version: 12,
+			TestInvocation: &artifact.TestInvocation{
+				IsCftRun: true,
+			},
+		}
+		storage := common.NewInjectableStorage()
+		So(storage.Set("testResult", testResult), ShouldBeNil)
+		So(storage.LoadInjectables(), ShouldBeNil)
+		So(common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), ShouldBeNil)
+
+		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		extractedTestResult := &artifact.TestResult{}
+		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
+		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
+		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+	})
+
+	Convey("Any -> Any", t, func() {
+		publishMetadata, _ := anypb.New(&artifact.TestResult{})
+		original_proto := &testapi.PublishRequest{
+			Metadata: publishMetadata,
+		}
+		testResult := &artifact.TestResult{
+			Version: 12,
+			TestInvocation: &artifact.TestInvocation{
+				IsCftRun: true,
+			},
+		}
+		testResultAny, _ := anypb.New(testResult)
+		storage := common.NewInjectableStorage()
+		So(storage.Set("testResult", testResultAny), ShouldBeNil)
+		So(storage.LoadInjectables(), ShouldBeNil)
+		So(common.Inject(original_proto, "metadata", storage, "testResult"), ShouldBeNil)
+
+		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		extractedTestResult := &artifact.TestResult{}
+		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
+		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
+		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+	})
+
+	Convey("Overwrite with different Any", t, func() {
+		publishMetadata, _ := anypb.New(&artifact.TestResult{})
+		original_proto := &testapi.PublishRequest{
+			Metadata: publishMetadata,
+		}
+		testInvocation := &artifact.TestInvocation{
+			IsCftRun: true,
+		}
+		testInvocationAny, _ := anypb.New(testInvocation)
+		storage := common.NewInjectableStorage()
+		So(storage.Set("testResult", testInvocationAny), ShouldBeNil)
+		So(storage.LoadInjectables(), ShouldBeNil)
+		So(common.Inject(original_proto, "metadata", storage, "testResult"), ShouldBeNil)
+
+		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestInvocation")
+		extractedTestInvocation := &artifact.TestInvocation{}
+		So(original_proto.Metadata.UnmarshalTo(extractedTestInvocation), ShouldBeNil)
+		So(extractedTestInvocation.IsCftRun, ShouldEqual, testInvocation.IsCftRun)
+	})
+}
 
 func TestDependencyInjectionBasic(t *testing.T) {
 	Convey("basic injection", t, func() {
