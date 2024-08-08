@@ -30,16 +30,6 @@ deps = {
      "{chromium_git}/infra/luci/luci-py@" +
      "7e534a3d19fefa47aea1c2ac4cbe89e05dac6c0f",
 
-  # TODO(crbug.com/1415507): remove this once infra_superproject is in
-  # OSS codesearch. In the meantime, no need to add a gitlink for this.
-  # This unpinned dependency is present because it is used by the trybots for
-  # the recipes-py repo; They check out infra with this at HEAD, and then apply
-  # the patch to it and run verifications within that copy of the repo. They
-  # piggyback on top of infra in order to take advantage of it's precompiled
-  # version of python-coverage.
-  "recipes-py":
-     "{chromium_git}/infra/luci/recipes-py@" + "refs/heads/main",
-
   "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
      "e2c338a6c5c871a622ae5accd4e8036ac98ca241",
