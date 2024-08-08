@@ -2414,6 +2414,18 @@ Examples:
 shivas add peripheral-pasit-host -dut {DUT name} -f {host .json file}
 shivas delete peripheral-pasit-host -dut {DUT name}
 `
+
+	// ManagePeripheralAMTLongDesc is along description for Intel AMT (vPro) subcommands
+	ManagePeripheralAMTLongDesc string = `Manage a DUT's Intel AMT (vPro) settings.
+
+The command always runs in the OS namespace.
+Only one AMT peripheral is allowed per DUT.
+
+Add adds the specified AMT manager to the DUT.
+
+Examples:
+shivas add peripheral-amt -dut {DUT name} -amt-hostname {amt hostname}
+`
 )
 
 func CronTriggerAvailableJobsString() string {
