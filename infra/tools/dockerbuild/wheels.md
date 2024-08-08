@@ -7713,6 +7713,18 @@ wheel: <
 
 * *universal*
 
+### 1.11.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/py-py2_py3"
+  version: "version:1.11.0"
+>
+```
+
+
+* *universal*
+
 ## **pyahocorasick**
 
 ### 1.4.1.chromium.2
