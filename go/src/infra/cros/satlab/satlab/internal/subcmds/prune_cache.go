@@ -64,7 +64,7 @@ func cleanVolume() error {
 	}
 
 	// Running a created container.
-	if err := cli.ContainerStart(context.Background(), resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(context.Background(), resp.ID, container.StartOptions{}); err != nil {
 		return err
 	}
 
@@ -81,7 +81,7 @@ func cleanVolume() error {
 	}
 
 	// Removing the container.
-	if err := cli.ContainerRemove(context.Background(), resp.ID, types.ContainerRemoveOptions{}); err != nil {
+	if err := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{}); err != nil {
 		return err
 	}
 	return nil
