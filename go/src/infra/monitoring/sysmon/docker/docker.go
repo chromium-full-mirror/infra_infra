@@ -13,7 +13,6 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
-	dockerContainerTypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 
 	"go.chromium.org/luci/common/clock"
@@ -156,7 +155,7 @@ func update(ctx context.Context) error {
 	}
 	engVerMetric.Set(ctx, version.Version)
 
-	containers, err := dockerClient.ContainerList(ctx, dockerContainerTypes.ListOptions{All: true})
+	containers, err := dockerClient.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
 	if err != nil {
 		return err
 	}

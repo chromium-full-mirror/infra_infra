@@ -41,7 +41,7 @@ func (m *MockContainerAPIClient) EXPECT() *MockContainerAPIClientMockRecorder {
 }
 
 // ContainerAttach mocks base method.
-func (m *MockContainerAPIClient) ContainerAttach(arg0 context.Context, arg1 string, arg2 container.AttachOptions) (types.HijackedResponse, error) {
+func (m *MockContainerAPIClient) ContainerAttach(arg0 context.Context, arg1 string, arg2 types.ContainerAttachOptions) (types.HijackedResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerAttach", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.HijackedResponse)
@@ -56,7 +56,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerAttach(arg0, arg1, arg2 i
 }
 
 // ContainerCommit mocks base method.
-func (m *MockContainerAPIClient) ContainerCommit(arg0 context.Context, arg1 string, arg2 container.CommitOptions) (types.IDResponse, error) {
+func (m *MockContainerAPIClient) ContainerCommit(arg0 context.Context, arg1 string, arg2 types.ContainerCommitOptions) (types.IDResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerCommit", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.IDResponse)
@@ -146,7 +146,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerExecInspect(arg0, arg1 in
 }
 
 // ContainerExecResize mocks base method.
-func (m *MockContainerAPIClient) ContainerExecResize(arg0 context.Context, arg1 string, arg2 container.ResizeOptions) error {
+func (m *MockContainerAPIClient) ContainerExecResize(arg0 context.Context, arg1 string, arg2 types.ResizeOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecResize", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -234,7 +234,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerKill(arg0, arg1, arg2 int
 }
 
 // ContainerList mocks base method.
-func (m *MockContainerAPIClient) ContainerList(arg0 context.Context, arg1 container.ListOptions) ([]types.Container, error) {
+func (m *MockContainerAPIClient) ContainerList(arg0 context.Context, arg1 types.ContainerListOptions) ([]types.Container, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerList", arg0, arg1)
 	ret0, _ := ret[0].([]types.Container)
@@ -249,7 +249,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerList(arg0, arg1 interface
 }
 
 // ContainerLogs mocks base method.
-func (m *MockContainerAPIClient) ContainerLogs(arg0 context.Context, arg1 string, arg2 container.LogsOptions) (io.ReadCloser, error) {
+func (m *MockContainerAPIClient) ContainerLogs(arg0 context.Context, arg1 string, arg2 types.ContainerLogsOptions) (io.ReadCloser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerLogs", arg0, arg1, arg2)
 	ret0, _ := ret[0].(io.ReadCloser)
@@ -278,7 +278,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerPause(arg0, arg1 interfac
 }
 
 // ContainerRemove mocks base method.
-func (m *MockContainerAPIClient) ContainerRemove(arg0 context.Context, arg1 string, arg2 container.RemoveOptions) error {
+func (m *MockContainerAPIClient) ContainerRemove(arg0 context.Context, arg1 string, arg2 types.ContainerRemoveOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerRemove", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -306,7 +306,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerRename(arg0, arg1, arg2 i
 }
 
 // ContainerResize mocks base method.
-func (m *MockContainerAPIClient) ContainerResize(arg0 context.Context, arg1 string, arg2 container.ResizeOptions) error {
+func (m *MockContainerAPIClient) ContainerResize(arg0 context.Context, arg1 string, arg2 types.ResizeOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerResize", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -334,7 +334,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerRestart(arg0, arg1, arg2 
 }
 
 // ContainerStart mocks base method.
-func (m *MockContainerAPIClient) ContainerStart(arg0 context.Context, arg1 string, arg2 container.StartOptions) error {
+func (m *MockContainerAPIClient) ContainerStart(arg0 context.Context, arg1 string, arg2 types.ContainerStartOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStart", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
