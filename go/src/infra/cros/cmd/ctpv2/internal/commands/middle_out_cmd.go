@@ -142,7 +142,16 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	if pool == "" {
 		pool = "DUT_POOL_QUOTA"
 	}
-	cfg := distroCfg{maxInShard: 150, pool: pool}
+	cfg := distroCfg{
+		maxInShard: func() int {
+			maxInShard := int(cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetMaxInShard())
+			if maxInShard == 0 {
+				return 150
+			}
+			return maxInShard
+		}(),
+		pool: pool,
+	}
 
 	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
 	if err != nil {
