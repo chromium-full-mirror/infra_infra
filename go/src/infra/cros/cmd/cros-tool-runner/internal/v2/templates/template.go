@@ -6,7 +6,6 @@ package templates
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -137,7 +136,7 @@ func defaultDiscoverPort(cmdExecutor cmdExecutor, request *api.StartTemplatedCon
 	}
 	stdout, stderr, err := cmdExecutor.Execute(context.Background(), cmd)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("%v with stderr: %s", err, stderr))
+		return nil, fmt.Errorf("%w with stderr: %s", err, stderr)
 	}
 	servicePort, err := strconv.Atoi(strings.TrimSpace(stdout))
 	if err != nil {
