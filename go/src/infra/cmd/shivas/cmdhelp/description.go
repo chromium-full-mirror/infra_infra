@@ -2419,12 +2419,15 @@ shivas delete peripheral-pasit-host -dut {DUT name}
 	ManagePeripheralAMTLongDesc string = `Manage a DUT's Intel AMT (vPro) settings.
 
 The command always runs in the OS namespace.
+The command requires either the add or delete action.
 Only one AMT peripheral is allowed per DUT.
 
 Add adds the specified AMT manager to the DUT.
+Delete deletes the AMT manager from the DUT.
 
 Examples:
 shivas add peripheral-amt -dut {DUT name} -amt-hostname {amt hostname}
+shivas delete peripheral-amt -dut {DUT name}
 `
 )
 

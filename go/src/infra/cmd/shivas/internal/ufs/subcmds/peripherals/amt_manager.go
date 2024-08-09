@@ -25,7 +25,8 @@ import (
 )
 
 var (
-	AddPeripheralAMTCmd = amtManagerCmd(actionAdd)
+	AddPeripheralAMTCmd    = amtManagerCmd(actionAdd)
+	DeletePeripheralAMTCmd = amtManagerCmd(actionDelete)
 )
 
 // amtManagerCmd creates a command for adding, removing or updating AMT details for a DUT.
@@ -122,17 +123,23 @@ func (c *manageAmtManagerCmd) cleanAndValidateFlags() error {
 	if len(c.dutName) == 0 {
 		errStrs = append(errStrs, errDUTMissing)
 	}
-	c.amtHostname = strings.TrimSpace(c.amtHostname)
-	if c.amtHostname == "" {
-		errStrs = append(errStrs, errNoHostname)
-	}
 	// Set the amtObj based on action.
 	switch c.mode {
 	case actionAdd:
+		c.amtHostname = strings.TrimSpace(c.amtHostname)
+		if c.amtHostname == "" {
+			errStrs = append(errStrs, errNoHostname)
+		}
 		c.amtObj = &lab.AMTManager{Hostname: c.amtHostname}
+	case actionDelete:
+		c.amtObj = nil
 	default:
 		return errors.Reason("unknown action: %d", c.mode).Err()
 	}
+	return c.checkErrStr(errStrs)
+}
+
+func (c *manageAmtManagerCmd) checkErrStr(errStrs []string) error {
 	if len(errStrs) == 0 {
 		return nil
 	}

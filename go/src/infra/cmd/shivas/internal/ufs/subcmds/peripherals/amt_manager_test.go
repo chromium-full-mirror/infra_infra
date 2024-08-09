@@ -47,6 +47,10 @@ func TestAmtManager(t *testing.T) {
 					cmd:  &manageAmtManagerCmd{dutName: "dut", amtHostname: " "},
 					want: []string{errNoHostname},
 				},
+				{
+					cmd:  &manageAmtManagerCmd{mode: actionDelete},
+					want: []string{errDUTMissing},
+				},
 			}
 			for _, tt := range errTests {
 				err := tt.cmd.cleanAndValidateFlags()
@@ -64,6 +68,19 @@ func TestAmtManager(t *testing.T) {
 			dutName:     "dut",
 			amtHostname: "192.168.231.123",
 			mode:        actionAdd,
+		}
+		t.Run("cleanAndValidateFlags", func(t *testing.T) {
+			if err := cmd.cleanAndValidateFlags(); err != nil {
+				t.Errorf("cleanAndValidateFlags got error: %v; want nil", err)
+			}
+		})
+	})
+
+	t.Run("delete action", func(t *testing.T) {
+		// Valid case
+		cmd := &manageAmtManagerCmd{
+			dutName: "dut",
+			mode:    actionDelete,
 		}
 		t.Run("cleanAndValidateFlags", func(t *testing.T) {
 			if err := cmd.cleanAndValidateFlags(); err != nil {

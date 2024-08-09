@@ -53,7 +53,8 @@ var DeleteCmd = &subcommands.Command{
 	peripheral-wifi
 	bluetooth-peers
 	peripheral-pasit-host
-	peripheral-audio-latency-toolkit`,
+	peripheral-audio-latency-toolkit
+	peripheral-amt`,
 	CommandRun: func() subcommands.CommandRun {
 		c := &delete{}
 		return c
@@ -110,6 +111,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		peripherals.DeletePeripheralAudioLatencyToolkitCmd,
 		peripherals.DeletePeripheralALTCmd,
 		peripherals.DeletePasitHostCmd,
+		peripherals.DeletePeripheralAMTCmd,
 	}
 }
 
