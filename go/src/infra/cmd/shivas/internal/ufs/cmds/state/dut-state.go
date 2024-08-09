@@ -5,6 +5,7 @@
 package state
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -32,6 +33,7 @@ var DutStateCmd = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
+		c.Flags.BoolVar(&c.dolos, "dolos", false, "Lookup state for dolos peripheral instead of DUT")
 		return c
 	},
 }
@@ -41,6 +43,8 @@ type dutStateCmdRun struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
+
+	dolos bool
 }
 
 // Run implements the subcommands.CommandRun interface.
@@ -72,12 +76,32 @@ func (c *dutStateCmdRun) innerRun(a subcommands.Application, args []string, env 
 		Options: site.DefaultPRPCOptions,
 	})
 	host := args[0]
+	if c.dolos {
+		return c.getDolosState(ctx, ufsClient, host)
+	}
 	i := dutstate.Read(ctx, ufsClient, host)
 	fmt.Printf("%s: %s\n", host, i.State.String())
 	if c.commonFlags.Verbose() {
 		fmt.Printf("Updated at:%s \n", time.Unix(i.Time, 0))
 	}
 	return nil
+}
+
+func (c *dutStateCmdRun) getDolosState(ctx context.Context, ufsClient ufsAPI.FleetClient, host string) error {
+	req := &ufsAPI.GetDeviceDataRequest{
+		Hostname: host,
+	}
+	resp, err := ufsClient.GetDeviceData(ctx, req)
+	if err != nil {
+		return err
+	}
+	switch resp.GetResourceType() {
+	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
+		fmt.Printf("Dolos state of %s: %s\n", host, resp.GetChromeOsDeviceData().GetDutState().GetDolosState())
+		return nil
+	default:
+		return fmt.Errorf("dolos state does not valid for Non-ChromeOS device")
+	}
 }
 
 func (c *dutStateCmdRun) validateArgs(args []string) error {
