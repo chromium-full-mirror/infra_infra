@@ -51,6 +51,8 @@ const (
 	apProgrammerCmdGlob     = "futility update -i %s --servo_port=%d"
 	apProgrammerWithGbbFlag = "--gbb_flags=%s"
 	apProgrammerWithForce   = "--force"
+	apProgrammerUnlockCSME  = "--quirks unlock_csme"
+	csmeDetect              = "futility read --emulate='%[1]s' -r SI_ME /dev/null || futility read --emulate='%[1]s' -r SI_DESC /dev/null"
 )
 
 // ProgramEC programs EC firmware to devices by servo.
@@ -125,7 +127,14 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	if force {
 		cmd = append(cmd, apProgrammerWithForce)
 	}
-	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
+	// For Intel devices with CSME, it must be unlocked or test firmware provisioning will fail to write RO firmware.
+	// If the FW has a SI_ME or SI_DESC section, than it has CSME.
+	out, err := p.run(ctx, firmwareProgramTimeout, fmt.Sprintf(csmeDetect, imagePath))
+	p.log.Debugf("Detect CSME output:\n%s", out)
+	if err == nil {
+		cmd = append(cmd, apProgrammerUnlockCSME)
+	}
+	out, err = p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)
 	return errors.Annotate(err, "program ap").Err()
 }
