@@ -86,8 +86,11 @@ func ReadConfigYAML(ctx context.Context, model string, run components.Runner, lo
 				}
 				apTarget = thisAPName
 			}
-			thisECName := config.Firmware.BuildTargets.ZephyrEC
-			if thisECName == "" {
+			var thisECName string
+			// Bizarrely, zephyr builders use the coreboot name for the ec.bin file.
+			if config.Firmware.BuildTargets.ZephyrEC != "" {
+				thisECName = thisAPName
+			} else {
 				thisECName = config.Firmware.BuildTargets.EC
 			}
 			thisECName = strings.TrimSpace(thisECName)
