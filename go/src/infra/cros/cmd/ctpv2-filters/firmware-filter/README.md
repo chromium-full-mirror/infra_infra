@@ -1,3 +1,62 @@
+# Using firmware-filter
+
+There are several flags that can be passed to the firmware-filter.
+
+Arg | Description
+--|--
+`-ro SPEC` | Flash the RO and RW AP & EC firmware from specified location. 
+`-rw SPEC` | Flash the RW AP & EC firmware from specified location. This takes place after the RO flashing.
+`-fallbackToCros` | If `-ro` or -`rw` is set to `firmwareBoardBranch`, and no branch build can be found, fallback to `cros` instead. This is handy for new boards that don't have a branch yet.
+
+The SPEC arg can be one of the following:
+SPEC | Description
+--|--
+`gs://tar.bz2` url | Specify a specific url to a firmware_from_source.tar.bz2 archive.
+`firmwareBoardBranch` | Find the latest branch build for the DUT's board.
+`cros` | Use the firmware_from_source.tar.bz2 from the OS build. NOTE: Many launched devices do not build firmware in the OS build.
+
+## In suite schedule
+
+Add this to your `config_gen.create_config()` call in your star file.
+
+```starlark
+config_gen.create_config(
+    ... # existing args
+    karbon_filters = [
+        config_gen.create_known_udf(
+            "firmware-filter",
+            args = ["-ro", "firmwareBoardBranch", "-fallbackToCros"],
+        ),
+    ],
+    run_via_trv2 = True,
+    dynamic_trv2 = True,
+)
+```
+
+## From crosfleet
+
+TODO: Find out how to to launch from crosfleet.
+
+# Production deployment
+
+1) The code is built automatically by
+[infra-packager-linux-64](https://ci.chromium.org/ui/p/infra-internal/builders/prod/infra-packager-linux-64)
+and pushed to [CIPD](https://chrome-infra-packages.appspot.com/p/chromiumos/infra/ctpv2-filters/firmware-filter/linux-amd64).
+This builder is triggered after every commit.
+1) The CIPD package is tagged `staging` by [ctp-uprev-staging](https://ci.chromium.org/ui/p/chromeos/builders/infra/ctp-uprev-staging)
+multiple times per day. This same builder also builds the docker container at
+[us-docker.pkg.dev/cros-registry/test-services/firmware-filter](http://us-docker.pkg.dev/cros-registry/test-services/firmware-filter)
+and labels it `staging`.
+1) The CIPD package & docker container is tagged `prod` by [ctp-uprev-prod](https://ci.chromium.org/ui/p/chromeos/builders/infra/ctp-uprev-prod).
+This is started manually by the [CTP oncall once a week](go/ctp-oncall#releasing-new-versions-to-production-services) following the instructions at go/ctp-release-doc.
+1) When a Ctpv2 test runs it picks the firmware-filter sha256 sum to use by the `prod` label. If a test is run with Ctpv2 non-prod, it uses the `staging` label instead.
+
+## Finding the current prod version
+
+If you want to know, is my change in production yet? Look at [CIPD](https://chrome-infra-packages.appspot.com/p/chromiumos/infra/ctpv2-filters/firmware-filter/linux-amd64),
+and click on a instance. It will be tagged with all the commit ids that build this instance. If one of those commit ids is equal to or later than your
+change, then your change is included in that instance.
+
 # Debugging
 
 If you are looking at a [failed test run](http://go/bbid/8741669481538299105/infra), and you want to see the logs, find the section `ctpv2 sub-build (async)` -> `Suite Executions (async)`, then open the logs under `Read Container Logs`, `Container Start: firmware-filter`, and `Filter execution: firmware-filter`.
