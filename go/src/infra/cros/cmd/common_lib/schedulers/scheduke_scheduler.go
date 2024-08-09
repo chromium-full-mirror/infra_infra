@@ -92,7 +92,7 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 			step.SetSummaryMarkdown(summary)
 			return nil, "", fmt.Errorf(summary)
 		default:
-			summary := fmt.Sprintf("task %d in unexpected state %s in Scheduke", taskID, s)
+			summary := fmt.Sprintf("task %d in unexpected state %s in Scheduke", taskID, s.String())
 			step.SetSummaryMarkdown(summary)
 			return nil, "", fmt.Errorf(summary)
 		}
