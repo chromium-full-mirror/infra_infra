@@ -23,6 +23,7 @@ import (
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 
 	"infra/chromium/bootstrapper/bootstrap"
 	"infra/chromium/bootstrapper/clients/cipd"
@@ -347,19 +348,48 @@ func testExecuteCmdFn(cmdErr error) executeCmdFn {
 	}
 }
 
-type buildUpdateRecord struct {
-	build *buildbucketpb.Build
+type buildUpdateRecords struct {
+	builds []*buildbucketpb.Build
 }
 
-func testUpdateBuildFn(updateErr error) (*buildUpdateRecord, updateBuildFn) {
-	update := &buildUpdateRecord{}
-	return update, func(ctx context.Context, build *buildbucketpb.Build) error {
-		update.build = build
-		if updateErr != nil {
-			return updateErr
-		}
-		return nil
+type datagramStream struct {
+	errs    []error
+	records *buildUpdateRecords
+}
+
+func (d *datagramStream) WriteDatagram(dg []byte) error {
+	build := &buildbucketpb.Build{}
+	PanicOnError(proto.Unmarshal(dg, build))
+
+	d.records.builds = append(d.records.builds, build)
+
+	var err error
+	if len(d.errs) > 0 {
+		err = d.errs[0]
+		d.errs = d.errs[1:]
 	}
+	return err
+}
+
+func (d *datagramStream) Close() error {
+	return nil
+}
+
+func testGetStreamFn(getStreamErr error, updateErrs ...error) (*buildUpdateRecords, getStreamFn) {
+	records := &buildUpdateRecords{}
+
+	getStream := func(ctx context.Context) (streamclient.DatagramStream, error) {
+		if getStreamErr != nil {
+			return nil, getStreamErr
+		}
+		stream := &datagramStream{
+			errs:    updateErrs,
+			records: records,
+		}
+		return stream, nil
+	}
+
+	return records, getStream
 }
 
 func TestBootstrapMain(t *testing.T) {
@@ -372,14 +402,14 @@ func TestBootstrapMain(t *testing.T) {
 		getOptions := func() options { return options{} }
 		performBootstrap := testBootstrapFn(nil)
 		execute := testExecuteCmdFn(nil)
-		record, updateBuild := testUpdateBuildFn(nil)
+		records, getStream := testGetStreamFn(nil)
 
 		Convey("does not update build on success", func() {
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldBeNil)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldBeNil)
+			So(records.builds, ShouldBeEmpty)
 		})
 
 		Convey("does not update build on bootstrapped exe failure", func() {
@@ -389,22 +419,26 @@ func TestBootstrapMain(t *testing.T) {
 			}
 			execute := testExecuteCmdFn(exeErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, exeErr)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldBeNil)
+			So(records.builds, ShouldBeEmpty)
 		})
 
 		Convey("updates build when failing to execute bootstrapped exe", func() {
 			cmdErr := errors.New("test cmd execution failure")
 			execute := testExecuteCmdFn(cmdErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, cmdErr)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldResembleProtoJSON, `{
+			So(len(records.builds), ShouldEqual, 2)
+			So(records.builds[0], ShouldResembleProtoJSON, `{
+				"status": "STARTED"
+			}`)
+			So(records.builds[1], ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test cmd execution failure</pre>"
 			}`)
@@ -417,11 +451,15 @@ func TestBootstrapMain(t *testing.T) {
 			}
 			performBootstrap := testBootstrapFn(cmdErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, cmdErr)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldResembleProtoJSON, fmt.Sprintf(`{
+			So(len(records.builds), ShouldEqual, 2)
+			So(records.builds[0], ShouldResembleProtoJSON, `{
+				"status": "STARTED"
+			}`)
+			So(records.builds[1], ShouldResembleProtoJSON, fmt.Sprintf(`{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>%s</pre>"
 			}`, cmdErr))
@@ -431,11 +469,15 @@ func TestBootstrapMain(t *testing.T) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, bootstrapErr)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldResembleProtoJSON, `{
+			So(len(records.builds), ShouldEqual, 2)
+			So(records.builds[0], ShouldResembleProtoJSON, `{
+				"status": "STARTED"
+			}`)
+			So(records.builds[1], ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test bootstrap failure</pre>"
 			}`)
@@ -446,11 +488,15 @@ func TestBootstrapMain(t *testing.T) {
 			bootstrapErr = bootstrap.PatchRejected.Apply(bootstrapErr)
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, bootstrapErr)
 			So(sleepDuration, ShouldEqual, 0)
-			So(record.build, ShouldResembleProtoJSON, `{
+			So(len(records.builds), ShouldEqual, 2)
+			So(records.builds[0], ShouldResembleProtoJSON, `{
+				"status": "STARTED"
+			}`)
+			So(records.builds[1], ShouldResembleProtoJSON, `{
 				"status": "FAILURE",
 				"summary_markdown": "<pre>Patch failure: See build stderr log. Try rebasing?</pre>",
 				"output": {
@@ -466,23 +512,51 @@ func TestBootstrapMain(t *testing.T) {
 			bootstrapErr = bootstrap.SleepBeforeExiting.With(20 * time.Second).Apply(bootstrapErr)
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, "test error")
 			So(sleepDuration, ShouldEqual, 20*time.Second)
-			So(record.build, ShouldResembleProtoJSON, `{
+			So(len(records.builds), ShouldEqual, 2)
+			So(records.builds[0], ShouldResembleProtoJSON, `{
+				"status": "STARTED"
+			}`)
+			So(records.builds[1], ShouldResembleProtoJSON, `{
 				"status": "INFRA_FAILURE",
 				"summary_markdown": "<pre>test error</pre>"
 			}`)
+		})
+
+		Convey("returns original error if getting stream fails", func() {
+			bootstrapErr := errors.New("test bootstrap failure")
+			performBootstrap := testBootstrapFn(bootstrapErr)
+			getStreamErr := errors.New("test get stream failure")
+			_, getStream := testGetStreamFn(getStreamErr)
+
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
+
+			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
+		})
+
+		Convey("returns original error if writing initial build fails", func() {
+			bootstrapErr := errors.New("test bootstrap failure")
+			performBootstrap := testBootstrapFn(bootstrapErr)
+			initialBuildErr := errors.New("test initial build failure")
+			_, getStream := testGetStreamFn(nil, initialBuildErr)
+
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
+
+			So(err, ShouldErrLike, bootstrapErr)
+			So(sleepDuration, ShouldEqual, 0)
 		})
 
 		Convey("returns original error if updating build fails", func() {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 			updateBuildErr := errors.New("test update build failure")
-			_, updateBuild := testUpdateBuildFn(updateBuildErr)
+			_, getStream := testGetStreamFn(nil, nil, updateBuildErr)
 
-			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, updateBuild)
+			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
 			So(err, ShouldErrLike, bootstrapErr)
 			So(sleepDuration, ShouldEqual, 0)

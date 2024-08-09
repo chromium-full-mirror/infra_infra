@@ -174,46 +174,83 @@ func executeCmd(ctx context.Context, cmd []string, input []byte) error {
 	return cmdCtx.Run()
 }
 
-type updateBuildFn func(ctx context.Context, build *buildbucketpb.Build) error
+type getStreamFn func(ctx context.Context) (streamclient.DatagramStream, error)
 
-func updateBuild(ctx context.Context, build *buildbucketpb.Build) (err error) {
-	outputData, err := proto.Marshal(build)
-	if err != nil {
-		return errors.Annotate(err, "failed to marshal output build.proto").Err()
-	}
-
+func getStream(ctx context.Context) (streamclient.DatagramStream, error) {
+	logging.Infof(ctx, "bootstrapping logdog")
 	logdog, err := logdogbootstrap.Get()
 	if err != nil {
-		return errors.Annotate(err, "failed to get logdog bootstrap instance").Err()
+		return nil, errors.Annotate(err, "failed to bootstrap logdog").Err()
 	}
+
+	logging.Infof(ctx, "getting datagram stream")
 	stream, err := logdog.Client.NewDatagramStream(
 		ctx,
 		luciexe.BuildProtoStreamSuffix,
 		streamclient.WithContentType(luciexe.BuildProtoContentType),
 	)
 	if err != nil {
-		return errors.Annotate(err, "failed to get datagram stream").Err()
+		return nil, errors.Annotate(err, "failed to get datagram stream").Err()
+	}
+
+	return stream, nil
+
+}
+
+func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream getStreamFn) {
+	stream, err := getStream(ctx)
+	if err != nil {
+		logging.Errorf(ctx, err.Error())
+		return
 	}
 	defer func() {
-		closeErr := stream.Close()
-		if closeErr != nil {
-			if err != nil {
-				logging.Errorf(ctx, closeErr.Error())
-			} else {
-				err = closeErr
-			}
+		if err := stream.Close(); err != nil {
+			logging.Errorf(ctx, errors.Annotate(err, "failed to close datagram stream").Err().Error())
 		}
 	}()
 
-	err = stream.WriteDatagram(outputData)
-	if err != nil {
-		err = errors.Annotate(err, "failed to write modified build").Err()
+	build := &buildbucketpb.Build{}
+
+	writeBuild := func() error {
+		outputData, err := proto.Marshal(build)
+		if err != nil {
+			return err
+		}
+		return stream.WriteDatagram(outputData)
+	}
+
+	// Write out a build setting the STARTED status to establish the links to the build logs in
+	// milo in case writing out the final build fails (e.g. summary markdown is too big)
+	logging.Infof(ctx, "writing out initial build")
+	build.Status = buildbucketpb.Status_STARTED
+	if err := writeBuild(); err != nil {
+		logging.Errorf(ctx, errors.Annotate(err, "failed to write out initial build").Err().Error())
 		return
 	}
-	return
+
+	if bootstrap.PatchRejected.In(bootstrapErr) {
+		build.Status = buildbucketpb.Status_FAILURE
+		build.SummaryMarkdown = "<pre>Patch failure: See build stderr log. Try rebasing?</pre>"
+		build.Output = &buildbucketpb.Build_Output{
+			Properties: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"failure_type": structpb.NewStringValue("PATCH_FAILURE"),
+				},
+			},
+		}
+	} else {
+		build.Status = buildbucketpb.Status_INFRA_FAILURE
+		build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", bootstrapErr)
+	}
+
+	logging.Infof(ctx, "updating build with failure details")
+	if err := writeBuild(); err != nil {
+		logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
+		return
+	}
 }
 
-func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, updateBuild updateBuildFn) (time.Duration, error) {
+func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap bootstrapFn, executeCmd executeCmdFn, getStream getStreamFn) (time.Duration, error) {
 	opts := getOpts()
 	cmd, input, err := performBootstrap(ctx, os.Stdin, opts)
 	if err == nil {
@@ -231,27 +268,7 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
-
-		build := &buildbucketpb.Build{}
-
-		if bootstrap.PatchRejected.In(err) {
-			build.Status = buildbucketpb.Status_FAILURE
-			build.SummaryMarkdown = "<pre>Patch failure: See build stderr log. Try rebasing?</pre>"
-			build.Output = &buildbucketpb.Build_Output{
-				Properties: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"failure_type": structpb.NewStringValue("PATCH_FAILURE"),
-					},
-				},
-			}
-		} else {
-			build.Status = buildbucketpb.Status_INFRA_FAILURE
-			build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
-		}
-
-		if err := updateBuild(ctx, build); err != nil {
-			logging.Errorf(ctx, errors.Annotate(err, "failed to update build with failure details").Err().Error())
-		}
+		handleBootstrapError(ctx, err, getStream)
 
 		sleepDuration, _ := bootstrap.SleepBeforeExiting.In(err)
 		return sleepDuration, err
@@ -271,7 +288,7 @@ func main() {
 	ctx, shutdown := lucictx.TrackSoftDeadline(ctx, 500*time.Millisecond)
 	defer shutdown()
 
-	sleepDuration, err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, updateBuild)
+	sleepDuration, err := bootstrapMain(ctx, parseFlags, performBootstrap, executeCmd, getStream)
 	time.Sleep(sleepDuration)
 	if err != nil {
 		os.Exit(1)
