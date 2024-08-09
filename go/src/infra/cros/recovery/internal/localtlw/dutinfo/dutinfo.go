@@ -610,6 +610,12 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 				labData.SimInfos = append(labData.SimInfos, simInfo)
 			}
 		}
+		if c := ch.GetDolos(); c != nil {
+			labData.Dolos = &ufsAPI.ChromeOsRecoveryData_Dolos{
+				SerialUsb: c.GetSerialUsb(),
+				FwVersion: c.GetFwVersion(),
+			}
+		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
 		labData.AudioboxJackpluggerState = convertAudioBoxJackPluggerStateToUFS(ch.GetChameleon().GetAudioboxjackpluggerstate())
