@@ -116,6 +116,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
 		c.Flags.StringVar(&c.dolosRpmHost, "dolos-rpm-host", "", "RPM host for the Dolos A/C power.")
 		c.Flags.StringVar(&c.dolosRpmOutlet, "dolos-rpm-outlet", "", "RPM outlet for the Dolos A/C power.")
+		c.Flags.StringVar(&c.dolosFirmwareVersion, "dolos-firmware-version", "", "Firmware version Dolos devices is expected to have.")
 
 		// Machine fields
 		// crbug.com/1188488 showed us that it might be wise to add model/board during deployment if required.
@@ -201,10 +202,11 @@ type addDUT struct {
 	deployBBBucket  string
 
 	// Dolos
-	dolosHost        string
-	dolosSerialCable string
-	dolosRpmHost     string
-	dolosRpmOutlet   string
+	dolosHost            string
+	dolosSerialCable     string
+	dolosRpmHost         string
+	dolosRpmOutlet       string
+	dolosFirmwareVersion string
 }
 
 var mcsvFields = []string{
@@ -424,6 +426,9 @@ func (c addDUT) validateArgs() error {
 		}
 		if c.dolosRpmOutlet != "" && c.dolosHost == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos rpm outlet is provided but dolos host is empty, need both information.")
+		}
+		if c.dolosFirmwareVersion != "" && c.dolosHost == "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nDolos firmware version is provided but dolos host is empty, need both information.")
 		}
 	}
 	if c.newSpecsFile == "" && c.hostname == "" {
@@ -736,6 +741,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		peripherals.GetDolos().SerialCable = c.dolosSerialCable
 		peripherals.GetDolos().GetRpm().PowerunitName = c.dolosRpmHost
 		peripherals.GetDolos().GetRpm().PowerunitOutlet = c.dolosRpmOutlet
+		peripherals.GetDolos().FwVersion = c.dolosFirmwareVersion
 	}
 	// Get the updated asset and update paths
 	asset, paths := utils.GenerateAssetUpdate(machines[0], model, board, c.zone, c.rack)

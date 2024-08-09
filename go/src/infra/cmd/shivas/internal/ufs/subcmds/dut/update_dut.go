@@ -92,10 +92,11 @@ const (
 	swarmOp = "Deployment"
 
 	// Dolos related UpdateMask paths.
-	dolosHostnamePath    = "dut.dolos.hostname"
-	dolosSerialCablePath = "dut.dolos.serial.cable"
-	dolosRpmHostPath     = "dut.dolos.rpm.host"
-	dolosRpmOutletPath   = "dut.dolos.rpm.outlet"
+	dolosHostnamePath        = "dut.dolos.hostname"
+	dolosSerialCablePath     = "dut.dolos.serial.cable"
+	dolosRpmHostPath         = "dut.dolos.rpm.host"
+	dolosRpmOutletPath       = "dut.dolos.rpm.outlet"
+	dolosFirmwareVersionPath = "dut.dolos.firmware.version"
 )
 
 // partialUpdateDeployPaths is a collection of paths for which there is a partial update on servo/rpm.
@@ -140,6 +141,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.dolosSerialCable, "dolos-serial-cable", "", "Serial number from the Dolos cable(the one between Dolos and DUT).")
 		c.Flags.StringVar(&c.dolosRpmHost, "dolos-rpm-host", "", "")
 		c.Flags.StringVar(&c.dolosRpmOutlet, "dolos-rpm-outlet", "", "")
+		c.Flags.StringVar(&c.dolosFirmwareVersion, "dolos-firmware-version", "", "")
 		c.Flags.StringVar(&c.hive, "hive", "", "Hive name for the DUT. "+cmdhelp.ClearFieldHelpText)
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
@@ -205,6 +207,7 @@ type updateDUT struct {
 	dolosSerialCable         string
 	dolosRpmHost             string
 	dolosRpmOutlet           string
+	dolosFirmwareVersion     string
 	hive                     string
 
 	// Deploy task inputs.
@@ -731,7 +734,7 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	mask.Paths = append(mask.Paths, paths...)
 
 	// Create and assign dolos and corresponding masks.
-	dolos, paths := generateDolosWithMask(c.dolosHost, c.dolosSerialCable, c.dolosRpmHost, c.dolosRpmOutlet)
+	dolos, paths := generateDolosWithMask(c.dolosHost, c.dolosSerialCable, c.dolosRpmHost, c.dolosRpmOutlet, c.dolosFirmwareVersion)
 	peripherals.Dolos = dolos
 	mask.Paths = append(mask.Paths, paths...)
 
@@ -1077,7 +1080,7 @@ func generateRPMWithMask(rpmHost, rpmOutlet, rpmType string) (*chromeosLab.OSRPM
 }
 
 // generateDolosWithMask generates a Dolos object from the given inputs and corresponding masks.
-func generateDolosWithMask(dolosHost, dolosSerialCable string, dolosRpmHost string, dolosRpmOutlet string) (*chromeosLab.Dolos, []string) {
+func generateDolosWithMask(dolosHost, dolosSerialCable string, dolosRpmHost string, dolosRpmOutlet string, dolosFirmwareVersion string) (*chromeosLab.Dolos, []string) {
 	// Check the case if the Dolos is being deleted.
 	if dolosHost == utils.ClearFieldValue {
 		return nil, []string{dolosHostnamePath}
@@ -1107,6 +1110,10 @@ func generateDolosWithMask(dolosHost, dolosSerialCable string, dolosRpmHost stri
 		}
 		dolos.GetRpm().PowerunitOutlet = dolosRpmOutlet
 		paths = append(paths, dolosRpmOutletPath)
+	}
+	if dolosFirmwareVersion != "" {
+		dolos.FwVersion = dolosFirmwareVersion
+		paths = append(paths, dolosFirmwareVersionPath)
 	}
 	return dolos, paths
 }

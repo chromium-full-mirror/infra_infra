@@ -360,6 +360,7 @@ func dolosHostValidation(ctx context.Context, newMachineLse *ufspb.MachineLSE, m
 		"dut.dolos.serial.usb",
 		"dut.dolos.rpm.host",
 		"dut.dolos.rpm.outlet",
+		"dut.dolos.firmware.version",
 	}
 	// We do not need to perform validation when any masks exist but no Dolos specific masks found in there.
 	if mask != nil && len(mask.Paths) > 0 && !util.ContainsAnyStrings(mask.Paths, dolosMasks...) {
@@ -563,6 +564,9 @@ func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.Field
 			}
 			if _, ok := maskSet["dut.dolos.rpm.host"]; dolos.GetHostname() == "" && ok && dolos.GetRpm().GetPowerunitName() != "" {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos rpm host. Dolos host is being reset.")
+			}
+			if _, ok := maskSet["dut.dolos.firmware.version"]; dolos.GetHostname() == "" && ok && dolos.GetFwVersion() != "" {
+				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot update dolos firmware version. Dolos host is being reset.")
 			}
 		case "dut.dolos.rpm.host":
 			if _, ok := maskSet["dut.rpm.rpm.outlet"]; ok && dolos.GetRpm().GetPowerunitName() == "" && dolos.GetRpm().GetPowerunitOutlet() != "" {
@@ -966,6 +970,8 @@ func processUpdateMachineLSEDolosMask(oldDolos, newDolos *chromeosLab.Dolos, pat
 		oldDolos.GetRpm().PowerunitName = newDolos.GetRpm().GetPowerunitName()
 	case "dut.dolos.rpm.outlet":
 		oldDolos.GetRpm().PowerunitOutlet = newDolos.GetRpm().GetPowerunitOutlet()
+	case "dut.dolos.firmware.version":
+		oldDolos.FwVersion = newDolos.GetFwVersion()
 	}
 }
 
