@@ -20,8 +20,9 @@ import (
 
 const (
 	// User the doloscmd to query the Dolos status.
-	dolosFindUartCmdGlob  = "/usr/bin/doloscmd find-uartname --serial %s"
-	dolosGetStatusCmdGlob = "/usr/bin/doloscmd get-status --uartname %s"
+	dolosFindUartCmdGlob       = "/usr/bin/doloscmd find-uartname --serial %s"
+	dolosGetStatusCableCmdGlob = "/usr/bin/doloscmd get-status --serial %s"
+	dolosGetStatusUsbCmdGlob   = "/usr/bin/doloscmd get-status --uartname %s"
 )
 
 func isEnabledForTestbedExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -65,7 +66,14 @@ func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolos.State = tlw.Dolos_DOLOS_UNKNOWN
 
 	run := info.NewRunner(dolos.GetHostname())
-	output, err := run(ctx, info.GetExecTimeout(), fmt.Sprintf(dolosGetStatusCmdGlob, dolos.GetSerialUsb()))
+	command := ""
+
+	if dolos.GetSerialUsb() != "" {
+		command = fmt.Sprintf(dolosGetStatusUsbCmdGlob, dolos.GetSerialUsb())
+	} else {
+		command = fmt.Sprintf(dolosGetStatusCableCmdGlob, dolos.GetSerialCable())
+	}
+	output, err := run(ctx, info.GetExecTimeout(), command)
 	if err != nil {
 		return errors.Annotate(err, "determine dolos state").Err()
 	}
