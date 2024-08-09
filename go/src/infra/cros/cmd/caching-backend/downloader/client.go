@@ -124,7 +124,7 @@ func (c *androidClient) request(ctx context.Context, path string) (*http.Respons
 		}{}
 		err = json.Unmarshal(content, &e)
 		if err != nil {
-			return nil, fmt.Errorf("android client request: json %q: %w", content, err)
+			return nil, &googleapi.Error{Code: resp.StatusCode, Message: string(content)}
 		}
 		return nil, &e.Error
 	}
