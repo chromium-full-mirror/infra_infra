@@ -44,7 +44,9 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *FoilRequestUpdat
 		"/tmp/provisionservice", fmt.Sprintf("%s server -port 0", binary))
 
 	containers := []*api.ContainerRequest{}
-	containers = append(containers, provisionContainerBuilder.Build())
+	container := provisionContainerBuilder.Build()
+	container.Network = "adb-network"
+	containers = append(containers, container)
 	generator.AddModification(
 		&api.CrosTestRunnerDynamicRequest_Task{
 			OrderedContainerRequests: containers,
@@ -70,6 +72,12 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 		structpb.NewStringValue(updater.TestPath),
 		map[string]string{
 			"orderedContainerRequests.0.containerImagePath": "value",
+		},
+	)
+	generator.AddModification(
+		structpb.NewStringValue("adb-network"),
+		map[string]string{
+			"orderedContainerRequests.0.network": "value",
 		},
 	)
 
