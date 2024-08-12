@@ -46,14 +46,14 @@ luci.cq_group(
 build.presubmit(
     name = "recipes-py-try-presubmit",
     cq_group = "recipes-py",
-    repo_name = "recipes_py",
+    repo_name = "recipes_py_bare",
     timeout_s = 1200,
     os = "Ubuntu-22.04",
 )
 build.presubmit(
     name = "recipes-py-try-presubmit-win",
     cq_group = "recipes-py",
-    repo_name = "recipes_py",
+    repo_name = "recipes_py_bare",
     timeout_s = 1200,
     os = "Windows-10",
     experiment_percentage = 100,
