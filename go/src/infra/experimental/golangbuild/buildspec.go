@@ -242,7 +242,10 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	}
 	if inputs.Target.Goarch == "wasm" {
 		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
-		env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "misc/wasm"), os.PathListSeparator, env.Get("PATH")))
+		env.Set("PATH", fmt.Sprintf("%v%c%v%c%v",
+			filepath.Join(goroot, "misc/wasm"), os.PathListSeparator,
+			filepath.Join(goroot, "lib/wasm"), os.PathListSeparator,
+			env.Get("PATH")))
 		switch {
 		case inputs.Target.Goos == "js":
 			env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "nodejs/bin"), os.PathListSeparator, env.Get("PATH")))
