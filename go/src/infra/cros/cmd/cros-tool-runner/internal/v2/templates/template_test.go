@@ -57,21 +57,6 @@ func TestDefaultDiscoverPort_errorPropagated(t *testing.T) {
 	}
 }
 
-func TestDefaultDiscoverPort_bridgeNetwork_populateProtocolOnly(t *testing.T) {
-	expected := &api.Container_PortBinding{
-		ContainerPort: int32(42),
-		Protocol:      protocolTcp,
-	}
-	executor := getMockCmdExecutorWithSuccess("42")
-	request := getCrosProvisionTemplateRequest("mynet")
-	binding, err := defaultDiscoverPort(executor, request)
-
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	check(t, binding.String(), expected.String())
-}
-
 func TestDefaultDiscoverPort_hostNetwork_populateAllFields(t *testing.T) {
 	expected := &api.Container_PortBinding{
 		ContainerPort: int32(42),

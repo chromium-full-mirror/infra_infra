@@ -41,10 +41,6 @@ func (p *crosDutProcessor) Process(request *api.StartTemplatedContainerRequest) 
 	volume := fmt.Sprintf("%s:%s", request.ArtifactDir, p.dockerArtifactDirName)
 	port := portZero
 	expose := make([]string, 0)
-	if request.Network != hostNetworkName {
-		port = p.defaultServerPort
-		expose = append(expose, port)
-	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,

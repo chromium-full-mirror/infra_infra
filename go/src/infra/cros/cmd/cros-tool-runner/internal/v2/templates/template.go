@@ -146,9 +146,30 @@ func defaultDiscoverPort(cmdExecutor cmdExecutor, request *api.StartTemplatedCon
 		ContainerPort: int32(servicePort),
 		Protocol:      protocolTcp,
 	}
+	portBinding.HostPort = portBinding.ContainerPort
 	if request.Network == hostNetworkName {
-		portBinding.HostPort = portBinding.ContainerPort
 		portBinding.HostIp = localhostIp
+	} else {
+		containerIP, err := getContainerIP(cmdExecutor, request.Name)
+		if err != nil {
+			return nil, fmt.Errorf("failed to retrieve container IP address: %s", err)
+		}
+		portBinding.HostIp = containerIP
 	}
 	return portBinding, nil
+}
+
+// getContainerIP inspects the docker container for
+// IpAddress as it is known by the host device.
+func getContainerIP(cmdExecutor cmdExecutor, containerName string) (string, error) {
+	cmd := &commands.DockerInspect{
+		Name:   containerName,
+		Format: "'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'",
+	}
+	stdout, stderr, err := cmdExecutor.Execute(context.Background(), cmd)
+	if err != nil {
+		return "", fmt.Errorf("%v with stderr: %s", err, stderr)
+	}
+	containerIP := strings.Trim(strings.TrimSpace(stdout), "'")
+	return containerIP, nil
 }

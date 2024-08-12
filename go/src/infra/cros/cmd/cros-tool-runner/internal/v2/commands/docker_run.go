@@ -24,7 +24,7 @@ func (c *DockerRun) compose() ([]string, error) {
 	if c.ContainerImage == "" {
 		return nil, errors.New("ContainerImage is mandatory")
 	}
-	args := []string{"run", "-d", "--rm", "-P", "--cap-add=NET_RAW"}
+	args := []string{"run", "-d", "--rm", "--cap-add=NET_RAW"}
 	if c.Name != "" {
 		args = append(args, "--name", c.Name)
 	}
@@ -33,14 +33,8 @@ func (c *DockerRun) compose() ([]string, error) {
 		if options.Network != "" {
 			args = append(args, "--network", options.Network)
 		}
-		if options.Expose != nil {
-			for _, port := range options.Expose {
-				if port == "" {
-					continue
-				}
-				args = append(args, "--expose", port)
-			}
-		}
+		// TODO: pass port exposing through request object.
+		// Reneable expose options.
 		if options.Volume != nil {
 			for _, volume := range options.Volume {
 				if volume == "" {

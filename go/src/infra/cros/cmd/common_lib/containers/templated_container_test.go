@@ -24,7 +24,7 @@ func TestCrosDutTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.initializeCrosDutTemplate(ctx, nil)
 		So(err, ShouldNotBeNil)
 	})
@@ -34,7 +34,7 @@ func TestCrosDutTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		dutTemplate := &api.CrosDutTemplate{}
 		err := cont.initializeCrosDutTemplate(ctx, dutTemplate)
 		So(err, ShouldNotBeNil)
@@ -45,7 +45,7 @@ func TestCrosDutTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		dutTemplate := &api.CrosDutTemplate{CacheServer: &labapi.IpEndpoint{}}
 		err := cont.initializeCrosDutTemplate(ctx, dutTemplate)
 		So(err, ShouldNotBeNil)
@@ -56,7 +56,7 @@ func TestCrosDutTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		dutTemplate := &api.CrosDutTemplate{
 			CacheServer: &labapi.IpEndpoint{},
 			DutAddress:  &labapi.IpEndpoint{}}
@@ -73,7 +73,7 @@ func TestCrosProvisionTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.initializeCrosProvisionTemplate(ctx, nil)
 		So(err, ShouldNotBeNil)
 	})
@@ -83,7 +83,7 @@ func TestCrosProvisionTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		provisionTemplate := &api.CrosProvisionTemplate{}
 		err := cont.initializeCrosProvisionTemplate(ctx, provisionTemplate)
 		So(err, ShouldNotBeNil)
@@ -94,7 +94,7 @@ func TestCrosProvisionTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		provisionTemplate := &api.CrosProvisionTemplate{
 			InputRequest: &api.CrosProvisionRequest{},
 		}
@@ -110,7 +110,7 @@ func TestCacheServerTemplate(t *testing.T) {
 		wantContType := CacheServerTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		return cont
 	}
 
@@ -138,7 +138,7 @@ func TestCrosTestTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.initializeCrosTestTemplate(ctx, nil)
 		So(err, ShouldNotBeNil)
 	})
@@ -148,7 +148,7 @@ func TestCrosTestTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		testTemplate := &api.CrosTestTemplate{}
 		err := cont.initializeCrosTestTemplate(ctx, testTemplate)
 		So(err, ShouldBeNil)
@@ -163,7 +163,7 @@ func TestPostProcessTemplate(t *testing.T) {
 		wantContType := PostProcessTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.initializeCrosTestTemplate(ctx, nil)
 		So(err, ShouldNotBeNil)
 	})
@@ -173,7 +173,7 @@ func TestPostProcessTemplate(t *testing.T) {
 		wantContType := PostProcessTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		postProcessTemplate := &api.PostProcessTemplate{}
 		err := cont.initializePostProcessTemplate(ctx, postProcessTemplate)
 		So(err, ShouldBeNil)
@@ -188,7 +188,7 @@ func TestCrosPublishTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.initializeCrosPublishTemplate(ctx, nil)
 		So(err, ShouldNotBeNil)
 	})
@@ -198,7 +198,7 @@ func TestCrosPublishTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		publishTemplate := &api.CrosPublishTemplate{PublishType: api.CrosPublishTemplate_PUBLISH_GCS}
 		err := cont.initializeCrosPublishTemplate(ctx, publishTemplate)
 		So(err, ShouldNotBeNil)
@@ -209,7 +209,7 @@ func TestCrosPublishTemplate(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		publishTemplate := &api.CrosPublishTemplate{PublishType: api.CrosPublishTemplate_PUBLISH_GCS, PublishSrcDir: "src/dir/loc"}
 		err := cont.initializeCrosPublishTemplate(ctx, publishTemplate)
 		So(err, ShouldBeNil)
@@ -224,7 +224,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosDut{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
@@ -235,7 +235,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosProvision{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
@@ -246,7 +246,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosTest{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
@@ -257,7 +257,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := PostProcessTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_PostProcess{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
@@ -268,7 +268,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosPublish{}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldNotBeNil)
@@ -279,7 +279,7 @@ func TestTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		template := &api.Template{Container: &api.Template_CrosPublish{CrosPublish: &api.CrosPublishTemplate{PublishType: api.CrosPublishTemplate_PUBLISH_GCS, PublishSrcDir: "src/dir/loc"}}}
 		err := cont.Initialize(ctx, template)
 		So(err, ShouldBeNil)
@@ -294,7 +294,7 @@ func TestTemplatedStartContainer(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		resp, err := cont.StartContainer(ctx)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
@@ -303,7 +303,7 @@ func TestTemplatedStartContainer(t *testing.T) {
 	Convey("StartContainer_empty_ctr", t, func() {
 		ctx := context.Background()
 		wantContType := CrosProvisionTemplatedContainerType
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", nil)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", nil)
 		cont.StartTemplatedContainerReq = &api.StartTemplatedContainerRequest{}
 		resp, err := cont.StartContainer(ctx)
 		So(err, ShouldNotBeNil)
@@ -315,7 +315,7 @@ func TestTemplatedStartContainer(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		cont.StartTemplatedContainerReq = &api.StartTemplatedContainerRequest{}
 		resp, err := cont.StartContainer(ctx)
 		So(err, ShouldNotBeNil)

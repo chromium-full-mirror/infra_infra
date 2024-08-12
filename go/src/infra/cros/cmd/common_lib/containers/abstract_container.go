@@ -33,14 +33,15 @@ const (
 func NewContainer(
 	contType interfaces.ContainerType,
 	namePrefix string,
+	network string,
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner,
 	isTemplated bool) interfaces.ContainerInterface {
 
 	if isTemplated {
-		return NewTemplatedContainer(contType, namePrefix, containerImage, ctr)
+		return NewTemplatedContainer(contType, namePrefix, network, containerImage, ctr)
 	} else {
-		return NewNonTemplatedContainer(contType, namePrefix, containerImage, ctr)
+		return NewNonTemplatedContainer(contType, namePrefix, network, containerImage, ctr)
 	}
 }
 
@@ -54,6 +55,7 @@ type AbstractContainer struct {
 	state          ContainerState
 
 	Name          string
+	Network       string
 	TempDirLoc    string
 	containerType interfaces.ContainerType
 
@@ -65,10 +67,11 @@ type AbstractContainer struct {
 func NewAbstractContainer(
 	contType interfaces.ContainerType,
 	namePrefix string,
+	network string,
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) AbstractContainer {
 
-	return AbstractContainer{containerType: contType, namePrefix: namePrefix, containerImage: containerImage, ctr: ctr, state: ContainerStateNotInitialized}
+	return AbstractContainer{containerType: contType, namePrefix: namePrefix, Network: network, containerImage: containerImage, ctr: ctr, state: ContainerStateNotInitialized}
 }
 
 func (cont *AbstractContainer) GetContainerType() interfaces.ContainerType {

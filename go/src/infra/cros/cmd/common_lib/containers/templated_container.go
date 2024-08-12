@@ -25,10 +25,11 @@ type TemplatedContainer struct {
 
 func NewTemplatedContainer(contType interfaces.ContainerType,
 	namePrefix string,
+	network string,
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) *TemplatedContainer {
 
-	cont := &TemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, containerImage, ctr)}
+	cont := &TemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, network, containerImage, ctr)}
 	cont.ConcreteContainer = cont
 	return cont
 }
@@ -92,11 +93,15 @@ func (cont *TemplatedContainer) Initialize(
 		return fmt.Errorf("TempDirLoc is empty but required for ArtifactDir")
 	}
 
+	if cont.Network == "" {
+		cont.Network = common.ContainerDefaultNetwork
+	}
+
 	cont.StartTemplatedContainerReq = &api.StartTemplatedContainerRequest{
 		Name:           cont.Name,
 		ContainerImage: cont.containerImage,
 		Template:       template,
-		Network:        common.ContainerDefaultNetwork,
+		Network:        cont.Network,
 		ArtifactDir:    cont.TempDirLoc}
 
 	cont.state = ContainerStateInitialized

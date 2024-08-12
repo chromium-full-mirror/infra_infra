@@ -25,7 +25,7 @@ func TestGetContainerType(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(wantContType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(wantContType, "test-container", "host", "container-image", ctr)
 		gotContType := absContainer.GetContainerType()
 		assert.Loosely(t, gotContType, should.Equal(wantContType))
 	})
@@ -38,7 +38,7 @@ func TestGetLogsLocation(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		logsLoc, err := absContainer.GetLogsLocation()
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, logsLoc, should.BeEmpty)
@@ -49,7 +49,7 @@ func TestGetLogsLocation(t *testing.T) {
 		wantLogsLoc := "temp/dir/loc"
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.TempDirLoc = wantLogsLoc
 		gotLogsLoc, err := absContainer.GetLogsLocation()
 		assert.Loosely(t, err, should.BeNil)
@@ -65,7 +65,7 @@ func TestInitializeBase(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		err := absContainer.InitializeBase(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -76,7 +76,7 @@ func TestInitializeBase(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "", "host", "container-image", ctr)
 		err := absContainer.InitializeBase(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
 	})
@@ -86,7 +86,7 @@ func TestInitializeBase(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "", ctr)
 		err := absContainer.InitializeBase(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
 	})
@@ -96,7 +96,7 @@ func TestInitializeBase(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		err := absContainer.InitializeBase(ctx)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, absContainer.TempDirLoc, should.NotEqual(""))
@@ -111,7 +111,7 @@ func TestGetContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		resp, err := absContainer.GetContainer(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
@@ -122,7 +122,7 @@ func TestGetContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		resp, err := absContainer.GetContainer(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -134,7 +134,7 @@ func TestGetContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		absContainer.Name = "container-1234"
 		resp, err := absContainer.GetContainer(ctx)
@@ -151,7 +151,7 @@ func TestStopContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		err := absContainer.StopContainer(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
 	})
@@ -161,7 +161,7 @@ func TestStopContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.state = ContainerStateStarted
 		err := absContainer.StopContainer(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -173,7 +173,7 @@ func TestStopContainer(t *testing.T) {
 	//		contType := CrosProvisionTemplatedContainerType
 	//		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 	//		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-	//		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+	//		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 	//		absContainer.state = ContainerStateStarted
 	//		absContainer.Name = "container-1234"
 	//		err := absContainer.StopContainer(ctx)
@@ -189,7 +189,7 @@ func TestProcessContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -201,7 +201,7 @@ func TestProcessContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: nil, StartContainerErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -213,7 +213,7 @@ func TestProcessContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: &api.StartContainerResponse{}, StartContainerErr: nil, GetContainerResp: nil, GetContainerErr: fmt.Errorf("some err")}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -225,7 +225,7 @@ func TestProcessContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		absContainer.ConcreteContainer = &MockContainer{InitializeErr: nil, StartContainerResp: &api.StartContainerResponse{}, StartContainerErr: nil, GetContainerResp: nil, GetContainerErr: nil}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -239,7 +239,7 @@ func TestProcessContainer(t *testing.T) {
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		absContainer := NewAbstractContainer(contType, "test-container", "container-image", ctr)
+		absContainer := NewAbstractContainer(contType, "test-container", "host", "container-image", ctr)
 		getResp := &api.GetContainerResponse{Container: &api.Container{
 			PortBindings: []*api.Container_PortBinding{
 				{

@@ -70,10 +70,6 @@ func (p *postProcessProcessor) Process(request *api.StartTemplatedContainerReque
 
 	port := portZero
 	expose := make([]string, 0)
-	if request.GetNetwork() != hostNetworkName {
-		port = p.defaultServerPort
-		expose = append(expose, port)
-	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,

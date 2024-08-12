@@ -13,49 +13,49 @@ func NewCrosDutTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CrosDutTemplatedContainerType, "cros-dut", containerImage, ctr, true)
+	return NewContainer(CrosDutTemplatedContainerType, "cros-dut", "host", containerImage, ctr, true)
 }
 
 func NewAndroidDutTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(AndroidDutTemplatedContainerType, "android-dut", containerImage, ctr, true)
+	return NewContainer(AndroidDutTemplatedContainerType, "android-dut", "host", containerImage, ctr, true)
 }
 
 func NewCrosProvisionTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CrosProvisionTemplatedContainerType, "cros-provision", containerImage, ctr, true)
+	return NewContainer(CrosProvisionTemplatedContainerType, "cros-provision", "host", containerImage, ctr, true)
 }
 
 func NewCrosVMProvisionTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CrosVMProvisionTemplatedContainerType, "vm-provision", containerImage, ctr, true)
+	return NewContainer(CrosVMProvisionTemplatedContainerType, "vm-provision", "host", containerImage, ctr, true)
 }
 
 func NewCrosTestTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CrosTestTemplatedContainerType, "cros-test", containerImage, ctr, true)
+	return NewContainer(CrosTestTemplatedContainerType, "cros-test", "host", containerImage, ctr, true)
 }
 
 func NewCrosTestFinderTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CrosTestFinderTemplatedContainerType, "cros-test-finder", containerImage, ctr, true)
+	return NewContainer(CrosTestFinderTemplatedContainerType, "cros-test-finder", "host", containerImage, ctr, true)
 }
 
 func NewCacheServerTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CacheServerTemplatedContainerType, "cache-server", containerImage, ctr, true)
+	return NewContainer(CacheServerTemplatedContainerType, "cache-server", "host", containerImage, ctr, true)
 }
 
 func NewCrosPublishTemplatedContainer(
@@ -66,7 +66,7 @@ func NewCrosPublishTemplatedContainer(
 	if contType != CrosGcsPublishTemplatedContainerType && contType != CrosTkoPublishTemplatedContainerType && contType != CrosPublishTemplatedContainerType && contType != CrosRdbPublishTemplatedContainerType {
 		return nil
 	}
-	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
+	return NewContainer(contType, "cros-publish", "host", containerImage, ctr, true)
 }
 
 // NewPostProcessTemplatedContainer creates a new templated post-process container.
@@ -77,7 +77,7 @@ func NewPostProcessTemplatedContainer(
 	if contType != PostProcessTemplatedContainerType {
 		return nil
 	}
-	return NewContainer(contType, "post-process", containerImage, ctr, true)
+	return NewContainer(contType, "post-process", "host", containerImage, ctr, true)
 }
 
 func NewGenericTemplatedContainer(
@@ -86,7 +86,7 @@ func NewGenericTemplatedContainer(
 	namePrefix string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(contType, namePrefix, containerImage, ctr, true)
+	return NewContainer(contType, namePrefix, "host", containerImage, ctr, true)
 }
 
 func NewGenericProvisionTemplatedContainer(
@@ -94,5 +94,5 @@ func NewGenericProvisionTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(GenericProvisionTemplatedContainerType, namePrefix, containerImage, ctr, true)
+	return NewContainer(GenericProvisionTemplatedContainerType, namePrefix, "host", containerImage, ctr, true)
 }

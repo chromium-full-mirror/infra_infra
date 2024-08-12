@@ -22,7 +22,7 @@ func TestNonTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewNonTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		gotContType := cont.GetContainerType()
 		So(gotContType, ShouldNotBeNil)
 		So(gotContType, ShouldEqual, wantContType)
@@ -33,7 +33,7 @@ func TestNonTemplatedInitialize(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewNonTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.Initialize(ctx, nil)
 		So(err, ShouldBeNil)
 	})
@@ -47,7 +47,7 @@ func TestNonTemplatedStartContainer(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewNonTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		resp, err := cont.StartContainer(ctx)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
@@ -58,7 +58,7 @@ func TestNonTemplatedStartContainer(t *testing.T) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := NewNonTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		cont.StartContainerReq = &api.StartContainerRequest{}
 		resp, err := cont.StartContainer(ctx)
 		So(err, ShouldNotBeNil)

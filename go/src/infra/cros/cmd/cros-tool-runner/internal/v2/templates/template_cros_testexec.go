@@ -41,10 +41,6 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 
 	port := portZero
 	expose := make([]string, 0)
-	if request.Network != hostNetworkName {
-		port = p.defaultServerPort
-		expose = append(expose, port)
-	}
 	// All non-test harness artifacts will be in <artifact_dir>/cros-test/cros-test.
 	crosTestDir := path.Join(request.ArtifactDir, "cros-test", "cros-test")
 	// All test result artifacts will be in <artifact_dir>/cros-test/results.

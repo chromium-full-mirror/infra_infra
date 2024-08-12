@@ -29,11 +29,8 @@ func TestCrosProvisionPopulate(t *testing.T) {
 	check(t, convertedRequest.Name, request.Name)
 	check(t, convertedRequest.ContainerImage, request.ContainerImage)
 	check(t, convertedRequest.AdditionalOptions.Network, "mynet")
-	check(t, convertedRequest.AdditionalOptions.Expose[0], "80")
 	check(t, convertedRequest.AdditionalOptions.Volume[0], "/tmp:/tmp/provisionservice")
 	check(t, convertedRequest.StartCommand[0], "cros-provision")
-	check(t, convertedRequest.StartCommand[len(convertedRequest.StartCommand)-1],
-		"80")
 }
 
 func TestCrosProvisionPopulate_hostNetwork(t *testing.T) {

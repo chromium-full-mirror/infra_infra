@@ -281,6 +281,66 @@ func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName stri
 	return nil
 }
 
+// CreateNetwork creates a bridge network with the provided name.
+func (ctr *CrosToolRunner) CreateNetwork(ctx context.Context, networkName string) (*testapi.CreateNetworkResponse, error) {
+	if networkName == "" {
+		return nil, fmt.Errorf("Cannot create network with empty network name.")
+	}
+	if networkName == "host" {
+		return nil, fmt.Errorf("Cannot overwrite default host network.")
+	}
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Create network %s", networkName))
+	defer func() { step.End(err) }()
+
+	if ctr.CtrClient == nil {
+		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+	}
+
+	createNetworkReq := &testapi.CreateNetworkRequest{Name: networkName}
+	common.WriteProtoToStepLog(ctx, step, createNetworkReq, "CreateNetworkRequest")
+
+	resp, err := ctr.CtrClient.CreateNetwork(ctx, createNetworkReq, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "error during create network: ").Err()
+	}
+
+	common.WriteProtoToStepLog(ctx, step, resp, "CreateNetworkResponse")
+	logging.Infof(ctx, "Successfully started network %s!", networkName)
+	return resp, nil
+}
+
+// GetNetwork provides the network ID of the provided name if it exists.
+func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (*testapi.GetNetworkResponse, error) {
+	if networkName == "" {
+		return nil, fmt.Errorf("Cannot get network with empty network name.")
+	}
+	if networkName == "host" {
+		return nil, fmt.Errorf("Cannot fetch default host network. Known to exist.")
+	}
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Get network %s", networkName))
+	defer func() { step.End(err) }()
+
+	if ctr.CtrClient == nil {
+		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+	}
+
+	getNetworkReq := &testapi.GetNetworkRequest{Name: networkName}
+	common.WriteProtoToStepLog(ctx, step, getNetworkReq, "GetNetworkRequest")
+
+	resp, err := ctr.CtrClient.GetNetwork(ctx, getNetworkReq, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "error during get network: ").Err()
+	}
+
+	common.WriteProtoToStepLog(ctx, step, resp, "GetNetworkResponse")
+	logging.Infof(ctx, "Successfully got network %s", networkName)
+	return resp, nil
+}
+
 // GetContainer gets the container with provided name.
 func (ctr *CrosToolRunner) GetContainer(
 	ctx context.Context,

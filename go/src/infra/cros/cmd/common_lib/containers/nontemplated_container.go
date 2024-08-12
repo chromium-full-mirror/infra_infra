@@ -36,10 +36,11 @@ type NonTemplatedContainer struct {
 func NewNonTemplatedContainer(
 	contType interfaces.ContainerType,
 	namePrefix string,
+	network string,
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) *NonTemplatedContainer {
 
-	cont := &NonTemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, containerImage, ctr)}
+	cont := &NonTemplatedContainer{AbstractContainer: NewAbstractContainer(contType, namePrefix, network, containerImage, ctr)}
 	cont.ConcreteContainer = cont
 	return cont
 }

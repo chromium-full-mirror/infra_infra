@@ -23,12 +23,8 @@ func TestCrosTestPopulate(t *testing.T) {
 	check(t, convertedRequest.Name, request.Name)
 	check(t, convertedRequest.ContainerImage, request.ContainerImage)
 	check(t, convertedRequest.AdditionalOptions.Network, "mynet")
-	check(t, convertedRequest.AdditionalOptions.Expose[0], "8001")
 	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "cros-test") {
 		t.Fatalf("cros-test is not part of start command")
-	}
-	if !strings.Contains(strings.Join(convertedRequest.StartCommand, " "), "-port 8001") {
-		t.Fatalf("-port 8001 is not part of start command")
 	}
 }
 

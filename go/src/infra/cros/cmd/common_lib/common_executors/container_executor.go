@@ -36,7 +36,9 @@ type ContainerExecutor struct {
 		string
 		interfaces.ContainerInterface
 	}
-	isClosed bool
+	// KnownNetworks maps the network name to its ID.
+	KnownNetworks map[string]string
+	isClosed      bool
 }
 
 func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor {
@@ -44,7 +46,7 @@ func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor
 	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}, ContainerChannel: make(chan struct {
 		string
 		interfaces.ContainerInterface
-	}), isClosed: false}
+	}), isClosed: false, KnownNetworks: map[string]string{}}
 }
 
 func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
@@ -101,6 +103,7 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 
 	containerInstance, endpoint, err := ex.Start(
 		ctx,
+		cmd.ContainerRequest,
 		cmd.ContainerRequest.Container,
 		interfaces.ContainerType(cmd.ContainerRequest.DynamicIdentifier),
 		cmd.ContainerRequest.DynamicIdentifier,
@@ -148,14 +151,39 @@ func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
 // Start starts the container.
 func (ex *ContainerExecutor) Start(
 	ctx context.Context,
+	contReq *api.ContainerRequest,
 	template *api.Template,
 	containerType interfaces.ContainerType,
 	containerPrefix string,
 	containerImage string) (interfaces.ContainerInterface, *labapi.IpEndpoint, error) {
 
+	if contReq.Network == "" {
+		contReq.Network = common.ContainerDefaultNetwork
+	}
+	if contReq.Network != common.ContainerDefaultNetwork {
+		id, ok := ex.KnownNetworks[contReq.Network]
+		if !ok {
+			getResp, err := ex.Ctr.GetNetwork(ctx, contReq.Network)
+			if err != nil {
+				logging.Infof(ctx, err.Error())
+			}
+			if getResp != nil {
+				id = getResp.GetNetwork().GetId()
+			} else {
+				resp, err := ex.Ctr.CreateNetwork(ctx, contReq.Network)
+				if err != nil {
+					return nil, nil, errors.Annotate(err, "error processing container: ").Err()
+				}
+				id = resp.GetNetwork().GetId()
+			}
+			ex.KnownNetworks[contReq.Network] = id
+		}
+	}
+
 	containerInstance := containers.NewContainer(
-		containerType,
-		containerPrefix,
+		interfaces.ContainerType(contReq.DynamicIdentifier),
+		contReq.DynamicIdentifier,
+		contReq.Network,
 		containerImage,
 		ex.Ctr,
 		true)
