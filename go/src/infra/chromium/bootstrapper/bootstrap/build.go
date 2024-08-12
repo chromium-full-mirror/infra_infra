@@ -345,7 +345,10 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 		properties := &structpb.Struct{}
 		logging.Infof(ctx, "unmarshalling builder properties file %s", f)
 		if err := protojson.Unmarshal([]byte(contents), properties); err != nil {
-			return nil, errors.Annotate(err, "failed to unmarshall builder properties file %s: {%s}", f, contents).Err()
+			err := errors.Annotate(err, "failed to unmarshall builder properties file %s", f).Err()
+			logging.Errorf(ctx, err.Error())
+			logging.Errorf(ctx, "properties file contents: {%s}", contents)
+			return nil, err
 		}
 		return properties, nil
 	}
