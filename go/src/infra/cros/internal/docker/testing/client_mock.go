@@ -41,7 +41,7 @@ func (m *MockContainerAPIClient) EXPECT() *MockContainerAPIClientMockRecorder {
 }
 
 // ContainerAttach mocks base method.
-func (m *MockContainerAPIClient) ContainerAttach(arg0 context.Context, arg1 string, arg2 types.ContainerAttachOptions) (types.HijackedResponse, error) {
+func (m *MockContainerAPIClient) ContainerAttach(arg0 context.Context, arg1 string, arg2 container.AttachOptions) (types.HijackedResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerAttach", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.HijackedResponse)
@@ -56,7 +56,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerAttach(arg0, arg1, arg2 i
 }
 
 // ContainerCommit mocks base method.
-func (m *MockContainerAPIClient) ContainerCommit(arg0 context.Context, arg1 string, arg2 types.ContainerCommitOptions) (types.IDResponse, error) {
+func (m *MockContainerAPIClient) ContainerCommit(arg0 context.Context, arg1 string, arg2 container.CommitOptions) (types.IDResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerCommit", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.IDResponse)
@@ -101,7 +101,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerDiff(arg0, arg1 interface
 }
 
 // ContainerExecAttach mocks base method.
-func (m *MockContainerAPIClient) ContainerExecAttach(arg0 context.Context, arg1 string, arg2 types.ExecStartCheck) (types.HijackedResponse, error) {
+func (m *MockContainerAPIClient) ContainerExecAttach(arg0 context.Context, arg1 string, arg2 container.ExecStartOptions) (types.HijackedResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecAttach", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.HijackedResponse)
@@ -116,7 +116,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerExecAttach(arg0, arg1, ar
 }
 
 // ContainerExecCreate mocks base method.
-func (m *MockContainerAPIClient) ContainerExecCreate(arg0 context.Context, arg1 string, arg2 types.ExecConfig) (types.IDResponse, error) {
+func (m *MockContainerAPIClient) ContainerExecCreate(arg0 context.Context, arg1 string, arg2 container.ExecOptions) (types.IDResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecCreate", arg0, arg1, arg2)
 	ret0, _ := ret[0].(types.IDResponse)
@@ -131,10 +131,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerExecCreate(arg0, arg1, ar
 }
 
 // ContainerExecInspect mocks base method.
-func (m *MockContainerAPIClient) ContainerExecInspect(arg0 context.Context, arg1 string) (types.ContainerExecInspect, error) {
+func (m *MockContainerAPIClient) ContainerExecInspect(arg0 context.Context, arg1 string) (container.ExecInspect, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecInspect", arg0, arg1)
-	ret0, _ := ret[0].(types.ContainerExecInspect)
+	ret0, _ := ret[0].(container.ExecInspect)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -146,7 +146,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerExecInspect(arg0, arg1 in
 }
 
 // ContainerExecResize mocks base method.
-func (m *MockContainerAPIClient) ContainerExecResize(arg0 context.Context, arg1 string, arg2 types.ResizeOptions) error {
+func (m *MockContainerAPIClient) ContainerExecResize(arg0 context.Context, arg1 string, arg2 container.ResizeOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecResize", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -160,7 +160,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerExecResize(arg0, arg1, ar
 }
 
 // ContainerExecStart mocks base method.
-func (m *MockContainerAPIClient) ContainerExecStart(arg0 context.Context, arg1 string, arg2 types.ExecStartCheck) error {
+func (m *MockContainerAPIClient) ContainerExecStart(arg0 context.Context, arg1 string, arg2 container.ExecStartOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerExecStart", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -234,7 +234,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerKill(arg0, arg1, arg2 int
 }
 
 // ContainerList mocks base method.
-func (m *MockContainerAPIClient) ContainerList(arg0 context.Context, arg1 types.ContainerListOptions) ([]types.Container, error) {
+func (m *MockContainerAPIClient) ContainerList(arg0 context.Context, arg1 container.ListOptions) ([]types.Container, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerList", arg0, arg1)
 	ret0, _ := ret[0].([]types.Container)
@@ -249,7 +249,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerList(arg0, arg1 interface
 }
 
 // ContainerLogs mocks base method.
-func (m *MockContainerAPIClient) ContainerLogs(arg0 context.Context, arg1 string, arg2 types.ContainerLogsOptions) (io.ReadCloser, error) {
+func (m *MockContainerAPIClient) ContainerLogs(arg0 context.Context, arg1 string, arg2 container.LogsOptions) (io.ReadCloser, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerLogs", arg0, arg1, arg2)
 	ret0, _ := ret[0].(io.ReadCloser)
@@ -278,7 +278,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerPause(arg0, arg1 interfac
 }
 
 // ContainerRemove mocks base method.
-func (m *MockContainerAPIClient) ContainerRemove(arg0 context.Context, arg1 string, arg2 types.ContainerRemoveOptions) error {
+func (m *MockContainerAPIClient) ContainerRemove(arg0 context.Context, arg1 string, arg2 container.RemoveOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerRemove", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -306,7 +306,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerRename(arg0, arg1, arg2 i
 }
 
 // ContainerResize mocks base method.
-func (m *MockContainerAPIClient) ContainerResize(arg0 context.Context, arg1 string, arg2 types.ResizeOptions) error {
+func (m *MockContainerAPIClient) ContainerResize(arg0 context.Context, arg1 string, arg2 container.ResizeOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerResize", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -334,7 +334,7 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerRestart(arg0, arg1, arg2 
 }
 
 // ContainerStart mocks base method.
-func (m *MockContainerAPIClient) ContainerStart(arg0 context.Context, arg1 string, arg2 types.ContainerStartOptions) error {
+func (m *MockContainerAPIClient) ContainerStart(arg0 context.Context, arg1 string, arg2 container.StartOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStart", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
@@ -348,10 +348,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerStart(arg0, arg1, arg2 in
 }
 
 // ContainerStatPath mocks base method.
-func (m *MockContainerAPIClient) ContainerStatPath(arg0 context.Context, arg1, arg2 string) (types.ContainerPathStat, error) {
+func (m *MockContainerAPIClient) ContainerStatPath(arg0 context.Context, arg1, arg2 string) (container.PathStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStatPath", arg0, arg1, arg2)
-	ret0, _ := ret[0].(types.ContainerPathStat)
+	ret0, _ := ret[0].(container.PathStat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -363,10 +363,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerStatPath(arg0, arg1, arg2
 }
 
 // ContainerStats mocks base method.
-func (m *MockContainerAPIClient) ContainerStats(arg0 context.Context, arg1 string, arg2 bool) (types.ContainerStats, error) {
+func (m *MockContainerAPIClient) ContainerStats(arg0 context.Context, arg1 string, arg2 bool) (container.StatsResponseReader, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStats", arg0, arg1, arg2)
-	ret0, _ := ret[0].(types.ContainerStats)
+	ret0, _ := ret[0].(container.StatsResponseReader)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -378,10 +378,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerStats(arg0, arg1, arg2 in
 }
 
 // ContainerStatsOneShot mocks base method.
-func (m *MockContainerAPIClient) ContainerStatsOneShot(arg0 context.Context, arg1 string) (types.ContainerStats, error) {
+func (m *MockContainerAPIClient) ContainerStatsOneShot(arg0 context.Context, arg1 string) (container.StatsResponseReader, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainerStatsOneShot", arg0, arg1)
-	ret0, _ := ret[0].(types.ContainerStats)
+	ret0, _ := ret[0].(container.StatsResponseReader)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -466,10 +466,10 @@ func (mr *MockContainerAPIClientMockRecorder) ContainerWait(arg0, arg1, arg2 int
 }
 
 // ContainersPrune mocks base method.
-func (m *MockContainerAPIClient) ContainersPrune(arg0 context.Context, arg1 filters.Args) (types.ContainersPruneReport, error) {
+func (m *MockContainerAPIClient) ContainersPrune(arg0 context.Context, arg1 filters.Args) (container.PruneReport, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ContainersPrune", arg0, arg1)
-	ret0, _ := ret[0].(types.ContainersPruneReport)
+	ret0, _ := ret[0].(container.PruneReport)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -481,11 +481,11 @@ func (mr *MockContainerAPIClientMockRecorder) ContainersPrune(arg0, arg1 interfa
 }
 
 // CopyFromContainer mocks base method.
-func (m *MockContainerAPIClient) CopyFromContainer(arg0 context.Context, arg1, arg2 string) (io.ReadCloser, types.ContainerPathStat, error) {
+func (m *MockContainerAPIClient) CopyFromContainer(arg0 context.Context, arg1, arg2 string) (io.ReadCloser, container.PathStat, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CopyFromContainer", arg0, arg1, arg2)
 	ret0, _ := ret[0].(io.ReadCloser)
-	ret1, _ := ret[1].(types.ContainerPathStat)
+	ret1, _ := ret[1].(container.PathStat)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
@@ -497,7 +497,7 @@ func (mr *MockContainerAPIClientMockRecorder) CopyFromContainer(arg0, arg1, arg2
 }
 
 // CopyToContainer mocks base method.
-func (m *MockContainerAPIClient) CopyToContainer(arg0 context.Context, arg1, arg2 string, arg3 io.Reader, arg4 types.CopyToContainerOptions) error {
+func (m *MockContainerAPIClient) CopyToContainer(arg0 context.Context, arg1, arg2 string, arg3 io.Reader, arg4 container.CopyToContainerOptions) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CopyToContainer", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(error)

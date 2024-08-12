@@ -13,6 +13,7 @@ import (
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 
 	"go.chromium.org/luci/common/clock"
@@ -86,7 +87,7 @@ type memoryStats struct {
 	Limit int64
 }
 
-func updateContainerMetrics(ctx context.Context, c dockerTypes.Container, cInfo dockerTypes.ContainerJSON, cStatsJSON dockerTypes.ContainerStats) error {
+func updateContainerMetrics(ctx context.Context, c dockerTypes.Container, cInfo dockerTypes.ContainerJSON, cStatsJSON container.StatsResponseReader) error {
 	// Remove leading slash from container name.
 	cName := strings.TrimPrefix(c.Names[0], "/")
 	cState := c.State
@@ -155,7 +156,7 @@ func update(ctx context.Context) error {
 	}
 	engVerMetric.Set(ctx, version.Version)
 
-	containers, err := dockerClient.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
+	containers, err := dockerClient.ContainerList(ctx, container.ListOptions{All: true})
 	if err != nil {
 		return err
 	}

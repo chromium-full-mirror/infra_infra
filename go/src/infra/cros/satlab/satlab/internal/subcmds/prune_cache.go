@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/maruel/subcommands"
 
@@ -44,7 +44,7 @@ func cleanVolume() error {
 	command := []string{"sh", "-c", "rm -rf /_data/*"}
 
 	// Pull nginx image.
-	if _, err := cli.ImagePull(context.Background(), imageName, types.ImagePullOptions{}); err != nil {
+	if _, err := cli.ImagePull(context.Background(), imageName, image.PullOptions{}); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func cleanVolume() error {
 	}
 
 	// Running a created container.
-	if err := cli.ContainerStart(context.Background(), resp.ID, types.ContainerStartOptions{}); err != nil {
+	if err := cli.ContainerStart(context.Background(), resp.ID, container.StartOptions{}); err != nil {
 		return err
 	}
 
@@ -81,7 +81,7 @@ func cleanVolume() error {
 	}
 
 	// Removing the container.
-	if err := cli.ContainerRemove(context.Background(), resp.ID, types.ContainerRemoveOptions{}); err != nil {
+	if err := cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{}); err != nil {
 		return err
 	}
 	return nil

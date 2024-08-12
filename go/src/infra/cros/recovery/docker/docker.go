@@ -22,6 +22,7 @@ import (
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/docker/go-connections/nat"
@@ -123,7 +124,7 @@ func (d *dockerClient) Pull(ctx context.Context, imageName string, timeout time.
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	// Only able to pull image from public registry.
-	res, err := d.client.ImagePull(ctx, imageName, types.ImagePullOptions{})
+	res, err := d.client.ImagePull(ctx, imageName, image.PullOptions{})
 	if err != nil {
 		log.Debugf(ctx, "Run docker pull %q: err: %v", imageName, err)
 		return errors.Annotate(err, "pull image").Err()
@@ -182,7 +183,7 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 
 	go func() {
 		// Demultiplexing the exec stdout into two buffers
-		err = d.client.ContainerStart(ctx, c.ID, types.ContainerStartOptions{})
+		err = d.client.ContainerStart(ctx, c.ID, container.StartOptions{})
 		outputDone <- err
 	}()
 	select {
@@ -240,7 +241,7 @@ func generateCommandArray(containerName string, req *ContainerArgs) []string {
 // Remove removes existed container.
 func (d *dockerClient) Remove(ctx context.Context, containerName string, force bool) error {
 	log.Debugf(ctx, "Removing container %q, using force:%v", containerName, force)
-	o := types.ContainerRemoveOptions{Force: force}
+	o := container.RemoveOptions{Force: force}
 	err := d.client.ContainerRemove(ctx, containerName, o)
 	return errors.Annotate(err, "docker remove container  %s", containerName).Err()
 }
@@ -330,7 +331,7 @@ func (d *dockerClient) execSDK(ctx context.Context, containerName string, req *E
 
 // PrintAllContainers prints all active containers.
 func (d *dockerClient) PrintAll(ctx context.Context) error {
-	containers, err := d.client.ContainerList(ctx, types.ContainerListOptions{})
+	containers, err := d.client.ContainerList(ctx, container.ListOptions{})
 	if err != nil {
 		return errors.Annotate(err, "docker print all").Err()
 	}
@@ -342,7 +343,7 @@ func (d *dockerClient) PrintAll(ctx context.Context) error {
 
 // ContainerIsUp checks is container is up.
 func (d *dockerClient) IsUp(ctx context.Context, containerName string) (bool, error) {
-	containers, err := d.client.ContainerList(ctx, types.ContainerListOptions{})
+	containers, err := d.client.ContainerList(ctx, container.ListOptions{})
 	if err != nil {
 		return false, errors.Annotate(err, "container is up: fail to get a list of containers").Err()
 	}
@@ -367,7 +368,7 @@ func (d *dockerClient) IPAddress(ctx context.Context, containerName string) (str
 	f.Add("name", containerName)
 	f.Add("status", "running")
 	// Get the list of containers based on the filter above.
-	containers, err := d.client.ContainerList(ctx, types.ContainerListOptions{Filters: f})
+	containers, err := d.client.ContainerList(ctx, container.ListOptions{Filters: f})
 	if err != nil {
 		return "", errors.Annotate(err, "ip-address of %q: fail to get a list of containers", containerName).Err()
 	}
