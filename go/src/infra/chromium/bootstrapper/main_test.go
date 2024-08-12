@@ -436,11 +436,15 @@ func TestBootstrapMain(t *testing.T) {
 			So(sleepDuration, ShouldEqual, 0)
 			So(len(records.builds), ShouldEqual, 2)
 			So(records.builds[0], ShouldResembleProtoJSON, `{
-				"status": "STARTED"
+				"output": {
+					"status": "STARTED"
+				}
 			}`)
 			So(records.builds[1], ShouldResembleProtoJSON, `{
-				"status": "INFRA_FAILURE",
-				"summary_markdown": "<pre>test cmd execution failure</pre>"
+				"summary_markdown": "<pre>test cmd execution failure</pre>",
+				"output": {
+					"status": "INFRA_FAILURE"
+				}
 			}`)
 		})
 
@@ -457,11 +461,15 @@ func TestBootstrapMain(t *testing.T) {
 			So(sleepDuration, ShouldEqual, 0)
 			So(len(records.builds), ShouldEqual, 2)
 			So(records.builds[0], ShouldResembleProtoJSON, `{
-				"status": "STARTED"
+				"output": {
+					"status": "STARTED"
+				}
 			}`)
 			So(records.builds[1], ShouldResembleProtoJSON, fmt.Sprintf(`{
-				"status": "INFRA_FAILURE",
-				"summary_markdown": "<pre>%s</pre>"
+				"summary_markdown": "<pre>%s</pre>",
+				"output": {
+					"status": "INFRA_FAILURE"
+				}
 			}`, cmdErr))
 		})
 
@@ -475,11 +483,15 @@ func TestBootstrapMain(t *testing.T) {
 			So(sleepDuration, ShouldEqual, 0)
 			So(len(records.builds), ShouldEqual, 2)
 			So(records.builds[0], ShouldResembleProtoJSON, `{
-				"status": "STARTED"
+				"output": {
+					"status": "STARTED"
+				}
 			}`)
 			So(records.builds[1], ShouldResembleProtoJSON, `{
-				"status": "INFRA_FAILURE",
-				"summary_markdown": "<pre>test bootstrap failure</pre>"
+				"summary_markdown": "<pre>test bootstrap failure</pre>",
+				"output": {
+					"status": "INFRA_FAILURE"
+				}
 			}`)
 		})
 
@@ -494,12 +506,14 @@ func TestBootstrapMain(t *testing.T) {
 			So(sleepDuration, ShouldEqual, 0)
 			So(len(records.builds), ShouldEqual, 2)
 			So(records.builds[0], ShouldResembleProtoJSON, `{
-				"status": "STARTED"
+				"output": {
+					"status": "STARTED"
+				}
 			}`)
 			So(records.builds[1], ShouldResembleProtoJSON, `{
-				"status": "FAILURE",
 				"summary_markdown": "<pre>Patch failure: See build stderr log. Try rebasing?</pre>",
 				"output": {
+					"status": "FAILURE",
 					"properties": {
 						"failure_type": "PATCH_FAILURE"
 					}
@@ -518,11 +532,15 @@ func TestBootstrapMain(t *testing.T) {
 			So(sleepDuration, ShouldEqual, 20*time.Second)
 			So(len(records.builds), ShouldEqual, 2)
 			So(records.builds[0], ShouldResembleProtoJSON, `{
-				"status": "STARTED"
+				"output": {
+					"status": "STARTED"
+				}
 			}`)
 			So(records.builds[1], ShouldResembleProtoJSON, `{
-				"status": "INFRA_FAILURE",
-				"summary_markdown": "<pre>test error</pre>"
+				"summary_markdown": "<pre>test error</pre>",
+				"output": {
+					"status": "INFRA_FAILURE"
+				}
 			}`)
 		})
 

@@ -222,16 +222,18 @@ func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream get
 	// Write out a build setting the STARTED status to establish the links to the build logs in
 	// milo in case writing out the final build fails (e.g. summary markdown is too big)
 	logging.Infof(ctx, "writing out initial build")
-	build.Status = buildbucketpb.Status_STARTED
+	build.Output = &buildbucketpb.Build_Output{
+		Status: buildbucketpb.Status_STARTED,
+	}
 	if err := writeBuild(); err != nil {
 		logging.Errorf(ctx, errors.Annotate(err, "failed to write out initial build").Err().Error())
 		return
 	}
 
 	if bootstrap.PatchRejected.In(bootstrapErr) {
-		build.Status = buildbucketpb.Status_FAILURE
 		build.SummaryMarkdown = "<pre>Patch failure: See build stderr log. Try rebasing?</pre>"
 		build.Output = &buildbucketpb.Build_Output{
+			Status: buildbucketpb.Status_FAILURE,
 			Properties: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"failure_type": structpb.NewStringValue("PATCH_FAILURE"),
@@ -239,8 +241,10 @@ func handleBootstrapError(ctx context.Context, bootstrapErr error, getStream get
 			},
 		}
 	} else {
-		build.Status = buildbucketpb.Status_INFRA_FAILURE
 		build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", bootstrapErr)
+		build.Output = &buildbucketpb.Build_Output{
+			Status: buildbucketpb.Status_INFRA_FAILURE,
+		}
 	}
 
 	logging.Infof(ctx, "updating build with failure details")
