@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -61,6 +62,14 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 		if err != nil {
 			return nil, errors.Annotate(err, "version").Err()
 		}
+	}
+	// TODO(otabek): That fix is till we move to CFT components.
+	// The change will be extracted to execs and always provide board/model.
+	if dut != nil && req.GetType() == tlw.VersionRequest_CROS && strings.HasSuffix(req.GetResource(), "-tablet") {
+		req.Board = dut.GetChromeos().GetBoard()
+		req.Model = fmt.Sprintf("%s_tablet", dut.GetChromeos().GetModel())
+		// Table has special version.
+		log.Debugf(ctx, "Version: detected tablet device, update request to %v", req)
 	}
 	if req.GetBoard() != "" || req.GetModel() != "" {
 		versionKey = fmt.Sprintf("%s|%s|%s", req.GetType(), req.GetBoard(), req.GetModel())
