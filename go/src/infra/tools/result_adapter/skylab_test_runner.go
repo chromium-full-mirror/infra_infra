@@ -11,6 +11,7 @@ import (
 	"html"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	"google.golang.org/protobuf/types/known/structpb"
@@ -55,7 +56,7 @@ func (r *TestRunnerResult) ConvertFromJSON(reader io.Reader) error {
 }
 
 // ToProtos converts test results in r to []*sinkpb.TestResult.
-func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string) ([]*sinkpb.TestResult, error) {
+func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile, artifactDir string) ([]*sinkpb.TestResult, error) {
 	metadata := map[string]*api.TestCaseMetadata{}
 	var err error
 	if testMetadataFile != "" {
@@ -123,6 +124,18 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 			}
 		}
 
+		// If tauto only contains one test case, associate all artifacts
+		// that contain the test name with the test case.
+		if len(r.Autotest.TestCases) == 1 && artifactDir != "" {
+			arts, err := testCaseArtifacts(artifactDir, testName(c.Name))
+			if err != nil {
+				logging.Warningf(ctx, "Warning: failed to prepare test level artifacts from dir: %q for test: %q, err: %v", artifactDir, c.Name, err)
+			} else {
+				logging.Infof(ctx, "Info: Uploading %d test level artifacts to resultdb from dir: %q for test: %q", len(arts), artifactDir, c.Name)
+				tr.Artifacts = arts
+			}
+		}
+
 		ret = append(ret, tr)
 	}
 	return ret, nil
@@ -140,4 +153,48 @@ func genTestCaseStatus(c TestRunnerTestCase) pb.TestStatus {
 		return pb.TestStatus_ABORT
 	}
 	return pb.TestStatus_FAIL
+}
+
+// testName extract the test name from test ID by removing the test harness.
+// The test name and harness name should be separated by a ".".
+func testName(testID string) string {
+	parts := strings.Split(testID, ".")
+	if len(parts) >= 2 {
+		return parts[1]
+	}
+
+	return testID
+}
+
+// testCaseArtifacts returns the map of relative filepaths to the result sink
+// artifacts by walking the artifactDir and fetching the artifacts that have
+// the testName in their filepath.
+func testCaseArtifacts(artifactDir, testName string) (map[string]*sinkpb.Artifact, error) {
+	// Map normal relative paths to full paths.
+	normPathToFullPaths, err := processArtifacts(artifactDir)
+	if err != nil {
+		return nil, err
+	}
+
+	// Find the files that have test name in their filepath.
+	testCaseNormPaths := make([]string, 0, len(normPathToFullPaths))
+	for normPath, fullPath := range normPathToFullPaths {
+		if strings.Contains(fullPath, testName) {
+			testCaseNormPaths = append(testCaseNormPaths, normPath)
+		}
+	}
+
+	// Find the common dir to trim from the test level artifact path.
+	commonDir := commonDirFromFiles(testCaseNormPaths)
+
+	artifacts := map[string]*sinkpb.Artifact{}
+	for _, normPath := range testCaseNormPaths {
+		fullPath := normPathToFullPaths[normPath]
+		testCasePath := strings.TrimPrefix(normPath, commonDir)
+		artifacts[testCasePath] = &sinkpb.Artifact{
+			Body: &sinkpb.Artifact_FilePath{FilePath: fullPath},
+		}
+	}
+
+	return artifacts, nil
 }

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -109,9 +110,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 	})
 
 	Convey(`ToProtos`, t, func() {
+		artBaseDir := filepath.Join("test_data", "cros_test_result", "artifacts")
+
 		Convey("test passes", func() {
 
-			testResults, err := results.ToProtos(ctx, "")
+			testResults, err := results.ToProtos(ctx, "", artBaseDir)
 			So(err, ShouldBeNil)
 
 			expected := []*sinkpb.TestResult{
@@ -205,7 +208,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			results := TestRunnerResult{Autotest: TestRunnerAutotest{
 				TestCases: testCases,
 			}}
-			testResults, err := results.ToProtos(ctx, "./test_data/skylab_test_runner/test_metadata.json")
+			testResults, err := results.ToProtos(ctx, "./test_data/skylab_test_runner/test_metadata.json", "")
 			So(err, ShouldBeNil)
 
 			expected := []*sinkpb.TestResult{
@@ -371,7 +374,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			resultString := fmt.Sprintf(str, failureReason)
 			results := &TestRunnerResult{}
 			results.ConvertFromJSON(strings.NewReader(resultString))
-			testResults, err := results.ToProtos(ctx, "")
+			testResults, err := results.ToProtos(ctx, "", "")
 
 			// Checks if the test result conversion succeeded and size limitation was set properly.
 			So(err, ShouldBeNil)
@@ -395,12 +398,62 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			results := &TestRunnerResult{}
 			results.ConvertFromJSON(strings.NewReader(str))
-			testResults, err := results.ToProtos(ctx, "")
+			testResults, err := results.ToProtos(ctx, "", "")
 
 			So(err, ShouldBeNil)
 			So(testResults, ShouldHaveLength, 1)
 			So(testResults[0].Status, ShouldResemble, pb.TestStatus_SKIP)
 			So(testResults[0].Expected, ShouldResemble, true)
+		})
+
+		Convey("When running one test case should upload all artifacts under that test", func() {
+			artName1 := "test_artifact_1.txt"
+			artName2 := "test_artifact_2.txt"
+			wantArtifacts := map[string]*sinkpb.Artifact{
+				artName1: {
+					Body: &sinkpb.Artifact_FilePath{FilePath: filepath.Join(artBaseDir, artName1)},
+				},
+				artName2: {
+					Body: &sinkpb.Artifact_FilePath{FilePath: filepath.Join(artBaseDir, artName2)},
+				},
+			}
+			tc := []TestRunnerTestCase{
+				{
+					Name:      "cros_test_result",
+					Verdict:   "VERDICT_PASS",
+					StartTime: parseTime("2021-07-26T18:53:33.983328614Z"),
+					EndTime:   parseTime("2021-07-26T18:53:37.983328614Z"),
+				},
+			}
+			results := TestRunnerResult{Autotest: TestRunnerAutotest{
+				TestCases: tc,
+			}}
+
+			gotTestResults, err := results.ToProtos(ctx, "", artBaseDir)
+
+			So(err, ShouldBeNil)
+			So(gotTestResults, ShouldHaveLength, 1)
+			So(gotTestResults[0].GetArtifacts(), ShouldResemble, wantArtifacts)
+		})
+
+		Convey("Skips test artifacts upload when result dir is invalid", func() {
+			tc := []TestRunnerTestCase{
+				{
+					Name:      "test1",
+					Verdict:   "VERDICT_PASS",
+					StartTime: parseTime("2021-07-26T18:53:33.983328614Z"),
+					EndTime:   parseTime("2021-07-26T18:53:37.983328614Z"),
+				},
+			}
+			results := TestRunnerResult{Autotest: TestRunnerAutotest{
+				TestCases: tc,
+			}}
+
+			gotTestResults, err := results.ToProtos(ctx, "", "invalid_dir")
+
+			So(err, ShouldBeNil)
+			So(gotTestResults, ShouldHaveLength, 1)
+			So(gotTestResults[0].GetArtifacts(), ShouldBeEmpty)
 		})
 	})
 }

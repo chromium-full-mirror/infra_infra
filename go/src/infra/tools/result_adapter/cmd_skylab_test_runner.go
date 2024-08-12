@@ -64,7 +64,7 @@ func (r *skylabTestRunnerRun) generateTestResults(ctx context.Context, _ []byte)
 	if err = skylabTestRunnerFormat.ConvertFromJSON(f); err != nil {
 		return nil, errors.Annotate(err, "did not recognize as skylab_test_runner Result").Err()
 	}
-	trs, err := skylabTestRunnerFormat.ToProtos(ctx, r.testMetadataFile)
+	trs, err := skylabTestRunnerFormat.ToProtos(ctx, r.testMetadataFile, r.artifactDir)
 	if err != nil {
 		return nil, errors.Annotate(err, "converting as skylab_test_runner Results").Err()
 	}

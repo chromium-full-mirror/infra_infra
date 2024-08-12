@@ -416,3 +416,47 @@ func tagsToMap(tags []*pb.StringPair) map[string]any {
 	}
 	return fields
 }
+
+// commonDirFromFiles finds the common directory for the given filepaths.
+// It returns empty if a common directory was not found.
+func commonDirFromFiles(filepaths []string) (commonDir string) {
+	if len(filepaths) == 0 {
+		return ""
+	}
+
+	commonDir = filepath.Dir(filepaths[0])
+
+	// Ensure the first common dir ends with a path separator
+	if !strings.HasSuffix(commonDir, string(filepath.Separator)) {
+		commonDir += string(filepath.Separator)
+	}
+
+	for _, path := range filepaths[1:] {
+
+		// Find the common prefix between the two paths
+		commonPrefix := ""
+		minPathLen := min(len(commonDir), len(path))
+		for i := 0; i < minPathLen; i++ {
+			if commonDir[i] != path[i] {
+				break
+			}
+			commonPrefix += string(commonDir[i])
+		}
+
+		if len(commonPrefix) < len(commonDir) {
+			commonDir = commonPrefix
+		}
+
+		// Return early if no common dir was found so far
+		if commonDir == "" {
+			return ""
+		}
+	}
+
+	// Ensure the common dir ends with a path separator
+	if !strings.HasSuffix(commonDir, string(filepath.Separator)) {
+		return ""
+	}
+
+	return commonDir
+}
