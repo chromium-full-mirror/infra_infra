@@ -5,6 +5,7 @@
 package peripherals
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -32,20 +33,20 @@ func TestAmtManager(t *testing.T) {
 				want []string
 			}{
 				{
-					cmd:  &manageAmtManagerCmd{amtHostname: "192.168.231.123"},
+					cmd:  &manageAmtManagerCmd{amtHostname: "192.168.231.123", mode: actionAdd},
 					want: []string{errDUTMissing},
 				},
 				{
-					cmd:  &manageAmtManagerCmd{dutName: " ", amtHostname: "192.168.231.123"},
+					cmd:  &manageAmtManagerCmd{dutName: " ", amtHostname: "192.168.231.123", mode: actionAdd},
 					want: []string{errDUTMissing},
 				},
 				{
-					cmd:  &manageAmtManagerCmd{dutName: "dut"},
-					want: []string{errNoHostname},
+					cmd:  &manageAmtManagerCmd{dutName: "dut", mode: actionAdd},
+					want: []string{"'-amt-hostname' is required"},
 				},
 				{
-					cmd:  &manageAmtManagerCmd{dutName: "dut", amtHostname: " "},
-					want: []string{errNoHostname},
+					cmd:  &manageAmtManagerCmd{dutName: "dut", amtHostname: " ", mode: actionAdd},
+					want: []string{"'-amt-hostname' is required"},
 				},
 				{
 					cmd:  &manageAmtManagerCmd{mode: actionDelete},
@@ -57,6 +58,11 @@ func TestAmtManager(t *testing.T) {
 				if err == nil {
 					t.Errorf("cleanAndValidateFlags got nil; want errors: %v", tt.want)
 					continue
+				}
+				for _, errStr := range tt.want {
+					if !strings.Contains(err.Error(), errStr) {
+						t.Errorf("cleanAndValidateFlags = %q; want err %q included", err, errStr)
+					}
 				}
 			}
 		})

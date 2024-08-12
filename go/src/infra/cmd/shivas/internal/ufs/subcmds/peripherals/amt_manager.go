@@ -128,7 +128,7 @@ func (c *manageAmtManagerCmd) cleanAndValidateFlags() error {
 	case actionAdd:
 		c.amtHostname = strings.TrimSpace(c.amtHostname)
 		if c.amtHostname == "" {
-			errStrs = append(errStrs, errNoHostname)
+			errStrs = append(errStrs, "'-amt-hostname' is required")
 		}
 		c.amtObj = &lab.AMTManager{Hostname: c.amtHostname}
 	case actionDelete:
