@@ -14,6 +14,7 @@
   * [powershell](#recipe_modules-powershell)
   * [qemu](#recipe_modules-qemu)
   * [recipe_autoroller](#recipe_modules-recipe_autoroller)
+  * [secret_manager](#recipe_modules-secret_manager)
   * [support_3pp](#recipe_modules-support_3pp) &mdash; Allows uniform cross-compiliation, version tracking and archival for third-party software packages (libs+tools) for distribution via CIPD.
   * [windows_adk](#recipe_modules-windows_adk)
   * [windows_scripts_executor](#recipe_modules-windows_scripts_executor)
@@ -70,6 +71,7 @@
   * [recipe_roll_tryjob](#recipes-recipe_roll_tryjob)
   * [recipe_simulation](#recipes-recipe_simulation) &mdash; A continuous builder which runs recipe tests.
   * [recipes_py_continuous](#recipes-recipes_py_continuous)
+  * [secret_manager:examples/full](#recipes-secret_manager_examples_full)
   * [support_3pp:tests/full](#recipes-support_3pp_tests_full)
   * [tricium_infra](#recipes-tricium_infra)
   * [update_submodules_mirror](#recipes-update_submodules_mirror)
@@ -761,6 +763,20 @@ Args:
   projects: list of tuples of
     project_id (string): id as found in recipes.cfg.
     project_url (string): Git repository URL of the project.
+### *recipe_modules* / [secret\_manager](/recipes/recipe_modules/secret_manager)
+
+[DEPS](/recipes/recipe_modules/secret_manager/__init__.py#5): [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+
+#### **class [SecretManagerApi](/recipes/recipe_modules/secret_manager/api.py#9)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+
+&emsp; **@contextmanager**<br>&mdash; **def [fetch](/recipes/recipe_modules/secret_manager/api.py#11)(self, project, secret, step_name='fetch secret'):**
+
+Yield the latest version of the secret from Cloud Secret Manager.
+
+Args:
+  project: GCP project name in string.
+  secret: Secret name in the Secret Manager.
 ### *recipe_modules* / [support\_3pp](/recipes/recipe_modules/support_3pp)
 
 [DEPS](/recipes/recipe_modules/support_3pp/__init__.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [depot\_tools/windows\_sdk][depot_tools/recipe_modules/windows_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/bcid\_reporter][recipe_engine/recipe_modules/bcid_reporter], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
@@ -1851,6 +1867,12 @@ A continuous builder which runs recipe tests.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/recipes_py_continuous.py#19)(api):**
+### *recipes* / [secret\_manager:examples/full](/recipes/recipe_modules/secret_manager/examples/full.py)
+
+[DEPS](/recipes/recipe_modules/secret_manager/examples/full.py#7): [secret\_manager](#recipe_modules-secret_manager)
+
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/secret_manager/examples/full.py#12)(api):**
 ### *recipes* / [support\_3pp:tests/full](/recipes/recipe_modules/support_3pp/tests/full.py)
 
 [DEPS](/recipes/recipe_modules/support_3pp/tests/full.py#16): [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [support\_3pp](#recipe_modules-support_3pp), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
