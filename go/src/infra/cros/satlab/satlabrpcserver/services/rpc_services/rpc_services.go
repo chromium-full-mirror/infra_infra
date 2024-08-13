@@ -594,8 +594,34 @@ func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequ
 	return &pb.AddPoolResponse{}, nil
 }
 
-func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander, hostname string) error {
-	return addPoolsToDUT(ctx, executor, hostname, []string{"-"})
+func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander, s services.ISwarmingService, hostname string) error {
+	err := addPoolsToDUT(ctx, executor, hostname, []string{"-"})
+	// As the CL changed, it returns an error even though the command removes all pools from the DUTs.
+	// Ref: https://chromium-review.googlesource.com/c/infra/infra/+/5673141
+	if err != nil {
+		// We try to get the bot info by hostname
+		dut, swarmingError := s.GetBot(ctx, hostname)
+		if swarmingError != nil {
+			logging.Infof(ctx, "remove pool error: %v", err)
+			logging.Infof(ctx, "can't get the bot info from hostname: %s, got an error: %v", hostname, swarmingError)
+			return errors.New("Internal server error")
+		}
+
+		for _, dim := range dut.Dimensions {
+			// We check the label-pool tag is empty
+			// If it is, we ignore the error because it means
+			// the command has been executed successfully
+			if dim.Key == site.LabelPoolTag {
+				if len(dim.Value) == 0 {
+					return nil
+				} else {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 // validateUpdatePools validate remove pools from UI
@@ -615,7 +641,7 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 		if validateUpdatePools(item.GetPools()) {
 			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
 			// host.
-			if err := removeAllPoolsFromDUT(ctx, s.commandExecutor, item.GetHostname()); err != nil {
+			if err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, item.GetHostname()); err != nil {
 				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}

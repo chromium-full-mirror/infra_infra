@@ -2299,3 +2299,71 @@ func Test_AbortJobsShouldSuccess(t *testing.T) {
 		t.Errorf("Should not return error, but got an error: {%v}", err)
 	}
 }
+
+func Test_removeAllPoolShouldSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	s := createMockServer(t)
+	hostname := "hostname1"
+
+	mockBotInfo := &swarmingapi.BotInfo{
+		Dimensions: []*swarmingapi.StringListPair{
+			{
+				Key:   "drone",
+				Value: []string{"satlab-satlab-id"},
+			},
+			{
+				Key:   site.LabelPoolTag,
+				Value: []string{},
+			},
+		},
+		BotId: hostname,
+	}
+
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(mockBotInfo, nil).AnyTimes()
+	s.commandExecutor = &executor.FakeCommander{Err: errors.New("found no pool for device satlab-<satlab-id>")}
+
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+
+	if err != nil {
+		t.Errorf("should sucess, but got an error: %v", err)
+		return
+	}
+}
+
+func Test_removeAllPoolShouldFailWhenGettingBotInfoFailed(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	s := createMockServer(t)
+	hostname := "hostname1"
+
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(nil, errors.New("Failed to get bot info")).AnyTimes()
+	s.commandExecutor = &executor.FakeCommander{Err: errors.New("found no pool for device satlab-<satlab-id>")}
+
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+
+	if err == nil {
+		t.Errorf("should get an error")
+		return
+	}
+}
+
+func Test_removeAllPoolShouldSuccessWhenCommandSuccess(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	s := createMockServer(t)
+	hostname := "hostname1"
+
+	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(nil, errors.New("Failed to get bot info")).AnyTimes()
+	s.commandExecutor = &executor.FakeCommander{CmdOutput: "success"}
+
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+
+	if err != nil {
+		t.Errorf("should sucess, but got an error: %v", err)
+		return
+	}
+}
