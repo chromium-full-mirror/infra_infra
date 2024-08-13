@@ -41,11 +41,11 @@ func TestExtractECImage(t *testing.T) {
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
 		req.Servod = servod
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/EC": {},
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": {Output: `ec.bin
-my-board/ec.bin`},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC ec.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/EC": "",
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `ec.bin
+my-board/ec.bin`,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC ec.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
@@ -58,12 +58,12 @@ my-board/ec.bin`},
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
 		req.Servod = servod
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/EC": {},
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": {Output: `my-ec.bin
-my-board/ec.bin`},
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/npcx_monitor.bin ./s-board/npcx_monitor.bin my-model/npcx_monitor.bin ./my-model/npcx_monitor.bin my-board/npcx_monitor.bin ./my-board/npcx_monitor.bin npcx_monitor.bin ./npcx_monitor.bin": {},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/EC": "",
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
+my-board/ec.bin`,
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/npcx_monitor.bin ./s-board/npcx_monitor.bin my-model/npcx_monitor.bin ./my-model/npcx_monitor.bin my-board/npcx_monitor.bin ./my-board/npcx_monitor.bin npcx_monitor.bin ./npcx_monitor.bin": ``,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
@@ -76,13 +76,13 @@ my-board/ec.bin`},
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
 		req.Servod = servod
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/EC": {},
-			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": {Output: `my-ec.bin
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/EC": "",
+			"tar tf /some/folder/my_folder/tarbar.tr s-board/ec.bin ./s-board/ec.bin my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
-npcx_monitor.bin`},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  {},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": {},
+npcx_monitor.bin`,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
@@ -92,13 +92,13 @@ npcx_monitor.bin`},
 	})
 	ftt.Run("Happy path without servod", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/EC": {},
-			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": {Output: `my-ec.bin
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/EC": "",
+			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
-npcx_monitor.bin`},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  {},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": {},
+npcx_monitor.bin`,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
@@ -108,13 +108,13 @@ npcx_monitor.bin`},
 	})
 	ftt.Run("Happy path run from DUT", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(false)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/EC": {},
-			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": {Output: `my-ec.bin
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/EC": "",
+			"tar tf /some/folder/my_folder/tarbar.tr my-model/ec.bin ./my-model/ec.bin my-board/ec.bin ./my-board/ec.bin ec.bin ./ec.bin": `my-ec.bin
 my-board/ec.bin
-npcx_monitor.bin`},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  {},
-			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": {},
+npcx_monitor.bin`,
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC my-board/ec.bin":  "",
+			"tar xf /some/folder/my_folder/tarbar.tr -C /some/folder/my_folder/EC npcx_monitor.bin": "",
 		}
 		req.DutRunner = mockRunner(runRequest)
 		image, fwBoard, err := extractECImage(ctx, req, tarballPath, logger)
@@ -133,11 +133,11 @@ func TestExtractAPImage(t *testing.T) {
 	tarballPath := "/some/folder/my_folder/tarbar2.tr"
 	ftt.Run("Happy path", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/AP": {},
-			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": {Output: `image.bin
-image-my-model.bin`},
-			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image.bin
+image-my-model.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image.bin": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("s-Board"), nil).Times(1)
@@ -149,11 +149,11 @@ image-my-model.bin`},
 	})
 	ftt.Run("Happy path with board file", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/AP": {},
-			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": {Output: `image-my.bin
-image-my-model.bin`},
-			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.bin ./image-s-board.bin image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
+image-my-model.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("S-board"), nil).Times(1)
@@ -166,11 +166,11 @@ image-my-model.bin`},
 	ftt.Run("Happy path with serial", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
 		req.UseSerialTargets = true
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/AP": {},
-			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.serial.bin ./image-s-board.serial.bin image-my-model.serial.bin ./image-my-model.serial.bin image-my-board.serial.bin ./image-my-board.serial.bin image.serial.bin ./image.serial.bin": {Output: `image-my.serial.bin
-image-my-model.serial.bin`},
-			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.serial.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.serial.bin ./image-s-board.serial.bin image-my-model.serial.bin ./image-my-model.serial.bin image-my-board.serial.bin ./image-my-board.serial.bin image.serial.bin ./image.serial.bin": `image-my.serial.bin
+image-my-model.serial.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.serial.bin": "",
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("S-board"), nil).Times(1)
@@ -182,11 +182,11 @@ image-my-model.serial.bin`},
 	})
 	ftt.Run("Happy path without servod", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(true)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/AP": {},
-			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": {Output: `image-my.bin
-image-my-model.bin`},
-			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
+image-my-model.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
 		req.ServoHostRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
@@ -195,11 +195,11 @@ image-my-model.bin`},
 	})
 	ftt.Run("Happy path run from DUT", t, func(t *ftt.Test) {
 		req := getBaseTestRequest(false)
-		runRequest := map[string]RunResponse{
-			"mkdir -p /some/folder/my_folder/AP": {},
-			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": {Output: `image-my.bin
-image-my-model.bin`},
-			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": {},
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-my-model.bin ./image-my-model.bin image-my-board.bin ./image-my-board.bin image.bin ./image.bin": `image-my.bin
+image-my-model.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.bin": "",
 		}
 		req.DutRunner = mockRunner(runRequest)
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
