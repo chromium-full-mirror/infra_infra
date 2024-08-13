@@ -190,7 +190,8 @@ def adhoc_builder(
         experiments = None,
         schedule = None,
         triggered_by = None,
-        description_html = None):
+        description_html = None,
+        custom_metrics = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -206,6 +207,7 @@ def adhoc_builder(
         build_numbers = True,
         schedule = schedule,
         triggered_by = triggered_by,
+        custom_metrics = custom_metrics,
     )
 
 adhoc_builder(
@@ -297,6 +299,15 @@ adhoc_builder(
             },
         ],
     },
+    custom_metrics = [
+        buildbucket.custom_metric(
+            name = "/chrome/infra/custom/dev/infra/builds/started",
+            predicates = ['build.tags.get_value("bounded_child")=="True"'],
+            extra_fields = {
+                "bounded_child": 'build.tags.get_value("bounded_child")',
+            },
+        ),
+    ],
 )
 
 adhoc_builder(
