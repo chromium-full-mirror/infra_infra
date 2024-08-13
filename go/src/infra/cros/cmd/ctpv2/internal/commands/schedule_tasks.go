@@ -457,13 +457,15 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 	}
 
 	helper := &TrV2ReqHelper{
-		trReqHWDef: TrReqhwDef,
-		schedUnit:  schedUnit,
-		testCases:  testCases,
-		build:      cmd.BuildState,
-		suiteInfo:  cmd.InternalTestPlan.SuiteInfo,
-		shardNum:   shardNum,
-		dynamicRun: cmd.DynamicRun,
+		schedUnit:            schedUnit,
+		trReqHWDef:           TrReqhwDef,
+		testCases:            testCases,
+		build:                cmd.BuildState,
+		suiteInfo:            cmd.InternalTestPlan.SuiteInfo,
+		shardNum:             shardNum,
+		dynamicRun:           cmd.DynamicRun,
+		schedUnitMetadataMap: buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo()),
+		config:               cmd.Config,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)
