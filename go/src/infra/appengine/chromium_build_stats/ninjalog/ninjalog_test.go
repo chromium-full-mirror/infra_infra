@@ -8,6 +8,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -17,7 +18,7 @@ import (
 )
 
 var (
-	logTestCase = `# ninja log v5
+	logTestCase = `# ninja log v6
 76	187	0	resources/inspector/devtools_extension_api.js	75430546595be7c2
 80	284	0	gen/autofill_regex_constants.cc	fa33c8d7ce1d8791
 78	286	0	gen/angle/commit_id.py	4ede38e2c1617d8c
@@ -190,8 +191,28 @@ func TestStepsReverse(t *testing.T) {
 	}
 }
 
-func TestParseBadVersion(t *testing.T) {
+func TestParseSupportedVersion(t *testing.T) {
+	for _, v := range []int{5, 6} {
+		_, err := Parse(".ninja_log", strings.NewReader(fmt.Sprintf(`# ninja log v%d
+0	1	0	foo	touch foo
+`, v)))
+		if err != nil {
+			t.Errorf("Parse()=_, %v; want=_, <nil>", err)
+		}
+	}
+}
+
+func TestParseOldVersion(t *testing.T) {
 	_, err := Parse(".ninja_log", strings.NewReader(`# ninja log v4
+0	1	0	foo	touch foo
+`))
+	if err == nil {
+		t.Error("Parse()=_, <nil>; want=_, error")
+	}
+}
+
+func TestParseInvalidVersion(t *testing.T) {
+	_, err := Parse(".ninja_log", strings.NewReader(`# ninja log vXXX
 0	1	0	foo	touch foo
 `))
 	if err == nil {

@@ -200,8 +200,12 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 	}
 	lineno++
 	line := scanner.Text()
-	if line != "# ninja log v5" {
-		return nil, fmt.Errorf("unexpected format: %s", line)
+	version, err := lineToVersion(line)
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract version number from %q", line)
+	}
+	if version < 5 {
+		return nil, fmt.Errorf("ninjalog version %d is unsupported. it must be v5 or later", version)
 	}
 	nlog.Start = lineno
 	lastStep := Step{
@@ -262,6 +266,18 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 	return nlog, nil
 }
 
+func lineToVersion(line string) (int, error) {
+	// Extract the version number from the header line.
+	// e.g. # ninja log v5
+	re := regexp.MustCompile(`v\d+`)
+	match := re.FindString(line)
+	if len(match) == 0 {
+		return 0, fmt.Errorf("unexpexted version header: could not find version number from %q", line)
+	}
+	versionStr := match[1:]
+	return strconv.Atoi(versionStr)
+}
+
 func lineToStep(line string) (Step, error) {
 	var step Step
 
@@ -313,7 +329,7 @@ func stepToLine(s Step) string {
 
 // Dump dumps steps as ninja log v5 format in w.
 func Dump(w io.Writer, steps []Step) error {
-	_, err := fmt.Fprintf(w, "# ninja log v5\n")
+	_, err := fmt.Fprintf(w, "# ninja log v6\n")
 	if err != nil {
 		return err
 	}
