@@ -294,6 +294,109 @@ func TestClient(t *testing.T) {
 
 		})
 
+		Convey("GetSubmoduleRevision", func() {
+
+			Convey("fails if getting gitiles client fails", func() {
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return nil, errors.New("test gitiles client factory failure")
+				})
+
+				client := NewClient(ctx)
+				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
+
+				So(err, ShouldErrLike, "test gitiles client factory failure")
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("fails if API call fails", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), gomock.Any()).
+					Return(nil, errors.New("fake DownloadFile failure"))
+
+				client := NewClient(ctx)
+				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
+
+				So(err, ShouldErrLike, "fake DownloadFile failure")
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("fails if json response doesn't contain revision", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				matcher := proto.MatcherEqual(&gitilespb.DownloadFileRequest{
+					Project:    "fake/project",
+					Committish: "fake-revision",
+					Path:       "fake/submodule/path",
+					Format:     gitilespb.DownloadFileRequest_JSON,
+				})
+				// Check that potentially transient errors are retried
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.NotFound, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.Unavailable, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(&gitilespb.DownloadFileResponse{
+						Contents: `{}`,
+					}, nil)
+
+				client := NewClient(ctx)
+				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
+
+				So(err, ShouldErrLike, "no revision found for fake-host/fake/project/+/fake-revision/fake/submodule/path")
+				So(revision, ShouldBeEmpty)
+			})
+
+			Convey("returns submodule revision", func() {
+				ctl := gomock.NewController(t)
+				defer ctl.Finish()
+
+				mockGitilesClient := mock_gitiles.NewMockGitilesClient(ctl)
+				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
+					return mockGitilesClient, nil
+				})
+				matcher := proto.MatcherEqual(&gitilespb.DownloadFileRequest{
+					Project:    "fake/project",
+					Committish: "fake-revision",
+					Path:       "fake/submodule/path",
+					Format:     gitilespb.DownloadFileRequest_JSON,
+				})
+				// Check that potentially transient errors are retried
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.NotFound, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(nil, status.Error(codes.Unavailable, "fake transient Log failure"))
+				mockGitilesClient.EXPECT().
+					DownloadFile(gomock.Any(), matcher).
+					Return(&gitilespb.DownloadFileResponse{
+						Contents: `{"revision": "fake-submodule-revision"}`,
+					}, nil)
+
+				client := NewClient(ctx)
+				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
+
+				So(err, ShouldBeNil)
+				So(revision, ShouldEqual, "fake-submodule-revision")
+			})
+
+		})
+
 		Convey("DownloadFile", func() {
 
 			Convey("fails if getting gitiles client fails", func() {
@@ -339,6 +442,7 @@ func TestClient(t *testing.T) {
 					Project:    "fake/project",
 					Committish: "fake-revision",
 					Path:       "fake-file",
+					Format:     gitilespb.DownloadFileRequest_TEXT,
 				})
 				// Check that potentially transient errors are retried
 				mockGitilesClient.EXPECT().
