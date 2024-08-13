@@ -5,6 +5,7 @@
 package common_builders
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -366,7 +367,8 @@ func BuildPostProcessContainerRequest(identifier string, deps []*api.DynamicDep)
 // BuildPostProcessRequest constructs a PostProcessRequest with provided dependencies.
 func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 	dutServer := common.NewPrimaryDeviceIdentifier().GetCrosDutServer()
-	testResult, _ := anypb.New(&artifact.TestResult{})
+	testResultAnyProto, _ := anypb.New(&artifact.TestResult{})
+	testResultAnyProtoDep := fmt.Sprintf("ANY(%s)=%s", testResultAnyProto.GetTypeUrl(), common.NewTaskIdentifier(common.CrosTest).GetRpcResponse("rdbTestResult"))
 	return &api.PostTestTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		StartUpRequest: &api.PostTestStartUpRequest{},
@@ -383,7 +385,6 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 					},
 				},
 			},
-			TestResult: testResult,
 		},
 		DynamicIdentifier: dynamicID,
 		DynamicDeps: []*api.DynamicDep{
@@ -400,10 +401,8 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 				Value: dutServer,
 			},
 			{
-				Key: "runActivitiesRequest.testResult",
-				// TODO(b/358005080): Replace the "rdbTestResultAnyProto" key
-				// with the "rdbTestResult" key.
-				Value: common.NewTaskIdentifier(common.CrosTest).GetRpcResponse("rdbTestResultAnyProto"),
+				Key:   "runActivitiesRequest.testResult",
+				Value: testResultAnyProtoDep,
 			},
 		},
 	}
