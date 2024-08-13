@@ -46,6 +46,7 @@ const (
 
 	// Labstation related UpdateMask paths.
 	poolsPath = "labstation.pools"
+	hivePath  = "labstation.hive"
 )
 
 // UpdateLabstationCmd update dut by given hostname and start a swarming job to deploy.
@@ -74,6 +75,7 @@ var UpdateLabstationCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.hive, "hive", "", "Hive name for the labstation. "+cmdhelp.ClearFieldHelpText)
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a redeploy task.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -103,6 +105,7 @@ type updateLabstation struct {
 	deploymentTicket string
 	tags             []string
 	description      string
+	hive             string
 
 	// Deploy task inputs.
 	forceDeploy bool
@@ -370,7 +373,7 @@ func (c *updateLabstation) parseMCSV() ([]*ufsAPI.UpdateMachineLSERequest, error
 }
 
 func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufspb.MachineLSE, *field_mask.FieldMask, error) {
-	var name, rpmHost, rpmOutlet, rpmType string
+	var name, rpmHost, rpmOutlet, rpmType, hive string
 	var pools, machines []string
 	if recMap != nil {
 		// CSV map. Assign all the params to the variables.
@@ -380,6 +383,7 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 		rpmType = recMap["rpm_type"]
 		machines = []string{recMap["asset"]}
 		pools = strings.Fields(recMap["pools"])
+		hive = recMap["hive"]
 	} else {
 		// command line parameters. Update vars with the correct values.
 		name = c.hostname
@@ -388,6 +392,7 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 		rpmType = c.rpmType
 		machines = []string{c.machine}
 		pools = c.pools
+		hive = c.hive
 	}
 
 	// Generate lse and mask
@@ -425,6 +430,14 @@ func (c *updateLabstation) initializeLSEAndMask(recMap map[string]string) (*ufsp
 			lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = nil
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = pools
+		}
+	}
+	if hive != "" {
+		mask.Paths = append(mask.Paths, hivePath)
+		if hive != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = hive
+		} else {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = ""
 		}
 	}
 
