@@ -237,6 +237,7 @@ func validateUpdateLabstationMask(ctx context.Context, mask *field_mask.FieldMas
 		case "description":
 		case "resourceState":
 		case "labstation.pools":
+		case "labstation.hive":
 			// valid fields, nothing to validate.
 		default:
 			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSELabstationUpdateMask - unsupported update mask path %q", path)
@@ -283,6 +284,8 @@ func processUpdateLabstationMask(ctx context.Context, oldMachineLSE, newMachineL
 			oldMachineLSE.Description = newMachineLSE.Description
 		case "deploymentTicket":
 			oldMachineLSE.DeploymentTicket = newMachineLSE.GetDeploymentTicket()
+		case "labstation.hive":
+			oldLabstation.Hive = newLabstation.GetHive()
 		case "labstation.pools":
 			// Append/Clear the pools given.
 			if len(newLabstation.GetPools()) > 0 {

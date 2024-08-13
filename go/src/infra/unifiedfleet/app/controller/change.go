@@ -895,6 +895,7 @@ func logRPM(resourceName, labelPrefix string, oldRpm, newRpm *chromeosLab.OSRPM)
 func logLabstation(resourceName string, oldData, newData *chromeosLab.Labstation) []*ufspb.ChangeEvent {
 	changes := make([]*ufspb.ChangeEvent, 0)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.labstation.pools", oldData.GetPools(), newData.GetPools())...)
+	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.labstation.hive", oldData.GetHive(), newData.GetHive())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.labstation.servos", oldData.GetServos(), newData.GetServos())...)
 	// Log labstation rpm changes.
 	changes = append(changes, logRPM(resourceName, "machine_lse.chromeos_machine_lse.labstation.rpm", oldData.GetRpm(), newData.GetRpm())...)

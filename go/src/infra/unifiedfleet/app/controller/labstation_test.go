@@ -291,6 +291,61 @@ func TestUpdateLabstation(t *testing.T) {
 			// No update to machines of rpm. Should not be in needs_deploy.
 			assert.Loosely(t, s.GetState(), should.NotEqual(ufspb.State_STATE_DEPLOYED_PRE_SERVING))
 		})
+		t.Run("UpdateLabstation - Update/Delete hive", func(t *ftt.Test) {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-13",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			labstation1 := mockLabstation("labstation-13", "machine-13")
+			res, err := CreateLabstation(ctx, labstation1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			labstation2 := mockLabstation("labstation-13", "machine-13")
+			// Add a hive to the labstation.
+			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = "test-hive"
+			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.hive"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive(), should.Equal("test-hive"))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[0].NewValue, should.Equal("REGISTRATION"))
+			assert.Loosely(t, changes[1].OldValue, should.Equal(""))
+			assert.Loosely(t, changes[1].NewValue, should.Equal("test-hive"))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			labstation3, err := GetMachineLSE(ctx, "labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive(), should.Equal("test-hive"))
+			// Reset hive assigned to labstation.
+			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = ""
+			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.hive"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive(), should.Equal(""))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(3))
+			assert.Loosely(t, changes[0].NewValue, should.Equal("REGISTRATION"))
+			assert.Loosely(t, changes[2].OldValue, should.Equal("test-hive"))
+			assert.Loosely(t, changes[2].NewValue, should.Equal(""))
+			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(3))
+			labstation3, err = GetMachineLSE(ctx, "labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive(), should.Equal(""))
+			s, err := state.GetStateRecord(ctx, "hosts/labstation-13")
+			assert.Loosely(t, err, should.BeNil)
+			// No update to machines of rpm. Should not be in needs_deploy.
+			assert.Loosely(t, s.GetState(), should.NotEqual(ufspb.State_STATE_DEPLOYED_PRE_SERVING))
+		})
 		t.Run("UpdateLabstation - Update/Delete tags", func(t *ftt.Test) {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
 				Name: "machine-7",
