@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/cfgclient"
 	"go.chromium.org/luci/config/impl/memory"
@@ -17,7 +17,7 @@ import (
 func TestConfig(t *testing.T) {
 	t.Parallel()
 
-	Convey("With mocks", t, func() {
+	ftt.Run("With mocks", t, func(t *ftt.Test) {
 		configs := map[config.Set]memory.Files{
 			"services/${appid}": map[string]string{},
 		}
@@ -29,20 +29,20 @@ func TestConfig(t *testing.T) {
 		ctx = cfgclient.Use(ctx, memory.New(configs))
 		ctx = caching.WithEmptyProcessCache(ctx)
 
-		Convey("No config", func() {
-			So(Set(ctx), ShouldErrLike, "no such config")
+		t.Run("No config", func(t *ftt.Test) {
+			assert.Loosely(t, Set(ctx), should.ErrLike("no such config"))
 
 			cfg, err := Get(ctx)
-			So(cfg, ShouldBeNil)
-			So(err, ShouldErrLike, "failed to fetch cached config")
+			assert.Loosely(t, cfg, should.BeNil)
+			assert.Loosely(t, err, should.ErrLike("failed to fetch cached config"))
 		})
 
-		Convey("Broken config", func() {
+		t.Run("Broken config", func(t *ftt.Test) {
 			mockConfig("broken")
-			So(Set(ctx), ShouldErrLike, "validation errors")
+			assert.Loosely(t, Set(ctx), should.ErrLike("validation errors"))
 		})
 
-		Convey("Good config", func() {
+		t.Run("Good config", func(t *ftt.Test) {
 			mockConfig(`
         hosts {
           name: "chromium"
@@ -65,11 +65,11 @@ func TestConfig(t *testing.T) {
           }
         }
 			`)
-			So(Set(ctx), ShouldBeNil)
+			assert.Loosely(t, Set(ctx), should.BeNil)
 
 			cfg, err := Get(ctx)
-			So(err, ShouldBeNil)
-			So(cfg, ShouldResembleProto, &Config{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, cfg, should.Resemble(&Config{
 				Hosts: []*Host{
 					{
 						Name: "chromium",
@@ -102,7 +102,7 @@ func TestConfig(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 	})
 }
