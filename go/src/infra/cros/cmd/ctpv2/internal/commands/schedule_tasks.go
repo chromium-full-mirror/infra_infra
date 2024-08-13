@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -284,9 +285,11 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		return nil
 	}
 
+	summaries := []string{}
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
 		result.BuildUrl = common.BBUrl(builderID, scheduledBuild.GetId())
-		step.SetSummaryMarkdown(fmt.Sprintf("[latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
+		summaries = append(summaries, fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
+		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
 	} else {
 		errStr := "no bbid found from scheduler"
 		err = fmt.Errorf(errStr)
@@ -325,6 +328,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				_, err = dmc.Extend(ctx, leaseID, dm.LeaseExtensionAmount)
 				if err != nil {
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
+					summaries = append(summaries, fmt.Sprintf("* %s", err))
+					err = fmt.Errorf(strings.Join(summaries, "\n"))
 					return setTopLevelError(ctx, step, result, resultsChan, err)
 				}
 				lastLeaseExtensionTime = time.Now()
@@ -341,7 +346,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			if err != nil {
 				err = fmt.Errorf("error while releasing lease %s with Device Manager: %w", leaseID, err)
 				logging.Infof(ctx, err.Error())
-				step.SetSummaryMarkdown(err.Error())
+				summaries = append(summaries, fmt.Sprintf("* %s", err))
+				step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
 			}
 		}
 
@@ -360,6 +366,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		trResult, err := extractResult(buildInfo)
 		if err != nil {
 			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
+			summaries = append(summaries, fmt.Sprintf("* %s", err))
+			err = fmt.Errorf(strings.Join(summaries, "\n"))
 			return setTopLevelError(ctx, step, result, resultsChan, err)
 		} else {
 			result.Results = trResult
