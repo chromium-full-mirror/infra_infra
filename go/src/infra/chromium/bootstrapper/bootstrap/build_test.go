@@ -503,7 +503,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 			})
 
-			Convey("for dependency project", func() {
+			Convey("for dependency project with config repo path", func() {
 
 				setBootstrapPropertiesProperties(build, `{
 					"dependency_project": {
@@ -704,7 +704,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}`)
 				})
 
-				Convey("returns config with properties from revision pinned by commit ref when commit for top level project with ID", func() {
+				Convey("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func() {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -1013,6 +1013,449 @@ func TestGetBootstrapConfig(t *testing.T) {
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
 					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
+This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
+					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
+					So(errHasSleepTag, ShouldBeTrue)
+					So(sleepDuration, ShouldEqual, 10*time.Minute)
+					So(config, ShouldBeNil)
+				})
+
+			})
+
+			Convey("for dependency project with config repo submodule path", func() {
+
+				setBootstrapPropertiesProperties(build, `{
+					"dependency_project": {
+						"top_level_repo": {
+							"host": "chromium.googlesource.com",
+							"project": "top/level"
+						},
+						"top_level_ref": "refs/heads/top-level",
+						"config_repo": {
+							"host": "chromium.googlesource.com",
+							"project": "dependency"
+						},
+						"config_repo_submodule_path": "submodule/path"
+					},
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
+				}`)
+
+				Convey("returns config with properties from revision pinned by top level ref when no commit or change for either project", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/top-level",
+						"id": "top-level-top-level-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from commit ref when commit for dependency project without ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "dependency",
+						Ref:     "refs/heads/some-branch",
+					}
+					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
+					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "some-branch-head-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-head-value"
+					}`)
+				})
+
+				Convey("returns config with properties from commit revision when commit for dependency project with ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "dependency",
+						Ref:     "refs/heads/some-branch",
+						Id:      "dependency-some-branch-revision",
+					}
+					dependencyGitiles.Revisions["dependency-some-branch-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "some-branch-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-revision"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "top/level",
+						Ref:     "refs/heads/some-branch",
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func() {
+					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
+						Host:    "chromium.googlesource.com",
+						Project: "top/level",
+						Ref:     "refs/heads/some-branch",
+						Id:      "top-level-some-branch-revision",
+					}
+					topLevelGitiles.Revisions["top-level-some-branch-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "dependency-revision"
+					}`)
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-revision"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-revision-value"
+					}`)
+				})
+
+				Convey("returns config with properties from target ref and patch applied when change for dependency project", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "dependency",
+						Change:   2345,
+						Patchset: 1,
+					})
+					dependencyGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
+					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "some-branch-head-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-value5"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "some-branch-head-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-old-value5"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "some-branch-head-new-value",
+								"test_property2": "some-branch-head-value2",
+								"test_property3": "some-branch-head-value3",
+								"test_property4": "some-branch-head-value4",
+								"test_property5": "some-branch-head-old-value5"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"ref": "refs/heads/some-branch",
+						"id": "dependency-some-branch-head"
+					}`)
+					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+						"host": "chromium-review.googlesource.com",
+						"project": "dependency",
+						"change": 2345,
+						"patchset": 1
+					}`)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "some-branch-head-new-value",
+						"test_property2": "some-branch-head-value2",
+						"test_property3": "some-branch-head-value3",
+						"test_property4": "some-branch-head-value4",
+						"test_property5": "some-branch-head-value5"
+					}`)
+					So(config.skipAnalysisReasons, ShouldResemble, []string{
+						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
+					})
+				})
+
+				Convey("returns config with properties from patched pinned revision when change for top level project that changes pin", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "top/level",
+						Change:   2345,
+						Patchset: 1,
+					})
+					topLevelGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("old-dependency-revision"),
+						},
+					}
+					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("old-dependency-revision"),
+						},
+					}
+					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("new-dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "old-dependency-revision-value"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "new-dependency-revision-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "new-dependency-revision"
+					}`)
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "new-dependency-revision-value"
+					}`)
+					So(config.skipAnalysisReasons, ShouldResemble, []string{
+						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL (via DEPS change)",
+					})
+				})
+
+				Convey("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func() {
+					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
+						Host:     "chromium-review.googlesource.com",
+						Project:  "top/level",
+						Change:   2345,
+						Patchset: 1,
+					})
+					topLevelGerrit.Changes[2345] = &fakegerrit.Change{
+						Ref: "refs/heads/some-branch",
+						Patchsets: map[int32]*fakegerrit.Patchset{
+							1: {
+								Revision: "cl-revision",
+							},
+						},
+					}
+					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
+					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("old-dependency-revision"),
+						},
+					}
+					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("old-dependency-revision"),
+						},
+					}
+					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
+						Parent: "cl-base",
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("new-dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "dependency-value"
+							}`),
+						},
+					}
+					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"infra/config/fake-bucket/fake-builder/properties.json": fakegitiles.File(`{
+								"test_property": "dependency-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "dependency",
+						"id": "new-dependency-revision"
+					}`)
+					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+						"host": "chromium.googlesource.com",
+						"project": "top/level",
+						"ref": "refs/heads/some-branch",
+						"id": "top-level-some-branch-head"
+					}`)
+					So(config.change, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "dependency-value"
+					}`)
+					So(config.skipAnalysisReasons, ShouldBeEmpty)
+				})
+
+				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"submodule/path": fakegitiles.Submodule("dependency-revision"),
+						},
+					}
+					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
+						Files: map[string]*fakegitiles.PathObject{
+							"": fakegitiles.File("fake-root-contents"),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-revision
 This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
 					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
 					So(errHasSleepTag, ShouldBeTrue)

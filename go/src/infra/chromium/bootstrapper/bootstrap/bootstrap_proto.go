@@ -133,8 +133,22 @@ func (x *BootstrapPropertiesProperties_DependencyProject_) validate(v *validator
 	} else {
 		v.validate(d.ConfigRepo, "config_repo")
 	}
-	if d.ConfigRepoPath == "" {
-		v.errorf("${}.config_repo_path is not set")
+	isConfigRepoLocatorSet := true
+	switch configRepoLocator := x.DependencyProject.ConfigRepoLocator.(type) {
+	case *BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath:
+		isConfigRepoLocatorSet = configRepoLocator.ConfigRepoPath != ""
+
+	case *BootstrapPropertiesProperties_DependencyProject_ConfigRepoSubmodulePath:
+		isConfigRepoLocatorSet = configRepoLocator.ConfigRepoSubmodulePath != ""
+
+	case nil:
+		isConfigRepoLocatorSet = false
+
+	default:
+		v.errorf("unexpected type for ${}.config_repo_locator: %T", configRepoLocator)
+	}
+	if !isConfigRepoLocatorSet {
+		v.errorf("none of the config_repo_locator fields in ${} is set")
 	}
 }
 

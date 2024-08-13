@@ -188,9 +188,27 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		return nil, err
 	}
 
-	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, dependency.ConfigRepoPath, commit, change)
+	var locator configRepoLocator
+	switch x := dependency.ConfigRepoLocator.(type) {
+	case *BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath:
+		locator = &depsConfigRepoLocator{
+			bootstrapper:   b,
+			configRepoPath: x.ConfigRepoPath,
+		}
+
+	case *BootstrapPropertiesProperties_DependencyProject_ConfigRepoSubmodulePath:
+		locator = &submoduleConfigRepoLocator{
+			bootstrapper:            b,
+			configRepoSubmodulePath: x.ConfigRepoSubmodulePath,
+		}
+
+	default:
+		return nil, errors.Reason("config_repo_locator handling for type %T is not implemented", x).Err()
+	}
+
+	dependencyRevision, oldDependencyRevision, err := b.getDependencyRevision(ctx, commit, change, locator)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to get dependency revision for %s", dependency.ConfigRepoPath).Err()
+		return nil, errors.Annotate(err, "failed to get dependency revision for %s/%s", dependency.ConfigRepo.Host, dependency.ConfigRepo.Project).Err()
 	}
 
 	// If the DEPS pin for the config repo has changed, find out if the properties file has
@@ -209,13 +227,17 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	configCommit := &gitilesCommit{&buildbucketpb.GitilesCommit{
 		Host:    dependency.ConfigRepo.Host,
 		Project: dependency.ConfigRepo.Project,
+	}}
+	if locator.mightBeRef() {
 		// We don't know if the revision is a commit hash or a ref, so just set it as ref.
 		// If it is a revision, populateCommitId will clear Ref.
-		Ref: dependencyRevision,
-	}}
-	configCommit, err = b.populateCommitId(ctx, configCommit)
-	if err != nil {
-		return nil, err
+		configCommit.Ref = dependencyRevision
+		configCommit, err = b.populateCommitId(ctx, configCommit)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		configCommit.Id = dependencyRevision
 	}
 
 	return &BootstrapConfig{
@@ -226,25 +248,56 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 	}, nil
 }
 
-func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRepoPath string, topLevelRepoCommit *gitilesCommit, topLevelRepoChange *gerritChange) (string, string, error) {
-	gclient, err := b.gclientGetter(ctx)
-	if err != nil {
-		return "", "", errors.Annotate(err, "failed to get gclient").Err()
-	}
+type configRepoLocator interface {
+	mightBeRef() bool
+	getRevision(ctx context.Context, commit *gitilesCommit) (string, error)
+}
 
-	getRevision := func(ctx context.Context, commit *gitilesCommit) (string, error) {
-		contents, err := b.downloadFile(ctx, commit, "DEPS")
+type depsConfigRepoLocator struct {
+	bootstrapper   *BuildBootstrapper
+	configRepoPath string
+
+	gclient *gclient.Client
+}
+
+func (d *depsConfigRepoLocator) mightBeRef() bool {
+	return true
+}
+
+func (d *depsConfigRepoLocator) getRevision(ctx context.Context, commit *gitilesCommit) (string, error) {
+	if d.gclient == nil {
+		gclient, err := d.bootstrapper.gclientGetter(ctx)
 		if err != nil {
 			return "", err
 		}
-		return gclient.GetDep(ctx, contents, configRepoPath)
+		d.gclient = gclient
 	}
+	contents, err := d.bootstrapper.downloadFile(ctx, commit, "DEPS")
+	if err != nil {
+		return "", err
+	}
+	return d.gclient.GetDep(ctx, contents, d.configRepoPath)
+}
 
+type submoduleConfigRepoLocator struct {
+	bootstrapper            *BuildBootstrapper
+	configRepoSubmodulePath string
+}
+
+func (s *submoduleConfigRepoLocator) mightBeRef() bool {
+	return false
+}
+
+func (s *submoduleConfigRepoLocator) getRevision(ctx context.Context, commit *gitilesCommit) (string, error) {
+	return s.bootstrapper.gitiles.GetSubmoduleRevision(ctx, commit.Host, commit.Project, commit.Id, s.configRepoSubmodulePath)
+}
+
+func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, topLevelRepoCommit *gitilesCommit, topLevelRepoChange *gerritChange, locator configRepoLocator) (string, string, error) {
 	// If there is a change for the top-level repo, get the revision for the dependency repo
 	// from the CL and its base. If they are different, than we can just use the revision from
 	// the CL and indicate that there was a change to the pin.
 	if topLevelRepoChange != nil {
-		clDependencyRevision, err := getRevision(ctx, &gitilesCommit{
+		clDependencyRevision, err := locator.getRevision(ctx, &gitilesCommit{
 			GitilesCommit: &buildbucketpb.GitilesCommit{
 				Host:    topLevelRepoCommit.Host,
 				Project: topLevelRepoCommit.Project,
@@ -258,7 +311,7 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRep
 		if err != nil {
 			return "", "", errors.Annotate(err, "failed to get base revision for CL %s", topLevelRepoChange).Err()
 		}
-		baseDependencyRevision, err := getRevision(ctx, &gitilesCommit{
+		baseDependencyRevision, err := locator.getRevision(ctx, &gitilesCommit{
 			GitilesCommit: &buildbucketpb.GitilesCommit{
 				Host:    topLevelRepoCommit.Host,
 				Project: topLevelRepoCommit.Project,
@@ -275,7 +328,7 @@ func (b *BuildBootstrapper) getDependencyRevision(ctx context.Context, configRep
 
 	// There is no change to the pin for the dependency repo, so just use the pin from the head
 	// DEPS file
-	revision, err := getRevision(ctx, topLevelRepoCommit)
+	revision, err := locator.getRevision(ctx, topLevelRepoCommit)
 	if err != nil {
 		return "", "", errors.Annotate(err, "failed to get dependency revision from commit %s", topLevelRepoCommit).Err()
 	}

@@ -196,7 +196,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 					"$test.dependency_project.top_level_repo is not set",
 					"$test.dependency_project.top_level_ref is not set",
 					"$test.dependency_project.config_repo is not set",
-					"$test.dependency_project.config_repo_path is not set")
+					"none of the config_repo_locator fields in $test.dependency_project is set")
 			})
 
 			Convey("fails for unset required fields in dependency_project.top_level_repo", func() {
@@ -227,7 +227,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 					"$test.dependency_project.config_repo.project is not set")
 			})
 
-			Convey("succeeds for valid properties", func() {
+			Convey("succeeds for valid properties with config_repo_submodule_path", func() {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {
 							"top_level_repo": {
@@ -240,6 +240,28 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 								"project": "dependency"
 							},
 							"config_repo_path": "path/to/dependency"
+						},
+						"properties_file": "infra/config/generated/builders/bucket/builder/properties.json"
+					}`))
+
+				err := validate(props, "$test")
+
+				So(err, ShouldBeNil)
+			})
+
+			Convey("succeeds for valid properties with config_repo_path", func() {
+				props := createBootstrapPropertiesProperties([]byte(`{
+						"dependency_project": {
+							"top_level_repo": {
+								"host": "chromium.googlesource.com",
+								"project": "top/level"
+							},
+							"top_level_ref": "refs/heads/top-level",
+							"config_repo": {
+								"host": "chromium.googlesource.com",
+								"project": "dependency"
+							},
+							"config_repo_submodule_path": "submodule/path"
 						},
 						"properties_file": "infra/config/generated/builders/bucket/builder/properties.json"
 					}`))

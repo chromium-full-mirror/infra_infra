@@ -160,7 +160,9 @@ func TestDownloadPackages(t *testing.T) {
 							Host:    "fake-config-host",
 							Project: "fake-config-project",
 						},
-						ConfigRepoPath: "path/to/config/repo",
+						ConfigRepoLocator: &BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath{
+							ConfigRepoPath: "path/to/config/repo",
+						},
 					},
 				}
 				depotToolsCh := make(chan string, 1)
@@ -249,7 +251,9 @@ func TestDownloadPackages(t *testing.T) {
 							Host:    "fake-config-host",
 							Project: "fake-config-project",
 						},
-						ConfigRepoPath: "path/to/config/repo",
+						ConfigRepoLocator: &BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath{
+							ConfigRepoPath: "path/to/config/repo",
+						},
 					},
 				}
 				depotToolsCh := make(chan string, 1)

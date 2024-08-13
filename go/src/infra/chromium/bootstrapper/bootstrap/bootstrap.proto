@@ -48,7 +48,7 @@ message BootstrapPropertiesProperties {
   // A project where the builder property files are retrieved from a repository
   // whose revision is determined by the DEPS of another repository
   //
-  // Next ID: 6
+  // Next ID: 7
   message DependencyProject {
     reserved 5;
     reserved "fallback_config_repo_paths";
@@ -69,8 +69,15 @@ message BootstrapPropertiesProperties {
 
     // Required, the gitiles repo containing the builder property files
     GitilesRepo config_repo = 3;
-    // Required, the path that the config repository is checked out to
-    string config_repo_path = 4;
+    // Details to find the config repo, one of the fields MUST be set
+    oneof config_repo_locator {
+      // The path that the config repository is checked out to by gclient (a key
+      // into the deps dict in the DEPS file)
+      string config_repo_path = 4;
+      // The path to the submodule within the top-level repo that refers to the
+      // config repo
+      string config_repo_submodule_path = 6;
+    }
   }
 
   // Details to find the repo and revision containing the builder property
