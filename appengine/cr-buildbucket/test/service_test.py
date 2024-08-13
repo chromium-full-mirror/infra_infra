@@ -22,7 +22,6 @@ import errors
 import model
 import notifications
 import service
-import swarming
 import user
 
 
@@ -85,11 +84,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
         'config.get_settings_async',
         autospec=True,
         return_value=future(service_config_pb2.SettingsCfg())
-    )
-    self.patch(
-        'swarming.cancel_task_transactionally_async',
-        autospec=True,
-        return_value=future(None)
     )
 
     self.patch('search.TagIndex.random_shard_index', return_value=0)

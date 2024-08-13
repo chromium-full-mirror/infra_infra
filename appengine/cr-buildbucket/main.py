@@ -14,7 +14,6 @@ import webapp2
 
 import handlers
 import metrics
-import swarming
 
 
 def disable_memcache(app):  # pragma: no cover
@@ -42,7 +41,7 @@ def create_frontend_app():  # pragma: no cover
 
 def create_backend_app():  # pragma: no cover
   """Returns WSGI app for backend."""
-  routes = handlers.get_backend_routes() + swarming.get_backend_routes()
+  routes = handlers.get_backend_routes()
   app = webapp2.WSGIApplication(routes, debug=utils.is_local_dev_server())
   gae_ts_mon.initialize_prod(app)
   return app
