@@ -9,13 +9,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestValidateFile(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ValidateFile`, t, func() {
+	ftt.Run(`ValidateFile`, t, func(t *ftt.Test) {
 		suite := func(path string, valid bool) {
 			err := filepath.Walk(path, func(fullName string, info os.FileInfo, err error) error {
 				switch {
@@ -25,17 +27,17 @@ func TestValidateFile(t *testing.T) {
 					return nil
 				}
 
-				Convey(fullName, func() {
+				t.Run(fullName, func(t *ftt.Test) {
 					err := ValidateFile(fullName)
 					if valid {
-						So(err, ShouldBeNil)
+						assert.Loosely(t, err, should.BeNil)
 					} else {
-						So(err, ShouldNotBeNil)
+						assert.Loosely(t, err, should.NotBeNil)
 					}
 				})
 				return nil
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		}
 
 		suite("testdata/validation/valid", true)
