@@ -79,11 +79,16 @@ class TestAndroidDockerClient(unittest.TestCase):
     fake_container = FakeContainer('android_serial3')
     mock_create_container.return_value = fake_container
     device = FakeDevice('serial3', 3)
+    device.major = 111
     desc = containers.AndroidContainerDescriptor(device)
     client = containers.AndroidDockerClient()
     client.create_container(desc, 'image', 'swarm-url.com', {})
     mock_create_container.assert_called_once_with(
-        desc, 'image', 'swarm-url.com', {}, cpu_shares=512)
+        desc,
+        'image',
+        'swarm-url.com', {},
+        cpu_shares=512,
+        device_cgroup_rules=['c 111:* rwm'])
     mock_add_device.assert_called_once_with(desc)
 
   @mock.patch.object(swarm_containers, '_DOCKER_VOLUMES', {})
@@ -127,8 +132,9 @@ class TestAddDevice(unittest.TestCase):
     self.container_backend = FakeContainerBackend('container1')
     mock.patch('docker.from_env', return_value=FakeClient()).start()
     self.container_backend.attrs = {
-      'Id': 'abc123',
-      'State': {'Status': 'running'},
+        'State': {
+            'Status': 'running'
+        },
     }
     self.client = containers.AndroidDockerClient()
     self.device = FakeDevice('serial1', 1)
@@ -137,16 +143,11 @@ class TestAddDevice(unittest.TestCase):
         self.client, 'get_container',
         return_value=swarm_containers.Container(self.container_backend)).start()
     self.mock_sleep = mock.patch('time.sleep', return_value=None).start()
-    self.mock_path_exists = mock.patch(
-        'os.path.exists', return_value=True).start()
 
   def tearDown(self):
     mock.patch.stopall()
 
-  @mock.patch('os.open')
-  @mock.patch('os.write')
-  @mock.patch('os.close')
-  def test_add_device(self, mock_close, mock_write, mock_open):
+  def test_add_device(self):
     self.container_backend.exec_outputs = ['', '']
     self.device.major = 111
     self.device.minor = 9
@@ -154,55 +155,11 @@ class TestAddDevice(unittest.TestCase):
     self.device.dev_file_path = '/dev/bus/usb/001/123'
     self.client.add_device(self.desc)
 
-    self.assertTrue('abc123' in mock_open.call_args[0][0])
-    # Ensure the device's major and minor numbers were written to the
-    # cgroup file.
-    self.assertEqual(mock_write.call_args[0][1], b'c 111:9 rwm')
-    self.assertTrue(mock_close.called)
-    self.assertFalse(self.container_backend.is_paused)
-
-  @mock.patch('os.open')
-  def test_add_device_missing_cgroup(self, mock_open):
-    self.mock_path_exists.return_value = False
-    self.container_backend.exec_outputs = ['']
-    self.client.add_device(self.desc)
-
-    self.assertFalse(mock_open.called)
-    self.assertEqual(len(self.container_backend.exec_inputs), 1)
-    self.assertFalse(self.container_backend.is_paused)
-
-  @mock.patch('os.open')
-  @mock.patch('os.write')
-  @mock.patch('os.close')
-  def test_add_device_os_open_error(self, mock_close, mock_write, mock_open):
-    mock_open.side_effect = OSError('omg open error')
-    self.container_backend.exec_outputs = ['']
-    self.device.major = 111
-    self.device.minor = 9
-    self.client.add_device(self.desc)
-
-    self.assertTrue('abc123' in mock_open.call_args[0][0])
-    self.assertFalse(mock_write.called)
-    self.assertFalse(mock_close.called)
-    self.assertEqual(len(self.container_backend.exec_inputs), 1)
-    self.assertFalse(self.container_backend.is_paused)
-
-  @mock.patch('os.open')
-  @mock.patch('os.write')
-  @mock.patch('os.close')
-  def test_add_device_os_write_error(self, mock_close,
-                                     mock_write, mock_open):
-    mock_write.side_effect = OSError('omg write error')
-    self.container_backend.exec_outputs = ['']
-    self.device.major = 111
-    self.device.minor = 9
-    self.client.add_device(self.desc)
-
-    self.assertTrue('abc123' in mock_open.call_args[0][0])
-    self.assertEqual(mock_write.call_args[0][1], b'c 111:9 rwm')
-    self.assertTrue(mock_close.called)
-    self.assertEqual(len(self.container_backend.exec_inputs), 1)
-    self.assertFalse(self.container_backend.is_paused)
+    # Ensure the desired exec_run commands are called.
+    self.assertEqual(len(self.container_backend.exec_inputs), 2)
+    self.assertEqual(self.container_backend.exec_inputs[0], 'rm -rf /dev/bus')
+    self.assertIn('mknod /dev/bus/usb/001/123 c 111 9',
+                  self.container_backend.exec_inputs[1])
 
   def test_container_not_running(self):
     self.container_backend.attrs['State']['Status'] = 'paused'

@@ -98,14 +98,37 @@ class AndroidDockerClient(containers.DockerClient):
     }
     return cmd
 
-  def create_container(self, container_desc, image_name, swarming_url, labels,
+  def _make_device_cgroup_rule(self, container_desc):
+    """Make a cgroup rule to ensure the permission to access the device.
+
+    An Android device may reboot during container run. While its minor number
+    is likely to change, its major number likely remains unchanged because it
+    identifies the driver associated with the device which doesn't change.
+
+    So use "<major>:*" to cover a wider range of devices, then the method
+    "_make_dev_file_cmd" is used to limit the access to the particular device.
+    """
+    device = container_desc.device
+    return 'c %d:* rwm' % device.major
+
+  def create_container(self,
+                       container_desc,
+                       image_name,
+                       swarming_url,
+                       labels,
                        additional_env=None):
     assert isinstance(container_desc, AndroidContainerDescriptor)
     # Launch containers with a cpu_share value of 1/2 of the default of 1024.
     # This will theoretically decrease each container's weight when CPU cycles
     # are constrained.
     super(AndroidDockerClient, self).create_container(
-        container_desc, image_name, swarming_url, labels, cpu_shares=512)
+        container_desc,
+        image_name,
+        swarming_url,
+        labels,
+        cpu_shares=512,
+        device_cgroup_rules=[self._make_device_cgroup_rule(container_desc)],
+    )
     self.add_device(container_desc)
 
   def add_device(self, container_desc, sleep_time=1.0):
@@ -120,43 +143,6 @@ class AndroidDockerClient(containers.DockerClient):
     # help ensure any wait-for-device threads inside notice its absence.
     container.exec_run('rm -rf /dev/bus')
     time.sleep(sleep_time)
-
-    # Pause the container while modifications to its cgroup are made. This
-    # isn't strictly necessary, but it helps avoid race-conditions.
-    container.pause()
-
-    try:
-      # Give the container permission to access the device.
-      container_id = container.attrs['Id']
-      path_to_cgroup = os.path.join(
-          _DOCKER_CGROUP, container_id, 'devices.allow')
-      if not os.path.exists(path_to_cgroup):
-        logging.error(
-            'cgroup file %s does not exist for device %s.',
-            device, path_to_cgroup)
-        return
-      try:
-        cgroup_fd = os.open(path_to_cgroup, os.O_WRONLY)
-      except OSError:
-        logging.exception(
-            'Unable to open cgroup file %s for device %s.',
-            path_to_cgroup, device)
-        return
-      try:
-        os.write(cgroup_fd, b'c %d:%d rwm' % (device.major, device.minor))
-      except OSError:
-        logging.exception(
-            'Unable to write to cgroup %s of %s\'s container.',
-            path_to_cgroup, device)
-        return
-      finally:
-        os.close(cgroup_fd)
-
-      # Sleep one more second to ensure the container's cgroup picks up the
-      # changes that were just made.
-      time.sleep(sleep_time)
-    finally:
-      container.unpause()
 
     # In-line these mutliple commands to help avoid a race condition in adb
     # that gets in a stuck state when polling for devices half-way through.

@@ -23,24 +23,31 @@ for each one.
 Adding a device to a container
 --------------------------
 On linux, docker limits containers to their set of resources via
-[cgroups](https://www.kernel.org/doc/Documentation/cgroup-v1/devices.txt)
-(e.g. memory, network, etc.) Since cgroups extend support for
-[devices](https://www.kernel.org/doc/Documentation/cgroup-v1/devices.txt),
-we can leverage this to add an android device to a container. This is done via
-adding the device's descriptor to the container's cgroup and creating a
-[device node](https://linux.die.net/man/8/makedev) in the container's /dev
-filesystem. All of this is done when invoking the script with the `add_device`
-argument.
+cgroups ([v1](https://docs.kernel.org/admin-guide/cgroup-v1/index.html),
+[v2](https://docs.kernel.org/admin-guide/cgroup-v2.html)), e.g. memory,
+network, etc. However the device controller implementation changed from
+[interface files in v1](https://docs.kernel.org/admin-guide/cgroup-v1/devices.html)
+to [cgroup BPF in v2](https://docs.kernel.org/admin-guide/cgroup-v2.html#device-controller)
+which doesn't have any interface files.
 
-Everytime a device reboots or resets, it momentarily dissapears from the host.
-When this happens, many things that uniquely identify the device change. This
-includes its [major and minor numbers](http://www.makelinux.net/ldd3/chp-3-sect-2)
-and its [dev and bus numbers](http://www.makelinux.net/ldd3/chp-13-sect-2).
-Consequently, we need to re-add a device to its container everytime this
-happens. [udev](https://www.kernel.org/pub/linux/utils/kernel/hotplug/udev/udev.html)
-allows us to do this by running `add_device` everytime an android device
-appears on the host.
+To support this change, we first use the docker container option
+[`--device-cgroup-rule`](https://docs.docker.com/reference/cli/docker/container/run/#device-cgroup-rule)
+to grant the container access to all devices of a given
+[major number][major and minor nums]. This is because every time a device
+reboots or resets, it momentarily disappears from the host. When this happens,
+many things that uniquely identify the device change. This includes its
+[dev and bus numbers](http://www.makelinux.net/ldd3/chp-13-sect-2.shtml), and
+[minor number][major and minor nums]. But the major number likely remains
+unchanged as it identifies the driver associated with the device which doesn't
+change.
 
+Then a custom [udev](https://linux.die.net/man/7/udev) rule is written so that
+every time an android device appears on the host, the script is invoked with
+`add_device` argument which adds the device to the container by creating a
+[device node](https://linux.die.net/man/3/mknod) in the container's `/dev`
+filesystem.
+
+[major and minor nums]: https://www.makelinux.net/ldd3/chp-3-sect-2.shtml
 
 Gracefully shutting down a container
 --------------------------
