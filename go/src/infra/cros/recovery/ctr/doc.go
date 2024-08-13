@@ -2,5 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package ctr represent function and interfaces to communitae with CTR CIPD.
+// Package ctr represents function and interfaces to communitae with CTR CIPD.
 package ctr

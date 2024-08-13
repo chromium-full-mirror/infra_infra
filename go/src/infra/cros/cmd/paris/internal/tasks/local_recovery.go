@@ -233,11 +233,11 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		SwarmingTaskID: c.swarmingID,
 		BBID:           c.bbID,
 	}
-	if ctr, err := cft.Prepare(ctx, cftInfo, metrics, logger); err != nil {
+	if ctr, cftCloser, err := cft.Prepare(ctx, cftInfo, metrics, logger); err != nil {
 		return errors.Annotate(err, "local recovery: start cft").Err()
 	} else {
 		params[scopes.ParamKeyCTRClient] = ctr
-		defer ctr.Stop(ctx)
+		defer cftCloser(ctx)
 	}
 	ctx = scopes.WithParams(ctx, params)
 	access, err := recovery.NewLocalTLWAccess(ic, csac)

@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/common_lib/common"
@@ -19,26 +19,25 @@ import (
 	"infra/cros/recovery/scopes"
 )
 
-// Info describes abilities of CTR service.
-type Info interface {
-	Stop(ctx context.Context) error
-	GetContainer(ctx context.Context, req *testapi.StartTemplatedContainerRequest) (BaseContainer, error)
-	IsUp() bool
-}
-
 const (
-	// TODO(otabek): Switch to prod when finish testing of ADB.
-	// cipdTag = "prod"
-	cipdTag = "latest"
+	cipdTag = "prod"
 	// Directory when CTR service will create a file.
 	metadateDirName  = "ctr_metadata"
 	artifactsDirName = "ctr_artifacts"
 )
 
+// ServiceInfo describes abilities of CTR service.
+type ServiceInfo interface {
+	Stop(ctx context.Context) error
+	GetContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (BaseContainer, error)
+	GetNetwork(ctx context.Context, name string) (Network, error)
+	IsUp() bool
+}
+
 // Init initializes the CTR service and does all the preparation for its use.
 // If it fails to start or authorize then it will be closed.
-func Init(ctx context.Context, rootDir string) (Info, error) {
-	i := &infoImpl{
+func Init(ctx context.Context, rootDir string) (ServiceInfo, error) {
+	i := &serviceInfoImpl{
 		ctr:            nil,
 		rootDir:        rootDir,
 		containerCache: make(map[string]BaseContainer),
@@ -69,18 +68,18 @@ func Init(ctx context.Context, rootDir string) (Info, error) {
 	return i, nil
 }
 
-// Get returns ctr Info from context.
-func Get(ctx context.Context) (i Info, ok bool) {
+// Get returns ctr ServiceInfo from context.
+func Get(ctx context.Context) (i ServiceInfo, ok bool) {
 	if p, ok := scopes.GetParam(ctx, scopes.ParamKeyCTRClient); !ok {
 		return nil, false
-	} else if v, ok := p.(Info); ok {
+	} else if v, ok := p.(ServiceInfo); ok {
 		return v, true
 	} else {
 		return nil, false
 	}
 }
 
-type infoImpl struct {
+type serviceInfoImpl struct {
 	ctr           *crostoolrunner.CrosToolRunner
 	serverAddress string
 
@@ -94,15 +93,15 @@ type infoImpl struct {
 }
 
 // Stop stops CTR service.
-func (c *infoImpl) Stop(ctx context.Context) error {
+func (c *serviceInfoImpl) Stop(ctx context.Context) error {
 	if c.ctr == nil {
 		return nil
 	}
 	errs := []error{}
 	log.Infof(ctx, "Try to stop CTR service...")
 	for _, v := range c.containerCache {
-		if err := v.Stop(ctx, true); err != nil {
-			errs = append(errs, errors.Annotate(err, "stop container").Err())
+		if err := v.Stop(ctx); err != nil {
+			errs = append(errs, errors.Annotate(err, "stop").Err())
 		}
 	}
 	if len(errs) != 0 {
@@ -120,12 +119,62 @@ func (c *infoImpl) Stop(ctx context.Context) error {
 }
 
 // IsUp tells if CTR service is up or not.
-func (c *infoImpl) IsUp() bool {
+func (c *serviceInfoImpl) IsUp() bool {
 	return c.ctr != nil && c.serverAddress != "" && c.ctr.CtrClient != nil
 }
 
+// GetNetwork find or create requested network.
+func (c *serviceInfoImpl) GetNetwork(ctx context.Context, name string) (_ Network, rErr error) {
+	if name == "" {
+		return nil, errors.Reason("get network: invalid request").Err()
+	} else if c.ctr.CtrClient == nil {
+		return nil, errors.Reason("get network: ctr-client not found, probably server is not started").Err()
+	}
+	n := &networkImpl{name: name}
+
+	// If network present in docker level then no need to create it.
+	if res, err := c.ctr.CtrClient.GetNetwork(ctx, &api.GetNetworkRequest{Name: n.name}); err != nil {
+		log.Debugf(ctx, "Network %q is not found in the docker level: %s", n.name, err)
+	} else {
+		log.Infof(ctx, "Network %q found: %v", n.name, res)
+		return n, nil
+	}
+	// So network was not exist before. Let's create it.
+	if res, err := c.ctr.CtrClient.CreateNetwork(ctx, &api.CreateNetworkRequest{Name: n.name}); err != nil {
+		return nil, errors.Annotate(err, "get network %q", n.name).Err()
+	} else {
+		log.Infof(ctx, "Network %q created: %v", n.name, res)
+		return n, nil
+	}
+}
+
+// GetContainer create requested container.
+func (c *serviceInfoImpl) GetContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (_ BaseContainer, rErr error) {
+	if req.GetName() == "" {
+		return nil, errors.Reason("get container: invalid request").Err()
+	} else if c.ctr.CtrClient == nil {
+		return nil, errors.Reason("get container: ctr-client not found, probably server is not started").Err()
+	}
+	if existContainer, ok := c.containerCache[req.GetName()]; ok && !existContainer.IsClosed() {
+		log.Infof(ctx, "Got container %q from cache!", existContainer.Name())
+		return existContainer, nil
+	}
+	container := &baseContainerImpl{
+		name: req.GetName(),
+		ci:   c,
+	}
+	req.ArtifactDir = c.artifactsDir
+	res, err := c.ctr.StartTemplatedContainer(ctx, req)
+	if err != nil {
+		return nil, errors.Annotate(err, "get container %q", container.name).Err()
+	}
+	c.containerCache[container.name] = container
+	log.Infof(ctx, "Container %q started: %v", container.name, res)
+	return container, nil
+}
+
 // start pulls CIPD and start service from it.
-func (c *infoImpl) start(ctx context.Context) error {
+func (c *serviceInfoImpl) start(ctx context.Context) error {
 	log.Infof(ctx, "Prepare start cros-tool-runner as service.")
 	ctr := &crostoolrunner.CrosToolRunner{
 		CtrCipdInfo: crostoolrunner.CtrCipdInfo{
@@ -175,7 +224,7 @@ func (c *infoImpl) start(ctx context.Context) error {
 	return nil
 }
 
-func (c *infoImpl) gcloudAuth(ctx context.Context) error {
+func (c *serviceInfoImpl) gcloudAuth(ctx context.Context) error {
 	log.Infof(ctx, "Prepare to get Gcloud auth.")
 	if c.ctr == nil || c.serverAddress == "" {
 		return errors.Reason("gcloud auth: service is not started").Err()
@@ -195,7 +244,7 @@ func (c *infoImpl) gcloudAuth(ctx context.Context) error {
 }
 
 // createDit creates required directory in the rootDir.
-func (c *infoImpl) createDir(name string) (string, error) {
+func (c *serviceInfoImpl) createDir(name string) (string, error) {
 	newDir := filepath.Join(c.rootDir, name)
 	// Always try to clean up directory first to avoid data pollution.
 	_ = os.RemoveAll(newDir)

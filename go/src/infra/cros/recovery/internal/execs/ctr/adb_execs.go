@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package stableversion
+// Package ctr contains functions with cros-tool-runner.
+package ctr
 
 import (
 	"context"
 	"fmt"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/ctr"
@@ -16,17 +17,27 @@ import (
 	"infra/cros/recovery/internal/log"
 )
 
+const (
+	networkPrefix      = "network-%s"
+	adbContainerPrefix = "adb-%s"
+)
+
 func startADBContainer(ctx context.Context, info *execs.ExecInfo) error {
 	ctrInfo, ok := ctr.Get(ctx)
 	if !ok {
 		return errors.Reason("start adb container").Err()
 	}
-	req := &testapi.StartTemplatedContainerRequest{
-		Name:           fmt.Sprintf("adb-%s", info.GetDut().Name),
+	networkName := fmt.Sprintf(networkPrefix, info.GetDut().Name)
+	containerName := fmt.Sprintf(adbContainerPrefix, info.GetDut().Name)
+	if _, err := ctrInfo.GetNetwork(ctx, networkName); err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
+	req := &api.StartTemplatedContainerRequest{
+		Name:           containerName,
 		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/adb-base:prod",
-		Template: &testapi.Template{
-			Container: &testapi.Template_Generic{
-				Generic: &testapi.GenericTemplate{
+		Template: &api.Template{
+			Container: &api.Template_Generic{
+				Generic: &api.GenericTemplate{
 					BinaryName: "tail",
 					BinaryArgs: []string{
 						"-f",
@@ -39,8 +50,8 @@ func startADBContainer(ctx context.Context, info *execs.ExecInfo) error {
 				},
 			},
 		},
-		Network: "", //common.ContainerDefaultNetwork,
-		// ArtifactDir: c.artifactsDir,
+		Network: networkName,
+		// ArtifactDir: c.artifactsDir, defined below in the call.
 	}
 	if _, err := ctrInfo.GetContainer(ctx, req); err != nil {
 		return errors.Annotate(err, "start adb container").Err()

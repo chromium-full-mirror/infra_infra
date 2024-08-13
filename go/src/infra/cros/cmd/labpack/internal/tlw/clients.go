@@ -30,10 +30,10 @@ type AccessData struct {
 }
 
 // NewAccess creates TLW Access for recovery engine.
-func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoot string, metrics metrics.Metrics, lg logger.Logger) (context.Context, tlw.Access, error) {
+func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoot string, metrics metrics.Metrics, lg logger.Logger) (context.Context, tlw.Access, cft.CftCloser, error) {
 	hc, err := httpClient(ctx)
 	if err != nil {
-		return ctx, nil, errors.Annotate(err, "create tlw access: create http client").Err()
+		return ctx, nil, nil, errors.Annotate(err, "create tlw access: create http client").Err()
 	}
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
@@ -70,7 +70,8 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoo
 		BBID:           in.Bbid,
 	}
 	// TODO(otabek): Make it critical after testing.
-	if cft, err := cft.Prepare(ctx, cftInfor, metrics, lg); err != nil {
+	cft, cftCloser, err := cft.Prepare(ctx, cftInfor, metrics, lg)
+	if err != nil {
 		lg.Infof("(NOT critical) Fail to prepare CFT containers!")
 	} else {
 		params[scopes.ParamKeyCTRClient] = cft
@@ -78,9 +79,9 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoo
 	ctx = scopes.WithParams(ctx, params)
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
 	if err != nil {
-		return nil, nil, errors.Annotate(err, "create tlw access").Err()
+		return nil, nil, nil, errors.Annotate(err, "create tlw access").Err()
 	}
-	return ctx, access, nil
+	return ctx, access, cftCloser, nil
 }
 
 // httpClient returns an HTTP client with authentication set up.
