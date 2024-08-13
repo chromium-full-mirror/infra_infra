@@ -8,6 +8,8 @@ package crosskylabadmin.fleet;
 
 option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
+import "go.chromium.org/chromiumos/infra/proto/src/lab_platform/stable_version.proto";
+import "google/api/field_behavior.proto";
 
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
@@ -15,6 +17,9 @@ service Inventory {
   //
   // There is intentionally no RPC for overwriting the stable version with arbitrary content.
   rpc GetStableVersion(GetStableVersionRequest) returns (GetStableVersionResponse);
+
+  // GetRecoveryVersion reads the recovery version for a particular board/model/host.
+  rpc GetRecoveryVersion(GetRecoveryVersionRequest) returns (GetRecoveryVersionResponse);
 
   // SetSatlabStableVersion sets the stable version value (for which CrOSSkylabAdmin is the source of truth),
   // for satlab devices only.
@@ -31,40 +36,52 @@ service Inventory {
 
 // next tag: 5
 message GetStableVersionRequest {
-    // TODO(gregorynisbet): remove support for looking up
-    // stable version information by buildTarget + model
-    string buildTarget = 1;
-    string model = 2;
-    // NOTE: {hostname} and {buildTarget, model} are alternatives
-    string hostname = 3;
-    //
-    // SatlabInformationalQuery identifies whether this request is an information-only request coming
-    // from the satlab CLI.
-    //
-    // Supporting `./satlab get-stable-version -model ... -board ...`, which is necessary for users to be
-    // able to how the stable versions are configured for their devices, requires us to be able to identify
-    // requests for board+model that are intended to be associated with satlab devices.
-    //
-    // In the normal flow, which looks at hostnames only, we distinguish a satlab or non-satlab request using
-    // `heuristics.LooksLikeSatlabDevice(hostname)`.
-    //
-    bool satlabInformationalQuery = 4;
+  // TODO(gregorynisbet): remove support for looking up
+  // stable version information by buildTarget + model
+  string buildTarget = 1;
+  string model = 2;
+  // NOTE: {hostname} and {buildTarget, model} are alternatives
+  string hostname = 3;
+  //
+  // SatlabInformationalQuery identifies whether this request is an information-only request coming
+  // from the satlab CLI.
+  //
+  // Supporting `./satlab get-stable-version -model ... -board ...`, which is necessary for users to be
+  // able to how the stable versions are configured for their devices, requires us to be able to identify
+  // requests for board+model that are intended to be associated with satlab devices.
+  //
+  // In the normal flow, which looks at hostnames only, we distinguish a satlab or non-satlab request using
+  // `heuristics.LooksLikeSatlabDevice(hostname)`.
+  //
+  bool satlabInformationalQuery = 4;
 }
 
 // next tag: 6
 message GetStableVersionResponse {
-    string crosVersion = 1;
-    string firmwareVersion = 2;
-    string faftVersion = 3;
-    string servoCrosVersion = 4;
-    // Reason is an explanation of *why* this particular stable version
-    // was picked. Possible values are:
-    //
-    // 1) "host-specific"
-    // 2) "board and model"
-    //
-    // This value is intended to be informational, and either logged or presented to an end user.
-    string reason = 5;
+  string crosVersion = 1;
+  string firmwareVersion = 2;
+  string faftVersion = 3;
+  string servoCrosVersion = 4;
+  // Reason is an explanation of *why* this particular stable version
+  // was picked. Possible values are:
+  //
+  // 1) "host-specific"
+  // 2) "board and model"
+  //
+  // This value is intended to be informational, and either logged or presented to an end user.
+  string reason = 5;
+}
+
+message GetRecoveryVersionRequest {
+  // Name of device listed in inventory.
+  string device_name = 1;
+  string board = 2 [(google.api.field_behavior) = REQUIRED];
+  string model = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated string pools = 4;
+}
+
+message GetRecoveryVersionResponse {
+  lab_platform.StableVersion version = 1;
 }
 
 // SatlabBoardAndModelStrategy is a combination of keys that define a stable version entry for Satlab

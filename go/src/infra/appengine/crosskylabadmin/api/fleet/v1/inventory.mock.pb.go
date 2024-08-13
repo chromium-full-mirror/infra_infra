@@ -145,6 +145,26 @@ func (mr *MockInventoryClientMockRecorder) DumpStableVersionToDatastore(ctx, in 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryClient)(nil).DumpStableVersionToDatastore), varargs...)
 }
 
+// GetRecoveryVersion mocks base method.
+func (m *MockInventoryClient) GetRecoveryVersion(ctx context.Context, in *GetRecoveryVersionRequest, opts ...grpc.CallOption) (*GetRecoveryVersionResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetRecoveryVersion", varargs...)
+	ret0, _ := ret[0].(*GetRecoveryVersionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecoveryVersion indicates an expected call of GetRecoveryVersion.
+func (mr *MockInventoryClientMockRecorder) GetRecoveryVersion(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecoveryVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetRecoveryVersion), varargs...)
+}
+
 // GetStableVersion mocks base method.
 func (m *MockInventoryClient) GetStableVersion(ctx context.Context, in *GetStableVersionRequest, opts ...grpc.CallOption) (*GetStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -236,6 +256,21 @@ func (m *MockInventoryServer) DumpStableVersionToDatastore(arg0 context.Context,
 func (mr *MockInventoryServerMockRecorder) DumpStableVersionToDatastore(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DumpStableVersionToDatastore", reflect.TypeOf((*MockInventoryServer)(nil).DumpStableVersionToDatastore), arg0, arg1)
+}
+
+// GetRecoveryVersion mocks base method.
+func (m *MockInventoryServer) GetRecoveryVersion(arg0 context.Context, arg1 *GetRecoveryVersionRequest) (*GetRecoveryVersionResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRecoveryVersion", arg0, arg1)
+	ret0, _ := ret[0].(*GetRecoveryVersionResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRecoveryVersion indicates an expected call of GetRecoveryVersion.
+func (mr *MockInventoryServerMockRecorder) GetRecoveryVersion(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecoveryVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetRecoveryVersion), arg0, arg1)
 }
 
 // GetStableVersion mocks base method.

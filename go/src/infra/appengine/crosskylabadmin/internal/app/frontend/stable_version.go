@@ -70,6 +70,16 @@ func (is *ServerImpl) GetStableVersion(ctx context.Context, req *fleet.GetStable
 	return getStableVersionImpl(ctx, req.GetBuildTarget(), req.GetModel(), req.GetHostname(), req.GetSatlabInformationalQuery())
 }
 
+// GetRecoveryVersion implements the method from fleet.InventoryServer interface
+func (is *ServerImpl) GetRecoveryVersion(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (resp *fleet.GetRecoveryVersionResponse, err error) {
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+
+	err = errors.Reason("not implemented").Err()
+	return nil, status.Errorf(codes.Unimplemented, "get recovery version impl: %s", err)
+}
+
 // getSatlabStableVersion gets a stable version for a satlab device.
 //
 // It returns a full response if there's no error, and a boolean ok which determines whether the error should cause
