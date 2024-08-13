@@ -36,6 +36,11 @@ plans:
                       exec_name: cros_ping
                 - name: Is Dolos present
                   exec_name: dolos_is_enabled
+        - name: Check firmware version is correct.
+          exec_name: dolos_check_firmware_up_to_date
+          recoveries:
+            - name: dolos_update_firmware
+              exec_name: dolos_update_firmware
         - name: Update state
           exec_name: dolos_determine_and_set_dolos_state
         - name: Dolos does not needs reboot

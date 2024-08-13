@@ -15,6 +15,7 @@ func dolosRepairPlan() *Plan {
 			"Is Dolos present",
 			"Device is sshable",
 			"Uartname is known",
+			"Check firmware version is correct.",
 			"Update state",
 			"Dolos does not needs reboot",
 		},
@@ -132,6 +133,12 @@ func dolosRepairPlan() *Plan {
 					"Sleep 20s",
 				},
 				ExecName: "sample_pass",
+			},
+			"Check firmware version is correct.": {
+				ExecName: "dolos_check_firmware_up_to_date",
+				RecoveryActions: []string{
+					"dolos_update_firmware",
+				},
 			},
 		},
 	}
