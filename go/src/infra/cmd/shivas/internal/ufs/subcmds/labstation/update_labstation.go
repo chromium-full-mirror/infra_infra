@@ -263,7 +263,7 @@ func (c *updateLabstation) validateArgs() error {
 	}
 	// If hostname is given and it's not forceDeploy. Check if no other input is given.
 	if c.hostname != "" && !c.forceDeploy {
-		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.rpmType == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 {
+		if c.machine == "" && c.rpm == "" && c.rpmOutlet == "" && c.rpmType == "" && c.description == "" && c.deploymentTicket == "" && len(c.tags) == 0 && len(c.pools) == 0 && c.hive == "" {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update")
 		}
 	}
