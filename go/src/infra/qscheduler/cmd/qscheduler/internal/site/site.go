@@ -6,9 +6,6 @@
 package site
 
 import (
-	"os"
-	"path/filepath"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
@@ -31,20 +28,11 @@ var Dev = Environment{
 
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
-//
-// TODO: This is copied from the Go swarming client.  We should probably get our
-// own OAuth client credentials at some point.
-var DefaultAuthOptions = auth.Options{
-	// Note that ClientSecret is not really a secret since it's hardcoded into
-	// the source code (and binaries). It's totally fine, as long as it's callback
-	// URI is configured to be 'localhost'. If someone decides to reuse such
-	// ClientSecret they have to run something on user's local machine anyway
-	// to get the refresh_token.
-	ClientID:          "446450136466-mj75ourhccki9fffaq8bc1e50di315po.apps.googleusercontent.com",
-	ClientSecret:      "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",
-	LoginSessionsHost: chromeinfra.LoginSessionsHost,
-	SecretsDir:        SecretsDir(),
-	Scopes:            []string{auth.OAuthScopeEmail},
+var DefaultAuthOptions auth.Options
+
+func init() {
+	DefaultAuthOptions = chromeinfra.DefaultAuthOptions()
+	DefaultAuthOptions.Scopes = []string{auth.OAuthScopeEmail}
 }
 
 // DefaultPRPCOptions is used for PRPC clients.  If it is nil, the
@@ -52,15 +40,3 @@ var DefaultAuthOptions = auth.Options{
 //
 // This is provided so it can be overridden for testing.
 var DefaultPRPCOptions *prpc.Options
-
-// SecretsDir returns an absolute path to a directory (in $HOME) to keep secret
-// files in (e.g. OAuth refresh tokens) or an empty string if $HOME can't be
-// determined (happens in some degenerate cases, it just disables auth token
-// cache).
-func SecretsDir() string {
-	configDir := os.Getenv("XDG_CACHE_HOME")
-	if configDir == "" {
-		configDir = filepath.Join(os.Getenv("HOME"), ".cache")
-	}
-	return filepath.Join(configDir, "qscheduler", "auth")
-}
