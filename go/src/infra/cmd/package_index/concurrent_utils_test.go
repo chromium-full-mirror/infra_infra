@@ -3,18 +3,20 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestSet(t *testing.T) {
 	t.Parallel()
-	Convey("Concurrent set", t, func() {
+	ftt.Run("Concurrent set", t, func(t *ftt.Test) {
 		cs := NewConcurrentSet(0)
 
-		Convey("Adding to set", func() {
-			Convey("Adding a new value should return true", func() {
-				So(cs.Add("hello"), ShouldEqual, true)
-				So(cs.Add("hello"), ShouldEqual, false)
+		t.Run("Adding to set", func(t *ftt.Test) {
+			t.Run("Adding a new value should return true", func(t *ftt.Test) {
+				assert.Loosely(t, cs.Add("hello"), should.Equal(true))
+				assert.Loosely(t, cs.Add("hello"), should.Equal(false))
 			})
 		})
 	})
@@ -22,35 +24,35 @@ func TestSet(t *testing.T) {
 
 func TestMap(t *testing.T) {
 	t.Parallel()
-	Convey("FileHashMap", t, func() {
+	ftt.Run("FileHashMap", t, func(t *ftt.Test) {
 		m := NewFileHashMap()
 
-		Convey("Getting nonexistent values", func() {
+		t.Run("Getting nonexistent values", func(t *ftt.Test) {
 			hash, ok := m.Filehash("nonexistent")
-			Convey("Filehash should not be fetched", func() {
-				So(hash, ShouldEqual, "")
-				So(ok, ShouldEqual, false)
+			t.Run("Filehash should not be fetched", func(t *ftt.Test) {
+				assert.Loosely(t, hash, should.BeEmpty)
+				assert.Loosely(t, ok, should.Equal(false))
 			})
 
 			fname, ok := m.Filename("nonexistent")
-			Convey("Filename should not be fetched", func() {
-				So(fname, ShouldEqual, "")
-				So(ok, ShouldEqual, false)
+			t.Run("Filename should not be fetched", func(t *ftt.Test) {
+				assert.Loosely(t, fname, should.BeEmpty)
+				assert.Loosely(t, ok, should.Equal(false))
 			})
 		})
 
-		Convey("Adding and retrieving data", func() {
-			Convey("Adding should return true if new and false if not", func() {
-				So(m.Add("hello", "hash"), ShouldEqual, true)
-				So(m.Add("bye", "hash"), ShouldEqual, false)
+		t.Run("Adding and retrieving data", func(t *ftt.Test) {
+			t.Run("Adding should return true if new and false if not", func(t *ftt.Test) {
+				assert.Loosely(t, m.Add("hello", "hash"), should.Equal(true))
+				assert.Loosely(t, m.Add("bye", "hash"), should.Equal(false))
 
 				fname, ok := m.Filename("hash")
-				So(fname, ShouldEqual, "hello")
-				So(ok, ShouldEqual, true)
+				assert.Loosely(t, fname, should.Equal("hello"))
+				assert.Loosely(t, ok, should.Equal(true))
 
 				hash, ok := m.Filehash("hello")
-				So(hash, ShouldEqual, "hash")
-				So(ok, ShouldEqual, true)
+				assert.Loosely(t, hash, should.Equal("hash"))
+				assert.Loosely(t, ok, should.Equal(true))
 			})
 		})
 	})

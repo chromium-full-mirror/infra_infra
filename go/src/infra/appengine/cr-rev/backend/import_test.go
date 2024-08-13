@@ -4,10 +4,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/cr-rev/backend/gitiles"
 	"infra/appengine/cr-rev/backend/repoimport"
@@ -20,7 +22,7 @@ func TestInitialImport(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	Convey("invalid host", t, func() {
+	ftt.Run("invalid host", t, func(t *ftt.Test) {
 		cfg := &config.Config{
 			Hosts: []*config.Host{
 				{
@@ -28,9 +30,9 @@ func TestInitialImport(t *testing.T) {
 				},
 			},
 		}
-		So(func() {
+		assert.Loosely(t, func() {
 			setupImport(ctx, cfg)
-		}, ShouldPanic)
+		}, should.Panic)
 	})
 }
 
@@ -40,7 +42,7 @@ func TestInitialHostImport(t *testing.T) {
 	defer mockCtrl.Finish()
 	controller := repoimport.NewMockController(mockCtrl)
 
-	Convey("Skip repos", t, func() {
+	ftt.Run("Skip repos", t, func(t *ftt.Test) {
 		// Setup gitiles
 		fakeGitilesClient := &gitilesProto.Fake{}
 		fakeGitilesClient.SetRepository("foo", nil, nil)
@@ -69,6 +71,6 @@ func TestInitialHostImport(t *testing.T) {
 
 		initialHostImport(ctx, controller, host)
 		// We expect only one Gitiles calls (to list projects):
-		So(len(fakeGitilesClient.GetCallLogs()), ShouldEqual, 1)
+		assert.Loosely(t, len(fakeGitilesClient.GetCallLogs()), should.Equal(1))
 	})
 }
