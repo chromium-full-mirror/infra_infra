@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chromeos.karte;
+
+option go_package = "infra/cros/karte/api;kartepb";
+
+// StoragePolicy controls where and how the Karte records will be stored.
+// For example, will we skip BigQuery.
+message StoragePolicy {
+  enum StoragePolicy {
+    // UNSPECIFIED is treated as store.
+    UNSPECIFIED = 0;
+    STORE = 1;
+    SKIP = 2;
+  }
+  StoragePolicy storage_policy = 1;
+}

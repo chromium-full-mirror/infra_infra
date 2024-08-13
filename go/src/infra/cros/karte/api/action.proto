@@ -9,6 +9,7 @@ package chromeos.karte;
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/protobuf/timestamp.proto";
+import "infra/cros/karte/api/storage_policy.proto";
 
 option go_package = "infra/cros/karte/api;kartepb";
 
@@ -136,4 +137,9 @@ message Action {
     ACTION_TYPE_RECOVERY = 3;
   }
   ActionType action_type = 23;
+
+  // Storage policy describes how to store this record in Datastore and Bigquery.
+  //
+  // This is a control field and is NOT persisted to the storage layer.
+  StoragePolicy storage_policy = 24;
 }

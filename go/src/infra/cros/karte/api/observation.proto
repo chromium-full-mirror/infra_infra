@@ -7,6 +7,7 @@ syntax = "proto3";
 package chromeos.karte;
 
 import "google/api/resource.proto";
+import "infra/cros/karte/api/storage_policy.proto";
 
 option go_package = "infra/cros/karte/api;kartepb";
 
@@ -41,4 +42,9 @@ message Observation {
     string value_string = 4;
     double value_number = 5;
   }
+
+  // Storage policy describes how to store this record in Datastore and Bigquery.
+  //
+  // This is a control field and is NOT persisted to the storage layer.
+  StoragePolicy storage_policy = 6;
 }
