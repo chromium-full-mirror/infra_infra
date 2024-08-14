@@ -594,30 +594,32 @@ func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequ
 	return &pb.AddPoolResponse{}, nil
 }
 
-func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander, s services.ISwarmingService, hostname string) error {
+func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander, satlabID, hostname string) error {
 	err := addPoolsToDUT(ctx, executor, hostname, []string{"-"})
 	// As the CL changed, it returns an error even though the command removes all pools from the DUTs.
 	// Ref: https://chromium-review.googlesource.com/c/infra/infra/+/5673141
 	if err != nil {
 		// We try to get the bot info by hostname
-		dut, swarmingError := s.GetBot(ctx, hostname)
-		if swarmingError != nil {
+		satlabRackFilter := []string{site.MaybePrepend(site.Satlab, satlabID, "rack")}
+		d := dut.GetDUT{
+			SatlabID: satlabID,
+			Racks:    satlabRackFilter,
+		}
+		dut, ufsErr := d.TriggerRun(ctx, executor, []string{site.MaybePrepend(site.Satlab, satlabID, hostname)})
+		if ufsErr != nil {
 			logging.Infof(ctx, "remove pool error: %v", err)
-			logging.Infof(ctx, "can't get the bot info from hostname: %s, got an error: %v", hostname, swarmingError)
+			logging.Infof(ctx, "can't get the bot info from hostname: %s, got an error: %v", hostname, ufsErr)
 			return errors.New("Internal server error")
 		}
 
-		for _, dim := range dut.Dimensions {
-			// We check the label-pool tag is empty
-			// If it is, we ignore the error because it means
-			// the command has been executed successfully
-			if dim.Key == site.LabelPoolTag {
-				if len(dim.Value) == 0 {
-					return nil
-				} else {
-					return err
-				}
-			}
+		if len(dut) == 0 {
+			logging.Infof(ctx, "remove pool error, can't get dut from ufs by hostname")
+			return errors.New("Internal server error")
+		}
+
+		pools := dut[0].GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
+		if len(pools) != 0 {
+			return err
 		}
 	}
 
@@ -636,12 +638,16 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 	if err := s.validateServices(); err != nil {
 		return nil, err
 	}
+	satlabID, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, item := range in.GetItems() {
 		if validateUpdatePools(item.GetPools()) {
 			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
 			// host.
-			if err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, item.GetHostname()); err != nil {
+			if err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, item.GetHostname()); err != nil {
 				logging.Errorf(ctx, "gRPC Service error: update_pool: %w", err)
 				return nil, err
 			}

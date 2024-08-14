@@ -28,6 +28,7 @@ import (
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	. "go.chromium.org/luci/common/testing/assertions"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"
@@ -45,6 +46,7 @@ import (
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 	mon "infra/cros/satlab/satlabrpcserver/utils/monitor"
 	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsLabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 	ufspb "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
@@ -2300,31 +2302,71 @@ func Test_AbortJobsShouldSuccess(t *testing.T) {
 	}
 }
 
+func newMachineLSE(name string, pools []string) *ufsModels.MachineLSE {
+	return &ufsModels.MachineLSE{
+		Name:     name,
+		Hostname: name,
+		Machines: []string{"machine"},
+		Lse: &ufsModels.MachineLSE_ChromeosMachineLse{
+			ChromeosMachineLse: &ufsModels.ChromeOSMachineLSE{
+				ChromeosLse: &ufsModels.ChromeOSMachineLSE_Dut{
+					Dut: &ufsModels.ChromeOSDeviceLSE{
+						Device: &ufsModels.ChromeOSDeviceLSE_Dut{
+							Dut: &ufsLabpb.DeviceUnderTest{
+								Hostname: name,
+								Pools:    pools,
+								Peripherals: &ufsLabpb.Peripherals{
+									Servo: &ufsLabpb.Servo{
+										ServoFwChannel: ufsLabpb.ServoFwChannel_SERVO_FW_PREV,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func marshallMachineLSESlice(expected []*ufsModels.MachineLSE) []string {
+	m := protojson.MarshalOptions{
+		Indent: "  ",
+	}
+	s := []string{}
+	for _, elem := range expected {
+		js, _ := m.Marshal(elem)
+		s = append(s, string(js))
+	}
+
+	return s
+}
+
 func Test_removeAllPoolShouldSuccess(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
 	s := createMockServer(t)
 	hostname := "hostname1"
+	satlabID := "satlab-id"
 
-	mockBotInfo := &swarmingapi.BotInfo{
-		Dimensions: []*swarmingapi.StringListPair{
-			{
-				Key:   "drone",
-				Value: []string{"satlab-satlab-id"},
-			},
-			{
-				Key:   site.LabelPoolTag,
-				Value: []string{},
-			},
-		},
-		BotId: hostname,
-	}
+	s.commandExecutor = &executor.FakeCommander{FakeFn: func(c *exec.Cmd) ([]byte, error) {
+		if c.Args[0] == paths.ShivasCLI {
+			if c.Args[1] == "update" {
+				return nil, errors.New("found no pool for device satlab-<satlab-id>")
+			} else if c.Args[1] == "get" {
+				gotMachineLSE := []*ufsModels.MachineLSE{newMachineLSE(hostname, []string{})}
+				marshalled := marshallMachineLSESlice(gotMachineLSE)
 
-	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(mockBotInfo, nil).AnyTimes()
-	s.commandExecutor = &executor.FakeCommander{Err: errors.New("found no pool for device satlab-<satlab-id>")}
+				return []byte(fmt.Sprintf("[%v]", strings.Join(marshalled, ","))), nil
+			} else {
+				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+			}
+		}
+		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+	}}
 
-	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)
 
 	if err != nil {
 		t.Errorf("should sucess, but got an error: %v", err)
@@ -2338,11 +2380,22 @@ func Test_removeAllPoolShouldFailWhenGettingBotInfoFailed(t *testing.T) {
 
 	s := createMockServer(t)
 	hostname := "hostname1"
+	satlabID := "satlab-id"
 
-	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(nil, errors.New("Failed to get bot info")).AnyTimes()
-	s.commandExecutor = &executor.FakeCommander{Err: errors.New("found no pool for device satlab-<satlab-id>")}
+	s.commandExecutor = &executor.FakeCommander{FakeFn: func(c *exec.Cmd) ([]byte, error) {
+		if c.Args[0] == paths.ShivasCLI {
+			if c.Args[1] == "update" {
+				return nil, errors.New("found no pool for device satlab-<satlab-id>")
+			} else if c.Args[1] == "get" {
+				return nil, errors.New("execute the command failed")
+			} else {
+				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+			}
+		}
+		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+	}}
 
-	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)
 
 	if err == nil {
 		t.Errorf("should get an error")
@@ -2356,11 +2409,24 @@ func Test_removeAllPoolShouldSuccessWhenCommandSuccess(t *testing.T) {
 
 	s := createMockServer(t)
 	hostname := "hostname1"
+	satlabID := "satlab-id"
 
-	s.swarmingService.(*services.MockISwarmingService).EXPECT().GetBot(ctx, hostname).Return(nil, errors.New("Failed to get bot info")).AnyTimes()
-	s.commandExecutor = &executor.FakeCommander{CmdOutput: "success"}
+	s.commandExecutor = &executor.FakeCommander{FakeFn: func(c *exec.Cmd) ([]byte, error) {
+		if c.Args[0] == paths.ShivasCLI {
+			if c.Args[1] == "update" {
+				return []byte("success"), nil
+			} else if c.Args[1] == "get" {
+				return nil, errors.New("should not reach here")
+			} else {
+				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+			}
+		} else if c.Args[0] == paths.GetHostIdentifierScript {
+			return []byte(satlabID), nil
+		}
+		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+	}}
 
-	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, s.swarmingService, hostname)
+	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)
 
 	if err != nil {
 		t.Errorf("should sucess, but got an error: %v", err)
