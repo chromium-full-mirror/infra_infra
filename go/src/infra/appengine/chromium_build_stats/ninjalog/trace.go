@@ -82,6 +82,10 @@ func mustHexID(size int) string {
 
 // UploadTraceOnCriticalPath uploads build actions included in critical path of build in ninja log to Cloud Trace.
 func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string, nlog *NinjaLog) (rerr error) {
+	if len(nlog.Steps) == 0 {
+		logging.Debugf(ctx, "no steps to process")
+		return nil
+	}
 	nlog.Steps = Dedup(nlog.Steps)
 	flow := Flow(nlog.Steps, true)
 	if len(flow) == 0 {

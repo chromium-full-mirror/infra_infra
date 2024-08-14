@@ -167,7 +167,7 @@ func TestTrace(t *testing.T) {
 func TestUploadTraceOnCriticalPathWithEmptySteps(t *testing.T) {
 	ctx := context.Background()
 	err := UploadTraceOnCriticalPath(ctx, "testProj", "testTrace", &NinjaLog{})
-	if err == nil {
-		t.Errorf("UploadTraceOnCriticalPath() returns nil. expected an error")
+	if err != nil {
+		t.Errorf("UploadTraceOnCriticalPath() returns %v. expected nil", err)
 	}
 }
