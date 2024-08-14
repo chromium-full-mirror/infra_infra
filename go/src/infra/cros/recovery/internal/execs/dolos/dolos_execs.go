@@ -23,7 +23,7 @@ const (
 	dolosSubCmdGetStatus = "get-status"
 	dolosSubCmdVersion   = "version"
 	dolosSubCmdFwUpdate  = "firmware-update"
-	dolosSubCmdFindUart  = "find-uart"
+	dolosSubCmdFindUart  = "find-uartname"
 )
 
 func isEnabledForTestbedExec(ctx context.Context, info *execs.ExecInfo) error {
