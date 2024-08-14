@@ -5929,12 +5929,12 @@ wheel: <
 
 ## **mozprocess-py3**
 
-### 1.3.0
+### 1.3.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/mozprocess-py3"
-  version: "version:1.3.0"
+  version: "version:1.3.1"
 >
 ```
 

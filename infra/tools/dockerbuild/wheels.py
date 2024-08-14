@@ -2203,7 +2203,7 @@ SPECS.update({
         Universal('mozlog', '5.0'),
         Universal('mozlog', '7.1.0'),
         Universal('mozprocess', '1.2.1'),
-        Universal('mozprocess', '1.3.0', pyversions=['py3']),
+        Universal('mozprocess', '1.3.1', pyversions=['py3']),
         Universal('mozterm', '1.0.0'),
         Universal('multiprocessing-logging', '0.3.1'),
         Universal('mypy', '1.2.0', pyversions=['py3']),
