@@ -488,3 +488,72 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 
 	return nil
 }
+
+type PackageXcodeArchiveArgs struct {
+	xcodePath          string
+	xcodeVersion       string
+	cipdPackagePrefix  string
+	serviceAccountJSON string
+	outputDir          string
+	skipRefTag         bool
+}
+
+func packageXcodeArchive(ctx context.Context, args PackageXcodeArchiveArgs) error {
+	xcodeDir, err := filepath.Abs(args.xcodePath)
+	if err != nil {
+		err = errors.Annotate(err, "failed to create an absolute path from %s", xcodeDir).Err()
+		return err
+	}
+
+	// validate files in the runtime dir
+	entries, err := ioutil.ReadDir(xcodeDir)
+	if err != nil {
+		err = errors.Annotate(err, "unable to list files from %s", xcodeDir).Err()
+		return err
+	}
+	archiveFileCount := 0
+	for _, entry := range entries {
+		if strings.HasSuffix(entry.Name(), ".xip") {
+			archiveFileCount++
+		}
+	}
+	if archiveFileCount != 1 {
+		return errors.Reason("the xcode-path should only contain exactly one archive file. Currently it contains %d", archiveFileCount).Err()
+	}
+
+	xcodeMakePackageArgs := MakePackageArgs{
+		cipdPackageName:   XcodeArchivePackageName,
+		cipdPackagePrefix: args.cipdPackagePrefix,
+		rootPath:          xcodeDir,
+		includePrefixes:   []string{},
+		excludePrefixes:   []string{},
+	}
+	pkg, err := makePackage(xcodeMakePackageArgs)
+	if err != nil {
+		return errors.Annotate(err, "failed to create cipd package definition for %s/%s", xcodeDir, args.xcodeVersion).Err()
+	}
+
+	xcodeBuildVersion := strings.ToLower(args.xcodeVersion)
+	tags := []string{
+		"xcode_version:" + xcodeBuildVersion,
+	}
+	refs := []string{
+		xcodeBuildVersion,
+	}
+
+	if args.skipRefTag {
+		tags = []string{}
+		refs = []string{}
+	}
+
+	buildFn := createBuilder(ctx, tags, refs, args.serviceAccountJSON, args.outputDir)
+
+	if err = buildCipdPackages(Packages{xcodeBuildVersion: pkg}, buildFn); err != nil {
+		return err
+	}
+
+	fmt.Printf("\nCIPD package for xcode archive:\n")
+	fmt.Printf("  %s  %s \n", pkg.Package, xcodeBuildVersion)
+
+	return nil
+}

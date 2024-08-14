@@ -590,3 +590,99 @@ func TestPackageRuntimeDMG(t *testing.T) {
 		})
 	})
 }
+
+func TestPackageXcodeArchive(t *testing.T) {
+	t.Parallel()
+
+	Convey("packageXcodeArchive works", t, func() {
+		var s MockSession
+		ctx := useMockCmd(context.Background(), &s)
+
+		Convey("package a test xcode archive", func() {
+			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+				xcodePath:          filepath.Join("testdata", "xcode-archive"),
+				xcodeVersion:       "test-xcode-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         false,
+			}
+			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "create")
+			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldContain, "60m")
+			So(s.Calls[0].Args, ShouldContain, "xcode_version:test-xcode-version")
+			So(s.Calls[0].Args, ShouldContain, "test-xcode-version")
+
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+		})
+
+		Convey("package a test xcode archive without refs & tags", func() {
+			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+				xcodePath:          filepath.Join("testdata", "xcode-archive"),
+				xcodeVersion:       "test-xcode-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         true,
+			}
+			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "create")
+			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldContain, "60m")
+			So(s.Calls[0].Args, ShouldNotContain, "-tag")
+			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+		})
+
+		Convey("package a test xcode archive with wrong file path", func() {
+			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+				xcodePath:          filepath.Join("testdata", "runtimes"),
+				xcodeVersion:       "test-xcode-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         false,
+			}
+			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "the xcode-path should only contain exactly one archive file")
+		})
+
+		Convey("for local package creating", func() {
+			// Make sure `outputDir` actually exists in testdata; otherwise the test
+			// will needlessly create a directory and leave it behind.
+			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+				xcodePath:          filepath.Join("testdata", "xcode-archive"),
+				xcodeVersion:       "test-xcode-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "testdata/outdir",
+				skipRefTag:         false,
+			}
+			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "xcode_archive.cipd"))
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "pkg-build")
+
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			So(s.Calls[0].Args, ShouldNotContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldNotContain, "60m")
+			So(s.Calls[0].Args, ShouldNotContain, "-tag")
+			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+		})
+	})
+
+}

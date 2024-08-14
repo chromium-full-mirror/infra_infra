@@ -41,8 +41,11 @@ const XcodeIOSSimulatorRuntimeVersionRelPath = "Contents/Developer/Platforms/iPh
 // Package name of iOS runtime in CIPD.
 const IosRuntimePackageName = "ios_runtime"
 
-// Package name of iOS runtime in DMG format in CIPD.
+// IosRuntimeDMGPackageName package name of iOS runtime in DMG format in CIPD.
 const IosRuntimeDMGPackageName = "ios_runtime_dmg"
+
+// XcodeArchivePackageName package name of iOS runtime in DMG format in CIPD.
+const XcodeArchivePackageName = "xcode_archive"
 
 // Package name of Mac package in CIPD. The package contains Xcode contents that
 // are both useful in Mac & iOS.
@@ -67,14 +70,16 @@ const (
 	iosKind           = KindType(IosPackageName)
 	iosRuntimeKind    = KindType(IosRuntimePackageName)
 	iosRuntimeDMGKind = KindType(IosRuntimeDMGPackageName)
+	xcodeArchiveKind  = KindType(XcodeArchivePackageName)
 	// DefaultKind is the default value for the -kind flag.
 	DefaultKind = macKind
 )
 
 // KindTypeEnum is the corresponding Enum type for the -kind argument.
 var KindTypeEnum = flagenum.Enum{
-	MacPackageName: macKind,
-	IosPackageName: iosKind,
+	MacPackageName:          macKind,
+	IosPackageName:          iosKind,
+	XcodeArchivePackageName: xcodeArchiveKind,
 }
 
 // String implements flag.Value
@@ -132,6 +137,13 @@ type uploadRuntimeDMGRun struct {
 	serviceAccountJSON string
 }
 
+type uploadXcodeArchiveRun struct {
+	commonFlags
+	xcodePath          string
+	xcodeVersion       string
+	serviceAccountJSON string
+}
+
 type packageRuntimeRun struct {
 	commonFlags
 	runtimePath string
@@ -145,6 +157,13 @@ type packageRuntimeDMGRun struct {
 	runtimeBuild   string
 	xcodeVersion   string
 	outputDir      string
+}
+
+type packageXcodeArchiveRun struct {
+	commonFlags
+	xcodePath    string
+	xcodeVersion string
+	outputDir    string
 }
 
 type installRuntimeRun struct {
@@ -321,6 +340,32 @@ func (c *uploadRuntimeDMGRun) Run(a subcommands.Application, args []string, env 
 	return 0
 }
 
+// Entrance function to upload a xcode archive for upload-xcode-archive cmd line switch.
+func (c *uploadXcodeArchiveRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if c.xcodePath == "" {
+		errors.Log(ctx, errors.Reason("path to xcode archive is not specified (-xcode-path)").Err())
+		return 1
+	}
+	if c.xcodeVersion == "" {
+		errors.Log(ctx, errors.Reason("xcode version is not specified (-xcode-version)").Err())
+		return 1
+	}
+
+	packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+		xcodePath:          stripLastTrailingSlash(c.xcodePath),
+		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
+		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
+		serviceAccountJSON: c.serviceAccountJSON,
+		outputDir:          "",
+	}
+	if err := packageXcodeArchive(ctx, packageXcodeArchiveArgs); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	return 0
+}
+
 // Entrance function to package a runtime locally for package-runtime cmd line
 // switch.
 func (c *packageRuntimeRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -383,6 +428,37 @@ func (c *packageRuntimeDMGRun) Run(a subcommands.Application, args []string, env
 		outputDir:          c.outputDir,
 	}
 	if err := packageRuntimeDMG(ctx, PackageRuntimeDMGArgs); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	return 0
+}
+
+// Entrance function to package a xcode archive locally for package-xcode-archive cmd line
+// switch.
+func (c *packageXcodeArchiveRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if c.xcodePath == "" {
+		errors.Log(ctx, errors.Reason("path to xcode archive is not specified (-xcode-path)").Err())
+		return 1
+	}
+	if c.outputDir == "" {
+		errors.Log(ctx, errors.Reason("output directory is not specified (-output-dir)").Err())
+		return 1
+	}
+	if c.xcodeVersion == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime xcode version is not specified (-xcode-version)").Err())
+		return 1
+	}
+
+	PackageXcodeArchiveArgs := PackageXcodeArchiveArgs{
+		xcodePath:          stripLastTrailingSlash(c.xcodePath),
+		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
+		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
+		serviceAccountJSON: "",
+		outputDir:          c.outputDir,
+	}
+	if err := packageXcodeArchive(ctx, PackageXcodeArchiveArgs); err != nil {
 		errors.Log(ctx, err)
 		return 1
 	}
@@ -491,9 +567,23 @@ func uploadRuntimeDMGFlagVars(c *uploadRuntimeDMGRun) {
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "The latest Xcode version \"bundled\" with this runtime. For example, 14c18 for iOS16.2 (required)")
 }
 
+func uploadXcodeArchiveFlagVars(c *uploadXcodeArchiveRun) {
+	commonFlagVars(&c.commonFlags)
+	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
+	c.Flags.StringVar(&c.xcodePath, "xcode-path", "", "Parent path of Xcode archive file to be uploaded. (required)")
+	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "The xcode version of the archive. For example, 14c18 (required)")
+}
+
 func packageRuntimeFlagVars(c *packageRuntimeRun) {
 	commonFlagVars(&c.commonFlags)
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Path to iOS.simruntime to be uploaded. (required)")
+	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
+}
+
+func packageXcodeArchiveFlagVars(c *packageXcodeArchiveRun) {
+	commonFlagVars(&c.commonFlags)
+	c.Flags.StringVar(&c.xcodePath, "xcode-path", "", "Parent path of Xcode archive file to be uploaded. (required)")
+	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "The xcode version of the archive. For example, 14c18 (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }
 
@@ -586,6 +676,17 @@ requested is uploaded with it's runtime separated from Xcode package.`,
 		},
 	}
 
+	cmdUploadXcodeArchive = &subcommands.Command{
+		UsageLine: "upload-xcode-archive <options>",
+		ShortDesc: "Uploads Xcode archive (xip) package.",
+		LongDesc:  "Creates and uploads Xcode CIPD package, in archive (xip) format.",
+		CommandRun: func() subcommands.CommandRun {
+			c := &uploadXcodeArchiveRun{}
+			uploadXcodeArchiveFlagVars(c)
+			return c
+		},
+	}
+
 	cmdPackageRuntime = &subcommands.Command{
 		UsageLine: "package-runtime <options>",
 		ShortDesc: "Creates iOS runtime CIPD package locally.",
@@ -604,6 +705,17 @@ requested is uploaded with it's runtime separated from Xcode package.`,
 		CommandRun: func() subcommands.CommandRun {
 			c := &packageRuntimeDMGRun{}
 			packageRuntimeDMGFlagVars(c)
+			return c
+		},
+	}
+
+	cmdPackageXcodeArchive = &subcommands.Command{
+		UsageLine: "package-xcode-archive <options>",
+		ShortDesc: "Creates Xcode archive (xip) CIPD package locally.",
+		LongDesc:  "Packages Xcode archive (xip) CIPD package locally (won't upload).",
+		CommandRun: func() subcommands.CommandRun {
+			c := &packageXcodeArchiveRun{}
+			packageXcodeArchiveFlagVars(c)
 			return c
 		},
 	}
@@ -660,8 +772,10 @@ func main() {
 			cmdPackage,
 			cmdUploadRuntime,
 			cmdUploadRuntimeDMG,
+			cmdUploadXcodeArchive,
 			cmdPackageRuntime,
 			cmdPackageRuntimeDMG,
+			cmdPackageXcodeArchive,
 			cmdInstallRuntime,
 			cmdInstallRuntimeDMG,
 		},

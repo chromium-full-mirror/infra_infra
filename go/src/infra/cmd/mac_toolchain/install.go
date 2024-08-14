@@ -45,6 +45,55 @@ func getIOSVersionWithoutPatch(iosVersion string) string {
 	return iosVersion
 }
 
+func getFileExtension(fileName string) string {
+	return fileName[strings.LastIndex(fileName, ".")+1:]
+}
+
+func unzipXcodeArchive(ctx context.Context, rootDir, xcodePath string) error {
+	// xcode needs to be removed first, if exists
+	if _, err := os.Stat(xcodePath); !os.IsNotExist(err) {
+		if err := os.RemoveAll(xcodePath); err != nil {
+			return errors.Annotate(err, "Failed to remove existing xcode path %s", xcodePath).Err()
+		}
+	}
+
+	// search for xcode.xip file
+	files, err := os.ReadDir(rootDir)
+	if err != nil {
+		return errors.Annotate(err, "Unable to read root xip directory %s", rootDir).Err()
+	}
+	xipFilePath := ""
+	for _, file := range files {
+		if getFileExtension(file.Name()) == "xip" {
+			xipFilePath = filepath.Join(rootDir, file.Name())
+			break
+		}
+	}
+
+	if err := RunCommand(ctx, "/usr/bin/xip", "--expand", xipFilePath); err != nil {
+		return errors.Annotate(err, "Unable to unzip xip file %s", xipFilePath).Err()
+	}
+
+	// search for Xcode.app and move to the destination path
+	files, err = os.ReadDir(".")
+	if err != nil {
+		return errors.Annotate(err, "Unable to read root xip directory %s", rootDir).Err()
+	}
+	// Iterate through the list of files and find the first file with the extension of `.app`.
+	for _, file := range files {
+		if strings.Contains(file.Name(), "Xcode") && getFileExtension(file.Name()) == "app" {
+			unzippedXcodePath := filepath.Join("./", file.Name())
+			err = os.Rename(unzippedXcodePath, xcodePath)
+			if err != nil {
+				os.RemoveAll(unzippedXcodePath)
+				return errors.Annotate(err, "Failed to move Xcode to destination %s %s ", unzippedXcodePath, xcodePath).Err()
+			}
+			break
+		}
+	}
+	return nil
+}
+
 // InstallPackagesArgs are the parameters for installPackages() to keep them manageable.
 type InstallPackagesArgs struct {
 	ref                string
@@ -87,6 +136,8 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimePackageName, args.ref)
 	case iosRuntimeDMGKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimeDMGPackageName, args.ref)
+	case xcodeArchiveKind:
+		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, XcodeArchivePackageName, args.ref)
 	default:
 		return errors.Reason("unknown package kind: %s", args.kind).Err()
 	}
@@ -421,9 +472,9 @@ func installAndAddRuntimeDMG(ctx context.Context, runtimeDMGInstallArgs RuntimeD
 		return errors.Annotate(err, "Unable to read runtime dmg directory %s", runtimeDMGInstallArgs.installPath).Err()
 	}
 	dmgFilePath := ""
-	// Iterate through the list of files and find the first file with the extension of `.dmg`.
+	// Iterate through the list of files and find the first file with the extension of `dmg`.
 	for _, file := range files {
-		if file.Name()[len(file.Name())-4:] == ".dmg" {
+		if getFileExtension(file.Name()) == "dmg" {
 			dmgFilePath = filepath.Join(runtimeDMGInstallArgs.installPath, file.Name())
 			break
 		}
@@ -475,23 +526,17 @@ func getLatestCFBundleVersion(ctx context.Context, xcodePackagePath, xcodeVersio
 	}
 	return "", errors.Reason("Unable to parse CFBundleVersion from cipd describe output %s", output).Err()
 }
-func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, xcodeVersion string) (bool, error) {
-	xcodePackagePath := cipdPackagePrefix + "/" + MacPackageName
-	cfBundleVersion, _, _, err := getXcodeVersion(filepath.Join(xcodeAppPath, "Contents", "version.plist"))
+func shouldReInstallXcode(ctx context.Context, xcodeAppPath, xcodeVersion string) (bool, error) {
+	_, _, buildVersion, err := getXcodeVersion(filepath.Join(xcodeAppPath, "Contents", "version.plist"))
 	if err != nil {
 		logging.Warningf(ctx, "Xcode should be re-installed due to error %s", err.Error())
 		return true, err
 	}
-	cfBundleVersionOnCipd, err := getLatestCFBundleVersion(ctx, xcodePackagePath, xcodeVersion)
-	if err != nil {
-		logging.Warningf(ctx, "Xcode should be re-installed due to error %s", err.Error())
-		return true, err
-	}
-	if cfBundleVersion != cfBundleVersionOnCipd {
-		logging.Warningf(ctx, "CFBundleVersion mismatched between local %s and cipd %s, Xcode should be re-installed", cfBundleVersion, cfBundleVersionOnCipd)
+	if !strings.EqualFold(buildVersion, xcodeVersion) {
+		logging.Warningf(ctx, "Xcode version mismatched between local %s and expected %s, Xcode should be re-installed", buildVersion, xcodeVersion)
 		return true, nil
 	}
-	logging.Warningf(ctx, "CFBundleVersion %s matches between local and cipd and Xcode passed integrity check. So it should not be re-installed", cfBundleVersion)
+	logging.Warningf(ctx, "Xcode version %s matches between local and expected. So it should not be re-installed", buildVersion)
 	return false, nil
 }
 
@@ -577,21 +622,42 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	if err == nil {
 		if onMacOS13OrLater {
 			logging.Warningf(ctx, "Checking if Xcode should be re-installed")
-			shouldInstallXcode, _ = shouldReInstallXcode(ctx, args.cipdPackagePrefix, args.xcodeAppPath, args.xcodeVersion)
+			shouldInstallXcode, _ = shouldReInstallXcode(ctx, args.xcodeAppPath, args.xcodeVersion)
 		}
 	} else {
 		logging.Warningf(ctx, "Failed to check MacOS version with the error: %s", err)
 	}
 	if shouldInstallXcode {
-		installPackagesArgs := InstallPackagesArgs{
-			ref:                args.xcodeVersion,
-			rootPath:           args.xcodeAppPath,
-			cipdPackagePrefix:  args.cipdPackagePrefix,
-			kind:               args.kind,
-			serviceAccountJSON: args.serviceAccountJSON,
-		}
-		if err := installPackages(ctx, installPackagesArgs); err != nil {
-			return err
+		if args.kind == xcodeArchiveKind {
+			xcodeArchivePath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
+			if tmpDirErr != nil {
+				return tmpDirErr
+			}
+			defer os.RemoveAll(xcodeArchivePath)
+			installPackagesArgs := InstallPackagesArgs{
+				ref:                args.xcodeVersion,
+				rootPath:           xcodeArchivePath,
+				cipdPackagePrefix:  args.cipdPackagePrefix,
+				kind:               args.kind,
+				serviceAccountJSON: args.serviceAccountJSON,
+			}
+			if err := installPackages(ctx, installPackagesArgs); err != nil {
+				return err
+			}
+			if err := unzipXcodeArchive(ctx, xcodeArchivePath, args.xcodeAppPath); err != nil {
+				return err
+			}
+		} else {
+			installPackagesArgs := InstallPackagesArgs{
+				ref:                args.xcodeVersion,
+				rootPath:           args.xcodeAppPath,
+				cipdPackagePrefix:  args.cipdPackagePrefix,
+				kind:               args.kind,
+				serviceAccountJSON: args.serviceAccountJSON,
+			}
+			if err := installPackages(ctx, installPackagesArgs); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -622,6 +688,8 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	select {
 	case err := <-ch:
 		if err != nil {
+			// if fail to accept license or launch, remove xcode
+			os.RemoveAll(args.xcodeAppPath)
 			return err
 		} else {
 			close(ch)
