@@ -72,9 +72,14 @@ func (k *karteFrontend) CreateAction(ctx context.Context, req *kartepb.CreateAct
 		logging.Errorf(ctx, "Error converting action: %s", err)
 		return nil, errors.Annotate(err, "create action").Err()
 	}
-	if err := PutActionEntities(ctx, actionEntity); err != nil {
-		logging.Errorf(ctx, "error writing action: %s", err)
-		return nil, errors.Annotate(err, "writing action to datastore").Err()
+	if req.GetAction().GetStoragePolicy().GetStoragePolicy() == kartepb.StoragePolicy_SKIP {
+		logging.Infof(ctx, "Skipping writing action to datastore %q %q", req.GetAction().GetKind(), req.GetAction().GetHostname())
+	} else {
+		logging.Infof(ctx, "Writing action to datastore")
+		if err := PutActionEntities(ctx, actionEntity); err != nil {
+			logging.Errorf(ctx, "error writing action: %s", err)
+			return nil, errors.Annotate(err, "writing action to datastore").Err()
+		}
 	}
 
 	switch client {
@@ -119,9 +124,11 @@ func (k *karteFrontend) CreateObservation(ctx context.Context, req *kartepb.Crea
 		return nil, errors.Annotate(err, "writing action to datastore").Err()
 	}
 
-	switch client {
-	case nil:
-		logging.Infof(ctx, "skipping insert to BigQuery")
+	switch {
+	case client == nil:
+		logging.Infof(ctx, "client not provided for observation associated with %q, skipping", req.GetObservation().GetActionName())
+	case req.GetObservation().GetStoragePolicy().GetStoragePolicy() == kartepb.StoragePolicy_SKIP:
+		logging.Infof(ctx, "skipping associated with %q observation by policy", req.GetObservation().GetActionName())
 	default:
 		valueSaver := observationEntity.ConvertToValueSaver()
 		logging.Infof(ctx, "beginning to insert record to bigquery")
