@@ -15,12 +15,7 @@ app_engine_apis: true
 instance_class: F4_1G
 
 automatic_scaling:
-  max_instances: 10
-  max_pending_latency: 1s
-  min_pending_latency: 1s
-  min_idle_instances: 1
-  max_idle_instances: 1
-
+  max_instances: 20
 
 handlers:
 - url: /(.+\.ico)
