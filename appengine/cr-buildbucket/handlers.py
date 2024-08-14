@@ -2,24 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
-
-from google.appengine.api.modules import modules
-
 from components import auth
 from components import config as config_api
-from components import decorators
 from components import endpoints_webapp2
 from components import prpc
 
 import webapp2
 
-import bq
-import model
 import notifications
 import resultdb
-import service
-import user
 
 README_MD = (
     'https://chromium.googlesource.com/infra/infra/+/HEAD/'
@@ -81,12 +72,8 @@ def get_backend_routes():  # pragma: no cover
   prpc_server.add_interceptor(auth.prpc_interceptor)
 
   return [  # pragma: no branch
-      webapp2.Route(r'/internal/cron/buildbucket/bq-export',
-                    bq.CronExportBuilds),
       webapp2.Route(r'/internal/task/buildbucket/notify/<build_id:\d+>',
                     notifications.TaskPublishNotification),
-      webapp2.Route(r'/internal/task/bq/export/<build_id:\d+>',
-                    bq.TaskExport),
       webapp2.Route(r'/internal/task/resultdb/finalize/<build_id:\d+>',
                     resultdb.FinalizeInvocation),
   ] + (prpc_server.get_routes())
