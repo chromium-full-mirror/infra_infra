@@ -27,13 +27,12 @@ import (
 )
 
 var Labqual = &subcommands.Command{
-	UsageLine: "labqual [FLAGS...] -pool POOL HOSTNAME [HOSTNAME...]",
+	UsageLine: "labqual [FLAGS...] HOSTNAME [HOSTNAME...]",
 	ShortDesc: "Run a lab qualification on given host(s) using the board's stable build",
 	CommandRun: func() subcommands.CommandRun {
 		c := &LabqualRun{}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.pool, "pool", "", "Pool to schedule qualification jobs in (Required)")
 		c.Flags.StringVar(&c.imagePath, "image", "", "Image to use for qualification")
 		return c
 	},
@@ -44,7 +43,6 @@ type LabqualRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	pool      string
 	imagePath string
 }
 
@@ -61,10 +59,6 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 	ctx := cli.GetContext(a, c, env)
 
 	stdErrLog := log.New(a.GetErr(), "", 0)
-
-	if c.pool == "" {
-		return cmdlib.NewUsageError(c.Flags, "Flag '-pool' is required")
-	}
 
 	if len(args) == 0 {
 		return cmdlib.NewUsageError(c.Flags, "Expected at least 1 hostname after flags")
@@ -161,21 +155,27 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 			c.imagePath = board + "-release/" + stableResp.CrosVersion
 		}
 
+		pools := lseResponse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
+		if len(pools) == 0 {
+			runErrs = append(runErrs, fmt.Errorf("machineLSE of host %q has no pools associated", host))
+			continue
+		}
+
 		cmd := buildbucket.Run{
 			Board:       board,
-			Pool:        c.pool,
+			Pool:        pools[0],
 			Image:       c.imagePath,
 			Priority:    50,
 			TimeoutMins: 2330,
 			CFT:         true,
+			IsProd:      true,
 			Harness:     "tauto",
 			Tests:       []string{"tast.generic"},
 			AddedDims:   dims,
-			// Expected string: tast_expr=\(\"group:labqual_stable\"\) tast.firmware.firmwarePath=firmware-dedede-13606.B-branch-firmware/R89-13606.597.0/dedede
-			TestArgs: fmt.Sprintf(`tast_expr=\(\"group:labqual_stable\"\) tast.firmware.firmwarePath=%s`, stableResp.FaftVersion),
+			// Expected string: tast_expr=\\(\\\"group:labqual_stable\\\"\\) tast.firmware.firmwarePath=firmware-dedede-13606.B-branch-firmware/R89-13606.597.0/dedede
+			TestArgs: fmt.Sprintf("tast_expr=\\(\\\"group:labqual_stable\\\"\\) tast.firmware.firmwarePath=%s", stableResp.FaftVersion),
 			BBClient: bbClient.BuildBucketClient,
 		}
-
 		url, err := cmd.TriggerRun(ctx)
 		if err != nil {
 			err = fmt.Errorf("failed to start labqual on host %q: %w", host, err)

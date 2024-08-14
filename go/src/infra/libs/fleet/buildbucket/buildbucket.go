@@ -218,7 +218,7 @@ func (c *Run) createCTPBuilder(ctx context.Context) (*builder.CTPBuilder, error)
 		Board:               c.Board,
 		Model:               c.Model,
 		Pool:                c.Pool,
-		CFT:                 true,
+		CFT:                 c.CFT,
 		TestPlan:            tp,
 		BuilderID:           builderID,
 		Dimensions:          dims,
