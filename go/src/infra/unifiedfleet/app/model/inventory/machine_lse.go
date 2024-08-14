@@ -121,6 +121,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
 		rpmType = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitType()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools()
+		hive = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive()
 	}
 
 	var os []string
@@ -535,32 +536,15 @@ func ListAllMachineLSEs(ctx context.Context, keysOnly bool) (res []*ufspb.Machin
 }
 
 // ListAllMachineLSEsNameHive return all machine lses name and hive in datastore.
-func ListAllMachineLSEsNameHive(ctx context.Context) (res []*ufspb.MachineLSE, err error) {
+func ListAllMachineLSEsNameHive(ctx context.Context) (res map[string]string, err error) {
 	var entities []*MachineLSEEntity
+	res = make(map[string]string)
 	q := datastore.NewQuery(MachineLSEKind).Project("hive").FirestoreMode(true)
 	if err = datastore.GetAll(ctx, q, &entities); err != nil {
 		return nil, err
 	}
 	for _, ent := range entities {
-		lse := &ufspb.MachineLSE{
-			Name: ent.ID,
-		}
-		if ent.Hive != "" {
-			lse.Lse = &ufspb.MachineLSE_ChromeosMachineLse{
-				ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
-					ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
-						DeviceLse: &ufspb.ChromeOSDeviceLSE{
-							Device: &ufspb.ChromeOSDeviceLSE_Dut{
-								Dut: &chromeosLab.DeviceUnderTest{
-									Hive: ent.Hive,
-								},
-							},
-						},
-					},
-				},
-			}
-		}
-		res = append(res, lse)
+		res[ent.ID] = ent.Hive
 	}
 	return
 }

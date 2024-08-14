@@ -65,6 +65,31 @@ func addMachineLSEHive(ctx context.Context, name string, hive string) (*ufspb.Ma
 	return m, nil
 }
 
+// addMachineLSELabsationHive registers a machine labstation  with hive
+func addMachineLSELabstationHive(ctx context.Context, name string, hive string) (*ufspb.MachineLSE, error) {
+	m, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+		Name: name,
+		Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+					DeviceLse: &ufspb.ChromeOSDeviceLSE{
+						Device: &ufspb.ChromeOSDeviceLSE_Labstation{
+							Labstation: &chromeosLab.Labstation{
+								Hive: hive,
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Error creating machineLSE labstation: %w", err)
+	}
+
+	return m, nil
+}
+
 // Singleton client
 var (
 	client = &stubDroneQueenClientImpl{}
@@ -108,13 +133,24 @@ func TestPushToDroneQueenNamespaces(t *testing.T) {
 	// Satlab DUT with hive
 	osMachineSatlabWithHive, _ := addMachineLSEHive(osCtx, "satlab-abc-host2", "satlab-1")
 	// DUT with cloudbots hive should not be declared
-	addMachineLSEHive(osCtx, "cloudbots-host", "cloudbots")
+	if _, err := addMachineLSEHive(osCtx, "cloudbots-host", "cloudbots"); err != nil {
+		t.Errorf("err add cloudbots-host: %s", err)
+	}
+	// Labstation with cloudbots hive should not be declared
+	if _, err := addMachineLSELabstationHive(osCtx, "cloudbots-labstation1", "cloudbots-large"); err != nil {
+		t.Errorf("err add cloudbots-labstation1: %s", err)
+	}
+	// Labstation with non cloudbot hive should be declared
+	if _, err := addMachineLSELabstationHive(osCtx, "cloudbots-labstation2", "e"); err != nil {
+		t.Errorf("err add cloudbots-labstation2: %s", err)
+	}
 
 	// only want os, partner machines to be pushed
 	want := &dronequeenapi.DeclareDutsRequest{
 		AvailableDuts: []*dronequeenapi.DeclareDutsRequest_Dut{
 			{Name: osMachine.Name, Hive: ""},
 			{Name: osMachineSatlabNoHive.Name, Hive: "satlab-abc"},
+			{Name: "cloudbots-labstation2", Hive: "e"},
 			{Name: osMachineHive.Name, Hive: "hive1"},
 			{Name: osMachineSatlabWithHive.Name, Hive: "satlab-1"},
 			{Name: partnerMachine.Name, Hive: ""},
@@ -126,7 +162,7 @@ func TestPushToDroneQueenNamespaces(t *testing.T) {
 		t.Errorf("err when pushing to drone queen: %s", err)
 	}
 
-	if diff := cmp.Diff(client.lastDeclareDUTsCall, want, cmpopts.IgnoreUnexported(dronequeenapi.DeclareDutsRequest_Dut{}, dronequeenapi.DeclareDutsRequest{})); diff != "" {
+	if diff := cmp.Diff(client.lastDeclareDUTsCall.AvailableDuts, want.AvailableDuts, cmpopts.IgnoreUnexported(dronequeenapi.DeclareDutsRequest_Dut{}, dronequeenapi.DeclareDutsRequest{}), cmpopts.SortSlices(func(x, y *dronequeenapi.DeclareDutsRequest_Dut) bool { return x.Name > y.Name })); diff != "" {
 		t.Errorf("Call to drone queen had unexpected diff:\n%s", diff)
 	}
 }

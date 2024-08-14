@@ -6,6 +6,7 @@ package dumper
 
 import (
 	"context"
+	"strings"
 
 	"golang.org/x/oauth2"
 
@@ -52,7 +53,7 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 		}
 		// Get all the MachineLSEs
 		// Set keysOnly to true to get only keys. This is faster and consumes less data.
-		lses, err := inventory.ListAllMachineLSEsNameHive(ctx)
+		lseNameHive, err := inventory.ListAllMachineLSEsNameHive(ctx)
 		if err != nil {
 			err = errors.Annotate(err, "failed to list all MachineLSEs for chrome %s namespace", ns).Err()
 			logging.Errorf(ctx, err.Error())
@@ -76,16 +77,15 @@ func pushToDroneQueen(ctx context.Context) (err error) {
 				}
 			}
 		}
-		for _, lse := range lses {
-			if !lseInSUnitMap[lse.GetName()] {
-				hive := util.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive())
-				// Do not include "cloudbots" hive DUTS
-				if hive == "cloudbots" {
+		for lseName, hive := range lseNameHive {
+			if !lseInSUnitMap[lseName] {
+				// Do not include "cloudbots" prefix hives DUTS
+				if strings.HasPrefix(hive, "cloudbots") {
 					continue
 				}
 				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
-					Name: lse.GetName(),
-					Hive: hive,
+					Name: lseName,
+					Hive: util.GetHiveForDut(lseName, hive),
 				})
 			}
 		}

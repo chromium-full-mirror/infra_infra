@@ -83,9 +83,15 @@ func (c *pushDutsRun) innerRun(a subcommands.Application, args []string, env sub
 	for i, r := range res {
 		lse := r.(*ufspb.MachineLSE)
 		lse.Name = ufsUtil.RemovePrefix(lse.Name)
+		var h string
+		if lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
+			h = lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive()
+		} else {
+			h = lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
+		}
 		availableDuts[i] = &api.DeclareDutsRequest_Dut{
 			Name: lse.GetName(),
-			Hive: ufsUtil.GetHiveForDut(lse.GetName(), lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()),
+			Hive: ufsUtil.GetHiveForDut(lse.GetName(), h),
 		}
 	}
 	qc := api.NewInventoryProviderPRPCClient(&prpc.Client{
