@@ -10,7 +10,6 @@ from components import prpc
 import webapp2
 
 import notifications
-import resultdb
 
 README_MD = (
     'https://chromium.googlesource.com/infra/infra/+/HEAD/'
@@ -74,6 +73,4 @@ def get_backend_routes():  # pragma: no cover
   return [  # pragma: no branch
       webapp2.Route(r'/internal/task/buildbucket/notify/<build_id:\d+>',
                     notifications.TaskPublishNotification),
-      webapp2.Route(r'/internal/task/resultdb/finalize/<build_id:\d+>',
-                    resultdb.FinalizeInvocation),
   ] + (prpc_server.get_routes())
