@@ -14,7 +14,7 @@ import packaging.version
 
 def do_latest():
   versions = []
-  max_release = packaging.version.parse('1.22a0')
+  max_release = packaging.version.parse('1.23a0')
   for release in json.load(
       urllib.request.urlopen('https://golang.org/dl/?mode=json')):
     ver = packaging.version.parse(release['version'].replace('go', ''))
