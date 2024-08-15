@@ -305,6 +305,7 @@ adhoc_builder(
             predicates = ['build.tags.get_value("bounded_child")=="True"'],
             extra_fields = {
                 "bounded_child": 'build.tags.get_value("bounded_child")',
+                "child_tracking_service": 'build.tags.get_value("child_tracking_service")',
             },
         ),
     ],
