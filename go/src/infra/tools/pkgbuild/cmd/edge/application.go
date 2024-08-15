@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -164,11 +165,30 @@ func (a *Application) UploadCIPDAll(ctx context.Context, pkgs []actions.Package)
 	}
 	defer filesystem.RemoveAll(tmp)
 
-	for _, pkg := range pkgs {
-		if err = a.uploadCIPD(ctx, clt, tmp, pkg); err != nil {
-			return
+	// Ensure we only upload each package once.
+	var errs []error
+	toBeUpload := make(map[string]actions.Package)
+	for _, pkg := range flattenPkgs(pkgs) {
+		cipd := pkg.Action.Metadata.GetCipd()
+		if cipd.GetName() == "" || cipd.DisableUpload {
+			continue
+		}
+
+		id := cipd.Name + ":" + pkg.DerivationID
+		if p, ok := toBeUpload[id]; ok {
+			if !proto.Equal(cipd, p.Action.Metadata.Cipd) {
+				logging.Errorf(ctx, "cipd metadata missmatch: %s %s", cipd, p.Action.Metadata.Cipd)
+				errs = append(errs, fmt.Errorf("cipd metadata missmatch for %s", id))
+			}
+		} else {
+			toBeUpload[id] = pkg
 		}
 	}
+
+	for _, pkg := range toBeUpload {
+		errs = append(errs, a.uploadCIPD(ctx, clt, tmp, pkg))
+	}
+	err = errors.Join(errs...)
 
 	return
 }
@@ -178,6 +198,22 @@ type provenanceClient interface {
 	ReportCipd(context.Context, *snooperpb.ReportCipdRequest, ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
+func flattenPkgs(pkgs []actions.Package) []actions.Package {
+	var flatten []actions.Package
+	for _, pkg := range pkgs {
+		flatten = append(flatten, flattenPkg(pkg)...)
+	}
+	return flatten
+}
+
+func flattenPkg(pkg actions.Package) []actions.Package {
+	pkgs := []actions.Package{pkg}
+	for _, dep := range slices.Concat(pkg.BuildDependencies, pkg.RuntimeDependencies) {
+		pkgs = append(pkgs, flattenPkg(dep)...)
+	}
+	return pkgs
+}
+
 // uploadCIPD uploads the package provided. If reporter function is not nil,
 // it will be called after the cipd file generated in tmp, to report the
 // cipd package to snoopy service.
@@ -185,16 +221,6 @@ func (a *Application) uploadCIPD(ctx context.Context, clt provenanceClient, tmp 
 	cipdPkg := toCIPDPackage(pkg)
 	if cipdPkg == nil {
 		return nil
-	}
-
-	// Recursively upload package's dependencies
-	var deps []actions.Package
-	deps = append(deps, cipdPkg.BuildDependencies...)
-	deps = append(deps, cipdPkg.RuntimeDependencies...)
-	for _, dep := range deps {
-		if err = a.uploadCIPD(ctx, clt, tmp, dep); err != nil {
-			return
-		}
 	}
 
 	// This helps avoiding attaching possible ambiguous tags from different
