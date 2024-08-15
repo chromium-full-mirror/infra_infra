@@ -363,6 +363,7 @@ message HardwareCapabilities {
     CARRIER_CMW500 = 23;
     CARRIER_CMX500 = 24;
     CARRIER_RAK = 25;
+    CARRIER_CBRS = 26;
   }
   optional Carrier carrier = 16;
   // A list of all carriers that can be tested on the DUT. This extends the carrier field which could previously only
