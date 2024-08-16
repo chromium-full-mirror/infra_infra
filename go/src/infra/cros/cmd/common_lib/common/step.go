@@ -26,7 +26,6 @@ func AddLinksToStepSummaryMarkdown(
 	if gcsLink != "" {
 		links = append(links, fmt.Sprintf("* [Test Artifacts Gcs Link](%s)", gcsLink))
 	}
-
 	if len(links) > 0 {
 		step.SetSummaryMarkdown(strings.Join(links, "\n"))
 	}

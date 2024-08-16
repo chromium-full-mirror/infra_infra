@@ -20,6 +20,7 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/suitelimits"
 	"infra/cros/cmd/ctpv2/data"
 )
 
@@ -127,6 +128,12 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 	defer func() { step.End(err) }()
 
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.AllTestResults, "all test results")
+
+	// Add the suite limits metrics to the summarization step.
+	for requestName, csvData := range suitelimits.GetIncrementalLogs() {
+		common.WriteAnyObjectToStepLog(ctx, step, csvData, fmt.Sprintf("%s execution logs", requestName))
+	}
+	common.WriteAnyObjectToStepLog(ctx, step, suitelimits.GetTotalsLogs(), "Total Per Suite Execution Statistics")
 
 	// sort suite keys first
 	suiteKeys := make([]string, 0, len(cmd.AllTestResults))
@@ -281,6 +288,12 @@ func GroupErrAndNonErrResults(inputMap map[string][]*data.TestResults) ([]string
 					addToMap(errorResultMap, errKey, eachResult)
 				case *data.BotParamsRejectedError:
 					errKey := common.BotParamsRejectedErrKey
+					if _, ok := errorResultMap[errKey]; !ok {
+						errorResultKeys = append(errorResultKeys, errKey)
+					}
+					addToMap(errorResultMap, errKey, eachResult)
+				case *data.SuiteLimitsError:
+					errKey := common.SuiteLimitsErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
 						errorResultKeys = append(errorResultKeys, errKey)
 					}

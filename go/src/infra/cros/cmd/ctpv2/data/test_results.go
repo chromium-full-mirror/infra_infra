@@ -7,8 +7,11 @@ package data
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
+	"infra/cros/cmd/common_lib/tools/suitelimits"
 )
 
 type TestResults struct {
@@ -64,4 +67,14 @@ type EnumerationError struct {
 
 func (e *EnumerationError) Error() string {
 	return fmt.Sprintf("no test found for suite '%s'", e.SuiteName)
+}
+
+type SuiteLimitsError struct {
+	SuiteName     string
+	RequestName   string
+	TotalDUTHours time.Duration
+}
+
+func (e *SuiteLimitsError) Error() string {
+	return fmt.Sprintf("SUITE LIMITS: request %s for suite %s ran for %d DUT seconds, %d maximum allowed", e.RequestName, e.SuiteName, int(e.TotalDUTHours.Seconds()), suitelimits.DutHourMaximumSeconds)
 }

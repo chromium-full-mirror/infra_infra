@@ -61,6 +61,16 @@ func WriteAnyObjectToStepLog(ctx context.Context, step *build.Step, obj any, log
 	}
 }
 
+// WriteStringToStepLog writes provided string to build step.
+func WriteStringToStepLog(ctx context.Context, step *build.Step, data, logText string) {
+	outputLog := step.Log(logText)
+	_, err := outputLog.Write([]byte(data))
+	if err != nil {
+		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Writing %q failed:", logText), err.Error())
+		return
+	}
+}
+
 // GetFileContents finds the file and return the file contents.
 func GetFileContents(ctx context.Context, fileName string, rootDir string) ([]byte, error) {
 	filePath, err := FindFile(ctx, fileName, rootDir)

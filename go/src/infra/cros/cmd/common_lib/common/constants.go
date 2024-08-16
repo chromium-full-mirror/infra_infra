@@ -54,6 +54,7 @@ const (
 	LabelPool                              = "label-pool"
 	BotParamsRejectedErrKey                = "Bot Params Rejected"
 	EnumerationErrKey                      = "Enumeration Error"
+	SuiteLimitsErrKey                      = "Suite Limits Cancellation"
 	OtherErrKey                            = "Other Error"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is

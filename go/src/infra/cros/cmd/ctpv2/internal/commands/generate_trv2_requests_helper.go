@@ -127,7 +127,7 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 	return req, nil
 }
 
-func pool(suiteInfo *testapi.SuiteInfo) string {
+func getPool(suiteInfo *testapi.SuiteInfo) string {
 	if suiteInfo.GetSuiteMetadata().GetPool() != "" {
 		return suiteInfo.GetSuiteMetadata().GetPool()
 	}
@@ -330,7 +330,7 @@ func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
 		}
 	}
 	trHelper.suiteName = trHelper.suiteInfo.GetSuiteRequest().GetTestSuite().GetName()
-	trHelper.pool = pool(trHelper.suiteInfo)
+	trHelper.pool = getPool(trHelper.suiteInfo)
 	trHelper.currBBID = trHelper.build.Build().GetId()
 	trHelper.builderStr = getBuildFromGcsPath(trHelper.primaryTarget.gcsArtifactPath)
 	trHelper.parentRequestUID = fmt.Sprintf(CtpRequestUIDTemplate, trHelper.currBBID, trHelper.suiteName)

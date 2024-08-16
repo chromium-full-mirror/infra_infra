@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -29,6 +30,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/schedulers"
+	"infra/cros/cmd/common_lib/tools/suitelimits"
 	"infra/cros/cmd/ctpv2/data"
 	dm "infra/device_manager/client"
 )
@@ -182,7 +184,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	cmd.TestResults = map[string]*data.TestResults{}
 
 	scheduler := cmd.Scheduler
-	pool := pool(cmd.InternalTestPlan.SuiteInfo)
+	pool := getPool(cmd.InternalTestPlan.SuiteInfo)
 	err = scheduler.Setup(pool)
 	if err != nil {
 		errmsg := "error while setting up scheduler"
@@ -224,6 +226,27 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 
 }
 
+// formatBotListURL generates a swarming URL for all the request dimensions
+// provided. This will show all of the available bots that swarming has matched
+// with the request.
+func formatBotListURL(dims []*buildbucketpb.RequestedDimension) (string, error) {
+	baseURL := "https://chromeos-swarming.appspot.com/botlist?c=id&c=task&c=os&c=status&d=asc&k=pool&s=id"
+
+	for _, dim := range dims {
+		// Replace spaces with the URL safe unicode value.
+		value := strings.Replace(dim.GetValue(), " ", "%20", -1)
+
+		baseURL += "&f=" + dim.GetKey() + ":" + value + "&k=" + dim.GetKey()
+	}
+
+	swarmingURL, err := url.Parse(baseURL)
+	if err != nil {
+		return "", err
+	}
+
+	return swarmingURL.String(), nil
+}
+
 func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client) error {
 	defer wg.Done()
 	var err error
@@ -257,6 +280,12 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 	// Spit out requested dims since scheduke doesn't pass this info to swarming
 	common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
+
+	botListURL, err := formatBotListURL(req.GetDimensions())
+	if err != nil {
+		return err
+	}
+	common.WriteStringToStepLog(ctx, step, botListURL, "requested dimensions bot list")
 
 	builderID := common.TestRunnerBuilderID(cmd.Config)
 
@@ -303,6 +332,20 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Re-init the data for the run build step. Keep the previously populated data.
 	cmd.ObserveTrBuildStart(ctx, buildReq)
 
+	// // Since the requests are combined in CTPv2 and untangled later we need to
+	// // fetch the real request key name so that we can separate the merged
+	// // requests.
+	target, err := suitelimits.ExtractTarget(result.Key)
+	if err != nil {
+		return err
+	}
+
+	// Add the request to the SuiteLimits cache to begin being tracked.
+	err = suitelimits.AddRequestTask(cmd.RequestKey, suiteName, target, getPool(cmd.InternalTestPlan.SuiteInfo), scheduledBuild.GetId())
+	if err != nil {
+		return err
+	}
+
 	// Monitor here
 	lastLeaseExtensionTime := time.Now()
 	loopSleepInterval := 30 * time.Second
@@ -335,7 +378,22 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				lastLeaseExtensionTime = time.Now()
 			}
 
-			time.Sleep(loopSleepInterval)
+			overLimit, err := suitelimits.UpdateTotalTime(cmd.RequestKey, suiteName, target, scheduledBuild.GetId())
+			if err != nil {
+				return err
+			}
+
+			// If the request is over the allotted SuiteLimits maximum DUT hour
+			// time and it does not have an active exemption, cancel all child
+			// tasks.
+			if overLimit {
+				err := suitelimits.CancelTasks(ctx, cmd.RequestKey, target, bbClient)
+				if err != nil {
+					return err
+				}
+			} else {
+				time.Sleep(loopSleepInterval)
+			}
 
 			// we don't wanna fail coz it could be a flake so we continue checking
 			continue
@@ -361,6 +419,36 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
 			// setting this for the step to fail
 			err = fmt.Errorf("test_runner failed")
+		}
+
+		// Check the TestRunner build's step summary to see if the task was cancelled by
+		// SuiteLimits.
+		suiteLimited, slErr := suitelimits.ExceededLimit(cmd.RequestKey, target)
+		if slErr != nil {
+			return slErr
+		}
+
+		slExempt, slErr := suitelimits.HasExemption(cmd.RequestKey, target)
+		if slErr != nil {
+			return slErr
+		}
+		if suiteLimited && !slExempt {
+			totalDUTHours, slErr := suitelimits.GetTotalDUTHours(cmd.RequestKey, target)
+			if slErr != nil {
+				return slErr
+			}
+
+			common.WriteAnyObjectToStepLog(ctx, step, fmt.Sprintf("total DUT hour runtime: %.2f", totalDUTHours.Hours()), "SUITE EXECUTION TIME LIMIT EXCEEDED")
+
+			err = &data.SuiteLimitsError{RequestName: cmd.RequestKey, SuiteName: suiteName, TotalDUTHours: totalDUTHours}
+
+			// Attach the failure BB status so that the step shows up as red in
+			// MILO.
+			//
+			// TODO(b/360406127): This still is leaving the step green. This
+			// needs to be fixed so that the step ends in a red failure state.
+			err = build.AttachStatus(err, buildbucketpb.Status_FAILURE, nil)
+			return setTopLevelError(ctx, step, result, resultsChan, err)
 		}
 
 		trResult, err := extractResult(buildInfo)

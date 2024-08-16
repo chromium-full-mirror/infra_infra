@@ -26,6 +26,7 @@ import (
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/common_lib/tools/suitelimits"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
@@ -177,6 +178,10 @@ func executeCtpv2Reqs(ctx context.Context,
 	wg := &sync.WaitGroup{}
 	contInfoMap := data.NewContainerInfoMap()
 	suiteCounter := map[string]int{}
+
+	// Begin the metrics logging collection system for SuiteLimits.
+	go suitelimits.LogMetrics(ctx)
+
 	for key, ctpReq := range keyRequestMap {
 		suiteName := ctpReq.GetSuiteRequest().GetTestSuite().GetName()
 		suiteDisplayName := suiteName
@@ -194,6 +199,9 @@ func executeCtpv2Reqs(ctx context.Context,
 	go func() {
 		wg.Wait()
 		close(resultsChan) // Close the channel when all workers are done
+
+		// Flush the SL metrics results.
+		suitelimits.CloseMetricChan()
 	}()
 
 	// Read results
