@@ -121,6 +121,7 @@ enum Zone {
   ZONE_SFP_22 = 40; // "sfp_22" // Zone for SfP assets for partner // Testhaus ID:22;
   ZONE_SFP_23 = 41; // "sfp_23" // Zone for SfP assets for partner // Testhaus ID:23;
   ZONE_SFP_24 = 42; // "sfp_24" // Zone for SfP assets for partner // Testhaus ID:24;
+  // ZONE_SFP_25 - intentionally skipped, botched partner setup
   ZONE_SFP_26 = 43; // "sfp_26" // Zone for SfP assets for partner // Testhaus ID:26;
   ZONE_SFP_27 = 44; // "sfp_27" // Zone for SfP assets for partner // Testhaus ID:27;
   ZONE_SFP_28 = 45; // "sfp_28" // Zone for SfP assets for partner // Testhaus ID:28;
@@ -156,4 +157,8 @@ enum Zone {
   ZONE_SFP_58 = 75; // "sfp_58" // Zone for SfP assets for partner // Testhaus ID:58;
   ZONE_SFP_59 = 76; // "sfp_59" // Zone for SfP assets for partner // Testhaus ID:59;
   ZONE_SFP_60 = 77; // "sfp_60" // Zone for SfP assets for partner // Testhaus ID:60;
+  // ZONE_SFP_61 - intentionally skipped, botched partner setup
+  ZONE_SFP_62 = 78; // "sfp_62" // Zone for SfP assets for partner // Testhaus ID:62;
+  ZONE_SFP_63 = 79; // "sfp_63" // Zone for SfP assets for partner // Testhaus ID:63;
+  ZONE_SFP_64 = 80; // "sfp_64" // Zone for SfP assets for partner // Testhaus ID:64;
 }

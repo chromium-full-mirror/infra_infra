@@ -153,41 +153,46 @@ const (
 	Zone_ZONE_SFP_22               Zone = 40 // "sfp_22" // Zone for SfP assets for partner // Testhaus ID:22;
 	Zone_ZONE_SFP_23               Zone = 41 // "sfp_23" // Zone for SfP assets for partner // Testhaus ID:23;
 	Zone_ZONE_SFP_24               Zone = 42 // "sfp_24" // Zone for SfP assets for partner // Testhaus ID:24;
-	Zone_ZONE_SFP_26               Zone = 43 // "sfp_26" // Zone for SfP assets for partner // Testhaus ID:26;
-	Zone_ZONE_SFP_27               Zone = 44 // "sfp_27" // Zone for SfP assets for partner // Testhaus ID:27;
-	Zone_ZONE_SFP_28               Zone = 45 // "sfp_28" // Zone for SfP assets for partner // Testhaus ID:28;
-	Zone_ZONE_SFP_29               Zone = 46 // "sfp_29" // Zone for SfP assets for partner // Testhaus ID:29;
-	Zone_ZONE_SFP_30               Zone = 47 // "sfp_30" // Zone for SfP assets for partner // Testhaus ID:30;
-	Zone_ZONE_SFP_31               Zone = 48 // "sfp_31" // Zone for SfP assets for partner // Testhaus ID:31;
-	Zone_ZONE_SFP_32               Zone = 49 // "sfp_32" // Zone for SfP assets for partner // Testhaus ID:32;
-	Zone_ZONE_SFP_33               Zone = 50 // "sfp_33" // Zone for SfP assets for partner // Testhaus ID:33;
-	Zone_ZONE_SFP_34               Zone = 51 // "sfp_34" // Zone for SfP assets for partner // Testhaus ID:34;
-	Zone_ZONE_SFP_35               Zone = 52 // "sfp_35" // Zone for SfP assets for partner // Testhaus ID:35;
-	Zone_ZONE_SFP_36               Zone = 53 // "sfp_36" // Zone for SfP assets for partner // Testhaus ID:36;
-	Zone_ZONE_SFP_37               Zone = 54 // "sfp_37" // Zone for SfP assets for partner // Testhaus ID:37;
-	Zone_ZONE_SFP_38               Zone = 55 // "sfp_38" // Zone for SfP assets for partner // Testhaus ID:38;
-	Zone_ZONE_SFP_39               Zone = 56 // "sfp_39" // Zone for SfP assets for partner // Testhaus ID:39;
-	Zone_ZONE_SFP_40               Zone = 57 // "sfp_40" // Zone for SfP assets for partner // Testhaus ID:40;
-	Zone_ZONE_SFP_41               Zone = 58 // "sfp_41" // Zone for SfP assets for partner // Testhaus ID:41;
-	Zone_ZONE_SFP_42               Zone = 59 // "sfp_42" // Zone for SfP assets for partner // Testhaus ID:42;
-	Zone_ZONE_SFP_43               Zone = 60 // "sfp_43" // Zone for SfP assets for partner // Testhaus ID:43;
-	Zone_ZONE_SFP_44               Zone = 61 // "sfp_44" // Zone for SfP assets for partner // Testhaus ID:44;
-	Zone_ZONE_SFP_45               Zone = 62 // "sfp_45" // Zone for SfP assets for partner // Testhaus ID:45;
-	Zone_ZONE_SFP_46               Zone = 63 // "sfp_46" // Zone for SfP assets for partner // Testhaus ID:46;
-	Zone_ZONE_SFP_47               Zone = 64 // "sfp_47" // Zone for SfP assets for partner // Testhaus ID:47;
-	Zone_ZONE_SFP_48               Zone = 65 // "sfp_48" // Zone for SfP assets for partner // Testhaus ID:48;
-	Zone_ZONE_SFP_49               Zone = 66 // "sfp_49" // Zone for SfP assets for partner // Testhaus ID:49;
-	Zone_ZONE_SFP_50               Zone = 67 // "sfp_50" // Zone for SfP assets for partner // Testhaus ID:50;
-	Zone_ZONE_SFP_51               Zone = 68 // "sfp_51" // Zone for SfP assets for partner // Testhaus ID:51;
-	Zone_ZONE_SFP_52               Zone = 69 // "sfp_52" // Zone for SfP assets for partner // Testhaus ID:52;
-	Zone_ZONE_SFP_53               Zone = 70 // "sfp_53" // Zone for SfP assets for partner // Testhaus ID:53;
-	Zone_ZONE_SFP_54               Zone = 71 // "sfp_54" // Zone for SfP assets for partner // Testhaus ID:54;
-	Zone_ZONE_SFP_55               Zone = 72 // "sfp_55" // Zone for SfP assets for partner // Testhaus ID:55;
-	Zone_ZONE_SFP_56               Zone = 73 // "sfp_56" // Zone for SfP assets for partner // Testhaus ID:56;
-	Zone_ZONE_SFP_57               Zone = 74 // "sfp_57" // Zone for SfP assets for partner // Testhaus ID:57;
-	Zone_ZONE_SFP_58               Zone = 75 // "sfp_58" // Zone for SfP assets for partner // Testhaus ID:58;
-	Zone_ZONE_SFP_59               Zone = 76 // "sfp_59" // Zone for SfP assets for partner // Testhaus ID:59;
-	Zone_ZONE_SFP_60               Zone = 77 // "sfp_60" // Zone for SfP assets for partner // Testhaus ID:60;
+	// ZONE_SFP_25 - intentionally skipped, botched partner setup
+	Zone_ZONE_SFP_26 Zone = 43 // "sfp_26" // Zone for SfP assets for partner // Testhaus ID:26;
+	Zone_ZONE_SFP_27 Zone = 44 // "sfp_27" // Zone for SfP assets for partner // Testhaus ID:27;
+	Zone_ZONE_SFP_28 Zone = 45 // "sfp_28" // Zone for SfP assets for partner // Testhaus ID:28;
+	Zone_ZONE_SFP_29 Zone = 46 // "sfp_29" // Zone for SfP assets for partner // Testhaus ID:29;
+	Zone_ZONE_SFP_30 Zone = 47 // "sfp_30" // Zone for SfP assets for partner // Testhaus ID:30;
+	Zone_ZONE_SFP_31 Zone = 48 // "sfp_31" // Zone for SfP assets for partner // Testhaus ID:31;
+	Zone_ZONE_SFP_32 Zone = 49 // "sfp_32" // Zone for SfP assets for partner // Testhaus ID:32;
+	Zone_ZONE_SFP_33 Zone = 50 // "sfp_33" // Zone for SfP assets for partner // Testhaus ID:33;
+	Zone_ZONE_SFP_34 Zone = 51 // "sfp_34" // Zone for SfP assets for partner // Testhaus ID:34;
+	Zone_ZONE_SFP_35 Zone = 52 // "sfp_35" // Zone for SfP assets for partner // Testhaus ID:35;
+	Zone_ZONE_SFP_36 Zone = 53 // "sfp_36" // Zone for SfP assets for partner // Testhaus ID:36;
+	Zone_ZONE_SFP_37 Zone = 54 // "sfp_37" // Zone for SfP assets for partner // Testhaus ID:37;
+	Zone_ZONE_SFP_38 Zone = 55 // "sfp_38" // Zone for SfP assets for partner // Testhaus ID:38;
+	Zone_ZONE_SFP_39 Zone = 56 // "sfp_39" // Zone for SfP assets for partner // Testhaus ID:39;
+	Zone_ZONE_SFP_40 Zone = 57 // "sfp_40" // Zone for SfP assets for partner // Testhaus ID:40;
+	Zone_ZONE_SFP_41 Zone = 58 // "sfp_41" // Zone for SfP assets for partner // Testhaus ID:41;
+	Zone_ZONE_SFP_42 Zone = 59 // "sfp_42" // Zone for SfP assets for partner // Testhaus ID:42;
+	Zone_ZONE_SFP_43 Zone = 60 // "sfp_43" // Zone for SfP assets for partner // Testhaus ID:43;
+	Zone_ZONE_SFP_44 Zone = 61 // "sfp_44" // Zone for SfP assets for partner // Testhaus ID:44;
+	Zone_ZONE_SFP_45 Zone = 62 // "sfp_45" // Zone for SfP assets for partner // Testhaus ID:45;
+	Zone_ZONE_SFP_46 Zone = 63 // "sfp_46" // Zone for SfP assets for partner // Testhaus ID:46;
+	Zone_ZONE_SFP_47 Zone = 64 // "sfp_47" // Zone for SfP assets for partner // Testhaus ID:47;
+	Zone_ZONE_SFP_48 Zone = 65 // "sfp_48" // Zone for SfP assets for partner // Testhaus ID:48;
+	Zone_ZONE_SFP_49 Zone = 66 // "sfp_49" // Zone for SfP assets for partner // Testhaus ID:49;
+	Zone_ZONE_SFP_50 Zone = 67 // "sfp_50" // Zone for SfP assets for partner // Testhaus ID:50;
+	Zone_ZONE_SFP_51 Zone = 68 // "sfp_51" // Zone for SfP assets for partner // Testhaus ID:51;
+	Zone_ZONE_SFP_52 Zone = 69 // "sfp_52" // Zone for SfP assets for partner // Testhaus ID:52;
+	Zone_ZONE_SFP_53 Zone = 70 // "sfp_53" // Zone for SfP assets for partner // Testhaus ID:53;
+	Zone_ZONE_SFP_54 Zone = 71 // "sfp_54" // Zone for SfP assets for partner // Testhaus ID:54;
+	Zone_ZONE_SFP_55 Zone = 72 // "sfp_55" // Zone for SfP assets for partner // Testhaus ID:55;
+	Zone_ZONE_SFP_56 Zone = 73 // "sfp_56" // Zone for SfP assets for partner // Testhaus ID:56;
+	Zone_ZONE_SFP_57 Zone = 74 // "sfp_57" // Zone for SfP assets for partner // Testhaus ID:57;
+	Zone_ZONE_SFP_58 Zone = 75 // "sfp_58" // Zone for SfP assets for partner // Testhaus ID:58;
+	Zone_ZONE_SFP_59 Zone = 76 // "sfp_59" // Zone for SfP assets for partner // Testhaus ID:59;
+	Zone_ZONE_SFP_60 Zone = 77 // "sfp_60" // Zone for SfP assets for partner // Testhaus ID:60;
+	// ZONE_SFP_61 - intentionally skipped, botched partner setup
+	Zone_ZONE_SFP_62 Zone = 78 // "sfp_62" // Zone for SfP assets for partner // Testhaus ID:62;
+	Zone_ZONE_SFP_63 Zone = 79 // "sfp_63" // Zone for SfP assets for partner // Testhaus ID:63;
+	Zone_ZONE_SFP_64 Zone = 80 // "sfp_64" // Zone for SfP assets for partner // Testhaus ID:64;
 )
 
 // Enum value maps for Zone.
@@ -270,6 +275,9 @@ var (
 		75: "ZONE_SFP_58",
 		76: "ZONE_SFP_59",
 		77: "ZONE_SFP_60",
+		78: "ZONE_SFP_62",
+		79: "ZONE_SFP_63",
+		80: "ZONE_SFP_64",
 	}
 	Zone_value = map[string]int32{
 		"ZONE_UNSPECIFIED":          0,
@@ -349,6 +357,9 @@ var (
 		"ZONE_SFP_58":               75,
 		"ZONE_SFP_59":               76,
 		"ZONE_SFP_60":               77,
+		"ZONE_SFP_62":               78,
+		"ZONE_SFP_63":               79,
+		"ZONE_SFP_64":               80,
 	}
 )
 
@@ -583,7 +594,7 @@ var file_infra_unifiedfleet_api_v1_models_location_proto_rawDesc = []byte{
 	0x0a, 0x14, 0x4c, 0x41, 0x42, 0x5f, 0x44, 0x41, 0x54, 0x41, 0x43, 0x45, 0x4e, 0x54, 0x45, 0x52,
 	0x5f, 0x4d, 0x54, 0x56, 0x39, 0x37, 0x10, 0x0a, 0x12, 0x1a, 0x0a, 0x16, 0x4c, 0x41, 0x42, 0x5f,
 	0x44, 0x41, 0x54, 0x41, 0x43, 0x45, 0x4e, 0x54, 0x45, 0x52, 0x5f, 0x46, 0x55, 0x43, 0x48, 0x53,
-	0x49, 0x41, 0x10, 0x0b, 0x2a, 0x95, 0x0b, 0x0a, 0x04, 0x5a, 0x6f, 0x6e, 0x65, 0x12, 0x14, 0x0a,
+	0x49, 0x41, 0x10, 0x0b, 0x2a, 0xc8, 0x0b, 0x0a, 0x04, 0x5a, 0x6f, 0x6e, 0x65, 0x12, 0x14, 0x0a,
 	0x10, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45,
 	0x44, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x41, 0x54, 0x4c, 0x41,
 	0x4e, 0x54, 0x41, 0x10, 0x01, 0x12, 0x12, 0x0a, 0x0e, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x43, 0x48,
@@ -672,10 +683,14 @@ var file_infra_unifiedfleet_api_v1_models_location_proto_rawDesc = []byte{
 	0x5f, 0x53, 0x46, 0x50, 0x5f, 0x35, 0x37, 0x10, 0x4a, 0x12, 0x0f, 0x0a, 0x0b, 0x5a, 0x4f, 0x4e,
 	0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x35, 0x38, 0x10, 0x4b, 0x12, 0x0f, 0x0a, 0x0b, 0x5a, 0x4f,
 	0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x35, 0x39, 0x10, 0x4c, 0x12, 0x0f, 0x0a, 0x0b, 0x5a,
-	0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x36, 0x30, 0x10, 0x4d, 0x42, 0x28, 0x5a, 0x26,
-	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
-	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
-	0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x36, 0x30, 0x10, 0x4d, 0x12, 0x0f, 0x0a, 0x0b,
+	0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x36, 0x32, 0x10, 0x4e, 0x12, 0x0f, 0x0a,
+	0x0b, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x36, 0x33, 0x10, 0x4f, 0x12, 0x0f,
+	0x0a, 0x0b, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x50, 0x5f, 0x36, 0x34, 0x10, 0x50, 0x42,
+	0x28, 0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
+	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64,
+	0x65, 0x6c, 0x73, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
