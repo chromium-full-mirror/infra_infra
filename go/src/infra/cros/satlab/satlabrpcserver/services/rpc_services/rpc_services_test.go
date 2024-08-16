@@ -473,6 +473,71 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 	}
 }
 
+func Test_ListBuildVersionsStatusShouldSuccess(t *testing.T) {
+	t.Parallel()
+	// Create a SATLab Server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// Setup some data to Mock
+	board := "zork1"
+	model := "dirinboz1"
+	var milestone int32 = 105
+	s.bucketService.(*bucket_services.MockBucketServices).
+		On("GetBuilds", ctx, board, milestone).
+		Return([]string{"14820.8.0"}, nil)
+
+	s.buildService.(*build_service.MockBuildService).
+		On("ListBuildsForMilestone", ctx, board, model, milestone).
+		Return([]*build_service.BuildVersion{
+			{
+				Version: "14820.8.0",
+				Status:  build_service.FAILED,
+			},
+			{
+				Version: "14820.20.0",
+				Status:  build_service.AVAILABLE,
+			},
+		}, nil)
+
+	s.bucketService.(*bucket_services.MockBucketServices).On("IsBucketInAsia", ctx).Return(
+		false, nil)
+
+	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
+
+	res, err := s.ListBuildVersions(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	expected := &pb.ListBuildVersionsResponse{
+		BuildVersions: []*pb.BuildItem{
+			{
+				Value:    "14820.20.0",
+				Status:   pb.BuildItem_BUILD_STATUS_PASS,
+				IsStaged: false,
+			},
+			{
+				Value:    "14820.8.0",
+				Status:   pb.BuildItem_BUILD_STATUS_FAIL,
+				IsStaged: true,
+			},
+		},
+	}
+
+	// Assert
+	// ignore generated pb code
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListBuildVersionsResponse{}, pb.BuildItem{})
+	if diff := cmp.Diff(expected, res, ignorePBFieldOpts); diff != "" {
+		t.Errorf("Diff: %v", diff)
+		return
+	}
+}
+
 // TestListBuildVersionsShouldSuccess test `ListBuildVersions` function.
 func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	t.Parallel()

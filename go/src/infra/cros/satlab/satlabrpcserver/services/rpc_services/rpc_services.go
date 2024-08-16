@@ -270,26 +270,31 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 	}
 
 	var res []*pb.BuildItem
+	buildDict := map[string]*pb.BuildItem{}
 
 	// Map the bucketBuilds to response type `BuildItem`
 	for _, item := range bucketBuilds {
-		res = append(res, &pb.BuildItem{
+		buildDict[item] = &pb.BuildItem{
 			Status:   pb.BuildItem_BUILD_STATUS_PASS,
 			IsStaged: true,
 			Value:    item,
-		})
+		}
 	}
 
 	// Filter the remoteBuilds not in the bucketBuilds,
 	// and then mapping the remoteBuilds to response type `BuildItem`
-	for _, build := range collection.Subtract(remoteBuilds, bucketBuilds, func(a *build_service.BuildVersion, b string) bool {
-		return a.Version == b
-	}) {
-		res = append(res, &pb.BuildItem{
+	for _, build := range remoteBuilds {
+		_, ok := buildDict[build.Version]
+		item := &pb.BuildItem{
 			Value:    build.Version,
-			IsStaged: false,
+			IsStaged: ok,
 			Status:   constants.ToResponseBuildStatusMap[build.Status],
-		})
+		}
+		buildDict[build.Version] = item
+	}
+
+	for _, v := range buildDict {
+		res = append(res, v)
 	}
 
 	// Sort the result
