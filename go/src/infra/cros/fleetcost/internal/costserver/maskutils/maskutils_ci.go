@@ -37,6 +37,8 @@ func updateCostIndicatorField(dst *fleetcostpb.CostIndicator, src *fleetcostpb.C
 		dst.Board = src.GetBoard()
 	case "model":
 		dst.Model = src.GetModel()
+	case "sku":
+		dst.Model = src.GetSku()
 	case "cost":
 		dst.Cost = src.GetCost()
 	case "cost_cadence":
