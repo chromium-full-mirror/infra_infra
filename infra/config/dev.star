@@ -308,6 +308,10 @@ adhoc_builder(
                 "child_tracking_service": 'build.tags.get_value("child_tracking_service")',
             },
         ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/custom/dev/infra/builds/count",
+            predicates = ['build.tags.get_value("bounded_child")=="True"'],
+        ),
     ],
 )
 
