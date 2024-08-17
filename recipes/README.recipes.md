@@ -73,6 +73,7 @@
   * [recipes_py_continuous](#recipes-recipes_py_continuous)
   * [secret_manager:examples/full](#recipes-secret_manager_examples_full)
   * [support_3pp:tests/full](#recipes-support_3pp_tests_full)
+  * [swarming_bot_packager](#recipes-swarming_bot_packager) &mdash; Uploads Swarming bot code as a CIPD package.
   * [tricium_infra](#recipes-tricium_infra)
   * [update_submodules_mirror](#recipes-update_submodules_mirror)
   * [windows_adk:examples/ensure](#recipes-windows_adk_examples_ensure)
@@ -1879,6 +1880,14 @@ A continuous builder which runs recipe tests.
 
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/support_3pp/tests/full.py#47)(api, GOOS, GOARCH, experimental, load_dupe, package_prefix, source_cache_prefix, to_build, tryserver_affected_files, use_pkgbuild):**
+### *recipes* / [swarming\_bot\_packager](/recipes/recipes/swarming_bot_packager.py)
+
+[DEPS](/recipes/recipes/swarming_bot_packager.py#6): [depot\_tools/git][depot_tools/recipe_modules/git], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+
+Uploads Swarming bot code as a CIPD package.
+
+&mdash; **def [RunSteps](/recipes/recipes/swarming_bot_packager.py#20)(api):**
 ### *recipes* / [tricium\_infra](/recipes/recipes/tricium_infra.py)
 
 [DEPS](/recipes/recipes/tricium_infra.py#11): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
