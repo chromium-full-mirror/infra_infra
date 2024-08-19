@@ -14,7 +14,7 @@ func TestUploadRow(t *testing.T) {
 	t.Parallel()
 
 	err := uploadRow(context.Background(), nil, map[string]string{
-		"board": "quota-faft-rack-setup",
+		"primary": "quota-faft-rack-setup",
 	})
 	switch {
 	case err == nil:

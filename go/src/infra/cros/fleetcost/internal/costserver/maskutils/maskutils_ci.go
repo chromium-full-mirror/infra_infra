@@ -33,12 +33,12 @@ func updateCostIndicatorField(dst *fleetcostpb.CostIndicator, src *fleetcostpb.C
 		return
 	case "type":
 		dst.Type = src.GetType()
-	case "board":
-		dst.Board = src.GetBoard()
-	case "model":
-		dst.Model = src.GetModel()
-	case "sku":
-		dst.Model = src.GetSku()
+	case "primary":
+		dst.Primary = src.GetPrimary()
+	case "secondary":
+		dst.Secondary = src.GetSecondary()
+	case "tertiary":
+		dst.Tertiary = src.GetTertiary()
 	case "cost":
 		dst.Cost = src.GetCost()
 	case "cost_cadence":

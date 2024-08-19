@@ -26,22 +26,22 @@ type indicatorAttribute struct {
 	// It gets inserted into the error message.
 	ErrorHint     string
 	IndicatorType fleetcostpb.IndicatorType
-	Board         string
-	Model         string
-	Sku           string
+	Primary       string
+	Secondary     string
+	Tertiary      string
 	Location      fleetcostpb.Location
 }
 
 // newIndicatorAttribute creates a new indicator attribute.
 //
 // TODO(gregorynisbet): Rethink the API for this function, maybe move it to utils.
-func newIndicatorAttribute(errorHint string, typ fleetcostpb.IndicatorType, board string, model string, sku string, location fleetcostpb.Location) *indicatorAttribute {
+func newIndicatorAttribute(errorHint string, typ fleetcostpb.IndicatorType, primary string, secondary string, tertiary string, location fleetcostpb.Location) *indicatorAttribute {
 	return &indicatorAttribute{
 		ErrorHint:     errorHint,
 		IndicatorType: typ,
-		Board:         board,
-		Model:         model,
-		Sku:           sku,
+		Primary:       primary,
+		Secondary:     secondary,
+		Tertiary:      tertiary,
 		Location:      location,
 	}
 }
@@ -54,7 +54,7 @@ func (attribute *indicatorAttribute) FriendlyString() string {
 	if attribute == nil {
 		return "<nil>"
 	}
-	message := fmt.Sprintf("type=%s board=%s model=%s sku=%s loc=%s", attribute.IndicatorType.String(), attribute.Board, attribute.Model, attribute.Sku, attribute.Location.String())
+	message := fmt.Sprintf("type=%s primary=%s secondary=%s tertiary=%s loc=%s", attribute.IndicatorType.String(), attribute.Primary, attribute.Secondary, attribute.Tertiary, attribute.Location.String())
 	return message
 }
 
@@ -65,11 +65,11 @@ func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 	}
 	return &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Type:     attribute.IndicatorType,
-			Board:    attribute.Board,
-			Model:    attribute.Model,
-			Sku:      attribute.Sku,
-			Location: attribute.Location,
+			Type:      attribute.IndicatorType,
+			Primary:   attribute.Primary,
+			Secondary: attribute.Secondary,
+			Tertiary:  attribute.Tertiary,
+			Location:  attribute.Location,
 		},
 	}
 }
@@ -169,9 +169,9 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "labstation cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_LABSTATION,
-		Board:         m.GetBuildTarget(),
-		Model:         m.GetModel(),
-		Sku:           m.GetSku(),
+		Primary:       m.GetBuildTarget(),
+		Secondary:     m.GetModel(),
+		Tertiary:      m.GetSku(),
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -182,9 +182,9 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "usb hub cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_USBHUB,
-		Board:         "",
-		Model:         "",
-		Sku:           "",
+		Primary:       "",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -229,9 +229,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "server acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "server-acquisition",
-		Model:         "",
-		Sku:           "",
+		Primary:       "server-acquisition",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -242,9 +242,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "server maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "server-maintenance",
-		Model:         "",
-		Sku:           "",
+		Primary:       "server-maintenance",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -255,9 +255,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "network infra acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "network-infra-acquisition",
-		Model:         "",
-		Sku:           "",
+		Primary:       "network-infra-acquisition",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -268,9 +268,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "network infra maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "network-infra-maintenance",
-		Model:         "",
-		Sku:           "",
+		Primary:       "network-infra-maintenance",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -281,9 +281,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "quota faft opex",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
-		Board:         "quota-faft-opex",
-		Model:         "",
-		Sku:           "",
+		Primary:       "quota-faft-opex",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -294,9 +294,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "connectivity and misc testbeds",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "connectivity-and-misc-testbeds",
-		Model:         "",
-		Sku:           "",
+		Primary:       "connectivity-and-misc-testbeds",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -307,9 +307,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "control network racks",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "control-network-racks",
-		Model:         "",
-		Sku:           "",
+		Primary:       "control-network-racks",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -320,9 +320,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "rack setup",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "rack-setup",
-		Model:         "",
-		Sku:           "",
+		Primary:       "rack-setup",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -333,9 +333,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "phase deployments",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "phase-deployments",
-		Model:         "",
-		Sku:           "",
+		Primary:       "phase-deployments",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -346,9 +346,9 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 	v, err = getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "annual maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:         "annual-maintenance",
-		Model:         "",
-		Sku:           "",
+		Primary:       "annual-maintenance",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -366,9 +366,9 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "DUT cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:         m.GetBuildTarget(),
-		Model:         m.GetModel(),
-		Sku:           m.GetSku(),
+		Primary:       m.GetBuildTarget(),
+		Secondary:     m.GetModel(),
+		Tertiary:      m.GetSku(),
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {
@@ -383,9 +383,9 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 		servoCost, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 			ErrorHint:     "servo cost",
 			IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVO,
-			Board:         servo.GetServoType(),
-			Model:         "",
-			Sku:           "",
+			Primary:       servo.GetServoType(),
+			Secondary:     "",
+			Tertiary:      "",
 			Location:      location,
 		}, true, forgiveMissingEntries)
 
@@ -402,9 +402,9 @@ func getCloudCost(ctx context.Context, location fleetcostpb.Location, forgiveMis
 	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "annual cloud cost",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
-		Board:         "",
-		Model:         "",
-		Sku:           "",
+		Primary:       "",
+		Secondary:     "",
+		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
 	if err != nil {

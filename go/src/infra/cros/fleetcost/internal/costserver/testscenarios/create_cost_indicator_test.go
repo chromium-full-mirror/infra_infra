@@ -25,10 +25,10 @@ func TestCannotCreateDuplicateCostIndicator(t *testing.T) {
 
 	createCostIndicatorRequest1 := &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &models.CostIndicator{
-			Board:    "a",
-			Model:    "b",
-			Location: models.Location_LOCATION_ALL,
-			Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "a",
+			Secondary: "b",
+			Location:  models.Location_LOCATION_ALL,
+			Type:      models.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        100,
@@ -39,10 +39,10 @@ func TestCannotCreateDuplicateCostIndicator(t *testing.T) {
 
 	createCostIndicatorRequest2 := &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &models.CostIndicator{
-			Board:    "a",
-			Model:    "b",
-			Location: models.Location_LOCATION_ALL,
-			Type:     models.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "a",
+			Secondary: "b",
+			Location:  models.Location_LOCATION_ALL,
+			Type:      models.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        200,

@@ -285,11 +285,11 @@ func FriendlyString(indicator *fleetcostpb.CostIndicator) string {
 		return "<nil>"
 	}
 	message := fmt.Sprintf(
-		"type=%s board=%s model=%s sku=%s loc=%s",
+		"type=%s primary=%s secondary=%s tertiary=%s loc=%s",
 		indicator.GetType().String(),
-		indicator.GetBoard(),
-		indicator.GetModel(),
-		indicator.GetSku(),
+		indicator.GetPrimary(),
+		indicator.GetSecondary(),
+		indicator.GetTertiary(),
 		indicator.GetLocation().String(),
 	)
 	return message

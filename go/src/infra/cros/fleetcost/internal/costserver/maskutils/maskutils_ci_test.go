@@ -18,23 +18,23 @@ func TestUpdateCostIndicatorProtoHappyPath(t *testing.T) {
 	t.Parallel()
 
 	dst := &fleetcostpb.CostIndicator{
-		Name:  "wombat",
-		Board: "woof",
-		Model: "aaaaa",
+		Name:      "wombat",
+		Primary:   "woof",
+		Secondary: "aaaaa",
 	}
 	src := &fleetcostpb.CostIndicator{
-		Name:  "wombat",
-		Board: "the noise that wombats make",
-		Model: "bbbbb",
+		Name:      "wombat",
+		Primary:   "the noise that wombats make",
+		Secondary: "bbbbb",
 	}
 
-	UpdateCostIndicatorProto(dst, src, []string{"board"})
+	UpdateCostIndicatorProto(dst, src, []string{"primary"})
 
-	if dst.GetBoard() != "the noise that wombats make" {
+	if dst.GetPrimary() != "the noise that wombats make" {
 		t.Error("update cost failed to update board")
 	}
-	if dst.GetModel() != "aaaaa" {
-		t.Errorf("model is unexpectedly %q", dst.GetModel())
+	if dst.GetSecondary() != "aaaaa" {
+		t.Errorf("model is unexpectedly %q", dst.GetSecondary())
 	}
 }
 
@@ -65,33 +65,33 @@ func TestUpdateCostIndicatorProto(t *testing.T) {
 		{
 			name: "compatible name happy path",
 			dst: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "old-board",
+				Name:    "platypus",
+				Primary: "old-board",
 			},
 			src: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "new-board",
+				Name:    "platypus",
+				Primary: "new-board",
 			},
-			fieldmask: []string{"board"},
+			fieldmask: []string{"primary"},
 			output: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "new-board",
+				Name:    "platypus",
+				Primary: "new-board",
 			},
 		},
 		{
 			name: "compatible name wildcard name",
 			dst: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "old-board",
+				Name:    "platypus",
+				Primary: "old-board",
 			},
 			src: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "new-board",
+				Name:    "platypus",
+				Primary: "new-board",
 			},
-			fieldmask: []string{"board"},
+			fieldmask: []string{"primary"},
 			output: &fleetcostpb.CostIndicator{
-				Name:  "platypus",
-				Board: "new-board",
+				Name:    "platypus",
+				Primary: "new-board",
 			},
 		},
 		{

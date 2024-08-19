@@ -56,11 +56,11 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "build-target",
-			Model:    "model",
-			Sku:      "",
-			Location: fleetcostpb.Location_LOCATION_ALL,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
+			Primary:   "build-target",
+			Secondary: "model",
+			Tertiary:  "",
+			Location:  fleetcostpb.Location_LOCATION_ALL,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        12,
@@ -94,7 +94,7 @@ func TestFriendlyString(t *testing.T) {
 
 	str := (&controller.IndicatorAttribute{}).FriendlyString()
 
-	if str != "type=INDICATOR_TYPE_UNKNOWN board= model= sku= loc=LOCATION_UNKNOWN" {
+	if str != "type=INDICATOR_TYPE_UNKNOWN primary= secondary= tertiary= loc=LOCATION_UNKNOWN" {
 		t.Errorf("unexpcted friendly string %q", str)
 	}
 }

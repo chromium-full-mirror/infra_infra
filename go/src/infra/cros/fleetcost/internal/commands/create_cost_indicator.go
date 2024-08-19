@@ -35,9 +35,9 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.name, "name", "", "name of cost indicator")
 		c.Flags.Func("type", "name of cost indicator", makeTypeRecorder(&c.typ))
-		c.Flags.StringVar(&c.board, "board", "", "board")
-		c.Flags.StringVar(&c.model, "model", "", "model")
-		c.Flags.StringVar(&c.sku, "sku", "", "sku")
+		c.Flags.StringVar(&c.primary, "primary", "", "primary")
+		c.Flags.StringVar(&c.secondary, "secondary", "", "secondary")
+		c.Flags.StringVar(&c.tertiary, "tertiary", "", "tertiary")
 		c.Flags.Func("cost", "cost", makeMoneyRecorder(&c.cost))
 		c.Flags.Func("cadence", "cost-cadence", makeCostCadenceRecorder(&c.costCadence))
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", 0, "device burnout rate")
@@ -53,9 +53,9 @@ type createCostIndicatorCommand struct {
 	commonFlags         site.CommonFlags
 	name                string
 	typ                 fleetcostpb.IndicatorType
-	board               string
-	model               string
-	sku                 string
+	primary             string
+	secondary           string
+	tertiary            string
 	cost                *money.Money
 	costCadence         fleetcostpb.CostCadence
 	burnoutRate         float64
@@ -100,8 +100,9 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 		CostIndicator: &fleetcostpb.CostIndicator{
 			Name:                c.name,
 			Type:                c.typ,
-			Board:               c.board,
-			Model:               c.model,
+			Primary:             c.primary,
+			Secondary:           c.secondary,
+			Tertiary:            c.tertiary,
 			Cost:                c.cost,
 			CostCadence:         c.costCadence,
 			BurnoutRate:         c.burnoutRate,

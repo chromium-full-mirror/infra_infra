@@ -30,9 +30,9 @@ var GetCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.board, "board", "", "the board to search for")
-		c.Flags.StringVar(&c.model, "model", "", "the model to search for")
-		c.Flags.StringVar(&c.sku, "sku", "", "the sku to search for")
+		c.Flags.StringVar(&c.primary, "primary", "", "primary")
+		c.Flags.StringVar(&c.secondary, "secondary", "", "secondary")
+		c.Flags.StringVar(&c.tertiary, "tertiary", "", "tertiary")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		c.Flags.Func("type", "name of cost indicator", makeTypeRecorder(&c.typ))
 		return c
@@ -43,9 +43,9 @@ type getCostIndicatorCommand struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
-	board       string
-	model       string
-	sku         string
+	primary     string
+	secondary   string
+	tertiary    string
 	location    fleetcostpb.Location
 	typ         fleetcostpb.IndicatorType
 }
@@ -83,9 +83,9 @@ func (c *getCostIndicatorCommand) innerRun(ctx context.Context, a subcommands.Ap
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	filter := &fleetcostAPI.ListCostIndicatorsFilter{
-		Board: c.board,
-		Model: c.model,
-		Sku:   c.sku,
+		Primary:   c.primary,
+		Secondary: c.secondary,
+		Tertiary:  c.tertiary,
 	}
 	if c.location != fleetcostpb.Location_LOCATION_UNKNOWN {
 		filter.Location = c.location.String()

@@ -82,9 +82,9 @@ func TestGetIndicatorFallbacks(t *testing.T) {
 			name: "full example",
 			input: &controller.IndicatorAttribute{
 				IndicatorType: models.IndicatorType_INDICATOR_TYPE_CLOUD,
-				Board:         "board",
-				Model:         "model",
-				Sku:           "sku",
+				Primary:       "board",
+				Secondary:     "model",
+				Tertiary:      "sku",
 				Location:      models.Location_LOCATION_SFO36,
 			},
 			output: []*controller.IndicatorAttribute{

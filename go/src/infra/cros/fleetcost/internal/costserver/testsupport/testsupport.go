@@ -96,7 +96,7 @@ func NewFixtureWithData(ctx context.Context, t *testing.T) *Fixture {
 	tf := NewFixture(ctx, t)
 	err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 44.0,
 		},
 	}, nil)

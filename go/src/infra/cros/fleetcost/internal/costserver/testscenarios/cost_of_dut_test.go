@@ -155,7 +155,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 		Cost:                utils.FloatToMoney(dutCost),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_DUT,
 		Location:            fleetcostpb.Location_LOCATION_ALL,
-		Board:               "build-target",
+		Primary:             "build-target",
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,
 	})
@@ -176,7 +176,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(rackNetworking),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:               "control-network-racks",
+		Primary:             "control-network-racks",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,
@@ -184,7 +184,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(droneServer),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:               "server-acquisition",
+		Primary:             "server-acquisition",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,
@@ -192,7 +192,7 @@ func TestTotalCostOfDUT(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostpb.CostIndicator{
 		Cost:                utils.FloatToMoney(rackSetup),
 		Type:                fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
-		Board:               "rack-setup",
+		Primary:             "rack-setup",
 		Location:            fleetcostpb.Location_LOCATION_ALL,
 		CostCadence:         fleetcostpb.CostCadence_COST_CADENCE_ONE_TIME,
 		AmortizationInYears: amortizationTimeYears,

@@ -51,9 +51,9 @@ func TestGetCostResult(t *testing.T) {
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
 		Type:        fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:       "build-target",
-		Model:       "model",
-		Sku:         "",
+		Primary:     "build-target",
+		Secondary:   "model",
+		Tertiary:    "",
 		Location:    fleetcostModels.Location_LOCATION_ALL,
 		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 		Cost: &money.Money{
@@ -105,9 +105,9 @@ func TestGetCostResultWithStaleCacheEntry(t *testing.T) {
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
 		Type:        fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:       "build-target",
-		Model:       "model",
-		Sku:         "",
+		Primary:     "build-target",
+		Secondary:   "model",
+		Tertiary:    "",
 		Location:    fleetcostModels.Location_LOCATION_ALL,
 		CostCadence: fleetcostModels.CostCadence_COST_CADENCE_HOURLY,
 		Cost: &money.Money{

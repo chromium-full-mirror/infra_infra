@@ -91,7 +91,7 @@ message CostReportItem {
     // construct a cost report item.
     //
     // E.g.
-    //  "type=INDICATOR_TYPE_CLOUD board= model= sku= loc="
+    //  "type=INDICATOR_TYPE_CLOUD primary= secondary= tertiary= loc="
     string indicator_name = 5;
     // categories are:
     // - "dedicated"

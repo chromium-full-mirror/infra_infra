@@ -43,13 +43,15 @@ enum CostCadence {
     COST_CADENCE_HOURLY = 5;
 }
 
-// Any combination of type/board/model/sku/location will be unique.
+// Any combination of type/primary/secondary/tertiary/location will be unique.
 message CostIndicator {
+    reserved 3, 4, 5;
+    reserved "board", "model", "sku";
     string name = 1;
     IndicatorType type = 2;
-    string board = 3;
-    string model = 4;
-    string sku = 5;
+    string primary = 13;
+    string secondary = 14;
+    string tertiary = 15;
     google.type.Money cost = 6;
     // How frequently will the cost occur.
     CostCadence cost_cadence = 7;

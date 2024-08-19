@@ -26,6 +26,9 @@ import (
 const CostIndicatorKind = "CostIndicatorKind"
 
 // CostIndicatorEntity is a datastore entity storing a cost indicator.
+//
+// TODO(gregorynisbet): Change the name of the database entries from the legacy names Board, Model, Sku
+// to the new ones.
 type CostIndicatorEntity struct {
 	_kind         string                     `gae:"$kind,CostIndicatorKind"`
 	Extra         datastore.PropertyMap      `gae:",extra"`
@@ -45,9 +48,9 @@ var _ = CostIndicatorEntity{}._kind
 // Save saves an entity.
 func (indicator *CostIndicatorEntity) Save(withMeta bool) (datastore.PropertyMap, error) {
 	// TODO(gregorynisbet): extract normalization logic to helper function.
-	indicator.Board = indicator.CostIndicator.GetBoard()
-	indicator.Model = indicator.CostIndicator.GetModel()
-	indicator.Sku = indicator.CostIndicator.GetSku()
+	indicator.Board = indicator.CostIndicator.GetPrimary()
+	indicator.Model = indicator.CostIndicator.GetSecondary()
+	indicator.Sku = indicator.CostIndicator.GetTertiary()
 	indicator.AmortizationInYears = indicator.CostIndicator.GetAmortizationInYears()
 	if int(indicator.CostIndicator.GetType()) != 0 {
 		indicator.Type = indicator.CostIndicator.GetType().String()
@@ -88,9 +91,9 @@ func (indicator *CostIndicatorEntity) GetMeta(key string) (any, bool) {
 		costIndicator := indicator.CostIndicator
 		return fmt.Sprintf(
 			"v1;%s;%s;%s;%d;%d",
-			encode(costIndicator.GetBoard()),
-			encode(costIndicator.GetModel()),
-			encode(costIndicator.GetSku()),
+			encode(costIndicator.GetPrimary()),
+			encode(costIndicator.GetSecondary()),
+			encode(costIndicator.GetTertiary()),
 			costIndicator.GetLocation().Number(),
 			costIndicator.GetType().Number(),
 		), true
@@ -154,14 +157,14 @@ func ApplyFilter(query *datastore.Query, filter *fleetcostAPI.ListCostIndicators
 	if filter == nil {
 		return query, nil
 	}
-	if filter.GetBoard() != "" {
-		query = query.Eq("board", filter.GetBoard())
+	if filter.GetPrimary() != "" {
+		query = query.Eq("board", filter.GetPrimary())
 	}
-	if filter.GetModel() != "" {
-		query = query.Eq("model", filter.GetModel())
+	if filter.GetSecondary() != "" {
+		query = query.Eq("model", filter.GetSecondary())
 	}
-	if filter.GetSku() != "" {
-		query = query.Eq("sku", filter.GetSku())
+	if filter.GetTertiary() != "" {
+		query = query.Eq("sku", filter.GetTertiary())
 	}
 	if filter.GetLocation() != "" {
 		location, err := utils.ToLocation(filter.GetLocation())

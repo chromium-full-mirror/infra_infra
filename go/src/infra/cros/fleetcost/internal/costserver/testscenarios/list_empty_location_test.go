@@ -29,7 +29,7 @@ func TestListEmptyLocation(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
 		Type:     fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
 		Location: fleetcostModels.Location_LOCATION_ALL,
-		Board:    "octopus",
+		Primary:  "octopus",
 		Cost: &money.Money{
 			CurrencyCode: "USD",
 			Units:        3456789,
@@ -40,7 +40,7 @@ func TestListEmptyLocation(t *testing.T) {
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
 		Type:     fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
 		Location: fleetcostModels.Location_LOCATION_ALL,
-		Board:    "not-octopus",
+		Primary:  "not-octopus",
 		Cost: &money.Money{
 			CurrencyCode: "USD",
 			Units:        70,

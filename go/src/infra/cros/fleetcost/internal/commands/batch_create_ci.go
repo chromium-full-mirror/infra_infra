@@ -136,12 +136,12 @@ func uploadRow(ctx context.Context, fleetCostClient fleetcostAPI.FleetCostClient
 	if err := makeTypeRecorder(&typ)(m["type"]); err != nil {
 		return err
 	}
-	board := m["board"]
-	if replacement := site.ReservedCostIndicatorNames[board]; replacement != "" {
-		return fmt.Errorf("board %q cannot be used in an indicator, use %q instead", board, replacement)
+	primary := m["primary"]
+	if replacement := site.ReservedCostIndicatorNames[primary]; replacement != "" {
+		return fmt.Errorf("primary %q cannot be used in an indicator, use %q instead", primary, replacement)
 	}
-	model := m["model"]
-	sku := m["sku"]
+	secondary := m["secondary"]
+	tertiary := m["tertiary"]
 	var cost *money.Money
 	if err := makeMoneyRecorder(&cost)(m["cost"]); err != nil {
 		return errors.Annotate(err, "mistake in cost field %q", m["cost"]).Err()
@@ -168,9 +168,9 @@ func uploadRow(ctx context.Context, fleetCostClient fleetcostAPI.FleetCostClient
 			// TODO(gregorynisbet): Remove name field.
 			Name:                "",
 			Type:                typ,
-			Board:               board,
-			Model:               model,
-			Sku:                 sku,
+			Primary:             primary,
+			Secondary:           secondary,
+			Tertiary:            tertiary,
 			Cost:                cost,
 			CostCadence:         costCadence,
 			BurnoutRate:         burnoutRate,

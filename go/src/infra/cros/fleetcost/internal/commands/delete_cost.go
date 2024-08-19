@@ -32,9 +32,9 @@ var DeleteCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.board, "board", "", "the board of the indicator to delete")
-		c.Flags.StringVar(&c.model, "model", "", "the model of the indicator to delete")
-		c.Flags.StringVar(&c.sku, "sku", "", "the sku of the indicator to delete")
+		c.Flags.StringVar(&c.primary, "primary", "", "the board of the indicator to delete")
+		c.Flags.StringVar(&c.secondary, "secondary", "", "the model of the indicator to delete")
+		c.Flags.StringVar(&c.tertiary, "tertiary", "", "the sku of the indicator to delete")
 		c.Flags.Func("location", "the location of the thing to delete", makeLocationRecorder(&c.location))
 		c.Flags.Func("type", "the type of the thing to delete", makeTypeRecorder(&c.typ))
 		return c
@@ -46,11 +46,11 @@ type deleteCostIndicatorCommand struct {
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
 
-	board    string
-	model    string
-	sku      string
-	location fleetcostpb.Location
-	typ      fleetcostpb.IndicatorType
+	primary   string
+	secondary string
+	tertiary  string
+	location  fleetcostpb.Location
+	typ       fleetcostpb.IndicatorType
 }
 
 // Run is the main entrypoint to the deletion process.
@@ -87,11 +87,11 @@ func (c *deleteCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	request := &fleetcostAPI.DeleteCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    c.board,
-			Model:    c.model,
-			Sku:      c.sku,
-			Location: c.location,
-			Type:     c.typ,
+			Primary:   c.primary,
+			Secondary: c.secondary,
+			Tertiary:  c.tertiary,
+			Location:  c.location,
+			Type:      c.typ,
 		},
 	}
 	resp, err := fleetCostClient.DeleteCostIndicator(ctx, request)

@@ -29,7 +29,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 
 	if err := datastore.Put(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 12.0,
 		},
 	}); err != nil {
@@ -38,7 +38,7 @@ func TestCostIndicatorSimple(t *testing.T) {
 
 	if err := datastore.Get(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 12.0,
 		},
 	}); err != nil {
@@ -54,8 +54,8 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 
 	oldIndicator := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "e",
-			Model: "w",
+			Primary:   "e",
+			Secondary: "w",
 		},
 	}
 
@@ -66,8 +66,8 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 
 	item := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "e",
-			Model: "w",
+			Primary:   "e",
+			Secondary: "w",
 		},
 	}
 	if err := datastore.Get(tf.Ctx, item); err != nil {
@@ -76,8 +76,8 @@ func TestCostIndicatorIndexedFields(t *testing.T) {
 
 	if diff := typed.Got(item).Want(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "e",
-			Model: "w",
+			Primary:   "e",
+			Secondary: "w",
 		},
 		Board: "e",
 		Model: "w",
@@ -92,8 +92,8 @@ func TestCostIndicatorClone(t *testing.T) {
 
 	oldIndicator := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Name:  "a",
-			Board: "e",
+			Name:    "a",
+			Primary: "e",
 		},
 	}
 
@@ -111,7 +111,7 @@ func TestPutCostIndicator(t *testing.T) {
 
 	err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 12.0,
 		},
 	}, nil)
@@ -121,7 +121,7 @@ func TestPutCostIndicator(t *testing.T) {
 
 	result, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "e",
+			Primary: "e",
 		},
 	})
 	if err != nil {
@@ -140,7 +140,7 @@ func TestGetCostIndicator(t *testing.T) {
 
 	costIndicator, err := entities.GetCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board: "e",
+			Primary: "e",
 		},
 	})
 	if err != nil {
@@ -149,7 +149,7 @@ func TestGetCostIndicator(t *testing.T) {
 
 	want := &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 44.0,
 		},
 		Board: "e",
@@ -174,7 +174,7 @@ func TestListCostIndicator(t *testing.T) {
 
 	want := []*fleetcostpb.CostIndicator{
 		{
-			Board:       "e",
+			Primary:     "e",
 			BurnoutRate: 44.0,
 		},
 	}
@@ -191,10 +191,10 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 	tf := testsupport.NewFixture(context.Background(), t)
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-1",
-			Model:    "fake-model",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-1",
+			Secondary: "fake-model",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        100,
@@ -206,10 +206,10 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 	}
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-2",
-			Model:    "fake-model",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-2",
+			Secondary: "fake-model",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        200,
@@ -221,10 +221,10 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 	}
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-2",
-			Model:    "a-different-model",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-2",
+			Secondary: "a-different-model",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        200,
@@ -238,7 +238,7 @@ func TestListCostIndicatorWithModelFilter(t *testing.T) {
 	resp, err := tf.Frontend.ListCostIndicators(tf.Ctx, &fleetcostAPI.ListCostIndicatorsRequest{
 		PageSize: 1000,
 		Filter: &fleetcostAPI.ListCostIndicatorsFilter{
-			Model: "fake-model",
+			Secondary: "fake-model",
 		},
 	})
 	if err != nil {
@@ -257,11 +257,11 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 	tf := testsupport.NewFixture(context.Background(), t)
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-1",
-			Model:    "fake-model-1",
-			Sku:      "fake-sku",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-1",
+			Secondary: "fake-model-1",
+			Tertiary:  "fake-sku",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        100,
@@ -273,11 +273,11 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 	}
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-2",
-			Model:    "fake-model-2",
-			Sku:      "fake-sku",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-2",
+			Secondary: "fake-model-2",
+			Tertiary:  "fake-sku",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        200,
@@ -289,11 +289,11 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 	}
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:    "fake-board-3",
-			Model:    "fake-model-3",
-			Sku:      "different-sku",
-			Location: fleetcostpb.Location_LOCATION_ACS,
-			Type:     fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
+			Primary:   "fake-board-3",
+			Secondary: "fake-model-3",
+			Tertiary:  "different-sku",
+			Location:  fleetcostpb.Location_LOCATION_ACS,
+			Type:      fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        200,
@@ -307,7 +307,7 @@ func TestListCostIndicatorWithSkuFilter(t *testing.T) {
 	resp, err := tf.Frontend.ListCostIndicators(tf.Ctx, &fleetcostAPI.ListCostIndicatorsRequest{
 		PageSize: 1000,
 		Filter: &fleetcostAPI.ListCostIndicatorsFilter{
-			Sku: "fake-sku",
+			Tertiary: "fake-sku",
 		},
 	})
 	if err != nil {
@@ -329,7 +329,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	if err := utils.InsertOneWithoutReplacement(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "fake-board",
+			Primary:     "fake-board",
 			BurnoutRate: 12.0,
 			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
@@ -339,7 +339,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	got, err := entities.UpdateCostIndicatorEntity(tf.Ctx, &entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "fake-board",
+			Primary:     "fake-board",
 			BurnoutRate: 14.0,
 			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
@@ -351,7 +351,7 @@ func TestUpdateCostIndicatorHappyPath(t *testing.T) {
 
 	if diff := typed.Got(got).Want(&entities.CostIndicatorEntity{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "fake-board",
+			Primary:     "fake-board",
 			BurnoutRate: 14.0,
 			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,
 		},
@@ -368,7 +368,7 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 
 	if _, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "fake-board",
+			Primary:     "fake-board",
 			BurnoutRate: 14.0,
 			Location:    fleetcostpb.Location_LOCATION_ACS,
 			Type:        fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
@@ -384,7 +384,7 @@ func TestDeleteCostIndicatorEntity(t *testing.T) {
 
 	if _, err := tf.Frontend.DeleteCostIndicator(tf.Ctx, &fleetcostAPI.DeleteCostIndicatorRequest{
 		CostIndicator: &fleetcostpb.CostIndicator{
-			Board:       "fake-board",
+			Primary:     "fake-board",
 			Location:    fleetcostpb.Location_LOCATION_ACS,
 			Type:        fleetcostpb.IndicatorType_INDICATOR_TYPE_CLOUD,
 			CostCadence: fleetcostpb.CostCadence_COST_CADENCE_HOURLY,

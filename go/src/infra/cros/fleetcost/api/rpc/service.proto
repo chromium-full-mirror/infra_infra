@@ -138,12 +138,13 @@ message ListCostIndicatorsRequest {
 // TODO(gregorynisbet): Do we want a separate Boolean field for searching for empty boards, models, SKUs?
 //                      Does the datastore query engine support this well?
 message ListCostIndicatorsFilter {
-  // Board is the board of the cost indicator in question.
-  string board = 1;
-  // Model is the model of the cost indicator in question
-  string model = 2;
-  // Sku is the SKU of the cost indicator in question.
-  string sku = 3;
+  reserved 1, 2, 3;
+  reserved "board", "model", "sku";
+  // primary, secondary, and tertiary are three levels of taxonomy for indictors.
+  // Historically, primary was board, secondary was model, and tertiary was sku.
+  string primary = 6;
+  string secondary = 7;
+  string tertiary = 8;
   // Location is the location as a string.
   string location = 4;
   // Type is the type as a string.

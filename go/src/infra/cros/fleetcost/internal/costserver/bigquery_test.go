@@ -26,11 +26,11 @@ func TestRepopulateCache(t *testing.T) {
 	tf := testsupport.NewFixture(context.Background(), t)
 
 	costserver.MustCreateCostIndicator(tf.Ctx, tf.Frontend, &fleetcostModels.CostIndicator{
-		Type:     fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
-		Board:    "build-target",
-		Model:    "model",
-		Sku:      "",
-		Location: fleetcostModels.Location_LOCATION_ALL,
+		Type:      fleetcostModels.IndicatorType_INDICATOR_TYPE_DUT,
+		Primary:   "build-target",
+		Secondary: "model",
+		Tertiary:  "",
+		Location:  fleetcostModels.Location_LOCATION_ALL,
 		Cost: &money.Money{
 			CurrencyCode: "USD",
 			Units:        134,

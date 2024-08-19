@@ -149,9 +149,9 @@ func getCostIndicatorValueDirectly(ctx context.Context, attribute *indicatorAttr
 func getIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute, error) {
 	errorHint := attribute.ErrorHint
 	typ := attribute.IndicatorType
-	board := attribute.Board
-	model := attribute.Model
-	sku := attribute.Sku
+	primary := attribute.Primary
+	secondary := attribute.Secondary
+	tertiary := attribute.Tertiary
 	location := attribute.Location
 
 	if location == fleetcostpb.Location_LOCATION_UNKNOWN {
@@ -166,23 +166,23 @@ func getIndicatorFallbacks(attribute *indicatorAttribute) ([]*indicatorAttribute
 	var output []*indicatorAttribute
 
 	// TODO(gregorynisbet): rework this logic so that it isn't hardcoded.
-	if sku != "" {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, model, sku, location))
+	if tertiary != "" {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, secondary, tertiary, location))
 	}
-	if sku != "" && !hasLocationAll {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, model, sku, fleetcostpb.Location_LOCATION_ALL))
+	if tertiary != "" && !hasLocationAll {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, secondary, tertiary, fleetcostpb.Location_LOCATION_ALL))
 	}
-	if model != "" {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, model, "", location))
+	if secondary != "" {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, secondary, "", location))
 	}
-	if model != "" && !hasLocationAll {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, model, "", fleetcostpb.Location_LOCATION_ALL))
+	if secondary != "" && !hasLocationAll {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, secondary, "", fleetcostpb.Location_LOCATION_ALL))
 	}
-	if board != "" {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, "", "", location))
+	if primary != "" {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, "", "", location))
 	}
-	if board != "" && !hasLocationAll {
-		output = append(output, newIndicatorAttribute(errorHint, typ, board, "", "", fleetcostpb.Location_LOCATION_ALL))
+	if primary != "" && !hasLocationAll {
+		output = append(output, newIndicatorAttribute(errorHint, typ, primary, "", "", fleetcostpb.Location_LOCATION_ALL))
 	}
 	if typ != fleetcostpb.IndicatorType_INDICATOR_TYPE_UNKNOWN {
 		output = append(output, newIndicatorAttribute(errorHint, typ, "", "", "", location))

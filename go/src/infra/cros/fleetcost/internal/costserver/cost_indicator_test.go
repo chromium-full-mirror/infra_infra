@@ -21,10 +21,10 @@ func TestCreateCostIndicator(t *testing.T) {
 
 	_, err := tf.Frontend.CreateCostIndicator(tf.Ctx, &fleetcostAPI.CreateCostIndicatorRequest{
 		CostIndicator: &models.CostIndicator{
-			Board:    "board",
-			Model:    "model",
-			Location: 1,
-			Type:     2,
+			Primary:   "board",
+			Secondary: "model",
+			Location:  1,
+			Type:      2,
 			Cost: &money.Money{
 				CurrencyCode: "USD",
 				Units:        12,
