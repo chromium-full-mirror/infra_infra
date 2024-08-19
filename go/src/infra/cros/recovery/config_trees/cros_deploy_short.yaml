@@ -28,7 +28,7 @@ plans:
               dependencies:
                 - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
                 - name: Sleep 5s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Power cycle root servo ('servo_power_cycle_root_servo') (ALWAYS_RUN)
+                - name: Power cycle root servo (Allow to fail) ('servo_power_cycle_root_servo') (ALWAYS_RUN)
                 - name: Set RPM ON ('device_rpm_power_on') (ALWAYS_RUN)
                 - name: Sleep 20s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
     - name: servo

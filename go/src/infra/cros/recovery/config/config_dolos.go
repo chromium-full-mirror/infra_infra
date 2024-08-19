@@ -110,11 +110,9 @@ func dolosRepairPlan() *Plan {
 				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Power cycle root servo": {
-				ExecName:   "servo_power_cycle_root_servo",
-				RunControl: RunControl_ALWAYS_RUN,
-				RecoveryActions: []string{
-					"Set RPM ON",
-				},
+				ExecName:               "servo_power_cycle_root_servo",
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
 			},
 			"Reboot dolos": {
 				Docs: []string{
