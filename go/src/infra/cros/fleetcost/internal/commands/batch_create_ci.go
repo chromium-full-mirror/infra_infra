@@ -141,6 +141,7 @@ func uploadRow(ctx context.Context, fleetCostClient fleetcostAPI.FleetCostClient
 		return fmt.Errorf("board %q cannot be used in an indicator, use %q instead", board, replacement)
 	}
 	model := m["model"]
+	sku := m["sku"]
 	var cost *money.Money
 	if err := makeMoneyRecorder(&cost)(m["cost"]); err != nil {
 		return errors.Annotate(err, "mistake in cost field %q", m["cost"]).Err()
@@ -169,6 +170,7 @@ func uploadRow(ctx context.Context, fleetCostClient fleetcostAPI.FleetCostClient
 			Type:                typ,
 			Board:               board,
 			Model:               model,
+			Sku:                 sku,
 			Cost:                cost,
 			CostCadence:         costCadence,
 			BurnoutRate:         burnoutRate,
