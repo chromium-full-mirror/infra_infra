@@ -16,7 +16,6 @@ import (
 	"go.chromium.org/luci/common/bq"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
-	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
 )
 
@@ -41,24 +40,6 @@ func InitBQUploader(ctx context.Context, project, dataset, table string) (*bq.Up
 		return nil, err
 	}
 	return InitBQUploaderWithClient(ctx, client, dataset, table), nil
-}
-
-// GetRegisteredAssetsProtos prepares the proto messages for registered assets to upload to bq.
-func GetRegisteredAssetsProtos(ctx context.Context) []proto.Message {
-	assets, err := datastore.GetAllAssets(ctx, false)
-	if err != nil {
-		return nil
-	}
-	ts := timestamppb.Now()
-	msgs := make([]proto.Message, len(assets))
-	for i, a := range assets {
-		msgs[i] = &apibq.RegisteredAsset{
-			Id:          a.GetId(),
-			Asset:       a,
-			UpdatedTime: ts,
-		}
-	}
-	return msgs
 }
 
 // GetDeviceConfigProtos prepares the proto messages for all device configs to upload to bq.

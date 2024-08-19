@@ -5,27 +5,13 @@
 package utils
 
 import (
-	"context"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"regexp"
 	"strings"
 
-	"golang.org/x/net/context/ctxhttp"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
-	authclient "go.chromium.org/luci/auth"
-	gitilesapi "go.chromium.org/luci/common/api/gitiles"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/server/auth"
 
 	ca "infra/libs/fleet/protos"
 	fleet "infra/libs/fleet/protos/go"
-	"infra/libs/git"
 )
 
 // Host, project and branch to get dhcpd.conf file
@@ -44,97 +30,6 @@ func GetHostname(d *lab.ChromeOSDevice) string {
 	default:
 		panic(fmt.Sprintf("Unknown device type: %v", t))
 	}
-}
-
-// GetLocation attempts to parse the input string and return a Location object.
-// Default location is updated with values from the string. This is done
-// because the barcodes do not specify the complete location of the asset
-func GetLocation(input string) (loc *fleet.Location) {
-	//loc = c.defaultLocation()
-	loc = &fleet.Location{}
-	// Extract lab if it exists
-	for _, exp := range labs {
-		labStr := exp.FindString(input)
-		if labStr != "" {
-			loc.Lab = labStr
-		}
-	}
-	// Extract row if it exists
-	for _, exp := range rows {
-		rowStr := exp.FindString(input)
-		if rowStr != "" {
-			loc.Row = num.FindString(rowStr)
-			break
-		}
-	}
-	// Extract rack if it exists
-	for _, exp := range racks {
-		rackStr := exp.FindString(input)
-		if rackStr != "" {
-			loc.Rack = num.FindString(rackStr)
-			break
-		}
-	}
-	// Extract position if it exists
-	for _, exp := range hosts {
-		positionStr := exp.FindString(input)
-		if positionStr != "" {
-			loc.Position = num.FindString(positionStr)
-			break
-		}
-	}
-	return loc
-}
-
-// GetMacHostMappingFromDHCPConf downloads the dhcp conf from chromeos-admin
-// repo. Parses the file and returns Mac:Hostname mapping
-func GetMacHostMappingFromDHCPConf(ctx context.Context) (map[string]string, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesapi.OAuthScope))
-	if err != nil {
-		return nil, err
-	}
-	client, err := git.NewClient(ctx, &http.Client{Transport: t}, "", host, project, branch)
-	if err != nil {
-		return nil, err
-	}
-	res, err := client.GetFile(ctx, path)
-
-	return getMacHostMapping(res), nil
-}
-
-// Extract macaddress:hostname mapping from dhcp conf file
-func getMacHostMapping(conf string) map[string]string {
-	/* Rough parser designed to only extract mac:host mappings
-	 * using regex. There are 3 expressions to extract the info
-	 * required. First expression re extracts a host configuration
-	 * with mac address. Second one is to extract only hostname
-	 * and the third extracts hardware ethernet mac address
-	 */
-	// (?s) include newline and white spaces
-	// [^\#],[^\{] negated character class for # and {
-	var re = regexp.MustCompile(`(?m)^[^\#\r\n]*host[^\{]*\{[^\}]*hardware` +
-		` ethernet[^\}]*\}`)
-	var hn = regexp.MustCompile(`host .*{`)
-	var ma = regexp.MustCompile(`(?m)^[^\#\r\n]*hardware ethernet` +
-		` ([a-fA-F0-9]{2}\:){5}[a-fA-F0-9]{2}[ \t]*;`)
-	c := re.FindAllString(conf, -1)
-	res := make(map[string]string)
-	for _, ent := range c {
-		hostname := hn.FindString(ent)
-		hostname = strings.TrimSpace(hostname)
-		hostname = strings.TrimLeft(hostname, "host ")
-		hostname = strings.TrimRight(hostname, " {")
-		hostname = strings.TrimSpace(hostname)
-		mac := ma.FindString(ent)
-		mac = strings.TrimSpace(mac)
-		mac = strings.TrimLeft(mac, "hardware ethernet ")
-		mac = strings.TrimRight(mac, ";")
-		mac = strings.TrimSpace(mac)
-		if hostname != "" && mac != "" {
-			res[mac] = hostname
-		}
-	}
-	return res
 }
 
 // SanitizeChopsAsset removes all the trailing and leading whitespaces in
@@ -169,72 +64,4 @@ func trimWhiteSpaceInLocation(a *fleet.Location) *fleet.Location {
 	a.Shelf = strings.TrimSpace(a.Shelf)
 	a.Position = strings.TrimSpace(a.Position)
 	return a
-}
-
-/* Regular expressions to match various parts of the input string - START */
-
-var num = regexp.MustCompile(`[0-9]+`)
-
-var labs = []*regexp.Regexp{
-	regexp.MustCompile(`chromeos[\d]*`),
-}
-
-var rows = []*regexp.Regexp{
-	regexp.MustCompile(`ROW[\d]*`),
-	regexp.MustCompile(`row[\d]*`),
-}
-
-var racks = []*regexp.Regexp{
-	regexp.MustCompile(`RACK[\d]*`),
-	regexp.MustCompile(`rack[\d]*`),
-}
-
-var hosts = []*regexp.Regexp{
-	regexp.MustCompile(`HOST[\d]*`),
-	regexp.MustCompile(`host[\d]*`),
-	regexp.MustCompile(`labstation[\d]*`),
-}
-
-/* Regular expressions to match various parts of the input string - END */
-
-// HTTPError wraps the http response errors.
-type HTTPError struct {
-	Method     string
-	URL        *url.URL
-	StatusCode int
-	Body       string
-}
-
-func (e *HTTPError) Error() string {
-	return fmt.Sprintf("unexpected response: method=%q url=%q status=%d message=%q", e.Method, e.URL, e.StatusCode, e.Body)
-}
-
-func ExecuteRequest(ctx context.Context, hc *http.Client, req *http.Request, value proto.Message) error {
-	resp, err := ctxhttp.Do(ctx, hc, req)
-	defer resp.Body.Close()
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			logging.Debugf(ctx, "fail to read resp.Body: %s", err)
-		}
-		return &HTTPError{
-			Method:     req.Method,
-			URL:        req.URL,
-			StatusCode: resp.StatusCode,
-			Body:       string(body),
-		}
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("unable to read the body for %s: %w", req.URL, err)
-	}
-	logging.Debugf(ctx, "response:\n%v", string(body))
-
-	if err := protojson.Unmarshal(body, value); err != nil {
-		return fmt.Errorf("decode response body: %w", err)
-	}
-	return nil
 }
