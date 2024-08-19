@@ -14,16 +14,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
 	ds "go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/authtest"
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/appengine/cros/lab_inventory/app/config"
@@ -64,41 +60,6 @@ func testingContext() context.Context {
 		},
 	})
 	return c
-}
-
-func TestACL(t *testing.T) {
-	t.Parallel()
-
-	Convey("Get Chrome OS devices with ACL check", t, func() {
-		ctx := testingContext()
-		tf, validate := newTestFixtureWithContext(ctx, t)
-		defer validate()
-
-		req := &api.GetCrosDevicesRequest{}
-		Convey("Unknown user", func() {
-			_, err := tf.DecoratedInventory.GetCrosDevices(tf.C, req)
-			So(err, ShouldNotBeNil)
-			So(status.Code(err), ShouldEqual, codes.Internal)
-		})
-		Convey("Non authorized user", func() {
-			ctx := auth.WithState(tf.C, &authtest.FakeState{
-				Identity:       "user:abc@def.com",
-				IdentityGroups: []string{"abc"},
-			})
-			_, err := tf.DecoratedInventory.GetCrosDevices(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(status.Code(err), ShouldEqual, codes.PermissionDenied)
-		})
-		Convey("Happy path", func() {
-			ctx := auth.WithState(tf.C, &authtest.FakeState{
-				Identity:       "user:abc@def.com",
-				IdentityGroups: []string{"fake_group"},
-			})
-			_, err := tf.DecoratedInventory.GetCrosDevices(ctx, req)
-			// Get invalid argument error since we pass an empty request.
-			So(status.Code(err), ShouldEqual, codes.InvalidArgument)
-		})
-	})
 }
 
 type devcfgEntity struct {

@@ -173,7 +173,6 @@ func TestDeviceToBQMsgsSeq(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			out, stateOut, err := DeviceToBQMsgsSeq(tt.in)
 			isGood := len(err.(errors.MultiError)) == 0
-			fmt.Println(err)
 			if isGood != tt.isGood {
 				t.Errorf("error mismatch: expected (%v) got (%v) err was (%#v)", tt.isGood, isGood, err)
 			}

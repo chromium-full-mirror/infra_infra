@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 
 	proto "github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -21,19 +20,14 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/appengine/cros/lab_inventory/app/config"
 	"infra/appengine/cros/lab_inventory/app/external/ufs"
-	"infra/cros/lab_inventory/changehistory"
 	"infra/cros/lab_inventory/datastore"
 	"infra/cros/lab_inventory/deviceconfig"
-	"infra/cros/lab_inventory/hwid"
-	"infra/cros/lab_inventory/manufacturingconfig"
 	invlibs "infra/cros/lab_inventory/protos"
-	"infra/cros/lab_inventory/utils"
 )
 
 // InventoryServerImpl implements service interfaces.
@@ -41,100 +35,40 @@ type InventoryServerImpl struct {
 }
 
 var (
-	getHwidDataFunc            = hwid.GetHwidData
-	getDeviceConfigFunc        = deviceconfig.GetCachedConfig
-	getAllDeviceConfigFunc     = deviceconfig.GetAllCachedConfig
-	getManufacturingConfigFunc = manufacturingconfig.GetCachedConfig
+	getDeviceConfigFunc    = deviceconfig.GetCachedConfig
+	getAllDeviceConfigFunc = deviceconfig.GetAllCachedConfig
 )
 
-func getPassedResults(ctx context.Context, results []datastore.DeviceOpResult) []*api.DeviceOpResult {
-	passedDevices := make([]*api.DeviceOpResult, 0, len(results))
-	for _, res := range datastore.DeviceOpResults(results).Passed() {
-		r := new(api.DeviceOpResult)
-		r.Id = string(res.Entity.ID)
-		r.Hostname = res.Entity.Hostname
-		passedDevices = append(passedDevices, r)
-		logging.Debugf(ctx, "Passed: %s: %s", r.Hostname, r.Id)
-	}
-	logging.Infof(ctx, "%d device(s) passed", len(passedDevices))
-
-	return passedDevices
+// GetCrosDevices retrieves requested Chrome OS devices from the inventory.
+func (is *InventoryServerImpl) GetCrosDevices(ctx context.Context, req *api.GetCrosDevicesRequest) (resp *api.GetCrosDevicesResponse, err error) {
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	GetCrosDevices is deprecated.
+	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
+	`).Err())
 }
 
-func getFailedResults(ctx context.Context, results []datastore.DeviceOpResult, hideUUID bool) []*api.DeviceOpResult {
-	failedDevices := make([]*api.DeviceOpResult, 0, len(results))
-	for _, res := range datastore.DeviceOpResults(results).Failed() {
-		r := new(api.DeviceOpResult)
-		r.Hostname = res.Entity.Hostname
-		r.ErrorMsg = res.Err.Error()
-		id := string(res.Entity.ID)
-		if !(hideUUID && strings.HasPrefix(id, datastore.UUIDPrefix)) {
-			r.Id = id
-		}
-		failedDevices = append(failedDevices, r)
-		logging.Errorf(ctx, "Failed: %s: %s: %s", r.Hostname, r.Id, r.ErrorMsg)
-	}
-	if failedCount := len(failedDevices); failedCount > 0 {
-		logging.Errorf(ctx, "%d device(s) failed", failedCount)
-	} else {
-		logging.Infof(ctx, "0 devices failed")
-	}
-
-	return failedDevices
+// UpdateDutsStatus updates selected Duts' status labels, metas related to testing.
+func (is *InventoryServerImpl) UpdateDutsStatus(ctx context.Context, req *api.UpdateDutsStatusRequest) (resp *api.UpdateDutsStatusResponse, err error) {
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	UpdateDutsStatus is deprecated.
+	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
+	`).Err())
 }
 
-func addFailedDevice(ctx context.Context, failedDevices *[]*api.DeviceOpResult, dev *lab.ChromeOSDevice, err error, operation string) {
-	hostname := utils.GetHostname(dev)
-	logging.Errorf(ctx, "failed to %s for %s: %s", operation, hostname, err.Error())
-	*failedDevices = append(*failedDevices, &api.DeviceOpResult{
-		Id:       dev.GetId().GetValue(),
-		Hostname: hostname,
-		ErrorMsg: err.Error(),
-	})
-
+// GetHwidData retrieves requested Chrome OS device Hwid Data from the inventory.
+func (is *InventoryServerImpl) GetHwidData(ctx context.Context, req *api.GetHwidDataRequest) (resp *api.HwidData, err error) {
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	GetHwidData is deprecated.
+	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
+	`).Err())
 }
 
-func getHwidDataInBatch(ctx context.Context, extendedData []*api.ExtendedDeviceData) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
-	// Deduplicate the HWIDs in devices to improve the query performance.
-	secret := config.Get(ctx).HwidSecret
-	hwids := make([]string, 0, len(extendedData))
-	idToHwidData := map[string]*hwid.Data{}
-	for _, d := range extendedData {
-		hwid := d.LabConfig.GetManufacturingId().GetValue()
-		if hwid == "" {
-			logging.Warningf(ctx, "%v has empty HWID.", utils.GetHostname(d.LabConfig))
-		}
-		if _, found := idToHwidData[hwid]; found {
-			continue
-		}
-		hwids = append(hwids, hwid)
-		idToHwidData[hwid] = nil
-	}
-
-	for _, hwid := range hwids {
-		if hwid == "" {
-			continue
-		}
-		if hwidData, err := getHwidDataFunc(ctx, hwid, secret); err == nil {
-			idToHwidData[hwid] = hwidData
-		} else {
-			// HWID server may cannot find records for the HWID. Ignore the
-			// error for now.
-			logging.Warningf(ctx, "Ignored error: failed to get response from HWID server for %s", hwid)
-		}
-	}
-	newExtendedData := make([]*api.ExtendedDeviceData, 0, len(extendedData))
-	for i := range extendedData {
-		hwid := extendedData[i].LabConfig.GetManufacturingId().GetValue()
-		if hwidData := idToHwidData[hwid]; hwidData != nil {
-			extendedData[i].HwidData = &api.HwidData{
-				Sku:     hwidData.Sku,
-				Variant: hwidData.Variant,
-			}
-		}
-		newExtendedData = append(newExtendedData, extendedData[i])
-	}
-	return newExtendedData, nil
+// GetManufacturingConfig retrieves requested Chrome OS device manufacturing config from the inventory.
+func (is *InventoryServerImpl) GetManufacturingConfig(ctx context.Context, req *api.GetManufacturingConfigRequest) (resp *manufacturing.Config, err error) {
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
+	GetManufacturingConfig is deprecated.
+	Please contact fleet infra oncall (go/peep-fleet-oncall) if using this API.
+	`).Err())
 }
 
 func getDeviceConfigData(ctx context.Context, extendedData []*api.ExtendedDeviceData) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
@@ -186,280 +120,6 @@ func getFallbackDeviceConfigID(oldConfigID *device.ConfigId) *device.ConfigId {
 		return fallbackID
 	}
 	return oldConfigID
-}
-
-func getManufacturingConfigData(ctx context.Context, extendedData []*api.ExtendedDeviceData) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
-	// Start to retrieve manufacturing config data.
-	cfgIds := make([]*manufacturing.ConfigID, 0, len(extendedData))
-	idToCfg := map[string]*manufacturing.Config{}
-	for _, d := range extendedData {
-		manufacturingID := d.LabConfig.GetManufacturingId()
-		if manufacturingID.GetValue() == "" {
-			// We use manufacturingID as Key to query datastore. When it's
-			// empty, datastore.Get will fail due to incomplete key and all
-			// entities queried in same request will be <nil>.
-			continue
-		}
-		if _, found := idToCfg[manufacturingID.GetValue()]; found {
-			continue
-		}
-		cfgIds = append(cfgIds, manufacturingID)
-		idToCfg[manufacturingID.GetValue()] = nil
-	}
-	mCfgs, err := getManufacturingConfigFunc(ctx, cfgIds)
-	for i, d := range mCfgs {
-		if err == nil || err.(errors.MultiError)[i] == nil {
-			idToCfg[cfgIds[i].GetValue()] = d.(*manufacturing.Config)
-		} else {
-			logging.Warningf(ctx, "Ignored error: cannot get manufacturing config for %v: %v", cfgIds[i], err.(errors.MultiError)[i])
-		}
-	}
-	newExtendedData := make([]*api.ExtendedDeviceData, 0, len(extendedData))
-	failedDevices := make([]*api.DeviceOpResult, 0, len(extendedData))
-	for i := range extendedData {
-		if manufacturingID := extendedData[i].LabConfig.GetManufacturingId().GetValue(); manufacturingID != "" {
-			extendedData[i].ManufacturingConfig = idToCfg[manufacturingID]
-		}
-		newExtendedData = append(newExtendedData, extendedData[i])
-	}
-	return newExtendedData, failedDevices
-}
-
-// GetExtendedDeviceData gets the lab data joined with device config,
-// manufacturing config, etc.
-func GetExtendedDeviceData(ctx context.Context, devices []datastore.DeviceOpResult) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
-	logging.Debugf(ctx, "Get exteneded data for %d devcies", len(devices))
-	extendedData := make([]*api.ExtendedDeviceData, 0, len(devices))
-	failedDevices := make([]*api.DeviceOpResult, 0, len(devices))
-	for _, r := range devices {
-		var labData lab.ChromeOSDevice
-		logging.Debugf(ctx, "get ext data for %v", r.Entity.Hostname)
-		if err := r.Entity.GetCrosDeviceProto(&labData); err != nil {
-			logging.Errorf(ctx, "Wrong lab config data of device entity %s", r.Entity)
-			failedDevices = append(failedDevices, &api.DeviceOpResult{
-				Id:       string(r.Entity.ID),
-				Hostname: r.Entity.Hostname,
-				ErrorMsg: err.Error(),
-			})
-			continue
-		}
-		var dutState lab.DutState
-		if err := r.Entity.GetDutStateProto(&dutState); err != nil {
-			addFailedDevice(ctx, &failedDevices, &labData, err, "unmarshal dut state data")
-			continue
-		}
-
-		data := api.ExtendedDeviceData{
-			LabConfig: &labData,
-			DutState:  &dutState,
-		}
-		extendedData = append(extendedData, &data)
-	}
-	// Get HWID data in a batch.
-	extendedData, moreFailedDevices := getHwidDataInBatch(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-
-	// Get device config in a batch.
-	extendedData, moreFailedDevices = getDeviceConfigData(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-
-	extendedData, moreFailedDevices = getManufacturingConfigData(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-	logging.Debugf(ctx, "Got extended data for %d device(s)", len(extendedData))
-	return extendedData, failedDevices
-}
-
-// GetExtendedDeviceDataForUFSRouting gets the lab data joined with device config,
-// manufacturing config, etc.
-func GetExtendedDeviceDataForUFSRouting(ctx context.Context, extendedData []*api.ExtendedDeviceData) ([]*api.ExtendedDeviceData, []*api.DeviceOpResult) {
-	failedDevices := make([]*api.DeviceOpResult, 0, len(extendedData))
-	// Get HWID data in a batch.
-	extendedData, moreFailedDevices := getHwidDataInBatch(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-
-	// Get device config in a batch.
-	extendedData, moreFailedDevices = getDeviceConfigData(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-
-	extendedData, moreFailedDevices = getManufacturingConfigData(ctx, extendedData)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-	logging.Debugf(ctx, "Got extended data for %d device(s)", len(extendedData))
-	return extendedData, failedDevices
-}
-
-type requestWithIds interface {
-	GetIds() []*api.DeviceID
-}
-
-// extractHostnamesAndDeviceIDs extracts hostnames and lab.ChromeOSDeviceIDs
-// from the input request.
-func extractHostnamesAndDeviceIDs(ctx context.Context, req requestWithIds) ([]string, []string) {
-	reqIds := req.GetIds()
-	maxLen := len(reqIds)
-	hostnames := make([]string, 0, maxLen)
-	devIds := make([]string, 0, maxLen)
-	for _, id := range reqIds {
-		if _, ok := id.GetId().(*api.DeviceID_Hostname); ok {
-			hostnames = append(hostnames, id.GetHostname())
-		} else {
-			devIds = append(devIds, id.GetChromeosDeviceId())
-		}
-	}
-	logging.Debugf(ctx, "There are %d hostnames and %d Chrome OS Device IDs in the request", len(hostnames), len(devIds))
-	return hostnames, devIds
-}
-
-// GetCrosDevices retrieves requested Chrome OS devices from the inventory.
-func (is *InventoryServerImpl) GetCrosDevices(ctx context.Context, req *api.GetCrosDevicesRequest) (resp *api.GetCrosDevicesResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-
-	if err = req.Validate(); err != nil {
-		return nil, err
-	}
-
-	hostnames, devIds := extractHostnamesAndDeviceIDs(ctx, req)
-
-	// Route the call to UFS
-	if config.Get(ctx).GetRouting().GetGetCrosDevices() {
-		logging.Infof(ctx, "Routing GetCrosDevices to UFS: %+v", req)
-		ufsClient, err := ufs.GetUFSClient(ctx)
-		if err != nil {
-			return nil, err
-		}
-		var failedDevices []*api.DeviceOpResult
-		var devices []*lab.ChromeOSDevice
-		crosDevices, failed := ufs.GetUFSDevicesByIds(ctx, ufsClient, devIds)
-		logging.Debugf(ctx, "Get %d devices by ID(UFS)", len(devices))
-		devices = append(devices, crosDevices...)
-		failedDevices = append(failedDevices, failed...)
-
-		crosDevices, failed = ufs.GetUFSDevicesByHostnames(ctx, ufsClient, hostnames)
-		logging.Debugf(ctx, "Get %d more devices by hostname(UFS)", len(devices))
-		devices = append(devices, crosDevices...)
-		failedDevices = append(failedDevices, failed...)
-
-		crosDevices, failed = ufs.GetUFSDevicesByModels(ctx, ufsClient, req.GetModels())
-		logging.Debugf(ctx, "Get %d more devices by model(UFS)", len(devices))
-		devices = append(devices, crosDevices...)
-		failedDevices = append(failedDevices, failed...)
-
-		extendedData, moreFailedDevices := ufs.GetUFSDutStateForDevices(ctx, ufsClient, devices)
-		failedDevices = append(failedDevices, moreFailedDevices...)
-
-		extendedData, moreFailedDevices = GetExtendedDeviceDataForUFSRouting(ctx, extendedData)
-
-		failedDevices = append(failedDevices, moreFailedDevices...)
-		resp = &api.GetCrosDevicesResponse{
-			Data:          extendedData,
-			FailedDevices: failedDevices,
-		}
-		return resp, nil
-	}
-
-	result := ([]datastore.DeviceOpResult)(datastore.GetDevicesByIds(ctx, devIds))
-	logging.Debugf(ctx, "Get %d devices by ID", len(result))
-	result = append(result, datastore.GetDevicesByHostnames(ctx, hostnames)...)
-	logging.Debugf(ctx, "Get %d more devices by hostname", len(result))
-	byModels, err := datastore.GetDevicesByModels(ctx, req.GetModels())
-	if err != nil {
-		return nil, errors.Annotate(err, "get devices by models").Err()
-	}
-	result = append(result, byModels...)
-	logging.Debugf(ctx, "Get %d more devices by models", len(result))
-
-	extendedData, moreFailedDevices := GetExtendedDeviceData(ctx, datastore.DeviceOpResults(result).Passed())
-	failedDevices := getFailedResults(ctx, result, false)
-	failedDevices = append(failedDevices, moreFailedDevices...)
-
-	resp = &api.GetCrosDevicesResponse{
-		Data:          extendedData,
-		FailedDevices: failedDevices,
-	}
-	return resp, nil
-}
-
-func logDeviceOpResults(ctx context.Context, res datastore.DeviceOpResults) {
-	for _, r := range res {
-		if r.Err == nil {
-			logging.Debugf(ctx, "Device ID %s: succeed", r.Entity.ID)
-		} else {
-			logging.Debugf(ctx, "Device ID %s: %s", r.Entity.ID, r.Err)
-		}
-	}
-}
-
-// UpdateDutsStatus updates selected Duts' status labels, metas related to testing.
-func (is *InventoryServerImpl) UpdateDutsStatus(ctx context.Context, req *api.UpdateDutsStatusRequest) (resp *api.UpdateDutsStatusResponse, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-
-	if err = req.Validate(); err != nil {
-		return nil, err
-	}
-
-	// Route the call to UFS
-	if config.Get(ctx).GetRouting().GetUpdateDutsStatus() {
-		logging.Infof(ctx, "Routing UpdateDutsStatus to UFS: %+v", req)
-		passed, failed, err := ufs.UpdateUFSDutState(ctx, req)
-		if err != nil {
-			logging.Errorf(ctx, "fail to update dutmeta, labmeta and dutstate in UFS: %s", err.Error())
-			return nil, err
-		}
-		return &api.UpdateDutsStatusResponse{
-			UpdatedDevices: passed,
-			FailedDevices:  failed,
-		}, nil
-	}
-
-	meta := make(map[string]datastore.DutMeta, len(req.GetDutMetas()))
-	for _, d := range req.GetDutMetas() {
-		meta[d.GetChromeosDeviceId()] = datastore.DutMeta{
-			SerialNumber: d.GetSerialNumber(),
-			HwID:         d.GetHwID(),
-			DeviceSku:    d.GetDeviceSku(),
-		}
-	}
-	metaUpdateResults, err := datastore.UpdateDutMeta(ctx, meta)
-	logging.Debugf(ctx, "Meta update results")
-	logDeviceOpResults(ctx, metaUpdateResults)
-	if err != nil {
-		logging.Errorf(ctx, "fail to update dut meta: %s", err.Error())
-		return nil, err
-	}
-
-	labMeta := make(map[string]datastore.LabMeta, len(req.GetLabMetas()))
-	for _, d := range req.GetLabMetas() {
-		labMeta[d.GetChromeosDeviceId()] = datastore.LabMeta{
-			ServoType:     d.GetServoType(),
-			SmartUsbhub:   d.GetSmartUsbhub(),
-			ServoTopology: d.GetServoTopology(),
-		}
-	}
-	metaUpdateResults, err = datastore.UpdateLabMeta(ctx, labMeta)
-	logging.Debugf(ctx, "Lab meta update results")
-	logDeviceOpResults(ctx, metaUpdateResults)
-	if err != nil {
-		logging.Errorf(ctx, "fail to update lab meta: %s", err.Error())
-		return nil, err
-	}
-
-	updatingResults, err := datastore.UpdateDutsStatus(changehistory.Use(ctx, req.Reason), req.States)
-	if err != nil {
-		return nil, err
-	}
-	logging.Debugf(ctx, "State update results")
-	logDeviceOpResults(ctx, updatingResults)
-
-	updatedDevices := getPassedResults(ctx, updatingResults)
-	failedDevices := getFailedResults(ctx, updatingResults, false)
-	resp = &api.UpdateDutsStatusResponse{
-		UpdatedDevices: updatedDevices,
-		FailedDevices:  failedDevices,
-	}
-	return resp, nil
 }
 
 // ListCrosDevicesLabConfig retrieves all lab configs
@@ -696,29 +356,6 @@ func (is *InventoryServerImpl) ListManualRepairRecords(ctx context.Context, req 
 	}, err
 }
 
-// GetManufacturingConfig retrieves requested Chrome OS device manufacturing config from the inventory.
-func (is *InventoryServerImpl) GetManufacturingConfig(ctx context.Context, req *api.GetManufacturingConfigRequest) (resp *manufacturing.Config, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	if err = req.Validate(); err != nil {
-		return nil, err
-	}
-	mfgCfgID := &manufacturing.ConfigID{Value: req.GetName()}
-	cfgIds := []*manufacturing.ConfigID{mfgCfgID}
-	mCfgs, err := getManufacturingConfigFunc(ctx, cfgIds)
-	if err != nil {
-		if err.Error() == ds.ErrNoSuchEntity.Error() {
-			return nil, status.Errorf(codes.NotFound, fmt.Sprintf("manufacturing config not found for %s", req.GetName()))
-		}
-		return nil, err.(errors.MultiError)[0]
-	}
-	if len(mCfgs) == 0 {
-		return nil, status.Errorf(codes.NotFound, fmt.Sprintf("manufacturing config not found for %s", req.GetName()))
-	}
-	return mCfgs[0].(*manufacturing.Config), nil
-}
-
 // GetDeviceConfig retrieves requested Chrome OS device device config from the inventory.
 func (is *InventoryServerImpl) GetDeviceConfig(ctx context.Context, req *api.GetDeviceConfigRequest) (resp *device.Config, err error) {
 	defer func() {
@@ -760,29 +397,6 @@ func (is *InventoryServerImpl) GetDeviceConfig(ctx context.Context, req *api.Get
 		}
 	}
 	return res, nil
-}
-
-// GetHwidData retrieves requested Chrome OS device Hwid Data from the inventory.
-func (is *InventoryServerImpl) GetHwidData(ctx context.Context, req *api.GetHwidDataRequest) (resp *api.HwidData, err error) {
-	defer func() {
-		err = grpcutil.GRPCifyAndLogErr(ctx, err)
-	}()
-	if err = req.Validate(); err != nil {
-		return nil, err
-	}
-	secret := config.Get(ctx).HwidSecret
-	hwidData, err := getHwidDataFunc(ctx, req.GetName(), secret)
-	if err != nil {
-		if strings.Contains(err.Error(), "\"code\": 5") {
-			// NotFound status code is 5
-			return nil, status.Errorf(codes.NotFound, fmt.Sprintf("Hwid data not found for %s", req.GetName()))
-		}
-		return nil, err
-	}
-	return &api.HwidData{
-		Sku:     hwidData.Sku,
-		Variant: hwidData.Variant,
-	}, nil
 }
 
 // BatchGetManualRepairRecords gets the open record corresponding to each host

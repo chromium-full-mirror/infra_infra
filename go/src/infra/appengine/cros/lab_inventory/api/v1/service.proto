@@ -24,13 +24,39 @@ import "google/protobuf/timestamp.proto";
 service Inventory {
 
   // GetCrosDevices retrieves requested Chrome OS devices from the inventory.
-  rpc GetCrosDevices(GetCrosDevicesRequest) returns (GetCrosDevicesResponse);
+  rpc GetCrosDevices(GetCrosDevicesRequest) returns (GetCrosDevicesResponse) {
+    option deprecated = true;
+  };
 
   // UpdateDutsStatus updates selected Duts' status labels related to testing.
-  rpc UpdateDutsStatus(UpdateDutsStatusRequest) returns (UpdateDutsStatusResponse);
+  rpc UpdateDutsStatus(UpdateDutsStatusRequest) returns (UpdateDutsStatusResponse) {
+    option deprecated = true;
+  };
+
+  // Get a Hwid data for the device from datastore
+  rpc GetHwidData(GetHwidDataRequest) returns (HwidData) {
+    option deprecated = true;
+  };
+
+  // Get manufacturing config for the device from datastore
+  rpc GetManufacturingConfig(GetManufacturingConfigRequest) returns (manufacturing.Config) {
+    option deprecated = true;
+  };
+
+  // Get a device config for the device from datastore
+  rpc GetDeviceConfig(GetDeviceConfigRequest) returns (device.Config);
 
   // DeviceConfigsExists checks if the device_configs exists in the datastore
   rpc DeviceConfigsExists(DeviceConfigsExistsRequest) returns (DeviceConfigsExistsResponse);
+
+  // ListDeviceConfigs lists all device configs
+  //
+  // Explicitly not implementing AIP practices (https://google.aip.dev/132) due
+  // to desired deprecation of this service.
+  rpc ListDeviceConfigs(ListDeviceConfigsRequest) returns (ListDeviceConfigsResponse);
+
+  // ListCrosDevicesLabConfig lists the lab configs of all devices saved in Inventor v2.
+  rpc ListCrosDevicesLabConfig(ListCrosDevicesLabConfigRequest) returns (ListCrosDevicesLabConfigResponse);
 
   // Get a device manual repair record from datastore
   rpc GetDeviceManualRepairRecord(GetDeviceManualRepairRecordRequest) returns (GetDeviceManualRepairRecordResponse);
@@ -41,21 +67,9 @@ service Inventory {
   // Update a device manual repair record in datastore
   rpc UpdateDeviceManualRepairRecord(UpdateDeviceManualRepairRecordRequest) returns (UpdateDeviceManualRepairRecordResponse);
 
-  // ListCrosDevicesLabConfig lists the lab configs of all devices saved in Inventor v2.
-  rpc ListCrosDevicesLabConfig(ListCrosDevicesLabConfigRequest) returns (ListCrosDevicesLabConfigResponse);
-
   // ListManualRepairRecords lists repair records based on filters passed in the
   // request.
   rpc ListManualRepairRecords(ListManualRepairRecordsRequest) returns (ListManualRepairRecordsResponse);
-
-  // Get manufacturing config for the device from datastore
-  rpc GetManufacturingConfig(GetManufacturingConfigRequest) returns (manufacturing.Config);
-
-  // Get a device config for the device from datastore
-  rpc GetDeviceConfig(GetDeviceConfigRequest) returns (device.Config);
-
-  // Get a Hwid data for the device from datastore
-  rpc GetHwidData(GetHwidDataRequest) returns (HwidData);
 
   // Get the open manual repair records for a batch of hostnames from datastore
   rpc BatchGetManualRepairRecords(BatchGetManualRepairRecordsRequest) returns (BatchGetManualRepairRecordsResponse);
@@ -63,12 +77,6 @@ service Inventory {
   // BatchCreateManualRepairRecords creates multiple manual repair records in
   // datastore in batch
   rpc BatchCreateManualRepairRecords(BatchCreateManualRepairRecordsRequest) returns (BatchCreateManualRepairRecordsResponse);
-
-  // ListDeviceConfigs lists all device configs
-  //
-  // Explicitly not implementing AIP practices (https://google.aip.dev/132) due
-  // to desired deprecation of this service.
-  rpc ListDeviceConfigs(ListDeviceConfigsRequest) returns (ListDeviceConfigsResponse);
 }
 
 message ListCrosDevicesLabConfigRequest {

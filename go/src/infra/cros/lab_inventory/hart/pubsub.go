@@ -15,7 +15,6 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/lab_inventory/datastore"
 	fleet "infra/libs/fleet/protos/go"
 )
 
@@ -57,9 +56,6 @@ func PushHandler(ctx context.Context, r *http.Request) {
 	var response fleet.AssetInfoResponse
 	perr := proto.Unmarshal(data, &response)
 	if perr == nil {
-		if response.GetRequestStatus() == fleet.RequestStatus_OK {
-			datastore.AddAssetInfo(ctx, response.GetAssets())
-		}
 		logging.Infof(ctx, "Status: %v", response.GetRequestStatus())
 		missing := response.GetMissingAssetTags()
 		logging.Infof(ctx, "Missing[%v]: %v", len(missing), missing)

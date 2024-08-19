@@ -16,9 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/lab_inventory/changehistory"
 	inv "infra/cros/lab_inventory/protos"
-	"infra/cros/lab_inventory/utils"
 	fleet "infra/libs/fleet/protos"
 	ufs "infra/libs/fleet/protos/go"
 )
@@ -54,60 +52,6 @@ func (e *DeviceEntity) GetDutStateProto(p *lab.DutState) error {
 		return err
 	}
 	return nil
-}
-
-func (e *DeviceEntity) updateLabConfig(p *lab.ChromeOSDevice) (changehistory.Changes, error) {
-	var oldMsg lab.ChromeOSDevice
-	if err := proto.Unmarshal(e.LabConfig, &oldMsg); err != nil {
-		return nil, err
-	}
-	if proto.Equal(p, &oldMsg) {
-		// Do nothing if the proto message is identical.
-		return nil, nil
-	}
-	data, err := proto.Marshal(p)
-	if err != nil {
-		return nil, err
-	}
-	changes := changehistory.LogChromeOSDeviceChanges(&oldMsg, p)
-
-	e.LabConfig = data
-	e.Hostname = utils.GetHostname(p)
-
-	return changes, nil
-}
-
-func (e *DeviceEntity) updateDutState(p *lab.DutState) (changehistory.Changes, error) {
-	var oldMsg lab.DutState
-	if err := proto.Unmarshal(e.DutState, &oldMsg); err != nil {
-		return nil, err
-	}
-	if proto.Equal(p, &oldMsg) {
-		// Do nothing if the proto message is identical.
-		return nil, nil
-	}
-	data, err := proto.Marshal(p)
-	if err != nil {
-		return nil, err
-	}
-	changes := changehistory.LogDutStateChanges(e.Hostname, &oldMsg, p)
-
-	e.DutState = data
-	return changes, nil
-}
-
-// UpdatePayload sets the proto data to the entity.
-func (e *DeviceEntity) UpdatePayload(p proto.Message, t time.Time) (changes changehistory.Changes, err error) {
-	switch v := p.(type) {
-	case *lab.ChromeOSDevice:
-		changes, err = e.updateLabConfig(v)
-	case *lab.DutState:
-		changes, err = e.updateDutState(v)
-	default:
-		return nil, fmt.Errorf("inventory/datastore: unknown payload type to update: %T", v)
-	}
-	e.Updated = t
-	return changes, err
 }
 
 func (e *DeviceEntity) String() string {
