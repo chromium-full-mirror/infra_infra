@@ -71,6 +71,7 @@ var configurationDumpToolkit = map[string]getAllFunc{
 	"dhcps":                  getAllDHCPMsgs,
 	"ips":                    getAllIPMsgs,
 	"hwid_data":              getAllHwidData,
+	"device_config":          getAllDeviceConfigMsgs,
 }
 
 func uploadDumpToBQ(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
@@ -520,6 +521,26 @@ func getAllSchedulingUnitMsgs(ctx context.Context) ([]proto.Message, error) {
 		for _, r := range res {
 			msgs = append(msgs, &apibq.SchedulingUnitRow{
 				SchedulingUnit: r,
+			})
+		}
+		if nextToken == "" {
+			break
+		}
+		startToken = nextToken
+	}
+	return msgs, nil
+}
+
+func getAllDeviceConfigMsgs(ctx context.Context) ([]proto.Message, error) {
+	msgs := make([]proto.Message, 0)
+	for startToken := ""; ; {
+		res, nextToken, err := configuration.ListDeviceConfigs(ctx, pageSize, startToken, nil, false)
+		if err != nil {
+			return nil, errors.Annotate(err, "get all DeviceConfigs").Err()
+		}
+		for _, r := range res {
+			msgs = append(msgs, &apibq.DeviceConfigRow{
+				DeviceConfig: r,
 			})
 		}
 		if nextToken == "" {

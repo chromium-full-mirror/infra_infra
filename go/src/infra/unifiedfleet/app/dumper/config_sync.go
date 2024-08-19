@@ -22,6 +22,7 @@ import (
 // namespaceToRealmAssignerMap controls what namespaces are synced, and how realms are assigned
 var namespaceToRealmAssignerMap = map[string]configuration.RealmAssignerFunc{
 	util.OSPartnerNamespace: configuration.BoardModelRealmAssigner,
+	util.OSNamespace:        configuration.CrOSRealmAssigner,
 }
 
 // syncDeviceConfigs fetches devices configs from a file checked into gerrit

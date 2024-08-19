@@ -11,8 +11,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
@@ -61,10 +64,14 @@ func BlankRealmAssigner(d *ufsdevice.Config) string {
 	return ""
 }
 
-// BoardModelRealmAssigner constructs the realm based on the board and model
-// of the deviceconfig
+// BoardModelRealmAssigner constructs the realm of deviceconfig based on the board and model
 func BoardModelRealmAssigner(d *ufsdevice.Config) string {
 	return fmt.Sprintf("chromeos:%s-%s", strings.ToLower(d.Id.PlatformId.Value), strings.ToLower(d.Id.ModelId.Value))
+}
+
+// CrOSRealmAssigner constructs the realm
+func CrOSRealmAssigner(d *ufsdevice.Config) string {
+	return util.AtlLabAdminRealm
 }
 
 // newDeviceConfigEntityFunc generates a `datastore.NewFunc` that adds a realm
@@ -150,6 +157,49 @@ func BatchUpdateDeviceConfigs(ctx context.Context, configs []*ufsdevice.Config, 
 		return nil, err
 	}
 	return configs, nil
+}
+
+// ListDeviceConfigs lists all device configs.
+//
+// Does a query over device config entities. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). pageSize must be positive.
+func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufsdevice.Config, nextPageToken string, err error) {
+	q, err := ufsds.ListQuery(ctx, DeviceConfigKind, pageSize, pageToken, filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	var nextCur datastore.Cursor
+	err = datastore.Run(ctx, q, func(ent *DeviceConfigEntity, cb datastore.CursorCB) error {
+		pm, err := ent.GetProto()
+		if err != nil {
+			logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
+			return nil
+		}
+		dc := pm.(*ufsdevice.Config)
+		if keysOnly {
+			DutState := &ufsdevice.Config{
+				Id: dc.Id,
+			}
+			res = append(res, DutState)
+		} else {
+			res = append(res, dc)
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to list device configs %s", err)
+		return nil, "", status.Errorf(codes.Internal, fmt.Sprintf("%s: %s", ufsds.InternalError, err.Error()))
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
 }
 
 // GetDeviceConfigIDStr returns a string as device config short name.

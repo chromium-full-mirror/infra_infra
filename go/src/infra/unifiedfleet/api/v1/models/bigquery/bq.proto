@@ -23,6 +23,7 @@ import "infra/unifiedfleet/api/v1/models/rack.proto";
 import "infra/unifiedfleet/api/v1/models/rack_lse.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
 import "infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/device/config.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 
 message ChangeEventRow {
@@ -142,4 +143,9 @@ message SchedulingUnitRow {
 message HwidDataRow {
     models.HwidData hwid_data = 1;
     bool delete = 2;
+}
+
+// A device config row in BQ device_config table.
+message DeviceConfigRow {
+    models.chromeos.device.Config device_config = 1;
 }
