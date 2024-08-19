@@ -63,9 +63,4 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
-	if _, err := ninjalog.CreateTransferConfig(ctx, *project, *table); err != nil {
-		fmt.Printf("failed to create BigQuery transfer for project %s table %s: %v\n", *project, *table, err)
-		os.Exit(1)
-	}
 }
