@@ -1561,20 +1561,22 @@ func PrintDutsShort(res []proto.Message, keysOnly bool) {
 		fmt.Fprintf(tw, "\nHostname:\t%s\n", dut.GetName())
 		fmt.Fprintf(tw, "Inventory Id:\t%s\n", dut.GetMachines()[0])
 
-		servo := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo()
-		if servo != nil {
-			fmt.Fprintf(tw, "Servo:\n")
-			fmt.Fprintf(tw, "\thostname\t%s\n", servo.GetServoHostname())
-			fmt.Fprintf(tw, "\tport\t%d\n", servo.GetServoPort())
-			fmt.Fprintf(tw, "\tserial number\t%s\n", servo.GetServoSerial())
-			fmt.Fprintf(tw, "\ttype\t%s\n", servo.GetServoType())
-			fmt.Fprintf(tw, "\tsetup\t%s\n", servo.GetServoSetup())
-		} else {
-			fmt.Fprintf(tw, "Servo: None\n")
-		}
-		subrailConfig := dut.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig
-		if subrailConfig != "" {
-			fmt.Fprintf(tw, "Subrail Config: %+q\n", subrailConfig)
+		if innerDut := dut.GetChromeosMachineLse().GetDeviceLse().GetDut(); innerDut != nil {
+			servo := innerDut.GetPeripherals().GetServo()
+			if servo != nil {
+				fmt.Fprintf(tw, "Servo:\n")
+				fmt.Fprintf(tw, "\thostname\t%s\n", servo.GetServoHostname())
+				fmt.Fprintf(tw, "\tport\t%d\n", servo.GetServoPort())
+				fmt.Fprintf(tw, "\tserial number\t%s\n", servo.GetServoSerial())
+				fmt.Fprintf(tw, "\ttype\t%s\n", servo.GetServoType())
+				fmt.Fprintf(tw, "\tsetup\t%s\n", servo.GetServoSetup())
+			} else {
+				fmt.Fprintf(tw, "Servo: None\n")
+			}
+			subrailConfig := innerDut.SubrailConfig
+			if subrailConfig != "" {
+				fmt.Fprintf(tw, "Subrail Config: %+q\n", subrailConfig)
+			}
 		}
 
 		var rpm *chromeoslab.OSRPM
