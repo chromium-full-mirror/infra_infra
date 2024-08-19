@@ -56,11 +56,11 @@ type AMTClient struct {
 }
 
 // NewAMTClient returns a new AMTClient instance.
-func NewAMTClient(hostname string, username string, password string) AMTClient {
+func NewAMTClient(hostname string, username string, password string) *AMTClient {
 	protocol := "http"
 	port := 16992
 	uri := fmt.Sprintf("%s://%s:%d/wsman", protocol, hostname, port)
-	return AMTClient{uri, username, password}
+	return &AMTClient{uri, username, password}
 }
 
 func (c AMTClient) post(ctx context.Context, request string) (string, error) {

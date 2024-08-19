@@ -41,10 +41,16 @@ func setAMTStateExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // healthCheckExec checks if we can retrieve the power state.
 func healthCheckExec(ctx context.Context, info *execs.ExecInfo) error {
-	//TODO(b:353671548): Store the AMT password somewhere more secure
-	//
-	// These values are temporary, to support testing on live DUTs.
-	client := amt.NewAMTClient("192.168.231.218", "admin", "P@ssword1")
+	dut := info.GetDut()
+	if dut.GetChromeos().GetAmtManager() == nil {
+		return errors.Reason("check amt_manager health: amt_manager is not supported").Err()
+	}
+	hostname := dut.GetChromeos().GetAmtManager().GetHostname()
+	if hostname == "" {
+		return errors.Reason("check amt_manager health: hostname is empty").Err()
+	}
+	// b/353671548: Store the AMT password somewhere else.
+	client := amt.NewAMTClient(hostname, "admin", "P@ssword1")
 	//TODO(b/353283943): Implement a more granular AMT health check.
 	//
 	// Use this as a health check for now, since it implicity verifies that we can
