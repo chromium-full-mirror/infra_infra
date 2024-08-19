@@ -8,11 +8,9 @@ import (
 	"context"
 	"net/http"
 
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
@@ -37,9 +35,6 @@ var spreadSheetScope = []string{authclient.OAuthScopeEmail, "https://www.googlea
 // InterfaceFactoryKey is the key used to store instance of InterfaceFactory in context.
 var InterfaceFactoryKey = util.Key("ufs external-server-interface key")
 
-// CrosInventoryInterfaceFactory is a constructor for a invV2Api.InventoryClient
-type CrosInventoryInterfaceFactory func(ctx context.Context, host string) (CrosInventoryClient, error)
-
 // SheetInterfaceFactory is a constructor for a sheet.ClientInterface
 type SheetInterfaceFactory func(ctx context.Context) (sheet.ClientInterface, error)
 
@@ -57,19 +52,11 @@ type DeviceConfigFactory func(ctx context.Context, inventoryHost string) (Device
 
 // InterfaceFactory provides a collection of interfaces to external clients.
 type InterfaceFactory struct {
-	crosInventoryInterfaceFactory CrosInventoryInterfaceFactory
-	sheetInterfaceFactory         SheetInterfaceFactory
-	gitInterfaceFactory           GitInterfaceFactory
-	hwidInterfaceFactory          HwidInterfaceFactory
-	gitTilesInterfaceFactory      GitTilesInterfaceFactory
-	deviceConfigFactory           DeviceConfigFactory
-}
-
-// CrosInventoryClient refers to the fake inventory v2 client
-type CrosInventoryClient interface {
-	ListCrosDevicesLabConfig(ctx context.Context, in *invV2Api.ListCrosDevicesLabConfigRequest, opts ...grpc.CallOption) (*invV2Api.ListCrosDevicesLabConfigResponse, error)
-	GetManufacturingConfig(ctx context.Context, in *invV2Api.GetManufacturingConfigRequest, opts ...grpc.CallOption) (*manufacturing.Config, error)
-	GetHwidData(ctx context.Context, in *invV2Api.GetHwidDataRequest, opts ...grpc.CallOption) (*invV2Api.HwidData, error)
+	sheetInterfaceFactory    SheetInterfaceFactory
+	gitInterfaceFactory      GitInterfaceFactory
+	hwidInterfaceFactory     HwidInterfaceFactory
+	gitTilesInterfaceFactory GitTilesInterfaceFactory
+	deviceConfigFactory      DeviceConfigFactory
 }
 
 // GetServerInterface retrieves the ExternalServerInterface from context.
@@ -83,32 +70,12 @@ func GetServerInterface(ctx context.Context) (*InterfaceFactory, error) {
 // WithServerInterface adds the external server interface to context.
 func WithServerInterface(ctx context.Context) context.Context {
 	return context.WithValue(ctx, InterfaceFactoryKey, &InterfaceFactory{
-		crosInventoryInterfaceFactory: crosInventoryInterfaceFactoryImpl,
-		sheetInterfaceFactory:         sheetInterfaceFactoryImpl,
-		gitInterfaceFactory:           gitInterfaceFactoryImpl,
-		gitTilesInterfaceFactory:      gitTilesInterfaceFactoryImpl,
-		hwidInterfaceFactory:          hwidInterfaceFactoryImpl,
-		deviceConfigFactory:           deviceConfigFactoryImpl,
+		sheetInterfaceFactory:    sheetInterfaceFactoryImpl,
+		gitInterfaceFactory:      gitInterfaceFactoryImpl,
+		gitTilesInterfaceFactory: gitTilesInterfaceFactoryImpl,
+		hwidInterfaceFactory:     hwidInterfaceFactoryImpl,
+		deviceConfigFactory:      deviceConfigFactoryImpl,
 	})
-}
-
-// NewCrosInventoryInterfaceFactory creates a new CrosInventoryInterface.
-func (es *InterfaceFactory) NewCrosInventoryInterfaceFactory(ctx context.Context, host string) (CrosInventoryClient, error) {
-	if es.crosInventoryInterfaceFactory == nil {
-		es.crosInventoryInterfaceFactory = crosInventoryInterfaceFactoryImpl
-	}
-	return es.crosInventoryInterfaceFactory(ctx, host)
-}
-
-func crosInventoryInterfaceFactoryImpl(ctx context.Context, host string) (CrosInventoryClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
-	if err != nil {
-		return nil, err
-	}
-	return invV2Api.NewInventoryPRPCClient(&prpc.Client{
-		C:    &http.Client{Transport: t},
-		Host: host,
-	}), nil
 }
 
 // NewSheetInterface creates a new Sheet interface.

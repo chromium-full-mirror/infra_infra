@@ -18,20 +18,15 @@ func WithTestingContext(ctx context.Context) context.Context {
 	_, err := GetServerInterface(ctx)
 	if err != nil {
 		es := &InterfaceFactory{
-			crosInventoryInterfaceFactory: fakeCrosInventoryInterface,
-			sheetInterfaceFactory:         fakeSheetInterfaceFactory,
-			gitInterfaceFactory:           fakeGitInterfaceFactory,
-			gitTilesInterfaceFactory:      fakeGitTilesInterfaceFactory,
-			hwidInterfaceFactory:          fakeHwidInterfaceFactory,
-			deviceConfigFactory:           fakeDeviceConfigFactory,
+			sheetInterfaceFactory:    fakeSheetInterfaceFactory,
+			gitInterfaceFactory:      fakeGitInterfaceFactory,
+			gitTilesInterfaceFactory: fakeGitTilesInterfaceFactory,
+			hwidInterfaceFactory:     fakeHwidInterfaceFactory,
+			deviceConfigFactory:      fakeDeviceConfigFactory,
 		}
 		return context.WithValue(ctx, InterfaceFactoryKey, es)
 	}
 	return ctx
-}
-
-func fakeCrosInventoryInterface(ctx context.Context, host string) (CrosInventoryClient, error) {
-	return &fake.InventoryClient{}, nil
 }
 
 func fakeSheetInterfaceFactory(ctx context.Context) (sheet.ClientInterface, error) {

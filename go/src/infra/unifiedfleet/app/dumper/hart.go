@@ -6,6 +6,7 @@ package dumper
 
 import (
 	"context"
+	"regexp"
 	"strings"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
+
+var macRegex = regexp.MustCompile(`^([0-9A-Fa-f]{2}[:\.-]){5}([0-9A-Fa-f]{2})$`)
 
 // SyncAssetInfoFromHaRT publishes the request for asset info to HaRT.
 //

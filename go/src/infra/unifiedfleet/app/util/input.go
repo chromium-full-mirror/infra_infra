@@ -933,6 +933,8 @@ var googlers = []*regexp.Regexp{
 	regexp.MustCompile(`testbed`),
 }
 
+var oslabRegexp = regexp.MustCompile(`chromeos[0-9]{1,2}`)
+
 // LabToZone converts deprecated Lab type to Zone
 func LabToZone(lab string) ufspb.Zone {
 	if strings.Contains(lab, "mtv1950-testing") {

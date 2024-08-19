@@ -7,7 +7,6 @@ package util
 import (
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -15,34 +14,6 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/frontend/fake"
 )
-
-func TestCopyDUT(t *testing.T) {
-	ftt.Run("Verify copyDUT", t, func(t *ftt.Test) {
-		t.Run("happy path", func(t *ftt.Test) {
-			mockLabConfig := fake.GetMockDUT()
-			newDUT := copyDUT(mockLabConfig.GetConfig().GetDut())
-			nb, err := proto.Marshal(newDUT)
-			assert.Loosely(t, err, should.BeNil)
-			ob, err := proto.Marshal(mockLabConfig.Config.GetDut())
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, nb, should.Resemble(ob))
-		})
-	})
-}
-
-func TestCopyLabstation(t *testing.T) {
-	ftt.Run("Verify copyLabstation", t, func(t *ftt.Test) {
-		t.Run("happy path", func(t *ftt.Test) {
-			mockLabConfig := fake.GetMockLabstation()
-			newL := copyLabstation(mockLabConfig.GetConfig().GetLabstation())
-			nb, err := proto.Marshal(newL)
-			assert.Loosely(t, err, should.BeNil)
-			ob, err := proto.Marshal(mockLabConfig.GetConfig().GetLabstation())
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, nb, should.Resemble(ob))
-		})
-	})
-}
 
 func TestParseATLTopology(t *testing.T) {
 	ftt.Run("Verify ParseATLTopology", t, func(t *ftt.Test) {
