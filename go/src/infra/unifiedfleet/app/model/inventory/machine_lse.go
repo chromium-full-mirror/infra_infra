@@ -624,23 +624,6 @@ func redactMachineLSEOwnership(ctx context.Context, machineLSE *ufspb.MachineLSE
 	}
 }
 
-// ImportMachineLSEs creates or updates a batch of machine lses in datastore
-func ImportMachineLSEs(ctx context.Context, lses []*ufspb.MachineLSE) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(lses))
-	utime := ptypes.TimestampNow()
-	for i, m := range lses {
-		if m.UpdateTime == nil {
-			m.UpdateTime = utime
-		}
-
-		// Redact ownership data
-		redactMachineLSEOwnership(ctx, m)
-
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newMachineLSEEntity, true, true)
-}
-
 func queryAllMachineLSE(ctx context.Context) ([]ufsds.FleetEntity, error) {
 	var entities []*MachineLSEEntity
 	q := datastore.NewQuery(MachineLSEKind)

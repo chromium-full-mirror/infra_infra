@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
-	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	grpcStatus "google.golang.org/grpc/status"
 
@@ -17,11 +16,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/util"
 )
@@ -499,33 +496,6 @@ func (fs *FleetServerImpl) DeleteRackLSE(ctx context.Context, req *ufsAPI.Delete
 	name := util.RemovePrefix(req.Name)
 	err = controller.DeleteRackLSE(ctx, name)
 	return &empty.Empty{}, err
-}
-
-// ImportOSMachineLSEs imports chromeos devices machine lses
-func (fs *FleetServerImpl) ImportOSMachineLSEs(ctx context.Context, req *ufsAPI.ImportOSMachineLSEsRequest) (response *status.Status, err error) {
-	source := req.GetMachineDbSource()
-	if err := ufsAPI.ValidateMachineDBSource(source); err != nil {
-		return nil, err
-	}
-	es, err := external.GetServerInterface(ctx)
-	if err != nil {
-		return nil, err
-	}
-	client, err := es.NewCrosInventoryInterfaceFactory(ctx, source.GetHost())
-	if err != nil {
-		return nil, crosInventoryConnectionFailureStatus.Err()
-	}
-	resp, err := client.ListCrosDevicesLabConfig(ctx, &invV2Api.ListCrosDevicesLabConfigRequest{})
-	if err != nil {
-		return nil, crosInventoryServiceFailureStatus("ListCrosDevicesLabConfig").Err()
-	}
-	pageSize := fs.getImportPageSize()
-	res, err := controller.ImportOSMachineLSEs(ctx, resp.GetLabConfigs(), pageSize)
-	s := processImportDatastoreRes(res, err)
-	if s.Err() != nil {
-		return s.Proto(), s.Err()
-	}
-	return successStatus.Proto(), nil
 }
 
 // GetChromeOSDeviceData gets the ChromeOSDeviceData(MachineLSE, Machine, Device config, Manufacturing config, Dutstate and Hwid data)

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"testing"
 
-	code "google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -1263,103 +1262,6 @@ func TestDeleteRackLSE(t *testing.T) {
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.InvalidCharacters))
-		})
-	})
-}
-
-func TestImportOSMachineLSEs(t *testing.T) {
-	t.Parallel()
-	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
-	defer validate()
-	ftt.Run("Import ChromeOS machine lses", t, func(t *ftt.Test) {
-		t.Run("happy path", func(t *ftt.Test) {
-			req := &ufsAPI.ImportOSMachineLSEsRequest{
-				Source: &ufsAPI.ImportOSMachineLSEsRequest_MachineDbSource{
-					MachineDbSource: &ufsAPI.MachineDBSource{
-						Host: "fake_host",
-					},
-				},
-			}
-			tf.Fleet.importPageSize = 25
-			res, err := tf.Fleet.ImportOSMachineLSEs(ctx, req)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res.Code, should.Equal(code.Code_OK))
-
-			// Verify machine lse prototypes
-			lps, _, err := configuration.ListMachineLSEPrototypes(ctx, 100, "", nil, false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, ufsAPI.ParseResources(lps, "Name"), should.Resemble([]string{"acs:camera", "acs:wificell", "atl:labstation", "atl:standard"}))
-
-			// Verify machine lses
-			machineLSEs, _, err := inventory.ListMachineLSEs(ctx, 100, "", nil, false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, ufsAPI.ParseResources(machineLSEs, "Name"), should.Resemble([]string{"chromeos2-test_host", "chromeos3-test_host", "chromeos5-test_host", "test_servo"}))
-			// Spot check some fields
-			for _, r := range machineLSEs {
-				switch r.GetName() {
-				case "test_host", "chromeos1-test_host", "chromeos3-test_host":
-					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools(), should.Resemble([]string{"DUT_POOL_QUOTA", "hotrod"}))
-					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeTrue)
-				case "test_servo":
-					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Resemble([]string{"labstation_main"}))
-					assert.Loosely(t, r.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitName(), should.Equal("test_power_unit_name"))
-				}
-			}
-			lse, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_dut_id", false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, lse, should.HaveLength(1))
-			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("atl:standard"))
-			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos2-test_host"))
-			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_camera_dut_id", false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, lse, should.HaveLength(1))
-			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("acs:camera"))
-			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos3-test_host"))
-			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_wifi_dut_id", false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, lse, should.HaveLength(1))
-			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("acs:wificell"))
-			assert.Loosely(t, lse[0].GetHostname(), should.Equal("chromeos5-test_host"))
-			lse, err = inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", "mock_labstation_id", false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, lse, should.HaveLength(1))
-			assert.Loosely(t, lse[0].GetMachineLsePrototype(), should.Equal("atl:labstation"))
-			assert.Loosely(t, lse[0].GetHostname(), should.Equal("test_servo"))
-
-			// Verify dut states
-			resp, err := state.GetAllDutStates(ctx)
-			assert.Loosely(t, err, should.BeNil)
-			// Labstation doesn't have dut state
-			assert.Loosely(t, resp.Passed(), should.HaveLength(3))
-			ds, err := state.GetDutState(ctx, "mock_dut_id")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
-			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
-			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
-			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
-			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos2-test_host"))
-
-			ds, err = state.GetDutState(ctx, "mock_camera_dut_id")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_SERVOD_ISSUE))
-			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
-			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
-			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
-			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos3-test_host"))
-
-			ds, err = state.GetDutState(ctx, "mock_wifi_dut_id")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, ds.GetServo(), should.Equal(chromeosLab.PeripheralState_NOT_CONNECTED))
-			assert.Loosely(t, ds.GetWorkingBluetoothBtpeer(), should.Equal(1))
-			assert.Loosely(t, ds.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_NORMAL))
-			assert.Loosely(t, ds.GetCr50Phase(), should.Equal(chromeosLab.DutState_CR50_PHASE_PVT))
-			assert.Loosely(t, ds.GetHostname(), should.Equal("chromeos5-test_host"))
-
-			ds, err = state.GetDutState(ctx, "mock_labstation_id")
-			assert.Loosely(t, ds, should.BeNil)
-			assert.Loosely(t, err, should.NotBeNil)
-			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 	})
 }

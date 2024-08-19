@@ -313,16 +313,3 @@ func DeleteDutStates(ctx context.Context, resourceNames []string) *ufsds.OpResul
 	}
 	return ufsds.DeleteAll(ctx, protos, newDutStateEntity)
 }
-
-// ImportDutStates creates or updates a batch of dut states in datastore
-func ImportDutStates(ctx context.Context, dutStates []*chromeosLab.DutState) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(dutStates))
-	utime := ptypes.TimestampNow()
-	for i, m := range dutStates {
-		if m.UpdateTime == nil {
-			m.UpdateTime = utime
-		}
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newDutStateEntity, true, true)
-}

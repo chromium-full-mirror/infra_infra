@@ -640,23 +640,6 @@ func (s *DecoratedFleet) RenameMachineLSE(ctx context.Context, req *RenameMachin
 	return
 }
 
-func (s *DecoratedFleet) ImportOSMachineLSEs(ctx context.Context, req *ImportOSMachineLSEsRequest) (rsp *status.Status, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ImportOSMachineLSEs", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ImportOSMachineLSEs(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ImportOSMachineLSEs", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedFleet) CreateRackLSE(ctx context.Context, req *CreateRackLSERequest) (rsp *models.RackLSE, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

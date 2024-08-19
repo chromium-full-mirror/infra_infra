@@ -146,9 +146,6 @@ service Fleet {
   // Rename the machine lse
   rpc RenameMachineLSE(RenameMachineLSERequest) returns (models.MachineLSE);
 
-  // ImportOSMachineLSEs imports ChromeOS machine LSEs & all related infos if needed.
-  rpc ImportOSMachineLSEs(ImportOSMachineLSEsRequest) returns (google.rpc.Status);
-
   // CreateRackLSE creates a new rackLSE
   rpc CreateRackLSE(CreateRackLSERequest) returns (models.RackLSE);
 
@@ -688,28 +685,9 @@ message DeleteChromePlatformRequest {
   ];
 }
 
-message ImportChromePlatformsRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
-}
-
-message ImportChromePlatformsResponse {
-  repeated ChromePlatformResult passed = 1;
-  repeated ChromePlatformResult failed = 2;
-}
-
 message ChromePlatformResult {
   models.ChromePlatform platform = 1;
   string error_msg = 2;
-}
-
-message ImportOSVersionsRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
 }
 
 message ListOSVersionsRequest {
@@ -1187,21 +1165,6 @@ message RenameMachineLSERequest {
   ];
 }
 
-message ImportMachineLSEsRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
-}
-
-message ImportOSMachineLSEsRequest {
-  oneof source {
-    // Continue to use machine_db_source to specify any service host for consistency
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
-}
-
 // Contains the required information for creating a RackLSE represented in
 // the database.
 message CreateRackLSERequest {
@@ -1344,13 +1307,6 @@ message DeleteNicRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = { type: "unified-fleet-system.appspot.com/Nic" }
   ];
-}
-
-message ImportNicsRequest {
-  oneof source {
-    MachineDBSource machine_db_source = 1;
-    ConfigSource config_source = 2;
-  }
 }
 
 message RenameNicRequest {
