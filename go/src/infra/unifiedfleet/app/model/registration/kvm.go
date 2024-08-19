@@ -229,17 +229,6 @@ func putAllKVM(ctx context.Context, kvms []*ufspb.KVM, update bool) ([]*ufspb.KV
 	return nil, err
 }
 
-// ImportKVMs creates or updates a batch of kvms in datastore.
-func ImportKVMs(ctx context.Context, kvms []*ufspb.KVM) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(kvms))
-	utime := ptypes.TimestampNow()
-	for i, m := range kvms {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newKVMEntity, true, true)
-}
-
 func queryAllKVM(ctx context.Context) ([]ufsds.FleetEntity, error) {
 	var entities []*KVMEntity
 	q := datastore.NewQuery(KVMKind)

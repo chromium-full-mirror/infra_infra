@@ -202,17 +202,6 @@ func putSwitch(ctx context.Context, s *ufspb.Switch, update bool) (*ufspb.Switch
 	return nil, err
 }
 
-// ImportSwitches creates or updates a batch of switches in datastore
-func ImportSwitches(ctx context.Context, switches []*ufspb.Switch) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(switches))
-	utime := ptypes.TimestampNow()
-	for i, m := range switches {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newSwitchEntity, true, true)
-}
-
 // BatchUpdateSwitches updates switches in datastore.
 //
 // This is a non-atomic operation and doesnt check if the object already exists before

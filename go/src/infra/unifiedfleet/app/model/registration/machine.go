@@ -437,21 +437,6 @@ func DeleteMachine(ctx context.Context, id string) error {
 	return ufsds.Delete(ctx, &ufspb.Machine{Name: id}, newMachineEntity)
 }
 
-// ImportMachines creates or updates a batch of machines in datastore
-func ImportMachines(ctx context.Context, machines []*ufspb.Machine) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(machines))
-	utime := ptypes.TimestampNow()
-	for i, m := range machines {
-		m.UpdateTime = utime
-
-		// Redact ownership data
-		redactMachineOwnership(ctx, m)
-
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newMachineEntity, true, true)
-}
-
 // BatchUpdateMachines updates machines in datastore.
 //
 // This is a non-atomic operation and doesnt check if the object already exists before

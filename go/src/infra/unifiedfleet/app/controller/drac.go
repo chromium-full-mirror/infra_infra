@@ -20,7 +20,6 @@ import (
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/registration"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -357,11 +356,6 @@ func deleteDracHelper(ctx context.Context, id string, inTransaction bool) error 
 		return nil
 	}
 	return f(ctx)
-}
-
-// ImportDracs creates or updates a batch of dracs in datastore
-func ImportDracs(ctx context.Context, dracs []*ufspb.Drac) (*ufsds.OpResults, error) {
-	return registration.ImportDracs(ctx, dracs)
 }
 
 // ReplaceDrac replaces an old Drac with new Drac in datastore

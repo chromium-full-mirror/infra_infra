@@ -23,27 +23,6 @@ func mockState(resource string, state ufspb.State) *ufspb.StateRecord {
 	}
 }
 
-func TestImportStateRecords(t *testing.T) {
-	t.Parallel()
-	ctx := gaetesting.TestingContextWithAppID("go-test")
-	datastore.GetTestable(ctx).Consistent(true)
-	ftt.Run("import states", t, func(t *ftt.Test) {
-		states := []*ufspb.StateRecord{
-			mockState("machines/abc", ufspb.State_STATE_SERVING),
-			mockState("vms/abc-1", ufspb.State_STATE_SERVING),
-			mockState("vms/abc-2", ufspb.State_STATE_NEEDS_REPAIR),
-		}
-		t.Run("happy path", func(t *ftt.Test) {
-			resp, err := ImportStateRecords(ctx, states)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Passed(), should.HaveLength(len(states)))
-			getRes, _, err := ListStateRecords(ctx, 100, "", nil)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, getRes, should.Resemble(states))
-		})
-	})
-}
-
 func TestListState(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
@@ -55,7 +34,7 @@ func TestListState(t *testing.T) {
 			mockState("vms/abc-2", ufspb.State_STATE_NEEDS_REPAIR),
 		}
 		t.Run("happy path with single filter", func(t *ftt.Test) {
-			_, err := ImportStateRecords(ctx, states)
+			_, err := BatchUpdateStates(ctx, states)
 			assert.Loosely(t, err, should.BeNil)
 
 			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]interface{}{
@@ -68,7 +47,7 @@ func TestListState(t *testing.T) {
 			}
 		})
 		t.Run("happy path with multiple filter", func(t *ftt.Test) {
-			_, err := ImportStateRecords(ctx, states)
+			_, err := BatchUpdateStates(ctx, states)
 			assert.Loosely(t, err, should.BeNil)
 
 			resp, _, err := ListStateRecords(ctx, 10, "", map[string][]interface{}{

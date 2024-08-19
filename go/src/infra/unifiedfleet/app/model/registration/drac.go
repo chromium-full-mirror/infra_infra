@@ -231,17 +231,6 @@ func putAllDrac(ctx context.Context, dracs []*ufspb.Drac, update bool) ([]*ufspb
 	return nil, err
 }
 
-// ImportDracs creates or updates a batch of dracs in datastore.
-func ImportDracs(ctx context.Context, dracs []*ufspb.Drac) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(dracs))
-	utime := ptypes.TimestampNow()
-	for i, m := range dracs {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newDracEntity, true, true)
-}
-
 func queryAllDrac(ctx context.Context) ([]ufsds.FleetEntity, error) {
 	var entities []*DracEntity
 	q := datastore.NewQuery(DracKind)

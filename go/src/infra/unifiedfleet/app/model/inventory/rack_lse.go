@@ -204,17 +204,6 @@ func putAllRackLSE(ctx context.Context, rackLSEs []*ufspb.RackLSE, update bool) 
 	return nil, err
 }
 
-// ImportRackLSEs creates or updates a batch of rack LSEs in datastore
-func ImportRackLSEs(ctx context.Context, lses []*ufspb.RackLSE) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(lses))
-	utime := ptypes.TimestampNow()
-	for i, m := range lses {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newRackLSEEntity, true, true)
-}
-
 // GetRackLSEIndexedFieldName returns the index name
 func GetRackLSEIndexedFieldName(input string) (string, error) {
 	var field string

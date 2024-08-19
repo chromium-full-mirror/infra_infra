@@ -119,17 +119,6 @@ func ListStateRecords(ctx context.Context, pageSize int32, pageToken string, fil
 	return
 }
 
-// ImportStateRecords creates or updates a batch of state records in datastore
-func ImportStateRecords(ctx context.Context, states []*ufspb.StateRecord) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(states))
-	utime := ptypes.TimestampNow()
-	for i, m := range states {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newRecordEntity, true, true)
-}
-
 func queryAllState(ctx context.Context) ([]ufsds.FleetEntity, error) {
 	var entities []*RecordEntity
 	q := datastore.NewQuery(RecordKind)

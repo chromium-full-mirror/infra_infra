@@ -112,15 +112,6 @@ func ListOSes(ctx context.Context, pageSize int32, pageToken string, filterMap m
 	return
 }
 
-// ImportOses inserts chrome os versions to datastore.
-func ImportOses(ctx context.Context, oses []*ufspb.OSVersion) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(oses))
-	for i, p := range oses {
-		protos[i] = p
-	}
-	return ufsds.Insert(ctx, protos, newOSVersionEntity, true, true)
-}
-
 // GetAllOSes returns all os versions in record.
 func GetAllOSes(ctx context.Context) (*ufsds.OpResults, error) {
 	return ufsds.GetAll(ctx, queryAllOS)

@@ -15,13 +15,6 @@ import (
 	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
-// ImportOSes inserts chrome os_version to datastore.
-func ImportOSes(ctx context.Context, oses []*ufspb.OSVersion, pageSize int) (*ufsds.OpResults, error) {
-	deleteNonExistingOSes(ctx, oses, pageSize)
-	logging.Infof(ctx, "Importing %d os versions", len(oses))
-	return configuration.ImportOses(ctx, oses)
-}
-
 // ListOSes lists the chrome os_version
 func ListOSes(ctx context.Context, pageSize int32, pageToken string, filter string, keysOnly bool) ([]*ufspb.OSVersion, string, error) {
 	var filterMap map[string][]interface{}

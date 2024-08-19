@@ -363,17 +363,6 @@ func putRack(ctx context.Context, rack *ufspb.Rack, update bool) (*ufspb.Rack, e
 	return nil, err
 }
 
-// ImportRacks creates or updates a batch of racks in datastore.
-func ImportRacks(ctx context.Context, racks []*ufspb.Rack) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(racks))
-	utime := ptypes.TimestampNow()
-	for i, m := range racks {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newRackEntity, true, true)
-}
-
 func putAllRack(ctx context.Context, racks []*ufspb.Rack, update bool) ([]*ufspb.Rack, error) {
 	protos := make([]proto.Message, len(racks))
 	updateTime := ptypes.TimestampNow()

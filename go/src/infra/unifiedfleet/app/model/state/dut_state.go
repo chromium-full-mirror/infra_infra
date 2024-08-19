@@ -291,7 +291,7 @@ func validateDutStateFilters(filterMap map[string][]interface{}) error {
 	return nil
 }
 
-// The below 3 functions (GetAllDutStates, DeleteDutStates, ImportDutStates)
+// The below functions (GetAllDutStates, DeleteDutStates)
 // cannot be used by anyone outside the fleet team.
 // Although we believe these need to be removed that is a task for another day
 // TODO: remove usage of these function or just throw an error as an output

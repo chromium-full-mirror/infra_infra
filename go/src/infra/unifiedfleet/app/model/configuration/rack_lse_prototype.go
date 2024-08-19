@@ -182,17 +182,6 @@ func putRackLSEPrototype(ctx context.Context, rackLSEPrototype *ufspb.RackLSEPro
 	return nil, err
 }
 
-// ImportRackLSEPrototypes creates or updates a batch of rack lse prototypes in datastore
-func ImportRackLSEPrototypes(ctx context.Context, lps []*ufspb.RackLSEPrototype) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(lps))
-	utime := ptypes.TimestampNow()
-	for i, m := range lps {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newRackLSEPrototypeEntity, true, true)
-}
-
 // GetRackLSEPrototypeIndexedFieldName returns the index name
 func GetRackLSEPrototypeIndexedFieldName(input string) (string, error) {
 	var field string

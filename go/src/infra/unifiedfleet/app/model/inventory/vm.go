@@ -239,22 +239,6 @@ func BatchUpdateVMs(ctx context.Context, vms []*ufspb.VM) ([]*ufspb.VM, error) {
 	return nil, err
 }
 
-// ImportVMs creates or updates a batch of vms in datastore
-func ImportVMs(ctx context.Context, vms []*ufspb.VM) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(vms))
-	utime := ptypes.TimestampNow()
-	for i, m := range vms {
-		if m.UpdateTime == nil {
-			m.UpdateTime = utime
-		}
-		// Redact ownership data
-		redactVMOwnership(ctx, m)
-
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newVMEntity, true, true)
-}
-
 // UpdateVMOwnership updates VM ownership in datastore.
 func UpdateVMOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipData) (*ufspb.VM, error) {
 	return putVMOwnership(ctx, id, ownership, true)

@@ -242,17 +242,6 @@ func putAllNic(ctx context.Context, nics []*ufspb.Nic, update bool) ([]*ufspb.Ni
 	return nil, err
 }
 
-// ImportNics creates or updates a batch of nics in datastore.
-func ImportNics(ctx context.Context, nics []*ufspb.Nic) (*ufsds.OpResults, error) {
-	protos := make([]proto.Message, len(nics))
-	utime := ptypes.TimestampNow()
-	for i, m := range nics {
-		m.UpdateTime = utime
-		protos[i] = m
-	}
-	return ufsds.Insert(ctx, protos, newNicEntity, true, true)
-}
-
 func queryAllNic(ctx context.Context) ([]ufsds.FleetEntity, error) {
 	var entities []*NicEntity
 	q := datastore.NewQuery(NicKind)

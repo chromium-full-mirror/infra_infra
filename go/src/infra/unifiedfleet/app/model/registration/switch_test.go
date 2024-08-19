@@ -179,37 +179,6 @@ func TestDeleteSwitch(t *testing.T) {
 	})
 }
 
-func TestImportSwitches(t *testing.T) {
-	t.Parallel()
-	ctx := gaetesting.TestingContextWithAppID("go-test")
-	datastore.GetTestable(ctx).Consistent(true)
-	ftt.Run("import switches", t, func(t *ftt.Test) {
-		switches := []*ufspb.Switch{
-			mockSwitch("switch1"),
-			mockSwitch("switch2"),
-		}
-		t.Run("happy path", func(t *ftt.Test) {
-			resp, err := ImportSwitches(ctx, switches)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Passed(), should.HaveLength(len(switches)))
-			getRes, _, err := ListSwitches(ctx, 100, "", nil, false)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, getRes, should.Resemble(switches))
-		})
-		t.Run("happy path also for importing existing switches", func(t *ftt.Test) {
-			switch1 := []*ufspb.Switch{
-				mockSwitch("switch1"),
-			}
-			resp, err := ImportSwitches(ctx, switch1)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Passed(), should.HaveLength(len(switch1)))
-			s, err := GetSwitch(ctx, "switch1")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s, should.Resemble(switch1[0]))
-		})
-	})
-}
-
 func mockSwitch(id string) *ufspb.Switch {
 	return &ufspb.Switch{
 		Name: id,
