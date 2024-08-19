@@ -83,16 +83,6 @@ func getFailedResults(ctx context.Context, results []datastore.DeviceOpResult, h
 	return failedDevices
 }
 
-// AddCrosDevices adds new Chrome OS devices to the inventory.
-func (is *InventoryServerImpl) AddCrosDevices(ctx context.Context, req *api.AddCrosDevicesRequest) (resp *api.AddCrosDevicesResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	AddCrosDevices is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
 func addFailedDevice(ctx context.Context, failedDevices *[]*api.DeviceOpResult, dev *lab.ChromeOSDevice, err error, operation string) {
 	hostname := utils.GetHostname(dev)
 	logging.Errorf(ctx, "failed to %s for %s: %s", operation, hostname, err.Error())
@@ -472,84 +462,6 @@ func (is *InventoryServerImpl) UpdateDutsStatus(ctx context.Context, req *api.Up
 	return resp, nil
 }
 
-// UpdateLabstations updates the given labstations.
-func (is *InventoryServerImpl) UpdateLabstations(ctx context.Context, req *api.UpdateLabstationsRequest) (resp *api.UpdateLabstationsResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	 UpdateLabstations is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-// UpdateCrosDevicesSetup updates the selected Chrome OS devices setup data in
-// the inventory.
-func (is *InventoryServerImpl) UpdateCrosDevicesSetup(ctx context.Context, req *api.UpdateCrosDevicesSetupRequest) (resp *api.UpdateCrosDevicesSetupResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	UpdateCrosDevicesSetup is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-func getRemovalReason(req *api.DeleteCrosDevicesRequest) string {
-	if r := req.GetReason(); r.GetBug() != "" || r.GetComment() != "" {
-		return fmt.Sprintf("%s: %s", r.GetBug(), r.GetComment())
-	}
-	return ""
-}
-
-// DeleteCrosDevices delete the selelcted devices from the inventory.
-func (is *InventoryServerImpl) DeleteCrosDevices(ctx context.Context, req *api.DeleteCrosDevicesRequest) (resp *api.DeleteCrosDevicesResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	DeleteCrosDevices is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-// BatchUpdateDevices updates some specific devices properties in batch.
-func (is *InventoryServerImpl) BatchUpdateDevices(ctx context.Context, req *api.BatchUpdateDevicesRequest) (resp *api.BatchUpdateDevicesResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	BatchUpdateDevices is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-// AddAssets adds a record of the given asset to datastore
-func (is *InventoryServerImpl) AddAssets(ctx context.Context, req *api.AssetList) (response *api.AssetResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	AddAssets is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-// UpdateAssets updates a record of the given asset to datastore
-func (is *InventoryServerImpl) UpdateAssets(ctx context.Context, req *api.AssetList) (response *api.AssetResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	UpdateAssets is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-// GetAssets retrieves the asset information given its asset ID
-func (is *InventoryServerImpl) GetAssets(ctx context.Context, req *api.AssetIDList) (response *api.AssetResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	GetAssets is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
 // ListCrosDevicesLabConfig retrieves all lab configs
 func (is *InventoryServerImpl) ListCrosDevicesLabConfig(ctx context.Context, req *api.ListCrosDevicesLabConfigRequest) (response *api.ListCrosDevicesLabConfigResponse, err error) {
 	defer func() {
@@ -583,53 +495,6 @@ func (is *InventoryServerImpl) ListCrosDevicesLabConfig(ctx context.Context, req
 	return &api.ListCrosDevicesLabConfigResponse{
 		LabConfigs: labConfigs,
 	}, nil
-}
-
-// DeleteAssets deletes the asset information from datastore
-func (is *InventoryServerImpl) DeleteAssets(ctx context.Context, req *api.AssetIDList) (response *api.AssetIDResponse, err error) {
-	// TODO(crbug.com/1184794): Remove all the dependencies
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason(`
-	DeleteAssets is deprecated.
-	Check go/shivas, go/shivas-manual-os for alternative tools.
-	Unified-Fleet-System [UFS] maintains an alternative API.
-	`).Err())
-}
-
-func seperateAssetIDResults(a []*datastore.AssetOpResult) (pAssetIDs, fAssetIDs []*api.AssetIDResult) {
-	passed, failed := seperateAssetResults(a)
-	pAssetIDs = make([]*api.AssetIDResult, 0, len(passed))
-	fAssetIDs = make([]*api.AssetIDResult, 0, len(failed))
-	toAssetIDResult := func(b *api.AssetResult) *api.AssetIDResult {
-		return &api.AssetIDResult{
-			Id:       b.Asset.GetId(),
-			ErrorMsg: b.ErrorMsg,
-		}
-	}
-	for _, res := range passed {
-		pAssetIDs = append(pAssetIDs, toAssetIDResult(res))
-	}
-	for _, res := range failed {
-		fAssetIDs = append(fAssetIDs, toAssetIDResult(res))
-	}
-	return pAssetIDs, fAssetIDs
-}
-
-func seperateAssetResults(results []*datastore.AssetOpResult) (success, failure []*api.AssetResult) {
-	successResults := make([]*api.AssetResult, 0, len(results))
-	failureResults := make([]*api.AssetResult, 0, len(results))
-	for _, res := range results {
-		if res.Err != nil {
-			var failedResult api.AssetResult
-			failedResult.Asset = res.ToAsset()
-			failedResult.ErrorMsg = res.Err.Error()
-			failureResults = append(failureResults, &failedResult)
-		} else {
-			var successResult api.AssetResult
-			successResult.Asset = res.ToAsset()
-			successResults = append(successResults, &successResult)
-		}
-	}
-	return successResults, failureResults
 }
 
 // DeviceConfigsExists checks if the device_configs for the given configIds exists in the datastore
