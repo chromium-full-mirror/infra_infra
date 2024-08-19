@@ -375,6 +375,11 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 		RunActivitiesRequest: &api.RunActivitiesRequest{
 			Requests: []*api.Request{
 				{
+					Request: &api.Request_GetAvlInfoRequest{
+						GetAvlInfoRequest: &api.GetAvlInfoRequest{},
+					},
+				},
+				{
 					Request: &api.Request_GetFwInfoRequest{
 						GetFwInfoRequest: &api.GetFWInfoRequest{},
 					},
@@ -382,6 +387,11 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 				{
 					Request: &api.Request_GetGfxInfoRequest{
 						GetGfxInfoRequest: &api.GetGfxInfoRequest{},
+					},
+				},
+				{
+					Request: &api.Request_GetGscInfoRequest{
+						GetGscInfoRequest: &api.GetGscInfoRequest{},
 					},
 				},
 			},
