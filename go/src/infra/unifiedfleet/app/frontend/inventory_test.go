@@ -154,7 +154,7 @@ func TestCreateMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	ftt.Run("CreateMachineLSEs", t, func(t *ftt.Test) {
+	ftt.Run("CreateMachineLSE", t, func(t *ftt.Test) {
 		t.Run("Create new machineLSE with machineLSE_id", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-1",
@@ -246,7 +246,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 	ctx := testingContext()
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
-	ftt.Run("UpdateMachineLSEs", t, func(t *ftt.Test) {
+	ftt.Run("UpdateMachineLSE", t, func(t *ftt.Test) {
 		t.Run("Update existing machineLSEs", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "machine-0",
