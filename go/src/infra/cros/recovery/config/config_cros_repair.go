@@ -2633,7 +2633,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
 				"command:servo_pd_role",
-				"expected_string_value:src",
+				"string_value:src",
 			},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,

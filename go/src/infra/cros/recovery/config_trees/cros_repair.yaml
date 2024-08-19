@@ -13563,7 +13563,7 @@ plans:
                   exec_name: servo_set
                   exec_args:
                     - command:servo_pd_role
-                    - expected_string_value:src
+                    - string_value:src
                   docs:
                     - Set servo PD to src to power the DUT.
                     - If servo is type-c it can switch PD to snk.
@@ -39690,7 +39690,7 @@ plans:
                       exec_name: servo_set
                       exec_args:
                         - command:servo_pd_role
-                        - expected_string_value:src
+                        - string_value:src
                       docs:
                         - Set servo PD to src to power the DUT.
                         - If servo is type-c it can switch PD to snk.
@@ -40285,7 +40285,7 @@ plans:
                       exec_name: servo_set
                       exec_args:
                         - command:servo_pd_role
-                        - expected_string_value:src
+                        - string_value:src
                       docs:
                         - Set servo PD to src to power the DUT.
                         - If servo is type-c it can switch PD to snk.
@@ -40308,7 +40308,7 @@ plans:
                       exec_name: servo_set
                       exec_args:
                         - command:servo_pd_role
-                        - expected_string_value:src
+                        - string_value:src
                       docs:
                         - Set servo PD to src to power the DUT.
                         - If servo is type-c it can switch PD to snk.
