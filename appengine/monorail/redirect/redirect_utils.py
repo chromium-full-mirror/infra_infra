@@ -22,6 +22,7 @@ PROJECT_REDIRECT_MAP = {
     'fuchsia': 'https://issues.fuchsia.dev',
     'gerrit': 'https://issues.gerritcodereview.com',
     'git': 'https://git.issues.gerritcodereview.com',
+    'gn': 'https://gn.issues.chromium.org',
     'google-breakpad': 'https://issues.chromium.org',
     'libyuv': 'https://libyuv.issues.chromium.org',
     'linux-syscall-support': 'https://issues.chromium.org',
