@@ -7,43 +7,15 @@ cron:
   url: /internal/cron/sync-dev-config
   schedule: every 1 hours
 
-- description: Inventory change history periodic dump to bigquery
-  url: /internal/cron/changehistory-to-bq
-  schedule: every 10 minutes
-
-- description: Push inventory to drone queen
-  url: /internal/cron/push-to-drone-queen
-  schedule: every 10 minutes
-
-- description: Sync all devices to drone config
-  url: /internal/cron/sync-device-list-to-drone-config
-  schedule: every 24 hours
-
-- description: Dump registered assets
-  url: /internal/cron/dump-registered-assets-snapshot
-  schedule: every 1 hours
-
-- description: Dump AssetInfo
-  url: /internal/cron/dump-asset-info-to-bq
-  schedule: every 1 hours
-
-- description: Dump inventory snapshot
-  url: /internal/cron/dump-inventory-snapshot
-  schedule: every day 00:00
-  timezone: America/Los_Angeles
-
 - description: Dump other configs' snapshots
   url: /internal/cron/dump-other-configs-snapshot
   schedule: every day 00:01
   timezone: America/Los_Angeles
 
-- description: back-fill asset tags
-  url: /internal/cron/backfill-asset-tags
-  schedule: every 1 hours
-
-- description: Sync manual repair records to BQ
-  url: /internal/cron/sync-manual-repair-records-to-bq
-  schedule: every 30 minutes
+- description: Dump inventory snapshot
+  url: /internal/cron/dump-inventory-snapshot
+  schedule: every day 00:00
+  timezone: America/Los_Angeles
 
 - description: Backfill manual repair records indexes
   url: /internal/cron/backfill-mr-indexes
