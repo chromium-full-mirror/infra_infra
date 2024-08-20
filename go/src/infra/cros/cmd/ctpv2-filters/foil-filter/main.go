@@ -17,6 +17,7 @@ type FoilRequestUpdater struct {
 	ProvisionPath   string
 	ProvisionBinary string
 	TestPath        string
+	FilterTests     bool
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
@@ -35,8 +36,9 @@ func main() {
 	requestUpdater := &FoilRequestUpdater{}
 	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
 	fs.StringVar(&requestUpdater.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
-	fs.StringVar(&requestUpdater.ProvisionBinary, "prov-bin", "", "Binary called within provision container")
+	fs.StringVar(&requestUpdater.ProvisionBinary, "prov-bin", "foil-provision", "Binary called within provision container")
 	fs.StringVar(&requestUpdater.TestPath, "test-path", "", "SHA256 value for test container")
+	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 
 	err := server.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
 	if err != nil {

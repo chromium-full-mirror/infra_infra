@@ -240,7 +240,8 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 		if singleErr = cmd.Execute(ctx); singleErr != nil {
 			foundErr = true
 			allErr = errors.Append(allErr, singleErr)
-			logging.Infof(ctx, "Command type %s execution failed. Attempting to update state keeper.", cmdType)
+			logging.Infof(ctx, "Command type %s execution failed: %s.", cmdType, singleErr)
+			logging.Infof(ctx, "Attempting to update state keeper.")
 			if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
 				logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
 			}

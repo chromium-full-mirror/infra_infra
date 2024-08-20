@@ -22,7 +22,19 @@ import (
 func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) error {
 	modifyProvisionRequest(req, updater, log)
 	modifyTestRequest(req, updater, log)
+	filterOutFaultyTests(req, updater, log)
+	removePostProcess(req, log)
 	return nil
+}
+
+func removePostProcess(req *api.InternalTestplan, log *log.Logger) {
+	generator := generators.NewRemoveGenerator([]*api.FocalTaskFinder{
+		dynamic_common.FindByDynamicIdentifier(common.PostProcess)})
+
+	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+	if err != nil {
+		log.Printf("Error while creating remove update, %s", err)
+	}
 }
 
 func modifyProvisionRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
@@ -85,4 +97,27 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 	if err != nil {
 		log.Printf("Error while modifying test request, %s", err)
 	}
+}
+
+var faultTestCases = map[string]struct{}{
+	"tradefed.CtsDevicePolicyTestCases":   {},
+	"tradefed.CtsJobSchedulerTestCases":   {},
+	"tradefed.CtsStatsdAtomHostTestCases": {},
+}
+
+func filterOutFaultyTests(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
+	if !updater.FilterTests {
+		log.Println("Skipping test filtering")
+		return
+	}
+
+	filteredList := []*api.CTPTestCase{}
+	for _, testCase := range req.GetTestCases() {
+		if _, faulty := faultTestCases[testCase.GetName()]; !faulty {
+			filteredList = append(filteredList, testCase)
+		} else {
+			log.Printf("Filtered out faulty test: %s", testCase.GetName())
+		}
+	}
+	req.TestCases = filteredList
 }

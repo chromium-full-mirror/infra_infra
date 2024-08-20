@@ -128,7 +128,7 @@ func (ex *GenericPublishExecutor) Publish(
 	}
 
 	common.WriteProtoToStepLog(ctx, step, req, "publish request")
-	PublishOp, err := client.Publish(ctx, req, grpc.MaxCallRecvMsgSize(MaxPublishMsgSize))
+	PublishOp, err := client.Publish(ctx, req, grpc.MaxCallRecvMsgSize(MaxPublishMsgSize), grpc.MaxCallSendMsgSize(MaxPublishMsgSize))
 	if err != nil {
 		err = errors.Annotate(err, "publish failure: ").Err()
 		return

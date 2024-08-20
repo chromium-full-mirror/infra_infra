@@ -105,9 +105,8 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 		ctx,
 		cmd.ContainerRequest,
 		cmd.ContainerRequest.Container,
-		interfaces.ContainerType(cmd.ContainerRequest.DynamicIdentifier),
-		cmd.ContainerRequest.DynamicIdentifier,
-		cmd.ContainerImage)
+		cmd.ContainerImage,
+		cmd.BuildState.Build().GetId())
 
 	if err != nil {
 		return errors.Annotate(err, "Start container cmd err: ").Err()
@@ -153,9 +152,8 @@ func (ex *ContainerExecutor) Start(
 	ctx context.Context,
 	contReq *api.ContainerRequest,
 	template *api.Template,
-	containerType interfaces.ContainerType,
-	containerPrefix string,
-	containerImage string) (interfaces.ContainerInterface, *labapi.IpEndpoint, error) {
+	containerImage string,
+	bbID int64) (interfaces.ContainerInterface, *labapi.IpEndpoint, error) {
 
 	if contReq.Network == "" {
 		contReq.Network = common.ContainerDefaultNetwork
@@ -181,7 +179,7 @@ func (ex *ContainerExecutor) Start(
 	}
 
 	containerInstance := containers.NewContainer(
-		interfaces.ContainerType(contReq.DynamicIdentifier),
+		interfaces.ContainerType(fmt.Sprintf("%s-%d", contReq.DynamicIdentifier, bbID)),
 		contReq.DynamicIdentifier,
 		contReq.Network,
 		containerImage,

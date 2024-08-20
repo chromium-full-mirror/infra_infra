@@ -163,6 +163,7 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 		}
 		cmd.ContainerImage = containerImage
 	}
+	cmd.BuildState = sk.BuildState
 
 	return nil
 }

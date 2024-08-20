@@ -26,8 +26,9 @@ import (
 )
 
 // MaxPublishMsgSize the maximum size of the publish request message that the
-// cros-publish gRPC can receive is 10MB.
-const MaxPublishMsgSize = 1024 * 1024 * 10
+// cros-publish gRPC can receive is 400MB.
+// TODO: Remove once streaming is implemented.
+const MaxPublishMsgSize = 1024 * 1024 * 400
 
 // CrosPublishExecutor represents executor for all cros-publish related commands.
 type CrosPublishExecutor struct {
@@ -440,7 +441,7 @@ func (ex *CrosPublishExecutor) Publish(
 		return nil, fmt.Errorf("Cannot publish results with empty publish request.")
 	}
 
-	publishOp, err := publishClient.Publish(ctx, publishReq, grpc.MaxCallRecvMsgSize(MaxPublishMsgSize))
+	publishOp, err := publishClient.Publish(ctx, publishReq, grpc.MaxCallRecvMsgSize(MaxPublishMsgSize), grpc.MaxCallSendMsgSize(MaxPublishMsgSize))
 	if err != nil {
 		return nil, errors.Annotate(err, "publish failure: ").Err()
 	}
