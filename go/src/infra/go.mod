@@ -3,23 +3,23 @@ module infra
 go 1.22
 
 require (
-	cloud.google.com/go v0.115.0
-	cloud.google.com/go/appengine v1.8.11
+	cloud.google.com/go v0.115.1
+	cloud.google.com/go/appengine v1.8.12
 	cloud.google.com/go/bigquery v1.62.0
-	cloud.google.com/go/cloudsqlconn v1.8.1
+	cloud.google.com/go/cloudsqlconn v1.12.0
 	cloud.google.com/go/cloudtasks v1.12.13
-	cloud.google.com/go/compute v1.27.4
+	cloud.google.com/go/compute v1.27.5
 	cloud.google.com/go/compute/metadata v0.5.0
 	cloud.google.com/go/datastore v1.17.1
 	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/logging v1.11.0
-	cloud.google.com/go/longrunning v0.5.11
-	cloud.google.com/go/monitoring v1.20.3
+	cloud.google.com/go/longrunning v0.5.12
+	cloud.google.com/go/monitoring v1.20.4
 	cloud.google.com/go/profiler v0.4.1
-	cloud.google.com/go/pubsub v1.41.0
+	cloud.google.com/go/pubsub v1.42.0
 	cloud.google.com/go/secretmanager v1.13.6
 	cloud.google.com/go/storage v1.43.0
-	cloud.google.com/go/trace v1.10.11
+	cloud.google.com/go/trace v1.10.12
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/PaesslerAG/jsonpath v0.1.1
@@ -27,9 +27,9 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
-	github.com/bazelbuild/reclient/api v0.0.0-20231027154936-0dffdbcf8db1
+	github.com/bazelbuild/reclient/api v0.0.0-20240617160057-89d6134e48e5
 	github.com/bazelbuild/remote-apis v0.0.0-20240703191324-0d21f29acdb9
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240806195620-e9017eaf5982
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240815155135-13abc9047f5f
 	github.com/beevik/etree v1.4.0
 	github.com/biogo/hts v1.4.5
 	github.com/bmatcuk/doublestar v1.3.4
@@ -47,10 +47,10 @@ require (
 	github.com/golang/glog v1.2.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
-	github.com/google/cel-go v0.20.1
+	github.com/google/cel-go v0.21.0
 	github.com/google/go-cmp v0.6.0
-	github.com/google/go-containerregistry v0.6.0
-	github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2
+	github.com/google/go-containerregistry v0.14.0
+	github.com/google/safetext v0.0.0-20240722112252-5a72de7e7962
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.6.0
@@ -60,7 +60,7 @@ require (
 	github.com/hashicorp/go-version v1.2.0
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgtype v1.14.0
-	github.com/jackc/pgx/v5 v5.5.5
+	github.com/jackc/pgx/v5 v5.6.0
 	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.17.9
@@ -97,30 +97,30 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.21.0
 	go.opentelemetry.io/otel/sdk v1.28.0
 	go.opentelemetry.io/otel/trace v1.28.0
-	go.skia.org/infra v0.0.0-20240816131558-c2c2b134219b
+	go.skia.org/infra v0.0.0-20240820041610-c71e16037f25
 	go.starlark.net v0.0.0-20240725214946-42030a7cedce
-	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
+	golang.org/x/build v0.0.0-20240816214248-bba03e49f907
 	golang.org/x/crypto v0.26.0
-	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc
+	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.28.0
 	golang.org/x/oauth2 v0.22.0
-	golang.org/x/perf v0.0.0-20210220033136-40a54f11e909
+	golang.org/x/perf v0.0.0-20240806191124-3f62151e343c
 	golang.org/x/sync v0.8.0
 	golang.org/x/sys v0.24.0
 	golang.org/x/term v0.23.0
 	golang.org/x/time v0.6.0
 	golang.org/x/tools v0.24.0
-	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
+	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
 	gonum.org/v1/gonum v0.12.0
-	google.golang.org/api v0.191.0
+	google.golang.org/api v0.192.0
 	google.golang.org/appengine v1.6.8
-	google.golang.org/appengine/v2 v2.0.4
-	google.golang.org/genproto v0.0.0-20240808171019-573a1156607a
-	google.golang.org/genproto/googleapis/api v0.0.0-20240808171019-573a1156607a
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240808171019-573a1156607a
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240808171019-573a1156607a
+	google.golang.org/appengine/v2 v2.0.6
+	google.golang.org/genproto v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142
 	google.golang.org/grpc v1.65.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.34.2
@@ -136,7 +136,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.8.0 // indirect
+	cloud.google.com/go/auth v0.8.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
 	cloud.google.com/go/errorreporting v0.3.1 // indirect
 	cloud.google.com/go/iam v1.1.13 // indirect
@@ -159,9 +159,9 @@ require (
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/cli v20.10.7+incompatible // indirect
+	github.com/docker/cli v23.0.1+incompatible // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
-	github.com/docker/docker-credential-helpers v0.6.3 // indirect
+	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.1.0 // indirect
@@ -215,6 +215,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
