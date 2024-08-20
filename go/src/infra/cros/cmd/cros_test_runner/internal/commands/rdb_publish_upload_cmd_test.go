@@ -318,6 +318,8 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				PartnerInfo: &artifactpb.PartnerInfo{
 					AccountId: 4,
 				},
+				IsCftRun:  true,
+				IsTrv2Run: true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -418,6 +420,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				"build_target": "asurada",
 			},
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				RunViaTrv2: true,
 				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 					DutModel: &labapi.DutModel{
 						BuildTarget: primaryDUT.GetChromeos().GetDutModel().GetBuildTarget(),
@@ -718,6 +721,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
 				PartnerInfo:            &artifactpb.PartnerInfo{},
+				IsCftRun:               true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -944,6 +948,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
 				PartnerInfo:            &artifactpb.PartnerInfo{},
+				IsCftRun:               true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{

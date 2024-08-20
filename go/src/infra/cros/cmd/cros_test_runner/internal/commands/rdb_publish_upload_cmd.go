@@ -193,7 +193,9 @@ func populateTestInvocationInfo(
 	sk *data.HwTestStateKeeper,
 	botDims []*buildbucketpb.StringPair,
 	build *buildbucketpb.Build) {
-	testInv := &artifactpb.TestInvocation{}
+	testInv := &artifactpb.TestInvocation{
+		IsCftRun: true,
+	}
 	resultProto.TestInvocation = testInv
 
 	// Dut topology
@@ -214,6 +216,11 @@ func populateTestInvocationInfo(
 
 	// Populate Partner related info.
 	populatePartnerInfo(ctx, testInv, sk)
+
+	cftTestRequest := sk.CftTestRequest
+	if cftTestRequest != nil {
+		testInv.IsTrv2Run = cftTestRequest.RunViaTrv2
+	}
 }
 
 // populateBuildInfo populates build info.
