@@ -55,7 +55,7 @@ func TestGetDefaultFilters(t *testing.T) {
 	}
 	fmt.Println(contMetadataMap)
 
-	filters, err := GetDefaultFilters(ctx, []string{"container1", TestFinderContainerName, LegacyHWContainerName}, contMetadataMap, 16005)
+	filters, err := GetDefaultFilters(ctx, []string{"container1", TestFinderContainerName, LegacyHWContainerName}, contMetadataMap, 20005)
 	if err != nil {
 		t.Fatalf("got err: %s", err)
 	}

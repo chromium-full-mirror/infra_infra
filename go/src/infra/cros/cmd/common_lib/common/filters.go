@@ -70,9 +70,23 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 	defaultFilters := make([]*api.CTPFilter, 0)
 	logging.Infof(ctx, "Inside Default Filters: %s", defaultFilterNames)
 	for _, filterName := range defaultFilterNames {
+		var ctpFilter *api.CTPFilter
+		var err error
+		// Check for default SHAs
+		digest, ok := prodShas[filterName]
+		if ok {
+			logging.Infof(ctx, "Making default container for: %s", filterName)
+			ctpFilter, err = CreateCTPDefaultWithContainerName(filterName, digest, build)
+			if err != nil {
+				return nil, errors.Annotate(err, "failed to create default default filter: ").Err()
+			}
+			defaultFilters = append(defaultFilters, ctpFilter)
+			continue
+		}
+
 		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
 		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
+		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -87,18 +101,6 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 				return nil, errors.Annotate(err, "failed to create test-finder default filter").Err()
 			}
 			defaultFilters = append(defaultFilters, TFFilter)
-			continue
-		}
-
-		// Otherwise, build the other default filters off prod containers.
-		digest, ok := prodShas[filterName]
-		if ok {
-			logging.Infof(ctx, "Making default container for: %s", filterName)
-			ctpFilter, err = CreateCTPDefaultWithContainerName(filterName, digest, build)
-			if err != nil {
-				return nil, errors.Annotate(err, "failed to create default default filter: ").Err()
-			}
-			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
 		}
 		return nil, errors.Annotate(err, "failed to create default filter: ").Err()
@@ -229,7 +231,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.Cont
 func needBackwardsCompatibility(build int) bool {
 	// TODO (dbeckett/azrahamn): set this to the proper build # once the compatibility
 	// changes land in the OS src tree and have assigned build #s.
-	return build < 16000
+	return build < 20000
 }
 
 // CreateTTCPContainerRequest creates container request from provided ctp filter.
