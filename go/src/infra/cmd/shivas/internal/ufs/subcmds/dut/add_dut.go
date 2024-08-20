@@ -739,8 +739,10 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	if c.dolosHost != "" {
 		peripherals.GetDolos().Hostname = c.dolosHost
 		peripherals.GetDolos().SerialCable = c.dolosSerialCable
-		peripherals.GetDolos().GetRpm().PowerunitName = c.dolosRpmHost
-		peripherals.GetDolos().GetRpm().PowerunitOutlet = c.dolosRpmOutlet
+		peripherals.GetDolos().Rpm = &chromeosLab.OSRPM{
+			PowerunitName:   c.dolosRpmHost,
+			PowerunitOutlet: c.dolosRpmOutlet,
+		}
 		peripherals.GetDolos().FwVersion = c.dolosFirmwareVersion
 	}
 	// Get the updated asset and update paths
