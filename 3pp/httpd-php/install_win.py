@@ -458,10 +458,21 @@ def main():
 
   # finishing php
 
-  # move relefant php dlls into correct spots
+  # move relevant php dlls into correct spots
   os.chdir(out_dir)
   shutil.copyfile("php8ts.dll", ".\\bin\\php8ts.dll")
   shutil.copyfile("php8apache2_4.dll", ".\\modules\\php8apache2_4.dll")
+
+  win_sdk_dir = os.environ["WINSDK_FILES"]
+  if os.environ.get("_3PP_PLATFORM") == "windows-amd64":
+    dll_source_path = os.path.join(win_sdk_dir, "Windows Kits", "10", "bin",
+                                  "amd64", "vcruntime140.dll")
+  elif os.environ.get("_3PP_PLATFORM") == "windows-arm64":
+    dll_source_path = os.path.join(win_sdk_dir, "Windows Kits", "10", "bin",
+                                  "arm64", "vcruntime140.dll")
+  dll_target_path = os.path.join(".\\bin", "vcruntime140.dll")
+  shutil.copyfile(dll_source_path, dll_target_path)
+  print("vcruntime140.dll copied to bin.")
 
 
 if __name__ == '__main__':
