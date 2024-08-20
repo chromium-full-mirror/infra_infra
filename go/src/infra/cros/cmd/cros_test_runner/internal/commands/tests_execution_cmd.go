@@ -13,7 +13,9 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -110,6 +112,18 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
 
 	if cmd.TestResponses != nil {
 		sk.TestResponses = cmd.TestResponses
+
+		// For non-dynamic. Sets the processed test result into the dynamic
+		// storage.
+		rdbTestResult, err := constructTestResultFromStateKeeper(ctx, sk)
+		if err != nil {
+			return errors.Annotate(err, "Cmd %q failed to construct update: TestResultForRdb", cmd.GetCommandType()).Err()
+		}
+		sk.TestResultForRdb = rdbTestResult
+		taskIdentifier := common.NewTaskIdentifier(common.CrosTest)
+		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
+			logging.Warningf(ctx, "Warning: failed to set: %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResult"), err)
+		}
 	}
 	if cmd.TkoPublishSrcDir != "" {
 		sk.TkoPublishSrcDir = cmd.TkoPublishSrcDir

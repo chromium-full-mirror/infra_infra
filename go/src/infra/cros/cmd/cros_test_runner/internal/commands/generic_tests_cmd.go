@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
@@ -28,7 +27,7 @@ type GenericTestsCmd struct {
 	Identifier  string
 
 	// Updates
-	TestResponses *testapi.CrosTestResponse
+	TestResponses *api.CrosTestResponse
 }
 
 // Instantiate extracts initial state info from the state keeper.

@@ -169,7 +169,11 @@ func constructBaseVariantFromStateKeeper(
 func constructTestResultFromStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
-	build := sk.BuildState.Build()
+	build := &buildbucketpb.Build{}
+	if sk.BuildState != nil {
+		build = sk.BuildState.Build()
+	}
+
 	botDims := protoutil.MustBotDimensions(build)
 	resultProto := &artifactpb.TestResult{}
 

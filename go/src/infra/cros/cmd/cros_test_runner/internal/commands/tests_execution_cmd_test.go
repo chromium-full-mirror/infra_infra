@@ -15,6 +15,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -96,9 +97,12 @@ func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 
 func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
+
 	Convey("TestsExecutionCmd update SK", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{}
+		sk := &data.HwTestStateKeeper{
+			Injectables: common.NewInjectableStorage(),
+		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
@@ -121,6 +125,7 @@ func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(sk.TestResponses, ShouldNotBeNil)
 		So(sk.TkoPublishSrcDir, ShouldNotBeNil)
+		So(sk.TestResultForRdb, ShouldNotBeNil)
 		So(sk.TestResponses, ShouldEqual, wantTestResp)
 		So(sk.TkoPublishSrcDir, ShouldEqual, wantTkoPublishSrcDir)
 	})
