@@ -501,6 +501,7 @@ type InstallArgs struct {
 	packageInstallerOnBots string
 	withRuntime            bool
 	corruptedXcodePath     string
+	tmpXcodePath           string
 }
 
 func describeRef(ctx context.Context, packagePath, ref string) (string, error) {
@@ -628,30 +629,18 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	} else {
 		logging.Warningf(ctx, "Failed to check MacOS version with the error: %s", err)
 	}
+
+	downloadXcodePath := args.xcodeAppPath
+	if args.tmpXcodePath != "" && shouldInstallXcode {
+		downloadXcodePath = args.tmpXcodePath
+	}
 	if shouldInstallXcode {
 		if args.kind == xcodeArchiveKind {
-			xcodeArchivePath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
-			if tmpDirErr != nil {
-				return tmpDirErr
-			}
-			defer os.RemoveAll(xcodeArchivePath)
-			installPackagesArgs := InstallPackagesArgs{
-				ref:                args.xcodeVersion,
-				rootPath:           xcodeArchivePath,
-				cipdPackagePrefix:  args.cipdPackagePrefix,
-				kind:               args.kind,
-				serviceAccountJSON: args.serviceAccountJSON,
-			}
-			if err := installPackages(ctx, installPackagesArgs); err != nil {
-				return err
-			}
-			if err := unzipXcodeArchive(ctx, xcodeArchivePath, args.xcodeAppPath); err != nil {
-				return err
-			}
+			return errors.Reason("Downloading Xcode in archive format is no longer supported").Err()
 		} else {
 			installPackagesArgs := InstallPackagesArgs{
 				ref:                args.xcodeVersion,
-				rootPath:           args.xcodeAppPath,
+				rootPath:           downloadXcodePath,
 				cipdPackagePrefix:  args.cipdPackagePrefix,
 				kind:               args.kind,
 				serviceAccountJSON: args.serviceAccountJSON,
@@ -666,7 +655,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	// If Xcode is installed on MacOS13+, we need to remove them before runFirstLaunch.
 	if onMacOS13OrLater {
 		logging.Warningf(ctx, "Removing the hidden cipd files if exists to be compliant with MacOS13+ codesign check...")
-		if err := removeCipdFiles(args.xcodeAppPath); err != nil {
+		if err := removeCipdFiles(downloadXcodePath); err != nil {
 			return err
 		}
 	}
@@ -677,21 +666,29 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	// Xcode will be removed, and the main process will fail and exit.
 	ch := make(chan error, 1)
 	go func() {
-		if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
+		if err := acceptLicense(ctx, downloadXcodePath); err != nil {
 			ch <- err
 			return
 		}
-		if err = finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
+		if err = finalizeInstall(ctx, downloadXcodePath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
 			ch <- err
+			return
+		}
+		if args.tmpXcodePath != "" && shouldInstallXcode {
+			if err = renameDirectory(downloadXcodePath, args.xcodeAppPath); err != nil {
+				ch <- err
+				return
+			}
 		}
 		ch <- nil
+
 	}()
 	select {
 	case err := <-ch:
 		if err != nil {
 			if args.corruptedXcodePath != "" {
 				logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
-				if renameErr := renameDirectory(args.xcodeAppPath, args.corruptedXcodePath); renameErr != nil {
+				if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
 					logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
 				}
 			}
@@ -704,7 +701,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	case <-time.After(MaxXcodeLaunchWaitTime):
 		if args.corruptedXcodePath != "" {
 			logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
-			if renameErr := renameDirectory(args.xcodeAppPath, args.corruptedXcodePath); renameErr != nil {
+			if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
 				logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
 			}
 		}

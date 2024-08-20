@@ -8,6 +8,7 @@ import (
 	"context"
 	"flag"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -214,6 +215,22 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 	logging.Infof(ctx, "About to install Xcode %s in %s for %s", c.xcodeVersion, c.outputDir, c.kind.String())
 
 	c.cipdPackagePrefix = stripLastTrailingSlash(c.cipdPackagePrefix)
+
+	// Download Xcode into a temp directory, and attempt to launch it.
+	// If the launch is successful, then move the downloaded Xcode to the desired path.
+	// Delete the temp directory afterwards.
+	xcodeTmpPath, tmpDirErr := os.MkdirTemp(filepath.Join(c.outputDir, ".."), "tmp")
+	defer os.RemoveAll(xcodeTmpPath)
+	if tmpDirErr != nil {
+		errors.Log(ctx, tmpDirErr)
+		return 1
+	}
+	xcodeTmpApp := filepath.Join(xcodeTmpPath, "Xcode.app")
+	if err := os.MkdirAll(xcodeTmpApp, 0700); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+
 	installArgs := InstallArgs{
 		xcodeVersion:           c.xcodeVersion,
 		xcodeAppPath:           c.outputDir,
@@ -224,8 +241,32 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 		packageInstallerOnBots: PackageInstallerOnBots,
 		withRuntime:            c.withRuntime && c.kind == iosKind,
 		corruptedXcodePath:     c.corruptedXcodePath,
+		tmpXcodePath:           xcodeTmpApp,
 	}
-	if err := installXcode(ctx, installArgs); err != nil {
+	err := installXcode(ctx, installArgs)
+	if err != nil {
+		// TODO(crbug.com/359868027): Xcode sometimes fails to pass gatekeeper check.
+		// retry downloading xcode with another temp dir
+		if strings.Contains(err.Error(), "Xcode app is possibly corrupted") {
+			logging.Warningf(ctx, "Downloaded Xcode might be corrupted, going to retry... Error: %s", err.Error())
+			xcodeTmpPath2, tmpDirErr := os.MkdirTemp(filepath.Join(c.outputDir, ".."), "tmp")
+			defer os.RemoveAll(xcodeTmpPath2)
+			if tmpDirErr != nil {
+				errors.Log(ctx, tmpDirErr)
+				return 1
+			}
+			xcodeTmpApp = filepath.Join(xcodeTmpPath2, "Xcode.app")
+			if err = os.MkdirAll(xcodeTmpApp, 0700); err != nil {
+				errors.Log(ctx, err)
+				return 1
+			}
+			installArgs.tmpXcodePath = xcodeTmpApp
+
+			err = installXcode(ctx, installArgs)
+			if err == nil {
+				return 0
+			}
+		}
 		errors.Log(ctx, err)
 		return 1
 	}
