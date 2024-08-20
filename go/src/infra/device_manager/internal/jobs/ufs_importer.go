@@ -251,10 +251,12 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		wg.Done()
 	}()
 
+	// DeviceState will be clobbered by SQL COALESCE statement in UpsertDevice.
 	deviceModel := model.Device{
-		ID:         ufsUtil.RemovePrefix(name),
-		DeviceType: "DEVICE_TYPE_PHYSICAL",
-		IsActive:   active,
+		ID:          ufsUtil.RemovePrefix(name),
+		DeviceType:  "DEVICE_TYPE_PHYSICAL",
+		DeviceState: "DEVICE_STATE_AVAILABLE",
+		IsActive:    active,
 	}
 
 	r := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
