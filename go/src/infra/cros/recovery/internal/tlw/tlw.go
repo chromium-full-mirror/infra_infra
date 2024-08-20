@@ -107,8 +107,10 @@ func (s *tlwServer) cache(ctx context.Context, parsedURL *url.URL, dutName strin
 		log.Debugf(ctx, "CacheForDut: %s", err)
 		return "", errors.Annotate(err, "cache").Err()
 	}
-
-	u := fmt.Sprintf("%s/download/%s", strings.TrimSuffix(cs, "/"), path)
+	u, err := url.JoinPath(cs, "download", path)
+	if err != nil {
+		return "", errors.Annotate(err, "cache").Err()
+	}
 	log.Debugf(ctx, "CacheForDut: result URL: %s", u)
 	return u, nil
 }
