@@ -6,24 +6,14 @@ package dolos
 
 import (
 	"context"
-	"fmt"
 	"strings"
-
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/dolos"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-)
-
-const (
-	dolosCmd             = "/usr/bin/doloscmd "
-	dolosSubCmdGetStatus = "get-status"
-	dolosSubCmdVersion   = "version"
-	dolosSubCmdFwUpdate  = "firmware-update"
-	dolosSubCmdFindUart  = "find-uartname"
 )
 
 func isEnabledForTestbedExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -41,45 +31,35 @@ func isUartnameCachedExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updateUartNameExec(ctx context.Context, info *execs.ExecInfo) error {
-	dolos := info.GetChromeos().GetDolos()
+	dolosInfo := info.GetChromeos().GetDolos()
+	dutRun := info.NewRunner(info.GetDut().Name)
 
-	output, err := runDolosCommand(ctx, info, dolos, dolosSubCmdFindUart)
+	uartName, err := dolos.DolosFindUart(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		return errors.Annotate(err, "unable to get dolos UART").Err()
 	}
-
-	var decoded FindUartNameResponse
-	if err := protojson.Unmarshal([]byte(output), &decoded); err != nil {
-		return errors.Annotate(err, "update dolos UART: fail to parse results").Err()
-	}
-	log.Infof(ctx, "Found dolos uartname %s.", decoded.GetUartname())
-	dolos.SerialUsb = decoded.GetUartname()
+	dolosInfo.SerialUsb = uartName
 
 	return nil
 }
 
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	dolosInfo := info.GetChromeos().GetDolos()
+	dutRun := info.NewRunner(info.GetDut().Name)
 
-	dolos := info.GetChromeos().GetDolos()
+	previousState := dolosInfo.GetState()
+	dolosInfo.State = tlw.Dolos_DOLOS_UNKNOWN
 
-	previousState := dolos.GetState()
-	dolos.State = tlw.Dolos_DOLOS_UNKNOWN
-
-	output, err := runDolosCommand(ctx, info, dolos, dolosSubCmdGetStatus)
+	status, err := dolos.DolosGetStatus(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		return errors.Annotate(err, "unable to get dolos status").Err()
 	}
-	var decoded GetStatusResponse
-	err = protojson.Unmarshal([]byte(output), &decoded)
-	if err != nil {
-		return errors.Annotate(err, "determine dolos state").Err()
-	}
 
-	newState := decoded.GetStatus().String()
+	newState := status
 	log.Debugf(ctx, "Previous dolos state: %s", previousState)
 	if v, ok := tlw.Dolos_State_value[newState]; ok {
-		dolos.State = tlw.Dolos_State(v)
+		dolosInfo.State = tlw.Dolos_State(v)
 		log.Infof(ctx, "Set dolos state to be: %s", newState)
 		return nil
 	}
@@ -120,29 +100,23 @@ func dolosDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) erro
 
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error {
+	dolosInfo := info.GetChromeos().GetDolos()
+	dutRun := info.NewRunner(info.GetDut().Name)
 
-	dolos := info.GetChromeos().GetDolos()
-
-	output, err := runDolosCommand(ctx, info, dolos, dolosSubCmdVersion)
+	currentVersion, err := dolos.DolosGetVersion(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
 		log.Infof(ctx, "Unable to determine dolos version, so do not try to upgrade")
 		return nil
 	}
 
-	var decoded GetVersionResponse
-	err = protojson.Unmarshal([]byte(output), &decoded)
-	if err != nil {
-		return errors.Annotate(err, "determine dolos version").Err()
-	}
-
-	if dolos.GetFwVersion() == "" {
-		dolos.FwVersion = decoded.GetVersion()
-		log.Infof(ctx, "Setting UFS dolos firmware version to: %s", dolos.FwVersion)
+	if dolosInfo.GetFwVersion() == "" {
+		dolosInfo.FwVersion = currentVersion
+		log.Infof(ctx, "Setting UFS dolos firmware version to: %s", dolosInfo.FwVersion)
 		// No firmware update required.
 		return nil
 	}
 
-	if dolos.GetFwVersion() != decoded.GetVersion() {
+	if dolosInfo.GetFwVersion() != currentVersion {
 		return errors.Reason("dolos version does not match ufs").Err()
 	}
 
@@ -151,34 +125,9 @@ func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error 
 
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func updateDolosFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
-
-	dolos := info.GetChromeos().GetDolos()
-
-	log.Infof(ctx, "Update dolos firmware from to %s", dolos.FwVersion)
-	_, err := runDolosCommand(ctx, info, dolos, fmt.Sprintf("update-firmware --firmware_version %s ", dolos.FwVersion))
-	if err != nil {
-		return errors.Annotate(err, "unable to update dolos version").Err()
-	}
-	return nil
-}
-
-func runDolosCommand(ctx context.Context, info *execs.ExecInfo, dolos *tlw.Dolos, dolosSubCommand string) (string, error) {
-	run := info.NewRunner(dolos.GetHostname())
-	command := dolosCmd
-
-	if dolos == nil {
-		return "", errors.Reason("dolos ufs data is missing.").Err()
-	}
-
-	if dolos.GetSerialUsb() != "" {
-		command += dolosSubCommand + " --uartname " + dolos.GetSerialUsb()
-	} else {
-		command += dolosSubCommand + " --serial " + dolos.GetSerialCable()
-	}
-
-	output, err := run(ctx, info.GetExecTimeout(), command)
-	log.Infof(ctx, "Dolos command %s returned %s ", command, output)
-	return output, err
+	dolosInfo := info.GetChromeos().GetDolos()
+	dutRun := info.NewRunner(info.GetDut().Name)
+	return dolos.DolosUpdateFirmware(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 }
 
 func init() {
