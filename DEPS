@@ -32,7 +32,7 @@ deps = {
 
   "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
-     "f3ab5d7c31b0e3e16734b1a01047f79d7a99209a",
+     "cd09cfcb8dcf8c841e164c6ebdde9c801dabbf1d",
 
   "go/src/go.chromium.org/chromiumos/config":
      "{chromium_git}/chromiumos/config@" +
