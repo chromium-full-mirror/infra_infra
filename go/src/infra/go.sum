@@ -115,8 +115,8 @@ github.com/bazelbuild/remote-apis v0.0.0-20240703191324-0d21f29acdb9 h1:Ma3IQbZm
 github.com/bazelbuild/remote-apis v0.0.0-20240703191324-0d21f29acdb9/go.mod h1:ry8Y6CkQqCVcYsjPOlLXDX2iRVjOnjogdNwhvHmRcz8=
 github.com/bazelbuild/remote-apis-sdks v0.0.0-20240815155135-13abc9047f5f h1:8HFP4Y0zjlV42dtxovXcL71h5EkuKmXaEpzvc5SL9VE=
 github.com/bazelbuild/remote-apis-sdks v0.0.0-20240815155135-13abc9047f5f/go.mod h1:SkKj81cDNRVeJ9Ba34FGlnlz9QmpLJ1d2AOushpY5L4=
-github.com/beevik/etree v1.4.0 h1:oz1UedHRepuY3p4N5OjE0nK1WLCqtzHf25bxplKOHLs=
-github.com/beevik/etree v1.4.0/go.mod h1:cyWiXwGoasx60gHvtnEh5x8+uIjUVnjWqBvEnhnqKDA=
+github.com/beevik/etree v1.4.1 h1:PmQJDDYahBGNKDcpdX8uPy1xRCwoCGVUiW669MEirVI=
+github.com/beevik/etree v1.4.1/go.mod h1:gPNJNaBGVZ9AwsidazFZyygnd+0pAU38N4D+WemwKNs=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/biogo/hts v1.4.5 h1:mhVCpZaTYlAhBjMaAATGWBnauioBtmvOb0ApLdU4/+0=
