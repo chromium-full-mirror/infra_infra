@@ -216,17 +216,25 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 
 	c.cipdPackagePrefix = stripLastTrailingSlash(c.cipdPackagePrefix)
 
+	// outputDir may not be a path that actually exists. Before calling
+	// os.MkdirTemp, make sure outputDir points at a path that exists, in order
+	// to prevent failures when creating the temporary directory.
+	if err := os.MkdirAll(c.outputDir, 0700); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	outputParentDir := filepath.Join(c.outputDir, "..")
 	// Download Xcode into a temp directory, and attempt to launch it.
 	// If the launch is successful, then move the downloaded Xcode to the desired path.
 	// Delete the temp directory afterwards.
-	xcodeTmpPath, tmpDirErr := os.MkdirTemp(filepath.Join(c.outputDir, ".."), "tmp")
+	xcodeTmpPath, tmpDirErr := os.MkdirTemp(outputParentDir, "tmp")
 	defer os.RemoveAll(xcodeTmpPath)
 	if tmpDirErr != nil {
 		errors.Log(ctx, tmpDirErr)
 		return 1
 	}
 	xcodeTmpApp := filepath.Join(xcodeTmpPath, "Xcode.app")
-	if err := os.MkdirAll(xcodeTmpApp, 0700); err != nil {
+	if err := os.Mkdir(xcodeTmpApp, 0700); err != nil {
 		errors.Log(ctx, err)
 		return 1
 	}
@@ -249,14 +257,14 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 		// retry downloading xcode with another temp dir
 		if strings.Contains(err.Error(), "Xcode app is possibly corrupted") {
 			logging.Warningf(ctx, "Downloaded Xcode might be corrupted, going to retry... Error: %s", err.Error())
-			xcodeTmpPath2, tmpDirErr := os.MkdirTemp(filepath.Join(c.outputDir, ".."), "tmp")
+			xcodeTmpPath2, tmpDirErr := os.MkdirTemp(outputParentDir, "tmp")
 			defer os.RemoveAll(xcodeTmpPath2)
 			if tmpDirErr != nil {
 				errors.Log(ctx, tmpDirErr)
 				return 1
 			}
 			xcodeTmpApp = filepath.Join(xcodeTmpPath2, "Xcode.app")
-			if err = os.MkdirAll(xcodeTmpApp, 0700); err != nil {
+			if err = os.Mkdir(xcodeTmpApp, 0700); err != nil {
 				errors.Log(ctx, err)
 				return 1
 			}
