@@ -30,12 +30,18 @@ func TestMigrate(t *testing.T) {
 		files := map[string]string{
 			"migration.cfg": `
 			config {
-				min_cloudbots_percentage: 50
+				min_cloudbots_percentage: 30
 				min_low_risk_models_percentage: 25
+				min_large_memory_percentage: 20
 				low_risk_models: "model-1"
 				exclude_duts: "dut-2"
 				exclude_pools: "pool-2"
 				overrides {
+				  board: "board-2"
+				  model: "model-2"
+				  percentage: 0
+				}
+				large_memory_overrides {
 				  board: "board-2"
 				  model: "model-2"
 				  percentage: 0
@@ -215,7 +221,40 @@ func TestMigrate(t *testing.T) {
 									Device: &ufspb.ChromeOSDeviceLSE_Dut{
 										Dut: &chromeosLab.DeviceUnderTest{
 											Hostname: "dut-1",
-											Hive:     "cloudbots",
+											Hive:     "cloudbots-large",
+											Peripherals: &chromeosLab.Peripherals{
+												Chameleon:     &chromeosLab.Chameleon{},
+												Servo:         &chromeosLab.Servo{},
+												Rpm:           &chromeosLab.OSRPM{},
+												Audio:         &chromeosLab.Audio{},
+												Wifi:          &chromeosLab.Wifi{},
+												Touch:         &chromeosLab.Touch{},
+												CameraboxInfo: &chromeosLab.Camerabox{},
+												Dolos:         &chromeosLab.Dolos{},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{
+					Paths: []string{"dut.hive"},
+				},
+			}),
+			mockUFS.EXPECT().UpdateMachineLSE(ctxWithNS, &ufsAPI.UpdateMachineLSERequest{
+				MachineLSE: &ufspb.MachineLSE{
+					Name:     "machineLSEs/dut-3",
+					Hostname: "dut-3",
+					Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+						ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+							ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+								DeviceLse: &ufspb.ChromeOSDeviceLSE{
+									Device: &ufspb.ChromeOSDeviceLSE_Dut{
+										Dut: &chromeosLab.DeviceUnderTest{
+											Hostname: "dut-3",
+											Hive:     "cloudbots-large",
 											Peripherals: &chromeosLab.Peripherals{
 												Chameleon:     &chromeosLab.Chameleon{},
 												Servo:         &chromeosLab.Servo{},
