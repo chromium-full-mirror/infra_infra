@@ -10,11 +10,6 @@ details on the presubmit API built into gcl.
 
 import os
 
-DISABLED_TESTS = [
-    '.*appengine/chromium_status/tests/main_test.py',
-    '.*appengine/chromium_build/app_test.py',
-]
-
 DISABLED_PYLINT_WARNINGS = [
     'no-init',                # Class has no __init__ method
     'super-init-not-called',  # __init__ method from base class is not called
@@ -97,10 +92,6 @@ JSHINT_PROJECTS_BLACKLIST = THIRD_PARTY_DIRS
 # Paths tested are relative to the directory containing this file.
 # Ex: infra/libs/logs.py
 NOFORK_PATHS = []
-
-# This project is whitelisted to use Typescript on a trial basis.
-ROTANG_DIR = os.path.join('go', 'src', 'infra', 'appengine', 'rotang')
-CHOPSUI_DIR = os.path.join('crdx', 'chopsui-npm')
 
 
 def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
@@ -196,67 +187,6 @@ def GoCheckGoModTidy(input_api, output_api):
   ])
 
 
-# Forked from depot_tools/presubmit_canned_checks._FetchAllFiles
-def FetchAllFiles(input_api, files_to_check, files_to_skip):
-  import datetime
-  start_time = datetime.datetime.now()
-  def Find(filepath, filters):
-    return any(input_api.re.match(item, filepath) for item in filters)
-
-  repo_path = input_api.PresubmitLocalPath()
-  def MakeRootRelative(dirpath, item):
-    path = input_api.os_path.join(dirpath, item)
-    # Poor man's relpath:
-    if path.startswith(repo_path):  # pragma: no cover
-      return path[len(repo_path) + 1:]
-    return path  # pragma: no cover
-
-  dirs_walked = []
-
-  files = []
-  for dirpath, dirnames, filenames in input_api.os_walk(repo_path):
-    dirs_walked.append(dirpath)
-    for item in dirnames[:]:
-      filepath = MakeRootRelative(dirpath, item)
-      if Find(filepath, files_to_skip):
-        dirnames.remove(item)
-    for item in filenames:
-      filepath = MakeRootRelative(dirpath, item)
-      if Find(filepath, files_to_check) and not Find(filepath, files_to_skip):
-        files.append(filepath)
-  duration = datetime.datetime.now() - start_time
-  input_api.logging.info('FetchAllFiles found %s files, searching '
-      '%s directories in %ss' % (len(files), len(dirs_walked),
-      duration.total_seconds()))
-  return files
-
-
-# Forked with prejudice from depot_tools/presubmit_canned_checks.py
-def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
-                extra_python_paths):  # pragma: no cover
-  input_api.logging.debug('Running pylint on: %s', files)
-
-  # FIXME: depot_tools should be right next to infra, however DEPS
-  # recursion into build/DEPS does not seem to be working: crbug.com/410070
-  canned_checks_path = input_api.canned_checks.__file__
-  canned_checks_path = input_api.os_path.abspath(canned_checks_path)
-  depot_tools_path = input_api.os_path.dirname(canned_checks_path)
-
-  pylint_args = ['-d', ','.join(disabled_warnings)]
-
-  pytlint_path = input_api.os_path.join(depot_tools_path, 'pylint-2.7')
-
-  # Pass args via stdin, because windows (command line limit).
-  return input_api.Command(
-      name=('Pylint (%s files%s)' %
-            (len(files), ' under %s' % pylint_root if pylint_root else '')),
-      cmd=['vpython3', pytlint_path, '--args-on-stdin'],
-      kwargs={
-          'stdin': '\n'.join(pylint_args + files).encode(),
-      },
-      message=output_api.PresubmitError)
-
-
 def IgnoredPaths(input_api): # pragma: no cover
   # This computes the list if repository-root-relative paths which are
   # ignored by .gitignore files. There is probably a faster way to do this.
@@ -267,46 +197,6 @@ def IgnoredPaths(input_api): # pragma: no cover
     input_api.re.escape(path) for (mode, path) in statuses
     if mode in ('!!', '??') and not path.endswith('.pyc')
   ]
-
-
-def PythonRootForPath(input_api, path):
-  # For each path, walk up dirtories until find no more __init__.py
-  # The directory with the last __init__.py is considered our root.
-  root = input_api.os_path.dirname(path)
-  while True:
-    root_parent = input_api.os_path.dirname(root)
-    parent_init = input_api.os_path.join(root_parent, '__init__.py')
-    if not input_api.os_path.isfile(parent_init):
-      break
-    root = root_parent
-  return root
-
-
-def GroupPythonFilesByRoot(input_api, paths):
-  sorted_paths = sorted(paths)
-  import collections
-  grouped_paths = collections.defaultdict(list)
-  for path in sorted_paths:
-    # FIXME: This doesn't actually need to touch the filesystem if we can
-    # trust that 'paths' contains all __init__.py paths we care about.
-    root = PythonRootForPath(input_api, path)
-    grouped_paths[root].append(path)
-  # Convert back to a normal dict before returning.
-  return dict(grouped_paths)
-
-
-def DirtyRootsFromAffectedFiles(changed_py_files, root_to_paths):
-  # Compute root_groups for all python files
-  path_to_root = {}
-  for root, paths in root_to_paths.items():
-    for path in paths:
-      path_to_root[path] = root
-
-  # Using the above mapping, compute the actual roots we need to run
-  dirty_roots = set()
-  for path in changed_py_files:
-    dirty_roots.add(path_to_root[path])
-  return dirty_roots
 
 
 def NoForkCheck(input_api, output_api): # pragma: no cover
