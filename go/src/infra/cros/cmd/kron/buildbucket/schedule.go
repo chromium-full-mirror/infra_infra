@@ -36,7 +36,7 @@ var (
 	defaultStagingCTPBuilderID = bb.BuilderID{
 		Project: "chromeos",
 		Bucket:  "testplatform",
-		Builder: "cros_test_platform-dev",
+		Builder: "cros_test_platform-staging",
 	}
 
 	parentBuildBucketID = common.DefaultString

@@ -58,7 +58,7 @@ func main() {
 	authenticator := auth.NewAuthenticator(context.Background(), auth.SilentLogin, opts)
 	_, err := authenticator.Client()
 	if err != nil {
-		common.Stderr.Println("please run kron auth-login")
+		common.Stderr.Println("please run luci-auth login")
 		os.Exit(1)
 	}
 
