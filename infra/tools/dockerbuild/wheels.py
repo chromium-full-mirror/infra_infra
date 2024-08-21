@@ -1919,6 +1919,7 @@ SPECS.update({
         UniversalSource('websockets', '10.1', pyversions=['py3']),
         UniversalSource('websockets', '10.3', pyversions=['py3']),
         UniversalSource('websockets', '11.0.3', pyversions=['py3']),
+        UniversalSource('websockets', '13.0', pyversions=['py3']),
         UniversalSource('yamllint', '1.29.0', pyversions=['py3']),
     )
 })
