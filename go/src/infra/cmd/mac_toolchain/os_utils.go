@@ -6,8 +6,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"regexp"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -39,6 +41,10 @@ func getCurVersion(ctx context.Context) (string, error) {
 		return "", errors.Annotate(err, "failed to run sw_vers -productVersion").Err()
 	}
 	return out, nil
+}
+
+func collectLogs(ctx context.Context, startTime time.Time, output string) error {
+	return RunCommand(ctx, "sudo", "-n", "log", "collect", "--start", fmt.Sprintf("@%d", startTime.Unix()), "--output", output)
 }
 
 func renameDirectory(originDirectoryName string, destinationDirectoryName string) error {
