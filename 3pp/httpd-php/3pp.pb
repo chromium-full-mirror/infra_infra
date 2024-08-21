@@ -16,7 +16,7 @@ create {
   source {
     script { name: "fetch_win.py" }
     unpack_archive: false
-    patch_version: "chromium.5"
+    patch_version: "chromium.6"
   }
   build {
     tool: "tools/cmake"

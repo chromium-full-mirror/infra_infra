@@ -18,7 +18,7 @@ zlib_version = "1.2.13"
 
 
 def do_latest():
-  print('httpd{0}-php{1}.chromium.6'.format(httpd_version, php_version))
+  print('httpd{0}-php{1}'.format(httpd_version, php_version))
 
 
 def get_download_url():
