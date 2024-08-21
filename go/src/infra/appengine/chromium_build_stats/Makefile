@@ -5,14 +5,6 @@
 build:
 	go build ./...
 
-update-staging:
-	go run ./cmd/bqsetup/bqsetup.go -project chromium-build-stats-staging -table bots
-	go run ./cmd/bqsetup/bqsetup.go -project chromium-build-stats-staging -table users
-
-update-prod:
-	go run ./cmd/bqsetup/bqsetup.go -project chromium-build-stats -table bots
-	go run ./cmd/bqsetup/bqsetup.go -project chromium-build-stats -table users
-
 deploy-staging:
 	gae.py upload -x -f -A chromium-build-stats-staging --app-dir app
 
