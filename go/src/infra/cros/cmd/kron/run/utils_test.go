@@ -327,3 +327,262 @@ func TestMapEventsByConfig(t *testing.T) {
 		}
 	}
 }
+
+func TestRemoveDuplicateRequestsDuplicateSeen(t *testing.T) {
+	t.Parallel()
+
+	config1 := &suschpb.SchedulerConfig{}
+	config2 := &suschpb.SchedulerConfig{}
+
+	fakeCtpRequests := []*ctpEvent{
+		{
+			event: &kronpb.Event{
+				EventUuid: "123",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model:               "brick",
+						RequireStableDevice: false,
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelA",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           true,
+					ScheduleViaScheduke: true,
+					RunViaTrv2:          true,
+				},
+				TestPlan: &test_platform.Request_TestPlan{},
+			},
+			config: config1,
+		},
+		{
+			event: &kronpb.Event{
+				EventUuid: "456",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model:               "brick",
+						RequireStableDevice: false,
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelA",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           true,
+					ScheduleViaScheduke: true,
+					RunViaTrv2:          true,
+				},
+				TestPlan: &test_platform.Request_TestPlan{},
+			},
+			config: config2,
+		},
+		{
+			event: &kronpb.Event{
+				EventUuid: "789",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model: "brick2",
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelB",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           false,
+					ScheduleViaScheduke: false,
+					RunViaTrv2:          false,
+				},
+			},
+			config: config2,
+		},
+	}
+
+	dedupedFakes, err := removeDuplicateRequests(fakeCtpRequests)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(dedupedFakes) != 2 {
+		t.Errorf("expected %d events for config1 got %d", 2, len(dedupedFakes))
+		return
+	}
+
+	if dedupedFakes[0].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[0].ctpRequest != fakeCtpRequests[2].ctpRequest {
+		t.Errorf("returned item 1 did not match of the originally passed in requests.")
+		return
+	}
+
+	if dedupedFakes[1].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[1].ctpRequest != fakeCtpRequests[2].ctpRequest {
+		t.Errorf("returned item 2 did not match of the originally passed in requests.")
+		return
+	}
+}
+
+func TestRemoveDuplicateRequestsDuplicateNotSeen(t *testing.T) {
+	t.Parallel()
+
+	config1 := &suschpb.SchedulerConfig{}
+	config2 := &suschpb.SchedulerConfig{}
+
+	fakeCtpRequests := []*ctpEvent{
+		{
+			event: &kronpb.Event{
+				EventUuid: "123",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model:               "brick",
+						RequireStableDevice: false,
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelA",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           true,
+					ScheduleViaScheduke: true,
+					RunViaTrv2:          true,
+				},
+				TestPlan: &test_platform.Request_TestPlan{},
+			},
+			config: config1,
+		},
+		{
+			event: &kronpb.Event{
+				EventUuid: "456",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model:               "brickTest",
+						RequireStableDevice: false,
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelA",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           true,
+					ScheduleViaScheduke: true,
+					RunViaTrv2:          true,
+				},
+				TestPlan: &test_platform.Request_TestPlan{},
+			},
+			config: config2,
+		},
+		{
+			event: &kronpb.Event{
+				EventUuid: "789",
+			},
+			ctpRequest: &test_platform.Request{
+				Params: &test_platform.Request_Params{
+					HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+						Model: "brick2",
+					},
+					SecondaryDevices: []*test_platform.Request_Params_SecondaryDevice{
+						{
+							SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{},
+							HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
+								Model: "modelB",
+							},
+							SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+								{
+									Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+										AndroidImageVersion: "test",
+									},
+								},
+							},
+						},
+					},
+					RunViaCft:           false,
+					ScheduleViaScheduke: false,
+					RunViaTrv2:          false,
+				},
+			},
+			config: config2,
+		},
+	}
+
+	dedupedFakes, err := removeDuplicateRequests(fakeCtpRequests)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(dedupedFakes) != 3 {
+		t.Errorf("expected %d events for config1 got %d", 3, len(dedupedFakes))
+		return
+	}
+
+	if dedupedFakes[0].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[0].ctpRequest != fakeCtpRequests[1].ctpRequest && dedupedFakes[0].ctpRequest != fakeCtpRequests[2].ctpRequest {
+		t.Errorf("returned item 1 did not match of the originally passed in requests.")
+		return
+	}
+	if dedupedFakes[1].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[1].ctpRequest != fakeCtpRequests[1].ctpRequest && dedupedFakes[1].ctpRequest != fakeCtpRequests[2].ctpRequest {
+		t.Errorf("returned item 2 did not match of the originally passed in requests.")
+		return
+	}
+	if dedupedFakes[2].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[2].ctpRequest != fakeCtpRequests[1].ctpRequest && dedupedFakes[2].ctpRequest != fakeCtpRequests[2].ctpRequest {
+		t.Errorf("returned item 3 did not match of the originally passed in requests.")
+		return
+	}
+}

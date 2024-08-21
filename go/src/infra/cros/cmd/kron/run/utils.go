@@ -771,6 +771,11 @@ func scheduleRequests(kronBuildMap map[*kronpb.Build][]*suschpb.SchedulerConfig,
 		return err
 	}
 
+	ctpRequests, err = removeDuplicateRequests(ctpRequests)
+	if err != nil {
+		return err
+	}
+
 	batches, err := formatAndBatchCTPRequests(isProd, dryRun, ctpRequests)
 	if err != nil {
 		return err
@@ -850,4 +855,29 @@ func fetchRequiredBuildsFromLTS(ctx context.Context, requiredBuildsList []*build
 	common.Stdout.Printf("************************************************")
 
 	return fetchedBuilds, nil
+}
+
+// removeDuplicateRequests reads through all CTP requests and removes duplicate entries.
+// Note the eventUUID.
+func removeDuplicateRequests(incomingRequests []*ctpEvent) ([]*ctpEvent, error) {
+	seenBefore := map[string]string{}
+	dupeFreeEvents := []*ctpEvent{}
+
+	for _, event := range incomingRequests {
+		data, err := protojson.Marshal(event.ctpRequest)
+		if err != nil {
+			return nil, err
+		}
+
+		// If the proto output has been seen before then that means this is a
+		// duplicated task.
+		if originalEventUUID, ok := seenBefore[string(data)]; !ok {
+			seenBefore[string(data)] = event.event.EventUuid
+
+			dupeFreeEvents = append(dupeFreeEvents, event)
+		} else {
+			common.Stderr.Printf("Event %s is a duplicate of %s, removing from CTP request list.", event.event.EventUuid, originalEventUUID)
+		}
+	}
+	return dupeFreeEvents, nil
 }

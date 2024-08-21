@@ -495,6 +495,11 @@ func (c *CrOSMultiDUTCommand) ScheduleRequests(kronBuildMap map[*kronpb.Build][]
 		return err
 	}
 
+	ctpRequests, err = removeDuplicateRequests(ctpRequests)
+	if err != nil {
+		return err
+	}
+
 	// Pre-batch the requests according to the max batch size.
 	batches, err := formatAndBatchCTPRequests(c.isProd, c.dryRun, ctpRequests)
 	if err != nil {
