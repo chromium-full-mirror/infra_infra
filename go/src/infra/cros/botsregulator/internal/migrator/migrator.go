@@ -27,13 +27,11 @@ import (
 const migrationFile = "migration.cfg"
 
 // migrationState represents a state of the migration where
-// CloudbotsSmall shows the machineLSEs with a cloudbots hive.
-// CloudbotsLarge shows the machineLSEs with a cloudbots-large hive.
+// Cloudbots shows the machineLSEs with a cloudbots hive.
 // Drone shows the machineLses with a non-cloudbots hive.
 type migrationState struct {
-	CloudbotsSmall []string
-	CloudbotsLarge []string
-	Drone          []string
+	Cloudbots []string
+	Drone     []string
 }
 
 type migrator struct {
@@ -151,9 +149,7 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 			}
 			switch lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive() {
 			case "cloudbots":
-				bms[key].CloudbotsSmall = append(bms[key].CloudbotsSmall, stripped)
-			case "cloudbots-large":
-				bms[key].CloudbotsLarge = append(bms[key].CloudbotsLarge, stripped)
+				bms[key].Cloudbots = append(bms[key].Cloudbots, stripped)
 			case "e", "":
 				// e and empty hive are the only values drone-queen captures.
 				// TODO(b/338233053): change to e after backfill.
@@ -171,45 +167,28 @@ func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string
 	// MachinesLSEs to be converted to CloudBots or Drone.
 	migrationNext := &migrationState{}
 	for bm, state := range bms {
-		var targetSmall, targetLarge int32
 		t := strings.Split(bm, "/")
 		if len(t) != 2 {
 			panic("boardModelToState keys should always contain one '/'")
 		}
 		board := t[0]
 		model := t[1]
-		// Small bot percentage
 		if target, ok := cs.overrideBoardModel[bm]; ok {
 			// Board/Model override.
-			targetSmall = target
+			computeNextModelState(ctx, bm, target, state, migrationNext)
 		} else if target, ok := cs.overrideBoardModel[fmt.Sprintf("*/%s", model)]; ok {
 			// Model override.
-			targetSmall = target
+			computeNextModelState(ctx, bm, target, state, migrationNext)
 		} else if target, ok := cs.overrideBoardModel[fmt.Sprintf("%s/*", board)]; ok {
 			// Board override.
-			targetSmall = target
+			computeNextModelState(ctx, bm, target, state, migrationNext)
 		} else if _, ok := cs.overrideLowRisks[model]; ok {
 			// Low risk model override.
-			targetSmall = cs.minLowRiskModelsPercentage
+			computeNextModelState(ctx, bm, cs.minLowRiskModelsPercentage, state, migrationNext)
 		} else {
 			// No override.
-			targetSmall = cs.minCloudbotsPercentage
+			computeNextModelState(ctx, bm, cs.minCloudbotsPercentage, state, migrationNext)
 		}
-		// Large memory bot percentage
-		if target, ok := cs.largeMemoryOverrideBoardModel[bm]; ok {
-			// Board/Model override.
-			targetLarge = target
-		} else if target, ok := cs.largeMemoryOverrideBoardModel[fmt.Sprintf("*/%s", model)]; ok {
-			// Model override.
-			targetLarge = target
-		} else if target, ok := cs.largeMemoryOverrideBoardModel[fmt.Sprintf("%s/*", board)]; ok {
-			// Board override.
-			targetLarge = target
-		} else {
-			// No override.
-			targetLarge = cs.minLargeMemoryPercentage
-		}
-		computeNextModelState(ctx, bm, targetSmall, targetLarge, state, migrationNext)
 	}
 	return migrationNext
 }
@@ -217,23 +196,14 @@ func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string
 // RunBatchUpdate calls UFS to update all the hive of the machineLSEs in migration state.
 func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationState) error {
 	logging.Infof(ctx, "starting batch update for cloudBots")
-	errs := errors.NewLazyMultiError(len(migrationNext.CloudbotsSmall) + len(migrationNext.CloudbotsLarge) + len(migrationNext.Drone))
+	errs := errors.NewLazyMultiError(len(migrationNext.Cloudbots) + len(migrationNext.Drone))
 	cpt := 0
 	ctx = clients.SetUFSNamespace(ctx, "os")
-	for _, cbsmall := range migrationNext.CloudbotsSmall {
-		req := clients.InitializeUpdateDUTRequest(cbsmall, "cloudbots")
+	for _, cb := range migrationNext.Cloudbots {
+		req := clients.InitializeUpdateDUTRequest(cb, "cloudbots")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
-			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots: %v", cbsmall, err)
-			errs.Assign(cpt, err)
-		}
-		cpt++
-	}
-	for _, cblarge := range migrationNext.CloudbotsLarge {
-		req := clients.InitializeUpdateDUTRequest(cblarge, "cloudbots-large")
-		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
-		if err != nil {
-			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots-large: %v", cblarge, err)
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots: %v", cb, err)
 			errs.Assign(cpt, err)
 		}
 		cpt++
@@ -255,61 +225,23 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 // based on a target percentage of CloudBots DUTs and a current state.
 // This results in appending DUTs to nextState.
 // These DUTs will get their hive switched further down.
-func computeNextModelState(ctx context.Context, bm string, targetSmall, targetLarge int32, currentState, nextState *migrationState) {
-	logging.Infof(ctx, "computeNextModelState: %s with small bot target %d%%, large bot target %d%%", bm, targetSmall, targetLarge)
-	totalDUTs := float64(len(currentState.CloudbotsSmall) + len(currentState.CloudbotsLarge) + len(currentState.Drone))
-	targetSmallPercentage := float64(targetSmall)
-	targetLargePercentage := float64(targetLarge)
-	if targetSmallPercentage+targetLargePercentage > 100 {
-		targetSmallPercentage = 100 - targetLargePercentage
-		logging.Warningf(ctx, "computeNextModelState: %s, the sum of both small and large bot exceed 100%%, use new small bot target %d%%", targetSmallPercentage)
-	}
-	var moveBots []string
-	// Number of CloudBots, Drone, Small and Large CloudBots DUTs for this model expected after this migration iteration.
-	cloudbotsLargeAmount := math.Ceil((targetLargePercentage * totalDUTs) / 100)
-	cloudbotsSmallAmount := math.Ceil((targetSmallPercentage * totalDUTs) / 100)
-	if totalDUTs < cloudbotsLargeAmount+cloudbotsSmallAmount {
-		// There is a change total cloudbots is greater than total duts since we round up the dut percentage
-		cloudbotsSmallAmount = totalDUTs - cloudbotsLargeAmount
-	}
-	droneAmount := totalDUTs - cloudbotsLargeAmount - cloudbotsSmallAmount
-	// Number of surplus DUTs in each category.
-	surplusDrone := float64(len(currentState.Drone)) - droneAmount
-	surplusCloudBotsSmall := float64(len(currentState.CloudbotsSmall)) - cloudbotsSmallAmount
-	surplusCloudBotsLarge := float64(len(currentState.CloudbotsLarge)) - cloudbotsLargeAmount
-	if surplusDrone == 0 && surplusCloudBotsSmall == 0 && surplusCloudBotsLarge == 0 {
+func computeNextModelState(ctx context.Context, bm string, target int32, currentState, nextState *migrationState) {
+	logging.Infof(ctx, "computeNextModelState: %s with target %d%%", bm, target)
+	totalDUTs := float64(len(currentState.Cloudbots) + len(currentState.Drone))
+	targetPercentage := float64(target)
+	// Number of CloudBots DUTs for this model expected after this migration iteration.
+	cloudbotsAmount := math.Ceil((targetPercentage * totalDUTs) / 100)
+	diff := len(currentState.Cloudbots) - int(cloudbotsAmount)
+	if diff == 0 {
 		logging.Infof(ctx, "computeNextModelState: no change for board/model %s; skipping", bm)
-		return
-	}
-	if surplusDrone > 0 {
-		surplusBots := currentState.Drone[:int(surplusDrone)]
-		moveBots = append(moveBots, surplusBots...)
-	}
-	if surplusCloudBotsSmall > 0 {
-		surplusBots := currentState.CloudbotsSmall[:int(surplusCloudBotsSmall)]
-		moveBots = append(moveBots, surplusBots...)
-	}
-	if surplusCloudBotsLarge > 0 {
-		surplusBots := currentState.CloudbotsLarge[:int(surplusCloudBotsLarge)]
-		moveBots = append(moveBots, surplusBots...)
-	}
-	start := 0
-	if surplusDrone < 0 {
-		nb := moveBots[start : start+int(math.Abs(surplusDrone))]
-		nextState.Drone = append(nextState.Drone, nb...)
-		start += len(nb)
-		logging.Infof(ctx, "computeNextModelState: adding %v to SFO36", nb)
-	}
-	if surplusCloudBotsSmall < 0 {
-		nb := moveBots[start : start+int(math.Abs(surplusCloudBotsSmall))]
-		nextState.CloudbotsSmall = append(nextState.CloudbotsSmall, nb...)
-		start += len(nb)
-		logging.Infof(ctx, "computeNextModelState: adding %v to Small CloudBots", nb)
-	}
-	if surplusCloudBotsLarge < 0 {
-		nb := moveBots[start : start+int(math.Abs(surplusCloudBotsLarge))]
-		nextState.CloudbotsLarge = append(nextState.CloudbotsLarge, nb...)
-		logging.Infof(ctx, "computeNextModelState: adding %v to Large CloudBots", nb)
+	} else if diff < 0 {
+		ncb := currentState.Drone[:int(math.Abs(float64(diff)))]
+		nextState.Cloudbots = append(nextState.Cloudbots, ncb...)
+		logging.Infof(ctx, "computeNextModelState: adding %v to CloudBots", ncb)
+	} else {
+		nsf := currentState.Cloudbots[:int(math.Abs(float64(diff)))]
+		nextState.Drone = append(nextState.Drone, nsf...)
+		logging.Infof(ctx, "computeNextModelState: adding %v to SFO36", nsf)
 	}
 }
 
