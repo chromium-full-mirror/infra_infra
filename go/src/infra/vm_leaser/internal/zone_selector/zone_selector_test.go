@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/vm_leaser/internal/constants"
 )
@@ -26,8 +27,8 @@ func TestSelectZone(t *testing.T) {
 		}
 	}
 
-	Convey("Test SelectZone", t, func() {
-		Convey("SelectZone - zone provided; return zone", func() {
+	ftt.Run("Test SelectZone", t, func(t *ftt.Test) {
+		t.Run("SelectZone - zone provided; return zone", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:  "test-image",
@@ -35,18 +36,18 @@ func TestSelectZone(t *testing.T) {
 				},
 			}
 			z := SelectZone(ctx, req, 1)
-			So(z, ShouldEqual, "test-region")
+			assert.Loosely(t, z, should.Equal("test-region"))
 		})
-		Convey("SelectZone - select single random zone", func() {
+		t.Run("SelectZone - select single random zone", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage: "test-image",
 				},
 			}
 			z := SelectZone(ctx, req, 1)
-			So(allZones, ShouldContain, z)
+			assert.Loosely(t, allZones, should.Contain(z))
 		})
-		Convey("SelectZone - select single random zone for ChromeOS testing client", func() {
+		t.Run("SelectZone - select single random zone for ChromeOS testing client", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage: "test-image",
@@ -54,9 +55,9 @@ func TestSelectZone(t *testing.T) {
 				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CHROMEOS,
 			}
 			z := SelectZone(ctx, req, 1)
-			So(allZones, ShouldContain, z)
+			assert.Loosely(t, allZones, should.Contain(z))
 		})
-		Convey("SelectZone - check distribution of zones", func() {
+		t.Run("SelectZone - check distribution of zones", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage: "test-image",
@@ -76,7 +77,7 @@ func TestSelectZone(t *testing.T) {
 
 			// all keys should be valid zones
 			for k := range zonesDict {
-				So(allZones, ShouldContain, k)
+				assert.Loosely(t, allZones, should.Contain(k))
 			}
 
 			// Since we have 4 main zones and 13 total zones, the distribution for
@@ -84,8 +85,8 @@ func TestSelectZone(t *testing.T) {
 			// leeway, the zone distribution should be 4-14% (9±5%) per subzone.
 			dist := 1.0 / float64(len(allZones))
 			for _, a := range allZones {
-				So(zonesDict[a], ShouldBeLessThan, float64(numZones)*(dist+0.05))
-				So(zonesDict[a], ShouldBeGreaterThan, float64(numZones)*(dist-0.05))
+				assert.That(t, float64(zonesDict[a]), should.BeLessThan(float64(numZones)*(dist+0.05)))
+				assert.That(t, float64(zonesDict[a]), should.BeGreaterThan(float64(numZones)*(dist-0.05)))
 			}
 		})
 	})
@@ -95,17 +96,17 @@ func TestGetZoneSubnet(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("Test GetZoneSubnet", t, func() {
-		Convey("GetZoneSubnet - happy path", func() {
+	ftt.Run("Test GetZoneSubnet", t, func(t *ftt.Test) {
+		t.Run("GetZoneSubnet - happy path", func(t *ftt.Test) {
 			z, err := GetZoneSubnet(ctx, "test-region-1")
-			So(err, ShouldBeNil)
-			So(z, ShouldEqual, "regions/test-region/subnetworks/test-region")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, z, should.Equal("regions/test-region/subnetworks/test-region"))
 		})
-		Convey("GetZoneSubnet - bad zone", func() {
+		t.Run("GetZoneSubnet - bad zone", func(t *ftt.Test) {
 			z, err := GetZoneSubnet(ctx, "test-region")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
-			So(z, ShouldEqual, "")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("zone is malformed; needs to be xxx-yyy-zzz"))
+			assert.Loosely(t, z, should.BeEmpty)
 		})
 	})
 }
@@ -113,23 +114,23 @@ func TestGetZoneSubnet(t *testing.T) {
 func TestExtractGoogleApiZone(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test ExtractGoogleApiZone", t, func() {
-		Convey("ExtractGoogleApiZone - happy path", func() {
+	ftt.Run("Test ExtractGoogleApiZone", t, func(t *ftt.Test) {
+		t.Run("ExtractGoogleApiZone - happy path", func(t *ftt.Test) {
 			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones/us-central1-b")
-			So(err, ShouldBeNil)
-			So(z, ShouldEqual, "us-central1-b")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, z, should.Equal("us-central1-b"))
 		})
-		Convey("ExtractGoogleApiZone - bad zone", func() {
+		t.Run("ExtractGoogleApiZone - bad zone", func(t *ftt.Test) {
 			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones/us-central1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "google api zone uri is malformed")
-			So(z, ShouldEqual, "")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("google api zone uri is malformed"))
+			assert.Loosely(t, z, should.BeEmpty)
 		})
-		Convey("ExtractGoogleApiZone - no zone", func() {
+		t.Run("ExtractGoogleApiZone - no zone", func(t *ftt.Test) {
 			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "google api zone uri is malformed")
-			So(z, ShouldEqual, "")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("google api zone uri is malformed"))
+			assert.Loosely(t, z, should.BeEmpty)
 		})
 	})
 }
@@ -137,20 +138,20 @@ func TestExtractGoogleApiZone(t *testing.T) {
 func TestValidateZone(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test validateZone", t, func() {
-		Convey("validateZone - happy path", func() {
+	ftt.Run("Test validateZone", t, func(t *ftt.Test) {
+		t.Run("validateZone - happy path", func(t *ftt.Test) {
 			err := validateZone("us-central1-b")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("validateZone - bad zone", func() {
+		t.Run("validateZone - bad zone", func(t *ftt.Test) {
 			err := validateZone("us-central1")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("zone is malformed; needs to be xxx-yyy-zzz"))
 		})
-		Convey("validateZone - no zone", func() {
+		t.Run("validateZone - no zone", func(t *ftt.Test) {
 			err := validateZone("")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("zone is malformed; needs to be xxx-yyy-zzz"))
 		})
 	})
 }

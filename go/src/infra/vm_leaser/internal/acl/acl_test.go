@@ -9,11 +9,13 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 )
@@ -33,36 +35,36 @@ func TestRPCAccessInterceptor(t *testing.T) {
 		return status.Code(err)
 	}
 
-	Convey("Anonymous", t, func() {
+	ftt.Run("Anonymous", t, func(t *ftt.Test) {
 		ctx := auth.WithState(context.Background(), &authtest.FakeState{})
 
-		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
+		assert.Loosely(t, check(ctx, "unknown.API", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), should.Equal(codes.PermissionDenied))
 	})
 
-	Convey("Authenticated, but not authorized", t, func() {
+	ftt.Run("Authenticated, but not authorized", t, func(t *ftt.Test) {
 		ctx := auth.WithState(context.Background(), &authtest.FakeState{
 			Identity:       "user:someone@example.com",
 			IdentityGroups: []string{"some-random-group"},
 		})
 
-		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
+		assert.Loosely(t, check(ctx, "unknown.API", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), should.Equal(codes.PermissionDenied))
 	})
 
-	Convey("Authorized", t, func() {
+	ftt.Run("Authorized", t, func(t *ftt.Test) {
 		ctx := auth.WithState(context.Background(), &authtest.FakeState{
 			Identity:       "user:someone@example.com",
 			IdentityGroups: []string{VMLabGroup},
 		})
 
-		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.OK)
-		So(check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), ShouldEqual, codes.OK)
-		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.OK)
+		assert.Loosely(t, check(ctx, "unknown.API", "Something"), should.Equal(codes.PermissionDenied))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), should.Equal(codes.OK))
+		assert.Loosely(t, check(ctx, "grpc.reflection.v1.ServerReflection", "Something"), should.Equal(codes.OK))
+		assert.Loosely(t, check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), should.Equal(codes.OK))
 	})
 }

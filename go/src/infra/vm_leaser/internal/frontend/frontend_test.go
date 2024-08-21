@@ -9,10 +9,10 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/vm_leaser/internal/constants"
 )
@@ -25,8 +25,8 @@ func TestHandleLeaseVMError(t *testing.T) {
 	for _, a := range constants.AllQuotaZones {
 		allZones = append(allZones, a...)
 	}
-	Convey("Test handleLeaseVMError", t, func() {
-		Convey("handleLeaseVMError - no error; return original request", func() {
+	ftt.Run("Test handleLeaseVMError", t, func(t *ftt.Test) {
+		t.Run("handleLeaseVMError - no error; return original request", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceRegion:  "test-region",
@@ -34,9 +34,9 @@ func TestHandleLeaseVMError(t *testing.T) {
 				},
 			}
 			newReq := handleLeaseVMError(ctx, req, nil, nil)
-			So(req, ShouldResembleProto, newReq)
+			assert.Loosely(t, req, should.Match(newReq))
 		})
-		Convey("handleLeaseVMError - QUOTA_EXCEEDED error; return request with new zone", func() {
+		t.Run("handleLeaseVMError - QUOTA_EXCEEDED error; return request with new zone", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceRegion:  "test-region",
@@ -46,8 +46,8 @@ func TestHandleLeaseVMError(t *testing.T) {
 			err := errors.New("QUOTA_EXCEEDED error test")
 			quotaExceededZones := map[string]bool{}
 			newReq := handleLeaseVMError(ctx, req, err, quotaExceededZones)
-			So(newReq.GetHostReqs().GetGceRegion(), ShouldNotEqual, "test-region")
-			So(newReq.GetHostReqs().GetGceRegion(), ShouldBeIn, allZones)
+			assert.Loosely(t, newReq.GetHostReqs().GetGceRegion(), should.NotEqual("test-region"))
+			assert.Loosely(t, newReq.GetHostReqs().GetGceRegion(), should.BeIn(allZones...))
 		})
 	})
 }

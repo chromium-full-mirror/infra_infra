@@ -7,15 +7,15 @@ package validation
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestValidateLeaseVM(t *testing.T) {
-	Convey("Test ValidateLeaseVMRequest", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("Test ValidateLeaseVMRequest", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -26,15 +26,15 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - missing host requirements", func() {
+		t.Run("Invalid request - missing host requirements", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "VM requirements must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("VM requirements must be set."))
 		})
-		Convey("Invalid request - missing image", func() {
+		t.Run("Invalid request - missing image", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceRegion:      "test-region",
@@ -44,10 +44,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE image must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE image must be set."))
 		})
-		Convey("Invalid request - missing region", func() {
+		t.Run("Invalid request - missing region", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -57,10 +57,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE region (zone) must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE region (zone) must be set."))
 		})
-		Convey("Invalid request - missing project", func() {
+		t.Run("Invalid request - missing project", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -70,10 +70,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE project must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE project must be set."))
 		})
-		Convey("Invalid request - missing machine type", func() {
+		t.Run("Invalid request - missing machine type", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:    "test-image",
@@ -83,10 +83,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE machine type must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE machine type must be set."))
 		})
-		Convey("Invalid request - missing disk size", func() {
+		t.Run("Invalid request - missing disk size", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -96,10 +96,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE machine disk size must be set (in GB).")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE machine disk size must be set (in GB)."))
 		})
-		Convey("Valid request - successful path for crosfleet", func() {
+		t.Run("Valid request - successful path for crosfleet", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -115,9 +115,9 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - missing labels for crosfleet", func() {
+		t.Run("Invalid request - missing labels for crosfleet", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -129,10 +129,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CROSFLEET,
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Labels should not be nil")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Labels should not be nil"))
 		})
-		Convey("Invalid request - missing client label for crosfleet", func() {
+		t.Run("Invalid request - missing client label for crosfleet", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -147,10 +147,10 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Labels should contain \"client\"=\"crosfleet\"")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Labels should contain \"client\"=\"crosfleet\""))
 		})
-		Convey("Invalid request - missing leased-by label for crosfleet", func() {
+		t.Run("Invalid request - missing leased-by label for crosfleet", func(t *ftt.Test) {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
 					GceImage:       "test-image",
@@ -165,56 +165,56 @@ func TestValidateLeaseVM(t *testing.T) {
 				},
 			}
 			err := ValidateLeaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Labels should contain \"leased-by\"={email}")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Labels should contain \"leased-by\"={email}"))
 		})
 	})
 }
 
 func TestValidateReleaseVM(t *testing.T) {
-	Convey("Test ValidateReleaseVMRequest", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("Test ValidateReleaseVMRequest", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &api.ReleaseVMRequest{
 				LeaseId:    "test-lease-id",
 				GceProject: "test-project",
 				GceRegion:  "test-region",
 			}
 			err := ValidateReleaseVMRequest(req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - missing lease id", func() {
+		t.Run("Invalid request - missing lease id", func(t *ftt.Test) {
 			req := &api.ReleaseVMRequest{
 				GceProject: "test-project",
 				GceRegion:  "test-region",
 			}
 			err := ValidateReleaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Lease ID must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Lease ID must be set."))
 		})
-		Convey("Invalid request - missing project", func() {
+		t.Run("Invalid request - missing project", func(t *ftt.Test) {
 			req := &api.ReleaseVMRequest{
 				LeaseId:   "test-lease-id",
 				GceRegion: "test-region",
 			}
 			err := ValidateReleaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE project must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE project must be set."))
 		})
-		Convey("Invalid request - missing region", func() {
+		t.Run("Invalid request - missing region", func(t *ftt.Test) {
 			req := &api.ReleaseVMRequest{
 				LeaseId:    "test-lease-id",
 				GceProject: "test-project",
 			}
 			err := ValidateReleaseVMRequest(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE region (zone) must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE region (zone) must be set."))
 		})
 	})
 }
 
 func TestValidateVMRequirements(t *testing.T) {
-	Convey("Test ValidateVMRequirements", t, func() {
-		Convey("Valid request - successful path", func() {
+	ftt.Run("Test ValidateVMRequirements", t, func(t *ftt.Test) {
+		t.Run("Valid request - successful path", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
@@ -223,9 +223,9 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Invalid request - missing image", func() {
+		t.Run("Invalid request - missing image", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -233,10 +233,10 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE image must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE image must be set."))
 		})
-		Convey("Invalid request - missing region", func() {
+		t.Run("Invalid request - missing region", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceProject:     "test-project",
@@ -244,10 +244,10 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE region (zone) must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE region (zone) must be set."))
 		})
-		Convey("Invalid request - missing project", func() {
+		t.Run("Invalid request - missing project", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
@@ -255,10 +255,10 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE project must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE project must be set."))
 		})
-		Convey("Invalid request - missing machine type", func() {
+		t.Run("Invalid request - missing machine type", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceImage:    "test-image",
 				GceRegion:   "test-region",
@@ -266,10 +266,10 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceDiskSize: 100,
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE machine type must be set.")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE machine type must be set."))
 		})
-		Convey("Invalid request - missing disk size", func() {
+		t.Run("Invalid request - missing disk size", func(t *ftt.Test) {
 			req := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
@@ -277,33 +277,33 @@ func TestValidateVMRequirements(t *testing.T) {
 				GceMachineType: "test-machine-type",
 			}
 			err := ValidateVMRequirements(req)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "GCE machine disk size must be set (in GB).")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("GCE machine disk size must be set (in GB)."))
 		})
 	})
 }
 
 func TestValidateLeaseParent(t *testing.T) {
-	Convey("Test ValidateLeaseParent", t, func() {
-		Convey("Valid regex - successful path; only project", func() {
+	ftt.Run("Test ValidateLeaseParent", t, func(t *ftt.Test) {
+		t.Run("Valid regex - successful path; only project", func(t *ftt.Test) {
 			err := ValidateLeaseParent("projects/test-project")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Valid regex - successful path; project and zone", func() {
+		t.Run("Valid regex - successful path; project and zone", func(t *ftt.Test) {
 			err := ValidateLeaseParent("projects/test-project/zones/test-zone")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Valid regex - error; no project", func() {
+		t.Run("Valid regex - error; no project", func(t *ftt.Test) {
 			err := ValidateLeaseParent("projects/")
-			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
+			assert.Loosely(t, err, should.ErrLike("parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`"))
 		})
-		Convey("Valid regex - error; extra string", func() {
+		t.Run("Valid regex - error; extra string", func(t *ftt.Test) {
 			err := ValidateLeaseParent("projects/test-project/123")
-			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
+			assert.Loosely(t, err, should.ErrLike("parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`"))
 		})
-		Convey("Valid regex - error; typo in zone", func() {
+		t.Run("Valid regex - error; typo in zone", func(t *ftt.Test) {
 			err := ValidateLeaseParent("projects/test-project/zone/fail-zone")
-			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
+			assert.Loosely(t, err, should.ErrLike("parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`"))
 		})
 	})
 }

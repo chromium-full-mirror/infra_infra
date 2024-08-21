@@ -15,13 +15,14 @@ import (
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.
@@ -61,15 +62,15 @@ func (m *mockComputeInstancesClient) AggregatedList(context.Context, *computepb.
 func TestCheckIdempotencyKey(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test CheckIdempotencyKey", t, func() {
-		Convey("CheckIdempotencyKey - no instances found", func() {
+	ftt.Run("Test CheckIdempotencyKey", t, func(t *ftt.Test) {
+		t.Run("CheckIdempotencyKey - no instances found", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				aggregatedListFunc: func() *compute.InstancesScopedListPairIterator {
 					return nil
 				},
 			}
 			in := CheckIdempotencyKey(ctx, client, "test-project", "test-key")
-			So(in, ShouldBeNil)
+			assert.Loosely(t, in, should.BeNil)
 		})
 	})
 }
@@ -77,8 +78,8 @@ func TestCheckIdempotencyKey(t *testing.T) {
 func TestCreateInstance(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test CreateInstance", t, func() {
-		Convey("CreateInstance - error: unable to create", func() {
+	ftt.Run("Test CreateInstance", t, func(t *ftt.Test) {
+		t.Run("CreateInstance - error: unable to create", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, errors.New("failed insert")
@@ -95,10 +96,10 @@ func TestCreateInstance(t *testing.T) {
 				},
 			}
 			err := CreateInstance(ctx, client, "dev", "test-id", leaseReq)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unable to create instance")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unable to create instance"))
 		})
-		Convey("CreateInstance - error: no operation returned", func() {
+		t.Run("CreateInstance - error: no operation returned", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, nil
@@ -115,10 +116,10 @@ func TestCreateInstance(t *testing.T) {
 				},
 			}
 			err := CreateInstance(ctx, client, "dev", "test-id", leaseReq)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("no operation returned for waiting"))
 		})
-		Convey("CreateInstance - with labels - error: no operation returned", func() {
+		t.Run("CreateInstance - with labels - error: no operation returned", func(t *ftt.Test) {
 			labels := map[string]string{"k": "v"}
 			client := &mockComputeInstancesClient{
 				insertFunc: func(r *computepb.InsertInstanceRequest) (*compute.Operation, error) {
@@ -140,10 +141,10 @@ func TestCreateInstance(t *testing.T) {
 				Labels: labels,
 			}
 			err := CreateInstance(ctx, client, "dev", "test-id", leaseReq)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("no operation returned for waiting"))
 		})
-		Convey("CreateInstance - error: failed to get network interface", func() {
+		t.Run("CreateInstance - error: failed to get network interface", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				insertFunc: func(*computepb.InsertInstanceRequest) (*compute.Operation, error) {
 					return nil, nil
@@ -160,8 +161,8 @@ func TestCreateInstance(t *testing.T) {
 				},
 			}
 			err := CreateInstance(ctx, client, "dev", "test-id", leaseReq)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "failed to get network interface")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("failed to get network interface"))
 		})
 	})
 }
@@ -169,8 +170,8 @@ func TestCreateInstance(t *testing.T) {
 func TestDeleteInstance(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test DeleteInstance", t, func() {
-		Convey("DeleteInstance - error: unable to delete", func() {
+	ftt.Run("Test DeleteInstance", t, func(t *ftt.Test) {
+		t.Run("DeleteInstance - error: unable to delete", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				deleteFunc: func() (*compute.Operation, error) {
 					return nil, errors.New("failed delete")
@@ -182,10 +183,10 @@ func TestDeleteInstance(t *testing.T) {
 				GceRegion:  "test-region",
 			}
 			err := DeleteInstance(ctx, client, releaseReq)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unable to delete instance")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unable to delete instance"))
 		})
-		Convey("DeleteInstance - success", func() {
+		t.Run("DeleteInstance - success", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				deleteFunc: func() (*compute.Operation, error) {
 					return &compute.Operation{}, nil
@@ -197,7 +198,7 @@ func TestDeleteInstance(t *testing.T) {
 				GceRegion:  "test-region",
 			}
 			err := DeleteInstance(ctx, client, releaseReq)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -205,8 +206,8 @@ func TestDeleteInstance(t *testing.T) {
 func TestGetInstance(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test GetInstance", t, func() {
-		Convey("GetInstance - happy path", func() {
+	ftt.Run("Test GetInstance", t, func(t *ftt.Test) {
+		t.Run("GetInstance - happy path", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return &computepb.Instance{
@@ -231,8 +232,8 @@ func TestGetInstance(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			ins, err := GetInstance(ctx, client, "test-id", hostReqs, false)
-			So(ins, ShouldNotBeNil)
-			So(ins, ShouldResembleProto, &computepb.Instance{
+			assert.Loosely(t, ins, should.NotBeNil)
+			assert.Loosely(t, ins, should.Match(&computepb.Instance{
 				Name: proto.String("test-id"),
 				NetworkInterfaces: []*computepb.NetworkInterface{
 					{
@@ -243,10 +244,10 @@ func TestGetInstance(t *testing.T) {
 						},
 					},
 				},
-			})
-			So(err, ShouldBeNil)
+			}))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("GetInstance - error: failed get", func() {
+		t.Run("GetInstance - error: failed get", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return nil, errors.New("failed get")
@@ -260,11 +261,11 @@ func TestGetInstance(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			ins, err := GetInstance(ctx, client, "test-id", hostReqs, false)
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "failed get")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("failed get"))
 		})
-		Convey("GetInstance - error: no network interface", func() {
+		t.Run("GetInstance - error: no network interface", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return &computepb.Instance{}, nil
@@ -278,11 +279,11 @@ func TestGetInstance(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			ins, err := GetInstance(ctx, client, "test-id", hostReqs, false)
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "instance does not have a network interface")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("instance does not have a network interface"))
 		})
-		Convey("GetInstance - error: no access config", func() {
+		t.Run("GetInstance - error: no access config", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return &computepb.Instance{
@@ -300,11 +301,11 @@ func TestGetInstance(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			ins, err := GetInstance(ctx, client, "test-id", hostReqs, false)
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "instance does not have an access config")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("instance does not have an access config"))
 		})
-		Convey("GetInstance - error: no nat ip", func() {
+		t.Run("GetInstance - error: no nat ip", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return &computepb.Instance{
@@ -326,9 +327,9 @@ func TestGetInstance(t *testing.T) {
 				GceDiskSize:    100,
 			}
 			ins, err := GetInstance(ctx, client, "test-id", hostReqs, false)
-			So(ins, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "instance does not have a nat ip")
+			assert.Loosely(t, ins, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("instance does not have a nat ip"))
 		})
 	})
 }
@@ -336,8 +337,8 @@ func TestGetInstance(t *testing.T) {
 func TestListInstances(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test ListInstances", t, func() {
-		Convey("listAllInstances - nil iterator returned", func() {
+	ftt.Run("Test ListInstances", t, func(t *ftt.Test) {
+		t.Run("listAllInstances - nil iterator returned", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				aggregatedListFunc: func() *compute.InstancesScopedListPairIterator {
 					return nil
@@ -349,10 +350,10 @@ func TestListInstances(t *testing.T) {
 				PageToken: "test-token",
 			}
 			_, err := listAllInstances(ctx, client, "test-project", listReq)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "listAllInstances: cannot get instances")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("listAllInstances: cannot get instances"))
 		})
-		Convey("listZoneInstances - nil iterator returned", func() {
+		t.Run("listZoneInstances - nil iterator returned", func(t *ftt.Test) {
 			client := &mockComputeInstancesClient{
 				listFunc: func() *compute.InstanceIterator {
 					return nil
@@ -364,8 +365,8 @@ func TestListInstances(t *testing.T) {
 				PageToken: "test-token",
 			}
 			_, err := listZoneInstances(ctx, client, "test-project", "test-zone", listReq)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "listZoneInstances: cannot get instances")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("listZoneInstances: cannot get instances"))
 		})
 	})
 }
@@ -373,22 +374,22 @@ func TestListInstances(t *testing.T) {
 func TestComputeExpirationTime(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test computeExpirationTime", t, func() {
-		Convey("Compute expiration time - no lease duration passed", func() {
+	ftt.Run("Test computeExpirationTime", t, func(t *ftt.Test) {
+		t.Run("Compute expiration time - no lease duration passed", func(t *ftt.Test) {
 			defaultExpTime := time.Now().Unix() + (600 * 60)
 			res, err := computeExpirationTime(ctx, nil, "dev")
-			So(err, ShouldBeNil)
-			So(res, ShouldBeBetweenOrEqual, defaultExpTime, defaultExpTime+1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.BeBetweenOrEqual(defaultExpTime, defaultExpTime+1))
 		})
-		Convey("Compute expiration time - lease duration passed", func() {
+		t.Run("Compute expiration time - lease duration passed", func(t *ftt.Test) {
 			leaseDuration, err := time.ParseDuration("20m")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expTime := time.Now().Add(leaseDuration).Unix()
 			logging.Errorf(ctx, "%s", durationpb.New(leaseDuration))
 			res, err := computeExpirationTime(ctx, durationpb.New(leaseDuration), "dev")
-			So(err, ShouldBeNil)
-			So(res, ShouldBeBetweenOrEqual, expTime, expTime+1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.BeBetweenOrEqual(expTime, expTime+1))
 		})
 	})
 }
@@ -396,14 +397,14 @@ func TestComputeExpirationTime(t *testing.T) {
 func TestGetInstanceNetworkInterfaces(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test getInstanceNetworkInterfaces", t, func() {
-		Convey("getInstanceNetworkInterfaces - happy path", func() {
+	ftt.Run("Test getInstanceNetworkInterfaces", t, func(t *ftt.Test) {
+		t.Run("getInstanceNetworkInterfaces - happy path", func(t *ftt.Test) {
 			hostReqs := &api.VMRequirements{
 				GceNetwork: "test-network",
 				GceSubnet:  "test-subnet",
 			}
 			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
-			So(n, ShouldResembleProto, []*computepb.NetworkInterface{
+			assert.Loosely(t, n, should.Match([]*computepb.NetworkInterface{
 				{
 					AccessConfigs: []*computepb.AccessConfig{
 						{
@@ -413,21 +414,21 @@ func TestGetInstanceNetworkInterfaces(t *testing.T) {
 					Network:    proto.String("test-network"),
 					Subnetwork: proto.String("test-subnet"),
 				},
-			})
-			So(err, ShouldBeNil)
+			}))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("getInstanceNetworkInterfaces - error: no network", func() {
+		t.Run("getInstanceNetworkInterfaces - error: no network", func(t *ftt.Test) {
 			hostReqs := &api.VMRequirements{}
 			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
-			So(n, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "gce network cannot be empty")
+			assert.Loosely(t, n, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("gce network cannot be empty"))
 		})
-		Convey("getInstanceNetworkInterfaces - no subnet", func() {
+		t.Run("getInstanceNetworkInterfaces - no subnet", func(t *ftt.Test) {
 			hostReqs := &api.VMRequirements{
 				GceNetwork: "test-network",
 			}
 			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
-			So(n, ShouldResembleProto, []*computepb.NetworkInterface{
+			assert.Loosely(t, n, should.Match([]*computepb.NetworkInterface{
 				{
 					AccessConfigs: []*computepb.AccessConfig{
 						{
@@ -436,8 +437,8 @@ func TestGetInstanceNetworkInterfaces(t *testing.T) {
 					},
 					Network: proto.String("test-network"),
 				},
-			})
-			So(err, ShouldBeNil)
+			}))
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -445,16 +446,16 @@ func TestGetInstanceNetworkInterfaces(t *testing.T) {
 func TestPoll(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Test poll", t, func() {
-		Convey("poll - no context deadline", func() {
+	ftt.Run("Test poll", t, func(t *ftt.Test) {
+		t.Run("poll - no context deadline", func(t *ftt.Test) {
 			f := func(ctx context.Context) (bool, error) {
 				return false, nil
 			}
 			interval := time.Duration(1)
 			err := poll(ctx, f, interval)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("poll - quit on error", func() {
+		t.Run("poll - quit on error", func(t *ftt.Test) {
 			expected := 2
 			count := 1
 			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -468,10 +469,10 @@ func TestPoll(t *testing.T) {
 			}
 			err := poll(ctx, f, 100*time.Millisecond)
 			actual := count
-			So(err, ShouldNotBeNil)
-			So(actual, ShouldEqual, expected)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, actual, should.Equal(expected))
 		})
-		Convey("poll - quit on success", func() {
+		t.Run("poll - quit on success", func(t *ftt.Test) {
 			expected := 3
 			count := 1
 			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -486,8 +487,8 @@ func TestPoll(t *testing.T) {
 			err := poll(ctx, f, 100*time.Millisecond)
 			actual := count
 
-			So(err, ShouldBeNil)
-			So(actual, ShouldEqual, expected)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Equal(expected))
 		})
 	})
 }
