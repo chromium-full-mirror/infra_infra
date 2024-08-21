@@ -7552,13 +7552,6 @@ plans:
           conditions:
             - name: Servo-host known
               exec_name: dut_servo_host_present
-            - name: Is a Chromebook (RUN_ONCE)
-              exec_name: dut_check_board
-              exec_args:
-                - string_values:aurora,reven
-                - invert_result:true
-              docs:
-                - Verify that the device is a Chromebook by checking for non-Chromebook boards
             - name: Servo-host is sshable (ALWAYS_RUN) (time:'15s')
               exec_name: cros_ssh
               exec_args:
@@ -7613,13 +7606,6 @@ plans:
             - name: Remove request to reboot if servo is good (Allow to fail)
               exec_name: cros_remove_reboot_request
               conditions:
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Verify that the device is a Chromebook by checking for non-Chromebook boards
                 - name: Servo-host known
                   exec_name: dut_servo_host_present
                 - name: Is servo_state:working

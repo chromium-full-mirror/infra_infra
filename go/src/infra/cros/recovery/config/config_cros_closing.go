@@ -31,7 +31,6 @@ func crosRepairClosingActions() map[string]*Action {
 		},
 		"Remove request to reboot if servo is good": {
 			Conditions: []string{
-				"Is a Chromebook",
 				"Servo-host known",
 				"Is servo_state:working",
 			},
@@ -41,7 +40,6 @@ func crosRepairClosingActions() map[string]*Action {
 		"Close Servo-host": {
 			Conditions: []string{
 				"Servo-host known",
-				"Is a Chromebook",
 				"Servo-host is sshable",
 			},
 			Dependencies: []string{
@@ -77,25 +75,6 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecName:               "cros_remove_servo_in_use",
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
-		},
-		"Is Flex device": {
-			Docs:     []string{"Verify that device is belong Reven models"},
-			ExecName: "dut_check_board",
-			ExecExtraArgs: []string{
-				"string_values:aurora,reven",
-			},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Is a Chromebook": {
-			Docs:     []string{"Verify that the device is a Chromebook by checking for non-Chromebook boards"},
-			ExecName: "dut_check_board",
-			ExecExtraArgs: []string{
-				"string_values:aurora,reven",
-				"invert_result:true",
-			},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect servod logs": {
 			Docs: []string{

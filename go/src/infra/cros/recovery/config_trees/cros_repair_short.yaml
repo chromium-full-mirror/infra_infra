@@ -28992,7 +28992,6 @@ plans:
         - name: Close Servo-host (Allow to fail) ('sample_pass')
           conditions:
             - name: Servo-host known ('dut_servo_host_present')
-            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
             - name: Servo-host is sshable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
           dependencies:
             - name: Copy messages from servo-host (Allow to fail) ('cros_copy_to_logs')
@@ -29010,7 +29009,6 @@ plans:
                 - name: Servo-host known ('dut_servo_host_present')
             - name: Remove request to reboot if servo is good (Allow to fail) ('cros_remove_reboot_request')
               conditions:
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Servo-host known ('dut_servo_host_present')
                 - name: Is servo_state:working ('servo_match_state')
             - name: Turn off servo usbkey power (Allow to fail) ('servo_set') (ALWAYS_RUN)
