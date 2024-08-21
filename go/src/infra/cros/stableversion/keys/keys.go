@@ -60,7 +60,7 @@ func (k *keyBuilder) Add(name, value string) error {
 	return nil
 }
 
-// String retuend combination of all keys added to the builder.
+// String returned combination of all keys added to the builder.
 func (k *keyBuilder) String() string {
 	return strings.Join(k.parts, separator)
 }
