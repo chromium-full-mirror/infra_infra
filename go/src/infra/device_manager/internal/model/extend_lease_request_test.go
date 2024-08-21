@@ -12,17 +12,17 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCreateExtendLeaseRequest(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("CreateExtendLeaseRequest", t, func() {
-		Convey("CreateExtendLeaseRequest: valid insert", func() {
+	ftt.Run("CreateExtendLeaseRequest", t, func(t *ftt.Test) {
+		t.Run("CreateExtendLeaseRequest: valid insert", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -66,7 +66,7 @@ func TestCreateExtendLeaseRequest(t *testing.T) {
 				ExtendDuration: 600,
 				ExpirationTime: timeNow,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -75,8 +75,8 @@ func TestGetExtendLeaseRequestByIdemKey(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("GetExtendLeaseRequestByIdemKey", t, func() {
-		Convey("GetExtendLeaseRequestByIdemKey: valid return", func() {
+	ftt.Run("GetExtendLeaseRequestByIdemKey", t, func(t *ftt.Test) {
+		t.Run("GetExtendLeaseRequestByIdemKey: valid return", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -120,17 +120,17 @@ func TestGetExtendLeaseRequestByIdemKey(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetExtendLeaseRequestByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldBeNil)
-			So(record, ShouldEqual, ExtendLeaseRequest{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, record, should.Equal(ExtendLeaseRequest{
 				ID:             "test-extend-record-1",
 				LeaseID:        "test-lease-record-1",
 				IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				ExtendDuration: 600,
 				RequestTime:    timeNow,
 				ExpirationTime: timeNow.Add(time.Minute * 10),
-			})
+			}))
 		})
-		Convey("GetExtendLeaseRequestByIdemKey: no record found", func() {
+		t.Run("GetExtendLeaseRequestByIdemKey: no record found", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -165,8 +165,8 @@ func TestGetExtendLeaseRequestByIdemKey(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetExtendLeaseRequestByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldErrLike, "no rows in result set")
-			So(record, ShouldEqual, ExtendLeaseRequest{})
+			assert.Loosely(t, err, should.ErrLike("no rows in result set"))
+			assert.Loosely(t, record, should.Equal(ExtendLeaseRequest{}))
 		})
 	})
 }

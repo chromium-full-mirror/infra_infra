@@ -12,17 +12,17 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCreateDeviceLeaseRecord(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("CreateDeviceLeaseRecord", t, func() {
-		Convey("CreateDeviceLeaseRecord: valid insert", func() {
+	ftt.Run("CreateDeviceLeaseRecord", t, func(t *ftt.Test) {
+		t.Run("CreateDeviceLeaseRecord: valid insert", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -110,8 +110,8 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				DeviceType:     "DEVICE_TYPE_PHYSICAL",
 				OwnerID:        "test-owner-id-1",
 			}, time.Minute)
-			So(err, ShouldBeNil)
-			So(newRec, ShouldEqual, DeviceLeaseRecord{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newRec, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DeviceID:        "test-device-1",
@@ -121,7 +121,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				LeasedTime:      timeNow,
 				ExpirationTime:  timeNow.Add(time.Minute),
 				LastUpdatedTime: timeNow,
-			})
+			}))
 		})
 	})
 }
@@ -130,8 +130,8 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("GetDeviceLeaseRecordByID", t, func() {
-		Convey("GetDeviceLeaseRecordByID: valid return", func() {
+	ftt.Run("GetDeviceLeaseRecordByID", t, func(t *ftt.Test) {
+		t.Run("GetDeviceLeaseRecordByID: valid return", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -187,8 +187,8 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetDeviceLeaseRecordByID(ctx, db, "test-lease-record-1")
-			So(err, ShouldBeNil)
-			So(record, ShouldEqual, DeviceLeaseRecord{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DeviceID:        "test-device-1",
@@ -199,9 +199,9 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				ReleasedTime:    timeNow,
 				ExpirationTime:  timeNow,
 				LastUpdatedTime: timeNow,
-			})
+			}))
 		})
-		Convey("GetDeviceLeaseRecordByID: no record found", func() {
+		t.Run("GetDeviceLeaseRecordByID: no record found", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -244,8 +244,8 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetDeviceLeaseRecordByID(ctx, db, "test-lease-record-1")
-			So(err, ShouldErrLike, "no rows in result set")
-			So(record, ShouldEqual, DeviceLeaseRecord{})
+			assert.Loosely(t, err, should.ErrLike("no rows in result set"))
+			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{}))
 		})
 	})
 }
@@ -254,8 +254,8 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("GetDeviceLeaseRecordByIdemKey", t, func() {
-		Convey("GetDeviceLeaseRecordByIdemKey: valid return", func() {
+	ftt.Run("GetDeviceLeaseRecordByIdemKey", t, func(t *ftt.Test) {
+		t.Run("GetDeviceLeaseRecordByIdemKey: valid return", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -311,8 +311,8 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetDeviceLeaseRecordByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldBeNil)
-			So(record, ShouldEqual, DeviceLeaseRecord{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DeviceID:        "test-device-1",
@@ -323,9 +323,9 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				ReleasedTime:    timeNow,
 				ExpirationTime:  timeNow,
 				LastUpdatedTime: timeNow,
-			})
+			}))
 		})
-		Convey("GetDeviceLeaseRecordByIdemKey: no record found", func() {
+		t.Run("GetDeviceLeaseRecordByIdemKey: no record found", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -368,8 +368,8 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				WillReturnRows(rows)
 
 			record, err := GetDeviceLeaseRecordByIdemKey(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldErrLike, "no rows in result set")
-			So(record, ShouldEqual, DeviceLeaseRecord{})
+			assert.Loosely(t, err, should.ErrLike("no rows in result set"))
+			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{}))
 		})
 	})
 }
@@ -378,8 +378,8 @@ func TestExtendLease(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ExtendLease", t, func() {
-		Convey("ExtendLease: valid extend", func() {
+	ftt.Run("ExtendLease", t, func(t *ftt.Test) {
+		t.Run("ExtendLease: valid extend", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -419,7 +419,7 @@ func TestExtendLease(t *testing.T) {
 				ID:             "test-lease-record-1",
 				ExpirationTime: timeNow.Add(time.Second * 600),
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -428,8 +428,8 @@ func TestReleaseLease(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ReleaseLease", t, func() {
-		Convey("ReleaseLease: valid release", func() {
+	ftt.Run("ReleaseLease", t, func(t *ftt.Test) {
+		t.Run("ReleaseLease: valid release", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -470,7 +470,7 @@ func TestReleaseLease(t *testing.T) {
 				ExpirationTime:  timeNow.Add(time.Second * 600),
 				LastUpdatedTime: timeNow,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

@@ -11,19 +11,20 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCheckLeaseIdempotency(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("CheckLeaseIdempotency", t, func() {
-		Convey("CheckLeaseIdempotency: valid request", func() {
+	ftt.Run("CheckLeaseIdempotency", t, func(t *ftt.Test) {
+		t.Run("CheckLeaseIdempotency: valid request", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -79,8 +80,8 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				WillReturnRows(rows)
 
 			rsp, err := CheckLeaseIdempotency(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldBeNil)
-			So(rsp, ShouldResemble, &api.LeaseDeviceResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rsp, should.Match(&api.LeaseDeviceResponse{
 				DeviceLease: &api.DeviceLeaseRecord{
 					Id:             "test-lease-record-1",
 					IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
@@ -95,9 +96,9 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 					ExpirationTime:  timestamppb.New(timeNow.Add(time.Hour * 1)),
 					LastUpdatedTime: timestamppb.New(timeNow),
 				},
-			})
+			}))
 		})
-		Convey("CheckLeaseIdempotency: invalid request; expired record", func() {
+		t.Run("CheckLeaseIdempotency: invalid request; expired record", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -153,8 +154,8 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				WillReturnRows(rows)
 
 			rsp, err := CheckLeaseIdempotency(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldErrLike, "DeviceLeaseRecord found with same idempotency key but is already expired")
-			So(rsp, ShouldResemble, &api.LeaseDeviceResponse{})
+			assert.Loosely(t, err, should.ErrLike("DeviceLeaseRecord found with same idempotency key but is already expired"))
+			assert.Loosely(t, rsp, should.Match(&api.LeaseDeviceResponse{}))
 		})
 	})
 }
@@ -163,8 +164,8 @@ func TestCheckExtensionIdempotency(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("CheckExtensionIdempotency", t, func() {
-		Convey("CheckExtensionIdempotency: valid request", func() {
+	ftt.Run("CheckExtensionIdempotency", t, func(t *ftt.Test) {
+		t.Run("CheckExtensionIdempotency: valid request", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -208,11 +209,11 @@ func TestCheckExtensionIdempotency(t *testing.T) {
 				WillReturnRows(rows)
 
 			rsp, err := CheckExtensionIdempotency(ctx, db, "fe20140c-b1aa-4953-90fc-d15677df0c6a")
-			So(err, ShouldBeNil)
-			So(rsp, ShouldResemble, &api.ExtendLeaseResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rsp, should.Match(&api.ExtendLeaseResponse{
 				LeaseId:        "test-lease-record-1",
 				ExpirationTime: timestamppb.New(timeNow.Add(time.Minute * 10)),
-			})
+			}))
 		})
 	})
 }

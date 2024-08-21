@@ -16,14 +16,15 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/DATA-DOG/go-sqlmock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/database"
@@ -246,8 +247,8 @@ func TestListDevices(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ListDevices", t, func() {
-		Convey("ListDevices: valid return; page token returned", func() {
+	ftt.Run("ListDevices", t, func(t *ftt.Test) {
+		t.Run("ListDevices: valid return; page token returned", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -266,7 +267,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rows := sqlmock.NewRows([]string{
 				"id",
@@ -315,8 +316,8 @@ func TestListDevices(t *testing.T) {
 			devices, err := ListDevices(ctx, db, &api.ListDevicesRequest{
 				PageSize: pageSize,
 			})
-			So(err, ShouldBeNil)
-			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devices, should.Match(&api.ListDevicesResponse{
 				Devices: []*api.Device{
 					{
 						Id: "test-device-1",
@@ -336,13 +337,13 @@ func TestListDevices(t *testing.T) {
 					},
 				},
 				NextPageToken: "MjAyNC0wMS0wMVQxMjowMDowMFo=",
-			})
+			}))
 
 			decodedToken, err := database.DecodePageToken(ctx, database.PageToken(devices.GetNextPageToken()))
-			So(err, ShouldBeNil)
-			So(decodedToken, ShouldEqual, createdTime.Format(time.RFC3339Nano))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, decodedToken, should.Equal(createdTime.Format(time.RFC3339Nano)))
 		})
-		Convey("ListDevices: valid return; no page token returned", func() {
+		t.Run("ListDevices: valid return; no page token returned", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -361,7 +362,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rows := sqlmock.NewRows([]string{
 				"id",
@@ -410,9 +411,9 @@ func TestListDevices(t *testing.T) {
 			devices, err := ListDevices(ctx, db, &api.ListDevicesRequest{
 				PageSize: pageSize,
 			})
-			So(err, ShouldBeNil)
-			So(devices.GetNextPageToken(), ShouldEqual, "")
-			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devices.GetNextPageToken(), should.BeEmpty)
+			assert.Loosely(t, devices, should.Match(&api.ListDevicesResponse{
 				Devices: []*api.Device{
 					{
 						Id: "test-device-1",
@@ -447,9 +448,9 @@ func TestListDevices(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
-		Convey("ListDevices: valid request using page token", func() {
+		t.Run("ListDevices: valid request using page token", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -469,7 +470,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// only add rows after test-device-1
 			rows := sqlmock.NewRows([]string{
@@ -512,9 +513,9 @@ func TestListDevices(t *testing.T) {
 				PageSize:  pageSize,
 				PageToken: pageToken,
 			})
-			So(err, ShouldBeNil)
-			So(devices.GetNextPageToken(), ShouldEqual, "")
-			So(devices, ShouldResembleProto, &api.ListDevicesResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devices.GetNextPageToken(), should.BeEmpty)
+			assert.Loosely(t, devices, should.Match(&api.ListDevicesResponse{
 				Devices: []*api.Device{
 					{
 						Id: "test-device-2",
@@ -533,7 +534,7 @@ func TestListDevices(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 	})
 }
@@ -578,8 +579,8 @@ func TestUpdateDevice(t *testing.T) {
 		t.Fatalf("failed to create fake pubsub topic")
 	}
 
-	Convey("UpdateDevice", t, func() {
-		Convey("UpdateDevice: valid update", func() {
+	ftt.Run("UpdateDevice", t, func(t *ftt.Test) {
+		t.Run("UpdateDevice: valid update", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -665,7 +666,7 @@ func TestUpdateDevice(t *testing.T) {
 				},
 				IsActive: false,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -674,14 +675,14 @@ func TestIsDeviceAvailable(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("IsDeviceAvailable", t, func() {
-		Convey("IsDeviceAvailable: device is available", func() {
+	ftt.Run("IsDeviceAvailable", t, func(t *ftt.Test) {
+		t.Run("IsDeviceAvailable: device is available", func(t *ftt.Test) {
 			rsp := IsDeviceAvailable(ctx, "DEVICE_STATE_AVAILABLE")
-			So(rsp, ShouldEqual, true)
+			assert.Loosely(t, rsp, should.Equal(true))
 		})
-		Convey("IsDeviceAvailable: device is not available", func() {
+		t.Run("IsDeviceAvailable: device is not available", func(t *ftt.Test) {
 			rsp := IsDeviceAvailable(ctx, "DEVICE_STATE_LEASED")
-			So(rsp, ShouldEqual, false)
+			assert.Loosely(t, rsp, should.Equal(false))
 		})
 	})
 }
@@ -690,26 +691,26 @@ func Test_stringToDeviceAddress(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("stringToDeviceAddress", t, func() {
-		Convey("stringToDeviceAddress: valid address", func() {
+	ftt.Run("stringToDeviceAddress", t, func(t *ftt.Test) {
+		t.Run("stringToDeviceAddress: valid address", func(t *ftt.Test) {
 			addr, err := stringToDeviceAddress(ctx, "1.1.1.1:1")
-			So(err, ShouldBeNil)
-			So(addr, ShouldResembleProto, &api.DeviceAddress{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, addr, should.Match(&api.DeviceAddress{
 				Host: "1.1.1.1",
 				Port: 1,
-			})
+			}))
 		})
-		Convey("stringToDeviceAddress: invalid address; no port", func() {
+		t.Run("stringToDeviceAddress: invalid address; no port", func(t *ftt.Test) {
 			addr, err := stringToDeviceAddress(ctx, "1.1.1.1.1.1")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "failed to split host and port")
-			So(addr, ShouldResembleProto, &api.DeviceAddress{})
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("failed to split host and port"))
+			assert.Loosely(t, addr, should.Match(&api.DeviceAddress{}))
 		})
-		Convey("stringToDeviceAddress: invalid address; bad port", func() {
+		t.Run("stringToDeviceAddress: invalid address; bad port", func(t *ftt.Test) {
 			addr, err := stringToDeviceAddress(ctx, "1.1.1.1:abc")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "port abc is not convertible to integer")
-			So(addr, ShouldResembleProto, &api.DeviceAddress{})
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("port abc is not convertible to integer"))
+			assert.Loosely(t, addr, should.Match(&api.DeviceAddress{}))
 		})
 	})
 }
@@ -718,20 +719,20 @@ func Test_deviceAddressToString(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("deviceAddressToString", t, func() {
-		Convey("deviceAddressToString: valid address", func() {
+	ftt.Run("deviceAddressToString", t, func(t *ftt.Test) {
+		t.Run("deviceAddressToString: valid address", func(t *ftt.Test) {
 			addr := deviceAddressToString(ctx, &api.DeviceAddress{
 				Host: "1.1.1.1",
 				Port: 1,
 			})
-			So(addr, ShouldEqual, "1.1.1.1:1")
+			assert.Loosely(t, addr, should.Equal("1.1.1.1:1"))
 		})
-		Convey("deviceAddressToString: ipv6 address", func() {
+		t.Run("deviceAddressToString: ipv6 address", func(t *ftt.Test) {
 			addr := deviceAddressToString(ctx, &api.DeviceAddress{
 				Host: "1:2:3",
 				Port: 1,
 			})
-			So(addr, ShouldEqual, "[1:2:3]:1")
+			assert.Loosely(t, addr, should.Equal("[1:2:3]:1"))
 		})
 	})
 }
@@ -740,20 +741,20 @@ func Test_stringToDeviceType(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("stringToDeviceType", t, func() {
-		Convey("stringToDeviceType: valid types", func() {
+	ftt.Run("stringToDeviceType", t, func(t *ftt.Test) {
+		t.Run("stringToDeviceType: valid types", func(t *ftt.Test) {
 			for _, deviceType := range []string{
 				"DEVICE_TYPE_UNSPECIFIED",
 				"DEVICE_TYPE_VIRTUAL",
 				"DEVICE_TYPE_PHYSICAL",
 			} {
 				apiType := stringToDeviceType(ctx, deviceType)
-				So(apiType, ShouldEqual, api.DeviceType_value[deviceType])
+				assert.Loosely(t, apiType, should.Equal(api.DeviceType_value[deviceType]))
 			}
 		})
-		Convey("stringToDeviceType: unknown type", func() {
+		t.Run("stringToDeviceType: unknown type", func(t *ftt.Test) {
 			apiType := stringToDeviceType(ctx, "UNKNOWN_TYPE")
-			So(apiType, ShouldEqual, api.DeviceType_DEVICE_TYPE_UNSPECIFIED)
+			assert.Loosely(t, apiType, should.Equal(api.DeviceType_DEVICE_TYPE_UNSPECIFIED))
 		})
 	})
 }
@@ -762,20 +763,20 @@ func Test_stringToDeviceState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("stringToDeviceState", t, func() {
-		Convey("stringToDeviceState: valid types", func() {
+	ftt.Run("stringToDeviceState", t, func(t *ftt.Test) {
+		t.Run("stringToDeviceState: valid types", func(t *ftt.Test) {
 			for _, deviceState := range []string{
 				"DEVICE_STATE_UNSPECIFIED",
 				"DEVICE_STATE_AVAILABLE",
 				"DEVICE_STATE_LEASED",
 			} {
 				apiState := stringToDeviceState(ctx, deviceState)
-				So(apiState, ShouldEqual, api.DeviceState_value[deviceState])
+				assert.Loosely(t, apiState, should.Equal(api.DeviceState_value[deviceState]))
 			}
 		})
-		Convey("stringToDeviceState: unknown state", func() {
+		t.Run("stringToDeviceState: unknown state", func(t *ftt.Test) {
 			apiState := stringToDeviceState(ctx, "UNKNOWN_STATE")
-			So(apiState, ShouldEqual, api.DeviceState_DEVICE_STATE_UNSPECIFIED)
+			assert.Loosely(t, apiState, should.Equal(api.DeviceState_DEVICE_STATE_UNSPECIFIED))
 		})
 	})
 }
@@ -784,8 +785,8 @@ func Test_labelsToHardwareReqs(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("labelsToHardwareReqs", t, func() {
-		Convey("labelsToHardwareReqs: valid labels", func() {
+	ftt.Run("labelsToHardwareReqs", t, func(t *ftt.Test) {
+		t.Run("labelsToHardwareReqs: valid labels", func(t *ftt.Test) {
 			labels := model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
@@ -795,7 +796,7 @@ func Test_labelsToHardwareReqs(t *testing.T) {
 				},
 			}
 			dims := labelsToHardwareReqs(ctx, labels)
-			So(dims, ShouldResembleProto, api.HardwareRequirements{
+			assert.That(t, dims, should.Match(&api.HardwareRequirements{
 				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
 					"label-test": {
 						Values: []string{
@@ -804,14 +805,14 @@ func Test_labelsToHardwareReqs(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
-		Convey("labelsToHardwareReqs: empty labels", func() {
+		t.Run("labelsToHardwareReqs: empty labels", func(t *ftt.Test) {
 			labels := model.SchedulableLabels{}
 			dims := labelsToHardwareReqs(ctx, labels)
-			So(dims, ShouldEqual, &api.HardwareRequirements{
+			assert.That(t, dims, should.Match(&api.HardwareRequirements{
 				SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
-			})
+			}))
 		})
 	})
 }
@@ -820,8 +821,8 @@ func Test_labelsToSwarmingDims(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("labelsToSwarmingDims", t, func() {
-		Convey("labelsToSwarmingDims: valid labels", func() {
+	ftt.Run("labelsToSwarmingDims", t, func(t *ftt.Test) {
+		t.Run("labelsToSwarmingDims: valid labels", func(t *ftt.Test) {
 			labels := model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
@@ -831,7 +832,7 @@ func Test_labelsToSwarmingDims(t *testing.T) {
 				},
 			}
 			dims := labelsToSwarmingDims(ctx, labels)
-			So(dims, ShouldResembleProto, schedulingAPI.SwarmingDimensions{
+			assert.That(t, dims, should.Match(&schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{
 					"label-test": {
 						Values: []string{
@@ -840,14 +841,14 @@ func Test_labelsToSwarmingDims(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
-		Convey("labelsToSwarmingDims: empty labels", func() {
+		t.Run("labelsToSwarmingDims: empty labels", func(t *ftt.Test) {
 			labels := model.SchedulableLabels{}
 			dims := labelsToSwarmingDims(ctx, labels)
-			So(dims, ShouldEqual, &schedulingAPI.SwarmingDimensions{
+			assert.That(t, dims, should.Match(&schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{},
-			})
+			}))
 		})
 	})
 }
@@ -856,8 +857,8 @@ func TestSwarmingDimsToLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("SwarmingDimsToLabels", t, func() {
-		Convey("SwarmingDimsToLabels: valid dims", func() {
+	ftt.Run("SwarmingDimsToLabels", t, func(t *ftt.Test) {
+		t.Run("SwarmingDimsToLabels: valid dims", func(t *ftt.Test) {
 			dims := swarming.Dimensions{
 				"label-test": []string{
 					"test-value-1",
@@ -865,19 +866,19 @@ func TestSwarmingDimsToLabels(t *testing.T) {
 				},
 			}
 			labels := SwarmingDimsToLabels(ctx, dims)
-			So(labels, ShouldEqual, model.SchedulableLabels{
+			assert.Loosely(t, labels, should.Match(model.SchedulableLabels{
 				"label-test": model.LabelValues{
 					Values: []string{
 						"test-value-1",
 						"test-value-2",
 					},
 				},
-			})
+			}))
 		})
-		Convey("SwarmingDimsToLabels: empty dims", func() {
+		t.Run("SwarmingDimsToLabels: empty dims", func(t *ftt.Test) {
 			dims := swarming.Dimensions{}
 			labels := SwarmingDimsToLabels(ctx, dims)
-			So(labels, ShouldEqual, model.SchedulableLabels{})
+			assert.Loosely(t, labels, should.Match(model.SchedulableLabels{}))
 		})
 	})
 }
@@ -886,8 +887,8 @@ func Test_deviceModelToAPIDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("deviceModelToAPIDevice", t, func() {
-		Convey("deviceModelToAPIDevice: valid device", func() {
+	ftt.Run("deviceModelToAPIDevice", t, func(t *ftt.Test) {
+		t.Run("deviceModelToAPIDevice: valid device", func(t *ftt.Test) {
 			modelDevice := model.Device{
 				ID:            "test-device-1",
 				DeviceAddress: "1.1.1.1:1",
@@ -902,7 +903,7 @@ func Test_deviceModelToAPIDevice(t *testing.T) {
 
 			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
 
-			So(apiDevice, ShouldResembleProto, &api.Device{
+			assert.Loosely(t, apiDevice, should.Match(&api.Device{
 				Id: "test-device-1",
 				Address: &api.DeviceAddress{
 					Host: "1.1.1.1",
@@ -917,9 +918,9 @@ func Test_deviceModelToAPIDevice(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
-		Convey("deviceModelToAPIDevice: invalid fields", func() {
+		t.Run("deviceModelToAPIDevice: invalid fields", func(t *ftt.Test) {
 			modelDevice := model.Device{
 				ID:                "test-device-invalid",
 				DeviceAddress:     "1.1",
@@ -930,28 +931,28 @@ func Test_deviceModelToAPIDevice(t *testing.T) {
 
 			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
 
-			So(apiDevice, ShouldResembleProto, &api.Device{
+			assert.Loosely(t, apiDevice, should.Match(&api.Device{
 				Id:      "test-device-invalid",
 				Address: &api.DeviceAddress{},
 				HardwareReqs: &api.HardwareRequirements{
 					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
 				},
-			})
+			}))
 		})
-		Convey("deviceModelToAPIDevice: empty device", func() {
+		t.Run("deviceModelToAPIDevice: empty device", func(t *ftt.Test) {
 			modelDevice := model.Device{
 				ID: "test-device-empty",
 			}
 
 			apiDevice := deviceModelToAPIDevice(ctx, modelDevice)
 
-			So(apiDevice, ShouldResembleProto, &api.Device{
+			assert.Loosely(t, apiDevice, should.Match(&api.Device{
 				Id:      "test-device-empty",
 				Address: &api.DeviceAddress{},
 				HardwareReqs: &api.HardwareRequirements{
 					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{},
 				},
-			})
+			}))
 		})
 	})
 }
@@ -960,8 +961,8 @@ func TestExtractSingleValuedDimension(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ExtractSingleValuedDimension", t, func() {
-		Convey("pass: one dim", func() {
+	ftt.Run("ExtractSingleValuedDimension", t, func(t *ftt.Test) {
+		t.Run("pass: one dim", func(t *ftt.Test) {
 			dims := map[string]*api.HardwareRequirements_LabelValues{
 				"dut_id": {
 					Values: []string{
@@ -970,10 +971,10 @@ func TestExtractSingleValuedDimension(t *testing.T) {
 				},
 			}
 			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
-			So(err, ShouldBeNil)
-			So(res, ShouldEqual, "test-id")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Equal("test-id"))
 		})
-		Convey("fail: too many dims", func() {
+		t.Run("fail: too many dims", func(t *ftt.Test) {
 			dims := map[string]*api.HardwareRequirements_LabelValues{
 				"dut_id": {
 					Values: []string{
@@ -983,18 +984,18 @@ func TestExtractSingleValuedDimension(t *testing.T) {
 				},
 			}
 			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
-			So(err, ShouldErrLike, "ExtractSingleValuedDimension: multiple values for dimension dut_id")
-			So(res, ShouldEqual, "")
+			assert.Loosely(t, err, should.ErrLike("ExtractSingleValuedDimension: multiple values for dimension dut_id"))
+			assert.Loosely(t, res, should.BeEmpty)
 		})
-		Convey("fail: empty dim", func() {
+		t.Run("fail: empty dim", func(t *ftt.Test) {
 			dims := map[string]*api.HardwareRequirements_LabelValues{
 				"dut_id": {
 					Values: []string{},
 				},
 			}
 			res, err := ExtractSingleValuedDimension(ctx, dims, "dut_id")
-			So(err, ShouldErrLike, "ExtractSingleValuedDimension: no value for dimension dut_id")
-			So(res, ShouldEqual, "")
+			assert.Loosely(t, err, should.ErrLike("ExtractSingleValuedDimension: no value for dimension dut_id"))
+			assert.Loosely(t, res, should.BeEmpty)
 		})
 	})
 }

@@ -16,8 +16,10 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/database"
@@ -233,8 +235,8 @@ func TestListDevices(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("ListDevices", t, func() {
-		Convey("ListDevices: valid return; page token returned", func() {
+	ftt.Run("ListDevices", t, func(t *ftt.Test) {
+		t.Run("ListDevices: valid return; page token returned", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -253,7 +255,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rows := sqlmock.NewRows([]string{
 				"id",
@@ -300,9 +302,9 @@ func TestListDevices(t *testing.T) {
 				WillReturnRows(rows)
 
 			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, database.PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo="))
-			So(devices, ShouldEqual, []Device{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.Match(database.PageToken("MjAyNC0wMS0wMVQxMjowMDowMFo=")))
+			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-1",
 					DeviceAddress: "1.1.1.1:1",
@@ -317,13 +319,13 @@ func TestListDevices(t *testing.T) {
 					LastUpdatedTime: timeNow,
 					IsActive:        true,
 				},
-			})
+			}))
 
 			decodedToken, err := database.DecodePageToken(ctx, database.PageToken(nextPageToken))
-			So(err, ShouldBeNil)
-			So(decodedToken, ShouldEqual, createdTime.Format(time.RFC3339Nano))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, decodedToken, should.Match(createdTime.Format(time.RFC3339Nano)))
 		})
-		Convey("ListDevices: valid return; no page token returned", func() {
+		t.Run("ListDevices: valid return; no page token returned", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -342,7 +344,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rows := sqlmock.NewRows([]string{
 				"id",
@@ -389,9 +391,9 @@ func TestListDevices(t *testing.T) {
 				WillReturnRows(rows)
 
 			devices, nextPageToken, err := ListDevices(ctx, db, "", pageSize, "")
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, database.PageToken(""))
-			So(devices, ShouldEqual, []Device{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.Equal(database.PageToken("")))
+			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-1",
 					DeviceAddress: "1.1.1.1:1",
@@ -420,9 +422,9 @@ func TestListDevices(t *testing.T) {
 					LastUpdatedTime: timeNow,
 					IsActive:        false,
 				},
-			})
+			}))
 		})
-		Convey("ListDevices: valid request using page token", func() {
+		t.Run("ListDevices: valid request using page token", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -442,7 +444,7 @@ func TestListDevices(t *testing.T) {
 			)
 
 			createdTime, err := time.Parse("2006-01-02 15:04:05", "2024-01-01 12:00:00")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// only add rows after test-device-1
 			rows := sqlmock.NewRows([]string{
@@ -482,9 +484,9 @@ func TestListDevices(t *testing.T) {
 				WillReturnRows(rows)
 
 			devices, nextPageToken, err := ListDevices(ctx, db, database.PageToken(pageToken), pageSize, "")
-			So(err, ShouldBeNil)
-			So(nextPageToken, ShouldEqual, database.PageToken(""))
-			So(devices, ShouldEqual, []Device{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nextPageToken, should.Equal(database.PageToken("")))
+			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-2",
 					DeviceAddress: "2.2.2.2:2",
@@ -499,7 +501,7 @@ func TestListDevices(t *testing.T) {
 					LastUpdatedTime: timeNow,
 					IsActive:        false,
 				},
-			})
+			}))
 		})
 	})
 }
@@ -596,8 +598,8 @@ func TestUpdateDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("UpdateDevice", t, func() {
-		Convey("UpdateDevice: valid update", func() {
+	ftt.Run("UpdateDevice", t, func(t *ftt.Test) {
+		t.Run("UpdateDevice: valid update", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -683,8 +685,8 @@ func TestUpdateDevice(t *testing.T) {
 				},
 				IsActive: false,
 			})
-			So(err, ShouldBeNil)
-			So(updatedDevice, ShouldEqual, Device{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, updatedDevice, should.Match(Device{
 				ID:            "test-device-1",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
@@ -698,7 +700,7 @@ func TestUpdateDevice(t *testing.T) {
 				CreatedTime:          timeNow,
 				LastUpdatedTime:      timeNow,
 				LastNotificationTime: timeNow,
-			})
+			}))
 		})
 	})
 }
@@ -707,8 +709,8 @@ func TestUpsertDevice(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey("UpsertDevice", t, func() {
-		Convey("UpsertDevice: valid upsert", func() {
+	ftt.Run("UpsertDevice", t, func(t *ftt.Test) {
+		t.Run("UpsertDevice: valid upsert", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -762,14 +764,14 @@ func TestUpsertDevice(t *testing.T) {
 				},
 				IsActive: false,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestDUTID(t *testing.T) {
 	t.Parallel()
-	Convey("DUTID should return dut_id label", t, func() {
+	ftt.Run("DUTID should return dut_id label", t, func(t *ftt.Test) {
 		d := Device{
 			ID: "foo",
 			SchedulableLabels: SchedulableLabels{
@@ -782,7 +784,7 @@ func TestDUTID(t *testing.T) {
 			},
 		}
 		dutID, err := d.DUTID()
-		So(err, ShouldBeNil)
-		So(dutID, ShouldEqual, "bar")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, dutID, should.Match("bar"))
 	})
 }

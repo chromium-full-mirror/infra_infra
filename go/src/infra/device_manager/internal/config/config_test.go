@@ -9,9 +9,9 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/secrets"
 )
 
@@ -24,17 +24,17 @@ func TestGetSecret(t *testing.T) {
 	}
 	ctx = secrets.Use(ctx, store)
 
-	Convey("Test GetSecret", t, func() {
-		Convey("success - valid secret location in base64", func() {
+	ftt.Run("Test GetSecret", t, func(t *ftt.Test) {
+		t.Run("success - valid secret location in base64", func(t *ftt.Test) {
 			secret, err := GetSecret(ctx, "devsecret://cGFzc3dvcmQ")
-			So(err, ShouldBeNil)
-			So(secret, ShouldEqual, "password")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, secret, should.Equal("password"))
 		})
-		Convey("fail - invalid secret location with padding", func() {
+		t.Run("fail - invalid secret location with padding", func(t *ftt.Test) {
 			secret, err := GetSecret(ctx, "devsecret://cGFzc3dvcmQ=")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "not base64 encoding")
-			So(secret, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("not base64 encoding"))
+			assert.Loosely(t, secret, should.BeEmpty)
 		})
 	})
 }
@@ -44,23 +44,23 @@ func TestGetEnvVar(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Test GetEnvVar", t, func() {
-		Convey("success - env var found", func() {
+	ftt.Run("Test GetEnvVar", t, func(t *ftt.Test) {
+		t.Run("success - env var found", func(t *ftt.Test) {
 			err := os.Setenv("FOO", "BAR")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			v, err := GetEnvVar(ctx, "FOO")
-			So(err, ShouldBeNil)
-			So(v, ShouldEqual, "BAR")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, v, should.Equal("BAR"))
 
 			err = os.Setenv("FOO", "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("fail - env var not found", func() {
+		t.Run("fail - env var not found", func(t *ftt.Test) {
 			v, err := GetEnvVar(ctx, "NO_FOO")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "environment variable not set")
-			So(v, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("environment variable not set"))
+			assert.Loosely(t, v, should.BeEmpty)
 		})
 	})
 }
