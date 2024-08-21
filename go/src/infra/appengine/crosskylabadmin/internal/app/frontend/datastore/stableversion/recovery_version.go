@@ -56,6 +56,7 @@ func FindVersion(ctx context.Context, board, model string, pools []string) (*lab
 		if v, err := findVersion(ctx, key); err != nil {
 			logging.Debugf(ctx, "find version: fail to find versio for key=%q", key)
 		} else if v != nil {
+			logging.Debugf(ctx, "find version: found for key=%q", key)
 			return v, nil
 		}
 	}
@@ -70,15 +71,35 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 		return nil
 	}
 	versionMap := removeBadVersions(ctx, versions)
-	var entities []*StableVersionEntity
+	var oldRecords []*StableVersionEntity
+	if err := datastore.GetAll(ctx, datastore.NewQuery(StableVersionKind), &oldRecords); err != nil {
+		return errors.Annotate(err, "write versions: fail to read record from datastore").Err()
+	}
+	if len(oldRecords) > 0 {
+		var notValidRecords []*StableVersionEntity
+		for _, record := range oldRecords {
+			key := targetToKey(record.Version)
+			if versionMap[key.String()] == nil {
+				notValidRecords = append(notValidRecords, record)
+			}
+		}
+		if len(notValidRecords) > 0 {
+			if err := datastore.Delete(ctx, notValidRecords); err != nil {
+				return errors.Annotate(err, "write versions: fail to remove expired records").Err()
+			}
+		}
+	}
+	var newRecords []*StableVersionEntity
 	for key, v := range versionMap {
-		entities = append(entities, &StableVersionEntity{
+		newRecords = append(newRecords, &StableVersionEntity{
 			ID:      key,
 			Version: v,
 		})
 	}
-	if err := datastore.Put(ctx, entities); err != nil {
-		return errors.Annotate(err, "write versions").Err()
+	if len(newRecords) > 0 {
+		if err := datastore.Put(ctx, newRecords); err != nil {
+			return errors.Annotate(err, "write versions: fail to save new records").Err()
+		}
 	}
 	return nil
 }
