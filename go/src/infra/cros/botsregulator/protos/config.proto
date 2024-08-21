@@ -19,6 +19,8 @@ message Config {
     repeated string exclude_duts = 4;
     repeated string exclude_pools = 5;
     repeated Override overrides = 6;
+    int32 min_large_memory_percentage = 7;
+    repeated Override large_memory_overrides = 8;
 }
 
 message Override {

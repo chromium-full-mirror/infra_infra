@@ -15,17 +15,20 @@ import (
 )
 
 type configSearchable struct {
-	minCloudbotsPercentage     int32
-	minLowRiskModelsPercentage int32
-	excludeDUTs                []*regexp.Regexp
-	excludePools               map[string]struct{}
-	overrideBoardModel         map[string]int32
-	overrideLowRisks           map[string]struct{}
+	minCloudbotsPercentage        int32
+	minLowRiskModelsPercentage    int32
+	minLargeMemoryPercentage      int32
+	excludeDUTs                   []*regexp.Regexp
+	excludePools                  map[string]struct{}
+	overrideBoardModel            map[string]int32
+	overrideLowRisks              map[string]struct{}
+	largeMemoryOverrideBoardModel map[string]int32
 }
 
 // NewConfigSearchable returns an easily searchable struct composed of maps instead of slices.
 func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSearchable {
 	obm := make(map[string]int32)
+	lmobm := make(map[string]int32)
 	// Override board/model.
 	for _, override := range config.Overrides {
 		key := fmt.Sprintf("%s/%s", override.Board, override.Model)
@@ -33,6 +36,15 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 			obm[key] = override.Percentage
 		} else {
 			logging.Errorf(ctx, "board/model combination: %s/%s has already been processed. Check for duplicate in %s", override.Board, override.Model, migrationFile)
+		}
+	}
+	// Large memory override board/model.
+	for _, override := range config.LargeMemoryOverrides {
+		key := fmt.Sprintf("%s/%s", override.Board, override.Model)
+		if _, ok := lmobm[key]; !ok {
+			lmobm[key] = override.Percentage
+		} else {
+			logging.Errorf(ctx, "large memory board/model combination: %s/%s has already been processed. Check for duplicate in %s", override.Board, override.Model, migrationFile)
 		}
 	}
 	// Low risk models.
@@ -64,12 +76,14 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 		}
 	}
 	searchable := &configSearchable{
-		minCloudbotsPercentage:     config.MinCloudbotsPercentage,
-		minLowRiskModelsPercentage: config.MinLowRiskModelsPercentage,
-		excludeDUTs:                regs,
-		excludePools:               pools,
-		overrideBoardModel:         obm,
-		overrideLowRisks:           lr,
+		minCloudbotsPercentage:        config.MinCloudbotsPercentage,
+		minLowRiskModelsPercentage:    config.MinLowRiskModelsPercentage,
+		minLargeMemoryPercentage:      config.MinLargeMemoryPercentage,
+		excludeDUTs:                   regs,
+		excludePools:                  pools,
+		overrideBoardModel:            obm,
+		overrideLowRisks:              lr,
+		largeMemoryOverrideBoardModel: lmobm,
 	}
 	return searchable
 }

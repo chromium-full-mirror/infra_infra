@@ -23,6 +23,7 @@ func TestNewConfigSearchable(t *testing.T) {
 			LowRiskModels:              []string{"model-1", "model-2"},
 			ExcludeDuts:                []string{"dut-1", "chromeos6-.*", "phone[0-9A-Za-z]*$"},
 			ExcludePools:               []string{"wifi", "chameleon_display"},
+			MinLargeMemoryPercentage:   1,
 			Overrides: []*protos.Override{
 				{
 					Board:      "board-1",
@@ -45,11 +46,34 @@ func TestNewConfigSearchable(t *testing.T) {
 					Percentage: 10,
 				},
 			},
+			LargeMemoryOverrides: []*protos.Override{
+				{
+					Board:      "board-1",
+					Model:      "model-1",
+					Percentage: 5,
+				},
+				{
+					Board:      "board-1",
+					Model:      "model-2",
+					Percentage: 10,
+				},
+				{
+					Board:      "board-2",
+					Model:      "*",
+					Percentage: 5,
+				},
+				{
+					Board:      "*",
+					Model:      "model-3",
+					Percentage: 9,
+				},
+			},
 		}
 		got := NewConfigSearchable(context.Background(), cfg)
 		want := &configSearchable{
 			minCloudbotsPercentage:     30,
 			minLowRiskModelsPercentage: 60,
+			minLargeMemoryPercentage:   1,
 			overrideLowRisks: map[string]struct{}{
 				"model-1": {},
 				"model-2": {},
@@ -68,6 +92,12 @@ func TestNewConfigSearchable(t *testing.T) {
 				"board-1/model-2": 2,
 				"board-2/*":       20,
 				"*/model-3":       10,
+			},
+			largeMemoryOverrideBoardModel: map[string]int32{
+				"board-1/model-1": 5,
+				"board-1/model-2": 10,
+				"board-2/*":       5,
+				"*/model-3":       9,
 			},
 		}
 		if diff := cmp.Diff(want, got, cmp.AllowUnexported(configSearchable{}, regexp.Regexp{})); diff != "" {
