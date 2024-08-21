@@ -32,7 +32,7 @@ func isUartnameCachedExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func updateUartNameExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
-	dutRun := info.NewRunner(info.GetDut().Name)
+	dutRun := info.NewRunner(dolosInfo.GetHostname())
 
 	uartName, err := dolos.DolosFindUart(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
@@ -46,7 +46,7 @@ func updateUartNameExec(ctx context.Context, info *execs.ExecInfo) error {
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
-	dutRun := info.NewRunner(info.GetDut().Name)
+	dutRun := info.NewRunner(dolosInfo.GetHostname())
 
 	previousState := dolosInfo.GetState()
 	dolosInfo.State = tlw.Dolos_DOLOS_UNKNOWN
@@ -101,7 +101,7 @@ func dolosDoesNotNeedsRebootExec(ctx context.Context, info *execs.ExecInfo) erro
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
-	dutRun := info.NewRunner(info.GetDut().Name)
+	dutRun := info.NewRunner(dolosInfo.GetHostname())
 
 	currentVersion, err := dolos.DolosGetVersion(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 	if err != nil {
@@ -126,7 +126,7 @@ func checkFirmwareUpToDateExec(ctx context.Context, info *execs.ExecInfo) error 
 // determineAndSetStateExec calculate the current Dolos state and update UFS.
 func updateDolosFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 	dolosInfo := info.GetChromeos().GetDolos()
-	dutRun := info.NewRunner(info.GetDut().Name)
+	dutRun := info.NewRunner(dolosInfo.GetHostname())
 	return dolos.DolosUpdateFirmware(ctx, dutRun, dolosInfo, info.GetExecTimeout())
 }
 
