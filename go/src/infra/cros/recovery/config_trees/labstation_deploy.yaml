@@ -87,10 +87,10 @@ plans:
           docs:
             - This verifier checks whether the host is accessible over ssh.
           recoveries:
-            - name: Power cycle by RPM (ALWAYS_RUN)
+            - name: Power cycle by RPM (ALWAYS_RUN) (time:'2m0s')
               exec_name: rpm_power_cycle
               docs:
-                - Action is always runnable.
+                - Power cycle the labstation via RPM.
               conditions:
                 - name: has_rpm_info
                   exec_name: has_rpm_info
@@ -139,10 +139,10 @@ plans:
                   exec_name: has_stable_version_cros_image
                 - name: cros_not_on_stable_version
                   exec_name: cros_not_on_stable_version
-            - name: Power cycle by RPM (ALWAYS_RUN)
+            - name: Power cycle by RPM (ALWAYS_RUN) (time:'2m0s')
               exec_name: rpm_power_cycle
               docs:
-                - Action is always runnable.
+                - Power cycle the labstation via RPM.
               conditions:
                 - name: has_rpm_info
                   exec_name: has_rpm_info
@@ -163,10 +163,10 @@ plans:
             - name: has_rpm_info
               exec_name: has_rpm_info
           recoveries:
-            - name: Power cycle by RPM (ALWAYS_RUN)
+            - name: Power cycle by RPM (ALWAYS_RUN) (time:'2m0s')
               exec_name: rpm_power_cycle
               docs:
-                - Action is always runnable.
+                - Power cycle the labstation via RPM.
               conditions:
                 - name: has_rpm_info
                   exec_name: has_rpm_info

@@ -30,6 +30,22 @@ plans:
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+            - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: has_rpm_info
+              dependencies:
+                - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
+                  conditions:
+                    - name: has_rpm_info
+                - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
+                  conditions:
+                    - name: has_rpm_info
+                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: System services is up ('cros_wait_for_system')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
@@ -39,6 +55,22 @@ plans:
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+                - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: has_rpm_info
+                    - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: has_rpm_info
                     - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
@@ -59,6 +91,22 @@ plans:
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
+                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
+                - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: has_rpm_info
+                  dependencies:
+                    - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: has_rpm_info
+                    - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
+                      conditions:
+                        - name: has_rpm_info
                     - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:

@@ -187,6 +187,7 @@ func LabstationRepairConfig() *Configuration {
 			},
 			RecoveryActions: []string{
 				"Power cycle by RPM",
+				"Power cycle by RPM with long delay",
 			},
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 30},
@@ -235,6 +236,49 @@ func LabstationRepairConfig() *Configuration {
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Power cycle by RPM with long delay": {
+			Docs: []string{
+				"Power cycle the labstation via RPM with longer delay between OFF/ON toggle.",
+			},
+			Conditions: []string{
+				"has_rpm_info",
+			},
+			Dependencies: []string{
+				"Power off by RPM",
+				"Sleep 1 minute",
+				"Power on by RPM",
+				"Wait to be SSHable",
+				"Start system services",
+				"Remove reboot requests",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Power off by RPM": {
+			Docs: []string{
+				"Power off the labstation via RPM.",
+			},
+			Conditions: []string{
+				"has_rpm_info",
+			},
+			ExecName: "rpm_power_off",
+			// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+			ExecTimeout:            &durationpb.Duration{Seconds: 120},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Power on by RPM": {
+			Docs: []string{
+				"Power on the labstation via RPM.",
+			},
+			Conditions: []string{
+				"has_rpm_info",
+			},
+			ExecName: "rpm_power_on",
+			// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+			ExecTimeout: &durationpb.Duration{Seconds: 120},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Simple reboot": {
 			Docs: []string{
@@ -482,6 +526,16 @@ func LabstationRepairConfig() *Configuration {
 				"host:",
 				"command:vpd -d whitelabel_tag",
 			},
+		},
+		"Sleep 1 minute": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:60",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 70},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
 	for k, v := range beforeLogActions {

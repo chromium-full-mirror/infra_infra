@@ -118,13 +118,15 @@ func LabstationDeployConfig() *Configuration {
 		},
 		"Power cycle by RPM": {
 			Docs: []string{
-				"Action is always runnable.",
+				"Power cycle the labstation via RPM.",
 			},
 			Conditions: []string{
 				"has_rpm_info",
 			},
-			ExecName:   "rpm_power_cycle",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName: "rpm_power_cycle",
+			// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+			ExecTimeout: &durationpb.Duration{Seconds: 120},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"VPD cache has whitelabel_tag field": {
 			Docs: []string{

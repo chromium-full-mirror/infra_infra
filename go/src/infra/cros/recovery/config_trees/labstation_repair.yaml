@@ -118,6 +118,53 @@ plans:
                   docs:
                     - Remove all requests for reboot on the host.
                     - The action has to be called after reboot of the device.
+            - name: Power cycle by RPM with long delay (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Power cycle the labstation via RPM with longer delay between OFF/ON toggle.
+              conditions:
+                - name: has_rpm_info
+                  exec_name: has_rpm_info
+              dependencies:
+                - name: Power off by RPM (Allow to fail) (ALWAYS_RUN) (time:'2m0s')
+                  exec_name: rpm_power_off
+                  docs:
+                    - Power off the labstation via RPM.
+                  conditions:
+                    - name: has_rpm_info
+                      exec_name: has_rpm_info
+                - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                  exec_name: sample_sleep
+                  exec_args:
+                    - sleep:60
+                - name: Power on by RPM (ALWAYS_RUN) (time:'2m0s')
+                  exec_name: rpm_power_on
+                  docs:
+                    - Power on the labstation via RPM.
+                  conditions:
+                    - name: has_rpm_info
+                      exec_name: has_rpm_info
+                - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable during after the device being rebooted.
+                - name: Start system services (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_run_command
+                  exec_args:
+                    - host:dut
+                    - command:start system-services
+                  docs:
+                    - Start system-services on the labstation
+                  dependencies:
+                    - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - This verifier checks whether the host is accessible over ssh.
+                - name: Remove reboot requests (Allow to fail)
+                  exec_name: cros_remove_all_reboot_request
+                  docs:
+                    - Remove all requests for reboot on the host.
+                    - The action has to be called after reboot of the device.
         - name: System services is up
           exec_name: cros_wait_for_system
           docs:
@@ -138,6 +185,53 @@ plans:
                   dependencies:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
+                    - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable during after the device being rebooted.
+                    - name: Start system services (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:start system-services
+                      docs:
+                        - Start system-services on the labstation
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - This verifier checks whether the host is accessible over ssh.
+                    - name: Remove reboot requests (Allow to fail)
+                      exec_name: cros_remove_all_reboot_request
+                      docs:
+                        - Remove all requests for reboot on the host.
+                        - The action has to be called after reboot of the device.
+                - name: Power cycle by RPM with long delay (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Power cycle the labstation via RPM with longer delay between OFF/ON toggle.
+                  conditions:
+                    - name: has_rpm_info
+                      exec_name: has_rpm_info
+                  dependencies:
+                    - name: Power off by RPM (Allow to fail) (ALWAYS_RUN) (time:'2m0s')
+                      exec_name: rpm_power_off
+                      docs:
+                        - Power off the labstation via RPM.
+                      conditions:
+                        - name: has_rpm_info
+                          exec_name: has_rpm_info
+                    - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:60
+                    - name: Power on by RPM (ALWAYS_RUN) (time:'2m0s')
+                      exec_name: rpm_power_on
+                      docs:
+                        - Power on the labstation via RPM.
+                      conditions:
+                        - name: has_rpm_info
+                          exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
                       exec_name: cros_ssh
                       docs:
@@ -203,6 +297,53 @@ plans:
                   dependencies:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
+                    - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable during after the device being rebooted.
+                    - name: Start system services (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:start system-services
+                      docs:
+                        - Start system-services on the labstation
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - This verifier checks whether the host is accessible over ssh.
+                    - name: Remove reboot requests (Allow to fail)
+                      exec_name: cros_remove_all_reboot_request
+                      docs:
+                        - Remove all requests for reboot on the host.
+                        - The action has to be called after reboot of the device.
+                - name: Power cycle by RPM with long delay (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Power cycle the labstation via RPM with longer delay between OFF/ON toggle.
+                  conditions:
+                    - name: has_rpm_info
+                      exec_name: has_rpm_info
+                  dependencies:
+                    - name: Power off by RPM (Allow to fail) (ALWAYS_RUN) (time:'2m0s')
+                      exec_name: rpm_power_off
+                      docs:
+                        - Power off the labstation via RPM.
+                      conditions:
+                        - name: has_rpm_info
+                          exec_name: has_rpm_info
+                    - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:60
+                    - name: Power on by RPM (ALWAYS_RUN) (time:'2m0s')
+                      exec_name: rpm_power_on
+                      docs:
+                        - Power on the labstation via RPM.
+                      conditions:
+                        - name: has_rpm_info
+                          exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
                       exec_name: cros_ssh
                       docs:
