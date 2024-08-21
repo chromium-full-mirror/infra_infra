@@ -153,8 +153,19 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 			}
 		}
 	}
+	lg.Infof("Prepare inventory namespace...")
+	if input.GetInventoryNamespace() == "" {
+		input.InventoryNamespace = ufsUtil.OSNamespace
+	}
+	lg.Infof("Using inventory namespace: %q", input.GetInventoryNamespace())
+	ctx = setupContextNamespace(ctx, input.GetInventoryNamespace())
+	useMetrics := !input.GetNoMetrics()
+	if useMetrics && input.GetInventoryNamespace() == ufsUtil.OSPartnerNamespace {
+		// Partners do nothave access for metrics service.
+		useMetrics = false
+	}
 	var metrics metrics.Metrics
-	if !input.GetNoMetrics() {
+	if useMetrics {
 		lg.Infof("Prepare create Karte client...")
 		var err error
 		metrics, err = karte.NewMetrics(ctx, kclient.ProdConfig(luciauth.Options{}))
@@ -402,10 +413,6 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metr
 			err = errors.Reason("panic: %v", r).Err()
 		}
 	}()
-	if in.InventoryNamespace == "" {
-		in.InventoryNamespace = ufsUtil.OSNamespace
-	}
-	ctx = setupContextNamespace(ctx, in.InventoryNamespace)
 	ctx, access, cftCloser, err := tlw.NewAccess(ctx, in, ad, logRoot, metrics, lg)
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
