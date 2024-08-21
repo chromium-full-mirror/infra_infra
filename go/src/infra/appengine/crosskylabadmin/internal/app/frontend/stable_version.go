@@ -75,9 +75,11 @@ func (is *ServerImpl) GetRecoveryVersion(ctx context.Context, req *fleet.GetReco
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-
-	err = errors.Reason("not implemented").Err()
-	return nil, status.Errorf(codes.Unimplemented, "get recovery version impl: %s", err)
+	v, err := getVersionImpl(ctx, req)
+	if err != nil {
+		return nil, status.Errorf(codes.FailedPrecondition, "get recovery version: %s", err)
+	}
+	return &fleet.GetRecoveryVersionResponse{Version: v}, nil
 }
 
 // getSatlabStableVersion gets a stable version for a satlab device.
@@ -191,6 +193,68 @@ func getStableVersionImpl(ctx context.Context, buildTarget string, model string,
 		return out, nil
 	}
 	return out, status.Errorf(codes.NotFound, "get stable version impl: %s", err)
+}
+
+// deviceInfo read device-info from inventory.
+func deviceInfo(ctx context.Context, hostname string) (*ufs.DeviceInfo, error) {
+	cfg := config.Get(ctx)
+	httpClient, err := ufs.NewHTTPClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "device info: fail create http client").Err()
+	}
+	client, err := ufs.NewClient(ctx, httpClient, cfg.GetUFS().GetHost())
+	if err != nil {
+		return nil, errors.Annotate(err, "device info: fail create ufs client").Err()
+	}
+	return ufs.GetDeviceInfo(ctx, client, hostname)
+}
+
+// getVersionImpl finds recovery version for request api.
+func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (*lab_platform.StableVersion, error) {
+	hostname := req.GetDeviceName()
+	board := req.GetBoard()
+	model := req.GetModel()
+	pools := req.GetPools()
+	if hostname == "" && (board == "" || model == "") {
+		return nil, errors.Reason("get version: search criteria not provided").Err()
+	}
+	// Satlab case supported only when hostname provided.
+	if hostname != "" && heuristics.LooksLikeSatlabDevice(hostname) {
+		// Satlab CLI allows to set versions per hostname only.
+		// So we search only by a hostname, and if it is not found, we move on to other options.
+		satlabKey := satlab.MakeSatlabStableVersionID(hostname, "", "")
+		entry, err := satlab.GetSatlabStableVersionEntryByRawID(ctx, satlabKey)
+		switch {
+		case err == nil:
+			logging.Infof(ctx, "Found version for Satlab device by hostname: %q", hostname)
+			return &lab_platform.StableVersion{
+				OsVersion:           entry.OS,
+				OsImagePath:         fmt.Sprintf("%s-release/%s", board, entry.OS),
+				FirmwareRoVersion:   entry.FW,
+				FirmwareRoImagePath: entry.FWImage,
+			}, nil
+		case datastore.IsErrNoSuchEntity(err):
+			// Do nothing. If there is no override for the hostname.
+			// Proceed with next options.
+		default:
+			return nil, errors.Annotate(err, "get version: for satlab").Err()
+		}
+	}
+	if hostname != "" && (board == "" || model == "") {
+		// Only read data for internal usage, no partners at this point.
+		di, err := deviceInfo(ctx, hostname)
+		if err != nil {
+			return nil, errors.Annotate(err, "get version").Err()
+		}
+		board = di.Board
+		model = di.Model
+		pools = di.Pools
+		if board == "" || model == "" {
+			return nil, errors.Reason("get version: board or model not found").Err()
+		}
+	}
+	logging.Infof(ctx, "Finding a version for board:%q, model:%q, poools:%q", board, model, pools)
+	return dssv.FindVersion(ctx, board, model, pools)
 }
 
 // getStableVersionImplNoHostname returns stableversion information given a buildTarget and model
