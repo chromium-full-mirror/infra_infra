@@ -86,6 +86,7 @@ peripherals: {
   pasit_components: "MONITOR-2"
   pasit_components: "DOCKING_STATION-1"
   amt_manager_state: 1
+  audio_beamforming: "intelligo"
 }
 os_type: 2
 model: "modelval"
@@ -263,6 +264,7 @@ peripherals: {
   pasit_components: "MONITOR-2"
   pasit_components: "DOCKING_STATION-1"
   amt_manager_state: 1
+  audio_beamforming: "intelligo"
 }
 os_type: 2
 model: "modelval"
@@ -503,6 +505,7 @@ var fullDimensions = Dimensions{
 	"label-working_bluetooth_btpeer": {"1", "2", "3"},
 	"label-pasit_components":         {"CAMERA-1", "MONITOR-1", "MONITOR-2", "DOCKING_STATION-1"},
 	"label-amt_manager_state":        {"WORKING"},
+	"label-audio_beamforming":        {"intelligo"},
 }
 
 func TestConvertEmpty(t *testing.T) {

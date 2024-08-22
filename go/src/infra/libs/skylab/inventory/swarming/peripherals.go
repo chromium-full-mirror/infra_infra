@@ -217,6 +217,10 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			dims["label-amt_manager_state"] = []string{state}
 		}
 	}
+
+	if audioBeamforming := p.GetAudioBeamforming(); audioBeamforming != "" {
+		appendDim(dims, "label-audio_beamforming", audioBeamforming)
+	}
 }
 
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -431,5 +435,9 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 	}
 	delete(d, "label-pasit_components")
 
+	if audioBeamforming, ok := getLastStringValue(d, "label-audio_beamforming"); ok {
+		p.AudioBeamforming = &audioBeamforming
+		delete(d, "label-audio_beamforming")
+	}
 	return d
 }
