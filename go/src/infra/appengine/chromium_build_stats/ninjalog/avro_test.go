@@ -56,15 +56,17 @@ func TestToAVRO(t *testing.T) {
 		t.Fatalf("got err %v, want nil", err)
 	}
 	if diff := cmp.Diff(map[string]interface{}{
-		"build_configs": []map[string]interface{}{},
-		"build_id":      int64(12345),
-		"invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d",
-		"cpu_core":      int(0),
-		"created_at":    createdTime,
-		"jobs":          int(50),
-		"os":            string("LINUX"),
-		"step_name":     string("compile"),
-		"targets":       []string{"all"},
+		"build_configs":      []map[string]interface{}{},
+		"build_id":           int64(12345),
+		"invocation_id":      "6dc52b4f-fdf9-4017-b542-8c6cf296677d",
+		"exit_code":          int(1),
+		"build_duration_sec": int(100),
+		"cpu_core":           int(0),
+		"created_at":         createdTime,
+		"jobs":               int(50),
+		"os":                 string("LINUX"),
+		"step_name":          string("compile"),
+		"targets":            []string{"all"},
 		"log_entries": []map[string]interface{}{
 			{
 				"end_duration_sec":      float64(0.076),

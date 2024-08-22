@@ -103,16 +103,18 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	}
 
 	return map[string]interface{}{
-		"targets":       info.Metadata.getTargets(),
-		"build_id":      buildID,
-		"invocation_id": info.Metadata.InvocationID,
-		"os":            os,
-		"step_name":     info.Metadata.StepName,
-		"jobs":          info.Metadata.Jobs,
-		"cpu_core":      int(info.Metadata.CPUCore),
-		"build_configs": buildConfigs,
-		"log_entries":   logEntries,
-		"created_at":    timeNow(),
+		"targets":            info.Metadata.getTargets(),
+		"build_id":           buildID,
+		"invocation_id":      info.Metadata.InvocationID,
+		"exit_code":          info.Metadata.ExitCode,
+		"build_duration_sec": info.Metadata.BuildDurationSec,
+		"os":                 os,
+		"step_name":          info.Metadata.StepName,
+		"jobs":               info.Metadata.Jobs,
+		"cpu_core":           int(info.Metadata.CPUCore),
+		"build_configs":      buildConfigs,
+		"log_entries":        logEntries,
+		"created_at":         timeNow(),
 	}, nil
 
 }

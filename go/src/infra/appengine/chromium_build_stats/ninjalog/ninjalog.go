@@ -100,6 +100,13 @@ type Metadata struct {
 	// such as Siso, Reclient, RBE.
 	InvocationID string `json:"invocation_id"`
 
+	// ExitCode is exit code of the ninja execution.
+	ExitCode int `json:"exit_code"`
+
+	// BuildDurationSec is the time spent on autoninja including the overheads
+	// outside of the ninja execution. e.g. Reclient startup/shutdown, Siso shutdown
+	BuildDurationSec int `json:"build_duration_sec"`
+
 	// Platform is platform of buildbot.
 	Platform string `json:"platform"`
 
