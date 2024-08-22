@@ -19,27 +19,32 @@ import (
 )
 
 var (
-	TtcpContainerName          = "cros-ddd-filter" // ttcp-demo
-	LegacyHWContainerName      = "cros-legacy-hw-filter"
-	ProvisionContainerName     = "provision-filter"
-	TestFinderContainerName    = "cros-test-finder"
-	UseFlagFilterContainerName = "use_flag_filter"
+	TtcpContainerName             = "cros-ddd-filter" // ttcp-demo
+	LegacyHWContainerName         = "cros-legacy-hw-filter"
+	ProvisionContainerName        = "provision-filter"
+	TestFinderContainerName       = "cros-test-finder"
+	UseFlagFilterContainerName    = "use_flag_filter"
+	PreProcessFilterContainerName = "pre-process-filter"
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName, PreProcessFilterContainerName}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultTTCPSha = "57486ffd9466cca130378e0953d515ae910df763f408b7c20e9635ab9e66ca89"
-	prodShas       = map[string]string{
-		TtcpContainerName: defaultTTCPSha}
+	defaultTTCPSha             = "57486ffd9466cca130378e0953d515ae910df763f408b7c20e9635ab9e66ca89"
+	defaultPreProcessFilterSha = "78a91ed396b1b30ab29b990780bfd511a30f8319de12380a89c5afea423b259d"
+	prodShas                   = map[string]string{
+		TtcpContainerName:             defaultTTCPSha,
+		PreProcessFilterContainerName: defaultPreProcessFilterSha,
+	}
 
 	binaryLookup = map[string]string{
-		TtcpContainerName:       "solver_service",
-		TestFinderContainerName: "test_finder_filter",
+		TtcpContainerName:             "solver_service",
+		TestFinderContainerName:       "test_finder_filter",
+		PreProcessFilterContainerName: "pre-process-filter",
 	}
 )
 
