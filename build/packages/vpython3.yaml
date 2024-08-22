@@ -14,9 +14,9 @@ install_mode: copy
 root: ../../go/bin
 cipd_export: |
   @Subdir 3.8
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.34
+  infra/3pp/tools/cpython3/${target_platform} version:3@3.8.10.chromium.34
   @Subdir 3.11
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.11.8.chromium.35
+  infra/3pp/tools/cpython3/${target_platform} version:3@3.11.9.chromium.35
 data:
   - file: vpython3${exe_suffix}
     generate_bat_shim: true
