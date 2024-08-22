@@ -6,10 +6,6 @@
 // vpython cmd packages.
 package vpythoncommon
 
-// Virtualenv27Version is the version of the CIPD package for the 'virtualenv'
-// wheel when used with python2.7. This CIPD package is "infra/3pp/tools/virtualenv".
-const Virtualenv27Version = "version:2@16.7.12.chromium.7"
-
 // Virtualenv38Version is the version of the CIPD package for the 'virtualenv'
 // wheel when used with python3.8. This CIPD package is "infra/3pp/tools/virtualenv".
 const Virtualenv38Version = "version:2@16.7.12.chromium.7"
