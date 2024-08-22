@@ -453,7 +453,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 51
+// NEXT TAG: 52
 message Peripherals {
   reserved 32;
 
@@ -663,6 +663,9 @@ message Peripherals {
   // The state of Intel AMT management.
   // See UFS peripherals.proto or go/flex-amt-enabled-repair for more context.
   optional PeripheralState amt_manager_state = 50;
+
+  // The type of Audio Beamforming on the DUT.
+  optional string audio_beamforming = 51;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.

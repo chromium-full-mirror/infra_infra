@@ -297,6 +297,7 @@ var devUFSState = chromeosLab.DutState{
 	PeripheralBtpeerState:    chromeosLab.PeripheralState_WORKING,
 	AudioLatencyToolkitState: chromeosLab.PeripheralState_WORKING,
 	GpuId:                    "test_gpu_id",
+	AudioBeamforming:         "intelligo",
 }
 
 var labstationMachine = ufspb.Machine{
@@ -671,6 +672,7 @@ common {
 			pasit_components: "MONITOR-2"
 			pasit_components: "DOCKING_STATION-1"
 			amt_manager_state: UNKNOWN
+			audio_beamforming: "intelligo"
 		}
 		phase: PHASE_DVT
 		platform: "coral"
@@ -785,6 +787,7 @@ common {
 			hmr_state: UNKNOWN
 			audio_latency_toolkit_state: WORKING
 			amt_manager_state: UNKNOWN
+			audio_beamforming: "intelligo"
 		}
 		platform:""
 		test_coverage_hints {
