@@ -1,1 +1,0 @@
-../cpython_common/ssl_suffix.py
