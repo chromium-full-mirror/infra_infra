@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -23,7 +22,9 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer/step"
@@ -48,12 +49,12 @@ func (m *mockResults) Next(dst interface{}) error {
 }
 
 func TestMockBQResults(t *testing.T) {
-	Convey("no results", t, func() {
+	ftt.Run("no results", t, func(t *ftt.Test) {
 		mr := &mockResults{}
 		r := &failureRow{}
-		So(mr.Next(r), ShouldEqual, iterator.Done)
+		assert.Loosely(t, mr.Next(r), should.Equal(iterator.Done))
 	})
-	Convey("copy op works", t, func() {
+	ftt.Run("copy op works", t, func(t *ftt.Test) {
 		mr := &mockResults{
 			failures: []failureRow{
 				{
@@ -63,53 +64,53 @@ func TestMockBQResults(t *testing.T) {
 		}
 		r := failureRow{}
 		err := mr.Next(&r)
-		So(err, ShouldBeNil)
-		So(r.StepName, ShouldEqual, "foo")
-		So(mr.Next(&r), ShouldEqual, iterator.Done)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, r.StepName, should.Equal("foo"))
+		assert.Loosely(t, mr.Next(&r), should.Equal(iterator.Done))
 	})
 
 }
 
 func TestGenerateBuilderURL(t *testing.T) {
-	Convey("Test builder with no space", t, func() {
+	ftt.Run("Test builder with no space", t, func(t *ftt.Test) {
 		project := "chromium"
 		bucket := "ci"
 		builderName := "Win"
 		url := generateBuilderURL(project, bucket, builderName)
-		So(url, ShouldEqual, "https://ci.chromium.org/p/chromium/builders/ci/Win")
+		assert.Loosely(t, url, should.Equal("https://ci.chromium.org/p/chromium/builders/ci/Win"))
 	})
-	Convey("Test builder with some spaces", t, func() {
+	ftt.Run("Test builder with some spaces", t, func(t *ftt.Test) {
 		project := "chromium"
 		bucket := "ci"
 		builderName := "Win 7 Test"
 		url := generateBuilderURL(project, bucket, builderName)
-		So(url, ShouldEqual, "https://ci.chromium.org/p/chromium/builders/ci/Win%207%20Test")
+		assert.Loosely(t, url, should.Equal("https://ci.chromium.org/p/chromium/builders/ci/Win%207%20Test"))
 	})
-	Convey("Test builder with special characters", t, func() {
+	ftt.Run("Test builder with special characters", t, func(t *ftt.Test) {
 		project := "chromium"
 		bucket := "ci"
 		builderName := "Mac 10.13 Tests (dbg)"
 		url := generateBuilderURL(project, bucket, builderName)
-		So(url, ShouldEqual, "https://ci.chromium.org/p/chromium/builders/ci/Mac%2010.13%20Tests%20%28dbg%29")
+		assert.Loosely(t, url, should.Equal("https://ci.chromium.org/p/chromium/builders/ci/Mac%2010.13%20Tests%20%28dbg%29"))
 	})
 }
 
 func TestGenerateBuildURL(t *testing.T) {
-	Convey("Test build url with build ID", t, func() {
+	ftt.Run("Test build url with build ID", t, func(t *ftt.Test) {
 		project := "chromium"
 		bucket := "ci"
 		builderName := "Win"
 		buildID := bigquery.NullInt64{Int64: 8127364737474, Valid: true}
 		url := generateBuildURL(project, bucket, builderName, buildID)
-		So(url, ShouldEqual, "https://ci.chromium.org/p/chromium/builders/ci/Win/b8127364737474")
+		assert.Loosely(t, url, should.Equal("https://ci.chromium.org/p/chromium/builders/ci/Win/b8127364737474"))
 	})
-	Convey("Test build url with empty buildID", t, func() {
+	ftt.Run("Test build url with empty buildID", t, func(t *ftt.Test) {
 		project := "chromium"
 		bucket := "ci"
 		builderName := "Win"
 		buildID := bigquery.NullInt64{}
 		url := generateBuildURL(project, bucket, builderName, buildID)
-		So(url, ShouldEqual, "")
+		assert.Loosely(t, url, should.BeEmpty)
 	})
 }
 
@@ -124,7 +125,7 @@ func formatQuery(query string) string {
 func TestGenerateSQLQuery(t *testing.T) {
 	c := gaetesting.TestingContext()
 
-	Convey("Test generate SQL query for project", t, func() {
+	ftt.Run("Test generate SQL query for project", t, func(t *ftt.Test) {
 		expected := `
 			SELECT
 			  Project,
@@ -153,15 +154,15 @@ func TestGenerateSQLQuery(t *testing.T) {
 			FROM
 				` + "`sheriff-o-matic.chrome.sheriffable_failures`"
 		actual := generateQueryForProject("sheriff-o-matic", "chrome")
-		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
+		assert.Loosely(t, formatQuery(actual), should.Equal(formatQuery(expected)))
 	})
 
-	Convey("Test generate SQL query for chromeos", t, func() {
+	ftt.Run("Test generate SQL query for chromeos", t, func(t *ftt.Test) {
 		treeName := "chromeos"
 		tree := &model.Tree{
 			Name: treeName,
 		}
-		So(datastore.Put(c, tree), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 		expected := `
 			SELECT
@@ -197,17 +198,17 @@ func TestGenerateSQLQuery(t *testing.T) {
 				AND (Critical != "NO" OR Critical is NULL)
 		`
 		actual, err := generateSQLQuery(c, treeName, "sheriff-o-matic")
-		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, formatQuery(actual), should.Equal(formatQuery(expected)))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Test generate SQL query for fuchsia", t, func() {
+	ftt.Run("Test generate SQL query for fuchsia", t, func(t *ftt.Test) {
 		treeName := "fuchsia"
 		tree := &model.Tree{
 			Name:                     treeName,
 			BuildBucketProjectFilter: "fuchsia-test",
 		}
-		So(datastore.Put(c, tree), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 		expected := `
 			SELECT
@@ -243,17 +244,17 @@ func TestGenerateSQLQuery(t *testing.T) {
 				1000
 		`
 		actual, err := generateSQLQuery(c, treeName, "sheriff-o-matic")
-		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, formatQuery(actual), should.Equal(formatQuery(expected)))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Test generate SQL query for angle", t, func() {
+	ftt.Run("Test generate SQL query for angle", t, func(t *ftt.Test) {
 		treeName := "angle"
 		tree := &model.Tree{
 			Name:                     treeName,
 			BuildBucketProjectFilter: "angle-test",
 		}
-		So(datastore.Put(c, tree), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 		expected := `
 			SELECT
@@ -286,16 +287,16 @@ func TestGenerateSQLQuery(t *testing.T) {
 				"angle" in UNNEST(SheriffRotations)
 		`
 		actual, err := generateSQLQuery(c, treeName, "sheriff-o-matic")
-		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, formatQuery(actual), should.Equal(formatQuery(expected)))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Test generate SQL query for devtools frontend", t, func() {
+	ftt.Run("Test generate SQL query for devtools frontend", t, func(t *ftt.Test) {
 		treeName := "devtools_frontend"
 		tree := &model.Tree{
 			Name: treeName,
 		}
-		So(datastore.Put(c, tree), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 		expected := `
 			SELECT
@@ -328,13 +329,13 @@ func TestGenerateSQLQuery(t *testing.T) {
 				"devtools_frontend" in UNNEST(SheriffRotations)
 		`
 		actual, err := generateSQLQuery(c, treeName, "sheriff-o-matic")
-		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, formatQuery(actual), should.Equal(formatQuery(expected)))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Test generate SQL query for invalid tree", t, func() {
+	ftt.Run("Test generate SQL query for invalid tree", t, func(t *ftt.Test) {
 		_, err := generateSQLQuery(c, "abc", "sheriff-o-matic")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -396,14 +397,14 @@ func TestFilterDeletedBuilders(t *testing.T) {
 	ctx = gologger.StdConfig.Use(ctx)
 	cl := mockBuildersClient{}
 
-	Convey("no builder", t, func() {
+	ftt.Run("no builder", t, func(t *ftt.Test) {
 		failureRows := []failureRow{}
 		filtered, err := filterDeletedBuildersWithClient(ctx, cl, failureRows)
-		So(err, ShouldBeNil)
-		So(filtered, ShouldBeEmpty)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.BeEmpty)
 	})
 
-	Convey("builders belong to one bucket", t, func() {
+	ftt.Run("builders belong to one bucket", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				Project: "chromium",
@@ -422,8 +423,8 @@ func TestFilterDeletedBuilders(t *testing.T) {
 			},
 		}
 		filtered, err := filterDeletedBuildersWithClient(ctx, cl, failureRows)
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, []failureRow{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble([]failureRow{
 			{
 				Project: "chromium",
 				Bucket:  "ci",
@@ -434,10 +435,10 @@ func TestFilterDeletedBuilders(t *testing.T) {
 				Bucket:  "ci",
 				Builder: "ci_2",
 			},
-		})
+		}))
 	})
 
-	Convey("builders belong to more than one buckets", t, func() {
+	ftt.Run("builders belong to more than one buckets", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				Project: "chromium",
@@ -461,8 +462,8 @@ func TestFilterDeletedBuilders(t *testing.T) {
 			},
 		}
 		filtered, err := filterDeletedBuildersWithClient(ctx, cl, failureRows)
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, []failureRow{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble([]failureRow{
 			{
 				Project: "chromium",
 				Bucket:  "ci",
@@ -473,10 +474,10 @@ func TestFilterDeletedBuilders(t *testing.T) {
 				Bucket:  "try",
 				Builder: "try_1",
 			},
-		})
+		}))
 	})
 
-	Convey("rpc returns errors", t, func() {
+	ftt.Run("rpc returns errors", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				Project: "chromium",
@@ -490,10 +491,10 @@ func TestFilterDeletedBuilders(t *testing.T) {
 			},
 		}
 		_, err := filterDeletedBuildersWithClient(ctx, cl, failureRows)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("rpc returns NotFound", t, func() {
+	ftt.Run("rpc returns NotFound", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				Project: "chromium",
@@ -507,14 +508,14 @@ func TestFilterDeletedBuilders(t *testing.T) {
 			},
 		}
 		filtered, err := filterDeletedBuildersWithClient(ctx, cl, failureRows)
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, []failureRow{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble([]failureRow{
 			{
 				Project: "chromium",
 				Bucket:  "ci",
 				Builder: "ci_1",
 			},
-		})
+		}))
 	})
 }
 
@@ -522,14 +523,14 @@ func TestProcessBQResults(t *testing.T) {
 	ctx := context.Background()
 	ctx = gologger.StdConfig.Use(ctx)
 
-	Convey("smoke", t, func() {
+	ftt.Run("smoke", t, func(t *ftt.Test) {
 		failureRows := []failureRow{}
 		got, err := processBQResults(ctx, failureRows)
-		So(err, ShouldEqual, nil)
-		So(got, ShouldBeEmpty)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, got, should.BeEmpty)
 	})
 
-	Convey("single result, only start/end build numbers", t, func() {
+	ftt.Run("single result, only start/end build numbers", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step",
@@ -551,11 +552,11 @@ func TestProcessBQResults(t *testing.T) {
 			},
 		}
 		got, err := processBQResults(ctx, failureRows)
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(1))
 	})
 
-	Convey("single result, only end build number", t, func() {
+	ftt.Run("single result, only end build number", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step",
@@ -573,11 +574,11 @@ func TestProcessBQResults(t *testing.T) {
 			},
 		}
 		got, err := processBQResults(ctx, failureRows)
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(1))
 	})
 
-	Convey("single result, start/end build numbers, single test name", t, func() {
+	ftt.Run("single result, start/end build numbers, single test name", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step",
@@ -608,21 +609,21 @@ func TestProcessBQResults(t *testing.T) {
 			},
 		}
 		got, err := processBQResults(ctx, failureRows)
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(1))
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
 			Tests:           makeTestWithResults("1"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 	})
 
-	Convey("multiple results, start/end build numbers, same step, same test name", t, func() {
+	ftt.Run("multiple results, start/end build numbers, same step, same test name", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step",
@@ -684,22 +685,22 @@ func TestProcessBQResults(t *testing.T) {
 			},
 		}
 		got, err := processBQResults(ctx, failureRows)
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
 			Tests:           makeTestWithResults("1"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
-		So(len(got[1].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
 	})
 
-	Convey("multiple results, start/end build numbers, different steps, different sets of test names", t, func() {
+	ftt.Run("multiple results, start/end build numbers, different steps, different sets of test names", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step 1",
@@ -758,33 +759,33 @@ func TestProcessBQResults(t *testing.T) {
 		}
 		got, err := processBQResults(ctx, failureRows)
 		sort.Sort(byStepName(got))
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
 			Tests:           makeTestWithResults("1", "2"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 
 		reason = got[1].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 2",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
 			Tests:           makeTestWithResults("3"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 	})
 
-	Convey("multiple results, start/end build numbers, same step, different sets of test names", t, func() {
+	ftt.Run("multiple results, start/end build numbers, same step, different sets of test names", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step 1",
@@ -843,35 +844,35 @@ func TestProcessBQResults(t *testing.T) {
 		}
 		got, err := processBQResults(ctx, failureRows)
 		sort.Sort(byTests(got))
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
 			Tests:           makeTestWithResults("1", "2"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
-		So(got[0].Builders[0].Name, ShouldEqual, "builder 1")
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
+		assert.Loosely(t, got[0].Builders[0].Name, should.Equal("builder 1"))
 
 		reason = got[1].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 1,
 			Tests:           makeTestWithResults("3"),
-		})
-		So(len(got[1].Builders), ShouldEqual, 1)
-		So(got[1].Builders[0].Name, ShouldEqual, "builder 2")
+		}))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
+		assert.Loosely(t, got[1].Builders[0].Name, should.Equal("builder 2"))
 	})
 
-	Convey("chromium.perf case: multiple results, different start build numbers, same end build number, same step, different sets of test names", t, func() {
+	ftt.Run("chromium.perf case: multiple results, different start build numbers, same end build number, same step, different sets of test names", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "performance_test_suite",
@@ -930,39 +931,39 @@ func TestProcessBQResults(t *testing.T) {
 		}
 		got, err := processBQResults(ctx, failureRows)
 		sort.Sort(byTests(got))
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
 			Tests:           makeTestWithResults("A1", "A2", "A3"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
-		So(got[0].Builders[0].Name, ShouldEqual, "win-10-perf")
-		So(got[0].Builders[0].FirstFailure, ShouldEqual, 100)
-		So(got[0].Builders[0].LatestFailure, ShouldEqual, 110)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
+		assert.Loosely(t, got[0].Builders[0].Name, should.Equal("win-10-perf"))
+		assert.Loosely(t, got[0].Builders[0].FirstFailure, should.Equal(100))
+		assert.Loosely(t, got[0].Builders[0].LatestFailure, should.Equal(110))
 
 		reason = got[1].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
 			Tests:           makeTestWithResults("B1", "B2", "B3"),
-		})
-		So(len(got[1].Builders), ShouldEqual, 1)
-		So(got[1].Builders[0].Name, ShouldEqual, "win-10-perf")
-		So(got[1].Builders[0].FirstFailure, ShouldEqual, 102)
-		So(got[1].Builders[0].LatestFailure, ShouldEqual, 110)
+		}))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
+		assert.Loosely(t, got[1].Builders[0].Name, should.Equal("win-10-perf"))
+		assert.Loosely(t, got[1].Builders[0].FirstFailure, should.Equal(102))
+		assert.Loosely(t, got[1].Builders[0].LatestFailure, should.Equal(110))
 	})
 
-	Convey("chromium.perf case: multiple results, same step, same truncated list of test names, different test name fingerprints", t, func() {
+	ftt.Run("chromium.perf case: multiple results, same step, same truncated list of test names, different test name fingerprints", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "performance_test_suite",
@@ -1021,40 +1022,40 @@ func TestProcessBQResults(t *testing.T) {
 		}
 		got, err := processBQResults(ctx, failureRows)
 		sort.Sort(byFirstFailure(got))
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
 			Tests:           makeTestWithResults("A1", "A2", "A3"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 
-		So(got[0].Builders[0].Name, ShouldEqual, "win-10-perf")
-		So(got[0].Builders[0].FirstFailure, ShouldEqual, 100)
-		So(got[0].Builders[0].LatestFailure, ShouldEqual, 110)
+		assert.Loosely(t, got[0].Builders[0].Name, should.Equal("win-10-perf"))
+		assert.Loosely(t, got[0].Builders[0].FirstFailure, should.Equal(100))
+		assert.Loosely(t, got[0].Builders[0].LatestFailure, should.Equal(110))
 
 		reason = got[1].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "performance_test_suite",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 3,
 			Tests:           makeTestWithResults("A1", "A2", "A3"),
-		})
-		So(len(got[1].Builders), ShouldEqual, 1)
-		So(got[1].Builders[0].Name, ShouldEqual, "win-10-perf")
-		So(got[1].Builders[0].FirstFailure, ShouldEqual, 102)
-		So(got[1].Builders[0].LatestFailure, ShouldEqual, 110)
+		}))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
+		assert.Loosely(t, got[1].Builders[0].Name, should.Equal("win-10-perf"))
+		assert.Loosely(t, got[1].Builders[0].FirstFailure, should.Equal(102))
+		assert.Loosely(t, got[1].Builders[0].LatestFailure, should.Equal(110))
 	})
 
-	Convey("multiple results, start/end build numbers, different steps, same set of test names", t, func() {
+	ftt.Run("multiple results, start/end build numbers, different steps, same set of test names", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step 1",
@@ -1113,32 +1114,32 @@ func TestProcessBQResults(t *testing.T) {
 		}
 		got, err := processBQResults(ctx, failureRows)
 		sort.Sort(byStepName(got))
-		So(err, ShouldEqual, nil)
-		So(len(got), ShouldEqual, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(got), should.Equal(2))
 		reason := got[0].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 1",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
 			Tests:           makeTestWithResults("1", "2"),
-		})
-		So(len(got[0].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 
 		reason = got[1].Reason
-		So(reason, ShouldNotBeNil)
-		So(reason.Raw, ShouldResemble, &BqFailure{
+		assert.Loosely(t, reason, should.NotBeNil)
+		assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 			Name:            "some step 2",
 			kind:            "test",
 			severity:        messages.ReliableFailure,
 			NumFailingTests: 2,
 			Tests:           makeTestWithResults("1", "2"),
-		})
-		So(len(got[1].Builders), ShouldEqual, 1)
+		}))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
 	})
 
-	Convey("process changepoint result", t, func() {
+	ftt.Run("process changepoint result", t, func(t *ftt.Test) {
 		failureRows := []failureRow{
 			{
 				StepName: "some step",
@@ -1160,7 +1161,7 @@ func TestProcessBQResults(t *testing.T) {
 				},
 			},
 		}
-		Convey("one segment", func() {
+		t.Run("one segment", func(t *ftt.Test) {
 			failureRows[0].TestsTrunc[0].Segments = []*segment{{
 				StartHour: bigquery.NullTimestamp{
 					Timestamp: time.Unix(3600*11, 0),
@@ -1193,20 +1194,20 @@ func TestProcessBQResults(t *testing.T) {
 				PrevCounts: step.Counts{},
 			}
 			got, err := processBQResults(ctx, failureRows)
-			So(err, ShouldEqual, nil)
-			So(len(got), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(got), should.Equal(1))
 			reason := got[0].Reason
-			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &BqFailure{
+			assert.Loosely(t, reason, should.NotBeNil)
+			assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
 				NumFailingTests: 1,
 				Tests:           []step.TestWithResult{result},
-			})
-			So(len(got[0].Builders), ShouldEqual, 1)
+			}))
+			assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 		})
-		Convey("two segments, deterministic failure", func() {
+		t.Run("two segments, deterministic failure", func(t *ftt.Test) {
 			failureRows[0].TestsTrunc[0].Segments = []*segment{{
 				StartHour: bigquery.NullTimestamp{
 					Timestamp: time.Unix(3600*11, 0),
@@ -1272,20 +1273,20 @@ func TestProcessBQResults(t *testing.T) {
 				},
 			}
 			got, err := processBQResults(ctx, failureRows)
-			So(err, ShouldEqual, nil)
-			So(len(got), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(got), should.Equal(1))
 			reason := got[0].Reason
-			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &BqFailure{
+			assert.Loosely(t, reason, should.NotBeNil)
+			assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
 				NumFailingTests: 1,
 				Tests:           []step.TestWithResult{result},
-			})
-			So(len(got[0].Builders), ShouldEqual, 1)
+			}))
+			assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 		})
-		Convey("two segments, non-deterministic failure", func() {
+		t.Run("two segments, non-deterministic failure", func(t *ftt.Test) {
 			failureRows[0].TestsTrunc[0].Segments = []*segment{{
 				StartHour: bigquery.NullTimestamp{
 					Timestamp: time.Unix(3600*11, 0),
@@ -1351,18 +1352,18 @@ func TestProcessBQResults(t *testing.T) {
 				},
 			}
 			got, err := processBQResults(ctx, failureRows)
-			So(err, ShouldEqual, nil)
-			So(len(got), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(got), should.Equal(1))
 			reason := got[0].Reason
-			So(reason, ShouldNotBeNil)
-			So(reason.Raw, ShouldResembleProto, &BqFailure{
+			assert.Loosely(t, reason, should.NotBeNil)
+			assert.Loosely(t, reason.Raw, should.Resemble(&BqFailure{
 				Name:            "some step",
 				kind:            "test",
 				severity:        messages.ReliableFailure,
 				NumFailingTests: 1,
 				Tests:           []step.TestWithResult{result},
-			})
-			So(len(got[0].Builders), ShouldEqual, 1)
+			}))
+			assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 		})
 	})
 }
@@ -1392,13 +1393,13 @@ func (f byTests) Less(i, j int) bool {
 }
 
 func TestFilterHierarchicalSteps(t *testing.T) {
-	Convey("smoke", t, func() {
+	ftt.Run("smoke", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{}
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 0)
+		assert.Loosely(t, len(got), should.BeZero)
 	})
 
-	Convey("single step, single builder", t, func() {
+	ftt.Run("single step, single builder", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -1417,11 +1418,11 @@ func TestFilterHierarchicalSteps(t *testing.T) {
 		}
 
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 1)
-		So(len(got[0].Builders), ShouldEqual, 1)
+		assert.Loosely(t, len(got), should.Equal(1))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 	})
 
-	Convey("nested step, single builder", t, func() {
+	ftt.Run("nested step, single builder", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -1468,11 +1469,11 @@ func TestFilterHierarchicalSteps(t *testing.T) {
 		}
 
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 1)
-		So(len(got[0].Builders), ShouldEqual, 1)
+		assert.Loosely(t, len(got), should.Equal(1))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(1))
 	})
 
-	Convey("single step, multiple builders", t, func() {
+	ftt.Run("single step, multiple builders", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -1496,11 +1497,11 @@ func TestFilterHierarchicalSteps(t *testing.T) {
 		}
 
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 1)
-		So(len(got[0].Builders), ShouldEqual, 2)
+		assert.Loosely(t, len(got), should.Equal(1))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(2))
 	})
 
-	Convey("nested step, multiple builder", t, func() {
+	ftt.Run("nested step, multiple builder", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -1562,12 +1563,12 @@ func TestFilterHierarchicalSteps(t *testing.T) {
 		}
 
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 1)
-		So(len(got[0].Builders), ShouldEqual, 2)
-		So(got[0].StepAtFault.Step.Name, ShouldEqual, "check build results|build results|chromeos.postsubmit.beaglebone_servo-postsubmit")
+		assert.Loosely(t, len(got), should.Equal(1))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(2))
+		assert.Loosely(t, got[0].StepAtFault.Step.Name, should.Equal("check build results|build results|chromeos.postsubmit.beaglebone_servo-postsubmit"))
 	})
 
-	Convey("mixed nested steps, multiple builder", t, func() {
+	ftt.Run("mixed nested steps, multiple builder", t, func(t *ftt.Test) {
 		failures := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -1676,61 +1677,61 @@ func TestFilterHierarchicalSteps(t *testing.T) {
 		}
 
 		got := filterHierarchicalSteps(failures)
-		So(len(got), ShouldEqual, 4)
-		So(len(got[0].Builders), ShouldEqual, 2)
-		So(got[0].StepAtFault.Step.Name, ShouldEqual, "test foo")
-		So(len(got[1].Builders), ShouldEqual, 1)
-		So(got[1].StepAtFault.Step.Name, ShouldEqual, "test bar")
-		So(len(got[2].Builders), ShouldEqual, 1)
-		So(got[2].StepAtFault.Step.Name, ShouldEqual, "test baz")
-		So(len(got[3].Builders), ShouldEqual, 2)
-		So(got[3].StepAtFault.Step.Name, ShouldEqual, "check build results|build results|chromeos.postsubmit.beaglebone_servo-postsubmit")
+		assert.Loosely(t, len(got), should.Equal(4))
+		assert.Loosely(t, len(got[0].Builders), should.Equal(2))
+		assert.Loosely(t, got[0].StepAtFault.Step.Name, should.Equal("test foo"))
+		assert.Loosely(t, len(got[1].Builders), should.Equal(1))
+		assert.Loosely(t, got[1].StepAtFault.Step.Name, should.Equal("test bar"))
+		assert.Loosely(t, len(got[2].Builders), should.Equal(1))
+		assert.Loosely(t, got[2].StepAtFault.Step.Name, should.Equal("test baz"))
+		assert.Loosely(t, len(got[3].Builders), should.Equal(2))
+		assert.Loosely(t, got[3].StepAtFault.Step.Name, should.Equal("check build results|build results|chromeos.postsubmit.beaglebone_servo-postsubmit"))
 	})
 }
 
 func TestSliceContains(t *testing.T) {
-	Convey("slice contains", t, func() {
+	ftt.Run("slice contains", t, func(t *ftt.Test) {
 		haystack := []string{"a", "b", "c"}
-		So(sliceContains(haystack, "a"), ShouldBeTrue)
-		So(sliceContains(haystack, "b"), ShouldBeTrue)
-		So(sliceContains(haystack, "c"), ShouldBeTrue)
-		So(sliceContains(haystack, "d"), ShouldBeFalse)
+		assert.Loosely(t, sliceContains(haystack, "a"), should.BeTrue)
+		assert.Loosely(t, sliceContains(haystack, "b"), should.BeTrue)
+		assert.Loosely(t, sliceContains(haystack, "c"), should.BeTrue)
+		assert.Loosely(t, sliceContains(haystack, "d"), should.BeFalse)
 	})
 }
 
 func TestZipUnzipData(t *testing.T) {
-	Convey("zip and unzip data", t, func() {
+	ftt.Run("zip and unzip data", t, func(t *ftt.Test) {
 		data := []byte("abcdef")
 		zippedData, err := zipData(data)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		unzippedData, err := unzipData(zippedData)
-		So(err, ShouldBeNil)
-		So(unzippedData, ShouldResemble, data)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, unzippedData, should.Resemble(data))
 	})
 }
 
 func TestGetFilterFuncForTree(t *testing.T) {
-	Convey("get filter func for tree", t, func() {
+	ftt.Run("get filter func for tree", t, func(t *ftt.Test) {
 		_, err := getFilterFuncForTree("android")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chromium")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chromium.gpu")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chromium.perf")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("ios")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chrome_browser_release")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chromium.clang")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("dawn")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("chromiumos")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = getFilterFuncForTree("another")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 

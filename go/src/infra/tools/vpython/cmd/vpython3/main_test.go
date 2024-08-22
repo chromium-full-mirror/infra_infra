@@ -16,10 +16,11 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/vpython/common"
 )
 
@@ -88,15 +89,15 @@ func setupExecutable(tb testing.TB, root string) {
 	}
 }
 
-func generateSpec(tb testing.TB, dir, ver string) string {
-	tb.Helper()
+func generateSpec(t *ftt.Test, dir, ver string) string {
+	t.Helper()
 
 	spec := filepath.Join(dir, "test.vpython")
 	f, err := os.Create(spec)
 	defer f.Close()
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil)
 	_, err = fmt.Fprintf(f, `python_version: "%s"`, ver)
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil)
 	return spec
 }
 
@@ -128,39 +129,39 @@ func TestPythonBasic(t *testing.T) {
 		t.Fatalf("failed setenv %s", err)
 	}
 
-	Convey("main", t, func() {
+	ftt.Run("main", t, func(t *ftt.Test) {
 		for _, ver := range []string{"3.8", "3.11"} {
 			spec := generateSpec(t, t.TempDir(), ver)
 
-			Convey(ver, func() {
-				Convey("ok", func() {
+			t.Run(ver, func(t *ftt.Test) {
+				t.Run("ok", func(t *ftt.Test) {
 					out, err := vpython(root, "-vpython-spec", spec, "-c", "print(123)").CombinedOutput()
-					So(string(out), ShouldEqualTrimSpace, "123")
-					So(err, ShouldBeNil)
+					assert.Loosely(t, strings.TrimSpace(string(out)), should.Equal("123"))
+					assert.Loosely(t, err, should.BeNil)
 				})
 
-				Convey("exit code", func() {
+				t.Run("exit code", func(t *ftt.Test) {
 					out, err := vpython(root, "-vpython-spec", spec, "-c", "exit(42)").CombinedOutput()
-					So(string(out), ShouldBeEmpty)
+					assert.Loosely(t, string(out), should.BeEmpty)
 					var exitErr *exec.ExitError
-					So(errors.As(err, &exitErr), ShouldBeTrue)
-					So(exitErr.ExitCode(), ShouldEqual, 42)
+					assert.Loosely(t, errors.As(err, &exitErr), should.BeTrue)
+					assert.Loosely(t, exitErr.ExitCode(), should.Equal(42))
 				})
 
-				Convey("preserve NoDefaultCurrentDirectoryInExePath state", func() {
+				t.Run("preserve NoDefaultCurrentDirectoryInExePath state", func(t *ftt.Test) {
 					cmd := vpython(root, "-vpython-spec", spec, "-c",
 						"import os; print(os.environ['NoDefaultCurrentDirectoryInExePath'])",
 					)
 					cmd.Env = append(cmd.Env, "NoDefaultCurrentDirectoryInExePath=SOMETHING")
 					out, err := cmd.CombinedOutput()
-					So(string(out), ShouldEqualTrimSpace, "SOMETHING")
-					So(err, ShouldBeNil)
+					assert.Loosely(t, strings.TrimSpace(string(out)), should.Equal("SOMETHING"))
+					assert.Loosely(t, err, should.BeNil)
 				})
 
-				Convey("help", func() {
+				t.Run("help", func(t *ftt.Test) {
 					out, err := vpython(root, "-vpython-spec", spec, "-help").CombinedOutput()
-					So(string(out), ShouldContainSubstring, "Usage of vpython:")
-					So(err, ShouldBeNil)
+					assert.Loosely(t, string(out), should.ContainSubstring("Usage of vpython:"))
+					assert.Loosely(t, err, should.BeNil)
 				})
 			})
 		}

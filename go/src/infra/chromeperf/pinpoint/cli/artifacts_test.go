@@ -14,17 +14,18 @@
 package cli
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCasHandling(t *testing.T) {
-	Convey("Parse components from CAS URL", t, func() {
+	ftt.Run("Parse components from CAS URL", t, func(t *ftt.Test) {
 		instance, hash, bytes, err := extractCasParamsFromURL("https://cas-viewer.appspot.com/projects/chrome-swarming/instances/default_instance/blobs/327d759be13ebe68392ab8deec4fba29243b96eea2cdc10a2a3b7eac44088123/176/tree")
-		So(err, ShouldBeNil)
-		So(string(instance), ShouldEqual, "projects/chrome-swarming/instances/default_instance")
-		So(string(hash), ShouldEqual, "327d759be13ebe68392ab8deec4fba29243b96eea2cdc10a2a3b7eac44088123")
-		So(int64(bytes), ShouldEqual, 176)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, string(instance), should.Equal("projects/chrome-swarming/instances/default_instance"))
+		assert.Loosely(t, string(hash), should.Equal("327d759be13ebe68392ab8deec4fba29243b96eea2cdc10a2a3b7eac44088123"))
+		assert.Loosely(t, int64(bytes), should.Equal(176))
 	})
 }

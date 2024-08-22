@@ -5,63 +5,64 @@
 package vmlab
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestConvertBuilderName(t *testing.T) {
-	Convey("success", t, func() {
+	ftt.Run("success", t, func(t *ftt.Test) {
 		want := "test_runner_gce"
 		got := ConvertBuilderName("test_runner")
-		So(got, ShouldEqual, want)
+		assert.Loosely(t, got, should.Equal(want))
 	})
 
-	Convey("success non prod", t, func() {
+	ftt.Run("success non prod", t, func(t *ftt.Test) {
 		want := "test_runner_gce-staging"
 		got := ConvertBuilderName("test_runner-staging")
-		So(got, ShouldEqual, want)
+		assert.Loosely(t, got, should.Equal(want))
 	})
 
-	Convey("ignore already converted", t, func() {
+	ftt.Run("ignore already converted", t, func(t *ftt.Test) {
 		want := "test_runner_gce"
 		got := ConvertBuilderName("test_runner_gce")
-		So(got, ShouldEqual, want)
+		assert.Loosely(t, got, should.Equal(want))
 	})
 
-	Convey("ignore unknown", t, func() {
+	ftt.Run("ignore unknown", t, func(t *ftt.Test) {
 		want := "trv3"
 		got := ConvertBuilderName("trv3")
-		So(got, ShouldEqual, want)
+		assert.Loosely(t, got, should.Equal(want))
 	})
 
-	Convey("ignore empty", t, func() {
+	ftt.Run("ignore empty", t, func(t *ftt.Test) {
 		want := ""
 		got := ConvertBuilderName("")
-		So(got, ShouldEqual, want)
+		assert.Loosely(t, got, should.Equal(want))
 	})
 }
 
 func TestEligible(t *testing.T) {
 	var boards = []string{"betty", "reven-vmtest", "amd64-generic"}
 	for _, board := range boards {
-		Convey("experiment not enabled", t, func() {
+		ftt.Run("experiment not enabled", t, func(t *ftt.Test) {
 			got := eligible(board, []string{"exp1", "exp2"})
-			So(got, ShouldBeFalse)
+			assert.Loosely(t, got, should.BeFalse)
 		})
 
-		Convey("experiment enabled", t, func() {
+		ftt.Run("experiment enabled", t, func(t *ftt.Test) {
 			got := eligible(board, []string{"exp1", "chromeos.cros_infra_config.vmlab.launch", "exp2"})
-			So(got, ShouldBeTrue)
+			assert.Loosely(t, got, should.BeTrue)
 		})
 	}
-	Convey("unsupported board", t, func() {
+	ftt.Run("unsupported board", t, func(t *ftt.Test) {
 		got := eligible("anotherboard", []string{"chromeos.cros_infra_config.vmlab.launch"})
-		So(got, ShouldBeFalse)
+		assert.Loosely(t, got, should.BeFalse)
 	})
 
-	Convey("unsupported board and no experiment", t, func() {
+	ftt.Run("unsupported board and no experiment", t, func(t *ftt.Test) {
 		got := eligible("anotherboard", nil)
-		So(got, ShouldBeFalse)
+		assert.Loosely(t, got, should.BeFalse)
 	})
 }

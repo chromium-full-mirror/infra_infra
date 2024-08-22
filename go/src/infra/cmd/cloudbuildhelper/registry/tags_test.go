@@ -5,26 +5,25 @@
 package registry
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestValidateTag(t *testing.T) {
 	t.Parallel()
 
-	Convey("Works", t, func() {
-		So(ValidateTag("good-TAG-.123_456"), ShouldBeNil)
-		So(ValidateTag(strings.Repeat("a", 128)), ShouldBeNil)
+	ftt.Run("Works", t, func(t *ftt.Test) {
+		assert.Loosely(t, ValidateTag("good-TAG-.123_456"), should.BeNil)
+		assert.Loosely(t, ValidateTag(strings.Repeat("a", 128)), should.BeNil)
 
-		So(ValidateTag(""), ShouldErrLike, "can't be empty")
-		So(ValidateTag("notascii\x02"), ShouldErrLike, "should match")
-		So(ValidateTag(":forbiddenchar"), ShouldErrLike, "should match")
-		So(ValidateTag(".noperiodinfront"), ShouldErrLike, "can't start with '.'")
-		So(ValidateTag("-nodashinfront"), ShouldErrLike, "can't start with '-'")
-		So(ValidateTag(strings.Repeat("a", 129)), ShouldErrLike, "can't have more than 128 characters")
+		assert.Loosely(t, ValidateTag(""), should.ErrLike("can't be empty"))
+		assert.Loosely(t, ValidateTag("notascii\x02"), should.ErrLike("should match"))
+		assert.Loosely(t, ValidateTag(":forbiddenchar"), should.ErrLike("should match"))
+		assert.Loosely(t, ValidateTag(".noperiodinfront"), should.ErrLike("can't start with '.'"))
+		assert.Loosely(t, ValidateTag("-nodashinfront"), should.ErrLike("can't start with '-'"))
+		assert.Loosely(t, ValidateTag(strings.Repeat("a", 129)), should.ErrLike("can't have more than 128 characters"))
 	})
 }
