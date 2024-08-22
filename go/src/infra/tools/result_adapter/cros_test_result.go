@@ -205,11 +205,10 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInvocation *artifactpb.TestInvocation) []*pb.StringPair {
 	tags := []*pb.StringPair{}
 
-	// For common tags.
-	// TODO(b/316624079): Support the "is_cft_run" field in the contract proto
-	tags = AppendTags(tags, "is_cft_run", "True")
-
 	if testInvocation != nil {
+		tags = AppendTags(tags, "is_cft_run", strconv.FormatBool(testInvocation.IsCftRun))
+		tags = AppendTags(tags, "is_trv2_run", strconv.FormatBool(testInvocation.IsTrv2Run))
+
 		dutTopology := testInvocation.GetDutTopology()
 		if dutTopology != nil {
 			// Populates the hostname by the DUT topology ID which captures

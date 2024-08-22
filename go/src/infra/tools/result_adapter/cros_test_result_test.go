@@ -183,7 +183,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("is_cft_run", "True"),
+						pbutil.StringPair("is_cft_run", "false"),
+						pbutil.StringPair("is_trv2_run", "false"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "False"),
@@ -209,7 +210,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("is_cft_run", "True"),
+						pbutil.StringPair("is_cft_run", "false"),
+						pbutil.StringPair("is_trv2_run", "false"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "False"),
@@ -306,9 +308,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 				{
 					TestId:   "power_Resume",
@@ -322,9 +321,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 			}
 
@@ -357,9 +353,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:    pb.TestStatus_PASS,
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 			}
 
@@ -394,9 +387,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 				{
 					TestId:   "power_Resume",
@@ -412,9 +402,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 			}
 
@@ -483,7 +470,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("hwid_sku", "katsu_MT8183_0B"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("is_cft_run", "True"),
+						pbutil.StringPair("is_cft_run", "true"),
+						pbutil.StringPair("is_trv2_run", "true"),
 						pbutil.StringPair("job_name", "bb-8818737803155059937-chromeos/general/Full"),
 						pbutil.StringPair("kernel_version", "5.4.151-16902-g93699f4e73de"),
 						pbutil.StringPair("label_pool", "DUT_POOL_QUOTA"),
@@ -546,7 +534,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos1-sinclair-callbox2-unit1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
-						pbutil.StringPair("is_cft_run", "True"),
+						pbutil.StringPair("is_cft_run", "false"),
+						pbutil.StringPair("is_trv2_run", "false"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
 						pbutil.StringPair("model", "nipperkin"),
 						pbutil.StringPair("multiduts", "True"),
@@ -601,9 +590,6 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:    pb.TestStatus_PASS,
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
-					Tags: SortTags([]*pb.StringPair{
-						pbutil.StringPair("is_cft_run", "True"),
-					}),
 				},
 			}
 

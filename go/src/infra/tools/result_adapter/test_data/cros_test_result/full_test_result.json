@@ -124,7 +124,9 @@
         },
         "project_tracker_metadata": {
             "bug_id": "1234"
-        }
+        },
+        "is_cft_run": true,
+        "is_trv2_run": true
     },
     "test_runs":[
         {
