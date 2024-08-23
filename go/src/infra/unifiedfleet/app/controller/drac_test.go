@@ -135,7 +135,7 @@ func TestCreateDrac(t *testing.T) {
 			}
 			resp, err := CreateDrac(ctx, drac)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac))
+			assert.Loosely(t, resp, should.Match(drac))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-25")
 			assert.Loosely(t, err, should.BeNil)
@@ -179,7 +179,7 @@ func TestCreateDrac(t *testing.T) {
 			}
 			resp, err := CreateDrac(ctx, drac2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac2))
+			assert.Loosely(t, resp, should.Match(drac2))
 
 			s, err := state.GetStateRecord(ctx, "dracs/drac-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -358,7 +358,7 @@ func TestUpdateDrac(t *testing.T) {
 			resp, err := UpdateDrac(ctx, drac, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(drac))
+			assert.Loosely(t, resp, should.Match(drac))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-5")
@@ -671,7 +671,7 @@ func TestUpdateDrac(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
 			resp, err := UpdateDrac(ctx, drac, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac))
+			assert.Loosely(t, resp, should.Match(drac))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-14")
@@ -1096,13 +1096,13 @@ func TestListDracs(t *testing.T) {
 		t.Run("List Dracs - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDracs(ctx, 5, "", "switch=switch-12", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dracsWithSwitch))
+			assert.Loosely(t, resp, should.Match(dracsWithSwitch))
 		})
 
 		t.Run("ListDracs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDracs(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs))
+			assert.Loosely(t, resp, should.Match(dracs))
 		})
 	})
 }
@@ -1123,7 +1123,7 @@ func TestBatchGetDracs(t *testing.T) {
 			resp, err := registration.BatchGetDracs(ctx, []string{"drac-batchGet-0", "drac-batchGet-1", "drac-batchGet-2", "drac-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get dracs  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetDracs(ctx, []string{"drac-batchGet-non-existing"})

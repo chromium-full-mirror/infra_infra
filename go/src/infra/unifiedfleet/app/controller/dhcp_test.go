@@ -33,7 +33,7 @@ func TestBatchGetDHCPs(t *testing.T) {
 			resp, err := configuration.BatchGetDHCPConfigs(ctx, []string{"dhcp-batchGet-0", "dhcp-batchGet-1", "dhcp-batchGet-2", "dhcp-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(dhcps))
+			assert.Loosely(t, resp, should.Match(dhcps))
 		})
 		t.Run("Batch get dhcps - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetDHCPConfigs(ctx, []string{"dhcp-batchGet-non-existing"})

@@ -15,7 +15,7 @@ import (
 
 func TestBotForDUT(t *testing.T) {
 	ftt.Run("empty dimensions", t, func(t *ftt.Test) {
-		assert.Loosely(t, BotForDUT("dut1", "", ""), should.Resemble(&swarmingv2.BotInfo{
+		assert.Loosely(t, BotForDUT("dut1", "", ""), should.Match(&swarmingv2.BotInfo{
 			BotId: "bot_dut1",
 			Dimensions: []*swarmingv2.StringListPair{
 				{Key: "dut_state", Value: []string{""}},
@@ -26,7 +26,7 @@ func TestBotForDUT(t *testing.T) {
 	})
 
 	ftt.Run("non-trivial dimensions with whitespace", t, func(t *ftt.Test) {
-		assert.Loosely(t, BotForDUT("dut1", "fake_state", "a: x, y ; b :z"), should.Resemble(&swarmingv2.BotInfo{
+		assert.Loosely(t, BotForDUT("dut1", "fake_state", "a: x, y ; b :z"), should.Match(&swarmingv2.BotInfo{
 			BotId: "bot_dut1",
 			Dimensions: []*swarmingv2.StringListPair{
 				{Key: "a", Value: []string{"x", "y"}},

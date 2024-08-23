@@ -25,7 +25,7 @@ func TestCreateDefaultWifi(t *testing.T) {
 			resp, err := CreateDefaultWifi(ctx, wifi)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(wifi))
+			assert.Loosely(t, resp, should.Match(wifi))
 		})
 		t.Run("Create new DefaultWifi - already existing", func(t *ftt.Test) {
 			w1 := &ufspb.DefaultWifi{Name: "pool1"}
@@ -83,7 +83,7 @@ func TestUpdateDefaultWifi(t *testing.T) {
 			resp, err := UpdateDefaultWifi(ctx, w2, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(w2))
+			assert.Loosely(t, resp, should.Match(w2))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "defaultwifis/zone_sfo36_os")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(2))

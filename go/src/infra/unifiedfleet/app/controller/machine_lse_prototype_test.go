@@ -43,7 +43,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 		t.Run("ListMachineLSEPrototypes - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEPrototypes(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototypes))
 		})
 	})
 }
@@ -57,7 +57,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 		t.Run("Delete machineLSEPrototype by existing ID with machinelse reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:                "machinelse-1",
@@ -65,7 +65,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 			}
 			mresp, merr := inventory.CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(machineLSE1))
+			assert.Loosely(t, mresp, should.Match(machineLSE1))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-1")
 			assert.Loosely(t, err, should.NotBeNil)
@@ -74,12 +74,12 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 			resp, cerr = configuration.GetMachineLSEPrototype(ctx, "machineLSEPrototype-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		})
 		t.Run("Delete machineLSEPrototype successfully by existing ID without references", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype2))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -108,7 +108,7 @@ func TestBatchGetMachineLSEPrototypes(t *testing.T) {
 			resp, err := configuration.BatchGetMachineLSEPrototypes(ctx, []string{"machinelseprototype-batchGet-0", "machinelseprototype-batchGet-1", "machinelseprototype-batchGet-2", "machinelseprototype-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get machine lse prototypes  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetMachineLSEPrototypes(ctx, []string{"machinelseprototype-batchGet-non-existing"})

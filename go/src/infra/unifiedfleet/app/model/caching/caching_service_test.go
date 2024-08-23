@@ -33,7 +33,7 @@ func TestCreateCachingService(t *testing.T) {
 			cs := mockCachingService("127.0.0.1")
 			resp, err := CreateCachingService(ctx, cs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cs))
+			assert.Loosely(t, resp, should.Match(cs))
 		})
 		t.Run("Create existing CachingService", func(t *ftt.Test) {
 			cs1 := mockCachingService("128.0.0.1")
@@ -56,7 +56,7 @@ func TestBatchCreateCachingServices(t *testing.T) {
 			cs := mockCachingService("128.0.0.1")
 			resp, err := BatchUpdateCachingServices(ctx, []*ufspb.CachingService{cs})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp[0], should.Resemble(cs))
+			assert.Loosely(t, resp[0], should.Match(cs))
 		})
 	})
 }
@@ -69,10 +69,10 @@ func TestGetCachingService(t *testing.T) {
 		t.Run("Get CachingService by existing name/ID", func(t *ftt.Test) {
 			resp, err := CreateCachingService(ctx, cs1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cs1))
+			assert.Loosely(t, resp, should.Match(cs1))
 			resp, err = GetCachingService(ctx, "cs-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cs1))
+			assert.Loosely(t, resp, should.Match(cs1))
 		})
 		t.Run("Get CachingService by non-existing name/ID", func(t *ftt.Test) {
 			resp, err := GetCachingService(ctx, "cs-2")
@@ -142,7 +142,7 @@ func TestListCachingServices(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cachingServices))
+			assert.Loosely(t, resp, should.Match(cachingServices))
 		})
 
 		t.Run("List CachingServices - listing with pagination", func(t *ftt.Test) {
@@ -150,12 +150,12 @@ func TestListCachingServices(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cachingServices[:3]))
+			assert.Loosely(t, resp, should.Match(cachingServices[:3]))
 
 			resp, _, err = ListCachingServices(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cachingServices[3:]))
+			assert.Loosely(t, resp, should.Match(cachingServices[3:]))
 		})
 	})
 }
