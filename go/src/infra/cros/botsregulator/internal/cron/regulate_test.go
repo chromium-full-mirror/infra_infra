@@ -35,12 +35,14 @@ func TestRegulate(t *testing.T) {
 		ctx = context.WithValue(ctx, clients.MockSwarmingClientKey, mockSwarming)
 
 		opts := &regulator.RegulatorOptions{
-			BPI:       "bpi.endpoint",
-			UFS:       "ufs.enpoint",
-			Hive:      "cloudbots",
-			CfID:      "cloudbots-dev",
-			Namespace: "os",
-			Swarming:  "swarming.endpoint",
+			BPI:        "bpi.endpoint",
+			UFS:        "ufs.enpoint",
+			Hive:       "cloudbots",
+			CfID:       "cloudbots-dev",
+			Namespace:  "os",
+			Swarming:   "swarming.endpoint",
+			Zone:       "ZONE_SFO36_OS",
+			BotConfigs: "skylab.py",
 		}
 
 		ctxWithNS := clients.SetUFSNamespace(ctx, "os")

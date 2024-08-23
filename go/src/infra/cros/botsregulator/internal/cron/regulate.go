@@ -35,7 +35,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	dbs, err := r.ListAllDroneBots(ctx, "skylab.py", "ZONE_SFO36_OS")
+	dbs, err := r.ListAllRunningBots(ctx)
 	if err != nil {
 		return err
 	}

@@ -95,12 +95,24 @@ func (r *regulator) ListAllSchedulingUnits(ctx context.Context) ([]*ufspb.Schedu
 	return sus, nil
 }
 
-// ListAllDroneBots returns list of running Drone Swarming bots.
-func (r *regulator) ListAllDroneBots(ctx context.Context, botConfig, ufsZone string) ([]*apipb.BotInfo, error) {
+// ListAllRunningBots returns list of running swarming bots belong to regulator botconfigs.
+func (r *regulator) ListAllRunningBots(ctx context.Context) ([]*apipb.BotInfo, error) {
+	var allBots []*apipb.BotInfo
+	for _, c := range r.botConfigs {
+		bots, err := r.listRunningBots(ctx, c, r.opts.Zone)
+		if err != nil {
+			return nil, err
+		}
+		allBots = append(allBots, bots...)
+	}
+	return allBots, nil
+}
+
+// listRunningBots returns running Swarming bots with given regulator botconfigs and zone.
+func (r *regulator) listRunningBots(ctx context.Context, botConfig, ufsZone string) ([]*apipb.BotInfo, error) {
 	cursor := ""
 	var bots []*apipb.BotInfo
 	for {
-		// TODO(b/328810743): The botsRequest dimensions should be derived from flag options to support Satlab flow.
 		resp, err := r.swarmingClient.ListBots(ctx, &apipb.BotsRequest{
 			Limit:  1000,
 			Cursor: cursor,
@@ -125,6 +137,7 @@ func (r *regulator) ListAllDroneBots(ctx context.Context, botConfig, ufsZone str
 			break
 		}
 	}
+	logging.Infof(ctx, "listRunningBots: botConfig: %s, ufsZone: %s, bots: %v\n", botConfig, ufsZone, len(bots))
 	return bots, nil
 }
 
