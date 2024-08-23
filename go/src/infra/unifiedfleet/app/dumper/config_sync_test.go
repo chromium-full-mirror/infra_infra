@@ -78,10 +78,10 @@ func TestSyncDeviceConfigs(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 
 				cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board1", "model1", ""))
-				assert.Loosely(t, cfg, should.Resemble(expectedConfigs[0]))
+				assert.Loosely(t, cfg, should.Match(expectedConfigs[0]))
 				assert.Loosely(t, err, should.BeNil)
 				cfg2, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board2", "model2", ""))
-				assert.Loosely(t, cfg2, should.Resemble(expectedConfigs[1]))
+				assert.Loosely(t, cfg2, should.Match(expectedConfigs[1]))
 				assert.Loosely(t, err, should.BeNil)
 			}
 		})

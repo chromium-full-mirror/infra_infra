@@ -103,44 +103,44 @@ func TestUpdateNetworkOpt(t *testing.T) {
 	})
 	ftt.Run("No vlan & ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "", input)
-		assert.Loosely(t, nwOpt, should.Resemble(input))
+		assert.Loosely(t, nwOpt, should.Match(input))
 	})
 	ftt.Run("Have vlan, no ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan1", "", nil)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Vlan: "vlan1",
 		}))
 	})
 	ftt.Run("Have vlan, no ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan2", "", input)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Vlan: "vlan2",
 			Nic:  "eth0",
 		}))
 	})
 	ftt.Run("no vlan, have ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "0.0.0.0", nil)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Ip: "0.0.0.0",
 		}))
 	})
 	ftt.Run("no vlan, have ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("", "0.0.0.0", input)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Ip:  "0.0.0.0",
 			Nic: "eth0",
 		}))
 	})
 	ftt.Run("have vlan, have ip, empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan1", "0.0.0.0", nil)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Ip:   "0.0.0.0",
 			Vlan: "vlan1",
 		}))
 	})
 	ftt.Run("have vlan, have ip, non-empty nwOpt", t, func(t *ftt.Test) {
 		nwOpt := updateNetworkOpt("vlan2", "0.0.0.0", input)
-		assert.Loosely(t, nwOpt, should.Resemble(&ufsAPI.NetworkOption{
+		assert.Loosely(t, nwOpt, should.Match(&ufsAPI.NetworkOption{
 			Ip:   "0.0.0.0",
 			Vlan: "vlan2",
 			Nic:  "eth0",
@@ -179,7 +179,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateMachineLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 		})
 
 		t.Run("Create new machineLSE - Invalid input nil", func(t *ftt.Test) {
@@ -266,7 +266,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE))
+			assert.Loosely(t, resp, should.Match(machineLSE))
 		})
 
 		t.Run("Update existing machineLSEs with states", func(t *ftt.Test) {
@@ -290,7 +290,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateMachineLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE))
+			assert.Loosely(t, resp, should.Match(machineLSE))
 			s, err := state.GetStateRecord(ctx, "hosts/machinelse-state")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_DEPLOYED_TESTING))
@@ -349,7 +349,7 @@ func TestGetMachineLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetMachineLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 		})
 		t.Run("Get machineLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSERequest{
@@ -513,7 +513,7 @@ func TestUpdateVM(t *testing.T) {
 			resp, err := tf.Fleet.UpdateVM(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
 			resp.UpdateTime = nil
-			assert.Loosely(t, resp, should.Resemble(vm))
+			assert.Loosely(t, resp, should.Match(vm))
 		})
 
 		t.Run("Update existing VMs with states", func(t *ftt.Test) {
@@ -760,7 +760,7 @@ func TestListVMs(t *testing.T) {
 			})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetVms(), should.HaveLength(2))
-			assert.Loosely(t, ufsAPI.ParseResources(resp.GetVms(), "Name"), should.Resemble([]string{"vm-list-1", "vm-list-2"}))
+			assert.Loosely(t, ufsAPI.ParseResources(resp.GetVms(), "Name"), should.Match([]string{"vm-list-1", "vm-list-2"}))
 		})
 	})
 }
@@ -795,7 +795,7 @@ func TestListMachineLSEs(t *testing.T) {
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.MachineLSEs, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp.MachineLSEs, should.Match(machineLSEs))
 		})
 
 		t.Run("ListMachineLSEs - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -822,7 +822,7 @@ func TestListMachineLSEs(t *testing.T) {
 			}
 			resp, err := tf.Fleet.ListMachineLSEs(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.MachineLSEs, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp.MachineLSEs, should.Match(machineLSEs))
 		})
 	})
 }
@@ -977,7 +977,7 @@ func TestCreateRackLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 		})
 
 		t.Run("Create existing rackLSEs", func(t *ftt.Test) {
@@ -1043,13 +1043,13 @@ func TestUpdateRackLSE(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 			ureq := &ufsAPI.UpdateRackLSERequest{
 				RackLSE: rackLSE2,
 			}
 			resp, err = tf.Fleet.UpdateRackLSE(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE2))
+			assert.Loosely(t, resp, should.Match(rackLSE2))
 		})
 
 		t.Run("Update non-existing rackLSEs", func(t *ftt.Test) {
@@ -1108,14 +1108,14 @@ func TestGetRackLSE(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(rackLSE1))
+		assert.Loosely(t, resp, should.Match(rackLSE1))
 		t.Run("Get rackLSE by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-1"),
 			}
 			resp, err := tf.Fleet.GetRackLSE(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 		})
 		t.Run("Get rackLSE by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSERequest{
@@ -1177,7 +1177,7 @@ func TestListRackLSEs(t *testing.T) {
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.RackLSEs, should.Resemble(rackLSEs))
+			assert.Loosely(t, resp.RackLSEs, should.Match(rackLSEs))
 		})
 
 		t.Run("ListRackLSEs - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1204,7 +1204,7 @@ func TestListRackLSEs(t *testing.T) {
 			}
 			resp, err := tf.Fleet.ListRackLSEs(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.RackLSEs, should.Resemble(rackLSEs))
+			assert.Loosely(t, resp.RackLSEs, should.Match(rackLSEs))
 		})
 	})
 }
@@ -1222,7 +1222,7 @@ func TestDeleteRackLSE(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateRackLSE(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(rackLSE1))
+		assert.Loosely(t, resp, should.Match(rackLSE1))
 		t.Run("Delete rackLSE by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.DeleteRackLSERequest{
 				Name: util.AddPrefix(util.RackLSECollection, "rackLSE-1"),
@@ -1287,7 +1287,7 @@ func TestGetMachineLSEDeployment(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetMachineLSEDeployment(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dr1[0]))
+			assert.Loosely(t, resp, should.Match(dr1[0]))
 		})
 		t.Run("Get machine lse deployment record by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEDeploymentRequest{
@@ -1333,7 +1333,7 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateSchedulingUnit(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(su))
+			assert.Loosely(t, resp, should.Match(su))
 		})
 
 		t.Run("Create new SchedulingUnit with nil entity", func(t *ftt.Test) {
@@ -1376,7 +1376,7 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateSchedulingUnit(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(su1))
+			assert.Loosely(t, resp, should.Match(su1))
 		})
 
 		t.Run("Update SchedulingUnit - Invalid input nil", func(t *ftt.Test) {
@@ -1430,7 +1430,7 @@ func TestGetSchedulingUnit(t *testing.T) {
 			resp, _ := tf.Fleet.GetSchedulingUnit(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			assert.Loosely(t, resp, should.Resemble(su))
+			assert.Loosely(t, resp, should.Match(su))
 		})
 
 		t.Run("Get SchedulingUnit - Invalid input empty name", func(t *ftt.Test) {
@@ -1528,7 +1528,7 @@ func TestListSchedulingUnits(t *testing.T) {
 			resp, err := tf.Fleet.ListSchedulingUnits(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.SchedulingUnits, should.Resemble(schedulingUnits))
+			assert.Loosely(t, resp.SchedulingUnits, should.Match(schedulingUnits))
 		})
 
 		t.Run("ListSchedulingUnits - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1642,7 +1642,7 @@ func TestGetDeviceData(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			resp.GetSchedulingUnit().Name = util.RemovePrefix(resp.GetSchedulingUnit().Name)
-			assert.Loosely(t, resp.GetSchedulingUnit(), should.Resemble(su))
+			assert.Loosely(t, resp.GetSchedulingUnit(), should.Match(su))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT))
 		})
 
@@ -1653,8 +1653,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machinelse))
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machine))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Match(machinelse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Match(machine))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 		})
 
@@ -1683,8 +1683,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machineOsLse))
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machineOs))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Match(machineOsLse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Match(machineOs))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 
 			// Should not exist in Browser namespace
@@ -1701,8 +1701,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Resemble(machinelse))
-			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Resemble(machine))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetLabConfig(), should.Match(machinelse))
+			assert.Loosely(t, resp.GetChromeOsDeviceData().GetMachine(), should.Match(machine))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE))
 		})
 
@@ -1713,8 +1713,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Match(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Match(adm))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 		})
 
@@ -1743,8 +1743,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Match(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Match(adm))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 
 			// Should not exist in Browser namespace
@@ -1761,8 +1761,8 @@ func TestGetDeviceData(t *testing.T) {
 			resp, err := tf.Fleet.GetDeviceData(osCtx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Resemble(admlse))
-			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Resemble(adm))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetLabConfig(), should.Match(admlse))
+			assert.Loosely(t, resp.GetAttachedDeviceData().GetMachine(), should.Match(adm))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE))
 		})
 
@@ -1876,7 +1876,7 @@ func TestGetDUTsForLabstation(t *testing.T) {
 
 		resp, err := tf.Fleet.GetDUTsForLabstation(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&ufsAPI.GetDUTsForLabstationResponse{
+		assert.Loosely(t, resp, should.Match(&ufsAPI.GetDUTsForLabstationResponse{
 			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
 				{
 					Hostname: "fake-labstation",
@@ -1892,7 +1892,7 @@ func TestGetDUTsForLabstation(t *testing.T) {
 
 		resp, err = tf.Fleet.GetDUTsForLabstation(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&ufsAPI.GetDUTsForLabstationResponse{
+		assert.Loosely(t, resp, should.Match(&ufsAPI.GetDUTsForLabstationResponse{
 			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
 				{
 					Hostname: "fake-labstation",

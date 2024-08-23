@@ -34,7 +34,7 @@ func TestCreateRackLSE(t *testing.T) {
 		t.Run("Create new rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 		})
 		t.Run("Create existing rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
@@ -62,11 +62,11 @@ func TestUpdateRackLSE(t *testing.T) {
 		t.Run("Update existing rackLSE", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 
 			resp, err = UpdateRackLSE(ctx, rackLSE2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE2))
+			assert.Loosely(t, resp, should.Match(rackLSE2))
 		})
 		t.Run("Update non-existing rackLSE", func(t *ftt.Test) {
 			resp, err := UpdateRackLSE(ctx, rackLSE3)
@@ -91,10 +91,10 @@ func TestGetRackLSE(t *testing.T) {
 		t.Run("Get rackLSE by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 			resp, err = GetRackLSE(ctx, "rackLSE-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 		})
 		t.Run("Get rackLSE by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRackLSE(ctx, "rackLSE-2")
@@ -135,7 +135,7 @@ func TestListRackLSEs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEs))
+			assert.Loosely(t, resp, should.Match(rackLSEs))
 		})
 
 		t.Run("List rackLSEs - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListRackLSEs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEs[:3]))
+			assert.Loosely(t, resp, should.Match(rackLSEs[:3]))
 
 			resp, _, err = ListRackLSEs(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEs[3:]))
+			assert.Loosely(t, resp, should.Match(rackLSEs[3:]))
 		})
 	})
 }
@@ -161,7 +161,7 @@ func TestDeleteRackLSE(t *testing.T) {
 		t.Run("Delete rackLSE by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 			err := DeleteRackLSE(ctx, "rackLSE-1")
 			assert.Loosely(t, err, should.BeNil)
 			res, err := GetRackLSE(ctx, "rackLSE-1")
@@ -192,13 +192,13 @@ func TestBatchUpdateRackLSEs(t *testing.T) {
 			rackLSE1 := mockRackLSE(fmt.Sprintf("rackLSE-%d", i))
 			resp, err := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE1))
+			assert.Loosely(t, resp, should.Match(rackLSE1))
 			rackLSEs = append(rackLSEs, resp)
 		}
 		t.Run("BatchUpdate all rackLSEs", func(t *ftt.Test) {
 			resp, err := BatchUpdateRackLSEs(ctx, rackLSEs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEs))
+			assert.Loosely(t, resp, should.Match(rackLSEs))
 		})
 		t.Run("BatchUpdate existing and invalid rackLSEs", func(t *ftt.Test) {
 			rackLSE5 := mockRackLSE("")
@@ -226,7 +226,7 @@ func TestQueryRackLSEByPropertyName(t *testing.T) {
 		}
 		resp, cerr := CreateRackLSE(ctx, rackLSE1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(rackLSE1))
+		assert.Loosely(t, resp, should.Match(rackLSE1))
 
 		rackLSEs := make([]*ufspb.RackLSE, 0, 1)
 		rackLSEs = append(rackLSEs, rackLSE1)
@@ -236,7 +236,7 @@ func TestQueryRackLSEByPropertyName(t *testing.T) {
 		t.Run("Query By existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "rack_ids", "rack-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEs))
+			assert.Loosely(t, resp, should.Match(rackLSEs))
 		})
 		t.Run("Query By non-existing Rack", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "rack_ids", "rack-5", false)
@@ -246,7 +246,7 @@ func TestQueryRackLSEByPropertyName(t *testing.T) {
 		t.Run("Query By existing RackLsePrototype keysonly", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "racklse_prototype_id", "rackLsePrototype-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dummyrackLSEs))
+			assert.Loosely(t, resp, should.Match(dummyrackLSEs))
 		})
 		t.Run("Query By non-existing RackLsePrototype", func(t *ftt.Test) {
 			resp, err := QueryRackLSEByPropertyName(ctx, "racklse_prototype_id", "rackLsePrototype-2", true)

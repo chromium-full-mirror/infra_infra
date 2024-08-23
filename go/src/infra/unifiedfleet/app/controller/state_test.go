@@ -44,33 +44,33 @@ func TestGetState(t *testing.T) {
 		t.Run("GetState for a browser machine with default namespace context", func(t *ftt.Test) {
 			res, err := GetState(ctx, "machine/browser-machine-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(bm1))
+			assert.Loosely(t, res, should.Match(bm1))
 		})
 
 		t.Run("GetState for a os machine with default namespace context", func(t *ftt.Test) {
 			res, err := GetState(ctx, "machine/os-machine-1")
 			assert.Loosely(t, err, should.BeNil)
 			// TODO(eshwarn): change this check when fall back read is removed
-			assert.Loosely(t, res, should.Resemble(os1Serving))
+			assert.Loosely(t, res, should.Match(os1Serving))
 			res, err = GetState(ctx, "machine/os-machine-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(os2Registered))
+			assert.Loosely(t, res, should.Match(os2Registered))
 			res, err = GetState(ctx, "machine/os-machine-3")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(os3Serving))
+			assert.Loosely(t, res, should.Match(os3Serving))
 		})
 
 		t.Run("GetState for a os machine with os namespace context", func(t *ftt.Test) {
 			res, err := GetState(osCtx, "machine/os-machine-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(os1Serving))
+			assert.Loosely(t, res, should.Match(os1Serving))
 			res, err = GetState(osCtx, "machine/os-machine-2")
 			assert.Loosely(t, err, should.BeNil)
 			// TODO(eshwarn): change this check when fall back read is removed
-			assert.Loosely(t, res, should.Resemble(os2Registered))
+			assert.Loosely(t, res, should.Match(os2Registered))
 			res, err = GetState(osCtx, "machine/os-machine-3")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(os3Serving))
+			assert.Loosely(t, res, should.Match(os3Serving))
 		})
 	})
 }
@@ -94,7 +94,7 @@ func TestUpdateState(t *testing.T) {
 			}
 			res, err := UpdateState(osCtx, sr)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(sr))
+			assert.Loosely(t, res, should.Match(sr))
 
 			res, err = state.GetStateRecord(osCtx, "machines/os-machine-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -121,7 +121,7 @@ func TestUpdateState(t *testing.T) {
 			}
 			res, err := UpdateState(osCtx, sr)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(sr))
+			assert.Loosely(t, res, should.Match(sr))
 
 			res, err = state.GetStateRecord(osCtx, "machines/os-machine-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -186,7 +186,7 @@ func TestUpdateState(t *testing.T) {
 			}
 			res, err := UpdateState(atlPermsCtx, sr)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(sr))
+			assert.Loosely(t, res, should.Match(sr))
 
 			res, err = state.GetStateRecord(atlPermsCtx, "machinelses/os-machine-4")
 			assert.Loosely(t, err, should.BeNil)

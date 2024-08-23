@@ -234,7 +234,7 @@ func TestListAssets(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets))
+			assert.Loosely(t, resp, should.Match(assets))
 		})
 
 		t.Run("List assets - listing with pagination", func(t *ftt.Test) {
@@ -242,12 +242,12 @@ func TestListAssets(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[:3]))
+			assert.Loosely(t, resp, should.Match(assets[:3]))
 
 			resp, _, err = ListAssets(ctx, 7, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[3:]))
+			assert.Loosely(t, resp, should.Match(assets[3:]))
 		})
 	})
 }
@@ -323,13 +323,13 @@ func TestListAssetsACL(t *testing.T) {
 			resp, nextPageToken, err := ListAssetsACL(ctxBat, 3, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[:3]))
+			assert.Loosely(t, resp, should.Match(assets[:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListAssetsACL(ctxBat, 100, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[3:10]))
+			assert.Loosely(t, resp, should.Match(assets[3:10]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List assets - happy path, two realms", func(t *ftt.Test) {
@@ -337,19 +337,19 @@ func TestListAssetsACL(t *testing.T) {
 			resp, nextPageToken, err := ListAssetsACL(ctxSpider, 3, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[:3]))
+			assert.Loosely(t, resp, should.Match(assets[:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListAssetsACL(ctxSpider, 7, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[3:10]))
+			assert.Loosely(t, resp, should.Match(assets[3:10]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListAssetsACL(ctxSpider, 100, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[10:]))
+			assert.Loosely(t, resp, should.Match(assets[10:]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List assets - happy path, two realms, zone filter", func(t *ftt.Test) {
@@ -357,13 +357,13 @@ func TestListAssetsACL(t *testing.T) {
 			resp, nextPageToken, err := ListAssetsACL(ctxSpider, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[:3]))
+			assert.Loosely(t, resp, should.Match(assets[:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListAssetsACL(ctxSpider, 100, nextPageToken, map[string][]interface{}{"zone": {"ZONE_CHROMEOS4"}}, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets[3:10]))
+			assert.Loosely(t, resp, should.Match(assets[3:10]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List assets - happy path, one realms, wrong zone filter", func(t *ftt.Test) {
@@ -386,14 +386,14 @@ func TestBatchUpdateAssets(t *testing.T) {
 			asset := mockAsset(fmt.Sprintf("C0000%d0", i), "eve", fmt.Sprintf("cros4-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateAsset(ctx, asset)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(asset))
+			assert.Loosely(t, resp, should.Match(asset))
 			asset.Model = "krane"
 			assets = append(assets, resp)
 		}
 		t.Run("BatchUpdate all assets", func(t *ftt.Test) {
 			resp, err := BatchUpdateAssets(ctx, assets)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(assets))
+			assert.Loosely(t, resp, should.Match(assets))
 		})
 		t.Run("BatchUpdate existing and invalid assets", func(t *ftt.Test) {
 			asset := mockAsset("", "krane", "cros4-row3-rack5-host4", ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
@@ -426,7 +426,7 @@ func TestGetAllAssets(t *testing.T) {
 			resp, err := GetAllAssets(ctx)
 			assert.Loosely(t, len(resp), should.Equal(10))
 			assert.Loosely(t, len(assets), should.Equal(10))
-			assert.Loosely(t, assets, should.Resemble(resp))
+			assert.Loosely(t, assets, should.Match(resp))
 			assert.Loosely(t, err, should.BeNil)
 		})
 	})
@@ -580,37 +580,37 @@ func TestQueryAssetByPropertyName(t *testing.T) {
 			resp, err := QueryAssetByPropertyName(ctx, "zone", "ZONE_CHROMEOS6", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(3))
-			assert.Loosely(t, resp[0], should.Resemble(assets[0])) // DUT A1
-			assert.Loosely(t, resp[1], should.Resemble(assets[1])) // Labstation B1
-			assert.Loosely(t, resp[2], should.Resemble(assets[2])) // Servo S1
+			assert.Loosely(t, resp[0], should.Match(assets[0])) // DUT A1
+			assert.Loosely(t, resp[1], should.Match(assets[1])) // Labstation B1
+			assert.Loosely(t, resp[2], should.Match(assets[2])) // Servo S1
 		})
 		t.Run("QueryAssetByPropertyName - phase", func(t *ftt.Test) {
 			resp, err := QueryAssetByPropertyName(ctx, "phase", "14", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(2))
-			assert.Loosely(t, resp[0], should.Resemble(assets[0])) // DUT A1
-			assert.Loosely(t, resp[1], should.Resemble(assets[3])) // DUT A2
+			assert.Loosely(t, resp[0], should.Match(assets[0])) // DUT A1
+			assert.Loosely(t, resp[1], should.Match(assets[3])) // DUT A2
 		})
 		t.Run("QueryAssetByPropertyName - tags", func(t *ftt.Test) {
 			resp, err := QueryAssetByPropertyName(ctx, "tags", "servo v4", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(2))
-			assert.Loosely(t, resp[0], should.Resemble(assets[2])) // Servo S1
-			assert.Loosely(t, resp[1], should.Resemble(assets[5])) // Servo S2
+			assert.Loosely(t, resp[0], should.Match(assets[2])) // Servo S1
+			assert.Loosely(t, resp[1], should.Match(assets[5])) // Servo S2
 		})
 		t.Run("QueryAssetByPropertyName - model", func(t *ftt.Test) {
 			resp, err := QueryAssetByPropertyName(ctx, "model", "test", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(2))
-			assert.Loosely(t, resp[0], should.Resemble(assets[0])) // DUT A1
-			assert.Loosely(t, resp[1], should.Resemble(assets[3])) // DUT A2
+			assert.Loosely(t, resp[0], should.Match(assets[0])) // DUT A1
+			assert.Loosely(t, resp[1], should.Match(assets[3])) // DUT A2
 		})
 		t.Run("QueryAssetByPropertyName - build_target", func(t *ftt.Test) {
 			resp, err := QueryAssetByPropertyName(ctx, "build_target", "labnotest", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(2))
-			assert.Loosely(t, resp[0], should.Resemble(assets[1])) // Labstation B1
-			assert.Loosely(t, resp[1], should.Resemble(assets[4])) // Labstation B2
+			assert.Loosely(t, resp[0], should.Match(assets[1])) // Labstation B1
+			assert.Loosely(t, resp[1], should.Match(assets[4])) // Labstation B2
 		})
 	})
 }

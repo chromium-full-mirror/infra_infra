@@ -304,7 +304,7 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 		runner.benchmark = "benchmark"
 		actual, _ := getTelemetryBatchExperiments(&runner, nil, p)
 		expected := []telemetryBatchExperiment{}
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 
 	ftt.Run("A valid experiment is generated from only CLI flags", t, func(t *ftt.Test) {
@@ -325,7 +325,7 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				Measurement: "measurement",
 			},
 		}
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 
 	ftt.Run("A valid experiment is generated from a single-run preset and CLI flags", t, func(t *ftt.Test) {
@@ -351,7 +351,7 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				ExtraArgs:   []string{"arg1"},
 			},
 		}
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 
 	ftt.Run("A valid experiment is generated from a multi-run preset and CLI flags", t, func(t *ftt.Test) {
@@ -393,6 +393,6 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				Measurement: "LCP",
 			},
 		}
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 }
