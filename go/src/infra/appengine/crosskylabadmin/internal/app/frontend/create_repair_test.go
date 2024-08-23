@@ -9,10 +9,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/testing/protocmp"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
@@ -526,8 +526,8 @@ func TestGetRolloutConfigSmokeTest(t *testing.T) {
 func TestCreateBuildbucketTask(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("test create buildbucket task", t, func() {
+	ftt.Run("test create buildbucket task", t, func(t *ftt.Test) {
 		_, err := createBuildbucketTask(ctx, nil, createBuildbucketTaskRequest{taskName: "e"})
-		So(err, ShouldErrLike, "unsupported")
+		assert.Loosely(t, err, should.ErrLike("unsupported"))
 	})
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -20,7 +21,7 @@ import (
 func TestSetSatlabStableVersion(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	_, sErr := tf.Inventory.SetSatlabStableVersion(ctx, &fleet.SetSatlabStableVersionRequest{
@@ -54,7 +55,7 @@ func TestSetSatlabStableVersion(t *testing.T) {
 func TestDeleteSatlabStableVersion(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	_, sErr := tf.Inventory.SetSatlabStableVersion(ctx, &fleet.SetSatlabStableVersionRequest{

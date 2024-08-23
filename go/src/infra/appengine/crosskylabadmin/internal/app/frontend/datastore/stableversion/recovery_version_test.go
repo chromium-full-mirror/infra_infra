@@ -10,8 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 )
 
@@ -33,8 +35,8 @@ func TestVersions(t *testing.T) {
 	ctx := context.Background()
 	ctx = memory.Use(ctx)
 
-	Convey("StableVersion datastore", t, func() {
-		Convey("Good cases", func() {
+	ftt.Run("StableVersion datastore", t, func(t *ftt.Test) {
+		t.Run("Good cases", func(t *ftt.Test) {
 			board := "my-board"
 			model := "my-model"
 			board2 := "yours-board"
@@ -44,58 +46,58 @@ func TestVersions(t *testing.T) {
 			version2 := fakeVersion(2, board2, model2, "pool1")
 
 			item, err := FindVersion(ctx, board, model, pools)
-			So(err, ShouldNotBeNil)
-			So(item, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, item, should.BeNil)
 
 			err = WriteVersions(ctx, []*lab_platform.StableVersion{version1, version2})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Find version1 without pools.
 			item, err = FindVersion(ctx, board, model, nil)
-			So(err, ShouldBeNil)
-			So(item.OsVersion, ShouldEqual, version1.OsVersion)
-			So(item.OsVersion, ShouldNotEqual, version2.OsVersion)
-			So(item.OsImagePath, ShouldEqual, version1.OsImagePath)
-			So(item.FirmwareRoVersion, ShouldEqual, version1.FirmwareRoVersion)
-			So(item.FirmwareRoImagePath, ShouldEqual, version1.FirmwareRoImagePath)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, item.OsVersion, should.Equal(version1.OsVersion))
+			assert.Loosely(t, item.OsVersion, should.NotEqual(version2.OsVersion))
+			assert.Loosely(t, item.OsImagePath, should.Equal(version1.OsImagePath))
+			assert.Loosely(t, item.FirmwareRoVersion, should.Equal(version1.FirmwareRoVersion))
+			assert.Loosely(t, item.FirmwareRoImagePath, should.Equal(version1.FirmwareRoImagePath))
 
 			// Find version1 as default when request with pools.
 			item, err = FindVersion(ctx, board, model, pools)
-			So(err, ShouldBeNil)
-			So(item.OsVersion, ShouldEqual, version1.OsVersion)
-			So(item.OsVersion, ShouldNotEqual, version2.OsVersion)
-			So(item.OsImagePath, ShouldEqual, version1.OsImagePath)
-			So(item.FirmwareRoVersion, ShouldEqual, version1.FirmwareRoVersion)
-			So(item.FirmwareRoImagePath, ShouldEqual, version1.FirmwareRoImagePath)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, item.OsVersion, should.Equal(version1.OsVersion))
+			assert.Loosely(t, item.OsVersion, should.NotEqual(version2.OsVersion))
+			assert.Loosely(t, item.OsImagePath, should.Equal(version1.OsImagePath))
+			assert.Loosely(t, item.FirmwareRoVersion, should.Equal(version1.FirmwareRoVersion))
+			assert.Loosely(t, item.FirmwareRoImagePath, should.Equal(version1.FirmwareRoImagePath))
 
 			// Find version2 with by a pool.
 			item, err = FindVersion(ctx, board2, model2, pools)
-			So(err, ShouldBeNil)
-			So(item.OsVersion, ShouldNotEqual, version1.OsVersion)
-			So(item.OsVersion, ShouldEqual, version2.OsVersion)
-			So(item.OsImagePath, ShouldEqual, version2.OsImagePath)
-			So(item.FirmwareRoVersion, ShouldEqual, version2.FirmwareRoVersion)
-			So(item.FirmwareRoImagePath, ShouldEqual, version2.FirmwareRoImagePath)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, item.OsVersion, should.NotEqual(version1.OsVersion))
+			assert.Loosely(t, item.OsVersion, should.Equal(version2.OsVersion))
+			assert.Loosely(t, item.OsImagePath, should.Equal(version2.OsImagePath))
+			assert.Loosely(t, item.FirmwareRoVersion, should.Equal(version2.FirmwareRoVersion))
+			assert.Loosely(t, item.FirmwareRoImagePath, should.Equal(version2.FirmwareRoImagePath))
 		})
-		Convey("key ignores cases", func() {
+		t.Run("key ignores cases", func(t *ftt.Test) {
 			board := "my1-Board"
 			model := "my1-Model"
 			version := fakeVersion(10, strings.ToLower(board), strings.ToLower(model), "")
 
 			item, err := FindVersion(ctx, board, model, nil)
-			So(err, ShouldNotBeNil)
-			So(item, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, item, should.BeNil)
 
 			err = WriteVersions(ctx, []*lab_platform.StableVersion{version})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Find version1 without pools.
 			item, err = FindVersion(ctx, board, model, nil)
-			So(err, ShouldBeNil)
-			So(item.OsVersion, ShouldEqual, version.OsVersion)
-			So(item.OsImagePath, ShouldEqual, version.OsImagePath)
-			So(item.FirmwareRoVersion, ShouldEqual, version.FirmwareRoVersion)
-			So(item.FirmwareRoImagePath, ShouldEqual, version.FirmwareRoImagePath)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, item.OsVersion, should.Equal(version.OsVersion))
+			assert.Loosely(t, item.OsImagePath, should.Equal(version.OsImagePath))
+			assert.Loosely(t, item.FirmwareRoVersion, should.Equal(version.FirmwareRoVersion))
+			assert.Loosely(t, item.FirmwareRoImagePath, should.Equal(version.FirmwareRoImagePath))
 		})
 	})
 }

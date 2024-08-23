@@ -11,9 +11,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/data/strpair"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -28,7 +30,7 @@ const repairLabstationQ = "repair-labstations"
 const auditQ = "audit-bots"
 
 func TestFlattenAndDuplicateBots(t *testing.T) {
-	Convey("zero bots", t, func() {
+	ftt.Run("zero bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
@@ -37,12 +39,12 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		).AnyTimes().Return([]*swarmingv2.BotInfo{}, nil)
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
-		So(bots, ShouldBeEmpty)
+		assert.Loosely(t, bots, should.BeEmpty)
 	})
 
-	Convey("multiple bots", t, func() {
+	ftt.Run("multiple bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
@@ -55,12 +57,12 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		).AnyTimes().Return(sbots, nil)
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
-		So(bots, ShouldHaveLength, 2)
+		assert.Loosely(t, bots, should.HaveLength(2))
 	})
 
-	Convey("duplicated bots", t, func() {
+	ftt.Run("duplicated bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 
@@ -73,13 +75,13 @@ func TestFlattenAndDuplicateBots(t *testing.T) {
 		).AnyTimes().Return(sbots, nil)
 
 		bots, err := tf.MockSwarming.ListAliveBotsInPool(tf.C, config.Get(tf.C).Swarming.BotPool, strpair.Map{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		bots = flattenAndDedpulicateBots([][]*swarmingv2.BotInfo{bots})
-		So(bots, ShouldHaveLength, 1)
+		assert.Loosely(t, bots, should.HaveLength(1))
 	})
 }
 func TestPushBotsForAdminTasks(t *testing.T) {
-	Convey("Handling 4 different state of cros bots", t, func() {
+	ftt.Run("Handling 4 different state of cros bots", t, func(t *ftt.Test) {
 		bot1 := BotForDUT("dut_1", "needs_repair", "label-os_type:OS_TYPE_CROS;id:id1")
 		bot2 := BotForDUT("dut_2", "repair_failed", "label-os_type:OS_TYPE_CROS;id:id2")
 		bot3 := BotForDUT("dut_3", "needs_reset", "label-os_type:OS_TYPE_JETSTREAM;id:id3")
@@ -96,7 +98,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 		validateTasksInQueue := func(tasks tq.QueueData, qKey string, qPath string, botIDs []string) {
 			fmt.Println(tasks)
 			repairTasks, ok := tasks[qKey]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 			repairPaths := appendPaths(repairTasks)
 			var expectedPaths []string
 			for _, botID := range botIDs {
@@ -104,16 +106,16 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			}
 			sort.Strings(repairPaths)
 			sort.Strings(expectedPaths)
-			So(repairPaths, ShouldResemble, expectedPaths)
+			assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
 		}
 		tf, validate := newTestFixture(t)
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
 		tqt.CreateQueue(repairQ)
 
-		So(tf.MockKarte, ShouldNotBeNil)
+		assert.Loosely(t, tf.MockKarte, should.NotBeNil)
 
-		Convey("run needs_repair status", func() {
+		t.Run("run needs_repair status", func(t *ftt.Test) {
 			tqt.ResetTasks()
 			tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(&metrics.QueryResult{
 				Actions:   nil,
@@ -129,13 +131,13 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				TargetDutState: fleet.DutState_NeedsRepair,
 			}
 			res, err := tf.Tracker.PushBotsForAdminTasks(tf.C, &request)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
 
 			tasks := tqt.GetScheduledTasks()
 			validateTasksInQueue(tasks, repairQ, "cros_repair", []string{"id1", "su_id1"})
 		})
-		Convey("run only for repair_failed status", func() {
+		t.Run("run only for repair_failed status", func(t *ftt.Test) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
@@ -147,13 +149,13 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				TargetDutState: fleet.DutState_RepairFailed,
 			}
 			res, err := tf.Tracker.PushBotsForAdminTasks(tf.C, &request)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
 
 			tasks := tqt.GetScheduledTasks()
 			validateTasksInQueue(tasks, repairQ, "cros_repair", []string{"id2"})
 		})
-		Convey("run only for needs_manual_repair status", func() {
+		t.Run("run only for needs_manual_repair status", func(t *ftt.Test) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(),
@@ -165,13 +167,13 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				TargetDutState: fleet.DutState_NeedsManualRepair,
 			}
 			res, err := tf.Tracker.PushBotsForAdminTasks(tf.C, &request)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
 
 			tasks := tqt.GetScheduledTasks()
 			validateTasksInQueue(tasks, repairQ, "cros_repair", []string{"id4"})
 		})
-		Convey("don't run for needs_replacement status", func() {
+		t.Run("don't run for needs_replacement status", func(t *ftt.Test) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(
 				gomock.Any(),
@@ -183,8 +185,8 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 				TargetDutState: fleet.DutState_NeedsReplacement,
 			}
 			res, err := tf.Tracker.PushBotsForAdminTasks(tf.C, &request)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
 
 			tasks := tqt.GetScheduledTasks()
 			validateTasksInQueue(tasks, repairQ, "cros_repair", []string{})
@@ -193,7 +195,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 }
 
 func TestPushBotsForAdminAuditTasks(t *testing.T) {
-	Convey("Handling types of cros bots", t, func() {
+	ftt.Run("Handling types of cros bots", t, func(t *ftt.Test) {
 		bot3 := BotForDUT("dut_3", "needs_repair", "label-os_type:OS_TYPE_MOBLAB;id:id3")
 		bot4 := BotForDUT("dut_4", "ready", "label-os_type:OS_TYPE_MOBLAB;id:id4")
 		bot5 := BotForDUT("dut_5", "needs_deploy", "label-os_type:OS_TYPE_MOBLAB;id:id5")
@@ -211,7 +213,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 		validateTasksInQueue := func(tasks tq.QueueData, qKey, qPath string, botIDs, actions []string) {
 			fmt.Println(tasks)
 			repairTasks, ok := tasks[qKey]
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 			repairPaths := appendPaths(repairTasks)
 			var expectedPaths []string
 			actionStr := strings.Join(actions, "-")
@@ -220,7 +222,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 			}
 			sort.Strings(repairPaths)
 			sort.Strings(expectedPaths)
-			So(repairPaths, ShouldResemble, expectedPaths)
+			assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
 		}
 		tf, validate := newTestFixture(t)
 		defer validate()
@@ -228,13 +230,13 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 		tqt.CreateQueue(auditQ)
 		config.Get(tf.C).GetSwarming().BotPool = ""
 
-		Convey("fail to run when actions is not specified", func() {
+		t.Run("fail to run when actions is not specified", func(t *ftt.Test) {
 			request := fleet.PushBotsForAdminAuditTasksRequest{}
 			res, err := tf.Tracker.PushBotsForAdminAuditTasks(tf.C, &request)
-			So(err, ShouldNotBeNil)
-			So(res, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, res, should.BeNil)
 		})
-		Convey("run only Servo USB-key check for all DUTs", func() {
+		t.Run("run only Servo USB-key check for all DUTs", func(t *ftt.Test) {
 			tqt.ResetTasks()
 			tf.MockSwarming.EXPECT().ListAliveBotsInPool(
 				gomock.Any(), gomock.Eq("ChromeOSSkylab"),
@@ -247,8 +249,8 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 				Task: fleet.AuditTask_ServoUSBKey,
 			}
 			res, err := tf.Tracker.PushBotsForAdminAuditTasks(tf.C, &request)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
 
 			tasks := tqt.GetScheduledTasks()
 			validateTasksInQueue(tasks, auditQ, "audit", []string{"id3", "id4", "id6", "su_id1"}, actions)
@@ -257,7 +259,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 }
 
 func TestPushLabstationsForRepair(t *testing.T) {
-	Convey("Handling labstation bots", t, func() {
+	ftt.Run("Handling labstation bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
@@ -271,11 +273,11 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		).AnyTimes().Return(bots, nil)
 		expectDefaultPerBotRefresh(tf)
 		_, err := tf.Tracker.PushRepairJobsForLabstations(tf.C, &fleet.PushRepairJobsForLabstationsRequest{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		tasks := tqt.GetScheduledTasks()
 		repairTasks, ok := tasks[repairLabstationQ]
-		So(ok, ShouldBeTrue)
+		assert.Loosely(t, ok, should.BeTrue)
 		var repairPaths []string
 		for _, v := range repairTasks {
 			repairPaths = append(repairPaths, v.Path)
@@ -284,10 +286,10 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		expectedPaths := []string{
 			"/internal/task/labstation_repair/lab_2",
 		}
-		So(repairPaths, ShouldResemble, expectedPaths)
+		assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
 	})
 
-	Convey("Handling empty bots", t, func() {
+	ftt.Run("Handling empty bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 		tqt := tq.GetTestable(tf.C)
@@ -300,15 +302,15 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		).AnyTimes().Return(bots, nil)
 		expectDefaultPerBotRefresh(tf)
 		_, err := tf.Tracker.PushRepairJobsForLabstations(tf.C, &fleet.PushRepairJobsForLabstationsRequest{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		tasks := tqt.GetScheduledTasks()
 		repairTasks, ok := tasks[repairLabstationQ]
-		So(ok, ShouldBeTrue)
+		assert.Loosely(t, ok, should.BeTrue)
 		var repairPaths []string
 		for _, v := range repairTasks {
 			repairPaths = append(repairPaths, v.Path)
 		}
-		So(repairPaths, ShouldBeEmpty)
+		assert.Loosely(t, repairPaths, should.BeEmpty)
 	})
 }

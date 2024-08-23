@@ -8,10 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -121,17 +121,17 @@ const (
 // which bypasses integerity checks and sometimes call RPCs.
 func TestGetStableVersion(t *testing.T) {
 	// t.Parallel(). These tests modify the getDUT test override and therefore can't be parallel.
-	Convey("Test GetStableVersion RPC -- stable versions exist", t, func() {
+	ftt.Run("Test GetStableVersion RPC -- stable versions exist", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFaftStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-faft-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-firmware-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		resp, err := tf.Inventory.GetStableVersion(
 			ctx,
 			&fleet.GetStableVersionRequest{
@@ -139,13 +139,13 @@ func TestGetStableVersion(t *testing.T) {
 				Model:       "xxx-model",
 			},
 		)
-		So(err, ShouldBeNil)
-		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
-		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
-		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp.CrosVersion, should.Equal("xxx-cros-version"))
+		assert.Loosely(t, resp.FaftVersion, should.Equal("xxx-faft-version"))
+		assert.Loosely(t, resp.FirmwareVersion, should.Equal("xxx-firmware-version"))
 	})
 
-	Convey("Test GetStableVersion RPC -- look up by hostname labstation", t, func() {
+	ftt.Run("Test GetStableVersion RPC -- look up by hostname labstation", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -190,13 +190,13 @@ func TestGetStableVersion(t *testing.T) {
 		}()
 
 		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFaftStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-faft-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-firmware-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		resp, err := tf.Inventory.GetStableVersion(
 			ctx,
@@ -205,14 +205,14 @@ func TestGetStableVersion(t *testing.T) {
 			},
 		)
 
-		So(err, ShouldBeNil)
-		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
-		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
-		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
-		So(resp.ServoCrosVersion, ShouldEqual, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp.CrosVersion, should.Equal("xxx-cros-version"))
+		assert.Loosely(t, resp.FaftVersion, should.Equal("xxx-faft-version"))
+		assert.Loosely(t, resp.FirmwareVersion, should.Equal("xxx-firmware-version"))
+		assert.Loosely(t, resp.ServoCrosVersion, should.BeEmpty)
 	})
 
-	Convey("Test GetStableVersion RPC -- look up labstation proper", t, func() {
+	ftt.Run("Test GetStableVersion RPC -- look up labstation proper", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -257,15 +257,15 @@ func TestGetStableVersion(t *testing.T) {
 		}()
 
 		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-firmware-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFaftStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-faft-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-firmware-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		resp, err := tf.Inventory.GetStableVersion(
 			ctx,
@@ -274,15 +274,15 @@ func TestGetStableVersion(t *testing.T) {
 			},
 		)
 
-		So(err, ShouldBeNil)
-		So(resp.CrosVersion, ShouldEqual, "xxx-labstation-cros-version")
-		So(resp.FaftVersion, ShouldEqual, "")
-		So(resp.FirmwareVersion, ShouldEqual, "") // not expected as faft version is empty.
-		So(resp.ServoCrosVersion, ShouldEqual, "")
-		So(resp.Reason, ShouldContainSubstring, "looked up non-satlab device hostname")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp.CrosVersion, should.Equal("xxx-labstation-cros-version"))
+		assert.Loosely(t, resp.FaftVersion, should.BeEmpty)
+		assert.Loosely(t, resp.FirmwareVersion, should.BeEmpty) // not expected as faft version is empty.
+		assert.Loosely(t, resp.ServoCrosVersion, should.BeEmpty)
+		assert.Loosely(t, resp.Reason, should.ContainSubstring("looked up non-satlab device hostname"))
 	})
 
-	Convey("Test GetStableVersion RPC -- hostname with dummy_host", t, func() {
+	ftt.Run("Test GetStableVersion RPC -- hostname with dummy_host", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -312,13 +312,13 @@ func TestGetStableVersion(t *testing.T) {
 		}()
 
 		err := dssv.PutSingleCrosStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleCrosStableVersion(ctx, "xxx-labstation-board", "xxx-labstation-model", "xxx-labstation-cros-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFaftStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-faft-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "xxx-build-target", "xxx-model", "xxx-firmware-version")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		resp, err := tf.Inventory.GetStableVersion(
 			ctx,
@@ -327,15 +327,15 @@ func TestGetStableVersion(t *testing.T) {
 			},
 		)
 
-		So(err, ShouldBeNil)
-		So(resp.CrosVersion, ShouldEqual, "xxx-cros-version")
-		So(resp.FaftVersion, ShouldEqual, "xxx-faft-version")
-		So(resp.FirmwareVersion, ShouldEqual, "xxx-firmware-version")
-		So(resp.ServoCrosVersion, ShouldEqual, "")
-		So(resp.Reason, ShouldContainSubstring, "looked up non-satlab device hostname")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp.CrosVersion, should.Equal("xxx-cros-version"))
+		assert.Loosely(t, resp.FaftVersion, should.Equal("xxx-faft-version"))
+		assert.Loosely(t, resp.FirmwareVersion, should.Equal("xxx-firmware-version"))
+		assert.Loosely(t, resp.ServoCrosVersion, should.BeEmpty)
+		assert.Loosely(t, resp.Reason, should.ContainSubstring("looked up non-satlab device hostname"))
 	})
 
-	Convey("Test GetStableVersion RPC -- no stable versions exist", t, func() {
+	ftt.Run("Test GetStableVersion RPC -- no stable versions exist", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		datastore.GetTestable(ctx)
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -347,13 +347,13 @@ func TestGetStableVersion(t *testing.T) {
 				Model:       "xxx-model",
 			},
 		)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
 	// This test creates a fake eve device that is a satlab device, and looks up its stable version.
 	// Then we create a hostname-specific stable version and check to make sure that that version overrides the real one.
-	Convey("Satlab DUT by model and then by hostname", t, func() {
+	ftt.Run("Satlab DUT by model and then by hostname", t, func(t *ftt.Test) {
 		oldGetDUTOverrideForTests := getDUTOverrideForTests
 		getDUTOverrideForTests = func(_ context.Context, hostname string) (*inventory.DeviceUnderTest, error) {
 			return &inventory.DeviceUnderTest{
@@ -377,13 +377,13 @@ func TestGetStableVersion(t *testing.T) {
 		defer validate()
 
 		err := dssv.PutSingleCrosStableVersion(ctx, "eve", "eve", "FAKE-CROS")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = dssv.PutSingleFaftStableVersion(ctx, "eve", "eve", "FAKE-FAFT")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = dssv.PutSingleFirmwareStableVersion(ctx, "eve", "eve", "FAKE-FIRMWARE")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		resp, err := tf.Inventory.GetStableVersion(
 			ctx,
@@ -391,13 +391,13 @@ func TestGetStableVersion(t *testing.T) {
 				Hostname: "satlab-hi-host1",
 			},
 		)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(resp.GetCrosVersion(), ShouldEqual, "FAKE-CROS")
-		So(resp.GetFirmwareVersion(), ShouldEqual, "FAKE-FIRMWARE")
-		So(resp.GetFaftVersion(), ShouldEqual, "FAKE-FAFT")
-		So(resp.GetServoCrosVersion(), ShouldBeEmpty)
-		So(resp.GetReason(), ShouldContainSubstring, "falling back")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
+		assert.Loosely(t, resp.GetCrosVersion(), should.Equal("FAKE-CROS"))
+		assert.Loosely(t, resp.GetFirmwareVersion(), should.Equal("FAKE-FIRMWARE"))
+		assert.Loosely(t, resp.GetFaftVersion(), should.Equal("FAKE-FAFT"))
+		assert.Loosely(t, resp.GetServoCrosVersion(), should.BeEmpty)
+		assert.Loosely(t, resp.GetReason(), should.ContainSubstring("falling back"))
 
 		err = satlab.PutSatlabStableVersionEntry(
 			ctx,
@@ -408,7 +408,7 @@ func TestGetStableVersion(t *testing.T) {
 				FWImage: "OVERRIDE-FAFT",
 			},
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		resp, err = tf.Inventory.GetStableVersion(
 			ctx,
@@ -416,84 +416,84 @@ func TestGetStableVersion(t *testing.T) {
 				Hostname: "satlab-hi-host1",
 			},
 		)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(resp.GetCrosVersion(), ShouldEqual, "OVERRIDE-CROS")
-		So(resp.GetFirmwareVersion(), ShouldEqual, "OVERRIDE-FIRMWARE")
-		So(resp.GetFaftVersion(), ShouldEqual, "OVERRIDE-FAFT")
-		So(resp.GetServoCrosVersion(), ShouldBeEmpty)
-		So(resp.GetReason(), ShouldContainSubstring, "looked up satlab device using id")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
+		assert.Loosely(t, resp.GetCrosVersion(), should.Equal("OVERRIDE-CROS"))
+		assert.Loosely(t, resp.GetFirmwareVersion(), should.Equal("OVERRIDE-FIRMWARE"))
+		assert.Loosely(t, resp.GetFaftVersion(), should.Equal("OVERRIDE-FAFT"))
+		assert.Loosely(t, resp.GetServoCrosVersion(), should.BeEmpty)
+		assert.Loosely(t, resp.GetReason(), should.ContainSubstring("looked up satlab device using id"))
 	})
 }
 
 func TestDumpStableVersionToDatastore(t *testing.T) {
-	Convey("Dump Stable version smoke test", t, func() {
+	ftt.Run("Dump Stable version smoke test", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 		tf.setStableVersionFactory("{}")
 		is := tf.Inventory
 		resp, err := is.DumpStableVersionToDatastore(ctx, nil)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
-	Convey("Update Datastore from empty stableversions file", t, func() {
+	ftt.Run("Update Datastore from empty stableversions file", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 		tf.setStableVersionFactory(emptyStableVersions)
 		_, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
-	Convey("Update Datastore from non-empty stableversions file", t, func() {
+	ftt.Run("Update Datastore from non-empty stableversions file", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 		tf.setStableVersionFactory(stableVersions)
 		_, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		cros, err := dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(cros, ShouldEqual, "R78-12499.40.0")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cros, should.Equal("R78-12499.40.0"))
 		firmware, err := dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(firmware, ShouldEqual, "Google_Auron_paine.6301.58.98")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, firmware, should.Equal("Google_Auron_paine.6301.58.98"))
 		faft, err := dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(faft, ShouldEqual, "auron_paine-firmware/R39-6301.58.98")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, faft, should.Equal("auron_paine-firmware/R39-6301.58.98"))
 	})
-	Convey("skip entries with empty version strings", t, func() {
+	ftt.Run("skip entries with empty version strings", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		tf.setStableVersionFactory(stableVersionWithEmptyVersions)
 		defer validate()
 		resp, err := tf.Inventory.DumpStableVersionToDatastore(ctx, nil)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 		_, err = dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 		_, err = dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 		_, err = dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestStableVersionFileParsing(t *testing.T) {
-	Convey("Parse non-empty stableversions", t, func() {
+	ftt.Run("Parse non-empty stableversions", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		parsed, err := parseStableVersions(stableVersions)
-		So(err, ShouldBeNil)
-		So(parsed, ShouldNotBeNil)
-		So(len(parsed.GetCros()), ShouldEqual, 1)
-		So(parsed.GetCros()[0].GetVersion(), ShouldEqual, "R78-12499.40.0")
-		So(parsed.GetCros()[0].GetKey(), ShouldNotBeNil)
-		So(parsed.GetCros()[0].GetKey().GetBuildTarget(), ShouldNotBeNil)
-		So(parsed.GetCros()[0].GetKey().GetBuildTarget().GetName(), ShouldEqual, "auron_paine")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, parsed, should.NotBeNil)
+		assert.Loosely(t, len(parsed.GetCros()), should.Equal(1))
+		assert.Loosely(t, parsed.GetCros()[0].GetVersion(), should.Equal("R78-12499.40.0"))
+		assert.Loosely(t, parsed.GetCros()[0].GetKey(), should.NotBeNil)
+		assert.Loosely(t, parsed.GetCros()[0].GetKey().GetBuildTarget(), should.NotBeNil)
+		assert.Loosely(t, parsed.GetCros()[0].GetKey().GetBuildTarget().GetName(), should.Equal("auron_paine"))
 		records := getStableVersionRecords(ctx, parsed)
-		So(len(records.cros), ShouldEqual, 1)
-		So(len(records.firmware), ShouldEqual, 1)
-		So(len(records.faft), ShouldEqual, 1)
+		assert.Loosely(t, len(records.cros), should.Equal(1))
+		assert.Loosely(t, len(records.firmware), should.Equal(1))
+		assert.Loosely(t, len(records.faft), should.Equal(1))
 	})
 }
 
@@ -503,26 +503,26 @@ func TestGetAllBoardModels(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("test get all board models", t, func() {
-		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+	ftt.Run("test get all board models", t, func(t *ftt.Test) {
+		assert.Loosely(t, datastore.Put(ctx, &dssv.CrosStableVersionEntity{
 			ID:   "a",
 			Cros: "a",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
 			ID:       "b",
 			Firmware: "b",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FaftStableVersionEntity{
 			ID:   "c",
 			Faft: "c",
-		}), ShouldBeNil)
+		}), should.BeNil)
 		out, err := getAllBoardModels(ctx)
-		So(err, ShouldBeNil)
-		So(out, ShouldResemble, map[string]bool{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble(map[string]bool{
 			"a": true,
 			"b": true,
 			"c": true,
-		})
+		}))
 	})
 }
 
@@ -536,29 +536,29 @@ func TestCanClearDatastoreWithZeroRecords(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("test can clear datastore with empty file", t, func() {
+	ftt.Run("test can clear datastore with empty file", t, func(t *ftt.Test) {
 		// 1. Preamble
-		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+		assert.Loosely(t, datastore.Put(ctx, &dssv.CrosStableVersionEntity{
 			ID:   "a",
 			Cros: "a",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
 			ID:       "b",
 			Firmware: "b",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FaftStableVersionEntity{
 			ID:   "c",
 			Faft: "c",
-		}), ShouldBeNil)
+		}), should.BeNil)
 		out, err := getAllBoardModels(ctx)
-		So(err, ShouldBeNil)
-		So(len(out), ShouldEqual, 3)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(out), should.Equal(3))
 		// 2. Simulate dumping an empty file
 		resp, err := dumpStableVersionToDatastoreImpl(ctx, func(_ context.Context, _ string) (string, error) {
 			return `{}`, nil
 		})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
 }
 
@@ -570,45 +570,45 @@ func TestReplaceDatastoreContents(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("test can clear datastore with empty file", t, func() {
+	ftt.Run("test can clear datastore with empty file", t, func(t *ftt.Test) {
 		// (1/3) Preamble
-		So(datastore.Put(ctx, &dssv.CrosStableVersionEntity{
+		assert.Loosely(t, datastore.Put(ctx, &dssv.CrosStableVersionEntity{
 			ID:   "a;a",
 			Cros: "a",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FirmwareStableVersionEntity{
 			ID:       "b;b",
 			Firmware: "b",
-		}), ShouldBeNil)
-		So(datastore.Put(ctx, &dssv.FaftStableVersionEntity{
+		}), should.BeNil)
+		assert.Loosely(t, datastore.Put(ctx, &dssv.FaftStableVersionEntity{
 			ID:   "c;c",
 			Faft: "c",
-		}), ShouldBeNil)
+		}), should.BeNil)
 		out, err := getAllBoardModels(ctx)
-		So(err, ShouldBeNil)
-		So(len(out), ShouldEqual, 3)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(out), should.Equal(3))
 		// (2/3) Simulate reading a file.
 		resp, err := dumpStableVersionToDatastoreImpl(ctx, func(_ context.Context, _ string) (string, error) {
 			return stableVersions, nil
 		})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 		// (3/3) Check the contents of datastore post-read.
 		cros, err := dssv.GetCrosStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(cros, ShouldEqual, "R78-12499.40.0")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cros, should.Equal("R78-12499.40.0"))
 		firmware, err := dssv.GetFirmwareStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(firmware, ShouldEqual, "Google_Auron_paine.6301.58.98")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, firmware, should.Equal("Google_Auron_paine.6301.58.98"))
 		faft, err := dssv.GetFaftStableVersion(ctx, "auron_paine", "auron_paine")
-		So(err, ShouldBeNil)
-		So(faft, ShouldEqual, "auron_paine-firmware/R39-6301.58.98")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, faft, should.Equal("auron_paine-firmware/R39-6301.58.98"))
 		// Be extra thorough and check that there are no cros, firmware, or faft versions for any of the fake names
 		// used in the preamble.
 		for _, name := range []string{"a", "b", "c"} {
 			val, err := dssv.GetCrosStableVersion(ctx, name, name)
-			So(err, ShouldErrLike, "Entity not found")
-			So(val, ShouldEqual, "")
+			assert.Loosely(t, err, should.ErrLike("Entity not found"))
+			assert.Loosely(t, val, should.BeEmpty)
 		}
 	})
 }

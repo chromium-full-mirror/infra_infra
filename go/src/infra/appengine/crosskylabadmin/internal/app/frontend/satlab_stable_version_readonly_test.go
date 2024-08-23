@@ -22,6 +22,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -35,7 +36,7 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModel(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	board := "b"
@@ -117,7 +118,7 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelWithHostnameLookup(
 
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	modelBoardID := satlab.MakeSatlabStableVersionID("", board, model)
@@ -172,7 +173,7 @@ func TestGetStableVersionRPCForSatlabDeviceUsingHostname(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	hostname := "satlab-h1"
@@ -229,7 +230,7 @@ func TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModelFallback(t *testing
 	t.Parallel()
 	ctx := testingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	tf, validate := newTestFixtureWithContext(ctx, t)
+	tf, validate := newTestFixtureWithContext(ctx, &ftt.Test{T: t})
 	defer validate()
 
 	oldGetDUTOverrideForTests := getDUTOverrideForTests

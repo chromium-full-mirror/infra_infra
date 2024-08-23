@@ -9,10 +9,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/testing/protocmp"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 
 	"infra/libs/skylab/common/heuristics"
 )
@@ -166,30 +166,30 @@ func TestComputePermilleData(t *testing.T) {
 func TestChooseImplementation(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("test choose implementation", t, func() {
-		Convey("nil permille data", func() {
+	ftt.Run("test choose implementation", t, func(t *ftt.Test) {
+		t.Run("nil permille data", func(t *ftt.Test) {
 			var pd *PermilleData
 			impl, err := pd.ChooseImplementation(ctx, 0.0)
-			So(impl, ShouldEqual, heuristics.ProdTaskType)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, impl, should.Equal(heuristics.ProdTaskType))
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("zeroes", func() {
+		t.Run("zeroes", func(t *ftt.Test) {
 			pd := &PermilleData{Prod: 0.0, Latest: 0.0}
 			impl, err := pd.ChooseImplementation(ctx, 0.0)
-			So(impl, ShouldEqual, heuristics.ProdTaskType)
-			So(err, ShouldErrLike, "not yet implemented")
+			assert.Loosely(t, impl, should.Equal(heuristics.ProdTaskType))
+			assert.Loosely(t, err, should.ErrLike("not yet implemented"))
 		})
 	})
 }
 
 func TestValidateNoRepairOnlyFields(t *testing.T) {
 	t.Parallel()
-	Convey("optin_all_duts", t, func() {
+	ftt.Run("optin_all_duts", t, func(t *ftt.Test) {
 		pd := &RolloutConfig{Enable: true, OptinAllDuts: true}
-		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "optin_all_duts")
+		assert.Loosely(t, pd.ValidateNoRepairOnlyFields(), should.ErrLike("optin_all_duts"))
 	})
-	Convey("optin_all_duts", t, func() {
+	ftt.Run("optin_all_duts", t, func(t *ftt.Test) {
 		pd := &RolloutConfig{Enable: true, OptinDutPool: []string{"aaa"}}
-		So(pd.ValidateNoRepairOnlyFields(), ShouldErrLike, "optin_dut_pool")
+		assert.Loosely(t, pd.ValidateNoRepairOnlyFields(), should.ErrLike("optin_dut_pool"))
 	})
 }

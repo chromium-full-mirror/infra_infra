@@ -13,9 +13,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -28,7 +30,7 @@ import (
 // TestPushBotsForAdminTasksImplSmokeTesttests that pushing bots for admin tasks
 // calls the ListALiveIdleBotsInPool API.
 func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
-	tf, validate := newTestFixture(t)
+	tf, validate := newTestFixture(&ftt.Test{T: t})
 	defer validate()
 	ctx := tf.C
 	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any())
@@ -64,7 +66,7 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 
 // TestPushBotsForAdminTasksWithUFSClient tests that pushing bots for admin tasks with a UFS client succeeds.
 func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
-	tf, validate := newTestFixture(t)
+	tf, validate := newTestFixture(&ftt.Test{T: t})
 	defer validate()
 	ctx := tf.C
 	tq.GetTestable(ctx).CreateQueue("repair-bots")
@@ -141,7 +143,7 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 
 // TestGetDUTsForLabstations tests that getDUTsForLabstations returns the correct list of bot names given that the GetDUTsForLabstation RPC is functioning correctly.
 func TestGetDUTsForLabstations(t *testing.T) {
-	tf, validate := newTestFixture(t)
+	tf, validate := newTestFixture(&ftt.Test{T: t})
 	defer validate()
 	ctx := tf.C
 	// Make the UFS call successfully return exactly one fake DUT.
@@ -170,7 +172,7 @@ func TestGetDUTsForLabstations(t *testing.T) {
 // We have Search return two records describing the same labstation to test the deduplication logic.
 func TestGetLabstations(t *testing.T) {
 	var zero time.Time
-	tf, validate := newTestFixture(t)
+	tf, validate := newTestFixture(&ftt.Test{T: t})
 	defer validate()
 	ctx := tf.C
 	tf.MockKarte.EXPECT().Search(gomock.Any(), gomock.Any()).Return(
@@ -201,7 +203,7 @@ func TestGetLabstations(t *testing.T) {
 
 // TestPushBotsForAdminTasksWithPoolCfg tests that pushing bots for admin tasks with Pool
 func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
-	Convey("Handling PoolCfg bots", t, func() {
+	ftt.Run("Handling PoolCfg bots", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 		ctx := tf.C
@@ -319,7 +321,7 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		tasks := tqt.GetScheduledTasks()[qn]
 		fmt.Println(tasks)
 		numTasks := len(tasks)
-		So(numTasks, ShouldEqual, 4)
+		assert.Loosely(t, numTasks, should.Equal(4))
 		var taskPaths, taskParams []string
 		for _, v := range tasks {
 			taskPaths = append(taskPaths, v.Path)
@@ -329,14 +331,14 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-a", "/internal/task/cros_repair/pool-cfg-bot-b"}
 		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-a&expectedState=needs_repair&swarmingPool=pool-cfg-a", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
-		So(taskPaths, ShouldResemble, expectedPaths)
-		So(taskParams, ShouldResemble, expectedParams)
+		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
+		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
 	})
 }
 
 // TestPushBotsForAdminTasksWithPoolCfgSkipError tests that error condition while pushing bots for admin tasks with Pool
 func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
-	Convey("Handling Errors for PoolCfg bots ", t, func() {
+	ftt.Run("Handling Errors for PoolCfg bots ", t, func(t *ftt.Test) {
 		tf, validate := newTestFixture(t)
 		defer validate()
 		ctx := tf.C
@@ -444,7 +446,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		tasks := tqt.GetScheduledTasks()[qn]
 		fmt.Println(tasks)
 		numTasks := len(tasks)
-		So(numTasks, ShouldEqual, 3)
+		assert.Loosely(t, numTasks, should.Equal(3))
 		var taskPaths, taskParams []string
 		for _, v := range tasks {
 			taskPaths = append(taskPaths, v.Path)
@@ -454,7 +456,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-b"}
 		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
-		So(taskPaths, ShouldResemble, expectedPaths)
-		So(taskParams, ShouldResemble, expectedParams)
+		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
+		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
 	})
 }

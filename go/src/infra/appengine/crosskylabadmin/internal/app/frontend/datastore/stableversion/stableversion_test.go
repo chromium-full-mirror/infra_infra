@@ -18,9 +18,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 )
@@ -36,102 +37,102 @@ func TestUpdateAndGet(t *testing.T) {
 	firmwareVersion := "xxx-firmware-version"
 	faftVersion := "xxx-faft-version"
 
-	Convey("StableVersion datastore", t, func() {
-		Convey("Cros", func() {
-			Convey("Cros not present initially", func() {
+	ftt.Run("StableVersion datastore", t, func(t *ftt.Test) {
+		t.Run("Cros", func(t *ftt.Test) {
+			t.Run("Cros not present initially", func(t *ftt.Test) {
 				item, err := GetCrosStableVersion(ctx, buildTarget, model)
-				So(err, ShouldNotBeNil)
-				So(item, ShouldEqual, "")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, item, should.BeEmpty)
 			})
-			Convey("Cros write should succeed", func() {
+			t.Run("Cros write should succeed", func(t *ftt.Test) {
 				err := PutSingleCrosStableVersion(ctx, buildTarget, model, crosVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("Cros present after write", func() {
+			t.Run("Cros present after write", func(t *ftt.Test) {
 				item, err := GetCrosStableVersion(ctx, buildTarget, model)
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, crosVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(crosVersion))
 			})
-			Convey("Cros is not case-sensitive", func() {
+			t.Run("Cros is not case-sensitive", func(t *ftt.Test) {
 				err := PutSingleCrosStableVersion(ctx, "AAA", "model", crosVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				item, err := GetCrosStableVersion(ctx, "Aaa", "model")
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, crosVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(crosVersion))
 			})
 		})
-		Convey("Faft", func() {
-			Convey("Faft not present initially", func() {
+		t.Run("Faft", func(t *ftt.Test) {
+			t.Run("Faft not present initially", func(t *ftt.Test) {
 				item, err := GetFaftStableVersion(ctx, buildTarget, model)
-				So(err, ShouldNotBeNil)
-				So(item, ShouldEqual, "")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, item, should.BeEmpty)
 			})
-			Convey("Faft write should succeed", func() {
+			t.Run("Faft write should succeed", func(t *ftt.Test) {
 				err := PutSingleFaftStableVersion(ctx, buildTarget, model, faftVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("Faft present after write", func() {
+			t.Run("Faft present after write", func(t *ftt.Test) {
 				item, err := GetFaftStableVersion(ctx, buildTarget, model)
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, faftVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(faftVersion))
 			})
-			Convey("Faft is not case-sensitive", func() {
+			t.Run("Faft is not case-sensitive", func(t *ftt.Test) {
 				err := PutSingleFaftStableVersion(ctx, "AAA", "BBB", faftVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				item, err := GetFaftStableVersion(ctx, "Aaa", "Bbb")
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, faftVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(faftVersion))
 			})
 		})
-		Convey("Firmware", func() {
-			Convey("Firmware not present initially", func() {
+		t.Run("Firmware", func(t *ftt.Test) {
+			t.Run("Firmware not present initially", func(t *ftt.Test) {
 				item, err := GetFirmwareStableVersion(ctx, buildTarget, model)
-				So(err, ShouldNotBeNil)
-				So(item, ShouldEqual, "")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, item, should.BeEmpty)
 			})
-			Convey("Firmware write should succeed", func() {
+			t.Run("Firmware write should succeed", func(t *ftt.Test) {
 				err := PutSingleFirmwareStableVersion(ctx, buildTarget, model, firmwareVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("Firmware present after write", func() {
+			t.Run("Firmware present after write", func(t *ftt.Test) {
 				item, err := GetFirmwareStableVersion(ctx, buildTarget, model)
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, firmwareVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(firmwareVersion))
 			})
-			Convey("Firmware is not case-sensitive", func() {
+			t.Run("Firmware is not case-sensitive", func(t *ftt.Test) {
 				err := PutSingleFirmwareStableVersion(ctx, "AAA", "BBB", firmwareVersion)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				item, err := GetFirmwareStableVersion(ctx, "Aaa", "Bbb")
-				So(err, ShouldBeNil)
-				So(item, ShouldEqual, firmwareVersion)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, item, should.Equal(firmwareVersion))
 			})
 		})
 	})
 }
 
 func TestRemoveEmptyKeyOrValue(t *testing.T) {
-	Convey("remove non-conforming keys and values", t, func() {
+	ftt.Run("remove non-conforming keys and values", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx = memory.Use(ctx)
-		Convey("remove empty key good", func() {
+		t.Run("remove empty key good", func(t *ftt.Test) {
 			m := map[string]string{"": "a"}
 			removeEmptyKeyOrValue(ctx, m)
-			So(len(m), ShouldEqual, 0)
+			assert.Loosely(t, len(m), should.BeZero)
 		})
-		Convey("remove empty value good", func() {
+		t.Run("remove empty value good", func(t *ftt.Test) {
 			m := map[string]string{"a": ""}
 			removeEmptyKeyOrValue(ctx, m)
-			So(len(m), ShouldEqual, 0)
+			assert.Loosely(t, len(m), should.BeZero)
 		})
-		Convey("remove empty key and value good", func() {
+		t.Run("remove empty key and value good", func(t *ftt.Test) {
 			m := map[string]string{"": ""}
 			removeEmptyKeyOrValue(ctx, m)
-			So(len(m), ShouldEqual, 0)
+			assert.Loosely(t, len(m), should.BeZero)
 		})
-		Convey("remove conforming key and value bad", func() {
+		t.Run("remove conforming key and value bad", func(t *ftt.Test) {
 			m := map[string]string{"k": "v"}
 			removeEmptyKeyOrValue(ctx, m)
-			So(len(m), ShouldEqual, 1)
+			assert.Loosely(t, len(m), should.Equal(1))
 		})
 	})
 }
@@ -141,45 +142,45 @@ func TestImposeVersion(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContext()
 	datastore.GetTestable(ctx).Consistent(true)
-	Convey("test impose version", t, func() {
-		Convey("cros", func() {
+	ftt.Run("test impose version", t, func(t *ftt.Test) {
+		t.Run("cros", func(t *ftt.Test) {
 			e := &CrosStableVersionEntity{
 				ID:   "eve;eve",
 				Cros: "a",
 			}
-			So(datastore.Put(ctx, e), ShouldBeNil)
-			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(ctx, e), should.BeNil)
+			assert.Loosely(t, e.ImposeVersion(ctx, "b"), should.BeNil)
 			var ents []*CrosStableVersionEntity
-			So(datastore.GetAll(ctx, datastore.NewQuery(CrosStableVersionKind), &ents), ShouldBeNil)
-			So(len(ents), ShouldEqual, 1)
-			So(ents[0].Cros, ShouldEqual, "b")
-			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
+			assert.Loosely(t, datastore.GetAll(ctx, datastore.NewQuery(CrosStableVersionKind), &ents), should.BeNil)
+			assert.Loosely(t, len(ents), should.Equal(1))
+			assert.Loosely(t, ents[0].Cros, should.Equal("b"))
+			assert.Loosely(t, e.ImposeVersion(ctx, ""), should.BeNil)
 		})
-		Convey("faft", func() {
+		t.Run("faft", func(t *ftt.Test) {
 			e := &FaftStableVersionEntity{
 				ID:   "eve;eve",
 				Faft: "a",
 			}
-			So(datastore.Put(ctx, e), ShouldBeNil)
-			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(ctx, e), should.BeNil)
+			assert.Loosely(t, e.ImposeVersion(ctx, "b"), should.BeNil)
 			var ents []*FaftStableVersionEntity
-			So(datastore.GetAll(ctx, datastore.NewQuery(FaftStableVersionKind), &ents), ShouldBeNil)
-			So(len(ents), ShouldEqual, 1)
-			So(ents[0].Faft, ShouldEqual, "b")
-			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
+			assert.Loosely(t, datastore.GetAll(ctx, datastore.NewQuery(FaftStableVersionKind), &ents), should.BeNil)
+			assert.Loosely(t, len(ents), should.Equal(1))
+			assert.Loosely(t, ents[0].Faft, should.Equal("b"))
+			assert.Loosely(t, e.ImposeVersion(ctx, ""), should.BeNil)
 		})
-		Convey("firmware", func() {
+		t.Run("firmware", func(t *ftt.Test) {
 			e := &FirmwareStableVersionEntity{
 				ID:       "eve;eve",
 				Firmware: "a",
 			}
-			So(datastore.Put(ctx, e), ShouldBeNil)
-			So(e.ImposeVersion(ctx, "b"), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(ctx, e), should.BeNil)
+			assert.Loosely(t, e.ImposeVersion(ctx, "b"), should.BeNil)
 			var ents []*FirmwareStableVersionEntity
-			So(datastore.GetAll(ctx, datastore.NewQuery(FirmwareStableVersionKind), &ents), ShouldBeNil)
-			So(len(ents), ShouldEqual, 1)
-			So(ents[0].Firmware, ShouldEqual, "b")
-			So(e.ImposeVersion(ctx, ""), ShouldBeNil)
+			assert.Loosely(t, datastore.GetAll(ctx, datastore.NewQuery(FirmwareStableVersionKind), &ents), should.BeNil)
+			assert.Loosely(t, len(ents), should.Equal(1))
+			assert.Loosely(t, ents[0].Firmware, should.Equal("b"))
+			assert.Loosely(t, e.ImposeVersion(ctx, ""), should.BeNil)
 		})
 	})
 }

@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
 )
@@ -18,42 +19,42 @@ import (
 func TestRouteAuditTaskImpl(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("no config", t, func() {
+	ftt.Run("no config", t, func(t *ftt.Test) {
 		tt, r := routeAuditTaskImpl(ctx, nil, "", 0.0)
-		So(tt, ShouldEqual, routing.Paris)
-		So(r, ShouldEqual, routing.ParisNotEnabled)
+		assert.Loosely(t, tt, should.Equal(routing.Paris))
+		assert.Loosely(t, r, should.Equal(routing.ParisNotEnabled))
 	})
-	Convey("invalid random float", t, func() {
+	ftt.Run("invalid random float", t, func(t *ftt.Test) {
 		tt, r := routeAuditTaskImpl(ctx, &config.RolloutConfig{}, "", 12.0)
-		So(tt, ShouldEqual, routing.Paris)
-		So(r, ShouldEqual, routing.InvalidRangeArgument)
+		assert.Loosely(t, tt, should.Equal(routing.Paris))
+		assert.Loosely(t, r, should.Equal(routing.InvalidRangeArgument))
 	})
-	Convey("bad permille info", t, func() {
+	ftt.Run("bad permille info", t, func(t *ftt.Test) {
 		pat := &config.RolloutConfig{
 			Pattern: []*config.RolloutConfig_Pattern{
 				{Pattern: "^", ProdPermille: 4},
 			},
 		}
 		res := pat.ComputePermilleData(ctx, "hostname")
-		So(res, ShouldBeNil)
+		assert.Loosely(t, res, should.BeNil)
 	})
-	Convey("25-25 split", t, func() {
+	ftt.Run("25-25 split", t, func(t *ftt.Test) {
 		pd := &config.RolloutConfig{Enable: true, ProdPermille: 250, LatestPermille: 250}
-		Convey("0.24", func() {
+		t.Run("0.24", func(t *ftt.Test) {
 			tt, r := routeAuditTaskImpl(ctx, pd, "", 0.24)
-			So(tt, ShouldEqual, routing.ParisLatest)
-			So(r, ShouldEqual, routing.ScoreBelowThreshold)
+			assert.Loosely(t, tt, should.Equal(routing.ParisLatest))
+			assert.Loosely(t, r, should.Equal(routing.ScoreBelowThreshold))
 		})
-		Convey("0.26", func() {
+		t.Run("0.26", func(t *ftt.Test) {
 			tt, r := routeAuditTaskImpl(ctx, pd, "", 0.26)
-			So(tt, ShouldEqual, routing.Paris)
-			So(r, ShouldEqual, routing.ScoreBelowThreshold)
+			assert.Loosely(t, tt, should.Equal(routing.Paris))
+			assert.Loosely(t, r, should.Equal(routing.ScoreBelowThreshold))
 		})
 	})
-	Convey("Repair-only field", t, func() {
+	ftt.Run("Repair-only field", t, func(t *ftt.Test) {
 		pd := &config.RolloutConfig{Enable: true, OptinAllDuts: true}
 		tt, r := routeAuditTaskImpl(ctx, pd, "", 0.24)
-		So(tt, ShouldEqual, routing.Paris)
-		So(r, ShouldEqual, routing.RepairOnlyField)
+		assert.Loosely(t, tt, should.Equal(routing.Paris))
+		assert.Loosely(t, r, should.Equal(routing.RepairOnlyField))
 	})
 }

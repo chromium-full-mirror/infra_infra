@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/gae/service/datastore"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
@@ -30,7 +31,7 @@ import (
 )
 
 type testFixture struct {
-	T *testing.T
+	T testing.TB
 	C context.Context
 
 	Tracker   fleet.TrackerServer
@@ -46,11 +47,11 @@ type testFixture struct {
 //
 // The function returns the created testFixture and a validation function that
 // must be deferred by the caller.
-func newTestFixture(t *testing.T) (testFixture, func()) {
+func newTestFixture(t *ftt.Test) (testFixture, func()) {
 	return newTestFixtureWithContext(testingContext(), t)
 }
 
-func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, func()) {
+func newTestFixtureWithContext(c context.Context, t testing.TB) (testFixture, func()) {
 	// Configure the tq implementation: confirm that it's testable and set up queues used by CrOSSkylabAdmin.
 	if tq.GetTestable(c) == nil {
 		panic("internal error in app/frontend/test_common.go: in unit tests, taskqueue must be a testable implementation")
@@ -58,7 +59,17 @@ func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, fu
 
 	tf := testFixture{T: t, C: c}
 
-	mc := gomock.NewController(t)
+	var testingT *testing.T
+	switch v := t.(type) {
+	case *testing.T:
+		testingT = v
+	case *ftt.Test:
+		testingT = v.T
+	default:
+		panic(fmt.Sprintf("invalid type %T for t", t))
+	}
+
+	mc := gomock.NewController(testingT)
 
 	tf.MockSwarming = mock.NewMockSwarmingClient(mc)
 	tf.MockBotTasksCursor = mock.NewMockBotTasksCursor(mc)
