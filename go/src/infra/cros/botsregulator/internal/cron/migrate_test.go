@@ -113,6 +113,15 @@ func TestMigrate(t *testing.T) {
 						},
 					},
 				},
+				&ufspb.Machine{
+					Name: "machines/machine-6",
+					Device: &ufspb.Machine_ChromeosMachine{
+						ChromeosMachine: &ufspb.ChromeOSMachine{
+							BuildTarget: "board-6",
+							Model:       "model-6",
+						},
+					},
+				},
 			}, nil),
 			mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"zone=ZONE_SFO36_OS"}, 0, false, false).Return([]protoadapt.MessageV1{
 				&ufspb.MachineLSE{
@@ -209,6 +218,25 @@ func TestMigrate(t *testing.T) {
 							},
 						},
 					}},
+				&ufspb.MachineLSE{
+					Name: "machineLSEs/labstation-6",
+					Machines: []string{
+						"machine-6",
+					},
+					Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+						ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+							ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+								DeviceLse: &ufspb.ChromeOSDeviceLSE{
+									Device: &ufspb.ChromeOSDeviceLSE_Labstation{
+										Labstation: &chromeosLab.Labstation{
+											Hive: "e",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			}, nil),
 			mockUFS.EXPECT().UpdateMachineLSE(ctxWithNS, &ufsAPI.UpdateMachineLSERequest{
 				MachineLSE: &ufspb.MachineLSE{
@@ -274,6 +302,30 @@ func TestMigrate(t *testing.T) {
 				},
 				UpdateMask: &fieldmaskpb.FieldMask{
 					Paths: []string{"dut.hive"},
+				},
+			}),
+			mockUFS.EXPECT().UpdateMachineLSE(ctxWithNS, &ufsAPI.UpdateMachineLSERequest{
+				MachineLSE: &ufspb.MachineLSE{
+					Name:     "machineLSEs/labstation-6",
+					Hostname: "labstation-6",
+					Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+						ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+							ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+								DeviceLse: &ufspb.ChromeOSDeviceLSE{
+									Device: &ufspb.ChromeOSDeviceLSE_Labstation{
+										Labstation: &chromeosLab.Labstation{
+											Hostname: "labstation-6",
+											Hive:     "cloudbots-large",
+											Rpm:      &chromeosLab.OSRPM{},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{
+					Paths: []string{"labstation.hive"},
 				},
 			}),
 		)

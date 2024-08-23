@@ -228,7 +228,7 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 	cpt := 0
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	for _, cbsmall := range migrationNext.CloudbotsSmall {
-		req := clients.InitializeUpdateDUTRequest(cbsmall, "cloudbots")
+		req := clients.InitializeUpdateLSERequest(cbsmall, "cloudbots")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
 			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots: %v", cbsmall, err)
@@ -237,7 +237,7 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 		cpt++
 	}
 	for _, cblarge := range migrationNext.CloudbotsLarge {
-		req := clients.InitializeUpdateDUTRequest(cblarge, "cloudbots-large")
+		req := clients.InitializeUpdateLSERequest(cblarge, "cloudbots-large")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
 			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots-large: %v", cblarge, err)
@@ -247,7 +247,7 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 	}
 	logging.Infof(ctx, "starting batch update for drone")
 	for _, drone := range migrationNext.Drone {
-		req := clients.InitializeUpdateDUTRequest(drone, "e")
+		req := clients.InitializeUpdateLSERequest(drone, "e")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
 			logging.Errorf(ctx, "failed to update machineLSE %s to hive e: %v", drone, err)
@@ -361,7 +361,7 @@ func (m *migrator) RunBatchRollback(ctx context.Context, lses []string) error {
 	errs := errors.NewLazyMultiError(len(lses))
 	ctx = clients.SetUFSNamespace(ctx, "os")
 	for i, lse := range lses {
-		req := clients.InitializeUpdateDUTRequest(lse, "e")
+		req := clients.InitializeUpdateLSERequest(lse, "e")
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
 			logging.Errorf(ctx, "failed to update machineLSE %s to hive drone: %v", lse, err)

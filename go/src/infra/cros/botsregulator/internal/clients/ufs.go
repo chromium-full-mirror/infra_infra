@@ -13,6 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	shivasUtil "infra/cmd/shivas/utils"
+	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -74,8 +75,16 @@ func SetUFSNamespace(ctx context.Context, namespace string) context.Context {
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
-// InitializeUpdateDUTRequest return a new initialized UpdateMachineLSERequest.
-func InitializeUpdateDUTRequest(hostname, hive string) *ufsAPI.UpdateMachineLSERequest {
+// InitializeUpdateLSERequest return a new initialized UpdateMachineLSERequest.
+func InitializeUpdateLSERequest(hostname, hive string) *ufsAPI.UpdateMachineLSERequest {
+	if heuristics.LooksLikeLabstation(hostname) {
+		return initializeUpdateLabstationRequest(hostname, hive)
+	}
+	return initializeUpdateDUTRequest(hostname, hive)
+}
+
+// initializeUpdateDUTRequest return a new initialized UpdateMachineLSERequest for DUT.
+func initializeUpdateDUTRequest(hostname, hive string) *ufsAPI.UpdateMachineLSERequest {
 	// An empty machineLSE is enough. UFS will fetch the correct lse from the machinelse.name.
 	// 3679c23a3c07de90bc8d4241ea77416cf3dcda45:infra/go/src/infra/unifiedfleet/app/controller/dut.go;l=160
 	// Shivas for ref: 132b2fe1a670c91e9eaad45b3cb0d04601ad0ce3:go/src/infra/cmd/shivas/internal/ufs/subcmds/dut/update_dut_batch.go;l=255
@@ -111,6 +120,38 @@ func InitializeUpdateDUTRequest(hostname, hive string) *ufsAPI.UpdateMachineLSER
 		MachineLSE: lse,
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"dut.hive"},
+		},
+	}
+	return req
+}
+
+// initializeUpdateLabstationRequest return a new initialized UpdateMachineLSERequest for labstation.
+func initializeUpdateLabstationRequest(hostname, hive string) *ufsAPI.UpdateMachineLSERequest {
+	// Generate lse and mask
+	lse := &ufspb.MachineLSE{
+		Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+					DeviceLse: &ufspb.ChromeOSDeviceLSE{
+						Device: &ufspb.ChromeOSDeviceLSE_Labstation{
+							Labstation: &chromeosLab.Labstation{
+								Rpm: &chromeosLab.OSRPM{},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	lse.Name = ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, hostname)
+	lse.Hostname = hostname
+	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hostname = hostname
+	lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = hive
+	req := &ufsAPI.UpdateMachineLSERequest{
+		MachineLSE: lse,
+		UpdateMask: &fieldmaskpb.FieldMask{
+			Paths: []string{"labstation.hive"},
 		},
 	}
 	return req
