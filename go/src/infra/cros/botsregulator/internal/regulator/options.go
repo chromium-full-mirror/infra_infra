@@ -14,12 +14,14 @@ import (
 // RegulatorOptions refers to the flag options needed
 // to create a new regulator struct.
 type RegulatorOptions struct {
-	BPI       string
-	CfID      string
-	Hive      string
-	Namespace string
-	UFS       string
-	Swarming  string
+	BPI        string
+	CfID       string
+	Hive       string
+	Namespace  string
+	UFS        string
+	Swarming   string
+	Zone       string
+	BotConfigs string
 }
 
 // RegisterFlags exposes the command line flags required to run the application.
@@ -31,4 +33,6 @@ func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.Namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
 	fs.StringVar(&r.UFS, "ufs", clients.UfsDev, "UFS endpoint.")
 	fs.StringVar(&r.Swarming, "swarming", clients.SwarmingDev, "Swarming server.")
+	fs.StringVar(&r.BotConfigs, "botconfigs", "skylab.py", "a comma-separated list of bots configs. e.g skylab.py,cloudbots_config.py")
+	fs.StringVar(&r.Zone, "zone", "ZONE_SFO36_OS", "UFS zone. e.g ZONE_SFO36_OS")
 }

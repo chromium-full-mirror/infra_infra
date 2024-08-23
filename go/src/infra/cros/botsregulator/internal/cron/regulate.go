@@ -22,7 +22,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	lses, err := r.ListAllMachineLSEsByHive(ctx)
+	lses, err := r.ListAllMachineLSEsByHive(ctx, opts.Hive)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func Regulate(ctx context.Context, opts *regulator.RegulatorOptions) error {
 	if err != nil {
 		return err
 	}
-	dbs, err := r.ListAllDroneBots(ctx)
+	dbs, err := r.ListAllDroneBots(ctx, "skylab.py", "ZONE_SFO36_OS")
 	if err != nil {
 		return err
 	}

@@ -8,6 +8,7 @@ package regulator
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.chromium.org/luci/common/logging"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
@@ -23,10 +24,15 @@ type regulator struct {
 	opts           *RegulatorOptions
 	swarmingClient clients.SwarmingClient
 	ufsClient      clients.UFSClient
+	botConfigs     []string
 }
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
 	logging.Infof(ctx, "creating regulator with flags: %v\n", opts)
+	bcfgs, err := botConfigs(opts)
+	if err != nil {
+		return nil, err
+	}
 	bc, err := provider.NewProviderFromEnv(ctx, opts.BPI)
 	if err != nil {
 		return nil, err
@@ -44,13 +50,26 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 		opts:           opts,
 		swarmingClient: sc,
 		ufsClient:      uc,
+		botConfigs:     bcfgs,
 	}, nil
 }
 
+// botConfigs returns bots configs parsed from botconfigs flag.
+func botConfigs(opts *RegulatorOptions) ([]string, error) {
+	var bc []string
+	bc = append(bc, strings.Split(opts.BotConfigs, ",")...)
+	return bc, nil
+}
+
+// BotConfigs returns regulator botconfigs.
+func (r *regulator) BotConfigs() []string {
+	return r.botConfigs
+}
+
 // ListAllMachineLSEsByHive fetches machineLSEs from UFS by hive.
-func (r *regulator) ListAllMachineLSEsByHive(ctx context.Context) ([]*ufspb.MachineLSE, error) {
+func (r *regulator) ListAllMachineLSEsByHive(ctx context.Context, hive string) ([]*ufspb.MachineLSE, error) {
 	ctx = clients.SetUFSNamespace(ctx, r.opts.Namespace)
-	filters := []string{fmt.Sprintf("hive=%s", r.opts.Hive)}
+	filters := []string{fmt.Sprintf("hive=%s", hive)}
 	res, err := r.ufsClient.BatchListMachineLSEs(ctx, filters, 0, true, false)
 	if err != nil {
 		return nil, err
@@ -77,7 +96,7 @@ func (r *regulator) ListAllSchedulingUnits(ctx context.Context) ([]*ufspb.Schedu
 }
 
 // ListAllDroneBots returns list of running Drone Swarming bots.
-func (r *regulator) ListAllDroneBots(ctx context.Context) ([]*apipb.BotInfo, error) {
+func (r *regulator) ListAllDroneBots(ctx context.Context, botConfig, ufsZone string) ([]*apipb.BotInfo, error) {
 	cursor := ""
 	var bots []*apipb.BotInfo
 	for {
@@ -88,11 +107,11 @@ func (r *regulator) ListAllDroneBots(ctx context.Context) ([]*apipb.BotInfo, err
 			Dimensions: []*apipb.StringPair{
 				{
 					Key:   "bot_config",
-					Value: "skylab.py",
+					Value: botConfig,
 				},
 				{
 					Key:   "ufs_zone",
-					Value: "ZONE_SFO36_OS",
+					Value: ufsZone,
 				},
 			},
 			IsDead: apipb.NullableBool_FALSE,
