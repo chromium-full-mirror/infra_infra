@@ -100,7 +100,7 @@ func TestComputeBoardModelToState(t *testing.T) {
 							DeviceLse: &ufspb.ChromeOSDeviceLSE{
 								Device: &ufspb.ChromeOSDeviceLSE_Dut{
 									Dut: &chromeosLab.DeviceUnderTest{
-										Hive: "cloudbots",
+										Hive: "cloudbots-large",
 									},
 								},
 							},
@@ -181,7 +181,7 @@ func TestComputeBoardModelToState(t *testing.T) {
 		}
 		want := map[string]*migrationState{
 			"board-1/model-1": {
-				Cloudbots: []string{
+				CloudbotsLarge: []string{
 					"dut-2",
 				},
 				Drone: []string{
@@ -233,7 +233,7 @@ func TestComputeBoardModelToState(t *testing.T) {
 							DeviceLse: &ufspb.ChromeOSDeviceLSE{
 								Device: &ufspb.ChromeOSDeviceLSE_Dut{
 									Dut: &chromeosLab.DeviceUnderTest{
-										Hive: "cloudbots",
+										Hive: "cloudbots-large",
 									},
 								},
 							},
@@ -282,17 +282,20 @@ func TestComputeNextModelState(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		amount       int32
+		amountSmall  int32
+		amountLarge  int32
 		currentState *migrationState
 		want         *migrationState
 	}{
 		{
-			amount: 1,
+			amountSmall: 1,
+			amountLarge: 0,
 			currentState: &migrationState{
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-1",
 					"dut-2",
 				},
+				CloudbotsLarge: []string{},
 				Drone: []string{
 					"dut-3",
 					"dut-4",
@@ -305,7 +308,8 @@ func TestComputeNextModelState(t *testing.T) {
 			},
 		},
 		{
-			amount: 100,
+			amountSmall: 100,
+			amountLarge: 0,
 			currentState: &migrationState{
 				Drone: []string{
 					"dut-1",
@@ -315,7 +319,7 @@ func TestComputeNextModelState(t *testing.T) {
 				},
 			},
 			want: &migrationState{
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-1",
 					"dut-2",
 					"dut-3",
@@ -324,10 +328,35 @@ func TestComputeNextModelState(t *testing.T) {
 			},
 		},
 		{
-			amount: 0,
+			amountSmall: 70,
+			amountLarge: 30,
 			currentState: &migrationState{
-				Cloudbots: []string{
+				Drone: []string{
 					"dut-1",
+					"dut-2",
+					"dut-3",
+					"dut-4",
+				},
+			},
+			want: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+				},
+				CloudbotsLarge: []string{
+					"dut-3",
+					"dut-4",
+				},
+			},
+		},
+		{
+			amountSmall: 0,
+			amountLarge: 0,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+				},
+				CloudbotsLarge: []string{
 					"dut-2",
 				},
 				Drone: []string{
@@ -343,12 +372,43 @@ func TestComputeNextModelState(t *testing.T) {
 			},
 		},
 		{
-			amount: 70,
+			amountSmall: 70,
+			amountLarge: 0,
 			currentState: &migrationState{
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-1",
 					"dut-2",
 					"dut-5",
+					"dut-6",
+				},
+				CloudbotsLarge: []string{},
+				Drone: []string{
+					"dut-3",
+					"dut-4",
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-3",
+					"dut-4",
+					"dut-7",
+				},
+			},
+		},
+		{
+			amountSmall: 50,
+			amountLarge: 20,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+					"dut-5",
+				},
+				CloudbotsLarge: []string{
 					"dut-6",
 				},
 				Drone: []string{
@@ -361,21 +421,46 @@ func TestComputeNextModelState(t *testing.T) {
 				},
 			},
 			want: &migrationState{
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-3",
 					"dut-4",
+				},
+				CloudbotsLarge: []string{
 					"dut-7",
 				},
 			},
+		},
+		{
+			amountSmall: 30,
+			amountLarge: 10,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+					"dut-5",
+				},
+				CloudbotsLarge: []string{
+					"dut-6",
+				},
+				Drone: []string{
+					"dut-3",
+					"dut-4",
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{},
 		},
 	}
 	for _, c := range cases {
 		// Loop closure.
 		c := c
-		t.Run(fmt.Sprintf("case: %d", c.amount), func(t *testing.T) {
+		t.Run(fmt.Sprintf("case: small_%d large_%d", c.amountSmall, c.amountLarge), func(t *testing.T) {
 			t.Parallel()
 			got := &migrationState{}
-			computeNextModelState(context.Background(), "model for log only", c.amount, c.currentState, got)
+			computeNextModelState(context.Background(), "model for log only", c.amountSmall, c.amountLarge, c.currentState, got)
 			if diff := cmp.Diff(c.want, got); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
@@ -395,8 +480,10 @@ func TestComputeNextMigrationSate(t *testing.T) {
 		t.Parallel()
 		bms := map[string]*migrationState{
 			"board-1/model-1": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-1",
+				},
+				CloudbotsLarge: []string{
 					"dut-2",
 				},
 				Drone: []string{
@@ -404,7 +491,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				},
 			},
 			"board-1/model-2": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-41",
 					"dut-42",
 					"dut-43",
@@ -413,15 +500,19 @@ func TestComputeNextMigrationSate(t *testing.T) {
 					"dut-46",
 					"dut-47",
 					"dut-48",
+				},
+				CloudbotsLarge: []string{
 					"dut-49",
 					"dut-50",
 				},
 			},
 			"board-2/model-4": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-61",
 					"dut-62",
 					"dut-63",
+				},
+				CloudbotsLarge: []string{
 					"dut-64",
 				},
 				Drone: []string{
@@ -429,7 +520,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				},
 			},
 			"board-2/model-5": {
-				Cloudbots: []string{
+				CloudbotsLarge: []string{
 					"dut-70",
 				},
 				Drone: []string{
@@ -444,7 +535,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				},
 			},
 			"board-3/model-3": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-51",
 					"dut-52",
 					"dut-53",
@@ -460,7 +551,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				},
 			},
 			"board-3/model-6": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-81",
 					"dut-82",
 					"dut-83",
@@ -476,7 +567,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				},
 			},
 			"board-3/model-7": {
-				Cloudbots: []string{
+				CloudbotsLarge: []string{
 					"dut-91",
 					"dut-92",
 				},
@@ -504,15 +595,22 @@ func TestComputeNextMigrationSate(t *testing.T) {
 			// The filtering happens earlier.
 			excludePools: nil,
 			overrideBoardModel: map[string]int32{
-				"board-2/*":       90,
+				"board-2/*":       70,
 				"board-1/model-1": 0,
-				"board-3/model-3": 58,
+				"board-3/model-3": 38,
 				"*/model-7":       100,
+			},
+			largeMemoryOverrideBoardModel: map[string]int32{
+				"board-2/*":       15,
+				"board-1/model-1": 0,
+				"board-3/model-3": 20,
+				"*/model-7":       15,
+				"board-1/model-2": 1,
 			},
 		}
 		got := m.ComputeNextMigrationState(context.Background(), bms, cs)
 		want := &migrationState{
-			Cloudbots: []string{
+			CloudbotsSmall: []string{
 				"dut-65",
 				"dut-71",
 				"dut-72",
@@ -521,10 +619,15 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				"dut-75",
 				"dut-76",
 				"dut-77",
-				"dut-78",
 				"dut-93",
 				"dut-94",
 				"dut-95",
+				"dut-91",
+			},
+			CloudbotsLarge: []string{
+				"dut-51",
+				"dut-52",
+				"dut-78",
 			},
 			Drone: []string{
 				"dut-1",
@@ -532,8 +635,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 				"dut-41",
 				"dut-42",
 				"dut-43",
-				"dut-44",
-				"dut-45",
+				"dut-49",
 				"dut-81",
 				"dut-82",
 				"dut-83",
@@ -549,7 +651,7 @@ func TestComputeNextMigrationSate(t *testing.T) {
 	t.Run("Should panic if migrationState keys does no contain ONE '/'", func(t *testing.T) {
 		bms := map[string]*migrationState{
 			"board-1model-1": {
-				Cloudbots: []string{
+				CloudbotsSmall: []string{
 					"dut-1",
 				},
 				Drone: []string{
