@@ -12,13 +12,15 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromeperf/pinpoint/proto"
 )
@@ -100,7 +102,7 @@ func setup(t *testing.T) (testPaths, error) {
 
 // start invokes the relevant servers in the background. The cleanup function
 // must always be called, even if an error is also returned.
-func start(ctx context.Context, t *testing.T, paths testPaths) (cleanup func(), execCLI func(args ...string) (string, error), _ error) {
+func start(ctx context.Context, t testing.TB, paths testPaths) (cleanup func(), execCLI func(args ...string) (string, error), _ error) {
 	unexpectedError := func(err error) {
 		t.Errorf("Test invariant failure: %v", err)
 	}
@@ -201,7 +203,7 @@ func waitForServices(ctx context.Context, grpcEndpoint string) error {
 	}
 }
 
-func extractJobID(t *testing.T, out string) string {
+func extractJobID(t testing.TB, out string) string {
 	lastSlash := strings.LastIndexByte(out, '/')
 	if lastSlash == -1 {
 		t.Fatalf("couldn't find URL-like path in CLI output:\n\n%s", out)
@@ -229,21 +231,21 @@ func TestScheduleJobFlow(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	Convey("With a fresh set of servers", t, func() {
+	ftt.Run("With a fresh set of servers", t, func(t *ftt.Test) {
 		ctx, cf := context.WithCancel(context.Background())
 		defer cf()
 
 		cleanup, execCLI, err := start(ctx, t, paths)
 		defer cleanup()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("list-jobs is empty", func() {
+		t.Run("list-jobs is empty", func(t *ftt.Test) {
 			out, err := execCLI("list-jobs")
-			So(err, ShouldBeNil)
-			So(out, ShouldEqual, "\n")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, out, should.Equal("\n"))
 		})
 
-		Convey("creating a new telemetry experiment succeeds", func() {
+		t.Run("creating a new telemetry experiment succeeds", func(t *ftt.Test) {
 			out, err := execCLI(
 				"experiment-telemetry-start",
 				"-base-commit", "abcefg",
@@ -252,21 +254,21 @@ func TestScheduleJobFlow(t *testing.T) {
 				"-story", "JetStream2",
 				"-cfg", "linux-perf",
 			)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			jobID := extractJobID(t, out)
 
-			Convey("get-job shows the new job", func() {
+			t.Run("get-job shows the new job", func(t *ftt.Test) {
 				out, err = execCLI("get-job", "-name", jobID)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("list-jobs shows the new job", func() {
+			t.Run("list-jobs shows the new job", func(t *ftt.Test) {
 				out, err = execCLI("list-jobs")
-				So(err, ShouldBeNil)
-				So(out, ShouldContainSubstring, jobID)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, out, should.ContainSubstring(jobID))
 			})
 		})
 
-		Convey("creating a new telemetry experiment with presets works", func() {
+		t.Run("creating a new telemetry experiment with presets works", func(t *ftt.Test) {
 			out, err := execCLI(
 				"experiment-telemetry-start",
 				"-presets-file", "testdata/sample-presets.yaml",
@@ -274,19 +276,19 @@ func TestScheduleJobFlow(t *testing.T) {
 				"-exp-cl", "1234/5",
 				"-preset", "sample",
 			)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			jobID := extractJobID(t, out)
 
-			Convey("get-job shows the new job", func() {
+			t.Run("get-job shows the new job", func(t *ftt.Test) {
 				out, err = execCLI("get-job", "-name", jobID)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 
-		Convey("config shows the expected flags for a user config", func() {
+		t.Run("config shows the expected flags for a user config", func(t *ftt.Test) {
 			out, err := exec.Command(paths.pinpointCLI, "config").CombinedOutput()
-			So(err, ShouldBeNil)
-			So(string(out), ShouldContainSubstring, "testdata/sample-presets.yaml")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(out), should.ContainSubstring("testdata/sample-presets.yaml"))
 		})
 	})
 }

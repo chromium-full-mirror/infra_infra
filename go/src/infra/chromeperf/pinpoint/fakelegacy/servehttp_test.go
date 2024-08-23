@@ -22,12 +22,15 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
+
 	"infra/chromeperf/pinpoint"
-	. "infra/chromeperf/pinpoint/assertions"
+	"infra/chromeperf/pinpoint/assertions"
 	"infra/chromeperf/pinpoint/fakelegacy"
 	"infra/chromeperf/pinpoint/proto"
 	"infra/chromeperf/pinpoint/server"
@@ -68,38 +71,38 @@ func TestStaticUsage(t *testing.T) {
 	grpcPinpoint := server.New(ts.URL, ts.Client())
 
 	ctx := context.Background()
-	Convey("GetJob should return known job", t, func() {
+	ftt.Run("GetJob should return known job", t, func(t *ftt.Test) {
 		j, err := grpcPinpoint.GetJob(ctx, &proto.GetJobRequest{Name: legacyName0})
-		So(err, ShouldBeNil)
-		So(j.Name, ShouldEqual, legacyName0)
-		So(j.State, ShouldEqual, proto.Job_SUCCEEDED)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, j.Name, should.Equal(legacyName0))
+		assert.Loosely(t, j.State, should.Equal(proto.Job_SUCCEEDED))
 	})
-	Convey("GetJob should return NotFound for unknown job", t, func() {
+	ftt.Run("GetJob should return NotFound for unknown job", t, func(t *ftt.Test) {
 		_, err := grpcPinpoint.GetJob(ctx, &proto.GetJobRequest{Name: pinpoint.LegacyJobName("86753098675309")})
-		So(err, ShouldBeStatusError, codes.NotFound)
+		assert.That(t, err, assertions.ShouldBeStatusError(codes.NotFound))
 	})
-	Convey("ListJobs should return both known jobs", t, func() {
+	ftt.Run("ListJobs should return both known jobs", t, func(t *ftt.Test) {
 		list, err := grpcPinpoint.ListJobs(ctx, &proto.ListJobsRequest{})
-		So(err, ShouldBeNil)
-		So(list.Jobs, ShouldHaveLength, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, list.Jobs, should.HaveLength(2))
 
 		sort.Slice(list.Jobs, func(i, j int) bool {
 			return list.Jobs[i].Name < list.Jobs[j].Name
 		})
-		So(list.Jobs[0].Name, ShouldEqual, legacyName0)
-		So(list.Jobs[1].Name, ShouldEqual, legacyName1)
+		assert.Loosely(t, list.Jobs[0].Name, should.Equal(legacyName0))
+		assert.Loosely(t, list.Jobs[1].Name, should.Equal(legacyName1))
 	})
 }
 
 func TestAddJob(t *testing.T) {
-	Convey("Given a fresh fakelegacy server", t, func() {
+	ftt.Run("Given a fresh fakelegacy server", t, func(t *ftt.Test) {
 		const userEmail = "user@example.com"
 
 		fake, err := fakelegacy.NewServer(
 			templateDir,
 			map[string]*fakelegacy.Job{},
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		ts := httptest.NewServer(fake.Handler())
 		defer ts.Close()
 
@@ -112,7 +115,7 @@ func TestAddJob(t *testing.T) {
 				),
 			},
 		})
-		Convey("Users can schedule a gtest benchmark", func() {
+		t.Run("Users can schedule a gtest benchmark", func(t *ftt.Test) {
 			job, err := grpcPinpoint.ScheduleJob(ctx, &proto.ScheduleJobRequest{
 				Job: &proto.JobSpec{
 					Config: "some-config",
@@ -126,22 +129,22 @@ func TestAddJob(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			name := job.Name
 
-			Convey("Users can immediately GetJob", func() {
+			t.Run("Users can immediately GetJob", func(t *ftt.Test) {
 				job, err := grpcPinpoint.GetJob(ctx, &proto.GetJobRequest{Name: name})
-				So(err, ShouldBeNil)
-				So(job.Name, ShouldEqual, name)
-				So(job.State, ShouldEqual, proto.Job_PENDING)
-				So(job.CreatedBy, ShouldEqual, userEmail)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, job.Name, should.Equal(name))
+				assert.Loosely(t, job.State, should.Equal(proto.Job_PENDING))
+				assert.Loosely(t, job.CreatedBy, should.Equal(userEmail))
 			})
 
-			Convey("The new job shows up in ListJobs", func() {
+			t.Run("The new job shows up in ListJobs", func(t *ftt.Test) {
 				list, err := grpcPinpoint.ListJobs(ctx, &proto.ListJobsRequest{})
-				So(err, ShouldBeNil)
-				So(list.Jobs, ShouldHaveLength, 1)
-				So(list.Jobs[0].Name, ShouldEqual, name)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, list.Jobs, should.HaveLength(1))
+				assert.Loosely(t, list.Jobs[0].Name, should.Equal(name))
 			})
 		})
 	})

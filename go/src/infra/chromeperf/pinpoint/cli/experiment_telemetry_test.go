@@ -25,8 +25,11 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	. "github.com/smartystreets/goconvey/convey"
 	grpc "google.golang.org/grpc"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromeperf/pinpoint/proto"
 )
@@ -102,16 +105,16 @@ func (c *fakePinpointClient) CancelJob(ctx context.Context, in *proto.CancelJobR
 
 func TestGetTarget(t *testing.T) {
 	t.Parallel()
-	Convey("GetTarget should return different values for different bot cfgs", t, func() {
-		So(getTarget("somenewtarget"), ShouldEqual, "performance_test_suite")
-		So(getTarget("lacros-eve-perf"), ShouldEqual, "performance_test_suite_eve")
-		So(getTarget("android-pixel2_webview-perf"), ShouldEqual, "performance_webview_test_suite")
+	ftt.Run("GetTarget should return different values for different bot cfgs", t, func(t *ftt.Test) {
+		assert.Loosely(t, getTarget("somenewtarget"), should.Equal("performance_test_suite"))
+		assert.Loosely(t, getTarget("lacros-eve-perf"), should.Equal("performance_test_suite_eve"))
+		assert.Loosely(t, getTarget("android-pixel2_webview-perf"), should.Equal("performance_webview_test_suite"))
 	})
 }
 
 func TestBatchKickoff(t *testing.T) {
 	t.Parallel()
-	Convey("A batch config should kick off a set of jobs", t, func() {
+	ftt.Run("A batch config should kick off a set of jobs", t, func(t *ftt.Test) {
 		batch_experiments := []telemetryBatchExperiment{
 			{
 				Benchmark: "desktop",
@@ -135,9 +138,9 @@ func TestBatchKickoff(t *testing.T) {
 		runner.baseCommandRun.workDir, err = ioutil.TempDir("", "tmp")
 		runner.initialAttemptCount = int(testInitialAttemptCount)
 		runner.priority = int(testPriority)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		jobs, err := runBatchJob(&runner, context.Background(), os.Stdout, c, "batch", batch_experiments, &experiment)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		expected := []startedJob{
 			{
@@ -189,22 +192,22 @@ func TestBatchKickoff(t *testing.T) {
 				StoryTags:           []string{"tagA", "tagB"},
 			},
 		}
-		So(cmp.Equal(c.Jobs, expected, cmpopts.SortSlices(less)), ShouldBeTrue)
-		So(len(jobs), ShouldEqual, 6)
+		assert.Loosely(t, cmp.Equal(c.Jobs, expected, cmpopts.SortSlices(less)), should.BeTrue)
+		assert.Loosely(t, len(jobs), should.Equal(6))
 
 		// Check the jobs file
 		jobs_filename := filepath.Join(runner.baseCommandRun.workDir, "batch.txt")
 		_, err = os.Stat(jobs_filename)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		content, err := ioutil.ReadFile(jobs_filename)
-		So(err, ShouldBeNil)
-		So(cmp.Equal(string(content), "4242\n4242\n4242\n4242\n4242\n4242\n"), ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmp.Equal(string(content), "4242\n4242\n4242\n4242\n4242\n4242\n"), should.BeTrue)
 	})
 }
 
 func TestCLIFlagOverriding(t *testing.T) {
 	t.Parallel()
-	Convey("CLI args must override presets", t, func() {
+	ftt.Run("CLI args must override presets", t, func(t *ftt.Test) {
 		batch_experiments := []telemetryBatchExperiment{
 			{
 				Benchmark:   "desktop",
@@ -247,10 +250,10 @@ func TestCLIFlagOverriding(t *testing.T) {
 			},
 		}
 		fmt.Println(cmp.Diff(batch_experiments, expected))
-		So(cmp.Equal(batch_experiments, expected), ShouldBeTrue)
+		assert.Loosely(t, cmp.Equal(batch_experiments, expected), should.BeTrue)
 	})
 
-	Convey("A single CLI override must not impact other preset params", t, func() {
+	ftt.Run("A single CLI override must not impact other preset params", t, func(t *ftt.Test) {
 		batch_experiments := []telemetryBatchExperiment{
 			{
 				Benchmark:   "desktop",
@@ -287,24 +290,24 @@ func TestCLIFlagOverriding(t *testing.T) {
 			},
 		}
 		fmt.Println(cmp.Diff(batch_experiments, expected))
-		So(cmp.Equal(batch_experiments, expected), ShouldBeTrue)
+		assert.Loosely(t, cmp.Equal(batch_experiments, expected), should.BeTrue)
 	})
 }
 
 func TestGetTelemetryBatchExperiments(t *testing.T) {
 	t.Parallel()
 
-	Convey("Zero experiments are generated from no preset and incomplete CLI flags", t, func() {
+	ftt.Run("Zero experiments are generated from no preset and incomplete CLI flags", t, func(t *ftt.Test) {
 		p := preset{}
 		runner := experimentTelemetryRun{}
 		runner.configurations = []string{"config1", "config2"}
 		runner.benchmark = "benchmark"
 		actual, _ := getTelemetryBatchExperiments(&runner, nil, p)
 		expected := []telemetryBatchExperiment{}
-		So(actual, ShouldResemble, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 
-	Convey("A valid experiment is generated from only CLI flags", t, func() {
+	ftt.Run("A valid experiment is generated from only CLI flags", t, func(t *ftt.Test) {
 		p := preset{}
 		runner := experimentTelemetryRun{}
 		runner.configurations = []string{"config1", "config2"}
@@ -322,10 +325,10 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				Measurement: "measurement",
 			},
 		}
-		So(actual, ShouldResemble, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 
-	Convey("A valid experiment is generated from a single-run preset and CLI flags", t, func() {
+	ftt.Run("A valid experiment is generated from a single-run preset and CLI flags", t, func(t *ftt.Test) {
 		experiment := telemetryExperimentJobSpec{
 			Benchmark:   "benchmark",
 			Config:      "cfg",
@@ -348,10 +351,10 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				ExtraArgs:   []string{"arg1"},
 			},
 		}
-		So(actual, ShouldResemble, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 
-	Convey("A valid experiment is generated from a multi-run preset and CLI flags", t, func() {
+	ftt.Run("A valid experiment is generated from a multi-run preset and CLI flags", t, func(t *ftt.Test) {
 		batch_experiments := []telemetryBatchExperiment{
 			{
 				Benchmark:   "desktop",
@@ -390,6 +393,6 @@ func TestGetTelemetryBatchExperiments(t *testing.T) {
 				Measurement: "LCP",
 			},
 		}
-		So(actual, ShouldResemble, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 }

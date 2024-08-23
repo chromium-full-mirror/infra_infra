@@ -23,13 +23,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 
 	configProto "go.chromium.org/luci/common/proto/config"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/memory"
 
@@ -240,10 +242,10 @@ func TestValidConfigurations(t *testing.T) {
 	defer conn.Close()
 	client := workflows.NewWorkflowTemplatesClient(conn)
 
-	Convey("Given a valid configuration defined with one template", t, func() {
+	ftt.Run("Given a valid configuration defined with one template", t, func(t *ftt.Test) {
 		mockConfig(configSingleTemplate)
 
-		Convey("When we attempt to validate the contents", func() {
+		t.Run("When we attempt to validate the contents", func(t *ftt.Test) {
 			resp, err := client.ValidateConfig(
 				ctx, &configProto.ValidationRequestMessage{
 					ConfigSet: "test-validation",
@@ -252,56 +254,56 @@ func TestValidConfigurations(t *testing.T) {
 				},
 			)
 
-			Convey("Then we get a non-error response", func() {
-				So(err, ShouldBeNil)
-				So(resp.Messages, ShouldBeEmpty)
+			t.Run("Then we get a non-error response", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, resp.Messages, should.BeEmpty)
 			})
 		})
 
-		Convey("When we list the templates", func() {
+		t.Run("When we list the templates", func(t *ftt.Test) {
 			resp, err := client.ListWorkflowTemplates(
 				ctx, &workflows.ListWorkflowTemplatesRequest{
 					PageSize: 10,
 				},
 			)
 
-			Convey("Then we find that the defined template is in the list", func() {
-				So(err, ShouldBeNil)
-				So(resp.WorkflowTemplates, ShouldNotBeEmpty)
+			t.Run("Then we find that the defined template is in the list", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, resp.WorkflowTemplates, should.NotBeEmpty)
 			})
 		})
 
-		Convey("When we get the template by name", func() {
+		t.Run("When we get the template by name", func(t *ftt.Test) {
 			wt, err := client.GetWorkflowTemplate(ctx, &workflows.GetWorkflowTemplateRequest{
 				Name: "/workflow-template/chromium-telemetry-bisect-v1",
 			})
 
-			Convey("Then we get a non-error response", func() {
-				So(err, ShouldBeNil)
+			t.Run("Then we get a non-error response", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
 			})
 
-			Convey("And we find that the defined template is retrieved", func() {
-				So(wt.Name, ShouldEqual, "chromium-telemetry-bisect-v1")
+			t.Run("And we find that the defined template is retrieved", func(t *ftt.Test) {
+				assert.Loosely(t, wt.Name, should.Equal("chromium-telemetry-bisect-v1"))
 			})
 
 		})
 
-		Convey("When we get a template that is not defined", func() {
+		t.Run("When we get a template that is not defined", func(t *ftt.Test) {
 			wt, err := client.GetWorkflowTemplate(ctx, &workflows.GetWorkflowTemplateRequest{
 				Name: "/workflow-template/nonexistent",
 			})
 
-			Convey("Then we get a not-found error response", func() {
-				So(status.Code(err), ShouldEqual, codes.NotFound)
-				So(wt, ShouldBeNil)
+			t.Run("Then we get a not-found error response", func(t *ftt.Test) {
+				assert.Loosely(t, status.Code(err), should.Equal(codes.NotFound))
+				assert.Loosely(t, wt, should.BeNil)
 			})
 		})
 	})
 
-	Convey("Given a valid configuration with more templates", t, func() {
+	ftt.Run("Given a valid configuration with more templates", t, func(t *ftt.Test) {
 		mockConfig(configMultipleTemplates)
 
-		Convey("When we attempt to validate the contents", func() {
+		t.Run("When we attempt to validate the contents", func(t *ftt.Test) {
 			resp, err := client.ValidateConfig(
 				ctx, &configProto.ValidationRequestMessage{
 					ConfigSet: "test-validation",
@@ -310,37 +312,37 @@ func TestValidConfigurations(t *testing.T) {
 				},
 			)
 
-			Convey("Then we get a non-error response", func() {
-				So(err, ShouldBeNil)
-				So(resp.Messages, ShouldBeEmpty)
+			t.Run("Then we get a non-error response", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, resp.Messages, should.BeEmpty)
 			})
 		})
 
-		Convey("When we list the templates", func() {
+		t.Run("When we list the templates", func(t *ftt.Test) {
 			resp, err := client.ListWorkflowTemplates(
 				ctx, &workflows.ListWorkflowTemplatesRequest{
 					PageSize: 10,
 				},
 			)
 
-			Convey("Then we find that the defined templates are in the list", func() {
-				So(err, ShouldBeNil)
-				So(resp.WorkflowTemplates, ShouldHaveLength, 2)
+			t.Run("Then we find that the defined templates are in the list", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, resp.WorkflowTemplates, should.HaveLength(2))
 			})
 
 		})
 
-		Convey("When we get the templates by name", func() {
+		t.Run("When we get the templates by name", func(t *ftt.Test) {
 			wt, err := client.GetWorkflowTemplate(ctx, &workflows.GetWorkflowTemplateRequest{
 				Name: "/workflow-template/chromium-telemetry-ab-v1",
 			})
 
-			Convey("Then we get a non-error response", func() {
-				So(err, ShouldBeNil)
+			t.Run("Then we get a non-error response", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
 			})
 
-			Convey("And we find that the defined templates are retrieved", func() {
-				So(wt.Name, ShouldEqual, "chromium-telemetry-ab-v1")
+			t.Run("And we find that the defined templates are retrieved", func(t *ftt.Test) {
+				assert.Loosely(t, wt.Name, should.Equal("chromium-telemetry-ab-v1"))
 			})
 
 		})
@@ -351,21 +353,21 @@ func TestValidConfigurations(t *testing.T) {
 
 func TestInvalidConfigurations(t *testing.T) {
 
-	Convey("Given a configuration with ill-formed text protobufs", t, func() {
+	ftt.Run("Given a configuration with ill-formed text protobufs", t, func(t *ftt.Test) {
 
-		Convey("When we attempt to validate the contents", func() {
+		t.Run("When we attempt to validate the contents", func(t *ftt.Test) {
 
-			Convey("Then we get a validation response with an ERROR severity", nil)
+			t.Run("Then we get a validation response with an ERROR severity", nil)
 
 		})
 
 	})
 
-	Convey("Given a configuration with missing input fields", t, func() {
+	ftt.Run("Given a configuration with missing input fields", t, func(t *ftt.Test) {
 
-		Convey("When we attempt to validate the contents", func() {
+		t.Run("When we attempt to validate the contents", func(t *ftt.Test) {
 
-			Convey("Then we get a validation response with an ERROR severity", nil)
+			t.Run("Then we get a validation response with an ERROR severity", nil)
 
 		})
 

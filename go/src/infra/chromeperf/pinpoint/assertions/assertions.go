@@ -17,22 +17,23 @@
 package assertions
 
 import (
-	"fmt"
-
-	"github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/common/testing/truth/comparison"
+	"go.chromium.org/luci/common/testing/truth/failure"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
-func ShouldBeStatusError(got interface{}, want ...interface{}) string {
-	err, ok := got.(error)
-	if !ok {
-		return fmt.Sprintf("actual value was not of type error: got type %T (value=%v)", got, got)
+// ShouldbeStatusError checks that an error is a status error with the given status.
+func ShouldBeStatusError(want codes.Code) comparison.Func[error] {
+	return func(got error) *failure.Summary {
+		s, ok := status.FromError(got)
+		if !ok {
+			sb := comparison.NewSummaryBuilder("should.BeStatusError")
+			sb = sb.AddFindingf("error type", "error was not a Status error, found %T", got)
+			return sb.Summary
+		}
+		return should.Equal(want)(s.Code())
 	}
-	wantCode := want[0].(codes.Code)
-	s, ok := status.FromError(err)
-	if !ok {
-		return fmt.Sprintf("error was not a Status error, found %T", err)
-	}
-	return convey.ShouldEqual(s.Code(), wantCode)
 }

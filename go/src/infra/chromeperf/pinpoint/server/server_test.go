@@ -26,20 +26,23 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/test/bufconn"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
+
 	"infra/chromeperf/pinpoint"
-	. "infra/chromeperf/pinpoint/assertions"
+	"infra/chromeperf/pinpoint/assertions"
 	"infra/chromeperf/pinpoint/proto"
 )
 
 const bufSize = 1024 * 1024
 
-func registerPinpointServer(t *testing.T, srv *pinpointServer) func(context.Context, string) (net.Conn, error) {
+func registerPinpointServer(t testing.TB, srv *pinpointServer) func(context.Context, string) (net.Conn, error) {
 	t.Helper()
 
 	l := bufconn.Listen(bufSize)
@@ -81,7 +84,7 @@ func (rr *requestRecorder) startRecord() (done func() []*url.URL) {
 	}
 }
 
-func startFakeLegacyServer(t *testing.T, httpResponses map[string]string) *requestRecorder {
+func startFakeLegacyServer(t testing.TB, httpResponses map[string]string) *requestRecorder {
 	ret := new(requestRecorder)
 	ret.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if ret.recording {
@@ -101,40 +104,39 @@ func startFakeLegacyServer(t *testing.T, httpResponses map[string]string) *reque
 }
 
 func TestServerService(t *testing.T) {
-	t.Parallel()
 	ctx := context.Background()
-	Convey("Given a grpc server without a client", t, func() {
+	ftt.Run("Given a grpc server without a client", t, func(t *ftt.Test) {
 		dialer := registerPinpointServer(t, &pinpointServer{})
 
-		Convey("When we connect to the Pinpoint service", func() {
+		t.Run("When we connect to the Pinpoint service", func(t *ftt.Test) {
 			conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			t.Cleanup(func() { conn.Close() })
 			client := proto.NewPinpointClient(conn)
 
-			Convey("Then requests to ScheduleJob will fail with 'misconfigured service'", func() {
+			t.Run("Then requests to ScheduleJob will fail with 'misconfigured service'", func(t *ftt.Test) {
 				_, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{})
-				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldContainSubstring, "misconfigured service")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err.Error(), should.ContainSubstring("misconfigured service"))
 			})
 
 		})
 	})
 
-	Convey("Given a grpc server with a legacy client not behind the ESP", t, func() {
+	ftt.Run("Given a grpc server with a legacy client not behind the ESP", t, func(t *ftt.Test) {
 		ts := startFakeLegacyServer(t, nil)
 		log.Printf("legacy service = %s", ts.URL)
 		dialer := registerPinpointServer(t, &pinpointServer{legacyPinpointService: ts.URL, LegacyClient: &http.Client{}})
 
-		Convey("When we connect to the Pinpoint service", func() {
+		t.Run("When we connect to the Pinpoint service", func(t *ftt.Test) {
 			conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer conn.Close()
 			client := proto.NewPinpointClient(conn)
-			Convey("Then requests to ScheduleJob will fail with 'missing required auth header'", func() {
+			t.Run("Then requests to ScheduleJob will fail with 'missing required auth header'", func(t *ftt.Test) {
 				_, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{})
-				So(err, ShouldBeStatusError, codes.PermissionDenied)
-				So(err.Error(), ShouldContainSubstring, "missing required auth header")
+				assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.PermissionDenied))
+				assert.Loosely(t, err.Error(), should.ContainSubstring("missing required auth header"))
 			})
 		})
 	})
@@ -158,55 +160,55 @@ func TestGetJob(t *testing.T) {
 	log.Printf("legacy service = %s", ts.URL)
 
 	ctx := context.Background()
-	Convey("Given a grpc server with a client", t, func() {
+	ftt.Run("Given a grpc server with a client", t, func(t *ftt.Test) {
 		dialer := registerPinpointServer(t, &pinpointServer{legacyPinpointService: ts.URL, LegacyClient: &http.Client{}})
 
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer conn.Close()
 		client := proto.NewPinpointClient(conn)
 
-		Convey("When we attempt to get a defined job", func() {
+		t.Run("When we attempt to get a defined job", func(t *ftt.Test) {
 			j, err := client.GetJob(ctx, &proto.GetJobRequest{
 				Name: definedJobName,
 			})
 
-			Convey("Then we find details in the response proto", func() {
-				So(err, ShouldBeNil)
-				So(j.Name, ShouldEqual, definedJobName)
+			t.Run("Then we find details in the response proto", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, j.Name, should.Equal(definedJobName))
 			})
 		})
 
-		Convey("When we attempt to get an undefined job", func() {
+		t.Run("When we attempt to get an undefined job", func(t *ftt.Test) {
 			_, err := client.GetJob(ctx, &proto.GetJobRequest{
 				Name: "jobs/legacy-02",
 			})
-			Convey("Then we get an error in the gRPC request", func() {
-				So(err, ShouldBeStatusError, codes.NotFound)
+			t.Run("Then we get an error in the gRPC request", func(t *ftt.Test) {
+				assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.NotFound))
 			})
 
 		})
 
-		Convey("When we attempt to provide an ill-defined legacy id", func() {
+		t.Run("When we attempt to provide an ill-defined legacy id", func(t *ftt.Test) {
 			_, err := client.GetJob(ctx, &proto.GetJobRequest{
 				Name: "jobs/legacy-",
 			})
-			Convey("Then we get an error in the gRPC request", func() {
-				So(err, ShouldBeStatusError, codes.InvalidArgument)
+			t.Run("Then we get an error in the gRPC request", func(t *ftt.Test) {
+				assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.InvalidArgument))
 			})
 		})
 
-		Convey("When we attempt go get an experiment job with results", func() {
+		t.Run("When we attempt go get an experiment job with results", func(t *ftt.Test) {
 			j, err := client.GetJob(ctx, &proto.GetJobRequest{
 				Name: definedJobName,
 			})
-			Convey("Then we find the results in the response", func() {
-				So(err, ShouldBeNil)
+			t.Run("Then we find the results in the response", func(t *ftt.Test) {
+				assert.Loosely(t, err, should.BeNil)
 				exp := j.JobSpec.GetExperiment()
-				So(exp, ShouldNotBeNil)
-				So(exp.BaseCommit.GitHash, ShouldEqual, "0d8952cfc50b039bf50320c9d3db82b164f3e549")
-				So(exp.ExperimentPatch.Change, ShouldEqual, 2560197)
-				So(exp.ExperimentPatch.Patchset, ShouldEqual, 12)
+				assert.Loosely(t, exp, should.NotBeNil)
+				assert.Loosely(t, exp.BaseCommit.GitHash, should.Equal("0d8952cfc50b039bf50320c9d3db82b164f3e549"))
+				assert.Loosely(t, exp.ExperimentPatch.Change, should.Equal(2560197))
+				assert.Loosely(t, exp.ExperimentPatch.Patchset, should.Equal(12))
 			})
 		})
 	})
@@ -236,40 +238,40 @@ func TestCancelJob(t *testing.T) {
 			base64.RawURLEncoding.EncodeToString([]byte(`{"email": "anonymous-user@example.com"}`)),
 		},
 	})
-	Convey("Given a grpc server with a client", t, func() {
+	ftt.Run("Given a grpc server with a client", t, func(t *ftt.Test) {
 		dialer := registerPinpointServer(t, &pinpointServer{legacyPinpointService: ts.URL, LegacyClient: &http.Client{}})
 
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer conn.Close()
 		client := proto.NewPinpointClient(conn)
 
-		Convey("with an un-authenticated connection", func() {
-			Convey("We fail to cancel the job", func() {
+		t.Run("with an un-authenticated connection", func(t *ftt.Test) {
+			t.Run("We fail to cancel the job", func(t *ftt.Test) {
 				_, err := client.CancelJob(ctx, &proto.CancelJobRequest{Name: definedJobName, Reason: "because"})
-				So(err, ShouldBeStatusError, codes.PermissionDenied)
+				assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.PermissionDenied))
 			})
 		})
 
-		Convey("with an authenticated connection", func() {
-			Convey("with an authorized connection", func() {
+		t.Run("with an authenticated connection", func(t *ftt.Test) {
+			t.Run("with an authorized connection", func(t *ftt.Test) {
 				ctx := authorizedCtx
-				Convey("We fail to cancel the Job without a reason", func() {
+				t.Run("We fail to cancel the Job without a reason", func(t *ftt.Test) {
 					_, err := client.CancelJob(ctx, &proto.CancelJobRequest{Name: definedJobName})
-					So(err, ShouldBeStatusError, codes.InvalidArgument)
+					assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.InvalidArgument))
 				})
-				Convey("We fail to cancel the Job without a name", func() {
+				t.Run("We fail to cancel the Job without a name", func(t *ftt.Test) {
 					_, err := client.CancelJob(ctx, &proto.CancelJobRequest{Reason: "because"})
-					So(err, ShouldBeStatusError, codes.InvalidArgument)
+					assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.InvalidArgument))
 				})
-				Convey("We can cancel a job with name and reason", func() {
+				t.Run("We can cancel a job with name and reason", func(t *ftt.Test) {
 					j, err := client.CancelJob(ctx, &proto.CancelJobRequest{Name: definedJobName, Reason: "because"})
-					So(err, ShouldBeNil)
-					So(j.Name, ShouldEqual, definedJobName)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, j.Name, should.Equal(definedJobName))
 				})
-				Convey("We fail to cancel a missing job", func() {
+				t.Run("We fail to cancel a missing job", func(t *ftt.Test) {
 					_, err := client.CancelJob(ctx, &proto.CancelJobRequest{Name: "doesnt-exist", Reason: "because"})
-					So(err, ShouldBeStatusError, codes.InvalidArgument)
+					assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.InvalidArgument))
 				})
 			})
 		})
@@ -289,27 +291,27 @@ func TestListJob(t *testing.T) {
 	defer ts.Close()
 
 	ctx := context.Background()
-	Convey("Given a grpc server with a client", t, func() {
+	ftt.Run("Given a grpc server with a client", t, func(t *ftt.Test) {
 		dialer := registerPinpointServer(t, &pinpointServer{legacyPinpointService: ts.URL, LegacyClient: &http.Client{}})
 
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer conn.Close()
 		client := proto.NewPinpointClient(conn)
 
-		Convey("listing results is successful", func() {
+		t.Run("listing results is successful", func(t *ftt.Test) {
 			_, err := client.ListJobs(ctx, &proto.ListJobsRequest{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("filters in the RPC request make it to the legacy service", func() {
+		t.Run("filters in the RPC request make it to the legacy service", func(t *ftt.Test) {
 			const filter = "THE FILTER"
 
 			getURLs := ts.startRecord()
 			_, err := client.ListJobs(ctx, &proto.ListJobsRequest{Filter: filter})
 			urls := getURLs()
-			So(err, ShouldBeNil)
-			So(len(urls), ShouldEqual, 1)
-			So(urls[0].String(), ShouldContainSubstring, url.QueryEscape(filter))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(urls), should.Equal(1))
+			assert.Loosely(t, urls[0].String(), should.ContainSubstring(url.QueryEscape(filter)))
 		})
 	})
 }
@@ -330,27 +332,27 @@ func TestScheduleJob(t *testing.T) {
 			base64.RawURLEncoding.EncodeToString([]byte(`{"email": "user@example.com"}`)),
 		},
 	})
-	Convey("Given a grpc server with a client", t, func() {
+	ftt.Run("Given a grpc server with a client", t, func(t *ftt.Test) {
 		dialer := registerPinpointServer(t, &pinpointServer{legacyPinpointService: ts.URL, LegacyClient: &http.Client{}})
 
 		conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithInsecure())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer conn.Close()
 		client := proto.NewPinpointClient(conn)
 
-		Convey("without authentication, ScheduleJob fails", func() {
+		t.Run("without authentication, ScheduleJob fails", func(t *ftt.Test) {
 			_, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{})
-			So(err, ShouldBeStatusError, codes.PermissionDenied)
+			assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.PermissionDenied))
 		})
-		Convey("with authentication", func() {
+		t.Run("with authentication", func(t *ftt.Test) {
 			ctx := authorizedCtx
 
-			Convey("without appropriate arguments, ScheduleJob fails", func() {
+			t.Run("without appropriate arguments, ScheduleJob fails", func(t *ftt.Test) {
 				_, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{})
-				So(err, ShouldBeStatusError, codes.InvalidArgument)
+				assert.Loosely(t, err, assertions.ShouldBeStatusError(codes.InvalidArgument))
 			})
 
-			Convey("with correct GTestBenchmark arguments, ScheduleJob succeeds", func() {
+			t.Run("with correct GTestBenchmark arguments, ScheduleJob succeeds", func(t *ftt.Test) {
 				j, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{
 					Job: &proto.JobSpec{
 						Config: "some-config",
@@ -364,11 +366,11 @@ func TestScheduleJob(t *testing.T) {
 						},
 					},
 				})
-				So(err, ShouldBeNil)
-				So(j.Name, ShouldEqual, jobName)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, j.Name, should.Equal(jobName))
 			})
 
-			Convey("with extra args for a Telemetry job, ScheduleJob succeeds", func() {
+			t.Run("with extra args for a Telemetry job, ScheduleJob succeeds", func(t *ftt.Test) {
 				j, err := client.ScheduleJob(ctx, &proto.ScheduleJobRequest{
 					Job: &proto.JobSpec{
 						Config: "some-config",
@@ -385,8 +387,8 @@ func TestScheduleJob(t *testing.T) {
 						},
 					},
 				})
-				So(err, ShouldBeNil)
-				So(j.Name, ShouldEqual, jobName)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, j.Name, should.Equal(jobName))
 			})
 		})
 	})

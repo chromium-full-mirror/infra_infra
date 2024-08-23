@@ -19,81 +19,82 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/text"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestLoadPresets(t *testing.T) {
 	t.Parallel()
 
-	Convey("Given a simple presets file", t, func() {
+	ftt.Run("Given a simple presets file", t, func(t *ftt.Test) {
 		sp, err := os.Open("testdata/simple-presets.yaml")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer sp.Close()
-		Convey("When we load the presets", func() {
+		t.Run("When we load the presets", func(t *ftt.Test) {
 			pd, err := loadPresets(sp)
-			So(err, ShouldBeNil)
-			Convey("Then we can find the \"basic\" preset", func() {
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("Then we can find the \"basic\" preset", func(t *ftt.Test) {
 				_, err := pd.GetPreset("basic")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("And we can find the \"complex\" preset", func() {
+			t.Run("And we can find the \"complex\" preset", func(t *ftt.Test) {
 				_, err := pd.GetPreset("complex")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("And we can find the \"summary_report\" preset", func() {
+			t.Run("And we can find the \"summary_report\" preset", func(t *ftt.Test) {
 				_, err := pd.GetPreset("summary_report")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 
-			Convey("And the \"basic\" and \"complex\" presets only differ with extra args", func() {
+			t.Run("And the \"basic\" and \"complex\" presets only differ with extra args", func(t *ftt.Test) {
 				b, err := pd.GetPreset("basic")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				c, err := pd.GetPreset("complex")
-				So(err, ShouldBeNil)
-				So(b.TelemetryExperiment.ExtraArgs, ShouldNotEqual, c.TelemetryExperiment.ExtraArgs)
-				So(b.TelemetryExperiment.Benchmark, ShouldEqual, c.TelemetryExperiment.Benchmark)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, b.TelemetryExperiment.ExtraArgs, should.NotMatch(c.TelemetryExperiment.ExtraArgs))
+				assert.Loosely(t, b.TelemetryExperiment.Benchmark, should.Equal(c.TelemetryExperiment.Benchmark))
 			})
 
 		})
 	})
 
-	Convey("Given an invalid presets file", t, func() {
+	ftt.Run("Given an invalid presets file", t, func(t *ftt.Test) {
 		sp, err := os.Open("testdata/invalid-presets.yaml")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer sp.Close()
-		Convey("When we load the presets", func() {
+		t.Run("When we load the presets", func(t *ftt.Test) {
 			pd, err := loadPresets(sp)
-			So(err, ShouldBeNil)
-			Convey("Then looking up a preset with invalid story selection fails", func() {
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("Then looking up a preset with invalid story selection fails", func(t *ftt.Test) {
 				_, err := pd.GetPreset("conflicting-story-selection")
 				expected := text.Doc(`
 					telemetry experiments must only have exactly one of story
 					or story_tags in story_selection
 				`)
-				So(err, ShouldBeError, expected)
+				assert.Loosely(t, err, should.ErrLike(expected))
 				_, err = pd.GetPreset("empty-story-selection")
-				So(err, ShouldBeError, expected)
+				assert.Loosely(t, err, should.ErrLike(expected))
 				_, err = pd.GetPreset("batch-empty-stories-and-story-tags")
-				So(err, ShouldBeError, "at least one story or story tag should be defined for each benchmark")
+				assert.Loosely(t, err, should.ErrLike("at least one story or story tag should be defined for each benchmark"))
 			})
-			Convey("And looking up a preset with no config fails", func() {
+			t.Run("And looking up a preset with no config fails", func(t *ftt.Test) {
 				_, err := pd.GetPreset("empty-config")
-				So(err, ShouldBeError, "telemetry experiments must have a non-empty config")
+				assert.Loosely(t, err, should.ErrLike("telemetry experiments must have a non-empty config"))
 				_, err = pd.GetPreset("batch-empty-configs")
-				So(err, ShouldBeError, "at least one config should be defined for each benchmark")
+				assert.Loosely(t, err, should.ErrLike("at least one config should be defined for each benchmark"))
 			})
 		})
 	})
 
-	Convey("Given an unparseable yaml file", t, func() {
+	ftt.Run("Given an unparseable yaml file", t, func(t *ftt.Test) {
 		pm := presetsMixin{
 			presetFile: "testdata/invalid-yaml.yaml",
 			presetName: "preset",
 		}
 		_, err := pm.getPreset(context.Background())
-		So(err, ShouldBeError)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
 }

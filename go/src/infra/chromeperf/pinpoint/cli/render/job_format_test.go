@@ -19,14 +19,17 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromeperf/pinpoint/proto"
 )
 
 func TestJobRenderingLegacyURL(t *testing.T) {
-	Convey("Given a Job proto", t, func() {
+	ftt.Run("Given a Job proto", t, func(t *ftt.Test) {
 		j := &proto.Job{
 			Name:           "",
 			State:          0,
@@ -42,45 +45,45 @@ func TestJobRenderingLegacyURL(t *testing.T) {
 			CancellationReason: "",
 			Results:            nil,
 		}
-		Convey("When we have a monorail issue", func() {
+		t.Run("When we have a monorail issue", func(t *ftt.Test) {
 			s := renderMonorailIssue(j)
-			So(s, ShouldEqual, "https://bugs.chromium.org/p/chromium/issues/detail?id=1234")
+			assert.Loosely(t, s, should.Equal("https://bugs.chromium.org/p/chromium/issues/detail?id=1234"))
 		})
-		Convey("When we have a legacy ID", func() {
+		t.Run("When we have a legacy ID", func(t *ftt.Test) {
 			j.Name = "jobs/legacy-1234567"
-			Convey("Then we can generate a URL for the job", func() {
+			t.Run("Then we can generate a URL for the job", func(t *ftt.Test) {
 				u, err := legacyJobURL(j)
-				So(err, ShouldBeNil)
-				So(u, ShouldEqual, "https://pinpoint-dot-chromeperf.appspot.com/job/1234567")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.Equal("https://pinpoint-dot-chromeperf.appspot.com/job/1234567"))
 			})
-			Convey("Then we can generate a ID for the job", func() {
+			t.Run("Then we can generate a ID for the job", func(t *ftt.Test) {
 				u, err := JobID(j)
-				So(err, ShouldBeNil)
-				So(u, ShouldEqual, "1234567")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.Equal("1234567"))
 			})
 		})
-		Convey("When the legacy service does not have a trailing /", func() {
+		t.Run("When the legacy service does not have a trailing /", func(t *ftt.Test) {
 			j.Name = "jobs/legacy-1234"
-			Convey("Then we can generate a valid URL for the job", func() {
+			t.Run("Then we can generate a valid URL for the job", func(t *ftt.Test) {
 				u, err := legacyJobURL(j)
-				So(err, ShouldBeNil)
-				So(u, ShouldEqual, "https://pinpoint-dot-chromeperf.appspot.com/job/1234")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.Equal("https://pinpoint-dot-chromeperf.appspot.com/job/1234"))
 			})
-			Convey("Then we can generate a valid ID for the job", func() {
+			t.Run("Then we can generate a valid ID for the job", func(t *ftt.Test) {
 				u, err := JobID(j)
-				So(err, ShouldBeNil)
-				So(u, ShouldEqual, "1234")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.Equal("1234"))
 			})
 		})
-		Convey("When we have a non-legacy ID", func() {
+		t.Run("When we have a non-legacy ID", func(t *ftt.Test) {
 			uID, err := uuid.NewRandom()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			j.Name = uID.String()
-			So(j.Name, ShouldNotEqual, "")
-			Convey("Then we cannot generate a valid URL for the job", func() {
+			assert.Loosely(t, j.Name, should.NotEqual(""))
+			t.Run("Then we cannot generate a valid URL for the job", func(t *ftt.Test) {
 				u, err := legacyJobURL(j)
-				So(u, ShouldEqual, "")
-				So(err, ShouldNotBeNil)
+				assert.Loosely(t, u, should.BeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
 		})
 	})

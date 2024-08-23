@@ -10,8 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	pinpoint_proto "infra/chromeperf/pinpoint/proto"
 )
@@ -52,7 +56,7 @@ func TestSimpleConversions(t *testing.T) {
 		UserAgent: "pinpoint/unittest",
 	}
 
-	Convey("We support Bisections without a Patch", t, func() {
+	ftt.Run("We support Bisections without a Patch", t, func(t *ftt.Test) {
 		job.JobKind = &pinpoint_proto.JobSpec_Bisection{
 			Bisection: &pinpoint_proto.Bisection{
 				CommitRange: &pinpoint_proto.GitilesCommitRange{
@@ -62,10 +66,10 @@ func TestSimpleConversions(t *testing.T) {
 					EndGitHash:   "f00dc0de",
 				}}}
 
-		Convey("Creating a Performance mode job", func() {
+		t.Run("Creating a Performance mode job", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_PERFORMANCE
 
-			Convey("We support Telemetry specifying a story", func() {
+			t.Run("We support Telemetry specifying a story", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 1000.0,
@@ -79,44 +83,44 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we have the user agent.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"user_agent": "pinpoint/unittest",
-				})
+				}))
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 
 				// Check that priority is unset
-				So(v, shouldContainMap, map[string]interface{}{
-					"priority": "0"})
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+					"priority": "0"}))
 			})
 
-			Convey("We support Telemetry specifying priority", func() {
+			t.Run("We support Telemetry specifying priority", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						Priority:            testPriority,
@@ -131,13 +135,13 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(v, shouldContainMap, map[string]interface{}{
-					"priority": fmt.Sprintf("%d", testPriority)})
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
+					"priority": fmt.Sprintf("%d", testPriority)}))
 			})
 
-			Convey("We support Telemetry specifying story tags", func() {
+			t.Run("We support Telemetry specifying story tags", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 1000.0,
@@ -153,36 +157,36 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 
 			})
 
-			Convey("We support GTest", func() {
+			t.Run("We support GTest", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					ComparisonMagnitude: 1000.0,
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
@@ -192,39 +196,39 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				v, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check the conversion of values to maps.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
-					"chart":     "some-metric"})
+					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 			})
 
 		})
 
-		Convey("Creating a Functional Comparison", func() {
+		t.Run("Creating a Functional Comparison", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_FUNCTIONAL
 
-			Convey("We support Telemetry specifying a story", func() {
+			t.Run("We support Telemetry specifying a story", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 0.2,
@@ -238,36 +242,36 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 
 			})
 
-			Convey("We support Telemetry specifying story tags", func() {
+			t.Run("We support Telemetry specifying story tags", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 0.2,
@@ -283,36 +287,36 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 
 			})
 
-			Convey("We support GTest", func() {
+			t.Run("We support GTest", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					ComparisonMagnitude: 0.2,
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
@@ -322,38 +326,38 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				v, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check the conversion of values to maps.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
-					"chart":     "some-metric"})
+					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 			})
 
 		})
 
 	})
 
-	Convey("We support Bisections with a Patch", t, func() {
+	ftt.Run("We support Bisections with a Patch", t, func(t *ftt.Test) {
 		job.JobKind = &pinpoint_proto.JobSpec_Bisection{
 			Bisection: &pinpoint_proto.Bisection{
 				CommitRange: &pinpoint_proto.GitilesCommitRange{
@@ -368,10 +372,10 @@ func TestSimpleConversions(t *testing.T) {
 					Change:   12345,
 					Patchset: 1}}}
 
-		Convey("Creating a Performance mode job", func() {
+		t.Run("Creating a Performance mode job", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_PERFORMANCE
 
-			Convey("We support Telemetry specifying a story", func() {
+			t.Run("We support Telemetry specifying a story", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 1000.0,
@@ -385,38 +389,38 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
 					// Pinpoint API.
-					"patch": "https://some-gerrit-host/c/12345/1"})
+					"patch": "https://some-gerrit-host/c/12345/1"}))
 			})
 
-			Convey("We support Telemetry specifying story tags", func() {
+			t.Run("We support Telemetry specifying story tags", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 1000.0,
@@ -432,38 +436,38 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
 					// Pinpoint API.
-					"patch": "https://some-gerrit-host/c/12345/1"})
+					"patch": "https://some-gerrit-host/c/12345/1"}))
 
 			})
-			Convey("We support GTest", func() {
+			t.Run("We support GTest", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					ComparisonMagnitude: 1000.0,
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
@@ -473,42 +477,42 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				v, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check the conversion of values to maps.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
-					"chart":     "some-metric"})
+					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "performance",
 					"comparison_magnitude": 1000.0,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
 					// Pinpoint API.
-					"patch": "https://some-gerrit-host/c/12345/1"})
+					"patch": "https://some-gerrit-host/c/12345/1"}))
 			})
 
 		})
 
-		Convey("Creating a Functional Comparison", func() {
+		t.Run("Creating a Functional Comparison", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_FUNCTIONAL
 
-			Convey("We support Telemetry specifying a story", func() {
+			t.Run("We support Telemetry specifying a story", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 0.2,
@@ -522,39 +526,39 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
 					// Pinpoint API.
-					"patch": "https://some-gerrit-host/c/12345/1"})
+					"patch": "https://some-gerrit-host/c/12345/1"}))
 
 			})
 
-			Convey("We support Telemetry specifying story tags", func() {
+			t.Run("We support Telemetry specifying story tags", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						ComparisonMagnitude: 0.2,
@@ -570,40 +574,40 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
 					"end_git_hash":   "f00dc0de",
 					// Here we're hard-coding the expected URL, as it's required by the legacy
 					// Pinpoint API.
-					"patch": "https://some-gerrit-host/c/12345/1"})
+					"patch": "https://some-gerrit-host/c/12345/1"}))
 
 			})
 
-			Convey("We support GTest", func() {
+			t.Run("We support GTest", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					ComparisonMagnitude: 0.2,
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
@@ -613,38 +617,38 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				v, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check the conversion of values to maps.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
-					"chart":     "some-metric"})
+					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":        "some-config",
 					"comparison_mode":      "functional",
 					"comparison_magnitude": 0.2,
-				})
+				}))
 
 				// Check that we also get the bisection details correct.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"start_git_hash": "c0dec0de",
-					"end_git_hash":   "f00dc0de"})
+					"end_git_hash":   "f00dc0de"}))
 			})
 
 		})
 
 	})
 
-	Convey("We fail on experiments with missing inputs", t, func() {
+	ftt.Run("We fail on experiments with missing inputs", t, func(t *ftt.Test) {
 		job.JobKind = &pinpoint_proto.JobSpec_Experiment{
 			Experiment: &pinpoint_proto.Experiment{
 				BaseCommit: &pinpoint_proto.GitilesCommit{
@@ -659,7 +663,7 @@ func TestSimpleConversions(t *testing.T) {
 					Patchset: 0,
 				},
 			}}
-		Convey("Creating a performance mode job", func() {
+		t.Run("Creating a performance mode job", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_PERFORMANCE
 			telemetryJob :=
 				&pinpoint_proto.JobSpec{
@@ -673,25 +677,25 @@ func TestSimpleConversions(t *testing.T) {
 							GroupingLabel: "some-grouping-label",
 							Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 			proto.Merge(telemetryJob, job)
-			Convey("No base commit", func() {
+			t.Run("No base commit", func(t *ftt.Test) {
 				telemetryJob.GetExperiment().BaseCommit = nil
 				_, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeError)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
-			Convey("No user configuration", func() {
+			t.Run("No user configuration", func(t *ftt.Test) {
 				telemetryJob.Config = ""
 				_, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeError)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
-			Convey("No target", func() {
+			t.Run("No target", func(t *ftt.Test) {
 				telemetryJob.Target = ""
 				_, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeError)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
 		})
 	})
 
-	Convey("We support experiments with base commit and experiment patch", t, func() {
+	ftt.Run("We support experiments with base commit and experiment patch", t, func(t *ftt.Test) {
 		job.JobKind = &pinpoint_proto.JobSpec_Experiment{
 			Experiment: &pinpoint_proto.Experiment{
 				BaseCommit: &pinpoint_proto.GitilesCommit{
@@ -706,10 +710,10 @@ func TestSimpleConversions(t *testing.T) {
 					Patchset: 1,
 				}}}
 
-		Convey("Creating a Performance mode job", func() {
+		t.Run("Creating a Performance mode job", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_PERFORMANCE
 
-			Convey("We support Telemetry specifying a story", func() {
+			t.Run("We support Telemetry specifying a story", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						Arguments: &pinpoint_proto.JobSpec_TelemetryBenchmark{
@@ -723,35 +727,35 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"story":          "some-story",
 					"metric":         "some-metric",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"base_git_hash":    "c0dec0de",
-					"experiment_patch": "https://some-gerrit-host/c/23456/1"})
+					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 
 			})
 
-			Convey("We support having both the base commit and experiment commit", func() {
+			t.Run("We support having both the base commit and experiment commit", func(t *ftt.Test) {
 				job.GetExperiment().ExperimentCommit = &pinpoint_proto.GitilesCommit{
 					Host:    "some-gitiles-host",
 					Project: "some-gitiles-project",
@@ -769,13 +773,13 @@ func TestSimpleConversions(t *testing.T) {
 							Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"end_git_hash": "60061ec0de",
-				})
+				}))
 			})
 
-			Convey("We support Telemetry specifying story tags", func() {
+			t.Run("We support Telemetry specifying story tags", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						Arguments: &pinpoint_proto.JobSpec_TelemetryBenchmark{
@@ -790,35 +794,35 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"base_git_hash":    "c0dec0de",
-					"experiment_patch": "https://some-gerrit-host/c/23456/1"})
+					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 
 			})
 
-			Convey("We support Telemetry specifying story tags and extra args", func() {
+			t.Run("We support Telemetry specifying story tags and extra args", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						Arguments: &pinpoint_proto.JobSpec_TelemetryBenchmark{
@@ -835,37 +839,37 @@ func TestSimpleConversions(t *testing.T) {
 							}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1",
 					"extra_test_args":  `["--browser","some-browser"]`,
-				})
+				}))
 
 			})
 
-			Convey("We support jobs with a Batch ID and Attempts", func() {
+			t.Run("We support jobs with a Batch ID and Attempts", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						BatchId:             "defined-job-id",
@@ -884,41 +888,41 @@ func TestSimpleConversions(t *testing.T) {
 							}}}
 				proto.Merge(telemetryJob, job)
 				v, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
 					"batch_id":      "defined-job-id",
-				})
+				}))
 
 				// Check that we have the required Telemetry fields in the JSON.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark":      "some-benchmark",
 					"metric":         "some-metric",
 					"story_tags":     "some-tag,some-other-tag",
-					"grouping_label": "some-grouping-label"})
+					"grouping_label": "some-grouping-label"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration": "some-config",
 					// In legacy Pinpoint, an experiment is a "try" comparison mode.
 					"comparison_mode": "try",
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"base_git_hash":    "c0dec0de",
 					"experiment_patch": "https://some-gerrit-host/c/23456/1",
 					"extra_test_args":  `["--browser","some-browser"]`,
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"initial_attempt_count": "42",
-				})
+				}))
 			})
 
-			Convey("We support GTest", func() {
+			t.Run("We support GTest", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
 						GtestBenchmark: &pinpoint_proto.GTestBenchmark{
@@ -927,37 +931,37 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				v, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Check that we support the required fields for all Pinpoint jobs.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"target":        "some-build-target",
 					"configuration": "some-config",
-				})
+				}))
 
 				// Check the conversion of values to maps.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"benchmark": "some-benchmark",
 					"trace":     "some-test",
-					"chart":     "some-metric"})
+					"chart":     "some-metric"}))
 
 				// Check that we have base job configurations are set.
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"configuration":   "some-config",
 					"comparison_mode": "try",
-				})
+				}))
 
-				So(v, shouldContainMap, map[string]interface{}{
+				assert.Loosely(t, v, convey.Adapt(shouldContainMap)(map[string]interface{}{
 					"base_git_hash":    "c0dec0de",
-					"experiment_patch": "https://some-gerrit-host/c/23456/1"})
+					"experiment_patch": "https://some-gerrit-host/c/23456/1"}))
 			})
 
 		})
 
-		Convey("Creating a Functional mode job", func() {
+		t.Run("Creating a Functional mode job", func(t *ftt.Test) {
 			job.ComparisonMode = pinpoint_proto.JobSpec_FUNCTIONAL
 
-			Convey("Fails for Telemetry (unsupported)", func() {
+			t.Run("Fails for Telemetry (unsupported)", func(t *ftt.Test) {
 				telemetryJob :=
 					&pinpoint_proto.JobSpec{
 						Arguments: &pinpoint_proto.JobSpec_TelemetryBenchmark{
@@ -970,11 +974,11 @@ func TestSimpleConversions(t *testing.T) {
 								Statistic:     pinpoint_proto.TelemetryBenchmark_NONE}}}
 				proto.Merge(telemetryJob, job)
 				_, err := JobToValues(telemetryJob, "user@example.com")
-				So(err, ShouldNotBeNil)
-				So(fmt.Sprintf("%v", err), ShouldContainSubstring, "functional experiments not supported")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, fmt.Sprintf("%v", err), should.ContainSubstring("functional experiments not supported"))
 			})
 
-			Convey("Fails for GTest (unsupported)", func() {
+			t.Run("Fails for GTest (unsupported)", func(t *ftt.Test) {
 				gtestJob := &pinpoint_proto.JobSpec{
 					Arguments: &pinpoint_proto.JobSpec_GtestBenchmark{
 						GtestBenchmark: &pinpoint_proto.GTestBenchmark{
@@ -983,8 +987,8 @@ func TestSimpleConversions(t *testing.T) {
 							Test:        "some-test"}}}
 				proto.Merge(gtestJob, job)
 				_, err := JobToValues(gtestJob, "user@example.com")
-				So(err, ShouldNotBeNil)
-				So(fmt.Sprintf("%v", err), ShouldContainSubstring, "functional experiments not supported")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, fmt.Sprintf("%v", err), should.ContainSubstring("functional experiments not supported"))
 			})
 		})
 
@@ -994,30 +998,30 @@ func TestSimpleConversions(t *testing.T) {
 
 func TestGerritChangeToURL(t *testing.T) {
 	t.Parallel()
-	Convey("Given valid GerritChange", t, func() {
+	ftt.Run("Given valid GerritChange", t, func(t *ftt.Test) {
 		c := &pinpoint_proto.GerritChange{
 			Host:    "host",
 			Project: "project",
 			Change:  123456,
 		}
-		Convey("When the patchset is provided", func() {
+		t.Run("When the patchset is provided", func(t *ftt.Test) {
 			c.Patchset = 1
-			Convey("Then we see the patchset in the URL", func() {
+			t.Run("Then we see the patchset in the URL", func(t *ftt.Test) {
 				u, err := gerritChangeToURL(c)
-				So(err, ShouldBeNil)
-				So(u, ShouldEqual, "https://host/c/123456/1")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.Equal("https://host/c/123456/1"))
 			})
 		})
-		Convey("When the patset is not provided", func() {
-			Convey("Then we see no patchset in the URL", func() {
+		t.Run("When the patset is not provided", func(t *ftt.Test) {
+			t.Run("Then we see no patchset in the URL", func(t *ftt.Test) {
 				u, err := gerritChangeToURL(c)
-				So(err, ShouldBeNil)
-				So(u, ShouldNotEndWith, "/1")
-				So(u, ShouldEqual, "https://host/c/123456")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, u, should.NotHaveSuffix("/1"))
+				assert.Loosely(t, u, should.Equal("https://host/c/123456"))
 			})
 		})
 	})
-	Convey("Given an invalidly GerritChange", t, func() {
+	ftt.Run("Given an invalidly GerritChange", t, func(t *ftt.Test) {
 		c := &pinpoint_proto.GerritChange{
 			Host:     "host",
 			Project:  "project",
@@ -1025,20 +1029,20 @@ func TestGerritChangeToURL(t *testing.T) {
 			Patchset: 7,
 		}
 
-		Convey("When it is missing a host", func() {
+		t.Run("When it is missing a host", func(t *ftt.Test) {
 			c.Host = ""
-			Convey("Then conversion fails", func() {
+			t.Run("Then conversion fails", func(t *ftt.Test) {
 				_, err := gerritChangeToURL(c)
-				So(err, ShouldBeError)
-				So(err.Error(), ShouldContainSubstring, "host")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err.Error(), should.ContainSubstring("host"))
 			})
 		})
-		Convey("When it is missing a change", func() {
+		t.Run("When it is missing a change", func(t *ftt.Test) {
 			c.Change = 0
-			Convey("Then conversion fails", func() {
+			t.Run("Then conversion fails", func(t *ftt.Test) {
 				_, err := gerritChangeToURL(c)
-				So(err, ShouldBeError)
-				So(err.Error(), ShouldContainSubstring, "change")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err.Error(), should.ContainSubstring("change"))
 			})
 		})
 	})
@@ -1046,18 +1050,18 @@ func TestGerritChangeToURL(t *testing.T) {
 
 func TestJobToProto(t *testing.T) {
 	t.Parallel()
-	Convey("Given a defined experiment", t, func() {
+	ftt.Run("Given a defined experiment", t, func(t *ftt.Test) {
 		lj, err := os.ReadFile("../testdata/defined-job-experiment.json")
-		So(err, ShouldBeNil)
-		Convey("When we convert the legacy JSON", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("When we convert the legacy JSON", func(t *ftt.Test) {
 			p, err := JobToProto(strings.NewReader(string(lj)))
-			So(err, ShouldBeNil)
-			So(p, ShouldNotBeNil)
-			Convey("Then we find the experiment URLs", func() {
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, p, should.NotBeNil)
+			t.Run("Then we find the experiment URLs", func(t *ftt.Test) {
 				results := p.GetAbExperimentResults()
-				So(results, ShouldNotBeNil)
-				So(results.AChangeResult.Attempts, ShouldHaveLength, 10)
-				So(results.BChangeResult.Attempts, ShouldHaveLength, 10)
+				assert.Loosely(t, results, should.NotBeNil)
+				assert.Loosely(t, results.AChangeResult.Attempts, should.HaveLength(10))
+				assert.Loosely(t, results.BChangeResult.Attempts, should.HaveLength(10))
 
 				// These are typical 3 steps for a legacy job
 				quests := []string{"Build", "Test", "Get values"}
@@ -1065,29 +1069,29 @@ func TestJobToProto(t *testing.T) {
 				// We know that legacy jobs have 2-3 executions per attempt. This corresponds with the Build, Test,
 				// Value quest executions, which is defined for most Pinpoint A/B experiments.
 				for _, a := range results.AChangeResult.Attempts {
-					So(len(a.Executions), ShouldBeBetweenOrEqual, 2, 3)
+					assert.Loosely(t, len(a.Executions), should.BeBetweenOrEqual(2, 3))
 					for i, e := range a.Executions {
-						So(e.Label, ShouldEqual, quests[i])
+						assert.Loosely(t, e.Label, should.Equal(quests[i]))
 					}
 				}
 				for _, a := range results.BChangeResult.Attempts {
-					So(len(a.Executions), ShouldBeBetweenOrEqual, 2, 3)
+					assert.Loosely(t, len(a.Executions), should.BeBetweenOrEqual(2, 3))
 					for i, e := range a.Executions {
-						So(e.Label, ShouldEqual, quests[i])
+						assert.Loosely(t, e.Label, should.Equal(quests[i]))
 					}
 				}
 			})
 		})
 	})
-	Convey("Given an experiment with a batch id", t, func() {
+	ftt.Run("Given an experiment with a batch id", t, func(t *ftt.Test) {
 		lj, err := os.ReadFile("../testdata/defined-job-experiment-with-batch-id.json")
-		So(err, ShouldBeNil)
-		Convey("When we convert the legacy JSON", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("When we convert the legacy JSON", func(t *ftt.Test) {
 			p, err := JobToProto(strings.NewReader(string(lj)))
-			So(err, ShouldBeNil)
-			So(p, ShouldNotBeNil)
-			Convey("Then we find the batch ID", func() {
-				So(p.JobSpec.BatchId, ShouldEqual, "batch-id-in-file")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, p, should.NotBeNil)
+			t.Run("Then we find the batch ID", func(t *ftt.Test) {
+				assert.Loosely(t, p.JobSpec.BatchId, should.Equal("batch-id-in-file"))
 			})
 		})
 	})

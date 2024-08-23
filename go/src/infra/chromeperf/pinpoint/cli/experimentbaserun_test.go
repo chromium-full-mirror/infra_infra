@@ -20,106 +20,108 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCLFlagParsing(t *testing.T) {
 	t.Parallel()
-	Convey("When provided a valid input", t, func() {
+	ftt.Run("When provided a valid input", t, func(t *ftt.Test) {
 		fs := flag.NewFlagSet("cl-flag-parsing", flag.PanicOnError)
 		clFlag := clValue{}
 		fs.Var(&clFlag, "cl", "a gerrit CL")
-		Convey("/c/<repo>/+/<CL>", func() {
+		t.Run("/c/<repo>/+/<CL>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/d/+/1234"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 0)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.BeZero)
 		})
-		Convey("/c/<repo>/+/<CL>/<patch>", func() {
+		t.Run("/c/<repo>/+/<CL>/<patch>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/d/+/1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 12)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.Equal(12))
 		})
-		Convey("/c/<repo>/+/<CL>/<patch> short repo", func() {
+		t.Run("/c/<repo>/+/<CL>/<patch> short repo", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/+/1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 12)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.Equal(12))
 		})
-		Convey("/c/<CL>", func() {
+		t.Run("/c/<CL>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/1234"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 0)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.BeZero)
 		})
-		Convey("/c/<CL>/<patch>", func() {
+		t.Run("/c/<CL>/<patch>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 12)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.Equal(12))
 		})
-		Convey("crrev.com", func() {
+		t.Run("crrev.com", func(t *ftt.Test) {
 			s := "https://crrev.com/c/1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldBeNil)
-			So(clFlag.clNum, ShouldEqual, 1234)
-			So(clFlag.patchSet, ShouldEqual, 12)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.BeNil)
+			assert.Loosely(t, clFlag.clNum, should.Equal(1234))
+			assert.Loosely(t, clFlag.patchSet, should.Equal(12))
 		})
 	})
-	Convey("When provided some invalid cases", t, func() {
+	ftt.Run("When provided some invalid cases", t, func(t *ftt.Test) {
 		fs := flag.NewFlagSet("cl-error-flag-parsing", flag.ContinueOnError)
 		clFlag := clValue{}
 		fs.Var(&clFlag, "cl", "a gerrit CL")
-		Convey("<CL>/<patch> without host", func() {
+		t.Run("<CL>/<patch> without host", func(t *ftt.Test) {
 			s := "1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
-		Convey("/c/<repo>/+/", func() {
+		t.Run("/c/<repo>/+/", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/d/+"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
-		Convey("/c/<repo>/+/0/<patch>", func() {
+		t.Run("/c/<repo>/+/0/<patch>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/d/+/0/01"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
-		Convey("/c/<repo>/+/<CL>/", func() {
+		t.Run("/c/<repo>/+/<CL>/", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/d/d/+/1234/"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
-		Convey("/c/+/<CL>", func() {
+		t.Run("/c/+/<CL>", func(t *ftt.Test) {
 			s := "https://chromium-review.googlesource.com/c/+/1234"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
-		Convey("<CL>/<patch> wrong host", func() {
+		t.Run("<CL>/<patch> wrong host", func(t *ftt.Test) {
 			s := "https://crev.com/c/1234/12"
-			So(fs.Parse([]string{"-cl", s}), ShouldNotBeNil)
+			assert.Loosely(t, fs.Parse([]string{"-cl", s}), should.NotBeNil)
 		})
 	})
 }
 
 func TestBugFlagParsing(t *testing.T) {
 	t.Parallel()
-	Convey("When provided a valid case", t, func() {
+	ftt.Run("When provided a valid case", t, func(t *ftt.Test) {
 		fs := flag.NewFlagSet("bug-flag-parsing", flag.ContinueOnError)
 		bug := &bugValue{}
 		fs.Var(bug, "bug", "a Monorail issue in the form <project>:<id>")
 		err := fs.Parse([]string{"-bug", "chromium:1234"})
-		So(err, ShouldBeNil)
-		So(bug.project, ShouldEqual, "chromium")
-		So(bug.issueID, ShouldEqual, 1234)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, bug.project, should.Equal("chromium"))
+		assert.Loosely(t, bug.issueID, should.Equal(1234))
 	})
-	Convey("When provided some invalid cases", t, func() {
+	ftt.Run("When provided some invalid cases", t, func(t *ftt.Test) {
 		fs := flag.NewFlagSet("errors-flag-parsing", flag.ContinueOnError)
 		bug := &bugValue{}
 		fs.Var(bug, "bug", "a Monorail issue in the form <project>:<id>")
-		Convey(":<id>", func() {
-			So(fs.Parse([]string{"-bug", ":1"}), ShouldNotBeNil)
+		t.Run(":<id>", func(t *ftt.Test) {
+			assert.Loosely(t, fs.Parse([]string{"-bug", ":1"}), should.NotBeNil)
 		})
-		Convey("project:0", func() {
-			So(fs.Parse([]string{"-bug", "project:0"}), ShouldNotBeNil)
+		t.Run("project:0", func(t *ftt.Test) {
+			assert.Loosely(t, fs.Parse([]string{"-bug", "project:0"}), should.NotBeNil)
 		})
-		Convey("project:01", func() {
-			So(fs.Parse([]string{"-bug", "project:01"}), ShouldNotBeNil)
+		t.Run("project:01", func(t *ftt.Test) {
+			assert.Loosely(t, fs.Parse([]string{"-bug", "project:01"}), should.NotBeNil)
 		})
 	})
 }
@@ -149,36 +151,36 @@ const (
 
 func TestGuessRepositoryDefaults(t *testing.T) {
 	t.Parallel()
-	Convey("When provided appropriate JSON data", t, func() {
+	ftt.Run("When provided appropriate JSON data", t, func(t *ftt.Test) {
 		gitiles, gerrit, repo, err := guessRepositoryDefaults(hardcodedCommandOutput(infraGitClIssueOutput))
 
-		Convey("should return infra information", func() {
-			So(err, ShouldBeNil)
-			So(gitiles, ShouldEqual, infraGitilesHost)
-			So(gerrit, ShouldEqual, infraGerritHost)
-			So(repo, ShouldEqual, infraRepository)
+		t.Run("should return infra information", func(t *ftt.Test) {
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gitiles, should.Equal(infraGitilesHost))
+			assert.Loosely(t, gerrit, should.Equal(infraGerritHost))
+			assert.Loosely(t, repo, should.Equal(infraRepository))
 		})
 	})
 
-	Convey("When provided outdated JSON data", t, func() {
+	ftt.Run("When provided outdated JSON data", t, func(t *ftt.Test) {
 		gitiles, gerrit, repo, err := guessRepositoryDefaults(hardcodedCommandOutput(oldGitClIssueOutput))
 
-		Convey("should return default information", func() {
-			So(err, ShouldBeError)
-			So(gitiles, ShouldEqual, defaultGitilesHost)
-			So(gerrit, ShouldEqual, defaultGerritHost)
-			So(repo, ShouldEqual, defaultRepository)
+		t.Run("should return default information", func(t *ftt.Test) {
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, gitiles, should.Equal(defaultGitilesHost))
+			assert.Loosely(t, gerrit, should.Equal(defaultGerritHost))
+			assert.Loosely(t, repo, should.Equal(defaultRepository))
 		})
 	})
 
-	Convey("When provided invalid JSON data", t, func() {
+	ftt.Run("When provided invalid JSON data", t, func(t *ftt.Test) {
 		gitiles, gerrit, repo, err := guessRepositoryDefaults(hardcodedCommandOutput("invalid json"))
 
-		Convey("should return default information", func() {
-			So(err, ShouldBeError)
-			So(gitiles, ShouldEqual, defaultGitilesHost)
-			So(gerrit, ShouldEqual, defaultGerritHost)
-			So(repo, ShouldEqual, defaultRepository)
+		t.Run("should return default information", func(t *ftt.Test) {
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, gitiles, should.Equal(defaultGitilesHost))
+			assert.Loosely(t, gerrit, should.Equal(defaultGerritHost))
+			assert.Loosely(t, repo, should.Equal(defaultRepository))
 		})
 	})
 }

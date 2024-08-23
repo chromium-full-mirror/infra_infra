@@ -19,7 +19,9 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func generateMockGetEmail(email string, err error) func(context.Context) (string, error) {
@@ -30,34 +32,34 @@ func generateMockGetEmail(email string, err error) func(context.Context) (string
 
 func TestFilter(t *testing.T) {
 	t.Parallel()
-	Convey("filter should return lj.filter if it's not empty.", t, func() {
+	ftt.Run("filter should return lj.filter if it's not empty.", t, func(t *ftt.Test) {
 		lj := listJobs{}
 		lj.filter = "user=email@example.com"
 		testEmail := "not_this_email@example.com"
 		ctx := context.Background()
 		actual, err := filter(ctx, &lj, generateMockGetEmail(testEmail, nil))
 		expected := "user=email@example.com"
-		So(err, ShouldBeNil)
-		So(actual, ShouldEqual, expected)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, actual, should.Equal(expected))
 	})
-	Convey("filter should return 'user=email@example.com' if it's empty.", t, func() {
+	ftt.Run("filter should return 'user=email@example.com' if it's empty.", t, func(t *ftt.Test) {
 		lj := listJobs{}
 		lj.filter = ""
 		testEmail := "email@example.com"
 		ctx := context.Background()
 		actual, err := filter(ctx, &lj, generateMockGetEmail(testEmail, nil))
 		expected := "user=email@example.com"
-		So(err, ShouldBeNil)
-		So(actual, ShouldEqual, expected)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, actual, should.Equal(expected))
 	})
-	Convey("filter should return the empty string if getEmail returns an error.", t, func() {
+	ftt.Run("filter should return the empty string if getEmail returns an error.", t, func(t *ftt.Test) {
 		lj := listJobs{}
 		lj.filter = ""
 		testEmail := "not_this_email@example.com"
 		ctx := context.Background()
 		actual, err := filter(ctx, &lj, generateMockGetEmail(testEmail, errors.New("Mock")))
 		expected := ""
-		So(err, ShouldBeNil)
-		So(actual, ShouldEqual, expected)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, actual, should.Equal(expected))
 	})
 }

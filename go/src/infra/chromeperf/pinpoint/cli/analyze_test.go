@@ -20,7 +20,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromeperf/pinpoint/proto"
 )
@@ -31,26 +33,26 @@ func TestAnalyzeTelemetryExperiment(t *testing.T) {
 	// TODO: add more fine-grained unit tests for processing in-memory data
 	// structures without requiring files
 	m, err := loadManifestFromPath("testdata/11ac8128320000/manifest.yaml")
-	Convey("Given a telemetry experiment manifest with known significant differences", t, func() {
-		So(err, ShouldBeNil)
-		Convey("When we analyze the artifacts", func() {
+	ftt.Run("Given a telemetry experiment manifest with known significant differences", t, func(t *ftt.Test) {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("When we analyze the artifacts", func(t *ftt.Test) {
 			rootDir, err := filepath.Abs("testdata/11ac8128320000")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			r, err := analyzeExperiment(m, rootDir)
-			So(err, ShouldBeNil)
-			So(r, ShouldNotBeNil)
-			So(len(r.Reports), ShouldEqual, 2)
-			Convey("Then we verify the overall p-value", func() {
-				So(r.OverallPValue, ShouldAlmostEqual, 0.0053, 0.0001)
-				Convey("And we verify the p-values of the individual metrics", func() {
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r, should.NotBeNil)
+			assert.Loosely(t, len(r.Reports), should.Equal(2))
+			t.Run("Then we verify the overall p-value", func(t *ftt.Test) {
+				assert.Loosely(t, r.OverallPValue, should.AlmostEqual(0.0053, 0.0001))
+				t.Run("And we verify the p-values of the individual metrics", func(t *ftt.Test) {
 					opt_metric := r.Reports["Optimize-Background:count"]
-					So(*opt_metric.PValue, ShouldAlmostEqual, 0.0026, 0.0001)
+					assert.Loosely(t, *opt_metric.PValue, should.AlmostEqual(0.0026, 0.0001))
 					parse_metric := r.Reports["Parse-Background:count"]
-					So(*parse_metric.PValue, ShouldAlmostEqual, 0.914, 0.001)
+					assert.Loosely(t, *parse_metric.PValue, should.AlmostEqual(0.914, 0.001))
 				})
 			})
 		})
-		Convey("When we use the mixin to analyze the artifacts", func() {
+		t.Run("When we use the mixin to analyze the artifacts", func(t *ftt.Test) {
 			m := &analyzeExperimentMixin{analyzeExperiment: true}
 			ctx := context.Background()
 			// This is the minimal Job definition that's associated with the
@@ -67,31 +69,31 @@ func TestAnalyzeTelemetryExperiment(t *testing.T) {
 				},
 			}
 			wd, err := filepath.Abs("testdata")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			r, err := m.doAnalyzeExperiment(ctx, wd, j)
-			So(err, ShouldBeNil)
-			So(r, ShouldNotBeNil)
-			So(r.OverallPValue, ShouldNotEqual, 0)
-			So(r.Reports, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r, should.NotBeNil)
+			assert.Loosely(t, r.OverallPValue, should.NotEqual(0.0))
+			assert.Loosely(t, r.Reports, should.NotBeNil)
 		})
 	})
 
-	Convey("Report serializes to JSON", t, func() {
+	ftt.Run("Report serializes to JSON", t, func(t *ftt.Test) {
 		m, err := loadManifestFromPath("testdata/11ac8128320000/manifest.yaml")
-		So(err, ShouldBeNil)
-		Convey("When we analyze the artifacts", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("When we analyze the artifacts", func(t *ftt.Test) {
 			rootDir, err := filepath.Abs("testdata/11ac8128320000")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			r, err := analyzeExperiment(m, rootDir)
-			So(err, ShouldBeNil)
-			So(r, ShouldNotBeNil)
-			Convey("The report struct should encode to JSON without errors", func() {
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r, should.NotBeNil)
+			t.Run("The report struct should encode to JSON without errors", func(t *ftt.Test) {
 				buf := &bytes.Buffer{}
 				enc := json.NewEncoder(buf)
 				err := enc.Encode(r)
-				So(err, ShouldBeNil)
-				So(len(buf.Bytes()), ShouldBeGreaterThan, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(buf.Bytes()), should.BeGreaterThan(0))
 			})
 		})
 
