@@ -651,6 +651,14 @@ func handleBatch(schedulerClient buildbucket.Scheduler, publishClient pubsub.Pub
 	return nil
 }
 
+const (
+	maxWorkers = 500
+)
+
+var (
+	workerSem = make(chan struct{}, maxWorkers)
+)
+
 // scheduleBatches takes in a list of CTPEvent batches and schedules them in
 // series to BuildBucket.
 func scheduleBatches(batches []*ctpEventBatch, isProd, dryRun bool, projectID string, authOpts *authcli.Flags) error {
@@ -663,9 +671,18 @@ func scheduleBatches(batches []*ctpEventBatch, isProd, dryRun bool, projectID st
 	common.Stdout.Printf("Scheduling %d batches to BB", len(batches))
 	var wg sync.WaitGroup
 	for _, batch := range batches {
+		// If we are at the maxWorkers limit then wait for an open position in
+		// the queue.
+		workerSem <- struct{}{}
+
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, schedulerClient buildbucket.Scheduler, publishClient pubsub.PublishClient, batch *ctpEventBatch) {
-			defer wg.Done()
+			defer func() {
+				wg.Done()
+
+				// Open a position in the worker queue.
+				<-workerSem
+			}()
 
 			err := handleBatch(schedulerClient, publishClient, batch, fillEventResponse, publishEventsToPubSub)
 			if err != nil {
