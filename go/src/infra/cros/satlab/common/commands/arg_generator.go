@@ -7,11 +7,9 @@ package commands
 import (
 	"context"
 	"fmt"
-	"os"
 	"sort"
 
 	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/system/terminal"
 
 	"infra/cros/satlab/common/site"
 )
@@ -38,9 +36,7 @@ func (c *CommandWithFlags) ToCommand() []string {
 	if c.AuthRequired {
 		a := auth.NewAuthenticator(context.Background(), auth.SilentLogin, site.DefaultAuthOptions)
 		if err := a.CheckLoginRequired(); err != nil {
-			if !terminal.IsTerminal(int(os.Stdout.Fd())) {
-				c.Flags["service-account-json"] = []string{site.GetServiceAccountPath()}
-			}
+			c.Flags["service-account-json"] = []string{site.GetServiceAccountPath()}
 		}
 	}
 	// ToCommand must be deterministic, sort the keys before iterating.

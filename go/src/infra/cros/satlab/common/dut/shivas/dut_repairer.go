@@ -48,8 +48,12 @@ func (u *DUTRepairer) Repair(
 	ctx context.Context,
 	action RepairAction,
 ) (*DUTRepairResponse, error) {
+	cmd := []string{paths.ShivasCLI, "repair-duts"}
+	if string(action) != "" {
+		cmd = append(cmd, string(action))
+	}
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "repair-duts"},
+		Commands: cmd,
 		Flags: map[string][]string{
 			"bucket":    {site.GetDeployBucket()},
 			"builder":   {site.RepairBuilderName},
