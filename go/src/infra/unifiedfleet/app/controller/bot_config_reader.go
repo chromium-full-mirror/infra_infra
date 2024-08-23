@@ -45,7 +45,7 @@ type ConfigSha struct {
 
 var prevConfig = ConfigSha{sha1: ""}
 
-var OwnershipConfigsCounter = metric.NewCounter(
+var OwnershipConfigsCounter = metric.NewInt(
 	"ufs/fleet/ownership",
 	"ownership data updated at sync",
 	nil,
@@ -53,6 +53,7 @@ var OwnershipConfigsCounter = metric.NewCounter(
 	field.String("security_level"),
 	field.String("swarming_instance"),
 	field.String("customer"),
+	field.Bool("prefix"),
 )
 
 // ImportBotConfigs gets the OwnershipConfig and git client and passes them to functions for importing bot configs
@@ -186,10 +187,10 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 	defer func() {
 		// Update the counters for metrics
 		for botID, od := range botsMap {
-			OwnershipConfigsCounter.Add(ctx, 1, botID, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer())
+			OwnershipConfigsCounter.Set(ctx, 1, botID, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer(), false)
 		}
 		for botPrefix, od := range botPrefixesMap {
-			OwnershipConfigsCounter.Add(ctx, 1, botPrefix, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer())
+			OwnershipConfigsCounter.Set(ctx, 1, botPrefix, od.GetSecurityLevel(), od.GetSwarmingInstance(), od.GetCustomer(), true)
 		}
 	}()
 	// Updating the ownership for the botIdPrefixes (ie. HostPrefixes).
