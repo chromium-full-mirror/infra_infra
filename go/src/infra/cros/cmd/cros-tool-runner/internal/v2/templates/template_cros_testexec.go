@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -69,16 +70,16 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 			volumes = append(volumes, fmt.Sprintf("%s:%s", dockerSock, dockerSock))
 		}
 	}
+	var envvars []string
 	// Add cloudbots related options
 	if env.IsCloudBot() {
 		cloudbotsOptions := cloudbotsAdditionalOptionsCrosTest()
+		envvars = append(envvars, cloudbotsOptions.Env...)
 		volumes = append(volumes, cloudbotsOptions.Volume...)
 	}
 	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, HostServiceAcctCredsDir))
 	}
-
-	var envvars []string
 	// Required for Satlab's Docker TLS daemon. See b/197875817
 	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", path, path))
@@ -135,6 +136,12 @@ func (p *crosTestProcessor) createDir(dirPath string) {
 func cloudbotsAdditionalOptionsCrosTest() *api.StartContainerRequest_Options {
 	o := &api.StartContainerRequest_Options{
 		Volume: []string{},
+	}
+	// cloudbots environment variables
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "CLOUDBOTS_") {
+			o.Env = append(o.Env, env)
+		}
 	}
 	// cloudbots host files
 	if v, found := os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); found {
