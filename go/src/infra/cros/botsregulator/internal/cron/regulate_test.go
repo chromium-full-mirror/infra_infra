@@ -42,17 +42,11 @@ func TestRegulate(t *testing.T) {
 			Namespace:  "os",
 			Swarming:   "swarming.endpoint",
 			Zone:       "ZONE_SFO36_OS",
-			BotConfigs: "skylab.py",
+			BotConfigs: "skylab.py,cloudbots_config.py",
 		}
 
 		ctxWithNS := clients.SetUFSNamespace(ctx, "os")
 		gomock.InOrder(
-			mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots"}, 0, true, false).Return([]protoadapt.MessageV1{
-				&ufspb.MachineLSE{Name: "machineLSEs/dut-1"},
-				&ufspb.MachineLSE{Name: "machineLSEs/dut-2"},
-				&ufspb.MachineLSE{Name: "machineLSEs/dut-3"},
-				&ufspb.MachineLSE{Name: "machineLSEs/dut-4"},
-			}, nil),
 			mockUFS.EXPECT().BatchListSchedulingUnits(ctxWithNS, nil, 0, false, false).Return([]protoadapt.MessageV1{
 				&ufspb.SchedulingUnit{Name: "schedulingunits/su-1", MachineLSEs: []string{"dut-1"}},
 				&ufspb.SchedulingUnit{Name: "schedulingunits/su-2", MachineLSEs: []string{"dut-2", "dut-3"}},
@@ -67,7 +61,24 @@ func TestRegulate(t *testing.T) {
 				},
 				IsDead: apipb.NullableBool_FALSE,
 			}).Return(&apipb.BotInfoListResponse{
-				Items: []*apipb.BotInfo{{Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"dut-1"}}}}, {Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"su-2"}}}}},
+				Items: []*apipb.BotInfo{{BotId: "crossk-dut-1", Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"dut-1"}}}}, {BotId: "crossk-su-2", Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"su-2"}}}}},
+			}, nil),
+			mockSwarming.EXPECT().ListBots(ctx, &apipb.BotsRequest{
+				Limit:  1000,
+				Cursor: "",
+				Dimensions: []*apipb.StringPair{
+					{Key: "bot_config", Value: "cloudbots_config.py"},
+					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
+				},
+				IsDead: apipb.NullableBool_FALSE,
+			}).Return(&apipb.BotInfoListResponse{
+				Items: []*apipb.BotInfo{},
+			}, nil),
+			mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots"}, 0, true, false).Return([]protoadapt.MessageV1{
+				&ufspb.MachineLSE{Name: "machineLSEs/dut-1"},
+				&ufspb.MachineLSE{Name: "machineLSEs/dut-2"},
+				&ufspb.MachineLSE{Name: "machineLSEs/dut-3"},
+				&ufspb.MachineLSE{Name: "machineLSEs/dut-4"},
 			}, nil),
 			mockGCEP.EXPECT().Get(ctx, &gcepAPI.GetRequest{
 				Id: "cloudbots-dev",
@@ -111,16 +122,43 @@ func TestRegulate(t *testing.T) {
 		ctx = context.WithValue(ctx, clients.MockSwarmingClientKey, mockSwarming)
 
 		opts := &regulator.RegulatorOptions{
-			BPI:       "bpi.endpoint",
-			UFS:       "ufs.enpoint",
-			Hive:      "cloudbots",
-			CfID:      "cloudbots-dev",
-			Namespace: "os",
-			Swarming:  "swarming.endpoint",
+			BPI:        "bpi.endpoint",
+			UFS:        "ufs.enpoint",
+			Namespace:  "os",
+			Swarming:   "swarming.endpoint",
+			Zone:       "ZONE_SFO36_OS",
+			BotConfigs: "skylab.py,cloudbots_config.py",
+			CfIDHives:  "cloudbots-e2-custom:cloudbots-large,cloudbots-dev:cloudbots",
 		}
 
 		ctxWithNS := clients.SetUFSNamespace(ctx, "os")
-		mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots"}, 0, true, false).Return([]protoadapt.MessageV1{}, nil)
+		gomock.InOrder(
+			mockUFS.EXPECT().BatchListSchedulingUnits(ctxWithNS, nil, 0, false, false).Return([]protoadapt.MessageV1{}, nil),
+			mockSwarming.EXPECT().ListBots(ctx, &apipb.BotsRequest{
+				Limit:  1000,
+				Cursor: "",
+				Dimensions: []*apipb.StringPair{
+					{Key: "bot_config", Value: "skylab.py"},
+					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
+				},
+				IsDead: apipb.NullableBool_FALSE,
+			}).Return(&apipb.BotInfoListResponse{
+				Items: []*apipb.BotInfo{{BotId: "crossk-dut-1", Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"dut-1"}}}}, {BotId: "crossk-dut-2", Dimensions: []*apipb.StringListPair{{Key: "dut_name", Value: []string{"su-2"}}}}},
+			}, nil),
+			mockSwarming.EXPECT().ListBots(ctx, &apipb.BotsRequest{
+				Limit:  1000,
+				Cursor: "",
+				Dimensions: []*apipb.StringPair{
+					{Key: "bot_config", Value: "cloudbots_config.py"},
+					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
+				},
+				IsDead: apipb.NullableBool_FALSE,
+			}).Return(&apipb.BotInfoListResponse{
+				Items: []*apipb.BotInfo{},
+			}, nil),
+			mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots"}, 0, true, false).Return([]protoadapt.MessageV1{}, nil),
+			mockUFS.EXPECT().BatchListMachineLSEs(ctxWithNS, []string{"hive=cloudbots-large"}, 0, true, false).Return([]protoadapt.MessageV1{}, nil),
+		)
 
 		// Fake Cloud Run environment.
 		t.Setenv("K_SERVICE", "bots-regulator-test")

@@ -62,6 +62,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 			}
 			dbs := []*apipb.BotInfo{
 				{
+					BotId: "crossk-dut-1",
 					Dimensions: []*apipb.StringListPair{
 						{
 							Key:   "dut_name",
@@ -70,6 +71,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					},
 				},
 				{
+					BotId: "cloudbots-e2-small-dut-5",
 					Dimensions: []*apipb.StringListPair{
 						{
 							Key:   "dut_name",
@@ -78,11 +80,14 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					},
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, sus)
+			ctx := context.Background()
+			dutIDMap := r.DutMapFromBots(ctx, dbs)
+			got := r.ConsolidateAvailableDUTs(ctx, "cloudbots-e2-small", dutIDMap, lses, sus)
 			want := []string{
 				"su-1",
 				"su-2",
 				"dut-4",
+				"dut-5",
 			}
 			if diff := cmp.Diff(want, got, trans); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
@@ -101,7 +106,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-1",
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), nil, lses, sus)
+			got := r.ConsolidateAvailableDUTs(context.Background(), "cloudbots", nil, lses, sus)
 			want := []string{
 				"su-1",
 			}
@@ -116,7 +121,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					Name: "machineLSEs/dut-1",
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), nil, lses, nil)
+			got := r.ConsolidateAvailableDUTs(context.Background(), "cloudbots", nil, lses, nil)
 			want := []string{
 				"dut-1",
 			}
@@ -136,6 +141,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 			}
 			dbs := []*apipb.BotInfo{
 				{
+					BotId: "crossk-dut-1",
 					Dimensions: []*apipb.StringListPair{
 						{
 							Key:   "dut_name",
@@ -144,6 +150,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					},
 				},
 				{
+					BotId: "crossk-dut-2",
 					Dimensions: []*apipb.StringListPair{
 						{
 							Key:   "dut_name",
@@ -152,7 +159,9 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					},
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, nil)
+			ctx := context.Background()
+			dutIDMap := r.DutMapFromBots(ctx, dbs)
+			got := r.ConsolidateAvailableDUTs(ctx, "cloudbots-e2-small", dutIDMap, lses, nil)
 			want := []string{
 				"dut-3",
 			}
@@ -175,6 +184,7 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 			}
 			dbs := []*apipb.BotInfo{
 				{
+					BotId: "crossk-su-1",
 					Dimensions: []*apipb.StringListPair{
 						{
 							Key:   "dut_name",
@@ -189,12 +199,121 @@ func TestConsolidateAvailableDUTs(t *testing.T) {
 					MachineLSEs: []string{"dut-1", "dut-2"},
 				},
 			}
-			got := r.ConsolidateAvailableDUTs(context.Background(), dbs, lses, sus)
+			ctx := context.Background()
+			dutIDMap := r.DutMapFromBots(ctx, dbs)
+			got := r.ConsolidateAvailableDUTs(ctx, "cloudbots-e2", dutIDMap, lses, sus)
 			want := []string{
 				"dut-3",
 			}
 			if diff := cmp.Diff(want, got, trans); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+	})
+}
+
+func TestConfigHive(t *testing.T) {
+	t.Parallel()
+	trans := cmpopts.SortMaps(func(a, b string) bool {
+		return a < b
+	})
+	t.Run("Success", func(t *testing.T) {
+		t.Parallel()
+		t.Run("Happy path", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfID:      "cloudbots-regular",
+				Hive:      "cloudbots",
+				CfIDHives: "cloudbots-e2-small:cloudbots-small,cloudbots-e2-custom-2-6144:cloudbots-large",
+			}
+			want := map[string]string{
+				"cloudbots-regular":          "cloudbots",
+				"cloudbots-e2-small":         "cloudbots-small",
+				"cloudbots-e2-custom-2-6144": "cloudbots-large",
+			}
+			got, err := configHive(opts)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+			if diff := cmp.Diff(want, got, trans); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+		t.Run("Cfid but no hive", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfID: "cloudbots-regular",
+			}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("expected error but got nil")
+			}
+		})
+		t.Run("Hive but no cfid", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				Hive: "cloudbots",
+			}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("expected error but got nil")
+			}
+		})
+		t.Run("Empty", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("expected error but got nil")
+			}
+		})
+		t.Run("CfIDHives", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfIDHives: "cloudbots-e2-small:cloudbots-small,cloudbots-e2-custom-2-6144:cloudbots-large",
+			}
+			want := map[string]string{
+				"cloudbots-e2-small":         "cloudbots-small",
+				"cloudbots-e2-custom-2-6144": "cloudbots-large",
+			}
+			got, err := configHive(opts)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+			if diff := cmp.Diff(want, got, trans); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+		})
+		t.Run("Cfid, hive and CfIDHives", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfID:      "cloudbots-e2-small",
+				Hive:      "cloudbots",
+				CfIDHives: "cloudbots-e2-small:cloudbots-small,cloudbots-e2-custom-2-6144:cloudbots-large",
+			}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+		t.Run("CfIDHives missing hive", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfIDHives: "cloudbots-e2-small:,cloudbots-e2-custom-2-6144:cloudbots-large",
+			}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
+		t.Run("CfIDHives missing cfid", func(t *testing.T) {
+			t.Parallel()
+			opts := &RegulatorOptions{
+				CfIDHives: ":cloudbots-e2-small,cloudbots-e2-custom-2-6144:cloudbots-large",
+			}
+			_, err := configHive(opts)
+			if err == nil {
+				t.Errorf("unexpected error: %v", err)
 			}
 		})
 	})

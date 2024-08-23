@@ -25,11 +25,16 @@ type regulator struct {
 	swarmingClient clients.SwarmingClient
 	ufsClient      clients.UFSClient
 	botConfigs     []string
+	configHive     map[string]string
 }
 
 func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, error) {
 	logging.Infof(ctx, "creating regulator with flags: %v\n", opts)
 	bcfgs, err := botConfigs(opts)
+	if err != nil {
+		return nil, err
+	}
+	ch, err := configHive(opts)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +56,37 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 		swarmingClient: sc,
 		ufsClient:      uc,
 		botConfigs:     bcfgs,
+		configHive:     ch,
 	}, nil
+}
+
+// configHive returns config hive map from config, hive, config-hive flags.
+func configHive(opts *RegulatorOptions) (map[string]string, error) {
+	ch := make(map[string]string)
+	if opts.CfID != "" || opts.Hive != "" {
+		if opts.CfID == "" || opts.Hive == "" {
+			return nil, fmt.Errorf("the cfid and hive flags must either both be defined or both be empty. cifd: %s, hive: %s", opts.CfID, opts.Hive)
+		}
+		ch[opts.CfID] = opts.Hive
+	}
+	if opts.CfIDHives != "" {
+		for _, f := range strings.Split(opts.CfIDHives, ",") {
+			s := strings.SplitN(f, ":", 2)
+			if len(s) != 2 || s[0] == "" || s[1] == "" {
+				return nil, fmt.Errorf("invalid cfid:hive format.  cfIDHive=%q ", s)
+			}
+			c := s[0]
+			h := s[1]
+			if _, found := ch[c]; found {
+				return nil, fmt.Errorf("config prefix %q already exists. please check config-hive flag", c)
+			}
+			ch[c] = h
+		}
+	}
+	if len(ch) == 0 {
+		return nil, fmt.Errorf("empty configHive")
+	}
+	return ch, nil
 }
 
 // botConfigs returns bots configs parsed from botconfigs flag.
@@ -59,6 +94,11 @@ func botConfigs(opts *RegulatorOptions) ([]string, error) {
 	var bc []string
 	bc = append(bc, strings.Split(opts.BotConfigs, ",")...)
 	return bc, nil
+}
+
+// ConfigHive returns config hive map.
+func (r *regulator) ConfigHive() map[string]string {
+	return r.configHive
 }
 
 // BotConfigs returns regulator botconfigs.
@@ -145,11 +185,9 @@ func (r *regulator) listRunningBots(ctx context.Context, botConfig, ufsZone stri
 // This list includes Scheduling Units and single DUTs, all sharing the same hive.
 // The assumption is that all LSEs in a Scheduling Unit should share the same hive.
 // This is enforced on UFS side.
-func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, dbs []*apipb.BotInfo, lses []*ufspb.MachineLSE, sus []*ufspb.SchedulingUnit) []string {
+func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, prefix string, dutIDMap map[string][]string, lses []*ufspb.MachineLSE, sus []*ufspb.SchedulingUnit) []string {
 	// List of available DUTs requiring a Swarming bot.
 	var ad []string
-	// Map of Drone DUTs for easy search.
-	droneDUTs := dutMapFromBots(dbs)
 	// Map of all lses sharing the same hive (e.g. cloudbots).
 	lsesInSU := make(map[string]bool, len(lses))
 	for _, lse := range lses {
@@ -165,25 +203,25 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, dbs []*apipb.B
 				seen = true
 			}
 		}
-		// At least 1 DUT in the SU has the corresponding hive.
 		if seen {
+			// At least 1 DUT in the SU is in the lses which means the SU share the same cloudbot hive/prefix as lses
 			s := ufsUtil.RemovePrefix(su.GetName())
-			// The SU is still running on Drone.
-			if _, ok := droneDUTs[s]; ok {
-				logging.Infof(ctx, "Scheduling Unit %s is still running on Drone; skipping", s)
+			if dutInOtherHives(s, prefix, dutIDMap) {
+				// The SU is still running on other prefix/hive.
+				logging.Infof(ctx, "Scheduling Unit %s is still running on other hives; skipping", s)
 				continue
 			}
 			ad = append(ad, s)
 		}
 	}
 	for lse, seen := range lsesInSU {
-		// The DUT is part of a scheduling unit.
 		if seen {
+			// The DUT is part of a scheduling unit.
 			continue
 		}
-		// The DUT is still running on Drone.
-		if _, ok := droneDUTs[lse]; ok {
-			logging.Infof(ctx, "DUT %s is still running on Drone; skipping", lse)
+		if dutInOtherHives(lse, prefix, dutIDMap) {
+			// The DUT is still running on other hives.
+			logging.Infof(ctx, "DUT %s is still running on other hives; skipping", lse)
 			continue
 		}
 		ad = append(ad, lse)
@@ -191,18 +229,37 @@ func (r *regulator) ConsolidateAvailableDUTs(ctx context.Context, dbs []*apipb.B
 	return ad
 }
 
-// UpdateConfig is a wrapper around the current provider UpdateConfig method.
-func (r *regulator) UpdateConfig(ctx context.Context, hns []string) error {
-	return r.bpiClient.UpdateConfig(ctx, hns, r.opts.CfID)
+// dutInOtherHives returns true if dut exist in a running bot of other hives
+func dutInOtherHives(dut, prefix string, dutIDMap map[string][]string) bool {
+	if ids, ok := dutIDMap[dut]; ok {
+		for _, id := range ids {
+			if len(prefix) > len(id) || id[:len(prefix)] != prefix {
+				// The dut is running on different bot prefix.
+				return true
+			}
+		}
+	}
+	return false
 }
 
-// dutMapFromBots return a map of DUT name from a list of Swarming bots.
-func dutMapFromBots(dbs []*apipb.BotInfo) map[string]struct{} {
-	duts := make(map[string]struct{}, len(dbs))
+// UpdateConfig is a wrapper around the current provider UpdateConfig method.
+func (r *regulator) UpdateConfig(ctx context.Context, hns []string, cfID string) error {
+	return r.bpiClient.UpdateConfig(ctx, hns, cfID)
+}
+
+// DutMapFromBots return a map of DUT name from a list of Swarming bots.
+func (r *regulator) DutMapFromBots(ctx context.Context, dbs []*apipb.BotInfo) map[string][]string {
+	duts := make(map[string][]string, len(dbs))
 	for _, db := range dbs {
 		for _, d := range db.GetDimensions() {
 			if d.Key == "dut_name" {
-				duts[d.Value[0]] = struct{}{}
+				dutName := d.Value[0]
+				if _, found := duts[dutName]; !found {
+					duts[dutName] = []string{}
+				} else {
+					logging.Warningf(ctx, "more than one bot share the same DUT. dut=%q, bots=%q,%q", dutName, duts[dutName], db.GetBotId())
+				}
+				duts[dutName] = append(duts[dutName], db.GetBotId())
 				break
 			}
 		}

@@ -22,6 +22,7 @@ type RegulatorOptions struct {
 	Swarming   string
 	Zone       string
 	BotConfigs string
+	CfIDHives  string
 }
 
 // RegisterFlags exposes the command line flags required to run the application.
@@ -35,4 +36,5 @@ func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.Swarming, "swarming", clients.SwarmingDev, "Swarming server.")
 	fs.StringVar(&r.BotConfigs, "botconfigs", "skylab.py", "a comma-separated list of bots configs. e.g skylab.py,cloudbots_config.py")
 	fs.StringVar(&r.Zone, "zone", "ZONE_SFO36_OS", "UFS zone. e.g ZONE_SFO36_OS")
+	fs.StringVar(&r.CfIDHives, "config-hive", "", "a comma-separated list of config prefix hive names. e.g cloudbots-e2-small:cloudbots,cloudbots-e2-custom-2-6144:cloudbots-large")
 }
