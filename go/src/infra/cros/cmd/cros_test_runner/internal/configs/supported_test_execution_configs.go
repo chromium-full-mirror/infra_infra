@@ -155,7 +155,8 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 	if !cftHwStepsConfig.GetSkipTestExecution() {
 		mainConfigs = append(mainConfigs,
 			TestServerStart_CrosTestExecutor,
-			TestsExecution_CrosTestExecutor)
+			TestsExecution_CrosTestExecutor,
+			GcloudAuth_CtrExecutor.WithRequired(true))
 	}
 
 	// Add support for dynamic command/executor for post-process.
@@ -377,10 +378,10 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform com
 		case *api.CrosTestRunnerDynamicRequest_Task_PreTest:
 		case *api.CrosTestRunnerDynamicRequest_Task_Test:
 			mainConfigs = append(mainConfigs,
-				GenericTests_GenericTestsExecutor.WithRequired(task.Required))
+				GenericTests_GenericTestsExecutor.WithRequired(task.Required),
+				GcloudAuth_CtrExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
 			mainConfigs = append(mainConfigs,
-				GcloudAuth_CtrExecutor.WithRequired(task.Required),
 				GenericPostProcess_GenericPostProcessExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_Publish:
 			if platform == common.BotProviderGce && !vmReleased {
@@ -389,7 +390,6 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform com
 					VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true))
 			}
 			mainConfigs = append(mainConfigs,
-				GcloudAuth_CtrExecutor.WithRequired(task.Required),
 				GenericPublish_GenericPublishExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_Generic:
 			mainConfigs = append(mainConfigs,
