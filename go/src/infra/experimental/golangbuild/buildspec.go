@@ -335,17 +335,11 @@ func (b *buildSpec) distTestListCmd(ctx context.Context, dir string) *exec.Cmd {
 // a subset of dist tests to run using dist test's command-line interface.
 // (See 'go tool dist test -help'.)
 //
-// If json is true, passes the -json flag, producing `go test -json`-compatible output.
-// Note: -json is not supported before Go 1.21.
-//
-// TODO(go.dev/issue/59990): Delete the json argument when it becomes always true.
+// It passes the -json flag, producing `go test -json`-compatible output.
 //
 // It automatically applies additional dist flags based on the buildSpec (e.g. -race).
-func (b *buildSpec) distTestCmd(ctx context.Context, dir, runRx string, testNames []string, json bool) *exec.Cmd {
-	args := []string{"tool", "dist", "test"}
-	if json {
-		args = append(args, "-json")
-	}
+func (b *buildSpec) distTestCmd(ctx context.Context, dir, runRx string, testNames []string) *exec.Cmd {
+	args := []string{"tool", "dist", "test", "-json"}
 	args = append(args, b.distTestFlags()...)
 	if runRx != "" {
 		args = append(args, "-run="+runRx)
