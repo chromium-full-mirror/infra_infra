@@ -37,5 +37,5 @@ func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.Swarming, "swarming", clients.SwarmingDev, "Swarming server.")
 	fs.StringVar(&r.BotConfigs, "botconfigs", "skylab.py,cloudbots_config.py", "a comma-separated list of bots configs. e.g skylab.py,cloudbots_config.py")
 	fs.StringVar(&r.Zone, "zone", "ZONE_SFO36_OS", "UFS zone. e.g ZONE_SFO36_OS")
-	fs.StringVar(&r.CfIDHives, "config-hive", "cloudbots-prod-e2-small:cloudbots,cloudbots-prod-e2-custom-2-6144:cloudbots-large", "a comma-separated list of config prefix hive names. e.g cloudbots-e2-small:cloudbots,cloudbots-e2-custom-2-6144:cloudbots-large")
+	fs.StringVar(&r.CfIDHives, "config-hive", "cloudbots-dev-e2-small:cloudbots,cloudbots-dev-e2-custom-2-6144:cloudbots-large", "a comma-separated list of config prefix hive names. e.g cloudbots-e2-small:cloudbots,cloudbots-e2-custom-2-6144:cloudbots-large")
 }
