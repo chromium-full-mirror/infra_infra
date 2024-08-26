@@ -74,6 +74,12 @@ func TestTotalCostOfDUT(t *testing.T) {
 						Category:        "dedicated",
 					},
 					{
+						SubtotalName:    "testbed cost",
+						RawFigure:       0,
+						PerDeviceFigure: 0,
+						Category:        "dedicated",
+					},
+					{
 						SubtotalName:    "server acquisition",
 						RawFigure:       droneServer / amortizationTimeYears / hoursPerYear,
 						PerDeviceFigure: droneServer / amortizationTimeYears / hoursPerYear,

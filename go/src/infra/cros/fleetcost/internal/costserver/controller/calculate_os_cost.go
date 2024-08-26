@@ -106,6 +106,16 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 	peripherals := dut.GetPeripherals()
 	servo := peripherals.GetServo()
 
+	// TODO(gregorynisbet): In cases where we have multiple pools, we need some logic to
+	//                      extract the most specific pool. We can probably achieve this by filtering out
+	//                      uninformative pools like DUT_POOL_QUOTA and then using a very simple fallback mechanism
+	//                      like the length of the name or lexicographic order.
+	pools := dut.GetPools()
+	pool := ""
+	if len(pools) == 1 {
+		pool = pools[0]
+	}
+
 	// TODO: add a map that convert UFS location to cost indicator location. Hardcode to all for now.
 	location := fleetcostpb.Location_LOCATION_ALL
 	if dut == nil {
@@ -119,7 +129,7 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: shared").Err()
 	}
 
-	dedicatedCost, err := getDUTDedicatedHardwareCost(ctx, m, servo, location, forgiveMissingEntries)
+	dedicatedCost, err := getDUTDedicatedHardwareCost(ctx, m, servo, location, forgiveMissingEntries, pool)
 	if err != nil {
 		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: dedicated").Err()
 	}
@@ -361,7 +371,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 
 // getDUTDedicatedHardwareCost gets the acquisition cost of a DUT and servo, which are the only two
 // resources that are DUT-specific
-func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool) ([]*fleetcostpb.CostReportItem, error) {
+func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, servo *lab.Servo, location fleetcostpb.Location, forgiveMissingEntries bool, pool string) ([]*fleetcostpb.CostReportItem, error) {
 	var out []*fleetcostpb.CostReportItem
 	ent, err := getCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "DUT cost",
@@ -395,6 +405,20 @@ func getDUTDedicatedHardwareCost(ctx context.Context, m *ufspb.ChromeOSMachine, 
 
 		out = append(out, utils.MakeCostReportItem("servo cost", servoCost, servoCost, "dedicated"))
 	}
+
+	testbed, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
+		ErrorHint:     "testbed cost",
+		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_TESTBED,
+		Primary:       pool,
+		Secondary:     "",
+		Tertiary:      "",
+		Location:      location,
+	}, true, forgiveMissingEntries)
+	if err != nil {
+		return nil, errors.Annotate(err, "testbed cost for %q %v", location.String(), forgiveMissingEntries).Err()
+	}
+	out = append(out, utils.MakeCostReportItem("testbed cost", testbed, testbed, "dedicated"))
+
 	return out, nil
 }
 
