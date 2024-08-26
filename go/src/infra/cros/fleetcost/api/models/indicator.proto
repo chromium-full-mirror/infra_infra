@@ -23,6 +23,8 @@ enum IndicatorType {
     INDICATOR_TYPE_OPERATION = 8;
     INDICATOR_TYPE_CLOUD = 9;
     INDICATOR_TYPE_POWER = 10;
+    // TESTBED is the total cost of a per-device testbed, for example in a connectivity pool.
+    INDICATOR_TYPE_TESTBED = 11;
 }
 
 // Location indicates location scope for costs that may vary in different sites.
