@@ -526,10 +526,9 @@ func refToBranch(ref string) string {
 }
 
 // isGoProject reports whether a project should be treated as the main Go repo.
-// For the moment, we develop security fixes in a project named golang/go-private.
-func isGoProject(name string) bool {
-	return name == "go" || name == "golang/go-private"
-}
+// We used to develop security fixes in a project named golang/go-private, but
+// by now that's been migrated to "go".
+func isGoProject(name string) bool { return name == "go" }
 
 func createAuthenticator(ctx context.Context) *auth.Authenticator {
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
