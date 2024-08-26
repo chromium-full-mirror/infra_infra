@@ -124,7 +124,7 @@ func calculateCostForSingleChromeosDut(ctx context.Context, ic ufsAPI.FleetClien
 
 	m := data.GetMachine().GetChromeosMachine()
 
-	sharedCost, err := getSharedCost(ctx, location, forgiveMissingEntries)
+	sharedCost, err := getSharedCost(ctx, location, forgiveMissingEntries, pool)
 	if err != nil {
 		return nil, nil, errors.Annotate(err, "calculate cost for single ChromeOS DUT: shared").Err()
 	}
@@ -234,13 +234,13 @@ func getLabstationHardwareCost(ctx context.Context, ic ufsAPI.FleetClient, hostn
 // - quota-faft-rack-setup                 rack-setup
 // - quota-faft-phase-deployments          phase-deployments
 // - quota-faft-annual-maintenance         annual-maintenance
-func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool) ([]*fleetcostpb.CostReportItem, error) {
+func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMissingEntries bool, pool string) ([]*fleetcostpb.CostReportItem, error) {
 	var sharedCost []*fleetcostpb.CostReportItem
 	v, err := getAmortizedCostIndicatorValue(ctx, &indicatorAttribute{
 		ErrorHint:     "server acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "server-acquisition",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -253,7 +253,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "server maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "server-maintenance",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -266,7 +266,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "network infra acquisition",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "network-infra-acquisition",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -279,7 +279,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "network infra maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "network-infra-maintenance",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -292,7 +292,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "quota faft opex",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SPACE,
 		Primary:       "quota-faft-opex",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -305,7 +305,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "connectivity and misc testbeds",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "connectivity-and-misc-testbeds",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -318,7 +318,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "control network racks",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "control-network-racks",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -331,7 +331,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "rack setup",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "rack-setup",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -344,7 +344,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "phase deployments",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "phase-deployments",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
@@ -357,7 +357,7 @@ func getSharedCost(ctx context.Context, location fleetcostpb.Location, forgiveMi
 		ErrorHint:     "annual maintenance",
 		IndicatorType: fleetcostpb.IndicatorType_INDICATOR_TYPE_SERVER,
 		Primary:       "annual-maintenance",
-		Secondary:     "",
+		Secondary:     pool,
 		Tertiary:      "",
 		Location:      location,
 	}, true, forgiveMissingEntries)
