@@ -24,6 +24,8 @@ func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdat
 	modifyTestRequest(req, updater, log)
 	filterOutFaultyTests(req, updater, log)
 	removePostProcess(req, log)
+	modifyRdbPublishRequest(req, updater, log)
+	updateProvisionInstallPath(req, updater, log)
 	return nil
 }
 
@@ -74,6 +76,12 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *FoilRequestUpdat
 	}
 }
 
+func updateProvisionInstallPath(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
+	req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"] = fmt.Sprintf(
+		"android-build/build_explorer/build_details/%s/%s/android-desktop-ota-packages.zip",
+		updater.buildNum, updater.buildStr)
+}
+
 func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
 	if updater.TestPath == "" {
 		return
@@ -96,6 +104,35 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 	if err != nil {
 		log.Printf("Error while modifying test request, %s", err)
+	}
+}
+
+func modifyRdbPublishRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
+	log.Println("Modifying rdb publish request")
+
+	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.RdbPublish))
+	generator.AddModification(
+		&api.DynamicDep{
+			Key:   "publishRequest.metadata.testResult.testInvocation.primaryExecutionInfo.buildInfo.name",
+			Value: fmt.Sprintf("FMT=%s/%s", updater.buildStr, updater.buildNum),
+		},
+		map[string]string{
+			"publish.dynamicDeps": "",
+		},
+	)
+	generator.AddModification(
+		&api.DynamicDep{
+			Key:   "publishRequest.metadata.sources.gsPath",
+			Value: fmt.Sprintf("FMT=%s", req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"]+"/metadata/sources.jsonpb"),
+		},
+		map[string]string{
+			"publish.dynamicDeps": "",
+		},
+	)
+
+	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+	if err != nil {
+		log.Printf("Error while modifying rdb publish request. %s", err)
 	}
 }
 

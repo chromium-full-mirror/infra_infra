@@ -18,10 +18,17 @@ type FoilRequestUpdater struct {
 	ProvisionBinary string
 	TestPath        string
 	FilterTests     bool
+
+	buildStr string
+	buildNum string
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
+
+	log.Println("Setting build.")
+	ru.buildStr = "brya-trunk_staging-userdebug"
+	ru.buildNum = "P79600266"
 
 	if err := GenerateDynamicUpdates(req, ru, log); err != nil {
 		log.Printf("Error while generating dynamic updates, %s", err)
