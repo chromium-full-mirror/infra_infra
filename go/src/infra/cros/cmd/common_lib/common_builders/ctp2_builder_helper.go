@@ -282,6 +282,12 @@ func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
 	} else if runWithQs {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
+	// Hardcoded check for foilTest to route into QS.
+	// TODO: remove once scheduke recognizes satlab.
+	pool := getTag(v1.GetParams().GetDecorations().GetTags(), LabelPool)
+	if pool == "foilTest" {
+		scheduler = testapi.SchedulerInfo_QSCHEDULER
+	}
 	return &testapi.SchedulerInfo{
 		// TODO(cdelagarza): Update to upstream variable.
 		Scheduler: scheduler,

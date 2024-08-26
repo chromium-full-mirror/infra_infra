@@ -130,8 +130,12 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	// Parse test results
 	autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
 	var testErr error
-	if cmd.TestResponses != nil && len(cmd.TestResponses.GetTestCaseResults()) > 0 {
+	testCaseCount := len(cmd.TestResponses.GetTestCaseResults())
+	if cmd.TestResponses != nil && testCaseCount > 0 {
 		isIncomplete = false
+		isPastCaseLimit := testCaseCount > 2000
+		passCount := 0
+		failCount := 0
 		for _, testResult := range cmd.TestResponses.GetTestCaseResults() {
 			testVerdict, isTestFailure := getTestVerdict(ctx, testResult)
 			testResultReason := testResult.GetReason()
@@ -141,12 +145,27 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 				HumanReadableSummary: testResultReason,
 			}
 			autotestTestCases = append(autotestTestCases, autotestTestCase)
+			if isTestFailure {
+				failCount += 1
+			} else {
+				passCount += 1
+			}
 
-			// Set test steps
-			testErr = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
-			// Propagate error status to parent step
-			if err == nil && isTestFailure {
-				err = testErr
+			if !isPastCaseLimit {
+				// Set test steps
+				testErr = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
+				// Propagate error status to parent step
+				if err == nil && isTestFailure {
+					err = testErr
+				}
+			}
+		}
+		if isPastCaseLimit {
+			if passCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests passed", passCount), "", false, false)
+			}
+			if failCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
 			}
 		}
 	}
