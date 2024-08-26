@@ -8,6 +8,7 @@ package rpm
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -128,8 +129,12 @@ func SetPowerStateHTTP(ctx context.Context, req *RPMPowerRequest) error {
 // http://www.servertech.com/products/switched-pdus/
 // https://cdn10.servertech.com/assets/documents/documents/968/original/JSON_API_Web_Service_%28JAWS%29_V1.06.pdf?1641867726
 func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
+	// TODO(echoyang): Reenable cert checks once RPM devices have proper certs
+	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
+	httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := &http.Client{
-		Timeout: setPowerTimeout,
+		Transport: httpTransport,
+		Timeout:   setPowerTimeout,
 	}
 	serverURL := fmt.Sprintf("https://%s/jaws/control/outlets/%s", r.PowerUnitHostname, r.PowerunitOutlet)
 	body := map[string]string{
