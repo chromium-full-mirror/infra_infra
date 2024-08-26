@@ -97,10 +97,6 @@ infra/3pp/tools/%[1]s/${platform} version:%[2]s
 			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "nodejs", v)
 		}
 		if v := inputs.WasmtimeVersion; v != "" {
-			wasmRuntimeDep := wasmRuntimeDep
-			if strings.HasPrefix(v, "13.") { // TODO(dmitshur): Delete after the need for older Wasmtime ages out.
-				wasmRuntimeDep = strings.Replace(wasmRuntimeDep, "infra/3pp/tools/", "golang/third_party/", 1)
-			}
 			cipdDeps += fmt.Sprintf(wasmRuntimeDep, "wasmtime", v)
 		}
 		if v := inputs.WazeroVersion; v != "" {
