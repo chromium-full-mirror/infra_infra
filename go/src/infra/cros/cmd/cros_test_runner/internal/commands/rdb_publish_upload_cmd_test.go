@@ -202,15 +202,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "hatch",
 						ModelName:   "nipperkin",
 					},
-					Chameleon: &labapi.Chameleon{
-						Types: []labapi.Chameleon_Type{
-							labapi.Chameleon_V2,
-							labapi.Chameleon_V3,
-						},
-					},
 					ModemInfo: &labapi.ModemInfo{
 						Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 					},
+					Sku: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
 				},
 			},
 		}
@@ -236,12 +231,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							Firmware: &artifactpb.BuildMetadata_Firmware{},
 							Kernel:   &artifactpb.BuildMetadata_Kernel{},
 							Lacros:   &artifactpb.BuildMetadata_Lacros{},
-							Chameleon: &labapi.Chameleon{
-								Types: []labapi.Chameleon_Type{
-									labapi.Chameleon_V2,
-									labapi.Chameleon_V3,
-								},
-							},
 							ModemInfo: &labapi.ModemInfo{
 								Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 							},
@@ -392,7 +381,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				BotDimensions: []*buildbucketpb.StringPair{
 					{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
 					{Key: "label-wifi_router_models", Value: "gale"},
-					{Key: "label-hwid_sku", Value: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I"},
 					{Key: "label-dlm_sku_id", Value: "16968"},
 					{Key: "label-carrier", Value: "CARRIER_ESIM"},
 					{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
@@ -526,15 +514,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "hatch",
 						ModelName:   "nipperkin",
 					},
-					Chameleon: &labapi.Chameleon{
-						Types: []labapi.Chameleon_Type{
-							labapi.Chameleon_V2,
-							labapi.Chameleon_V3,
-						},
-					},
 					ModemInfo: &labapi.ModemInfo{
 						Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
 					},
+					Sku: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
 				},
 			},
 		}
@@ -547,14 +530,10 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "dedede",
 						ModelName:   "drawman",
 					},
-					Chameleon: &labapi.Chameleon{
-						Types: []labapi.Chameleon_Type{
-							labapi.Chameleon_V3,
-						},
-					},
 					ModemInfo: &labapi.ModemInfo{
 						Type: labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
 					},
+					Sku: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-ABC",
 				},
 			},
 		}
@@ -577,15 +556,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							Cellular: &artifactpb.BuildMetadata_Cellular{
 								Carrier: "CARRIER_ESIM",
 							},
-							Firmware: &artifactpb.BuildMetadata_Firmware{},
-							Kernel:   &artifactpb.BuildMetadata_Kernel{},
-							Lacros:   &artifactpb.BuildMetadata_Lacros{},
-							Chameleon: &labapi.Chameleon{
-								Types: []labapi.Chameleon_Type{
-									labapi.Chameleon_V2,
-									labapi.Chameleon_V3,
-								},
-							},
+							Firmware:      &artifactpb.BuildMetadata_Firmware{},
+							Kernel:        &artifactpb.BuildMetadata_Kernel{},
+							Lacros:        &artifactpb.BuildMetadata_Lacros{},
 							ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{},
 							ModemInfo: &labapi.ModemInfo{
 								Type: labapi.ModemType_MODEM_TYPE_FIBOCOMM_L850GL,
@@ -640,7 +613,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							BuildTarget: "dedede",
 							BuildMetadata: &artifactpb.BuildMetadata{
 								Sku: &artifactpb.BuildMetadata_Sku{
-									HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
+									HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-ABC",
 									DlmSkuId: "16968",
 								},
 								Chipset: &artifactpb.BuildMetadata_Chipset{
@@ -650,14 +623,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 								Cellular: &artifactpb.BuildMetadata_Cellular{
 									Carrier: "CARRIER_ESIM",
 								},
-								Firmware: &artifactpb.BuildMetadata_Firmware{},
-								Kernel:   &artifactpb.BuildMetadata_Kernel{},
-								Lacros:   &artifactpb.BuildMetadata_Lacros{},
-								Chameleon: &labapi.Chameleon{
-									Types: []labapi.Chameleon_Type{
-										labapi.Chameleon_V3,
-									},
-								},
+								Firmware:      &artifactpb.BuildMetadata_Firmware{},
+								Kernel:        &artifactpb.BuildMetadata_Kernel{},
+								Lacros:        &artifactpb.BuildMetadata_Lacros{},
 								ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{},
 								ModemInfo: &labapi.ModemInfo{
 									Type: labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
@@ -785,7 +753,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				BotDimensions: []*buildbucketpb.StringPair{
 					{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
 					{Key: "label-wifi_router_models", Value: "gale"},
-					{Key: "label-hwid_sku", Value: "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I"},
 					{Key: "label-dlm_sku_id", Value: "16968"},
 					{Key: "label-carrier", Value: "CARRIER_ESIM"},
 					{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},

@@ -302,11 +302,6 @@ func populateBuildMetadata(
 	// - Sku info
 	skuInfo := &artifactpb.BuildMetadata_Sku{}
 	buildMetadata.Sku = skuInfo
-
-	if hwidSKU := getSingleTagValue(botDims, "label-hwid_sku"); hwidSKU != "" {
-		skuInfo.HwidSku = hwidSKU
-	}
-
 	if dlmSKUID := getSingleTagValue(botDims, "label-dlm_sku_id"); dlmSKUID != "" {
 		skuInfo.DlmSkuId = dlmSKUID
 	}
@@ -344,12 +339,11 @@ func populateBuildMetadata(
 	if dut != nil {
 		chromeOSInfo := dut.GetChromeos()
 		if chromeOSInfo != nil {
-			// - Chameleon info
-			// TODO (b/270230867): remove this once result adapter is updated.
-			buildMetadata.Chameleon = chromeOSInfo.GetChameleon()
-
 			// - Modem info
-			buildMetadata.ModemInfo = chromeOSInfo.GetModemInfo()
+			buildMetadata.ModemInfo = chromeOSInfo.ModemInfo
+
+			// - SKU info
+			buildMetadata.Sku.HwidSku = chromeOSInfo.Sku
 		}
 	}
 }
