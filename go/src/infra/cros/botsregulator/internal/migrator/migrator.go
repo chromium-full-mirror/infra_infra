@@ -150,7 +150,13 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 			if _, ok := bms[key]; !ok {
 				bms[key] = &migrationState{}
 			}
-			switch lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive() {
+			var h string
+			if lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
+				h = lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetHive()
+			} else {
+				h = lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
+			}
+			switch h {
 			case "cloudbots":
 				bms[key].CloudbotsSmall = append(bms[key].CloudbotsSmall, stripped)
 			case "cloudbots-large":
