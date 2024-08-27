@@ -280,6 +280,9 @@ message DUTAudio {
   }
   // Audio loopback dongle is plugged in.
   LoopbackState loopback_state = 4;
+
+  // The type of Audio Beamforming on the DUT.
+  string beamforming = 5;
 }
 
 // InitServodRequest represents data to initiate servod daemon on servo-host.

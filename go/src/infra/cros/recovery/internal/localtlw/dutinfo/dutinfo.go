@@ -165,6 +165,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		LoopbackState: convertAudioLoopbackState(ds.GetAudioLoopbackDongle()),
 		InBox:         p.GetAudio().GetAudioBox(),
 		StaticCable:   p.GetAudio().GetAudioCable(),
+		Beamforming:   ds.GetAudioBeamforming(),
 	}
 	d := &tlw.Dut{
 		Id:             machine.GetName(),
@@ -737,6 +738,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		} else {
 			state.AudioLoopbackDongle = ufslab.PeripheralState_UNKNOWN
 		}
+		state.AudioBeamforming = chromeos.GetAudio().GetBeamforming()
 		state.WifiPeripheralState = convertPeripheralWifiStateToUFS(chromeos.GetPeripheralWifiState())
 
 		if audioLatencyToolkit := chromeos.GetAudioLatencyToolkit(); audioLatencyToolkit != nil {
