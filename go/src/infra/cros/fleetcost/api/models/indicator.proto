@@ -66,4 +66,8 @@ message CostIndicator {
     reserved 11;
     // Amortization is the time in years that we amortize COST_CADENCE_ONE_TIME expenses over.
     double amortization_in_years = 12;
+    // ContextURL is a link to information about the cost indicator.
+    //
+    // It can be a google doc or a g3 doc for example.
+    repeated string context_url = 16;
 }
