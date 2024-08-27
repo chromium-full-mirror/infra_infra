@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
+	"github.com/google/uuid"
 	"github.com/googleapis/google-cloud-go-testing/storage/stiface"
 	pubsub "google.golang.org/api/pubsub/v1"
 	"google.golang.org/appengine/v2"
@@ -70,6 +71,13 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 
 	info, err := getFile(ctx, filename, bucketID)
 
+	// Use invocation ID for Trace upload if available.
+	invID, err := uuid.Parse(info.Metadata.InvocationID)
+	if err != nil {
+		log.Warningf(ctx, "failed to parse invocation ID: %v", err)
+		invID = uuid.New()
+	}
+
 	if err != nil {
 		log.Errorf(ctx, "failed to get file: %v", err)
 
@@ -92,7 +100,7 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "bot build", info); err != nil {
+	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "bot build", info, invID); err != nil {
 		http.Error(w, "failed to upload trace", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to upload trace: %v", err)
 		return

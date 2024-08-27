@@ -290,9 +290,16 @@ func uploadNinjaLogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Use invocation ID for GCS, Trace uploads if available.
+	invID, err := uuid.Parse(info.Metadata.InvocationID)
+	if err != nil {
+		log.Warningf(ctx, "failed to parse invocation ID: %v", err)
+		invID = uuid.New()
+	}
+
 	// TODO: jwata - Use the timestamp of the build.
 	datePrefix := time.Now().Format("2006_01_02")
-	fileName := fmt.Sprintf("%s.%s", datePrefix, uuid.NewString())
+	fileName := fmt.Sprintf("%s.%s", datePrefix, invID.String())
 
 	if err := ninjalog.WriteNinjaLogToGCS(ctx, info, appengine.AppID(ctx)+".appspot.com", "ninjalog_users_avro/"+fileName); err != nil {
 		http.Error(w, "failed to write to GCS", http.StatusInternalServerError)
@@ -300,7 +307,7 @@ func uploadNinjaLogHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "user build", info); err != nil {
+	if err := ninjalog.UploadTraceOnCriticalPath(ctx, appengine.AppID(ctx), "user build", info, invID); err != nil {
 		http.Error(w, "failed to upload trace", http.StatusInternalServerError)
 		log.Errorf(ctx, "failed to upload trace: %v", err)
 		return

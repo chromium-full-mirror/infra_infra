@@ -10,6 +10,8 @@ import (
 	"flag"
 	"os"
 
+	"github.com/google/uuid"
+
 	"infra/appengine/chromium_build_stats/ninjalog"
 )
 
@@ -31,7 +33,7 @@ func main() {
 
 	ctx := context.Background()
 
-	err = ninjalog.UploadTraceOnCriticalPath(ctx, *projectID, "build", logs)
+	err = ninjalog.UploadTraceOnCriticalPath(ctx, *projectID, "build", logs, uuid.New())
 	if err != nil {
 		panic(err)
 	}

@@ -15,6 +15,7 @@ import (
 
 	trace "cloud.google.com/go/trace/apiv2"
 	"cloud.google.com/go/trace/apiv2/tracepb"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/logging"
@@ -81,7 +82,7 @@ func mustHexID(size int) string {
 }
 
 // UploadTraceOnCriticalPath uploads build actions included in critical path of build in ninja log to Cloud Trace.
-func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string, nlog *NinjaLog) (rerr error) {
+func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string, nlog *NinjaLog, invocationID uuid.UUID) (rerr error) {
 	if len(nlog.Steps) == 0 {
 		logging.Debugf(ctx, "no steps to process")
 		return nil
@@ -108,7 +109,7 @@ func UploadTraceOnCriticalPath(ctx context.Context, projectID, traceName string,
 	request := &tracepb.BatchWriteSpansRequest{
 		Name: "projects/" + projectID,
 	}
-	traceID := mustHexID(16)
+	traceID := hex.EncodeToString(invocationID[:])
 
 	now := time.Now()
 

@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestTrace(t *testing.T) {
@@ -166,7 +168,7 @@ func TestTrace(t *testing.T) {
 
 func TestUploadTraceOnCriticalPathWithEmptySteps(t *testing.T) {
 	ctx := context.Background()
-	err := UploadTraceOnCriticalPath(ctx, "testProj", "testTrace", &NinjaLog{})
+	err := UploadTraceOnCriticalPath(ctx, "testProj", "testTrace", &NinjaLog{}, uuid.New())
 	if err != nil {
 		t.Errorf("UploadTraceOnCriticalPath() returns %v. expected nil", err)
 	}
