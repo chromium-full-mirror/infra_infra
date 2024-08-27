@@ -11,22 +11,22 @@ go 1.22.0
 
 require (
 	cloud.google.com/go v0.115.1
-	cloud.google.com/go/appengine v1.8.12
+	cloud.google.com/go/appengine v1.9.0
 	cloud.google.com/go/bigquery v1.62.0
 	cloud.google.com/go/cloudsqlconn v1.12.0
-	cloud.google.com/go/cloudtasks v1.12.13
-	cloud.google.com/go/compute v1.27.5
+	cloud.google.com/go/cloudtasks v1.13.0
+	cloud.google.com/go/compute v1.28.0
 	cloud.google.com/go/compute/metadata v0.5.0
-	cloud.google.com/go/datastore v1.17.1
+	cloud.google.com/go/datastore v1.18.1-0.20240822134219-d8887df4a12f
 	cloud.google.com/go/firestore v1.16.0
 	cloud.google.com/go/logging v1.11.0
-	cloud.google.com/go/longrunning v0.5.12
-	cloud.google.com/go/monitoring v1.20.4
+	cloud.google.com/go/longrunning v0.6.0
+	cloud.google.com/go/monitoring v1.21.0
 	cloud.google.com/go/profiler v0.4.1
 	cloud.google.com/go/pubsub v1.42.0
-	cloud.google.com/go/secretmanager v1.13.6
+	cloud.google.com/go/secretmanager v1.14.0
 	cloud.google.com/go/storage v1.43.0
-	cloud.google.com/go/trace v1.10.12
+	cloud.google.com/go/trace v1.11.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Microsoft/go-winio v0.6.2
 	github.com/PaesslerAG/jsonpath v0.1.1
@@ -104,11 +104,11 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.28.0
 	go.opentelemetry.io/otel/sdk v1.28.0
 	go.opentelemetry.io/otel/trace v1.28.0
-	go.skia.org/infra v0.0.0-20240820041610-c71e16037f25
+	go.skia.org/infra v0.0.0-20240823043022-8db4baf70cfc
 	go.starlark.net v0.0.0-20240725214946-42030a7cedce
-	golang.org/x/build v0.0.0-20240816214248-bba03e49f907
+	golang.org/x/build v0.0.0-20240822214659-cc9395c521ba
 	golang.org/x/crypto v0.26.0
-	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
+	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.20.0
 	golang.org/x/net v0.28.0
@@ -121,13 +121,13 @@ require (
 	golang.org/x/tools v0.24.0
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
 	gonum.org/v1/gonum v0.12.0
-	google.golang.org/api v0.192.0
+	google.golang.org/api v0.194.0
 	google.golang.org/appengine v1.6.8
 	google.golang.org/appengine/v2 v2.0.6
-	google.golang.org/genproto v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/api v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240814211410-ddb44dafa142
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142
+	google.golang.org/genproto v0.0.0-20240822170219-fc7c04adadcd
+	google.golang.org/genproto/googleapis/api v0.0.0-20240822170219-fc7c04adadcd
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240822170219-fc7c04adadcd
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240822170219-fc7c04adadcd
 	google.golang.org/grpc v1.65.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.34.2
@@ -143,8 +143,8 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.8.1 // indirect
-	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
+	cloud.google.com/go/auth v0.9.1 // indirect
+	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/errorreporting v0.3.1 // indirect
 	cloud.google.com/go/iam v1.1.13 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.0 // indirect
