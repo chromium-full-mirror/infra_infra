@@ -49,6 +49,7 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 	// Try to pull updated dimensions for devices; mark as inactive if not found.
 	// NOTE: this is not a batch operation as we serialize the requests to UFS, so
 	// large batches of devices may lock up rows for a long time.
+	deviceIDs = removeDupeDevices(deviceIDs)
 	updatedDevices, err := constructUpdatedDevices(ctx, deviceIDs)
 	if err != nil {
 		err = errors.Annotate(err, "ExpireLeases: pulling dimensions for released devices").Err()
@@ -118,6 +119,21 @@ func constructUpdatedDevices(ctx context.Context, deviceIDs []string) ([]model.D
 		updatedDevices[i] = d
 	}
 	return updatedDevices, nil
+}
+
+// removeDupeDevices removes duplicate devices in case there are multiple
+// unexpired leases.
+func removeDupeDevices(deviceIDs []string) []string {
+	seen := make(map[string]bool)
+	result := []string{}
+
+	for _, val := range deviceIDs {
+		if _, ok := seen[val]; !ok {
+			seen[val] = true
+			result = append(result, val)
+		}
+	}
+	return result
 }
 
 // bulkReleaseDevices releases a list of Devices in bulk
