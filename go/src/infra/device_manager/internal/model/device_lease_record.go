@@ -145,7 +145,7 @@ func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) 
 		&lastUpdatedTime,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "GetDeviceLeaseRecordByID: failed to get DeviceLeaseRecord %s: %s", recordID, err)
+		logging.Debugf(ctx, "GetDeviceLeaseRecordByID: failed to get DeviceLeaseRecord %s: %s", recordID, err)
 		return record, err
 	}
 
@@ -203,7 +203,7 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 		&lastUpdatedTime,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "GetDeviceLeaseRecordByIdemKey: failed to get DeviceLeaseRecord with Idempotency Key %s: %s", idemKey, err)
+		logging.Debugf(ctx, "GetDeviceLeaseRecordByIdemKey: failed to get DeviceLeaseRecord with Idempotency Key %s: %s", idemKey, err)
 		return record, err
 	}
 
