@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -284,7 +285,10 @@ func logStaleBuilds(fetchedBuilds []*kronpb.Build, requiredBuildsMap map[builds.
 			// each of the would have been generated requests and mark them
 			// as NO_PASSING_BUILD. Otherwise add it to the updated list of
 			// compliant configs.
-			if isBuildTooOld(fetchedBuild.GetCreateTime(), config.GetLaunchCriteria().GetLaunchProfile()) {
+			//
+			// TODO: Remove bypass by prefix check once a proper
+			// flag is implemented for bypassing build age check.
+			if isBuildTooOld(fetchedBuild.GetCreateTime(), config.GetLaunchCriteria().GetLaunchProfile()) && !strings.HasPrefix(config.GetName(), "AL.") {
 				common.Stdout.Printf("Build for buildTarget %s board %s at milestone %d from long term storage was too old and marked as stale for config %s.", fetchedBuild.BuildTarget, fetchedBuild.Board, fetchedBuild.Milestone, config.Name)
 				schedulingDecision := &kronpb.SchedulingDecision{
 					Type:         kronpb.DecisionType_STALE_BUILD,
