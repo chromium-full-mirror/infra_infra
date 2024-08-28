@@ -7,49 +7,51 @@ package tricium
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGetPlatforms(t *testing.T) {
 
-	Convey("PlatformBitPosToMask", t, func() {
-		So(PlatformBitPosToMask(0), ShouldEqual, 0)
-		So(PlatformBitPosToMask(1), ShouldEqual, 1)
-		So(PlatformBitPosToMask(2), ShouldEqual, 2)
-		So(PlatformBitPosToMask(3), ShouldEqual, 4)
-		So(PlatformBitPosToMask(4), ShouldEqual, 8)
-		So(PlatformBitPosToMask(5), ShouldEqual, 16)
+	ftt.Run("PlatformBitPosToMask", t, func(t *ftt.Test) {
+		assert.Loosely(t, PlatformBitPosToMask(0), should.BeZero)
+		assert.Loosely(t, PlatformBitPosToMask(1), should.Equal(1))
+		assert.Loosely(t, PlatformBitPosToMask(2), should.Equal(2))
+		assert.Loosely(t, PlatformBitPosToMask(3), should.Equal(4))
+		assert.Loosely(t, PlatformBitPosToMask(4), should.Equal(8))
+		assert.Loosely(t, PlatformBitPosToMask(5), should.Equal(16))
 	})
 
-	Convey("Platform: ANY", t, func() {
+	ftt.Run("Platform: ANY", t, func(t *ftt.Test) {
 		values, err := GetPlatforms(PlatformBitPosToMask(Platform_ANY))
-		So(err, ShouldBeNil)
-		So(values, ShouldResemble, []Platform_Name{Platform_ANY})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, values, should.Resemble([]Platform_Name{Platform_ANY}))
 	})
 
-	Convey("Platform: UBUNTU", t, func() {
+	ftt.Run("Platform: UBUNTU", t, func(t *ftt.Test) {
 		values, err := GetPlatforms(PlatformBitPosToMask(Platform_UBUNTU))
-		So(err, ShouldBeNil)
-		So(values, ShouldResemble, []Platform_Name{Platform_UBUNTU})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, values, should.Resemble([]Platform_Name{Platform_UBUNTU}))
 	})
 
-	Convey("Platform: ANDROID|OSX|WINDOWS", t, func() {
+	ftt.Run("Platform: ANDROID|OSX|WINDOWS", t, func(t *ftt.Test) {
 		values, err := GetPlatforms(
 			PlatformBitPosToMask(Platform_ANDROID) +
 				PlatformBitPosToMask(Platform_OSX) +
 				PlatformBitPosToMask(Platform_WINDOWS))
-		So(err, ShouldBeNil)
-		So(values, ShouldResemble, []Platform_Name{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, values, should.Resemble([]Platform_Name{
 			Platform_ANDROID,
 			Platform_OSX,
 			Platform_WINDOWS,
-		})
+		}))
 	})
 
-	Convey("Platform: Invalid", t, func() {
+	ftt.Run("Platform: Invalid", t, func(t *ftt.Test) {
 		// Position 60 is unused.
 		values, err := GetPlatforms(PlatformBitPosToMask(60))
-		So(err, ShouldNotBeNil)
-		So(values, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, values, should.BeNil)
 	})
 }

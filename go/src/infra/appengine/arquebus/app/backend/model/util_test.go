@@ -19,8 +19,10 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/arquebus/app/config"
@@ -29,24 +31,24 @@ import (
 
 // updateAndGetAllAssigners stores Assigners entities based on given configs,
 // and returns all the Assigner entities stored in datastore.
-func updateAndGetAllAssigners(c context.Context, rev string, cfgs ...*config.Assigner) []*Assigner {
+func updateAndGetAllAssigners(c context.Context, t *ftt.Test, rev string, cfgs ...*config.Assigner) []*Assigner {
 	err := UpdateAssigners(c, cfgs, rev)
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil)
 	assigners, err := GetAllAssigners(c)
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil)
 
 	return assigners
 }
 
 // createConfig creates a sample, valid Assigner config to be used in tests.
-func createConfig(id string) *config.Assigner {
+func createConfig(t *ftt.Test, id string) *config.Assigner {
 	var cfg config.Assigner
-	So(proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), ShouldBeNil)
+	assert.Loosely(t, proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), should.BeNil)
 	cfg.Id = id
 	return &cfg
 }
 
-func createTasks(c context.Context, assigner *Assigner, status TaskStatus, startTimes ...time.Time) []*Task {
+func createTasks(c context.Context, t *ftt.Test, assigner *Assigner, status TaskStatus, startTimes ...time.Time) []*Task {
 	var tasks []*Task
 	for _, s := range startTimes {
 		tasks = append(tasks, &Task{
@@ -55,6 +57,6 @@ func createTasks(c context.Context, assigner *Assigner, status TaskStatus, start
 			ExpectedStart: s,
 		})
 	}
-	So(datastore.Put(c, tasks), ShouldBeNil)
+	assert.Loosely(t, datastore.Put(c, tasks), should.BeNil)
 	return tasks
 }

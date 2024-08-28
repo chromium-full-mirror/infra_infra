@@ -9,10 +9,11 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/arquebus/app/util"
@@ -21,63 +22,63 @@ import (
 func TestUpdateAssigners(t *testing.T) {
 	t.Parallel()
 
-	Convey("UpdateAssigners", t, func() {
+	ftt.Run("UpdateAssigners", t, func(t *ftt.Test) {
 		c := util.CreateTestContext()
 		rev1, rev2, rev3 := "abc", "def", "ghi"
 
 		// Ensure empty now.
 		assigners, err := GetAllAssigners(c)
-		So(err, ShouldBeNil)
-		So(assigners, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, assigners, should.BeNil)
 
-		Convey("Creates a new Assigner", func() {
+		t.Run("Creates a new Assigner", func(t *ftt.Test) {
 			assigners := updateAndGetAllAssigners(
-				c, rev1, createConfig("test-a"))
-			So(len(assigners), ShouldEqual, 1)
-			So(assigners[0].ID, ShouldEqual, "test-a")
+				c, t, rev1, createConfig(t, "test-a"))
+			assert.Loosely(t, len(assigners), should.Equal(1))
+			assert.Loosely(t, assigners[0].ID, should.Equal("test-a"))
 		})
 
-		Convey("Updates an existing Assigner", func() {
-			assigners := updateAndGetAllAssigners(c, rev1, createConfig("test-a"))
-			So(len(assigners), ShouldEqual, 1)
-			So(assigners[0].ID, ShouldEqual, "test-a")
+		t.Run("Updates an existing Assigner", func(t *ftt.Test) {
+			assigners := updateAndGetAllAssigners(c, t, rev1, createConfig(t, "test-a"))
+			assert.Loosely(t, len(assigners), should.Equal(1))
+			assert.Loosely(t, assigners[0].ID, should.Equal("test-a"))
 
 			// increase the interval just to check the Assigner
 			// has been updated or not.
-			cfg := createConfig("test-a")
+			cfg := createConfig(t, "test-a")
 			original := cfg.Interval.Seconds
 			cfg.Interval.Seconds = original + 1
 			changed := time.Duration(original+1) * time.Second
 
-			Convey("With a new revision", func() {
-				assigners := updateAndGetAllAssigners(c, rev2, cfg)
-				So(len(assigners), ShouldEqual, 1)
-				So(assigners[0].Interval, ShouldEqual, changed)
+			t.Run("With a new revision", func(t *ftt.Test) {
+				assigners := updateAndGetAllAssigners(c, t, rev2, cfg)
+				assert.Loosely(t, len(assigners), should.Equal(1))
+				assert.Loosely(t, assigners[0].Interval, should.Equal(changed))
 			})
 
-			Convey("With the same new revision", func() {
-				assigners := updateAndGetAllAssigners(c, rev1, cfg)
-				So(len(assigners), ShouldEqual, 1)
+			t.Run("With the same new revision", func(t *ftt.Test) {
+				assigners := updateAndGetAllAssigners(c, t, rev1, cfg)
+				assert.Loosely(t, len(assigners), should.Equal(1))
 				du := time.Duration(original) * time.Second
-				So(assigners[0].Interval, ShouldEqual, du)
+				assert.Loosely(t, assigners[0].Interval, should.Equal(du))
 			})
 		})
 
-		Convey("Marks as removed if config removed", func() {
+		t.Run("Marks as removed if config removed", func(t *ftt.Test) {
 			// create
 			id := "test-a"
-			cfg := createConfig(id)
-			assigners := updateAndGetAllAssigners(c, rev1, cfg)
-			So(len(assigners), ShouldEqual, 1)
-			So(assigners[0].ID, ShouldEqual, id)
+			cfg := createConfig(t, id)
+			assigners := updateAndGetAllAssigners(c, t, rev1, cfg)
+			assert.Loosely(t, len(assigners), should.Equal(1))
+			assert.Loosely(t, assigners[0].ID, should.Equal(id))
 
 			// remove
-			assigners = updateAndGetAllAssigners(c, rev2)
-			So(assigners, ShouldBeNil)
+			assigners = updateAndGetAllAssigners(c, t, rev2)
+			assert.Loosely(t, assigners, should.BeNil)
 
 			// put it back
-			assigners = updateAndGetAllAssigners(c, rev3, cfg)
-			So(assigners[0].ID, ShouldEqual, id)
+			assigners = updateAndGetAllAssigners(c, t, rev3, cfg)
+			assert.Loosely(t, assigners[0].ID, should.Equal(id))
 		})
 	})
 }
@@ -86,13 +87,13 @@ func TestEnsureScheduledTasks(t *testing.T) {
 	t.Parallel()
 	var err error
 
-	Convey("EnsureScheduledTasks", t, func() {
+	ftt.Run("EnsureScheduledTasks", t, func(t *ftt.Test) {
 		c := util.CreateTestContext()
 		cl := testclock.New(time.Unix(testclock.TestTimeUTC.Unix(), 0).UTC())
 		c = clock.Set(c, cl)
 
-		assigner := updateAndGetAllAssigners(c, "rev1", createConfig("a"))[0]
-		So(assigner.IsDrained, ShouldEqual, false)
+		assigner := updateAndGetAllAssigners(c, t, "rev1", createConfig(t, "a"))[0]
+		assert.Loosely(t, assigner.IsDrained, should.Equal(false))
 
 		// helpers to make the body of unit tests smaller.
 		ensureScheduledTasks := func(c context.Context) (tasks []*Task) {
@@ -100,25 +101,25 @@ func TestEnsureScheduledTasks(t *testing.T) {
 				tasks, err = EnsureScheduledTasks(c, assigner.ID)
 				return err
 			}, &ds.TransactionOptions{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return tasks
 		}
 		getTasks := func(c context.Context, n int32) []*Task {
 			tasks, err := GetTasks(c, assigner, n, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return tasks
 		}
 
-		Convey("if assigner_interval == scheduler_interval", func() {
-			So(assigner.Interval, ShouldEqual, scheduleAssignerCronInterval)
+		t.Run("if assigner_interval == scheduler_interval", func(t *ftt.Test) {
+			assert.Loosely(t, assigner.Interval, should.Equal(scheduleAssignerCronInterval))
 			tasks := ensureScheduledTasks(c)
 			// Then, it should just create 1 task.
-			So(len(tasks), ShouldEqual, 1)
+			assert.Loosely(t, len(tasks), should.Equal(1))
 
-			Convey("with completed tasks only", func() {
+			t.Run("with completed tasks only", func(t *ftt.Test) {
 				// mark the task as completed.
 				tasks[0].Status = TaskStatus_Succeeded
-				So(ds.Put(c, tasks[0]), ShouldBeNil)
+				assert.Loosely(t, ds.Put(c, tasks[0]), should.BeNil)
 
 				// advance the current timestamp by the interval and run the
 				// scheduler logic.
@@ -127,41 +128,41 @@ func TestEnsureScheduledTasks(t *testing.T) {
 
 				// getTasks() returns Tasks in the order of desc ExpectedStart.
 				tasks = getTasks(c, 100)
-				So(len(tasks), ShouldEqual, 2)
+				assert.Loosely(t, len(tasks), should.Equal(2))
 				newTask, existingTask := tasks[0], tasks[1]
 
-				So(newTask.Status, ShouldEqual, TaskStatus_Scheduled)
-				So(newTask.ExpectedStart, ShouldResemble, cl.Now().Add(assigner.Interval))
-				So(existingTask.Status, ShouldEqual, TaskStatus_Succeeded)
+				assert.Loosely(t, newTask.Status, should.Equal(TaskStatus_Scheduled))
+				assert.Loosely(t, newTask.ExpectedStart, should.Resemble(cl.Now().Add(assigner.Interval)))
+				assert.Loosely(t, existingTask.Status, should.Equal(TaskStatus_Succeeded))
 			})
 
-			Convey("with a scheduled task", func() {
+			t.Run("with a scheduled task", func(t *ftt.Test) {
 				cl.Add(time.Second)
 				// There shouldn't be any new Tasks created.
-				So(ensureScheduledTasks(c), ShouldBeNil)
+				assert.Loosely(t, ensureScheduledTasks(c), should.BeNil)
 				tasks = getTasks(c, 100)
-				So(len(tasks), ShouldEqual, 1)
+				assert.Loosely(t, len(tasks), should.Equal(1))
 			})
 
-			Convey("with a stale, scheduled task", func() {
+			t.Run("with a stale, scheduled task", func(t *ftt.Test) {
 				// Advance the time.
 				cl.Add(assigner.Interval)
 				// Now, the existing task should be considered stale.
 				// A new task should be created by the scheduler.
-				So(len(ensureScheduledTasks(c)), ShouldEqual, 1)
+				assert.Loosely(t, len(ensureScheduledTasks(c)), should.Equal(1))
 
 				// getTasks() returns Tasks in the order of desc ExpectedStart.
 				tasks = getTasks(c, 100)
 				newTask, existingTask := tasks[0], tasks[1]
 
 				// Verify the existing Task is still marked as Scheduled.
-				So(existingTask.Status, ShouldEqual, TaskStatus_Scheduled)
-				So(newTask.Status, ShouldEqual, TaskStatus_Scheduled)
-				So(newTask.ExpectedStart, ShouldEqual, cl.Now().Add(assigner.Interval))
+				assert.Loosely(t, existingTask.Status, should.Equal(TaskStatus_Scheduled))
+				assert.Loosely(t, newTask.Status, should.Equal(TaskStatus_Scheduled))
+				assert.Loosely(t, newTask.ExpectedStart, should.Equal(cl.Now().Add(assigner.Interval)))
 			})
 		})
 
-		Convey("if assigner_interval > scheduler_interval", func() {
+		t.Run("if assigner_interval > scheduler_interval", func(t *ftt.Test) {
 			// This is the case where the next scheduler run comes before
 			// latestSchedule + Assigner.Interval. In theory, it's not
 			// necessary to schedule a Task immediately because there will be
@@ -171,40 +172,40 @@ func TestEnsureScheduledTasks(t *testing.T) {
 			// should create a new Task regardless.
 			assigner.Interval = scheduleAssignerCronInterval * 2
 			now := cl.Now().UTC()
-			So(ds.Put(c, assigner), ShouldBeNil)
+			assert.Loosely(t, ds.Put(c, assigner), should.BeNil)
 
 			// This should create a new one.
 			tasks := ensureScheduledTasks(c)
-			So(len(tasks), ShouldEqual, 1)
+			assert.Loosely(t, len(tasks), should.Equal(1))
 			newTask := tasks[0]
 
-			So(
-				newTask.ExpectedStart, ShouldEqual,
-				now.Add(scheduleAssignerCronInterval*2),
-			)
+			assert.Loosely(t,
+				newTask.ExpectedStart, should.Equal(
+					now.Add(scheduleAssignerCronInterval*2),
+				))
 		})
 
-		Convey("if assigner_interval < scheduler_interval", func() {
+		t.Run("if assigner_interval < scheduler_interval", func(t *ftt.Test) {
 			// EnsureScheduledTasks() should create an enough number of Task(s)
 			// to cover all the period until the next scheduler run.
 			assigner.Interval = scheduleAssignerCronInterval / 4
 			now := cl.Now().UTC()
-			So(ds.Put(c, assigner), ShouldBeNil)
+			assert.Loosely(t, ds.Put(c, assigner), should.BeNil)
 			tasks := ensureScheduledTasks(c)
-			So(len(tasks), ShouldEqual, 4)
+			assert.Loosely(t, len(tasks), should.Equal(4))
 			for i := 0; i < 4; i++ {
 				// each should assigner.Interval further away from the previous
 				// schedule.
 				start := now.Add(assigner.Interval * time.Duration(i+1))
-				So(tasks[i].ExpectedStart, ShouldEqual, start)
+				assert.Loosely(t, tasks[i].ExpectedStart, should.Equal(start))
 			}
 		})
 
-		Convey("with drained Assigner", func() {
+		t.Run("with drained Assigner", func(t *ftt.Test) {
 			// Drain it.
 			assigner.IsDrained = true
-			So(ds.Put(c, assigner), ShouldBeNil)
-			So(ensureScheduledTasks(c), ShouldBeNil)
+			assert.Loosely(t, ds.Put(c, assigner), should.BeNil)
+			assert.Loosely(t, ensureScheduledTasks(c), should.BeNil)
 		})
 	})
 }

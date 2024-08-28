@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -16,6 +15,9 @@ import (
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	dynamic "infra/cros/cmd/common_lib/dynamic_updates"
@@ -37,7 +39,7 @@ var (
 
 func TestDynamicUpdater(t *testing.T) {
 	req := baseRequest()
-	Convey("Find Provision, Prepend, Append, Replace", t, func() {
+	ftt.Run("Find Provision, Prepend, Append, Replace", t, func(t *ftt.Test) {
 		UDFs := []*api.UserDefinedDynamicUpdate{}
 		UDFs = append(UDFs, insertActionWrapper(
 			api.UpdateAction_Insert_PREPEND,
@@ -61,18 +63,18 @@ func TestDynamicUpdater(t *testing.T) {
 			}))
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 6)
-		So(reflect.TypeOf(req.OrderedTasks[0].GetTask()), ShouldEqual, genericType)
-		So(reflect.TypeOf(req.OrderedTasks[1].GetTask()), ShouldEqual, genericType)
-		So(reflect.TypeOf(req.OrderedTasks[2].GetTask()), ShouldEqual, genericType)
-		So(reflect.TypeOf(req.OrderedTasks[3].GetTask()), ShouldEqual, testType)
-		So(reflect.TypeOf(req.OrderedTasks[4].GetTask()), ShouldEqual, publishType)
-		So(reflect.TypeOf(req.OrderedTasks[5].GetTask()), ShouldEqual, publishType)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(6))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[0].GetTask()), should.Equal(genericType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[1].GetTask()), should.Equal(genericType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[2].GetTask()), should.Equal(genericType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[3].GetTask()), should.Equal(testType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[4].GetTask()), should.Equal(publishType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[5].GetTask()), should.Equal(publishType))
 	})
 
 	req = baseRequest()
-	Convey("Find Test, Inject", t, func() {
+	ftt.Run("Find Test, Inject", t, func(t *ftt.Test) {
 		req.OrderedTasks[1].OrderedContainerRequests = []*api.ContainerRequest{
 			{
 				ContainerImageKey: "cros-test",
@@ -133,20 +135,20 @@ func TestDynamicUpdater(t *testing.T) {
 		})
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 4)
-		So(req.OrderedTasks[1].GetOrderedContainerRequests(), ShouldHaveLength, 2)
-		So(req.OrderedTasks[1].GetOrderedContainerRequests()[0].ContainerImageKey, ShouldEqual, "cros-test-cq-light")
-		So(req.OrderedTasks[1].GetOrderedContainerRequests()[1].DynamicIdentifier, ShouldEqual, "appended-container")
-		So(req.OrderedTasks[1].GetTest().GetTestRequest().GetPrimary().GetDevboardServer().GetAddress(), ShouldEqual, "devboard-address")
-		So(req.OrderedTasks[1].GetTest().GetTestRequest().GetPrimary().GetDevboardServer().GetPort(), ShouldEqual, 12345)
-		So(req.OrderedTasks[1].GetTest().GetDynamicDeps(), ShouldHaveLength, 2)
-		So(req.OrderedTasks[1].GetTest().GetDynamicDeps()[1].GetKey(), ShouldEqual, "new-dep-key")
-		So(req.OrderedTasks[1].GetTest().GetDynamicDeps()[1].GetValue(), ShouldEqual, "new-dep-value")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(4))
+		assert.Loosely(t, req.OrderedTasks[1].GetOrderedContainerRequests(), should.HaveLength(2))
+		assert.Loosely(t, req.OrderedTasks[1].GetOrderedContainerRequests()[0].ContainerImageKey, should.Equal("cros-test-cq-light"))
+		assert.Loosely(t, req.OrderedTasks[1].GetOrderedContainerRequests()[1].DynamicIdentifier, should.Equal("appended-container"))
+		assert.Loosely(t, req.OrderedTasks[1].GetTest().GetTestRequest().GetPrimary().GetDevboardServer().GetAddress(), should.Equal("devboard-address"))
+		assert.Loosely(t, req.OrderedTasks[1].GetTest().GetTestRequest().GetPrimary().GetDevboardServer().GetPort(), should.Equal(12345))
+		assert.Loosely(t, req.OrderedTasks[1].GetTest().GetDynamicDeps(), should.HaveLength(2))
+		assert.Loosely(t, req.OrderedTasks[1].GetTest().GetDynamicDeps()[1].GetKey(), should.Equal("new-dep-key"))
+		assert.Loosely(t, req.OrderedTasks[1].GetTest().GetDynamicDeps()[1].GetValue(), should.Equal("new-dep-value"))
 	})
 
 	req = baseRequest()
-	Convey("Purge and test Append/Prepend on empty", t, func() {
+	ftt.Run("Purge and test Append/Prepend on empty", t, func(t *ftt.Test) {
 		UDFs := []*api.UserDefinedDynamicUpdate{
 			getRemoveRequest(getBeginningTask()),
 			getRemoveRequest(getBeginningTask()),
@@ -155,8 +157,8 @@ func TestDynamicUpdater(t *testing.T) {
 		}
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(0))
 
 		UDFs = []*api.UserDefinedDynamicUpdate{
 			insertActionWrapper(
@@ -175,36 +177,36 @@ func TestDynamicUpdater(t *testing.T) {
 		}
 
 		err = dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(1))
 	})
 
 	req = baseRequest()
-	Convey("Remove specific id", t, func() {
+	ftt.Run("Remove specific id", t, func(t *ftt.Test) {
 		UDFs := []*api.UserDefinedDynamicUpdate{
 			getRemoveRequest(getTaskWithDynamicId("test-id")),
 		}
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 3)
-		So(reflect.TypeOf(req.OrderedTasks[0].GetTask()), ShouldEqual, provisionType)
-		So(reflect.TypeOf(req.OrderedTasks[1].GetTask()), ShouldEqual, publishType)
-		So(reflect.TypeOf(req.OrderedTasks[2].GetTask()), ShouldEqual, publishType)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(3))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[0].GetTask()), should.Equal(provisionType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[1].GetTask()), should.Equal(publishType))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[2].GetTask()), should.Equal(publishType))
 	})
 
 	req = baseRequest()
-	Convey("Cant find id", t, func() {
+	ftt.Run("Cant find id", t, func(t *ftt.Test) {
 		UDFs := []*api.UserDefinedDynamicUpdate{
 			getRemoveRequest(getTaskWithDynamicId("test-id-does-not-exist")),
 		}
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
 	req = baseRequest()
-	Convey("Can resolve placeholders", t, func() {
+	ftt.Run("Can resolve placeholders", t, func(t *ftt.Test) {
 		UDFs := []*api.UserDefinedDynamicUpdate{
 			insertActionWrapper(
 				api.UpdateAction_Insert_PREPEND,
@@ -225,11 +227,11 @@ func TestDynamicUpdater(t *testing.T) {
 		}
 
 		err := dynamic.AddUserDefinedDynamicUpdates(req, UDFs, lookupTable)
-		So(err, ShouldBeNil)
-		So(req.OrderedTasks, ShouldHaveLength, 5)
-		So(reflect.TypeOf(req.OrderedTasks[0].GetTask()), ShouldEqual, provisionType)
-		So(req.OrderedTasks[0].GetProvision().Target, ShouldEqual, common.NewCompanionDeviceIdentifier(lookupTable["board"]).Id)
-		So(req.OrderedTasks[0].GetProvision().InstallRequest.ImagePath.Path, ShouldEqual, lookupTable["installPath"])
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, req.OrderedTasks, should.HaveLength(5))
+		assert.Loosely(t, reflect.TypeOf(req.OrderedTasks[0].GetTask()), should.Equal(provisionType))
+		assert.Loosely(t, req.OrderedTasks[0].GetProvision().Target, should.Equal(common.NewCompanionDeviceIdentifier(lookupTable["board"]).Id))
+		assert.Loosely(t, req.OrderedTasks[0].GetProvision().InstallRequest.ImagePath.Path, should.Equal(lookupTable["installPath"]))
 	})
 }
 

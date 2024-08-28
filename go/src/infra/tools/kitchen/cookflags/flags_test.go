@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 var flagTestCases = []struct {
@@ -68,31 +68,31 @@ func TestFlags(t *testing.T) {
 		"\\", "/",
 	)
 
-	Convey("Flags", t, func() {
+	ftt.Run("Flags", t, func(t *ftt.Test) {
 		cf := CookFlags{}
 		fs := flag.NewFlagSet("test_flags", flag.ContinueOnError)
 		fs.Usage = func() {}
 
-		Convey("can register them", func() {
+		t.Run("can register them", func(t *ftt.Test) {
 			cf.Register(fs)
 
-			Convey("and parse some flags", func() {
+			t.Run("and parse some flags", func(t *ftt.Test) {
 				for _, tc := range flagTestCases {
-					Convey(fmt.Sprintf("%v", tc.flags), func() {
-						So(fs.Parse(tc.flags), ShouldErrLike, tc.errParse)
+					t.Run(fmt.Sprintf("%v", tc.flags), func(t *ftt.Test) {
+						assert.Loosely(t, fs.Parse(tc.flags), should.ErrLike(tc.errParse))
 						if tc.errParse == nil {
 							if tc.errValidate == nil {
-								So(cf.Dump(), ShouldResemble, tc.flags)
+								assert.Loosely(t, cf.Dump(), should.Resemble(tc.flags))
 								data, err := json.Marshal(cf)
-								So(err, ShouldBeNil)
+								assert.Loosely(t, err, should.BeNil)
 								cf2 := &CookFlags{}
-								So(json.Unmarshal(data, cf2), ShouldBeNil)
-								So(&cf, ShouldResemble, cf2)
+								assert.Loosely(t, json.Unmarshal(data, cf2), should.BeNil)
+								assert.Loosely(t, &cf, should.Resemble(cf2))
 							}
-							So(cf.Normalize(), ShouldErrLike, tc.errValidate)
+							assert.Loosely(t, cf.Normalize(), should.ErrLike(tc.errValidate))
 							if tc.errValidate == nil {
 								cf.TempDir = r.Replace(cf.TempDir)
-								So(cf, ShouldResemble, tc.cf)
+								assert.Loosely(t, cf, should.Resemble(tc.cf))
 							}
 						}
 					})
