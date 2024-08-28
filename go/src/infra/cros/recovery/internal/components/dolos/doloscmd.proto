@@ -4,6 +4,10 @@
 
 syntax = "proto3";
 
+package chromeos.recovery;
+
+option go_package = "infra/cros/recovery/internal/components/dolos;dolos";
+
 enum ERROR_CODE {
     OK = 0;
     UNKNOWN_METHOD = 1;
