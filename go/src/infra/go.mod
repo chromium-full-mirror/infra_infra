@@ -49,7 +49,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/go-git/go-git/v5 v5.12.0
-	github.com/gofrs/flock v0.8.1
+	github.com/gofrs/flock v0.12.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/glog v1.2.2
 	github.com/golang/mock v1.6.0
