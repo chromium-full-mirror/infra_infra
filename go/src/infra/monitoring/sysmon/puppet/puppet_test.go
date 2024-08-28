@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
@@ -39,36 +39,36 @@ func TestMetrics(t *testing.T) {
 	c, _ = tsmon.WithDummyInMemory(c)
 	c, _ = testclock.UseTime(c, time.Unix(1440132466, 0).Add(123450*time.Millisecond))
 
-	Convey("Puppet last_run_summary.yaml metrics", t, func() {
+	ftt.Run("Puppet last_run_summary.yaml metrics", t, func(t *ftt.Test) {
 		file, err := os.CreateTemp("", "sysmon-puppet-test")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		defer file.Close()
 		defer os.Remove(file.Name())
 
-		Convey("with an empty file", func() {
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
-			So(configVersion.Get(c), ShouldEqual, 0)
-			So(puppetVersion.Get(c), ShouldEqual, "")
+		t.Run("with an empty file", func(t *ftt.Test) {
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
+			assert.Loosely(t, configVersion.Get(c), should.BeZero)
+			assert.Loosely(t, puppetVersion.Get(c), should.BeEmpty)
 		})
 
-		Convey("with a missing file", func() {
-			So(updateLastRunStats(c, "file does not exist"), ShouldNotBeNil)
+		t.Run("with a missing file", func(t *ftt.Test) {
+			assert.Loosely(t, updateLastRunStats(c, "file does not exist"), should.NotBeNil)
 		})
 
-		Convey("with an invalid file", func() {
+		t.Run("with an invalid file", func(t *ftt.Test) {
 			file.Write([]byte("\""))
 			file.Sync()
-			So(updateLastRunStats(c, file.Name()), ShouldNotBeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.NotBeNil)
 		})
 
-		Convey("with a file containing an array", func() {
+		t.Run("with a file containing an array", func(t *ftt.Test) {
 			file.Write([]byte("- one\n- two\n"))
 			file.Sync()
-			So(updateLastRunStats(c, file.Name()), ShouldNotBeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.NotBeNil)
 		})
 
-		Convey("metrics", func() {
+		t.Run("metrics", func(t *ftt.Test) {
 			file.Write([]byte(`---
   version:
     config: 1440131220
@@ -101,64 +101,64 @@ func TestMetrics(t *testing.T) {
     success: 2
     total: 3`))
 			file.Sync()
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
 
-			So(configVersion.Get(c), ShouldEqual, 1440131220)
-			So(puppetVersion.Get(c), ShouldEqual, "3.6.2")
+			assert.Loosely(t, configVersion.Get(c), should.Equal(1440131220))
+			assert.Loosely(t, puppetVersion.Get(c), should.Equal("3.6.2"))
 
-			So(events.Get(c, "failure"), ShouldEqual, 1)
-			So(events.Get(c, "success"), ShouldEqual, 2)
-			So(events.Get(c, "total"), ShouldEqual, 0)
+			assert.Loosely(t, events.Get(c, "failure"), should.Equal(1))
+			assert.Loosely(t, events.Get(c, "success"), should.Equal(2))
+			assert.Loosely(t, events.Get(c, "total"), should.BeZero)
 
-			So(failure.Get(c), ShouldBeTrue)
+			assert.Loosely(t, failure.Get(c), should.BeTrue)
 
-			So(resources.Get(c, "changed"), ShouldEqual, 1)
-			So(resources.Get(c, "failed"), ShouldEqual, 2)
-			So(resources.Get(c, "failed_to_restart"), ShouldEqual, 3)
-			So(resources.Get(c, "out_of_sync"), ShouldEqual, 4)
-			So(resources.Get(c, "restarted"), ShouldEqual, 5)
-			So(resources.Get(c, "scheduled"), ShouldEqual, 6)
-			So(resources.Get(c, "skipped"), ShouldEqual, 7)
-			So(resources.Get(c, "total"), ShouldEqual, 51)
+			assert.Loosely(t, resources.Get(c, "changed"), should.Equal(1))
+			assert.Loosely(t, resources.Get(c, "failed"), should.Equal(2))
+			assert.Loosely(t, resources.Get(c, "failed_to_restart"), should.Equal(3))
+			assert.Loosely(t, resources.Get(c, "out_of_sync"), should.Equal(4))
+			assert.Loosely(t, resources.Get(c, "restarted"), should.Equal(5))
+			assert.Loosely(t, resources.Get(c, "scheduled"), should.Equal(6))
+			assert.Loosely(t, resources.Get(c, "skipped"), should.Equal(7))
+			assert.Loosely(t, resources.Get(c, "total"), should.Equal(51))
 
-			So(times.Get(c, "anchor"), ShouldEqual, 0.01)
-			So(times.Get(c, "apt_key"), ShouldEqual, 0.02)
-			So(times.Get(c, "config_retrieval"), ShouldEqual, 0.03)
-			So(times.Get(c, "exec"), ShouldEqual, 0.04)
-			So(times.Get(c, "file"), ShouldEqual, 0.05)
-			So(times.Get(c, "filebucket"), ShouldEqual, 0.06)
-			So(times.Get(c, "package"), ShouldEqual, 0.07)
-			So(times.Get(c, "schedule"), ShouldEqual, 0.08)
-			So(times.Get(c, "service"), ShouldEqual, 0.09)
-			So(times.Get(c, "total"), ShouldEqual, 0)
+			assert.Loosely(t, times.Get(c, "anchor"), should.Equal(0.01))
+			assert.Loosely(t, times.Get(c, "apt_key"), should.Equal(0.02))
+			assert.Loosely(t, times.Get(c, "config_retrieval"), should.Equal(0.03))
+			assert.Loosely(t, times.Get(c, "exec"), should.Equal(0.04))
+			assert.Loosely(t, times.Get(c, "file"), should.Equal(0.05))
+			assert.Loosely(t, times.Get(c, "filebucket"), should.Equal(0.06))
+			assert.Loosely(t, times.Get(c, "package"), should.Equal(0.07))
+			assert.Loosely(t, times.Get(c, "schedule"), should.Equal(0.08))
+			assert.Loosely(t, times.Get(c, "service"), should.Equal(0.09))
+			assert.Loosely(t, times.Get(c, "total"), should.BeZero)
 
-			So(age.Get(c), ShouldEqual, 123.45)
+			assert.Loosely(t, age.Get(c), should.Equal(123.45))
 		})
 
-		Convey("metrics failed run, no events", func() {
+		t.Run("metrics failed run, no events", func(t *ftt.Test) {
 			_, err := file.Write([]byte(`---
   resources:
     failed: 0
     failed_to_restart: 0
     out_of_sync: 4`))
-			So(err, ShouldBeNil)
-			So(file.Sync(), ShouldBeNil)
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
-			So(failure.Get(c), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, file.Sync(), should.BeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
+			assert.Loosely(t, failure.Get(c), should.BeTrue)
 		})
-		Convey("metrics successful run without resources", func() {
+		t.Run("metrics successful run without resources", func(t *ftt.Test) {
 			_, err := file.Write([]byte(`---
   events:
     failure: 0
     success: 2
     total: 2`))
-			So(err, ShouldBeNil)
-			So(file.Sync(), ShouldBeNil)
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
-			So(failure.Get(c), ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, file.Sync(), should.BeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
+			assert.Loosely(t, failure.Get(c), should.BeFalse)
 		})
 
-		Convey("metrics failed run, resource failures", func() {
+		t.Run("metrics failed run, resource failures", func(t *ftt.Test) {
 			_, err := file.Write([]byte(`---
   resources:
     failed: 1
@@ -167,120 +167,120 @@ func TestMetrics(t *testing.T) {
     failure: 0
     success: 1
     total: 1`))
-			So(err, ShouldBeNil)
-			So(file.Sync(), ShouldBeNil)
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
-			So(failure.Get(c), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, file.Sync(), should.BeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
+			assert.Loosely(t, failure.Get(c), should.BeTrue)
 		})
 
-		Convey("metrics with completely failed run", func() {
+		t.Run("metrics with completely failed run", func(t *ftt.Test) {
 			_, err := file.Write([]byte(`---`))
-			So(err, ShouldBeNil)
-			So(file.Sync(), ShouldBeNil)
-			So(updateLastRunStats(c, file.Name()), ShouldBeNil)
-			So(failure.Get(c), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, file.Sync(), should.BeNil)
+			assert.Loosely(t, updateLastRunStats(c, file.Name()), should.BeNil)
+			assert.Loosely(t, failure.Get(c), should.BeTrue)
 		})
 
 	})
 
-	Convey("Puppet is_canary metric", t, func() {
-		Convey("with a missing file", func() {
-			So(updateIsCanary(c, "file does not exist"), ShouldNotBeNil)
-			So(isCanary.Get(c), ShouldBeFalse)
+	ftt.Run("Puppet is_canary metric", t, func(t *ftt.Test) {
+		t.Run("with a missing file", func(t *ftt.Test) {
+			assert.Loosely(t, updateIsCanary(c, "file does not exist"), should.NotBeNil)
+			assert.Loosely(t, isCanary.Get(c), should.BeFalse)
 		})
 
-		Convey("with a present file", func() {
+		t.Run("with a present file", func(t *ftt.Test) {
 			file, err := os.CreateTemp("", "sysmon-puppet-test")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("with environment=canary", func() {
+			t.Run("with environment=canary", func(t *ftt.Test) {
 				_, err := file.Write([]byte("foo=bar\nenvironment=canary\nblah=blah\n"))
-				So(err, ShouldBeNil)
-				So(file.Sync(), ShouldBeNil)
-				So(updateIsCanary(c, file.Name()), ShouldBeNil)
-				So(isCanary.Get(c), ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, file.Sync(), should.BeNil)
+				assert.Loosely(t, updateIsCanary(c, file.Name()), should.BeNil)
+				assert.Loosely(t, isCanary.Get(c), should.BeTrue)
 			})
 		})
 	})
 
-	Convey("Puppet exit_status metric", t, func() {
-		Convey("with a missing file", func() {
+	ftt.Run("Puppet exit_status metric", t, func(t *ftt.Test) {
+		t.Run("with a missing file", func(t *ftt.Test) {
 			err := updateExitStatus(c, []string{"file does not exist"})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("with a present file", func() {
+		t.Run("with a present file", func(t *ftt.Test) {
 			file, err := os.CreateTemp("", "sysmon-puppet-test")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("containing a valid number", func() {
+			t.Run("containing a valid number", func(t *ftt.Test) {
 				file.Write([]byte("42"))
 				file.Sync()
-				So(updateExitStatus(c, []string{file.Name()}), ShouldBeNil)
-				So(exitStatus.Get(c), ShouldEqual, 42)
+				assert.Loosely(t, updateExitStatus(c, []string{file.Name()}), should.BeNil)
+				assert.Loosely(t, exitStatus.Get(c), should.Equal(42))
 			})
 
-			Convey(`containing a valid number and a \n`, func() {
+			t.Run(`containing a valid number and a \n`, func(t *ftt.Test) {
 				file.Write([]byte("42\n"))
 				file.Sync()
-				So(updateExitStatus(c, []string{file.Name()}), ShouldBeNil)
-				So(exitStatus.Get(c), ShouldEqual, 42)
+				assert.Loosely(t, updateExitStatus(c, []string{file.Name()}), should.BeNil)
+				assert.Loosely(t, exitStatus.Get(c), should.Equal(42))
 			})
 
-			Convey("containing an invalid number", func() {
+			t.Run("containing an invalid number", func(t *ftt.Test) {
 				file.Write([]byte("not a number"))
 				file.Sync()
-				So(updateExitStatus(c, []string{file.Name()}), ShouldNotBeNil)
+				assert.Loosely(t, updateExitStatus(c, []string{file.Name()}), should.NotBeNil)
 			})
 
-			Convey("second in the list", func() {
+			t.Run("second in the list", func(t *ftt.Test) {
 				file.Write([]byte("42"))
 				file.Sync()
-				So(updateExitStatus(c, []string{"does not exist", file.Name()}), ShouldBeNil)
-				So(exitStatus.Get(c), ShouldEqual, 42)
+				assert.Loosely(t, updateExitStatus(c, []string{"does not exist", file.Name()}), should.BeNil)
+				assert.Loosely(t, exitStatus.Get(c), should.Equal(42))
 			})
 		})
 	})
 
-	Convey("Puppet cert_expiry metric", t, func() {
-		Convey("with no file found", func() {
-			So(updateCertExpiry(c, "not_a_path"), ShouldErrLike, "cert not found")
-			So(certExpiry.Get(c), ShouldEqual, 0)
+	ftt.Run("Puppet cert_expiry metric", t, func(t *ftt.Test) {
+		t.Run("with no file found", func(t *ftt.Test) {
+			assert.Loosely(t, updateCertExpiry(c, "not_a_path"), should.ErrLike("cert not found"))
+			assert.Loosely(t, certExpiry.Get(c), should.BeZero)
 		})
 
-		Convey("with valid and invalid cert contents", func() {
+		t.Run("with valid and invalid cert contents", func(t *ftt.Test) {
 			dir, err := os.MkdirTemp("", "test_cert_expiry")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(dir)
 			fqdnHost, _ := os.Hostname()
 
-			Convey("with invalid certificate, parsing err", func() {
+			t.Run("with invalid certificate, parsing err", func(t *ftt.Test) {
 				testCertInvalid := filepath.Join(dir, fqdnHost+".pem")
 				f, err := os.Create(testCertInvalid)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				_, err = f.WriteString("invalid cert contents")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				err = f.Sync()
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(updateCertExpiry(c, dir), ShouldErrLike, "error parsing certificate")
-				So(certExpiry.Get(c), ShouldEqual, 0)
+				assert.Loosely(t, updateCertExpiry(c, dir), should.ErrLike("error parsing certificate"))
+				assert.Loosely(t, certExpiry.Get(c), should.BeZero)
 			})
 
-			Convey("with valid certificate", func() {
+			t.Run("with valid certificate", func(t *ftt.Test) {
 				testCert := filepath.Join(dir, fqdnHost+".pem")
 				f, err := os.Create(testCert)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				_, err = f.WriteString(validCert)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				err = f.Sync()
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(updateCertExpiry(c, dir), ShouldBeNil)
+				assert.Loosely(t, updateCertExpiry(c, dir), should.BeNil)
 				// Clock time 2015-08-21, certificate notAfter 2023-02-23
-				So(certExpiry.Get(c), ShouldEqual, 237052188)
+				assert.Loosely(t, certExpiry.Get(c), should.Equal(237052188))
 			})
 		})
 	})

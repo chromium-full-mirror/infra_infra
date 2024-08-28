@@ -12,9 +12,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestLoadFile(t *testing.T) {
@@ -22,13 +23,13 @@ func TestLoadFile(t *testing.T) {
 	ctx := context.Background()
 	ctx, _ = testclock.UseTime(ctx, now)
 
-	Convey("In a temporary directory", t, func() {
+	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
 		path, err := ioutil.TempDir("", "android-devicefile-test")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(path)
 
 		fileName := filepath.Join(path, "file.json")
-		Convey("loads a valid file", func() {
+		t.Run("loads a valid file", func(t *ftt.Test) {
 			err := ioutil.WriteFile(fileName, []byte(`
         {
           "version": 1,
@@ -98,13 +99,13 @@ func TestLoadFile(t *testing.T) {
           }
         }
       `), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			f, st, _, err := loadFile(ctx, fileName)
-			So(err, ShouldBeNil)
-			So(st, ShouldEqual, status("good"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, st, should.Equal(status("good")))
 			var cpu float64 = 25
-			So(f, ShouldResemble, deviceStatusFile{
+			assert.Loosely(t, f, should.Resemble(deviceStatusFile{
 				Devices: map[string]deviceStatus{
 					"02eccd9208ead9ab": {
 						Battery: battery{
@@ -132,10 +133,10 @@ func TestLoadFile(t *testing.T) {
 				},
 				Version:   1,
 				Timestamp: 9.46782245e+08,
-			})
+			}))
 		})
 
-		Convey("loads a valid file, no CPUs", func() {
+		t.Run("loads a valid file, no CPUs", func(t *ftt.Test) {
 			err := ioutil.WriteFile(fileName, []byte(`
         {
           "version": 1,
@@ -150,12 +151,12 @@ func TestLoadFile(t *testing.T) {
           }
         }
       `), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			f, st, _, err := loadFile(ctx, fileName)
-			So(err, ShouldBeNil)
-			So(st, ShouldEqual, status("good"))
-			So(f, ShouldResemble, deviceStatusFile{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, st, should.Equal(status("good")))
+			assert.Loosely(t, f, should.Resemble(deviceStatusFile{
 				Devices: map[string]deviceStatus{
 					"02eccd9208ead9ab": {
 						State: "available",
@@ -168,52 +169,52 @@ func TestLoadFile(t *testing.T) {
 				},
 				Version:   1,
 				Timestamp: 9.46782245e+08,
-			})
+			}))
 		})
 
-		Convey("file not found", func() {
+		t.Run("file not found", func(t *ftt.Test) {
 			_, st, _, err := loadFile(ctx, "/file/not/found")
-			So(err, ShouldNotBeNil)
-			So(st, ShouldEqual, status("not_found"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, st, should.Equal(status("not_found")))
 		})
 
-		Convey("invalid json", func() {
+		t.Run("invalid json", func(t *ftt.Test) {
 			err := ioutil.WriteFile(fileName, []byte(`not valid json`), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, st, _, err := loadFile(ctx, fileName)
-			So(err, ShouldNotBeNil)
-			So(st, ShouldEqual, status("invalid_json"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, st, should.Equal(status("invalid_json")))
 		})
 
-		Convey("invalid version", func() {
+		t.Run("invalid version", func(t *ftt.Test) {
 			err := ioutil.WriteFile(fileName, []byte(`
         {
           "version": 42
         }
       `), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, st, _, err := loadFile(ctx, fileName)
-			So(err, ShouldBeNil)
-			So(st, ShouldEqual, status("invalid_version"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, st, should.Equal(status("invalid_version")))
 		})
 
-		Convey("previous version", func() {
+		t.Run("previous version", func(t *ftt.Test) {
 			err := ioutil.WriteFile(fileName, []byte(`
         {
           "version": 0,
           "timestamp": 946782245
         }
       `), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, st, _, err := loadFile(ctx, fileName)
-			So(err, ShouldBeNil)
-			So(st, ShouldEqual, status("good"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, st, should.Equal(status("good")))
 		})
 
-		Convey("stale timestamp", func() {
+		t.Run("stale timestamp", func(t *ftt.Test) {
 			// 946782084 == 946782245 - 161
 			err := ioutil.WriteFile(fileName, []byte(`
         {
@@ -221,12 +222,12 @@ func TestLoadFile(t *testing.T) {
           "timestamp": 946782084
         }
       `), 0644)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			_, st, staleness, err := loadFile(ctx, fileName)
-			So(err, ShouldBeNil)
-			So(staleness, ShouldEqual, 161)
-			So(st, ShouldEqual, status("stale_file"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, staleness, should.Equal(161.))
+			assert.Loosely(t, st, should.Equal(status("stale_file")))
 		})
 	})
 }

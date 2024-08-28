@@ -13,9 +13,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
@@ -24,29 +25,29 @@ func TestFileGlobbing(t *testing.T) {
 	c := context.Background()
 	c, _ = testclock.UseTime(c, now)
 
-	Convey("In a temporary directory", t, func() {
+	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
 		tmpPath, err := ioutil.TempDir("", "android-devicefile-test")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(tmpPath)
 		err = os.Mkdir(filepath.Join(tmpPath, ".android"), 0777)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		path := filepath.Join(tmpPath, ".android")
 		fileNames := []string{
 			strings.Replace(fileGlob, "*", "file1", 1),
 			strings.Replace(fileGlob, "*", "file2", 1),
 			strings.Replace(fileGlob, "*", "file3", 1),
 		}
-		Convey("loads a number of empty files", func() {
+		t.Run("loads a number of empty files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				So(ioutil.WriteFile(filepath.Join(path, fileName), []byte(`{"version": 1, "timestamp": 946782245, "devices": {}}`), 0644), ShouldBeNil)
+				assert.Loosely(t, ioutil.WriteFile(filepath.Join(path, fileName), []byte(`{"version": 1, "timestamp": 946782245, "devices": {}}`), 0644), should.BeNil)
 			}
-			So(update(c, tmpPath), ShouldBeNil)
+			assert.Loosely(t, update(c, tmpPath), should.BeNil)
 		})
-		Convey("loads a number of broken files", func() {
+		t.Run("loads a number of broken files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				So(ioutil.WriteFile(filepath.Join(path, fileName), []byte(`not json`), 0644), ShouldBeNil)
+				assert.Loosely(t, ioutil.WriteFile(filepath.Join(path, fileName), []byte(`not json`), 0644), should.BeNil)
 			}
-			So(update(c, tmpPath), ShouldNotBeNil)
+			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})
 	})
 }
@@ -56,7 +57,7 @@ func TestMetrics(t *testing.T) {
 	c, _ = tsmon.WithDummyInMemory(c)
 
 	var cpu float64 = 23
-	Convey("Device metrics", t, func() {
+	ftt.Run("Device metrics", t, func(t *ftt.Test) {
 		file := deviceStatusFile{
 			Devices: map[string]deviceStatus{
 				"02eccd9208ead9ab": {
@@ -89,15 +90,15 @@ func TestMetrics(t *testing.T) {
 
 		updateFromFile(c, file)
 
-		So(cpuTemp.Get(c, "02eccd9208ead9ab"), ShouldEqual, 23)
-		So(battTemp.Get(c, "02eccd9208ead9ab"), ShouldEqual, 24.8)
-		So(battCharge.Get(c, "02eccd9208ead9ab"), ShouldEqual, 100)
-		So(devOS.Get(c, "02eccd9208ead9ab"), ShouldEqual, "KTU84P")
-		So(devStatus.Get(c, "02eccd9208ead9ab", "123456789"), ShouldEqual, "good")
-		So(devType.Get(c, "02eccd9208ead9ab"), ShouldEqual, "hammerhead")
-		So(devUptime.Get(c, "02eccd9208ead9ab"), ShouldEqual, 1159.48)
-		So(memFree.Get(c, "02eccd9208ead9ab"), ShouldEqual, 1279052)
-		So(memTotal.Get(c, "02eccd9208ead9ab"), ShouldEqual, 1899548)
-		So(procCount.Get(c, "02eccd9208ead9ab"), ShouldEqual, 179)
+		assert.That(t, cpuTemp.Get(c, "02eccd9208ead9ab"), should.Equal(23.))
+		assert.That(t, battTemp.Get(c, "02eccd9208ead9ab"), should.Equal(24.8))
+		assert.That(t, battCharge.Get(c, "02eccd9208ead9ab"), should.Equal(100.))
+		assert.That(t, devOS.Get(c, "02eccd9208ead9ab"), should.Equal("KTU84P"))
+		assert.That(t, devStatus.Get(c, "02eccd9208ead9ab", "123456789"), should.Equal("good"))
+		assert.That(t, devType.Get(c, "02eccd9208ead9ab"), should.Equal("hammerhead"))
+		assert.That(t, devUptime.Get(c, "02eccd9208ead9ab"), should.Equal(1159.48))
+		assert.Loosely(t, memFree.Get(c, "02eccd9208ead9ab"), should.Equal(1279052))
+		assert.Loosely(t, memTotal.Get(c, "02eccd9208ead9ab"), should.Equal(1899548))
+		assert.Loosely(t, procCount.Get(c, "02eccd9208ead9ab"), should.Equal(179))
 	})
 }

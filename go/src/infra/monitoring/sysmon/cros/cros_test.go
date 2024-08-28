@@ -9,9 +9,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
@@ -20,28 +21,28 @@ func TestUpdate(t *testing.T) {
 	c := context.Background()
 	c, _ = tsmon.WithDummyInMemory(c)
 	c, _ = testclock.UseTime(c, now)
-	Convey("In a temporary directory", t, func() {
+	ftt.Run("In a temporary directory", t, func(t *ftt.Test) {
 		tmpPath, err := ioutil.TempDir("", "cros-devicefile-test")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer func() {
-			So(os.RemoveAll(tmpPath), ShouldBeNil)
+			assert.Loosely(t, os.RemoveAll(tmpPath), should.BeNil)
 		}()
 		fileNames := []string{
 			strings.Replace(fileGlob, "*", "device1", 1),
 			strings.Replace(fileGlob, "*", "device2", 1),
 			strings.Replace(fileGlob, "*", "device3", 1),
 		}
-		Convey("Loads a number of empty files", func() {
+		t.Run("Loads a number of empty files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				So(ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(""), 0644), ShouldBeNil)
+				assert.Loosely(t, ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(""), 0644), should.BeNil)
 			}
-			So(update(c, tmpPath), ShouldNotBeNil)
+			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})
-		Convey("Loads a number of broken files", func() {
+		t.Run("Loads a number of broken files", func(t *ftt.Test) {
 			for _, fileName := range fileNames {
-				So(ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(`not json`), 0644), ShouldBeNil)
+				assert.Loosely(t, ioutil.WriteFile(filepath.Join(tmpPath, fileName), []byte(`not json`), 0644), should.BeNil)
 			}
-			So(update(c, tmpPath), ShouldNotBeNil)
+			assert.Loosely(t, update(c, tmpPath), should.NotBeNil)
 		})
 	})
 }
@@ -70,25 +71,25 @@ func TestUpdateMetrics(t *testing.T) {
 		Uptime:    9233.61,
 		ProcCount: 233,
 	}
-	Convey("UpdateMetrics Testing", t, func() {
+	ftt.Run("UpdateMetrics Testing", t, func(t *ftt.Test) {
 		updateMetrics(c, statusFile)
-		So(dutStatus.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			"online")
-		So(crosVersion.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			"12317.0.0-rc1")
-		So(battCharge.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			50.56)
-		So(temperature.Get(c, statusFile.ContainerHostname, "CPU"), ShouldEqual,
-			29.4075)
-		So(temperature.Get(c, statusFile.ContainerHostname, "GPU"), ShouldEqual,
-			32.23)
-		So(totalMem.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			1899548)
-		So(availMem.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			1221444)
-		So(uptime.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			9233.61)
-		So(procCount.Get(c, statusFile.ContainerHostname), ShouldEqual,
-			233)
+		assert.Loosely(t, dutStatus.Get(c, statusFile.ContainerHostname), should.Equal(
+			"online"))
+		assert.Loosely(t, crosVersion.Get(c, statusFile.ContainerHostname), should.Equal(
+			"12317.0.0-rc1"))
+		assert.Loosely(t, battCharge.Get(c, statusFile.ContainerHostname), should.Equal(
+			50.56))
+		assert.Loosely(t, temperature.Get(c, statusFile.ContainerHostname, "CPU"), should.Equal(
+			29.4075))
+		assert.Loosely(t, temperature.Get(c, statusFile.ContainerHostname, "GPU"), should.Equal(
+			32.23))
+		assert.Loosely(t, totalMem.Get(c, statusFile.ContainerHostname), should.Equal(
+			1899548))
+		assert.Loosely(t, availMem.Get(c, statusFile.ContainerHostname), should.Equal(
+			1221444))
+		assert.Loosely(t, uptime.Get(c, statusFile.ContainerHostname), should.Equal(
+			9233.61))
+		assert.Loosely(t, procCount.Get(c, statusFile.ContainerHostname), should.Equal(
+			233))
 	})
 }

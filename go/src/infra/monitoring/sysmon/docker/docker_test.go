@@ -13,9 +13,11 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	dockerContainerTypes "github.com/docker/docker/api/types/container"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
@@ -58,20 +60,20 @@ func TestMetrics(t *testing.T) {
 			`"networks": {"eth0": {"rx_bytes": 987, "tx_bytes": 123}}}`))},
 	}
 
-	Convey("Test All Metrics", t, func() {
+	ftt.Run("Test All Metrics", t, func(t *ftt.Test) {
 		err := updateContainerMetrics(c, container, containerInfo,
 			containerStatsJSON)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(statusMetric.Get(c, "container_name", "hostname123"), ShouldEqual, "running")
-		So(uptimeMetric.Get(c, "container_name"), ShouldEqual, 10)
-		So(memUsedMetric.Get(c, "container_name"), ShouldEqual, 1111)
-		So(memTotalMetric.Get(c, "container_name"), ShouldEqual, 9999)
-		So(netUpMetric.Get(c, "container_name"), ShouldEqual, 123)
-		So(netDownMetric.Get(c, "container_name"), ShouldEqual, 987)
+		assert.Loosely(t, statusMetric.Get(c, "container_name", "hostname123"), should.Equal("running"))
+		assert.Loosely(t, uptimeMetric.Get(c, "container_name"), should.Equal(10.))
+		assert.Loosely(t, memUsedMetric.Get(c, "container_name"), should.Equal(1111))
+		assert.Loosely(t, memTotalMetric.Get(c, "container_name"), should.Equal(9999))
+		assert.Loosely(t, netUpMetric.Get(c, "container_name"), should.Equal(123))
+		assert.Loosely(t, netDownMetric.Get(c, "container_name"), should.Equal(987))
 	})
 
-	Convey("Test Broken JSON", t, func() {
+	ftt.Run("Test Broken JSON", t, func(t *ftt.Test) {
 		bodyJSON := "omg this isn't json"
 		reader := bytes.NewReader([]byte(bodyJSON))
 		readCloser := noOpCloser{reader}
@@ -79,14 +81,14 @@ func TestMetrics(t *testing.T) {
 
 		err := updateContainerMetrics(c, container, containerInfo,
 			containerStatsJSON)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Test Broken Time Format", t, func() {
+	ftt.Run("Test Broken Time Format", t, func(t *ftt.Test) {
 		containerState = dockerTypes.ContainerState{StartedAt: "omg this isn't a timestamp"}
 
 		err := updateContainerMetrics(c, container, containerInfo,
 			containerStatsJSON)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
