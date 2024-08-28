@@ -519,14 +519,33 @@ func readToken(dir string) (string, error) {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	var result map[string]interface{}
-	json.Unmarshal([]byte(byteValue), &result)
+	if err := json.Unmarshal(byteValue, &result); err != nil {
+		log.Printf("Error unmarshalling token JSON: %s", err)
+		return "", err
+	}
 
-	// ugly parse the json.
-	f := result["auths"].(map[string]interface{})[dockerRegistry].(map[string]interface{})["auth"]
-	str := fmt.Sprintf("%v", f)
+	// safely parse the nested structure
+	auths, ok := result["auths"].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("auths key not found or is not in expected format")
+	}
 
-	// convert magic to the usable str for dockerLogin.
-	decode, _ := base64.StdEncoding.DecodeString(str)
+	registry, ok := auths[dockerRegistry].(map[string]interface{})
+	if !ok {
+		return "", fmt.Errorf("dockerRegistry key not found or is not in expected format")
+	}
+
+	auth, ok := registry["auth"].(string)
+	if !ok {
+		return "", fmt.Errorf("auth key not found or is not a string")
+	}
+
+	// decode the base64 encoded auth string.
+	decode, err := base64.StdEncoding.DecodeString(auth)
+	if err != nil {
+		return "", errors.Annotate(err, "error decoding auth token").Err()
+	}
+
 	s := string(decode)
 	s = strings.ReplaceAll(s, "oauth2accesstoken:", "")
 
