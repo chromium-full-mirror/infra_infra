@@ -120,7 +120,7 @@ require (
 	golang.org/x/time v0.6.0
 	golang.org/x/tools v0.24.0
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
-	gonum.org/v1/gonum v0.12.0
+	gonum.org/v1/gonum v0.15.1
 	google.golang.org/api v0.194.0
 	google.golang.org/appengine v1.6.8
 	google.golang.org/appengine/v2 v2.0.6
