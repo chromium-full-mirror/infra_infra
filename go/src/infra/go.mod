@@ -68,7 +68,7 @@ require (
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgtype v1.14.3
 	github.com/jackc/pgx/v5 v5.6.0
-	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
+	github.com/jdxcode/netrc v1.0.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.17.9
 	github.com/klauspost/cpuid/v2 v2.2.8
