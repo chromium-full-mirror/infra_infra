@@ -10,13 +10,15 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
@@ -75,7 +77,7 @@ var deviceConfigJSON = `
 `
 
 func TestUpdateDatastore(t *testing.T) {
-	Convey("Test update device config cache", t, func() {
+	ftt.Run("Test update device config cache", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		ctl := gomock.NewController(t)
 		defer ctl.Finish()
@@ -87,23 +89,22 @@ func TestUpdateDatastore(t *testing.T) {
 			},
 			nil,
 		)
-		Convey("Happy path", func() {
-			err := UpdateDatastore(ctx, gitilesMock, "", "", "")
-			So(err, ShouldBeNil)
-			// There should be 2 entities created in datastore.
-			var cfgs []*devcfgEntity
-			datastore.GetTestable(ctx).Consistent(true)
-			err = datastore.GetAll(ctx, datastore.NewQuery(entityKind), &cfgs)
-			So(err, ShouldBeNil)
-			So(cfgs, ShouldHaveLength, 2)
-		})
+
+		err := UpdateDatastore(ctx, gitilesMock, "", "", "")
+		assert.Loosely(t, err, should.BeNil)
+		// There should be 2 entities created in datastore.
+		var cfgs []*devcfgEntity
+		datastore.GetTestable(ctx).Consistent(true)
+		err = datastore.GetAll(ctx, datastore.NewQuery(entityKind), &cfgs)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cfgs, should.HaveLength(2))
 	})
 }
 
 func TestGetCachedDeviceConfig(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 
-	Convey("Test get device config from datastore", t, func() {
+	ftt.Run("Test get device config from datastore", t, func(t *ftt.Test) {
 		err := datastore.Put(ctx, []devcfgEntity{
 			{ID: "platform.model.variant1"},
 			{ID: "platform.model.variant2"},
@@ -112,9 +113,9 @@ func TestGetCachedDeviceConfig(t *testing.T) {
 				DevConfig: []byte("bad data"),
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Happy path", func() {
+		t.Run("Happy path", func(t *ftt.Test) {
 			devcfg, err := GetCachedConfig(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "platform"},
@@ -129,11 +130,11 @@ func TestGetCachedDeviceConfig(t *testing.T) {
 					BrandId:    &device.BrandId{Value: "brand2"},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(devcfg, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devcfg, should.HaveLength(2))
 		})
 
-		Convey("Device id is case insensitive", func() {
+		t.Run("Device id is case insensitive", func(t *ftt.Test) {
 			devcfg, err := GetCachedConfig(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "PLATFORM"},
@@ -142,11 +143,11 @@ func TestGetCachedDeviceConfig(t *testing.T) {
 					BrandId:    &device.BrandId{Value: "brand1"},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(devcfg, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, devcfg, should.HaveLength(1))
 		})
 
-		Convey("Data unmarshal error", func() {
+		t.Run("Data unmarshal error", func(t *ftt.Test) {
 			_, err := GetCachedConfig(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "platform"},
@@ -155,11 +156,11 @@ func TestGetCachedDeviceConfig(t *testing.T) {
 					BrandId:    &device.BrandId{Value: "brand3"},
 				},
 			})
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "unmarshal config data")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("unmarshal config data"))
 		})
 
-		Convey("Get nonexisting data", func() {
+		t.Run("Get nonexisting data", func(t *ftt.Test) {
 			resp, err := GetCachedConfig(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "platform"},
@@ -180,22 +181,22 @@ func TestGetCachedDeviceConfig(t *testing.T) {
 					BrandId:    &device.BrandId{Value: "nonexisting"},
 				},
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 			errs := err.(errors.MultiError)
-			So(errs, ShouldHaveLength, 3)
-			So(resp, ShouldHaveLength, 3)
-			So(errs[0].Error(), ShouldContainSubstring, "no such entity")
-			So(resp[0], ShouldBeNil)
-			So(errs[1], ShouldBeNil)
-			So(resp[1].(*device.Config), ShouldNotBeNil)
-			So(errs[2].Error(), ShouldContainSubstring, "no such entity")
-			So(resp[2], ShouldBeNil)
+			assert.Loosely(t, errs, should.HaveLength(3))
+			assert.Loosely(t, resp, should.HaveLength(3))
+			assert.Loosely(t, errs[0].Error(), should.ContainSubstring("no such entity"))
+			assert.Loosely(t, resp[0], should.BeNil)
+			assert.Loosely(t, errs[1], should.BeNil)
+			assert.Loosely(t, resp[1].(*device.Config), should.NotBeNil)
+			assert.Loosely(t, errs[2].Error(), should.ContainSubstring("no such entity"))
+			assert.Loosely(t, resp[2], should.BeNil)
 		})
 	})
 }
 
 func TestGetAllCachedConfig(t *testing.T) {
-	Convey("Test get all device config cache", t, func() {
+	ftt.Run("Test get all device config cache", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		err := datastore.Put(ctx, []devcfgEntity{
@@ -206,13 +207,13 @@ func TestGetAllCachedConfig(t *testing.T) {
 				DevConfig: []byte("bad data"),
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		devConfigs, err := GetAllCachedConfig(ctx)
-		So(err, ShouldBeNil)
-		So(devConfigs, ShouldHaveLength, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, devConfigs, should.HaveLength(2))
 		for dc := range devConfigs {
-			So(dc.GetId(), ShouldBeNil)
+			assert.Loosely(t, dc.GetId(), should.BeNil)
 		}
 	})
 }
@@ -220,7 +221,7 @@ func TestGetAllCachedConfig(t *testing.T) {
 func TestDeviceConfigsExists(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 
-	Convey("Test exists device config in datastore", t, func() {
+	ftt.Run("Test exists device config in datastore", t, func(t *ftt.Test) {
 		err := datastore.Put(ctx, []devcfgEntity{
 			{ID: "kunimitsu.lars.variant1"},
 			{ID: "arcada.arcada.variant2"},
@@ -229,9 +230,9 @@ func TestDeviceConfigsExists(t *testing.T) {
 				DevConfig: []byte("bad data"),
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Happy path", func() {
+		t.Run("Happy path", func(t *ftt.Test) {
 			exists, err := DeviceConfigsExists(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "kunimitsu"},
@@ -244,12 +245,12 @@ func TestDeviceConfigsExists(t *testing.T) {
 					VariantId:  &device.VariantId{Value: "variant2"},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(exists[0], ShouldBeTrue)
-			So(exists[1], ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, exists[0], should.BeTrue)
+			assert.Loosely(t, exists[1], should.BeTrue)
 		})
 
-		Convey("check for nonexisting data", func() {
+		t.Run("check for nonexisting data", func(t *ftt.Test) {
 			exists, err := DeviceConfigsExists(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "platform"},
@@ -258,11 +259,11 @@ func TestDeviceConfigsExists(t *testing.T) {
 					BrandId:    &device.BrandId{Value: "nonexisting"},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(exists[0], ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, exists[0], should.BeFalse)
 		})
 
-		Convey("check for existing and nonexisting data", func() {
+		t.Run("check for existing and nonexisting data", func(t *ftt.Test) {
 			exists, err := DeviceConfigsExists(ctx, []*device.ConfigId{
 				{
 					PlatformId: &device.PlatformId{Value: "platform"},
@@ -275,9 +276,9 @@ func TestDeviceConfigsExists(t *testing.T) {
 					VariantId:  &device.VariantId{Value: "variant2"},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(exists[0], ShouldBeFalse)
-			So(exists[1], ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, exists[0], should.BeFalse)
+			assert.Loosely(t, exists[1], should.BeTrue)
 		})
 	})
 }
@@ -313,20 +314,20 @@ func (gsClient *fakeGSClient) GetFile(ctx context.Context, path string) ([]byte,
 }
 
 func TestUpdateDatastoreFromBoxter(t *testing.T) {
-	Convey("Test update device config from boxster", t, func() {
+	ftt.Run("Test update device config from boxster", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		gitilesMock := &fakeGitClient{}
-		Convey("Happy path", func() {
+		t.Run("Happy path", func(t *ftt.Test) {
 			err := UpdateDatastoreFromBoxster(ctx, gitilesMock, "generated/configs.jsonproto", nil, "", "", "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// There should be 7 entities created in datastore as
 			// test_device_config_v2.jsonproto contains 13 device configs:
 			// 6 sku-less device configs & 7 real device configs.
 			var cfgs []*devcfgEntity
 			datastore.GetTestable(ctx).Consistent(true)
 			err = datastore.GetAll(ctx, datastore.NewQuery(entityKind), &cfgs)
-			So(err, ShouldBeNil)
-			So(cfgs, ShouldHaveLength, 13)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, cfgs, should.HaveLength(13))
 		})
 	})
 }

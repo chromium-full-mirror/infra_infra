@@ -6,9 +6,11 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	invlibs "infra/cros/lab_inventory/protos"
@@ -88,75 +90,75 @@ func TestAddRecord(t *testing.T) {
 	rec3ID, _ := GenerateRepairRecordID(record3.Hostname, record3.AssetTag, ptypes.TimestampString(record3.CreatedTime))
 	rec4ID, _ := GenerateRepairRecordID(record4.Hostname, record4.AssetTag, ptypes.TimestampString(record4.CreatedTime))
 	ids2 := []string{rec3ID, rec4ID}
-	Convey("Add device manual repair record to datastore", t, func() {
-		Convey("Add multiple device manual repair records to datastore", func() {
+	ftt.Run("Add device manual repair record to datastore", t, func(t *ftt.Test) {
+		t.Run("Add multiple device manual repair records to datastore", func(t *ftt.Test) {
 			records := []*invlibs.DeviceManualRepairRecord{record1, record2}
 			res, err := AddDeviceManualRepairRecords(ctx, records)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
 
 			// Put and Get order should be the same as the order in which the records
 			// were passed in as arguments.
 			for i, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, records[i].GetHostname())
-				So(r.Entity.AssetTag, ShouldEqual, records[i].GetAssetTag())
-				So(r.Entity.RepairState, ShouldEqual, "STATE_NOT_STARTED")
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal(records[i].GetHostname()))
+				assert.Loosely(t, r.Entity.AssetTag, should.Equal(records[i].GetAssetTag()))
+				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(records[i].GetUpdatedTime())
-				So(r.Entity.UpdatedTime, ShouldEqual, updatedTime)
+				assert.Loosely(t, r.Entity.UpdatedTime, should.Equal(updatedTime))
 			}
 
 			res = GetDeviceManualRepairRecords(ctx, ids1)
-			So(res, ShouldHaveLength, 2)
+			assert.Loosely(t, res, should.HaveLength(2))
 			for i, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, records[i].GetHostname())
-				So(r.Entity.AssetTag, ShouldEqual, records[i].GetAssetTag())
-				So(r.Entity.RepairState, ShouldEqual, "STATE_NOT_STARTED")
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal(records[i].GetHostname()))
+				assert.Loosely(t, r.Entity.AssetTag, should.Equal(records[i].GetAssetTag()))
+				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(records[i].GetUpdatedTime())
-				So(r.Entity.UpdatedTime, ShouldEqual, updatedTime)
+				assert.Loosely(t, r.Entity.UpdatedTime, should.Equal(updatedTime))
 			}
 		})
-		Convey("Add existing record to datastore", func() {
+		t.Run("Add existing record to datastore", func(t *ftt.Test) {
 			req := []*invlibs.DeviceManualRepairRecord{record3}
 			res, err := AddDeviceManualRepairRecords(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.BeNil)
 
 			// Verify adding existing record.
 			req = []*invlibs.DeviceManualRepairRecord{record3, record4}
 			res, err = AddDeviceManualRepairRecords(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res, ShouldHaveLength, 2)
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "Record exists in the datastore")
-			So(res[1].Err, ShouldBeNil)
-			So(res[1].Entity.Hostname, ShouldEqual, record4.GetHostname())
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("Record exists in the datastore"))
+			assert.Loosely(t, res[1].Err, should.BeNil)
+			assert.Loosely(t, res[1].Entity.Hostname, should.Equal(record4.GetHostname()))
 
 			// Check both records are in datastore.
 			res = GetDeviceManualRepairRecords(ctx, ids2)
-			So(res, ShouldHaveLength, 2)
+			assert.Loosely(t, res, should.HaveLength(2))
 			for i, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, req[i].GetHostname())
-				So(r.Entity.AssetTag, ShouldEqual, req[i].GetAssetTag())
-				So(r.Entity.RepairState, ShouldEqual, "STATE_NOT_STARTED")
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal(req[i].GetHostname()))
+				assert.Loosely(t, r.Entity.AssetTag, should.Equal(req[i].GetAssetTag()))
+				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(req[i].GetUpdatedTime())
-				So(r.Entity.UpdatedTime, ShouldResemble, updatedTime)
+				assert.Loosely(t, r.Entity.UpdatedTime, should.Resemble(updatedTime))
 			}
 		})
-		Convey("Add record without hostname to datastore", func() {
+		t.Run("Add record without hostname to datastore", func(t *ftt.Test) {
 			req := []*invlibs.DeviceManualRepairRecord{record5}
 			res, err := AddDeviceManualRepairRecords(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "Hostname cannot be empty")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("Hostname cannot be empty"))
 		})
 	})
 }
@@ -169,27 +171,27 @@ func TestGetRecord(t *testing.T) {
 	rec1ID, _ := GenerateRepairRecordID(record1.Hostname, record1.AssetTag, ptypes.TimestampString(record1.CreatedTime))
 	rec2ID, _ := GenerateRepairRecordID(record2.Hostname, record2.AssetTag, ptypes.TimestampString(record2.CreatedTime))
 	ids1 := []string{rec1ID, rec2ID}
-	Convey("Get device manual repair record from datastore", t, func() {
-		Convey("Get non-existent device manual repair record from datastore", func() {
+	ftt.Run("Get device manual repair record from datastore", t, func(t *ftt.Test) {
+		t.Run("Get non-existent device manual repair record from datastore", func(t *ftt.Test) {
 			records := []*invlibs.DeviceManualRepairRecord{record1}
 			res, err := AddDeviceManualRepairRecords(ctx, records)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
 
 			res = GetDeviceManualRepairRecords(ctx, ids1)
-			So(res, ShouldHaveLength, 2)
-			So(res[0].Err, ShouldBeNil)
-			So(res[1].Err, ShouldNotBeNil)
-			So(res[1].Err.Error(), ShouldContainSubstring, "datastore: no such entity")
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[1].Err, should.NotBeNil)
+			assert.Loosely(t, res[1].Err.Error(), should.ContainSubstring("datastore: no such entity"))
 
 			updatedTime, _ := ptypes.Timestamp(record1.CreatedTime)
-			So(res[0].Entity.UpdatedTime, ShouldResemble, updatedTime)
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime))
 		})
-		Convey("Get record with empty id", func() {
+		t.Run("Get record with empty id", func(t *ftt.Test) {
 			res := GetDeviceManualRepairRecords(ctx, []string{""})
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "datastore: invalid key")
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("datastore: invalid key"))
 		})
 	})
 }
@@ -207,99 +209,99 @@ func TestGetRecordByPropertyName(t *testing.T) {
 	// Set up records in datastore and test
 	AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Get device manual repair record from datastore by property name", t, func() {
-		Convey("Get repair record by Hostname", func() {
+	ftt.Run("Get device manual repair record from datastore by property name", t, func(t *ftt.Test) {
+		t.Run("Get repair record by Hostname", func(t *ftt.Test) {
 			// Query should return record1, record2, record3
 			res, err := GetRepairRecordByPropertyName(ctx, map[string]string{"hostname": "chromeos-getByProp-aa"}, -1, 0, []string{})
-			So(res, ShouldHaveLength, 3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, res, should.HaveLength(3))
+			assert.Loosely(t, err, should.BeNil)
 			for _, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-				So(r.Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Entity.RepairState)
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Record.GetRepairState().String())
-				So([]string{"getByProp-111", "getByProp-222"}, ShouldContain, r.Entity.AssetTag)
-				So([]string{"getByProp-111", "getByProp-222"}, ShouldContain, r.Record.GetAssetTag())
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, r.Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Entity.RepairState))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Record.GetRepairState().String()))
+				assert.Loosely(t, []string{"getByProp-111", "getByProp-222"}, should.Contain(r.Entity.AssetTag))
+				assert.Loosely(t, []string{"getByProp-111", "getByProp-222"}, should.Contain(r.Record.GetAssetTag()))
 			}
 		})
-		Convey("Get repair record by Hostname limit to 1", func() {
+		t.Run("Get repair record by Hostname limit to 1", func(t *ftt.Test) {
 			// Query should return record1
 			res, err := GetRepairRecordByPropertyName(ctx, map[string]string{"hostname": "chromeos-getByProp-aa"}, 1, 0, []string{})
-			So(res, ShouldHaveLength, 1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, err, should.BeNil)
 			r := res[0]
-			So(r.Err, ShouldBeNil)
-			So(r.Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-			So(r.Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-			So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Entity.RepairState)
-			So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Record.GetRepairState().String())
-			So([]string{"getByProp-111", "getByProp-222"}, ShouldContain, r.Entity.AssetTag)
-			So([]string{"getByProp-111", "getByProp-222"}, ShouldContain, r.Record.GetAssetTag())
+			assert.Loosely(t, r.Err, should.BeNil)
+			assert.Loosely(t, r.Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, r.Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Entity.RepairState))
+			assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Record.GetRepairState().String()))
+			assert.Loosely(t, []string{"getByProp-111", "getByProp-222"}, should.Contain(r.Entity.AssetTag))
+			assert.Loosely(t, []string{"getByProp-111", "getByProp-222"}, should.Contain(r.Record.GetAssetTag()))
 		})
-		Convey("Get repair record by AssetTag", func() {
+		t.Run("Get repair record by AssetTag", func(t *ftt.Test) {
 			// Query should return record1, record2
 			res, err := GetRepairRecordByPropertyName(ctx, map[string]string{"asset_tag": "getByProp-111"}, -1, 0, []string{})
-			So(res, ShouldHaveLength, 2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, err, should.BeNil)
 			for _, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-				So(r.Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-				So(r.Entity.AssetTag, ShouldEqual, "getByProp-111")
-				So(r.Record.GetAssetTag(), ShouldEqual, "getByProp-111")
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Entity.RepairState)
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Record.GetRepairState().String())
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, r.Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, r.Entity.AssetTag, should.Equal("getByProp-111"))
+				assert.Loosely(t, r.Record.GetAssetTag(), should.Equal("getByProp-111"))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Entity.RepairState))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Record.GetRepairState().String()))
 			}
 		})
-		Convey("Get repair record by RepairState", func() {
+		t.Run("Get repair record by RepairState", func(t *ftt.Test) {
 			// Query should return record2
 			res, err := GetRepairRecordByPropertyName(ctx, map[string]string{"repair_state": "STATE_COMPLETED"}, -1, 0, []string{})
-			So(res, ShouldHaveLength, 1)
-			So(err, ShouldBeNil)
-			So(res[0].Err, ShouldBeNil)
-			So(res[0].Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-			So(res[0].Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-			So(res[0].Entity.AssetTag, ShouldEqual, "getByProp-111")
-			So(res[0].Record.GetAssetTag(), ShouldEqual, "getByProp-111")
-			So(res[0].Entity.RepairState, ShouldEqual, "STATE_COMPLETED")
-			So(res[0].Record.GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_COMPLETED)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[0].Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, res[0].Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, res[0].Entity.AssetTag, should.Equal("getByProp-111"))
+			assert.Loosely(t, res[0].Record.GetAssetTag(), should.Equal("getByProp-111"))
+			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_COMPLETED"))
+			assert.Loosely(t, res[0].Record.GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_COMPLETED))
 		})
-		Convey("Get repair record by multiple properties", func() {
+		t.Run("Get repair record by multiple properties", func(t *ftt.Test) {
 			// Query should return record1 and record2
 			res, err := GetRepairRecordByPropertyName(ctx,
 				map[string]string{
 					"hostname":  "chromeos-getByProp-aa",
 					"asset_tag": "getByProp-111",
 				}, -1, 0, []string{})
-			So(res, ShouldHaveLength, 2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, err, should.BeNil)
 			for _, r := range res {
-				So(r.Err, ShouldBeNil)
-				So(r.Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-				So(r.Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-				So(r.Entity.AssetTag, ShouldEqual, "getByProp-111")
-				So(r.Record.GetAssetTag(), ShouldEqual, "getByProp-111")
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Entity.RepairState)
-				So([]string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, ShouldContain, r.Record.GetRepairState().String())
+				assert.Loosely(t, r.Err, should.BeNil)
+				assert.Loosely(t, r.Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, r.Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+				assert.Loosely(t, r.Entity.AssetTag, should.Equal("getByProp-111"))
+				assert.Loosely(t, r.Record.GetAssetTag(), should.Equal("getByProp-111"))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Entity.RepairState))
+				assert.Loosely(t, []string{"STATE_NOT_STARTED", "STATE_COMPLETED"}, should.Contain(r.Record.GetRepairState().String()))
 			}
 		})
-		Convey("Get repair record by multiple properties with offset", func() {
+		t.Run("Get repair record by multiple properties with offset", func(t *ftt.Test) {
 			// Query should return record2
 			res, err := GetRepairRecordByPropertyName(ctx,
 				map[string]string{
 					"hostname":  "chromeos-getByProp-aa",
 					"asset_tag": "getByProp-111",
 				}, -1, 1, []string{})
-			So(res, ShouldHaveLength, 1)
-			So(err, ShouldBeNil)
-			So(res[0].Err, ShouldBeNil)
-			So(res[0].Entity.Hostname, ShouldEqual, "chromeos-getByProp-aa")
-			So(res[0].Record.GetHostname(), ShouldEqual, "chromeos-getByProp-aa")
-			So(res[0].Entity.AssetTag, ShouldEqual, "getByProp-111")
-			So(res[0].Record.GetAssetTag(), ShouldEqual, "getByProp-111")
-			So(res[0].Entity.RepairState, ShouldEqual, "STATE_COMPLETED")
-			So(res[0].Record.GetRepairState().String(), ShouldEqual, "STATE_COMPLETED")
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[0].Entity.Hostname, should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, res[0].Record.GetHostname(), should.Equal("chromeos-getByProp-aa"))
+			assert.Loosely(t, res[0].Entity.AssetTag, should.Equal("getByProp-111"))
+			assert.Loosely(t, res[0].Record.GetAssetTag(), should.Equal("getByProp-111"))
+			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_COMPLETED"))
+			assert.Loosely(t, res[0].Record.GetRepairState().String(), should.Equal("STATE_COMPLETED"))
 		})
 	})
 }
@@ -317,101 +319,101 @@ func TestUpdateRecord(t *testing.T) {
 	record4 := mockDeviceManualRepairRecord("chromeos-updateRec-dd", "updateRec-444", 1)
 
 	record5 := mockDeviceManualRepairRecord("", "", 1)
-	Convey("Update record in datastore", t, func() {
-		Convey("Update existing record to datastore", func() {
+	ftt.Run("Update record in datastore", t, func(t *ftt.Test) {
+		t.Run("Update existing record to datastore", func(t *ftt.Test) {
 			rec1ID, _ := GenerateRepairRecordID(record1.Hostname, record1.AssetTag, ptypes.TimestampString(record1.CreatedTime))
 			req := []*invlibs.DeviceManualRepairRecord{record1}
 			res, err := AddDeviceManualRepairRecords(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.BeNil)
 
 			res = GetDeviceManualRepairRecords(ctx, []string{rec1ID})
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldBeNil)
-			So(res[0].Entity.RepairState, ShouldEqual, "STATE_NOT_STARTED")
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 			updatedTime1, _ := ptypes.Timestamp(record1.CreatedTime)
-			So(res[0].Entity.UpdatedTime, ShouldResemble, updatedTime1)
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime1))
 
 			// Update and check
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{rec1ID: record1Update}
 			res, err = UpdateDeviceManualRepairRecords(ctx, reqUpdate)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.BeNil)
 
 			res = GetDeviceManualRepairRecords(ctx, []string{rec1ID})
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldBeNil)
-			So(res[0].Entity.RepairState, ShouldEqual, "STATE_COMPLETED")
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_COMPLETED"))
 
 			updatedTime1, _ = ptypes.Timestamp(&timestamp.Timestamp{Seconds: 333, Nanos: 0})
-			So(res[0].Entity.UpdatedTime, ShouldResemble, updatedTime1)
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime1))
 		})
-		Convey("Update non-existent record in datastore", func() {
+		t.Run("Update non-existent record in datastore", func(t *ftt.Test) {
 			rec2ID, _ := GenerateRepairRecordID(record2.Hostname, record2.AssetTag, ptypes.TimestampString(record2.CreatedTime))
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{rec2ID: record2}
 			res, err := UpdateDeviceManualRepairRecords(ctx, reqUpdate)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "datastore: no such entity")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("datastore: no such entity"))
 
 			res = GetDeviceManualRepairRecords(ctx, []string{rec2ID})
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldNotBeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
 		})
-		Convey("Update multiple records to datastore", func() {
+		t.Run("Update multiple records to datastore", func(t *ftt.Test) {
 			rec3ID, _ := GenerateRepairRecordID(record3.Hostname, record3.AssetTag, ptypes.TimestampString(record3.CreatedTime))
 			rec4ID, _ := GenerateRepairRecordID(record4.Hostname, record4.AssetTag, ptypes.TimestampString(record4.CreatedTime))
 			req := []*invlibs.DeviceManualRepairRecord{record3, record4}
 			res, err := AddDeviceManualRepairRecords(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res, ShouldHaveLength, 2)
-			So(res[0].Err, ShouldBeNil)
-			So(res[1].Err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[1].Err, should.BeNil)
 
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{
 				rec3ID: record3Update,
 				rec4ID: record4,
 			}
 			res, err = UpdateDeviceManualRepairRecords(ctx, reqUpdate)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 2)
-			So(res[0].Err, ShouldBeNil)
-			So(res[1].Err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[1].Err, should.BeNil)
 
 			res = GetDeviceManualRepairRecords(ctx, []string{rec3ID, rec4ID})
-			So(res, ShouldHaveLength, 2)
-			So(res[0].Err, ShouldBeNil)
-			So(res[1].Err, ShouldBeNil)
-			So(res[0].Entity.RepairState, ShouldEqual, "STATE_COMPLETED")
-			So(res[1].Entity.RepairState, ShouldEqual, "STATE_NOT_STARTED")
+			assert.Loosely(t, res, should.HaveLength(2))
+			assert.Loosely(t, res[0].Err, should.BeNil)
+			assert.Loosely(t, res[1].Err, should.BeNil)
+			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_COMPLETED"))
+			assert.Loosely(t, res[1].Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 			updatedTime3, _ := ptypes.Timestamp(&timestamp.Timestamp{Seconds: 333, Nanos: 0})
-			So(res[0].Entity.UpdatedTime, ShouldResemble, updatedTime3)
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime3))
 
 			updatedTime4, _ := ptypes.Timestamp(record4.CreatedTime)
-			So(res[1].Entity.UpdatedTime, ShouldResemble, updatedTime4)
+			assert.Loosely(t, res[1].Entity.UpdatedTime, should.Resemble(updatedTime4))
 		})
-		Convey("Update record without ID to datastore", func() {
+		t.Run("Update record without ID to datastore", func(t *ftt.Test) {
 			rec5ID, _ := GenerateRepairRecordID(record5.Hostname, record5.AssetTag, ptypes.TimestampString(record5.CreatedTime))
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{rec5ID: record5}
 			res, err := UpdateDeviceManualRepairRecords(ctx, reqUpdate)
-			So(err, ShouldBeNil)
-			So(res, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.HaveLength(1))
 
 			// Error should occur when trying to get old entity from datastore
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "datastore: no such entity")
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("datastore: no such entity"))
 
 			res = GetDeviceManualRepairRecords(ctx, []string{rec5ID})
-			So(res, ShouldHaveLength, 1)
-			So(res[0].Err, ShouldNotBeNil)
-			So(res[0].Err.Error(), ShouldContainSubstring, "datastore: no such entity")
+			assert.Loosely(t, res, should.HaveLength(1))
+			assert.Loosely(t, res[0].Err, should.NotBeNil)
+			assert.Loosely(t, res[0].Err.Error(), should.ContainSubstring("datastore: no such entity"))
 		})
 	})
 }
@@ -429,34 +431,34 @@ func TestManualRepairIndexes(t *testing.T) {
 	records := []*invlibs.DeviceManualRepairRecord{record1, record2, record3, record4}
 	_, _ = AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Query device manual repair record from datastore using indexes", t, func() {
-		Convey("Query by repair_state", func() {
+	ftt.Run("Query device manual repair record from datastore using indexes", t, func(t *ftt.Test) {
+		t.Run("Query by repair_state", func(t *ftt.Test) {
 			q := datastore.NewQuery(DeviceManualRepairRecordEntityKind).
 				Eq("repair_state", invlibs.DeviceManualRepairRecord_STATE_COMPLETED.String())
 
 			var entities []*DeviceManualRepairRecordEntity
 			err := datastore.GetAll(ctx, q, &entities)
 
-			So(err, ShouldBeNil)
-			So(entities, ShouldHaveLength, 3)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, entities, should.HaveLength(3))
 		})
-		Convey("Query by updated_time", func() {
+		t.Run("Query by updated_time", func(t *ftt.Test) {
 			rec4Update := mockUpdatedRecord("chromeos-indexTest-dd", "indexTest-444", 1)
 			rec4Update.UpdatedTime, _ = ptypes.TimestampProto(time.Unix(555, 0).UTC())
 
 			rec4ID, _ := GenerateRepairRecordID(rec4Update.Hostname, rec4Update.AssetTag, ptypes.TimestampString(rec4Update.CreatedTime))
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{rec4ID: rec4Update}
 			_, err := UpdateDeviceManualRepairRecords(ctx, reqUpdate)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			q := datastore.NewQuery(DeviceManualRepairRecordEntityKind).
 				Gte("updated_time", time.Unix(500, 0).UTC())
 
 			var entities []*DeviceManualRepairRecordEntity
 			err = datastore.GetAll(ctx, q, &entities)
-			So(err, ShouldBeNil)
-			So(entities, ShouldHaveLength, 1)
-			So(entities[0].ID, ShouldEqual, rec4ID)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, entities, should.HaveLength(1))
+			assert.Loosely(t, entities[0].ID, should.Equal(rec4ID))
 		})
 	})
 }

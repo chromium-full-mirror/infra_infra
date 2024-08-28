@@ -6,24 +6,25 @@ package datastore
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGetDevices(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	Convey("Get devices from an empty datastore", t, func() {
-		Convey("Get all", func() {
+	ftt.Run("Get devices from an empty datastore", t, func(t *ftt.Test) {
+		t.Run("Get all", func(t *ftt.Test) {
 			devs, err := GetAllDevices(ctx)
-			So(devs, ShouldBeEmpty)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, devs, should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 		})
-		Convey("Get by hostnames", func() {
+		t.Run("Get by hostnames", func(t *ftt.Test) {
 			result := GetDevicesByHostnames(ctx, []string{"dut1", "labstation2"})
-			So(result.Passed(), ShouldBeEmpty)
-			So(result.Failed(), ShouldHaveLength, 2)
+			assert.Loosely(t, result.Passed(), should.BeEmpty)
+			assert.Loosely(t, result.Failed(), should.HaveLength(2))
 		})
 	})
 }

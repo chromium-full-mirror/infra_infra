@@ -3,8 +3,9 @@ package utils
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ca "infra/libs/fleet/protos"
 	fleet "infra/libs/fleet/protos/go"
 )
@@ -25,16 +26,16 @@ func TestSanitizeChopsAsset(t *testing.T) {
 		Id: "Marvin ",
 	}
 
-	Convey("Test Sanitizing", t, func() {
+	ftt.Run("Test Sanitizing", t, func(t *ftt.Test) {
 		asset1New := SanitizeChopsAsset([]*ca.ChopsAsset{asset1})
-		So(asset1New[0].Id, ShouldEqual, "Eddie the Computer")
-		So(asset1New[0].Location.Lab, ShouldEqual, "Heart Of Gold")
-		So(asset1New[0].Location.Aisle, ShouldEqual, "Starboard Aisle 6")
-		So(asset1New[0].Location.Row, ShouldEqual, "10")
-		So(asset1New[0].Location.Rack, ShouldEqual, "1")
-		So(asset1New[0].Location.Position, ShouldEqual, "SomewhereImprobable")
+		assert.Loosely(t, asset1New[0].Id, should.Equal("Eddie the Computer"))
+		assert.Loosely(t, asset1New[0].Location.Lab, should.Equal("Heart Of Gold"))
+		assert.Loosely(t, asset1New[0].Location.Aisle, should.Equal("Starboard Aisle 6"))
+		assert.Loosely(t, asset1New[0].Location.Row, should.Equal("10"))
+		assert.Loosely(t, asset1New[0].Location.Rack, should.Equal("1"))
+		assert.Loosely(t, asset1New[0].Location.Position, should.Equal("SomewhereImprobable"))
 		asset2New := SanitizeChopsAsset([]*ca.ChopsAsset{asset2})
-		So(asset2New[0].Id, ShouldEqual, "Marvin")
+		assert.Loosely(t, asset2New[0].Id, should.Equal("Marvin"))
 	})
 
 }
