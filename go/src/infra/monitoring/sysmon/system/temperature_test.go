@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/shirou/gopsutil/v3/host"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"

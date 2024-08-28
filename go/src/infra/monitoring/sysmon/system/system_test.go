@@ -9,47 +9,49 @@ import (
 	"runtime"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
 func TestMetrics(t *testing.T) {
-	c := context.Background()
-	c, _ = tsmon.WithDummyInMemory(c)
 
-	Convey("Uptime", t, func() {
-		So(updateUptimeMetrics(c), ShouldBeNil)
-		So(uptime.Get(c), ShouldBeGreaterThan, 0)
+	ftt.Run("Uptime", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateUptimeMetrics(c), should.BeNil)
+		assert.Loosely(t, uptime.Get(c), should.BeGreaterThan(0))
 	})
 
-	Convey("CPU", t, func() {
+	ftt.Run("CPU", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
 		if !cgoEnabled && runtime.GOOS == "darwin" {
 			t.Skip("Requires CGO_ENABLED=1 on Mac")
 		}
 
-		So(updateCPUMetrics(c), ShouldBeNil)
-		So(cpuCount.Get(c), ShouldBeGreaterThan, 0)
+		assert.Loosely(t, updateCPUMetrics(c), should.BeNil)
+		assert.Loosely(t, cpuCount.Get(c), should.BeGreaterThan(0))
 
 		// Small fudge factor because sometimes this isn't exact.
 		const aBitLessThanZero = -0.001
 		const oneHundredAndABit = 100.001
 
 		v := cpuTime.Get(c, "user")
-		So(v, ShouldBeGreaterThanOrEqualTo, aBitLessThanZero)
-		So(v, ShouldBeLessThanOrEqualTo, oneHundredAndABit)
+		assert.Loosely(t, v, should.BeGreaterThanOrEqual(aBitLessThanZero))
+		assert.Loosely(t, v, should.BeLessThanOrEqual(oneHundredAndABit))
 
 		v = cpuTime.Get(c, "system")
-		So(v, ShouldBeGreaterThanOrEqualTo, aBitLessThanZero)
-		So(v, ShouldBeLessThanOrEqualTo, oneHundredAndABit)
+		assert.Loosely(t, v, should.BeGreaterThanOrEqual(aBitLessThanZero))
+		assert.Loosely(t, v, should.BeLessThanOrEqual(oneHundredAndABit))
 
 		v = cpuTime.Get(c, "idle")
-		So(v, ShouldBeGreaterThanOrEqualTo, aBitLessThanZero)
-		So(v, ShouldBeLessThanOrEqualTo, oneHundredAndABit)
+		assert.Loosely(t, v, should.BeGreaterThanOrEqual(aBitLessThanZero))
+		assert.Loosely(t, v, should.BeLessThanOrEqual(oneHundredAndABit))
 	})
 
-	Convey("Disk", t, func() {
-		So(updateDiskMetrics(c), ShouldBeNil)
+	ftt.Run("Disk", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateDiskMetrics(c), should.BeEmpty)
 
 		// A disk mountpoint that should always be present.
 		path := "/"
@@ -59,11 +61,16 @@ func TestMetrics(t *testing.T) {
 
 		free := diskFree.Get(c, path)
 		total := diskTotal.Get(c, path)
-		So(free, ShouldBeLessThanOrEqualTo, total)
+		assert.Loosely(t, free, should.BeLessThanOrEqual(total))
 
 		iFree := inodesFree.Get(c, path)
 		iTotal := inodesTotal.Get(c, path)
-		So(iFree, ShouldBeLessThanOrEqualTo, iTotal)
+		assert.Loosely(t, iFree, should.BeLessThanOrEqual(iTotal))
+
+		if runtime.GOOS == "darwin" && !cgoEnabled {
+			// gopsutil/v3/disk relies on CGO to get disk device stats.
+			t.Skip("skipping disk write tests on darwin with CGO_ENABLED=0")
+		}
 
 		// Try to get a device from reported metrics. There might be multiple
 		// devices reported, pick the one that has Non-Zero value for verification.
@@ -74,26 +81,29 @@ func TestMetrics(t *testing.T) {
 				break
 			}
 		}
-		So(device, ShouldNotEqual, "")
+		assert.Loosely(t, device, should.NotEqual(""))
 
-		So(diskRead.Get(c, device), ShouldBeGreaterThan, 0)
-		So(diskReadCount.Get(c, device), ShouldBeGreaterThan, 0)
-		So(diskReadTimeSpent.Get(c, device), ShouldBeGreaterThan, 0)
-		So(diskWrite.Get(c, device), ShouldBeGreaterThan, 0)
-		So(diskWriteCount.Get(c, device), ShouldBeGreaterThan, 0)
-		So(diskWriteTimeSpent.Get(c, device), ShouldBeGreaterThan, 0)
+		assert.Loosely(t, diskRead.Get(c, device), should.BeGreaterThan(0))
+		assert.Loosely(t, diskReadCount.Get(c, device), should.BeGreaterThan(0))
+		assert.Loosely(t, diskReadTimeSpent.Get(c, device), should.BeGreaterThan(0))
+
+		assert.Loosely(t, diskWrite.Get(c, device), should.BeGreaterThan(0))
+		assert.Loosely(t, diskWriteCount.Get(c, device), should.BeGreaterThan(0))
+		assert.Loosely(t, diskWriteTimeSpent.Get(c, device), should.BeGreaterThan(0))
 	})
 
-	Convey("Memory", t, func() {
-		So(updateMemoryMetrics(c), ShouldBeNil)
+	ftt.Run("Memory", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateMemoryMetrics(c), should.BeNil)
 
 		free := memFree.Get(c)
 		total := memTotal.Get(c)
-		So(free, ShouldBeLessThanOrEqualTo, total)
+		assert.Loosely(t, free, should.BeLessThanOrEqual(total))
 	})
 
-	Convey("Network", t, func() {
-		So(updateNetworkMetrics(c), ShouldBeNil)
+	ftt.Run("Network", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateNetworkMetrics(c), should.BeNil)
 
 		// A network interface that should always be present.
 		iface := "lo"
@@ -107,27 +117,30 @@ func TestMetrics(t *testing.T) {
 		netDown.Get(c, iface)
 	})
 
-	Convey("Process", t, func() {
-		So(updateProcessMetrics(c), ShouldBeNil)
-		So(procCount.Get(c), ShouldBeGreaterThan, 0)
+	ftt.Run("Process", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateProcessMetrics(c), should.BeNil)
+		assert.Loosely(t, procCount.Get(c), should.BeGreaterThan(0))
 
 		if runtime.GOOS != "windows" {
-			So(loadAverage.Get(c, 1), ShouldBeGreaterThan, 0)
-			So(loadAverage.Get(c, 5), ShouldBeGreaterThan, 0)
-			So(loadAverage.Get(c, 15), ShouldBeGreaterThan, 0)
+			assert.That(t, loadAverage.Get(c, 1), should.BeGreaterThan[float64](0))
+			assert.That(t, loadAverage.Get(c, 5), should.BeGreaterThan[float64](0))
+			assert.That(t, loadAverage.Get(c, 15), should.BeGreaterThan[float64](0))
 		}
 	})
 
-	Convey("Unix time", t, func() {
-		So(updateUnixTimeMetrics(c), ShouldBeNil)
-		So(unixTime.Get(c), ShouldBeGreaterThan, int64(1257894000000))
+	ftt.Run("Unix time", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateUnixTimeMetrics(c), should.BeNil)
+		assert.Loosely(t, unixTime.Get(c), should.BeGreaterThan(int64(1257894000000)))
 	})
 
-	Convey("OS information", t, func() {
-		So(updateOSInfoMetrics(c), ShouldBeNil)
+	ftt.Run("OS information", t, func(t *ftt.Test) {
+		c, _ := tsmon.WithDummyInMemory(context.Background())
+		assert.Loosely(t, updateOSInfoMetrics(c), should.BeNil)
 
-		So(osName.Get(c, ""), ShouldNotEqual, "")
-		So(osVersion.Get(c, ""), ShouldNotEqual, "")
-		So(osArch.Get(c), ShouldNotEqual, "")
+		assert.Loosely(t, osName.Get(c, ""), should.NotEqual(""))
+		assert.Loosely(t, osVersion.Get(c, ""), should.NotEqual(""))
+		assert.Loosely(t, osArch.Get(c), should.NotEqual(""))
 	})
 }

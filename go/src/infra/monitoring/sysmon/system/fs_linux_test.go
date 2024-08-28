@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestRemoveDiskDevices(t *testing.T) {
@@ -22,8 +24,8 @@ func TestRemoveDiskDevices(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		Convey(fmt.Sprintf("%d. %s", i, test.Names), t, func() {
-			So(removeDiskDevices(test.Names), ShouldResemble, test.Want)
+		ftt.Run(fmt.Sprintf("%d. %s", i, test.Names), t, func(t *ftt.Test) {
+			assert.Loosely(t, removeDiskDevices(test.Names), should.Resemble(test.Want))
 		})
 	}
 }
@@ -31,7 +33,7 @@ func TestRemoveDiskDevices(t *testing.T) {
 func TestMountpointsAreIgnored(t *testing.T) {
 	t.Parallel()
 
-	Convey("Docker mountpoints are ignored", t, func() {
-		So(shouldIgnoreMountpoint("/var/lib/docker/aufs"), ShouldBeTrue)
+	ftt.Run("Docker mountpoints are ignored", t, func(t *ftt.Test) {
+		assert.Loosely(t, shouldIgnoreMountpoint("/var/lib/docker/aufs"), should.BeTrue)
 	})
 }
