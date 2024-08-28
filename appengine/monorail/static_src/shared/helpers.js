@@ -216,8 +216,8 @@ export const shouldWaitForDefaultQuery = (queryParams) => {
 const redirectProjects = Object.freeze([
   'angleproject', 'aomedia', 'apvi', 'boringssl', 'chromedriver', 'chromium',
   'crashpad', 'dawn', 'fuchsia', 'gerrit', 'git', 'gn', 'google-breakpad',
-  'libyuv', 'linux-syscall-support', 'pdfium', 'pigweed', 'skia', 'tint', 'v8',
-  'webm', 'webp', 'webp2', 'webrtc',
+  'libyuv', 'linux-syscall-support', 'pdfium', 'pigweed', 'project-zero',
+  'skia', 'tint', 'v8', 'webm', 'webp', 'webp2', 'webrtc',
 ]);
 
 /**

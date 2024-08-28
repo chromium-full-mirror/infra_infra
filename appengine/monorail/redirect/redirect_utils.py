@@ -28,6 +28,7 @@ PROJECT_REDIRECT_MAP = {
     'linux-syscall-support': 'https://issues.chromium.org',
     'pdfium': 'https://issues.chromium.org',
     'pigweed': 'https://issues.pigweed.dev',
+    'project-zero': 'https://project-zero.issues.chromium.org',
     'skia': 'https://issues.skia.org',
     'tint': 'https://issues.chromium.org',
     'v8': 'https://issues.chromium.org',
