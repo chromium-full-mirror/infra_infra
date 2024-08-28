@@ -17,6 +17,7 @@ import (
 	shivasUtil "infra/cmd/shivas/utils"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/controller"
+	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/fleetcosterror"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -33,7 +34,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 		return f.getCostResultImpl(ctx, req)
 	}
 	ent, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
-	if readErr == nil && ent.CostResult != nil {
+	if entHasCostResult(readErr, ent) {
 		logging.Infof(ctx, "Return GetCostResult result from cache for hostname=%q", req.GetHostname())
 		return &fleetcostAPI.GetCostResultResponse{
 			Result: ent.CostResult,
@@ -73,4 +74,18 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 		Result: res,
 		Report: rep,
 	}, nil
+}
+
+// entHasCostResult returns true if and only if we read a valid entity out of datastore.
+func entHasCostResult(readErr error, ent *entities.CachedCostResultEntity) bool {
+	if readErr != nil {
+		return false
+	}
+	if ent == nil {
+		return false
+	}
+	if ent.CostResult == nil {
+		return false
+	}
+	return true
 }

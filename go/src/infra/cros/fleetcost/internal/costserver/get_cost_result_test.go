@@ -12,11 +12,14 @@ import (
 	"google.golang.org/genproto/googleapis/type/money"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/cros/fleetcost/internal/costserver/controller"
+	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
 	"infra/cros/fleetcost/internal/costserver/testsupport"
 	"infra/cros/fleetcost/internal/utils"
@@ -123,4 +126,21 @@ func TestGetCostResultWithStaleCacheEntry(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
+}
+
+// TestEntHasCostResult tests the helper function entHasCostResult to make sure that it doesn't panic.
+// That is the root cause behind https://b.corp.google.com/issues/362793808.
+func TestEntHasCostResult(t *testing.T) {
+	t.Parallel()
+
+	assert.That(t, costserver.EntHasCostResult(nil, nil), should.BeFalse)
+	assert.That(t, costserver.EntHasCostResult(errors.New("hi"), nil), should.BeFalse)
+	assert.That(t, costserver.EntHasCostResult(errors.New("hi"), &entities.CachedCostResultEntity{}), should.BeFalse)
+	assert.That(t, costserver.EntHasCostResult(errors.New("hi"), &entities.CachedCostResultEntity{
+		CostResult: &fleetcostModels.CostResult{},
+	}), should.BeFalse)
+	assert.That(t, costserver.EntHasCostResult(nil, &entities.CachedCostResultEntity{}), should.BeFalse)
+	assert.That(t, costserver.EntHasCostResult(nil, &entities.CachedCostResultEntity{
+		CostResult: &fleetcostModels.CostResult{},
+	}), should.BeTrue)
 }
