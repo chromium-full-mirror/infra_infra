@@ -194,7 +194,8 @@ func populateTestInvocationInfo(
 	botDims []*buildbucketpb.StringPair,
 	build *buildbucketpb.Build) {
 	testInv := &artifactpb.TestInvocation{
-		IsCftRun: true,
+		IsCftRun:  true,
+		IsTrv2Run: true,
 	}
 	resultProto.TestInvocation = testInv
 
@@ -216,11 +217,6 @@ func populateTestInvocationInfo(
 
 	// Populate Partner related info.
 	populatePartnerInfo(ctx, testInv, sk)
-
-	cftTestRequest := sk.CftTestRequest
-	if cftTestRequest != nil {
-		testInv.IsTrv2Run = cftTestRequest.RunViaTrv2
-	}
 }
 
 // populateBuildInfo populates build info.

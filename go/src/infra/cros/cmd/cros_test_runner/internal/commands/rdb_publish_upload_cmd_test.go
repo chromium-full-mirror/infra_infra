@@ -690,6 +690,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
 				PartnerInfo:            &artifactpb.PartnerInfo{},
 				IsCftRun:               true,
+				IsTrv2Run:              true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -916,6 +917,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
 				PartnerInfo:            &artifactpb.PartnerInfo{},
 				IsCftRun:               true,
+				IsTrv2Run:              true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
