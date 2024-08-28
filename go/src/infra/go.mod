@@ -90,7 +90,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.22.12
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/stretchr/testify v1.9.0
-	github.com/ulikunitz/xz v0.5.10
+	github.com/ulikunitz/xz v0.5.12
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	github.com/xinsnake/go-http-digest-auth-client v0.6.0
 	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
