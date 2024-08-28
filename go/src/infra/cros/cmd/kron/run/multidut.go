@@ -366,9 +366,9 @@ func (c *CrOSMultiDUTCommand) generateRequestMap(kronBuildMap map[*kronpb.Build]
 	return transformToRequestMap(secondariesToPrimary), nil
 }
 
-// buildMultiDUTCTPRequest generates a single CTP request for a MULTI_DUT
+// BuildMultiDUTCTPRequest generates a single CTP request for a MULTI_DUT
 // config.
-func buildMultiDUTCTPRequest(config *suschpb.SchedulerConfig, branchTrigger string, targetPair *multiDUTTargetPair) (*ctpEvent, error) {
+func BuildMultiDUTCTPRequest(config *suschpb.SchedulerConfig, branchTrigger string, targetPair *multiDUTTargetPair) (*ctpEvent, error) {
 	// Generate the base CTP request without any secondary device information.
 	request := ctprequest.BuildCTPRequest(config, targetPair.primaryBuild.GetBoard(), targetPair.primaryTarget.Model, targetPair.primaryBuild.GetBuildTarget(), strconv.FormatInt(targetPair.primaryBuild.GetMilestone(), 10), targetPair.primaryBuild.GetVersion(), branchTrigger)
 
@@ -468,7 +468,7 @@ func buildMultiDUTCTPRequests(requestMap map[*suschpb.SchedulerConfig][]*multiDU
 				return nil, err
 			}
 
-			event, err := buildMultiDUTCTPRequest(config, branch.String(), target)
+			event, err := BuildMultiDUTCTPRequest(config, branch.String(), target)
 			if err != nil {
 				return nil, err
 			}

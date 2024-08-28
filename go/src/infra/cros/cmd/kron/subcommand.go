@@ -5,7 +5,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
@@ -54,13 +53,6 @@ func main() {
 		"https://www.googleapis.com/auth/gerritcodereview",
 	}
 	opts.Scopes = append(opts.Scopes, gerritScopes...)
-
-	authenticator := auth.NewAuthenticator(context.Background(), auth.SilentLogin, opts)
-	_, err := authenticator.Client()
-	if err != nil {
-		common.Stderr.Println("please run luci-auth login")
-		os.Exit(1)
-	}
 
 	s := &kronApplication{
 		getApplication(opts),

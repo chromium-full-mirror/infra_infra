@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
+	"infra/cros/cmd/kron/builds"
 	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 	"infra/cros/cmd/kron/ctprequest"
@@ -45,6 +46,8 @@ type configParserCommand struct {
 	daily       bool
 	weekly      bool
 	fortnightly bool
+	ddd         bool
+	multiDUT    bool
 	nextNHours  time.Duration
 
 	// Bottom-Level Filters
@@ -71,9 +74,10 @@ type configParserCommand struct {
 	startTime int64
 
 	// Format Flags
-	asCtpRequest         bool
-	nameOnly             bool
-	buildTargetExpansion bool
+	asCtpRequest bool
+	nameOnly     bool
+	csv          bool
+	targetCount  bool
 }
 
 // setFlags adds also CLI flags to the subcommand.
@@ -81,6 +85,8 @@ func (c *configParserCommand) setFlags() {
 	// Top Level Filters
 
 	c.Flags.BoolVar(&c.newBuild, "new-build", false, "Fetch from NEW_BUILD triggered configs")
+	c.Flags.BoolVar(&c.ddd, "ddd", false, "Fetch from 3D configs")
+	c.Flags.BoolVar(&c.multiDUT, "multi-dut", false, "Fetch from MULTI_DUT configs")
 	c.Flags.BoolVar(&c.daily, "daily", false, "Fetch from { DAILY | NIGHTLY } triggered configs")
 	c.Flags.BoolVar(&c.weekly, "weekly", false, "Fetch from WEEKLY triggered configs")
 	c.Flags.BoolVar(&c.fortnightly, "fortnightly", false, "Fetch from FORTNIGHTLY triggered configs")
@@ -119,7 +125,8 @@ func (c *configParserCommand) setFlags() {
 
 	c.Flags.BoolVar(&c.asCtpRequest, "ctp-request", false, "Configs will be returned as the CTP Requests they would generate.")
 	c.Flags.BoolVar(&c.nameOnly, "name-only", false, "Only the name of the config will be returned.")
-	c.Flags.BoolVar(&c.buildTargetExpansion, "csv-request-mapping", false, "Output the configs in a CSV format showing their config > CTP request mapping. Format is config,buildTarget,board,model")
+	c.Flags.BoolVar(&c.csv, "csv", false, "Output the configs in a CSV format showing their config to CTP request mapping. Format is config,buildTarget,board,model")
+	c.Flags.BoolVar(&c.targetCount, "target-count", false, "Output the configs in a CSV format showing the amount of scheduled targets in the format config,targetCount")
 
 }
 
@@ -167,15 +174,14 @@ func isSingleBool(bools []bool) bool {
 // validate reads the user given flags and ensures that no improper combinations
 // were given.
 func (c *configParserCommand) validate() error {
-
 	// If the user did not select a top-level filter then we will assume that
 	// they are trying to search from the set of all configs.
-	c.searchAllConfigs = !(c.newBuild || c.daily || c.weekly || c.fortnightly || (c.nextNHours != common.DefaultHoursAhead))
+	c.searchAllConfigs = !(c.newBuild || c.ddd || c.multiDUT || c.daily || c.weekly || c.fortnightly || (c.nextNHours != common.DefaultHoursAhead))
 
 	// GENERAL RULES
 
 	// Only one top-level filter flag can be given for any CLI invocation.
-	if !isSingleBool([]bool{c.newBuild, c.daily, c.weekly, c.fortnightly, c.nextNHours != common.DefaultHoursAhead}) {
+	if !isSingleBool([]bool{c.newBuild, c.ddd, c.multiDUT, c.daily, c.weekly, c.fortnightly, c.nextNHours != common.DefaultHoursAhead}) {
 		return fmt.Errorf("only one type of top-level filter can be provided")
 	}
 
@@ -214,7 +220,7 @@ func (c *configParserCommand) validate() error {
 	}
 
 	// Ensure that only one formatting flag is provided.
-	if !isSingleBool([]bool{c.asCtpRequest, c.nameOnly, c.buildTargetExpansion}) {
+	if !isSingleBool([]bool{c.asCtpRequest, c.nameOnly, c.csv, c.targetCount}) {
 		return fmt.Errorf("only one of -ctp-request, -name-only, -csv-request-mapping or can be provided")
 	}
 
@@ -229,7 +235,7 @@ func (c *configParserCommand) validate() error {
 	}
 
 	// Rules specific to respective top-level filters.
-	if c.newBuild {
+	if c.newBuild || c.ddd {
 		if c.day != common.DefaultInt64 || c.hour != common.DefaultInt64 {
 			return fmt.Errorf("-day nor -hour can be provided when searching for NEW_BUILD configs")
 		}
@@ -362,6 +368,10 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 
 	if c.newBuild {
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllNewBuildConfigs()
+	} else if c.ddd {
+		filteredConfigs[c.commandExecutionTime] = configs.FetchAllNewBuild3dConfigs()
+	} else if c.multiDUT {
+		filteredConfigs[c.commandExecutionTime] = configs.FetchAllMultiDUTConfigs()
 	} else if c.daily {
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllDailyConfigs()
 	} else if c.weekly {
@@ -371,7 +381,6 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 	} else if c.searchAllConfigs {
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllConfigs()
 	} else if c.nextNHours != common.DefaultHoursAhead {
-
 		// Convert time.Time to a kron usable form.
 		kronTime := common.TimeToKronTime(c.commandExecutionTime)
 		common.Stdout.Printf("Looking ahead %d hours from a start time of %s %s. kron time: weekly (day:hour) %d:%d Fortnightly (day:hour) %d:%d\n", int(c.nextNHours.Hours()), c.commandExecutionTime.Weekday().String(), c.commandExecutionTime, kronTime.WeeklyDay, kronTime.Hour, kronTime.FortnightDay, kronTime.Hour)
@@ -476,32 +485,91 @@ func (c *configParserCommand) sieveViaBottomLevelFilters(configs CLIConfigList, 
 				}
 			}
 
-			// Fetch the cached TargetOptions for the current config. If they do not
-			// exist, an error has occurred during ingestion and the run should be terminated.
-			targetOptions, err := suiteIndex.FetchConfigTargetOptions(config.Name)
-			if err != nil {
-				return nil, err
+			// Handle MULTI_DUT configs. They use a different target options
+			// type so this is required.
+			if configparser.IsMultiDut(config) {
+				mdTargetOptions, err := suiteIndex.FetchMultiDUTConfigTargetOptions(config.Name)
+				if err != nil {
+					return nil, err
+				}
+
+				// Store all the unique names so that we can filter quickly
+				// based on the passed in flags
+				boards := map[string]bool{}
+				models := map[string]bool{}
+				variants := map[string]bool{}
+
+				// Iterate through all pairings and add their
+				// board/model/variant names to the tracking maps.
+				for buildTarget, targetOptions := range mdTargetOptions {
+					board, variant, err := builds.ExtractBoardAndVariant(buildTarget)
+					if err != nil {
+						return nil, err
+					}
+
+					boards[board] = true
+					variants[variant] = true
+
+					for _, targetOption := range targetOptions {
+						models[targetOption.Primary.Model] = true
+
+						for _, secondary := range targetOption.Secondaries {
+							boards[secondary.Board] = true
+							models[secondary.Model] = true
+						}
+					}
+				}
+
+				// Check to see if the config matches the criteria of all the
+				// passed in filter flags.
+
+				if c.board != common.DefaultString {
+					_, ok := boards[c.board]
+					shouldAddConfig = shouldAddConfig && ok
+				}
+
+				if c.model != common.DefaultString && shouldAddConfig {
+					_, ok := models[c.model]
+					shouldAddConfig = shouldAddConfig && ok
+				}
+
+				if c.variant != common.DefaultString && shouldAddConfig {
+					_, ok := variants[c.variant]
+					shouldAddConfig = shouldAddConfig && ok
+				}
+
+				if shouldAddConfig {
+					tempList = append(tempList, config)
+				}
+			} else {
+				// Fetch the cached TargetOptions for the current config. If they do not
+				// exist, an error has occurred during ingestion and the run should be terminated.
+				targetOptions, err := suiteIndex.FetchConfigTargetOptions(config.Name)
+				if err != nil {
+					return nil, err
+				}
+
+				var target *configparser.TargetOption
+				ok := false
+
+				if c.board != common.DefaultString {
+					target, ok = targetOptions[configparser.Board(c.board)]
+					shouldAddConfig = shouldAddConfig && ok
+				}
+
+				if c.model != common.DefaultString && ok {
+					shouldAddConfig = shouldAddConfig && common.HasString(c.model, target.Models)
+				}
+
+				if c.variant != common.DefaultString && ok {
+					shouldAddConfig = shouldAddConfig && common.HasString(c.variant, target.Variants)
+				}
+
+				if shouldAddConfig {
+					tempList = append(tempList, config)
+				}
 			}
 
-			var target *configparser.TargetOption
-			ok := false
-
-			if c.board != common.DefaultString {
-				target, ok = targetOptions[configparser.Board(c.board)]
-				shouldAddConfig = shouldAddConfig && ok
-			}
-
-			if c.model != common.DefaultString && ok {
-				shouldAddConfig = shouldAddConfig && common.HasString(c.model, target.Models)
-			}
-
-			if c.variant != common.DefaultString && ok {
-				shouldAddConfig = shouldAddConfig && common.HasString(c.variant, target.Variants)
-			}
-
-			if shouldAddConfig {
-				tempList = append(tempList, config)
-			}
 		}
 
 		if len(tempList) != 0 {
@@ -556,7 +624,9 @@ func ctpRequestFormat(configs CLIConfigList, configTargetOptions map[string]conf
 	// from it's invocation.
 	for datetimeKey, configList := range configs {
 		for _, config := range configList {
-			if _, ok := configTargetOptions[config.Name]; !ok {
+			// NOTE: MULTI_DUT CONFIGS are not currently supported in this
+			// format.
+			if _, ok := configTargetOptions[config.Name]; !ok && !configparser.IsMultiDut(config) {
 				return nil, fmt.Errorf("config %s is not tracked in the target options cache", config.Name)
 			}
 			requests := ctprequest.BuildAllCTPRequests(config, configTargetOptions[config.Name])
@@ -598,8 +668,9 @@ func suiteSchedulerConfigFormat(configs CLIConfigList, includeTimestamp bool) ([
 	return json.MarshalIndent(outputMap, "", jsonMarshallIndent)
 }
 
-// buildTargetExpansion outputs the mapping of potential
-func buildTargetExpansion(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions) ([]byte, error) {
+// csvFormat outputs the mapping of potential targets that the config can
+// target.
+func csvFormat(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions, schedulerConfigs *configparser.SuiteSchedulerConfigs) ([]byte, error) {
 	header := "config,buildTarget,board,model\n"
 	retBytes := []byte{}
 	retBytes = append(retBytes, []byte(header)...)
@@ -608,6 +679,29 @@ func buildTargetExpansion(configs CLIConfigList, configTargetOptions map[string]
 	// lists out.
 	for _, configList := range configs {
 		for _, config := range configList {
+			// If the config is multi-dut then we need to check for that here
+			// and handle it separately.
+			if configparser.IsMultiDut(config) {
+				mdTargetOptions, err := schedulerConfigs.FetchMultiDUTConfigTargetOptions(config.Name)
+				if err != nil {
+					return nil, err
+				}
+
+				for buildTarget, targetPairs := range mdTargetOptions {
+					for _, targetOption := range targetPairs {
+						model := targetOption.Primary.Model
+
+						if model == "" {
+							model = "None"
+						}
+
+						row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, targetOption.Primary.Board, model)
+						retBytes = append(retBytes, []byte(row)...)
+					}
+				}
+				continue
+			}
+
 			if _, ok := configTargetOptions[config.Name]; !ok {
 				return nil, fmt.Errorf("config %s is not tracked in the target options cache", config.Name)
 			}
@@ -617,34 +711,93 @@ func buildTargetExpansion(configs CLIConfigList, configTargetOptions map[string]
 				buildTargets := configparser.GetBuildTargets(item, item.VariantsOnly)
 
 				for _, buildTarget := range buildTargets {
-					// NOTE: Skipping CTPV2Demo since the CTPv2 logic is
-					// slightly different in LegacySuSch.
-					if config.Name != "CTPV2Demo" {
-						// Manually place None as the empty value in the CSV to
-						// be feature equivalent with python (Allows for better
-						// comparison with legacy).
-						if len(item.Models) == 0 {
-							row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, "None")
-							retBytes = append(retBytes, []byte(row)...)
-						}
+					// Manually place None as the empty value in the CSV to
+					// be feature equivalent with python (Allows for better
+					// comparison with legacy).
+					if len(item.Models) == 0 {
+						row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, "None")
+						retBytes = append(retBytes, []byte(row)...)
+					}
 
-						for _, model := range item.Models {
-							row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, model)
-							retBytes = append(retBytes, []byte(row)...)
-						}
+					for _, model := range item.Models {
+						row := fmt.Sprintf("%s,%s,%s,%s\n", config.Name, buildTarget, item.Board, model)
+						retBytes = append(retBytes, []byte(row)...)
 					}
 				}
-
 			}
 		}
 	}
 	return retBytes, nil
 }
 
+// targetFormat outputs the mapping of potential
+func targetFormat(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions, schedulerConfigs *configparser.SuiteSchedulerConfigs) ([]byte, error) {
+	header := "config,targetCount\n"
+	retBytes := []byte{}
+	retBytes = append(retBytes, []byte(header)...)
+
+	total := 0
+	targetMap := map[string]int{}
+
+	// To have a unified formatting configs are in time slotted. This pulls the
+	// lists out.
+	for _, configList := range configs {
+		for _, config := range configList {
+			targetMap[config.GetName()] = 0
+
+			// If the config is multi-dut then we need to check for that here
+			// and handle it separately.
+			if configparser.IsMultiDut(config) {
+				mdTargetOptions, err := schedulerConfigs.FetchMultiDUTConfigTargetOptions(config.Name)
+				if err != nil {
+					return nil, err
+				}
+
+				for _, targetPairs := range mdTargetOptions {
+					for range targetPairs {
+						total += 1
+						targetMap[config.GetName()] += 1
+					}
+				}
+			} else {
+				if _, ok := configTargetOptions[config.Name]; !ok {
+					return nil, fmt.Errorf("config %s is not tracked in the target options cache", config.Name)
+				}
+
+				for _, item := range configTargetOptions[config.Name] {
+					// Build targets are in the form of board<variant>.
+					buildTargets := configparser.GetBuildTargets(item, item.VariantsOnly)
+
+					for range buildTargets {
+						// Manually place None as the empty value in the CSV to
+						// be feature equivalent with python (Allows for better
+						// comparison with legacy).
+						if len(item.Models) == 0 {
+							total += 1
+							targetMap[config.GetName()] += 1
+						}
+
+						for range item.Models {
+							total += 1
+							targetMap[config.GetName()] += 1
+						}
+					}
+				}
+			}
+
+			row := fmt.Sprintf("%s,%d\n", config.Name, targetMap[config.GetName()])
+			retBytes = append(retBytes, []byte(row)...)
+		}
+	}
+
+	row := fmt.Sprintf("\nTotal: %d\n", total)
+	retBytes = append(retBytes, []byte(row)...)
+	return retBytes, nil
+}
+
 // formatOutput will strip or transform the configs according to the user given
 // flags.
-func (c *configParserCommand) formatOutput(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions) ([]byte, error) {
-
+func (c *configParserCommand) formatOutput(configs CLIConfigList, configTargetOptions map[string]configparser.TargetOptions, schedulerConfigs *configparser.SuiteSchedulerConfigs) ([]byte, error) {
 	// Only include the timestamp in the output if we search for configs in the
 	// next N hours.
 	includeTimestamp := c.nextNHours != common.DefaultHoursAhead
@@ -653,8 +806,10 @@ func (c *configParserCommand) formatOutput(configs CLIConfigList, configTargetOp
 		return nameOnlyFormat(configs, includeTimestamp)
 	} else if c.asCtpRequest {
 		return ctpRequestFormat(configs, configTargetOptions, includeTimestamp)
-	} else if c.buildTargetExpansion {
-		return buildTargetExpansion(configs, configTargetOptions)
+	} else if c.csv {
+		return csvFormat(configs, configTargetOptions, schedulerConfigs)
+	} else if c.targetCount {
+		return targetFormat(configs, configTargetOptions, schedulerConfigs)
 	} else {
 		return suiteSchedulerConfigFormat(configs, includeTimestamp)
 	}
@@ -719,7 +874,7 @@ func (c *configParserCommand) Run(a subcommands.Application, args []string, env 
 		return 1
 	}
 
-	output, err := c.formatOutput(filteredConfigs, schedulerConfigs.FetchAllTargetOptions())
+	output, err := c.formatOutput(filteredConfigs, schedulerConfigs.FetchAllTargetOptions(), schedulerConfigs)
 	if err != nil {
 		common.Stderr.Println(err)
 		return 1
