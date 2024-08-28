@@ -341,6 +341,8 @@ func metadataToTags(ctx context.Context, metadata *api.TestCaseMetadata) []*pb.S
 				harness = string(proto.MessageName(testHarness.GetMobly()).Name())
 			case *api.TestHarness_Crosier_:
 				harness = string(proto.MessageName(testHarness.GetCrosier()).Name())
+			case *api.TestHarness_Tradefed_:
+				harness = string(proto.MessageName(testHarness.GetTradefed()).Name())
 			default:
 				logging.Warningf(ctx, "Warning: ignore the unsupported test harness: %v", testHarness)
 			}

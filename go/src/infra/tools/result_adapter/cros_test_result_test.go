@@ -115,6 +115,11 @@ func TestCrosTestResultConversions(t *testing.T) {
 						Verdict:   &apipb.TestCaseResult_Pass_{},
 						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 						Duration:  &duration.Duration{Seconds: 60},
+						TestHarness: &apipb.TestHarness{
+							TestHarnessType: &apipb.TestHarness_Tradefed_{
+								Tradefed: &apipb.TestHarness_Tradefed{},
+							},
+						},
 					},
 				},
 				LogsInfo: []*configpb.StoragePath{

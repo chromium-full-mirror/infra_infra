@@ -47,7 +47,10 @@
                     },
                     "pass":{},
                     "start_time":"2022-09-07T18:53:33.983328614Z",
-                    "duration": "60s"
+                    "duration": "60s",
+                    "test_harness": {
+                        "tradefed": {}
+                    }
                 }
             },
             "logs_info":[
