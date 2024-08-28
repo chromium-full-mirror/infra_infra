@@ -7,13 +7,15 @@ package dut
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestHasServo(t *testing.T) {
 	t.Parallel()
 	satlabId := "satlab123"
-	Convey("Register servo for labstation", t, func() {
+	ftt.Run("Register servo for labstation", t, func(t *ftt.Test) {
 		ad := &AddDUT{
 			Servo:       "servo_1",
 			ServoSerial: "servo_serial",
@@ -21,10 +23,10 @@ func TestHasServo(t *testing.T) {
 		if yes := ad.setupServo(satlabId); !yes {
 			t.Errorf("Expected servo is not detected but expected!")
 		}
-		So(ad.qualifiedServo, ShouldEqual, "satlab-satlab123-servo_1")
-		So(ad.ServoDockerContainerName, ShouldEqual, "")
+		assert.Loosely(t, ad.qualifiedServo, should.Equal("satlab-satlab123-servo_1"))
+		assert.Loosely(t, ad.ServoDockerContainerName, should.BeEmpty)
 	})
-	Convey("Register servo for container", t, func() {
+	ftt.Run("Register servo for container", t, func(t *ftt.Test) {
 		ad := &AddDUT{
 			Servo:       "",
 			ServoSerial: "servo_serial",
@@ -32,10 +34,10 @@ func TestHasServo(t *testing.T) {
 		if yes := ad.setupServo(satlabId); !yes {
 			t.Errorf("Expected servo is not detected but expected!")
 		}
-		So(ad.qualifiedServo, ShouldEqual, "satlab-satlab123--docker_servod:9999")
-		So(ad.ServoDockerContainerName, ShouldEqual, "satlab-satlab123--docker_servod")
+		assert.Loosely(t, ad.qualifiedServo, should.Equal("satlab-satlab123--docker_servod:9999"))
+		assert.Loosely(t, ad.ServoDockerContainerName, should.Equal("satlab-satlab123--docker_servod"))
 	})
-	Convey("Servo-less setup", t, func() {
+	ftt.Run("Servo-less setup", t, func(t *ftt.Test) {
 		ad := &AddDUT{
 			Servo:       "",
 			ServoSerial: "",
@@ -43,8 +45,8 @@ func TestHasServo(t *testing.T) {
 		if yes := ad.setupServo(satlabId); yes {
 			t.Errorf("Expected servo is detected but not expected!")
 		}
-		So(ad.qualifiedServo, ShouldEqual, "")
-		So(ad.ServoDockerContainerName, ShouldEqual, "")
+		assert.Loosely(t, ad.qualifiedServo, should.BeEmpty)
+		assert.Loosely(t, ad.ServoDockerContainerName, should.BeEmpty)
 	})
 }
 

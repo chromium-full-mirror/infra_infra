@@ -18,7 +18,6 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/grpc"
@@ -26,7 +25,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -975,7 +976,7 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 	}
 	mockData := &swarmingapi.BotInfo{BotId: "test bot"}
 
-	Convey("GetDUTDetailShouldSuccess", t, func() {
+	ftt.Run("GetDUTDetailShouldSuccess", t, func(t *ftt.Test) {
 		mockSwarm.EXPECT().GetBot(ctx, "satlab-0wgtfqin1846803b-host12").Return(mockData, nil)
 
 		// Act
@@ -983,11 +984,11 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 			Address: "192.168.231.222",
 		}
 		resp, err := s.GetDutDetail(ctx, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &pb.GetDutDetailResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&pb.GetDutDetailResponse{
 			BotId:      "test bot",
 			Dimensions: []*pb.StringListPair{},
-		})
+		}))
 	})
 
 }
@@ -1018,7 +1019,7 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
   `,
 	}
 
-	Convey("ListDutTasksShouldSuccess", t, func() {
+	ftt.Run("ListDutTasksShouldSuccess", t, func(t *ftt.Test) {
 		mockSwarm.EXPECT().ListBotTasks(ctx, "satlab-0wgtfqin1846803b-host12", "", 1).Return(mockData, nil)
 		// Act
 		req := &pb.ListDutTasksRequest{
@@ -1027,14 +1028,14 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 			Address:   "192.168.231.222",
 		}
 		resp, err := s.ListDutTasks(ctx, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &pb.ListDutTasksResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&pb.ListDutTasksResponse{
 			NextPageToken: "next_cursor",
 			Tasks: []*pb.Task{
 				{
 					Id: "task id",
 				},
-			}})
+			}}))
 	})
 }
 
@@ -1062,7 +1063,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 		},
 	}
 
-	Convey("ListDutEventsShouldSuccess", t, func() {
+	ftt.Run("ListDutEventsShouldSuccess", t, func(t *ftt.Test) {
 		mockSwarm.EXPECT().ListBotEvents(ctx, "satlab-0wgtfqin1846803b-host12", "", 1).Return(mockData, nil)
 
 		// Act
@@ -1072,15 +1073,15 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 			Address:   "192.168.231.222",
 		}
 		resp, err := s.ListDutEvents(ctx, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &pb.ListDutEventsResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&pb.ListDutEventsResponse{
 			NextPageToken: "next_cursor",
 			Events: []*pb.BotEvent{
 				{
 					TaskId: "task id",
 				},
 			},
-		})
+		}))
 	})
 
 }
@@ -2089,7 +2090,7 @@ func TestListTasksShouldSuccess(t *testing.T) {
 	s := createMockServer(t)
 	s.swarmingService = mockSwarm
 
-	Convey("TestListTasksShouldSuccess", t, func() {
+	ftt.Run("TestListTasksShouldSuccess", t, func(t *ftt.Test) {
 		req := &pb.ListJobsRequest{
 			PageToken: "",
 			Limit:     1,
@@ -2099,11 +2100,11 @@ func TestListTasksShouldSuccess(t *testing.T) {
 		}
 		mockSwarm.EXPECT().ListTasks(ctx, getTaskListReq(req)).Return(mockTaskResults, nil)
 		resp, err := s.ListJobs(ctx, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &pb.ListJobsResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&pb.ListJobsResponse{
 			NextPageToken: expectedData.Cursor,
 			Jobs:          expectedData.Jobs,
-		})
+		}))
 	})
 }
 
@@ -2308,7 +2309,7 @@ func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
 	s := createMockServer(t)
 	s.swarmingService = mockSwarm
 
-	Convey("TestListTasksShouldSuccess", t, func() {
+	ftt.Run("TestListTasksShouldSuccess", t, func(t *ftt.Test) {
 		req := &pb.ListJobsRequest{
 			PageToken: "",
 			Limit:     1,
@@ -2324,11 +2325,11 @@ func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
 		}, nil).AnyTimes()
 
 		resp, err := s.ListJobs(ctx, req)
-		So(err, ShouldBeNil)
-		So(resp, ShouldResembleProto, &pb.ListJobsResponse{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.Resemble(&pb.ListJobsResponse{
 			NextPageToken: expectedData.Cursor,
 			Jobs:          expectedData.Jobs,
-		})
+		}))
 	})
 }
 
