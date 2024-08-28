@@ -484,7 +484,12 @@ func IsDDDSuite(v1 *test_platform.Request) bool {
 // By default it will be 0 which means no retry.
 func GetRetryCount(v1 *test_platform.Request) int64 {
 	if v1.GetParams().GetRetry().GetAllow() {
-		return int64(v1.GetParams().GetRetry().GetMax())
+		retries := int64(v1.GetParams().GetRetry().GetMax())
+		if v1.GetParams().GetTestExecutionBehavior() == test_platform.Request_Params_CRITICAL {
+			// Limit to one retry per shard if critical. Remain zero if zero.
+			return min(retries, 1)
+		}
+		return retries
 	}
 
 	return 0
