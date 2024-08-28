@@ -100,6 +100,10 @@ type Metadata struct {
 	// such as Siso, Reclient, RBE.
 	InvocationID string `json:"invocation_id"`
 
+	// User is the user who runs the build.
+	// It is usually an email address.
+	User string `json:"user"`
+
 	// ExitCode is exit code of the ninja execution.
 	ExitCode int `json:"exit_code"`
 
