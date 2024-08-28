@@ -301,7 +301,9 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 // field in the db.
 func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
 	var (
+		err                  error
 		updatedDevice        Device
+		labelBytes           []byte
 		createdTime          sql.NullTime
 		lastUpdatedTime      sql.NullTime
 		lastNotificationTime sql.NullTime
@@ -312,7 +314,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				device_address=COALESCE(NULLIF($2, ''), device_address),
 				device_type=COALESCE(NULLIF($3, ''), device_type),
 				device_state=COALESCE(NULLIF($4, ''), device_state),
-				schedulable_labels=COALESCE($5, schedulable_labels),
+				schedulable_labels=COALESCE($5::jsonb, schedulable_labels),
 				last_updated_time=NOW(),
 				is_active=COALESCE($6, is_active)
 			WHERE
@@ -329,13 +331,21 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				last_notification_time;`
 	)
 
+	// Marshal labels and set to null
+	if device.SchedulableLabels != nil {
+		labelBytes, err = json.Marshal(device.SchedulableLabels)
+		if err != nil {
+			return Device{}, err
+		}
+	}
+
 	logging.Debugf(ctx, "UpdateDevice: %s", query)
-	err := tx.QueryRowContext(ctx, query,
+	err = tx.QueryRowContext(ctx, query,
 		device.ID,
 		device.DeviceAddress,
 		device.DeviceType,
 		device.DeviceState,
-		device.SchedulableLabels,
+		labelBytes,
 		device.IsActive,
 	).Scan(
 		&updatedDevice.ID,

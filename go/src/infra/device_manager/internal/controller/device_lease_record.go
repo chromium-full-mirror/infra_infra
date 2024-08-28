@@ -64,6 +64,8 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 		return nil, err
 	}
 
+	logging.Debugf(ctx, "LeaseDevice: updated Device %v", updatedDevice)
+
 	if err = tx.Commit(); err != nil {
 		return nil, err
 	}

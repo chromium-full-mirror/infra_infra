@@ -7,6 +7,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -642,6 +643,14 @@ func TestUpdateDevice(t *testing.T) {
 					timeNow,
 					timeNow)
 
+			labelBytes, err := json.Marshal(SchedulableLabels{
+				"label-test": LabelValues{
+					Values: []string{"test-value-1"},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
 					"Devices"
@@ -649,7 +658,7 @@ func TestUpdateDevice(t *testing.T) {
 					device_address=COALESCE(NULLIF($2, ''), device_address),
 					device_type=COALESCE(NULLIF($3, ''), device_type),
 					device_state=COALESCE(NULLIF($4, ''), device_state),
-					schedulable_labels=COALESCE($5, schedulable_labels),
+					schedulable_labels=COALESCE($5::jsonb, schedulable_labels),
 					last_updated_time=NOW(),
 					is_active=COALESCE($6, is_active)
 				WHERE
@@ -669,7 +678,7 @@ func TestUpdateDevice(t *testing.T) {
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					labelBytes,
 					false).
 				WillReturnRows(rows)
 
