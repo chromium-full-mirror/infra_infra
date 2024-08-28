@@ -84,7 +84,7 @@ require (
 	github.com/otiai10/copy v1.14.0
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/profile v1.6.0
-	github.com/pkg/xattr v0.4.9
+	github.com/pkg/xattr v0.4.10
 	github.com/prometheus/client_golang v1.20.0
 	github.com/savaki/jq v0.0.0-20161209013833-0e6baecebbf8
 	github.com/shirou/gopsutil/v3 v3.22.12
