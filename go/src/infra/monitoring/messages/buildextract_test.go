@@ -3,12 +3,14 @@ package messages
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func Test(t *testing.T) {
-	Convey("Change", t, func() {
-		Convey("CommitPosition", func() {
+	ftt.Run("Change", t, func(t *ftt.Test) {
+		t.Run("CommitPosition", func(t *ftt.Test) {
 
 			text := `
 Revert "Media Controls: Replace painter with CSS."
@@ -51,9 +53,9 @@ Cr-Commit-Position: refs/heads/main@{#500363}`
 			}
 
 			branch, pos, err := c.CommitPosition()
-			So(err, ShouldBeNil)
-			So(branch, ShouldResemble, "refs/heads/main")
-			So(pos, ShouldResemble, 500363)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, branch, should.Match("refs/heads/main"))
+			assert.Loosely(t, pos, should.Match(500363))
 		})
 
 	})
