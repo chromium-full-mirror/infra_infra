@@ -140,6 +140,7 @@ var faultTestCases = map[string]struct{}{
 	"tradefed.CtsDevicePolicyTestCases":   {},
 	"tradefed.CtsJobSchedulerTestCases":   {},
 	"tradefed.CtsStatsdAtomHostTestCases": {},
+	"tradefed.CtsDeqpTestCases":           {},
 }
 
 func filterOutFaultyTests(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
