@@ -251,7 +251,8 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		wg.Done()
 	}()
 
-	// DeviceState will be clobbered by SQL COALESCE statement in UpsertDevice.
+	// DeviceState will be clobbered by SQL COALESCE statement in
+	// UpsertDeviceFromUFS.
 	deviceModel := model.Device{
 		ID:          ufsUtil.RemovePrefix(name),
 		DeviceType:  "DEVICE_TYPE_PHYSICAL",
@@ -276,14 +277,14 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	}
 
 	// Device found and not different
-	if !errors.Is(err, model.ErrDeviceNotFound) && !isDeviceDifferent(ctx, dbDevice, deviceModel) {
+	if !errors.Is(err, model.ErrDeviceNotFound) && !areLabelsOrActiveStateDifferent(ctx, dbDevice, deviceModel) {
 		logging.Debugf(ctx, "Device %s did not change. Did not update Device in database", deviceModel.ID)
 		return
 	}
 
 	// Either Device was not found and is new or it is different
 	logging.Debugf(ctx, "Found changes for Device %s. Upserting to DB", deviceModel.ID)
-	err = model.UpsertDevice(ctx, serviceClients.DBClient.Conn, deviceModel)
+	err = model.UpsertDeviceFromUFS(ctx, serviceClients.DBClient.Conn, deviceModel)
 	if err != nil {
 		logging.Errorf(ctx, "Failed to upsert Device %s: %s", deviceModel.ID, err)
 		upsertDeviceErrN++
@@ -330,21 +331,14 @@ func getInactiveDevices(ctx context.Context, serviceClients frontend.ServiceClie
 	return inactiveDevices, nil
 }
 
-// isDeviceDifferent checks if a Device is different from another.
-func isDeviceDifferent(ctx context.Context, d1, d2 model.Device) bool {
+// areLabelsOrActiveStateDifferent checks if the labels or the active state of
+// two Devices are different from one another.
+func areLabelsOrActiveStateDifferent(ctx context.Context, d1, d2 model.Device) bool {
 	if d1.ID != d2.ID {
 		panic(fmt.Sprintf("comparing two different devices %s and %s", d1.ID, d2.ID))
 	}
 
 	// compare Device fields
-	if d1.DeviceAddress != d2.DeviceAddress {
-		logging.Debugf(ctx, "%s DeviceAddress is different: %s vs %s", d1.ID, d1.DeviceAddress, d2.DeviceAddress)
-		return true
-	}
-	if d1.DeviceType != d2.DeviceType {
-		logging.Debugf(ctx, "%s DeviceType is different: %s vs %s", d1.ID, d1.DeviceType, d2.DeviceType)
-		return true
-	}
 	if !cmp.Equal(d1.SchedulableLabels, d2.SchedulableLabels) {
 		logging.Debugf(ctx, "%s SchedulableLabels is different:\n %s\n %s", d1.ID, d1.SchedulableLabels, d2.SchedulableLabels)
 		return true

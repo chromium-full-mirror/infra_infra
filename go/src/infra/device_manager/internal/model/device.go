@@ -382,11 +382,13 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 	return updatedDevice, nil
 }
 
-// UpsertDevice upserts a Device in a transaction.
+// UpsertDeviceFromUFS upserts a Device in a transaction.
 //
-// UpsertDevice will attempt to insert a Device into the db. On conflict of
-// the ID, the old device record will be updated with the new information.
-func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
+// UpsertDeviceFromUFS will attempt to insert a Device pulled from UFS into the
+// db. On conflict of the ID, the old device record will be updated with the new
+// information except for device_address, device_type, and device_state. Those
+// three will not be updated on conflict but should be inserted for new Devices.
+func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
 	result, err := db.ExecContext(ctx, `
 		INSERT INTO "Devices" AS d
 			(
@@ -401,9 +403,6 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 		VALUES ($1, $2, $3, $4, $5, NOW(), $6)
 		ON CONFLICT(id)
 		DO UPDATE SET
-			device_address=COALESCE(NULLIF(EXCLUDED.device_address, ''), d.device_address),
-			device_type=COALESCE(NULLIF(EXCLUDED.device_type, ''), d.device_type),
-			device_state=COALESCE(NULLIF(EXCLUDED.device_state, ''), NULLIF(d.device_state, ''), 'DEVICE_STATE_AVAILABLE'),
 			schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
 			last_updated_time=NOW(),
 			is_active=COALESCE(EXCLUDED.is_active, d.is_active);`,
@@ -415,16 +414,16 @@ func UpsertDevice(ctx context.Context, db *sql.DB, device Device) error {
 		device.IsActive,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "UpsertDevice: failed to upsert Device %s: %s", device.ID, err)
+		logging.Errorf(ctx, "UpsertDeviceFromUFS: failed to upsert Device %s: %s", device.ID, err)
 		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		logging.Errorf(ctx, "UpsertDevice: error getting rows affected: %s", err)
+		logging.Errorf(ctx, "UpsertDeviceFromUFS: error getting rows affected: %s", err)
 	}
 
-	logging.Debugf(ctx, "UpsertDevice: Device %s upserted successfully (%d row affected)", device.ID, rowsAffected)
+	logging.Debugf(ctx, "UpsertDeviceFromUFS: Device %s upserted successfully (%d row affected)", device.ID, rowsAffected)
 	return nil
 }
 

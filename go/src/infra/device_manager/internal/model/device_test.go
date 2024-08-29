@@ -714,12 +714,12 @@ func TestUpdateDevice(t *testing.T) {
 	})
 }
 
-func TestUpsertDevice(t *testing.T) {
+func TestUpsertDeviceFromUFS(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	ftt.Run("UpsertDevice", t, func(t *ftt.Test) {
-		t.Run("UpsertDevice: valid upsert", func(t *ftt.Test) {
+	ftt.Run("UpsertDeviceFromUFS", t, func(t *ftt.Test) {
+		t.Run("UpsertDeviceFromUFS: valid upsert", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -746,9 +746,6 @@ func TestUpsertDevice(t *testing.T) {
 				VALUES ($1, $2, $3, $4, $5, NOW(), $6)
 				ON CONFLICT(id)
 				DO UPDATE SET
-					device_address=COALESCE(NULLIF(EXCLUDED.device_address, ''), d.device_address),
-					device_type=COALESCE(NULLIF(EXCLUDED.device_type, ''), d.device_type),
-					device_state=COALESCE(NULLIF(EXCLUDED.device_state, ''), NULLIF(d.device_state, ''), 'DEVICE_STATE_AVAILABLE'),
 					schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
 					last_updated_time=NOW(),
 					is_active=COALESCE(EXCLUDED.is_active, d.is_active);`)).
@@ -761,7 +758,7 @@ func TestUpsertDevice(t *testing.T) {
 					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
-			err = UpsertDevice(ctx, db, Device{
+			err = UpsertDeviceFromUFS(ctx, db, Device{
 				ID:            "test-device-1",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",

@@ -35,7 +35,7 @@ func Test_isDeviceNeedsUpdate(t *testing.T) {
 			panicMsg: "comparing two different devices d1 and d2",
 		},
 		{
-			name: "pass; different DeviceAddress",
+			name: "pass; no update on different DeviceAddress",
 			oldDevice: model.Device{
 				ID:            "d1",
 				DeviceAddress: "1.1.1.1:1",
@@ -58,11 +58,11 @@ func Test_isDeviceNeedsUpdate(t *testing.T) {
 				},
 				IsActive: true,
 			},
-			wantBool: true,
+			wantBool: false,
 			panicMsg: "",
 		},
 		{
-			name: "pass; different DeviceType",
+			name: "pass; no update on different DeviceType",
 			oldDevice: model.Device{
 				ID:            "d1",
 				DeviceAddress: "1.1.1.1:1",
@@ -85,7 +85,7 @@ func Test_isDeviceNeedsUpdate(t *testing.T) {
 				},
 				IsActive: true,
 			},
-			wantBool: true,
+			wantBool: false,
 			panicMsg: "",
 		},
 		{
@@ -219,10 +219,10 @@ func Test_isDeviceNeedsUpdate(t *testing.T) {
 
 			t.Parallel()
 
-			gotBool := isDeviceDifferent(ctx, tt.oldDevice, tt.newDevice)
+			gotBool := areLabelsOrActiveStateDifferent(ctx, tt.oldDevice, tt.newDevice)
 
 			if gotBool != tt.wantBool {
-				t.Errorf("isDeviceDifferent() gotBool = %v, wantBool %v", gotBool, tt.wantBool)
+				t.Errorf("areLabelsOrActiveStateDifferent() gotBool = %v, wantBool %v", gotBool, tt.wantBool)
 			}
 		})
 	}
