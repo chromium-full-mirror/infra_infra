@@ -16,6 +16,7 @@ fields:
     type: string
   - name: user
     type: string
+    default: ''
   - name: exit_code
     type: int
   - name: build_duration_sec
