@@ -18,6 +18,7 @@ type configSearchable struct {
 	minCloudbotsPercentage        int32
 	minLowRiskModelsPercentage    int32
 	minLargeMemoryPercentage      int32
+	canaryPercentage              int32
 	excludeDUTs                   []*regexp.Regexp
 	excludePools                  map[string]struct{}
 	overrideBoardModel            map[string]int32
@@ -79,6 +80,7 @@ func NewConfigSearchable(ctx context.Context, config *protos.Config) *configSear
 		minCloudbotsPercentage:        config.MinCloudbotsPercentage,
 		minLowRiskModelsPercentage:    config.MinLowRiskModelsPercentage,
 		minLargeMemoryPercentage:      config.MinLargeMemoryPercentage,
+		canaryPercentage:              config.CanaryPercentage,
 		excludeDUTs:                   regs,
 		excludePools:                  pools,
 		overrideBoardModel:            obm,

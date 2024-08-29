@@ -24,17 +24,29 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
-// migrationFile is the the name of the CloudBots migration file.
-const migrationFile = "migration.cfg"
+const (
+	// migrationFile is the the name of the CloudBots migration file.
+	migrationFile = "migration.cfg"
+
+	cloudbotsHive            = "cloudbots"
+	cloudbotsHiveCanary      = "cloudbots-canary"
+	cloudbotsLargeHive       = "cloudbots-large"
+	cloudbotsLargeHiveCanary = "cloudbots-large-canary"
+	droneHive                = "e"
+)
 
 // migrationState represents a state of the migration where
 // CloudbotsSmall shows the machineLSEs with a cloudbots hive.
 // CloudbotsLarge shows the machineLSEs with a cloudbots-large hive.
+// CloudbotsSmallCanary shows the machineLSEs with a cloudbots-canary hive.
+// CloudbotsLargeCanary shows the machineLSEs with a cloudbots-large-canary hive.
 // Drone shows the machineLses with a non-cloudbots hive.
 type migrationState struct {
-	CloudbotsSmall []string
-	CloudbotsLarge []string
-	Drone          []string
+	CloudbotsSmall       []string
+	CloudbotsSmallCanary []string
+	CloudbotsLarge       []string
+	CloudbotsLargeCanary []string
+	Drone                []string
 }
 
 type migrator struct {
@@ -157,12 +169,16 @@ func (m *migrator) ComputeBoardModelToState(ctx context.Context, mcs []*ufspb.Ma
 				h = lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
 			}
 			switch h {
-			case "cloudbots":
+			case cloudbotsHive:
 				bms[key].CloudbotsSmall = append(bms[key].CloudbotsSmall, stripped)
-			case "cloudbots-large":
+			case cloudbotsLargeHive:
 				bms[key].CloudbotsLarge = append(bms[key].CloudbotsLarge, stripped)
-			case "e", "":
-				// e and empty hive are the only values drone-queen captures.
+			case cloudbotsHiveCanary:
+				bms[key].CloudbotsSmallCanary = append(bms[key].CloudbotsSmallCanary, stripped)
+			case cloudbotsLargeHiveCanary:
+				bms[key].CloudbotsLargeCanary = append(bms[key].CloudbotsLargeCanary, stripped)
+			case droneHive, "":
+				// droneHive and empty hive are the only values drone-queen captures.
 				// TODO(b/338233053): change to e after backfill.
 				bms[key].Drone = append(bms[key].Drone, stripped)
 			}
@@ -222,41 +238,62 @@ func (m *migrator) ComputeNextMigrationState(ctx context.Context, bms map[string
 			// No override.
 			targetLarge = cs.minLargeMemoryPercentage
 		}
-		computeNextModelState(ctx, bm, targetSmall, targetLarge, state, migrationNext)
+		computeNextModelState(ctx, bm, targetSmall, targetLarge, cs.canaryPercentage, state, migrationNext)
 	}
 	return migrationNext
 }
 
 // RunBatchUpdate calls UFS to update all the hive of the machineLSEs in migration state.
 func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationState) error {
-	logging.Infof(ctx, "starting batch update for cloudBots")
-	errs := errors.NewLazyMultiError(len(migrationNext.CloudbotsSmall) + len(migrationNext.CloudbotsLarge) + len(migrationNext.Drone))
+	errs := errors.NewLazyMultiError(len(migrationNext.CloudbotsSmall) + len(migrationNext.CloudbotsSmallCanary) + len(migrationNext.CloudbotsLarge) + len(migrationNext.CloudbotsLargeCanary) + len(migrationNext.Drone))
 	cpt := 0
 	ctx = clients.SetUFSNamespace(ctx, "os")
+	logging.Infof(ctx, "starting batch update for small cloudBots")
 	for _, cbsmall := range migrationNext.CloudbotsSmall {
-		req := clients.InitializeUpdateLSERequest(cbsmall, "cloudbots")
+		req := clients.InitializeUpdateLSERequest(cbsmall, cloudbotsHive)
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
-			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots: %v", cbsmall, err)
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive %s: %v", cbsmall, cloudbotsHive, err)
 			errs.Assign(cpt, err)
 		}
 		cpt++
 	}
-	for _, cblarge := range migrationNext.CloudbotsLarge {
-		req := clients.InitializeUpdateLSERequest(cblarge, "cloudbots-large")
+	logging.Infof(ctx, "starting batch update for small canary cloudBots")
+	for _, cbcsmall := range migrationNext.CloudbotsSmallCanary {
+		req := clients.InitializeUpdateLSERequest(cbcsmall, cloudbotsHiveCanary)
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
-			logging.Errorf(ctx, "failed to update machineLSE %s to hive cloudbots-large: %v", cblarge, err)
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive %s: %v", cbcsmall, cloudbotsHiveCanary, err)
+			errs.Assign(cpt, err)
+		}
+		cpt++
+	}
+	logging.Infof(ctx, "starting batch update for large cloudBots")
+	for _, cblarge := range migrationNext.CloudbotsLarge {
+		req := clients.InitializeUpdateLSERequest(cblarge, cloudbotsLargeHive)
+		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
+		if err != nil {
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive %s: %v", cblarge, cloudbotsLargeHive, err)
+			errs.Assign(cpt, err)
+		}
+		cpt++
+	}
+	logging.Infof(ctx, "starting batch update for large canary cloudBots")
+	for _, cbclarge := range migrationNext.CloudbotsLargeCanary {
+		req := clients.InitializeUpdateLSERequest(cbclarge, cloudbotsLargeHiveCanary)
+		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
+		if err != nil {
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive %s: %v", cbclarge, cloudbotsLargeHiveCanary, err)
 			errs.Assign(cpt, err)
 		}
 		cpt++
 	}
 	logging.Infof(ctx, "starting batch update for drone")
 	for _, drone := range migrationNext.Drone {
-		req := clients.InitializeUpdateLSERequest(drone, "e")
+		req := clients.InitializeUpdateLSERequest(drone, droneHive)
 		_, err := m.ufsClient.UpdateMachineLSE(ctx, req)
 		if err != nil {
-			logging.Errorf(ctx, "failed to update machineLSE %s to hive e: %v", drone, err)
+			logging.Errorf(ctx, "failed to update machineLSE %s to hive %s: %v", drone, droneHive, err)
 			errs.Assign(cpt, err)
 		}
 		cpt++
@@ -268,9 +305,9 @@ func (m *migrator) RunBatchUpdate(ctx context.Context, migrationNext *migrationS
 // based on a target percentage of CloudBots DUTs and a current state.
 // This results in appending DUTs to nextState.
 // These DUTs will get their hive switched further down.
-func computeNextModelState(ctx context.Context, bm string, targetSmall, targetLarge int32, currentState, nextState *migrationState) {
+func computeNextModelState(ctx context.Context, bm string, targetSmall, targetLarge, canaryPercentage int32, currentState, nextState *migrationState) {
 	logging.Infof(ctx, "computeNextModelState: %s with small bot target %d%%, large bot target %d%%", bm, targetSmall, targetLarge)
-	totalDUTs := float64(len(currentState.CloudbotsSmall) + len(currentState.CloudbotsLarge) + len(currentState.Drone))
+	totalDUTs := float64(len(currentState.CloudbotsSmall) + len(currentState.CloudbotsLarge) + len(currentState.CloudbotsSmallCanary) + len(currentState.CloudbotsLargeCanary) + len(currentState.Drone))
 	targetSmallPercentage := float64(targetSmall)
 	targetLargePercentage := float64(targetLarge)
 	if targetSmallPercentage+targetLargePercentage > 100 {
@@ -286,25 +323,47 @@ func computeNextModelState(ctx context.Context, bm string, targetSmall, targetLa
 		cloudbotsSmallAmount = totalDUTs - cloudbotsLargeAmount
 	}
 	droneAmount := totalDUTs - cloudbotsLargeAmount - cloudbotsSmallAmount
+	// Recalculate cloudbots amount for canary percentage
+	cloudbotsLargeAmountCanary := math.Ceil((float64(canaryPercentage) * cloudbotsLargeAmount) / 100)
+	cloudbotsLargeAmount = cloudbotsLargeAmount - cloudbotsLargeAmountCanary
+	cloudbotsSmallAmountCanary := math.Ceil((float64(canaryPercentage) * cloudbotsSmallAmount) / 100)
+	cloudbotsSmallAmount = cloudbotsSmallAmount - cloudbotsSmallAmountCanary
+
 	// Number of surplus DUTs in each category.
 	surplusDrone := float64(len(currentState.Drone)) - droneAmount
 	surplusCloudBotsSmall := float64(len(currentState.CloudbotsSmall)) - cloudbotsSmallAmount
+	surplusCloudBotsSmallCanary := float64(len(currentState.CloudbotsSmallCanary)) - cloudbotsSmallAmountCanary
 	surplusCloudBotsLarge := float64(len(currentState.CloudbotsLarge)) - cloudbotsLargeAmount
-	if surplusDrone == 0 && surplusCloudBotsSmall == 0 && surplusCloudBotsLarge == 0 {
+	surplusCloudBotsLargeCanary := float64(len(currentState.CloudbotsLargeCanary)) - cloudbotsLargeAmountCanary
+
+	if surplusDrone == 0 && surplusCloudBotsSmall == 0 && surplusCloudBotsLarge == 0 && surplusCloudBotsSmallCanary == 0 && surplusCloudBotsLargeCanary == 0 {
 		logging.Infof(ctx, "computeNextModelState: no change for board/model %s; skipping", bm)
 		return
 	}
 	if surplusDrone > 0 {
 		surplusBots := currentState.Drone[:int(surplusDrone)]
 		moveBots = append(moveBots, surplusBots...)
+		logging.Infof(ctx, "computeNextModelState: removing %v from SFO36", surplusBots)
 	}
 	if surplusCloudBotsSmall > 0 {
 		surplusBots := currentState.CloudbotsSmall[:int(surplusCloudBotsSmall)]
 		moveBots = append(moveBots, surplusBots...)
+		logging.Infof(ctx, "computeNextModelState: removing %v from small cloudbots", surplusBots)
+	}
+	if surplusCloudBotsSmallCanary > 0 {
+		surplusBots := currentState.CloudbotsSmallCanary[:int(surplusCloudBotsSmallCanary)]
+		moveBots = append(moveBots, surplusBots...)
+		logging.Infof(ctx, "computeNextModelState: removing %v from small canary cloudbots", surplusBots)
 	}
 	if surplusCloudBotsLarge > 0 {
 		surplusBots := currentState.CloudbotsLarge[:int(surplusCloudBotsLarge)]
 		moveBots = append(moveBots, surplusBots...)
+		logging.Infof(ctx, "computeNextModelState: removing %v from large cloudbots", surplusBots)
+	}
+	if surplusCloudBotsLargeCanary > 0 {
+		surplusBots := currentState.CloudbotsLargeCanary[:int(surplusCloudBotsLargeCanary)]
+		moveBots = append(moveBots, surplusBots...)
+		logging.Infof(ctx, "computeNextModelState: removing %v from large canary cloudbots", surplusBots)
 	}
 	start := 0
 	if surplusDrone < 0 {
@@ -319,10 +378,22 @@ func computeNextModelState(ctx context.Context, bm string, targetSmall, targetLa
 		start += len(nb)
 		logging.Infof(ctx, "computeNextModelState: adding %v to Small CloudBots", nb)
 	}
+	if surplusCloudBotsSmallCanary < 0 {
+		nb := moveBots[start : start+int(math.Abs(surplusCloudBotsSmallCanary))]
+		nextState.CloudbotsSmallCanary = append(nextState.CloudbotsSmallCanary, nb...)
+		start += len(nb)
+		logging.Infof(ctx, "computeNextModelState: adding %v to Small Canary CloudBots", nb)
+	}
 	if surplusCloudBotsLarge < 0 {
 		nb := moveBots[start : start+int(math.Abs(surplusCloudBotsLarge))]
 		nextState.CloudbotsLarge = append(nextState.CloudbotsLarge, nb...)
+		start += len(nb)
 		logging.Infof(ctx, "computeNextModelState: adding %v to Large CloudBots", nb)
+	}
+	if surplusCloudBotsLargeCanary < 0 {
+		nb := moveBots[start : start+int(math.Abs(surplusCloudBotsLargeCanary))]
+		nextState.CloudbotsLargeCanary = append(nextState.CloudbotsLargeCanary, nb...)
+		logging.Infof(ctx, "computeNextModelState: adding %v to Large Canary CloudBots", nb)
 	}
 }
 

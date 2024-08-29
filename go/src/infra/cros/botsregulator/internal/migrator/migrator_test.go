@@ -282,14 +282,16 @@ func TestComputeNextModelState(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		amountSmall  int32
-		amountLarge  int32
-		currentState *migrationState
-		want         *migrationState
+		amountSmall      int32
+		amountLarge      int32
+		canaryPercentage int32
+		currentState     *migrationState
+		want             *migrationState
 	}{
 		{
-			amountSmall: 1,
-			amountLarge: 0,
+			amountSmall:      1,
+			amountLarge:      0,
+			canaryPercentage: 0,
 			currentState: &migrationState{
 				CloudbotsSmall: []string{
 					"dut-1",
@@ -453,14 +455,145 @@ func TestComputeNextModelState(t *testing.T) {
 			},
 			want: &migrationState{},
 		},
+		{
+			amountSmall:      30,
+			amountLarge:      10,
+			canaryPercentage: 10,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+					"dut-5",
+				},
+				CloudbotsLarge: []string{
+					"dut-6",
+				},
+				Drone: []string{
+					"dut-3",
+					"dut-4",
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{
+				CloudbotsSmallCanary: []string{
+					"dut-1",
+				},
+				CloudbotsLargeCanary: []string{
+					"dut-6",
+				},
+			},
+		},
+		{
+			amountSmall:      30,
+			amountLarge:      30,
+			canaryPercentage: 10,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+				},
+				CloudbotsLarge: []string{
+					"dut-6",
+				},
+				Drone: []string{
+					"dut-3",
+					"dut-4",
+					"dut-5",
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{
+				CloudbotsSmallCanary: []string{
+					"dut-3",
+				},
+				CloudbotsLarge: []string{
+					"dut-4",
+				},
+				CloudbotsLargeCanary: []string{
+					"dut-5",
+				},
+			},
+		},
+		{
+			amountSmall:      30,
+			amountLarge:      30,
+			canaryPercentage: 10,
+			currentState: &migrationState{
+				CloudbotsSmallCanary: []string{
+					"dut-1",
+					"dut-2",
+				},
+				CloudbotsLargeCanary: []string{
+					"dut-6",
+				},
+				Drone: []string{
+					"dut-3",
+					"dut-4",
+					"dut-5",
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-3",
+					"dut-4",
+				},
+				CloudbotsLarge: []string{
+					"dut-5",
+					"dut-1",
+				},
+			},
+		},
+		{
+			amountSmall:      20,
+			amountLarge:      20,
+			canaryPercentage: 10,
+			currentState: &migrationState{
+				CloudbotsSmall: []string{
+					"dut-1",
+					"dut-2",
+				},
+				CloudbotsSmallCanary: []string{
+					"dut-3",
+				},
+				CloudbotsLarge: []string{
+					"dut-4",
+					"dut-5",
+				},
+				CloudbotsLargeCanary: []string{
+					"dut-6",
+				},
+				Drone: []string{
+					"dut-7",
+					"dut-8",
+					"dut-9",
+					"dut-10",
+				},
+			},
+			want: &migrationState{
+				Drone: []string{
+					"dut-1",
+					"dut-4",
+				},
+			},
+		},
 	}
 	for _, c := range cases {
 		// Loop closure.
 		c := c
-		t.Run(fmt.Sprintf("case: small_%d large_%d", c.amountSmall, c.amountLarge), func(t *testing.T) {
+		t.Run(fmt.Sprintf("case: small_%d large_%d canary_%d", c.amountSmall, c.amountLarge, c.canaryPercentage), func(t *testing.T) {
 			t.Parallel()
 			got := &migrationState{}
-			computeNextModelState(context.Background(), "model for log only", c.amountSmall, c.amountLarge, c.currentState, got)
+			computeNextModelState(context.Background(), "model for log only", c.amountSmall, c.amountLarge, c.canaryPercentage, c.currentState, got)
 			if diff := cmp.Diff(c.want, got); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
