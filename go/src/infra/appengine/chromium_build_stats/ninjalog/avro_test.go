@@ -56,6 +56,7 @@ func TestToAVRO(t *testing.T) {
 		t.Fatalf("got err %v, want nil", err)
 	}
 	if diff := cmp.Diff(map[string]interface{}{
+		"user":               string("bob@google.com"),
 		"build_configs":      []map[string]interface{}{},
 		"build_id":           int64(12345),
 		"invocation_id":      "6dc52b4f-fdf9-4017-b542-8c6cf296677d",

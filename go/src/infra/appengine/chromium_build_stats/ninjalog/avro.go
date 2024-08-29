@@ -103,6 +103,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	}
 
 	return map[string]interface{}{
+		"user":               info.Metadata.User,
 		"targets":            info.Metadata.getTargets(),
 		"build_id":           buildID,
 		"invocation_id":      info.Metadata.InvocationID,
