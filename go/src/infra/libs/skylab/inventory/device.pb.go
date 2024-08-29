@@ -3613,7 +3613,7 @@ func (x *HardwareCapabilities) GetVideoAcceleration() []HardwareCapabilities_Vid
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 52
+// NEXT TAG: 53
 type Peripherals struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3709,6 +3709,8 @@ type Peripherals struct {
 	AmtManagerState *PeripheralState `protobuf:"varint,50,opt,name=amt_manager_state,json=amtManagerState,enum=chrome.chromeos_infra.skylab.proto.inventory.PeripheralState" json:"amt_manager_state,omitempty"`
 	// The type of Audio Beamforming on the DUT.
 	AudioBeamforming *string `protobuf:"bytes,51,opt,name=audio_beamforming,json=audioBeamforming" json:"audio_beamforming,omitempty"`
+	// The state of camera on the DUT.
+	CameraState *HardwareState `protobuf:"varint,52,opt,name=camera_state,json=cameraState,enum=chrome.chromeos_infra.skylab.proto.inventory.HardwareState" json:"camera_state,omitempty"`
 }
 
 func (x *Peripherals) Reset() {
@@ -4070,6 +4072,13 @@ func (x *Peripherals) GetAudioBeamforming() string {
 		return *x.AudioBeamforming
 	}
 	return ""
+}
+
+func (x *Peripherals) GetCameraState() HardwareState {
+	if x != nil && x.CameraState != nil {
+		return *x.CameraState
+	}
+	return HardwareState_HARDWARE_UNKNOWN
 }
 
 // Copy from servo.proto
@@ -5256,7 +5265,7 @@ var file_infra_libs_skylab_inventory_device_proto_rawDesc = []byte{
 	0x56, 0x49, 0x44, 0x45, 0x4f, 0x5f, 0x41, 0x43, 0x43, 0x45, 0x4c, 0x45, 0x52, 0x41, 0x54, 0x49,
 	0x4f, 0x4e, 0x5f, 0x4d, 0x4a, 0x50, 0x47, 0x10, 0x0b, 0x12, 0x1f, 0x0a, 0x1b, 0x56, 0x49, 0x44,
 	0x45, 0x4f, 0x5f, 0x41, 0x43, 0x43, 0x45, 0x4c, 0x45, 0x52, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f,
-	0x45, 0x4e, 0x43, 0x5f, 0x4d, 0x4a, 0x50, 0x47, 0x10, 0x0c, 0x22, 0xcb, 0x26, 0x0a, 0x0b, 0x50,
+	0x45, 0x4e, 0x43, 0x5f, 0x4d, 0x4a, 0x50, 0x47, 0x10, 0x0c, 0x22, 0xab, 0x27, 0x0a, 0x0b, 0x50,
 	0x65, 0x72, 0x69, 0x70, 0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x61, 0x75,
 	0x64, 0x69, 0x6f, 0x5f, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52,
 	0x0a, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x42, 0x6f, 0x61, 0x72, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x61,
@@ -5474,7 +5483,13 @@ var file_infra_libs_skylab_inventory_device_proto_rawDesc = []byte{
 	0x72, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x0a, 0x11, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x5f,
 	0x62, 0x65, 0x61, 0x6d, 0x66, 0x6f, 0x72, 0x6d, 0x69, 0x6e, 0x67, 0x18, 0x33, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x10, 0x61, 0x75, 0x64, 0x69, 0x6f, 0x42, 0x65, 0x61, 0x6d, 0x66, 0x6f, 0x72, 0x6d,
-	0x69, 0x6e, 0x67, 0x22, 0xe9, 0x01, 0x0a, 0x0d, 0x43, 0x68, 0x61, 0x6d, 0x65, 0x6c, 0x65, 0x6f,
+	0x69, 0x6e, 0x67, 0x12, 0x5e, 0x0a, 0x0c, 0x63, 0x61, 0x6d, 0x65, 0x72, 0x61, 0x5f, 0x73, 0x74,
+	0x61, 0x74, 0x65, 0x18, 0x34, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x3b, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x65, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x5f, 0x69, 0x6e, 0x66, 0x72,
+	0x61, 0x2e, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x69,
+	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x48, 0x61, 0x72, 0x64, 0x77, 0x61, 0x72,
+	0x65, 0x53, 0x74, 0x61, 0x74, 0x65, 0x52, 0x0b, 0x63, 0x61, 0x6d, 0x65, 0x72, 0x61, 0x53, 0x74,
+	0x61, 0x74, 0x65, 0x22, 0xe9, 0x01, 0x0a, 0x0d, 0x43, 0x68, 0x61, 0x6d, 0x65, 0x6c, 0x65, 0x6f,
 	0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x16, 0x43, 0x48, 0x41, 0x4d, 0x45, 0x4c, 0x45,
 	0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10,
 	0x00, 0x12, 0x15, 0x0a, 0x11, 0x43, 0x48, 0x41, 0x4d, 0x45, 0x4c, 0x45, 0x4f, 0x4e, 0x5f, 0x54,
@@ -5928,19 +5943,20 @@ var file_infra_libs_skylab_inventory_device_proto_depIdxs = []int32{
 	1,  // 60: chrome.chromeos_infra.skylab.proto.inventory.Peripherals.hmr_state:type_name -> chrome.chromeos_infra.skylab.proto.inventory.PeripheralState
 	1,  // 61: chrome.chromeos_infra.skylab.proto.inventory.Peripherals.audio_latency_toolkit_state:type_name -> chrome.chromeos_infra.skylab.proto.inventory.PeripheralState
 	1,  // 62: chrome.chromeos_infra.skylab.proto.inventory.Peripherals.amt_manager_state:type_name -> chrome.chromeos_infra.skylab.proto.inventory.PeripheralState
-	43, // 63: chrome.chromeos_infra.skylab.proto.inventory.ServoTopology.main:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ServoTopologyItem
-	43, // 64: chrome.chromeos_infra.skylab.proto.inventory.ServoTopology.children:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ServoTopologyItem
-	28, // 65: chrome.chromeos_infra.skylab.proto.inventory.TestCoverageHints.cts_sparse:type_name -> chrome.chromeos_infra.skylab.proto.inventory.TestCoverageHints.CTSSparse
-	3,  // 66: chrome.chromeos_infra.skylab.proto.inventory.License.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.LicenseType
-	4,  // 67: chrome.chromeos_infra.skylab.proto.inventory.ModemInfo.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ModemType
-	6,  // 68: chrome.chromeos_infra.skylab.proto.inventory.SIMInfo.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.SIMType
-	49, // 69: chrome.chromeos_infra.skylab.proto.inventory.SIMInfo.profile_info:type_name -> chrome.chromeos_infra.skylab.proto.inventory.SIMProfileInfo
-	5,  // 70: chrome.chromeos_infra.skylab.proto.inventory.SIMProfileInfo.carrier_name:type_name -> chrome.chromeos_infra.skylab.proto.inventory.NetworkProvider
-	71, // [71:71] is the sub-list for method output_type
-	71, // [71:71] is the sub-list for method input_type
-	71, // [71:71] is the sub-list for extension type_name
-	71, // [71:71] is the sub-list for extension extendee
-	0,  // [0:71] is the sub-list for field type_name
+	2,  // 63: chrome.chromeos_infra.skylab.proto.inventory.Peripherals.camera_state:type_name -> chrome.chromeos_infra.skylab.proto.inventory.HardwareState
+	43, // 64: chrome.chromeos_infra.skylab.proto.inventory.ServoTopology.main:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ServoTopologyItem
+	43, // 65: chrome.chromeos_infra.skylab.proto.inventory.ServoTopology.children:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ServoTopologyItem
+	28, // 66: chrome.chromeos_infra.skylab.proto.inventory.TestCoverageHints.cts_sparse:type_name -> chrome.chromeos_infra.skylab.proto.inventory.TestCoverageHints.CTSSparse
+	3,  // 67: chrome.chromeos_infra.skylab.proto.inventory.License.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.LicenseType
+	4,  // 68: chrome.chromeos_infra.skylab.proto.inventory.ModemInfo.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ModemType
+	6,  // 69: chrome.chromeos_infra.skylab.proto.inventory.SIMInfo.type:type_name -> chrome.chromeos_infra.skylab.proto.inventory.SIMType
+	49, // 70: chrome.chromeos_infra.skylab.proto.inventory.SIMInfo.profile_info:type_name -> chrome.chromeos_infra.skylab.proto.inventory.SIMProfileInfo
+	5,  // 71: chrome.chromeos_infra.skylab.proto.inventory.SIMProfileInfo.carrier_name:type_name -> chrome.chromeos_infra.skylab.proto.inventory.NetworkProvider
+	72, // [72:72] is the sub-list for method output_type
+	72, // [72:72] is the sub-list for method input_type
+	72, // [72:72] is the sub-list for extension type_name
+	72, // [72:72] is the sub-list for extension extendee
+	0,  // [0:72] is the sub-list for field type_name
 }
 
 func init() { file_infra_libs_skylab_inventory_device_proto_init() }

@@ -453,7 +453,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 52
+// NEXT TAG: 53
 message Peripherals {
   reserved 32;
 
@@ -666,6 +666,9 @@ message Peripherals {
 
   // The type of Audio Beamforming on the DUT.
   optional string audio_beamforming = 51;
+
+  // The state of camera on the DUT.
+  optional HardwareState camera_state = 52;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.
