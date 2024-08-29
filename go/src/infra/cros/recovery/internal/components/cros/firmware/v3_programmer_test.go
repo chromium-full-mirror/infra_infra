@@ -28,9 +28,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("Happy path for stm32 chip", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=stm32 --image=ec_image.bin --port=95 --bitbang_rate=57600 --verify --verbose": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=stm32 --image=ec_image.bin --port=95 --bitbang_rate=57600 --verify --verbose": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -54,9 +54,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("Happy path for other chips", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=some_chip --image=ec_image.bin --port=96 --verify --verbose": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=some_chip --image=ec_image.bin --port=96 --verify --verbose": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -80,9 +80,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("Happy path for ite chip on ccd", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=it8XXXX --image=ec_image.bin --port=95 --verify --verbose --nouse_i2c_pseudo": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=it8XXXX --image=ec_image.bin --port=95 --verify --verbose --nouse_i2c_pseudo": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -106,9 +106,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("Happy path for ite chip on servo_micro", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=it8yyyyy --image=ec_image.bin --port=96 --verify --verbose": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=it8yyyyy --image=ec_image.bin --port=96 --verify --verbose": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -132,9 +132,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("use try_apshutdown is expected for ccd_cpu_fw_spi_depends_on_ec_fw:yes (1)", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -158,9 +158,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("use try_apshutdown is expected for cpu_fw_spi_depends_on_ec_fw:yes (2)", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --try_apshutdown": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -185,9 +185,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 	ftt.Run("do not use try_apshutdown if controls are not present", t, func(t *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(errors.Reason("Not present").Err()).Times(1)
@@ -212,9 +212,9 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		fwBoard = "reef"
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
-		runRequest := map[string]string{
-			"which flash_ec": "",
-			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --board=reef --try_apshutdown": "",
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=just_chip --image=ec_image.bin --port=96 --verify --verbose --board=reef --try_apshutdown": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
@@ -246,9 +246,9 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 	logger := logger.NewLogger()
 	imagePath := "image-board.bin"
 	ftt.Run("Happy path", t, func(t *ftt.Test) {
-		runRequest := map[string]string{
-			"which futility": "",
-			"futility update -i image-board.bin --servo_port=97": "",
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)
@@ -264,9 +264,9 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
 	ftt.Run("Happy path with GBB 0x18", t, func(t *ftt.Test) {
-		runRequest := map[string]string{
-			"which futility": "",
-			"futility update -i image-board.bin --servo_port=91 --gbb_flags=0x18": "",
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=91 --gbb_flags=0x18": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(91).Times(1)
@@ -282,9 +282,9 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
 	ftt.Run("Happy path with force update", t, func(t *ftt.Test) {
-		runRequest := map[string]string{
-			"which futility": "",
-			"futility update -i image-board.bin --servo_port=97 --force": "",
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97 --force": {},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)

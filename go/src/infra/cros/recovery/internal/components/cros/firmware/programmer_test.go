@@ -75,18 +75,23 @@ func stringValue(v string) *xmlrpc.Value {
 	}
 }
 
-func mockRunner(runResponses map[string]string) components.Runner {
+type RunResponse struct {
+	Output string
+	Err    error
+}
+
+func mockRunner(runResponses map[string]RunResponse) components.Runner {
 	run, _ := mockRunnerWithCheck(runResponses)
 	return run
 }
-func mockRunnerWithCheck(runResponses map[string]string) (components.Runner, func() int) {
+func mockRunnerWithCheck(runResponses map[string]RunResponse) (components.Runner, func() int) {
 	calls := make(map[string]bool)
 	return func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
 			cmd = strings.Join(append([]string{cmd}, args...), " ")
 			// Mark that call was done.
 			calls[cmd] = true
 			if v, ok := runResponses[cmd]; ok {
-				return v, nil
+				return v.Output, v.Err
 			}
 			return "", errors.Reason("Did not found response for %q!", cmd).Err()
 		}, func() int {
