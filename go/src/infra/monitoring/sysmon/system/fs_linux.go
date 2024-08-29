@@ -5,8 +5,9 @@
 package system
 
 import (
-	"io/ioutil"
+	"os"
 	"strings"
+	"sync"
 	"unicode"
 )
 
@@ -15,7 +16,8 @@ const (
 )
 
 var (
-	ignoredFstypes map[string]struct{}
+	ignoredFstypes   map[string]struct{}
+	ignoredFstypesMu sync.Mutex
 )
 
 func shouldIgnoreFstype(fstype string) bool {
@@ -23,14 +25,17 @@ func shouldIgnoreFstype(fstype string) bool {
 		return true
 	}
 
+	ignoredFstypesMu.Lock()
+	defer ignoredFstypesMu.Unlock()
+
 	if ignoredFstypes == nil {
-		ignoredFstypes = map[string]struct{}{}
-		contents, err := ioutil.ReadFile("/proc/filesystems")
+		contents, err := os.ReadFile("/proc/filesystems")
 		if err != nil {
 			return false
 		}
 
 		lines := strings.Split(string(contents), "\n")
+		ignoredFstypes = make(map[string]struct{}, len(lines))
 		for _, line := range lines {
 			if strings.HasPrefix(line, nodevPrefix) {
 				ignoredFstypes[line[len(nodevPrefix):]] = struct{}{}

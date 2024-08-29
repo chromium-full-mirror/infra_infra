@@ -8,12 +8,13 @@ import (
 	"fmt"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestRemoveDiskDevices(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		Names []string
 		Want  []string
@@ -24,8 +25,8 @@ func TestRemoveDiskDevices(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		ftt.Run(fmt.Sprintf("%d. %s", i, test.Names), t, func(t *ftt.Test) {
-			assert.Loosely(t, removeDiskDevices(test.Names), should.Resemble(test.Want))
+		t.Run(fmt.Sprintf("%d. %s", i, test.Names), func(t *testing.T) {
+			assert.That(t, removeDiskDevices(test.Names), should.Match(test.Want))
 		})
 	}
 }
@@ -33,7 +34,5 @@ func TestRemoveDiskDevices(t *testing.T) {
 func TestMountpointsAreIgnored(t *testing.T) {
 	t.Parallel()
 
-	ftt.Run("Docker mountpoints are ignored", t, func(t *ftt.Test) {
-		assert.Loosely(t, shouldIgnoreMountpoint("/var/lib/docker/aufs"), should.BeTrue)
-	})
+	assert.That(t, shouldIgnoreMountpoint("/var/lib/docker/aufs"), should.BeTrue)
 }

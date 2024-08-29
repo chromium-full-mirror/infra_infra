@@ -5,18 +5,21 @@
 package system
 
 import (
+	"io"
 	"testing"
 
 	"github.com/shirou/gopsutil/v3/host"
 
-	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestTemps(t *testing.T) {
+	t.Parallel()
 
-	ftt.Run("ParseMacBookTemps", t, func(t *ftt.Test) {
+	t.Run("ParseMacBookTemps", func(t *testing.T) {
+		t.Parallel()
+
 		sensors := []host.TemperatureStat{
 			{
 				SensorKey:   "TA0P",
@@ -32,13 +35,15 @@ func TestTemps(t *testing.T) {
 			},
 		}
 		temp := parseMacBookTemps(sensors)
-		assert.Loosely(t, *temp.Ambient, should.Equal(11.1))
-		assert.Loosely(t, *temp.Battery, should.Equal(22.2))
-		assert.Loosely(t, len(temp.CPUs), should.Equal(1))
-		assert.Loosely(t, temp.CPUs, should.Contain(cpuTemp{Core: "TC0P", Temperature: 33.3}))
+		assert.That(t, *temp.Ambient, should.Equal(11.1))
+		assert.That(t, *temp.Battery, should.Equal(22.2))
+		assert.That(t, len(temp.CPUs), should.Equal(1))
+		assert.That(t, temp.CPUs, should.Contain(cpuTemp{Core: "TC0P", Temperature: 33.3}))
 	})
 
-	ftt.Run("ParseMacBookMissingTemps", t, func(t *ftt.Test) {
+	t.Run("ParseMacBookMissingTemps", func(t *testing.T) {
+		t.Parallel()
+
 		sensors := []host.TemperatureStat{
 			{
 				SensorKey:   "TA0P",
@@ -52,10 +57,12 @@ func TestTemps(t *testing.T) {
 		temp := parseMacBookTemps(sensors)
 		assert.Loosely(t, temp.Ambient, should.BeNil)
 		assert.Loosely(t, temp.Battery, should.BeNil)
-		assert.Loosely(t, len(temp.CPUs), should.BeZero)
+		assert.Loosely(t, temp.CPUs, should.BeEmpty)
 	})
 
-	ftt.Run("ParsePowerEdgeTemps_windows", t, func(t *ftt.Test) {
+	t.Run("ParsePowerEdgeTemps_windows", func(t *testing.T) {
+		t.Parallel()
+
 		// Below string was pulled from the omreport of a R720 on Win7.
 		out := []byte(`
 		<?xml version="1.0" encoding="UTF-8"?>
@@ -150,15 +157,17 @@ func TestTemps(t *testing.T) {
                 </OMA>
                 `)
 		temp, err := parsePowerEdgeTemps(out)
-		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, *temp.Ambient, should.Equal(26.0))
+		assert.That(t, err, should.ErrLike(nil))
+		assert.That(t, *temp.Ambient, should.Equal(26.0))
 		assert.Loosely(t, temp.Battery, should.BeNil)
-		assert.Loosely(t, len(temp.CPUs), should.Equal(2))
-		assert.Loosely(t, temp.CPUs, should.Contain(cpuTemp{Core: "CPU1 Temp", Temperature: 78.0}))
-		assert.Loosely(t, temp.CPUs, should.Contain(cpuTemp{Core: "CPU2 Temp", Temperature: 80.0}))
+		assert.That(t, len(temp.CPUs), should.Equal(2))
+		assert.That(t, temp.CPUs, should.Contain(cpuTemp{Core: "CPU1 Temp", Temperature: 78.0}))
+		assert.That(t, temp.CPUs, should.Contain(cpuTemp{Core: "CPU2 Temp", Temperature: 80.0}))
 	})
 
-	ftt.Run("ParsePowerEdgeTemps_ubuntu", t, func(t *ftt.Test) {
+	t.Run("ParsePowerEdgeTemps_ubuntu", func(t *testing.T) {
+		t.Parallel()
+
 		// Below string was pulled from the omreport of a R220 on Ubuntu Trusty.
 		out := []byte(`
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -193,18 +202,20 @@ func TestTemps(t *testing.T) {
                 </OMA>
                 `)
 		temp, err := parsePowerEdgeTemps(out)
-		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, *temp.Ambient, should.Equal(27.5))
+		assert.That(t, err, should.ErrLike(nil))
+		assert.That(t, *temp.Ambient, should.Equal(27.5))
 		assert.Loosely(t, temp.Battery, should.BeNil)
-		assert.Loosely(t, len(temp.CPUs), should.BeZero)
-	})
-	ftt.Run("ParsePowerEdgeTempsBrokenXML", t, func(t *ftt.Test) {
-		out := []byte("this isn't xml")
-		temp, err := parsePowerEdgeTemps(out)
-		assert.Loosely(t, err, should.NotBeNil)
-		assert.Loosely(t, temp.Ambient, should.BeNil)
-		assert.Loosely(t, temp.Battery, should.BeNil)
-		assert.Loosely(t, len(temp.CPUs), should.BeZero)
+		assert.Loosely(t, temp.CPUs, should.BeEmpty)
 	})
 
+	t.Run("ParsePowerEdgeTempsBrokenXML", func(t *testing.T) {
+		t.Parallel()
+
+		out := []byte("this isn't xml")
+		temp, err := parsePowerEdgeTemps(out)
+		assert.That(t, err, should.ErrLike(io.EOF))
+		assert.Loosely(t, temp.Ambient, should.BeNil)
+		assert.Loosely(t, temp.Battery, should.BeNil)
+		assert.Loosely(t, temp.CPUs, should.BeEmpty)
+	})
 }
