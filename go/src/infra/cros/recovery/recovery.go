@@ -17,8 +17,6 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/sync/dispatcher"
-	"go.chromium.org/luci/common/sync/dispatcher/buffer"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/recovery/config"
@@ -62,15 +60,14 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		return errors.Annotate(err, "run recovery %q", args.UnitName).Err()
 	}
 	log.Infof(ctx, "Unit %q contains resources: %v", args.UnitName, resources)
-	if err := args.initMetricSaver(ctx); err != nil {
-		return err
-	}
-	defer args.metricsOffloader.CloseAndDrain(ctx)
+	args.initMetricSaver(ctx)
 	if args.metricSaver != nil {
 		taskMetric := args.newMetric(args.UnitName, metrics.RunLibraryKind)
 		defer (func() {
 			taskMetric.UpdateStatus(rErr)
-			args.metricSaver(taskMetric)
+			if mErr := args.metricSaver(taskMetric); mErr != nil {
+				args.Logger.Errorf("Fail to save task metric: %s", mErr)
+			}
 		})()
 	}
 
@@ -94,7 +91,9 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 		}
 		resourceMetric.UpdateStatus(err)
 		if args.metricSaver != nil {
-			args.metricSaver(resourceMetric)
+			if err := args.metricSaver(resourceMetric); err != nil {
+				args.Logger.Errorf("Create metric for resource: %q with error: %s", resource, err)
+			}
 		}
 	}
 	if len(errs) > 0 {
@@ -504,7 +503,7 @@ func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, exec
 // runDUTPlanPerResource runs a plan against the single resource of the DUT.
 func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) (rErr error) {
 	execArgs.ResourceName = resource
-	planResourceMetricSaver := func(metric *metrics.Action) {
+	planResourceMetricSaver := func(metric *metrics.Action) error {
 		if metric != nil && metricSaver != nil {
 			metric.Observations = append(
 				metric.Observations,
@@ -513,8 +512,9 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 			)
 			metric.PlanName = planName
 			metricsApplyBoardModel(ctx, execArgs.DUT, metric, resource)
-			metricSaver(metric)
+			return metricSaver(metric)
 		}
+		return nil
 	}
 	err := engine.Run(ctx, planName, plan, execArgs, planResourceMetricSaver)
 	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
@@ -633,10 +633,6 @@ type RunArgs struct {
 	DevHostProxyAddresses map[string]string
 	// MetricSaver provides ability to save a metric with original context.
 	metricSaver metrics.MetricSaver
-	// metricsOffloader is a LUCI Channel that offloads metrics using a whole mess of goroutines.
-	//
-	// Remember to wait for it.
-	metricsOffloader dispatcher.Channel[*metrics.Action]
 }
 
 // GetEnableRecovery returns whether recovery is enabled.
@@ -671,14 +667,14 @@ func (a *RunArgs) UseConfigFile(path string) error {
 
 // initMetricSaver creates metricSaver implementation to save metrics with the original context.
 // Note: Caontext cached to use for saving all metrics.
-func (a *RunArgs) initMetricSaver(ctx context.Context) error {
+func (a *RunArgs) initMetricSaver(ctx context.Context) {
 	if a == nil || a.Metrics == nil {
-		return nil
+		return
 	}
 	// Creating metrics saver to save metrics by local context
 	// as place which create the action can have canceled or
 	// deadlined context.
-	realMetricSaver := func(metric *metrics.Action) error {
+	a.metricSaver = func(metric *metrics.Action) error {
 		if metric == nil {
 			// Skip attempt for test cases and when mitric is not provided.
 			return nil
@@ -700,34 +696,6 @@ func (a *RunArgs) initMetricSaver(ctx context.Context) error {
 		err := a.Metrics.Create(ctx, metric)
 		return errors.Annotate(err, "metric saver").Err()
 	}
-
-	// Offload everything in a batch on its own because realMetricSaver is fundamentally synchronous.
-	options := &dispatcher.Options[*metrics.Action]{
-		Buffer: buffer.Options{
-			MaxLeases:     8,
-			BatchItemsMax: 1,
-		},
-	}
-
-	var err error
-	a.metricsOffloader, err = dispatcher.NewChannel(ctx, options, func(batch *buffer.Batch[*metrics.Action]) error {
-		for _, item := range batch.Data {
-			if err := realMetricSaver(item.Item); err != nil {
-				log.Errorf(ctx, "Failed to save metric: %s\n", err)
-				return err
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		return errors.Annotate(err, "initializing metric saver").Err()
-	}
-
-	a.metricSaver = func(action *metrics.Action) {
-		a.metricsOffloader.C <- action
-	}
-
-	return nil
 }
 
 // newMetric creates base a metric's action

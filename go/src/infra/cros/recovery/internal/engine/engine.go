@@ -96,7 +96,9 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			)
 			metric.Restarts = r.planRunTally
 			metric.UpdateStatus(rErr)
-			r.metricSaver(metric)
+			if err := r.metricSaver(metric); err != nil {
+				log.Debugf(ctx, "Fail to save plan %q metrics with error: %s", r.planName, err)
+			}
 		}()
 	}
 	for {
@@ -242,11 +244,15 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 			policy := act.GetMetricsConfig().GetUploadPolicy()
 			switch policy {
 			case config.MetricsConfig_DEFAULT_UPLOAD_POLICY:
-				r.metricSaver(metric)
+				if err := r.metricSaver(metric); err != nil {
+					log.Debugf(ctx, "Fail to save %q metrics with error: %s", actionName, err)
+				}
 			case config.MetricsConfig_UPLOAD_ON_ERROR:
 				log.Debugf(ctx, "Action %q requires save metrics only when fail.", actionName)
 				if rErr != nil {
-					r.metricSaver(metric)
+					if err := r.metricSaver(metric); err != nil {
+						log.Debugf(ctx, "Fail to save %q metrics with error: %s", actionName, err)
+					}
 				}
 			case config.MetricsConfig_SKIP_ALL:
 				log.Debugf(ctx, "Action %q: requires skipp metrics upload.", actionName)
@@ -367,7 +373,9 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 				additionalMetric.Observations = append(additionalMetric.Observations,
 					metrics.NewInt64Observation("plan_run_tally", int64(r.planRunTally)),
 				)
-				r.metricSaver(additionalMetric)
+				if err := r.metricSaver(additionalMetric); err != nil {
+					log.Debugf(ctx, "Fail to save %q additional metrics error: %s", r, r.planName, err)
+				}
 			}
 		}()
 	}
