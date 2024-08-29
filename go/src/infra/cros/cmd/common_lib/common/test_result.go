@@ -22,7 +22,6 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-	"go.chromium.org/luci/common/logging"
 )
 
 // GetMockedTestResultProto returns a mock result proto
@@ -126,11 +125,9 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 
 	value, ok := keyvals[key]
 	if !ok {
-		logging.Infof(ctx, "%s not found in keyvals.", key)
 		return ""
 	}
 
-	logging.Infof(ctx, "%s found in keyvals with value: %s", key, value)
 	return value
 }
 
