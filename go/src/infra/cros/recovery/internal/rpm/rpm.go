@@ -187,7 +187,7 @@ func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
 // environment variable and sets the appropriate authorization header in the
 // request.
 func setSentryRPMAuthHeader(req *http.Request) error {
-	passwordFile := os.Getenv("RPM_PASSWORD")
+	passwordFile := os.Getenv("DOCKER_RPM_PASSWORD")
 	if passwordFile == "" {
 		return errors.Reason("setSentryRPMAuthHeader: Could not get Sentry RPM password file path").Err()
 	}
