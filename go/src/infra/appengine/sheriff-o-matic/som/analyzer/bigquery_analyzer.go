@@ -381,6 +381,9 @@ func generateBuilderURL(project string, bucket string, builderName string) strin
 
 func generateBuildURL(project string, bucket string, builderName string, buildID bigquery.NullInt64) string {
 	if buildID.Valid {
+		// Note that various frontends (including LUCI UI) depend on this containing an actual build ID with a b prefix
+		// because the int64 build ID fields in the same data structure get converted to floating point in JSON and are
+		// thus not the correct build IDs.
 		return fmt.Sprintf("%s/b%d", generateBuilderURL(project, bucket, builderName), buildID.Int64)
 	}
 	return "" // Go does not allow null value :(
