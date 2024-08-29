@@ -12,7 +12,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -20,10 +23,12 @@ import (
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
+	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -46,9 +51,9 @@ func HwExecution() {
 	var writeOutputProps func(*steps.RunTestsResponse)
 	var mergeOutputProps func(*steps.RunTestsResponse)
 
-	build.Main(input, &writeOutputProps, &mergeOutputProps,
-		func(ctx context.Context, args []string, st *build.State) error {
-			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
+	build.Main(input, &writeOutputProps, &mergeOutputProps, func(ctx context.Context, args []string, st *build.State) error {
+		log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
+		innerFunc := func(ctx context.Context) error {
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
@@ -91,8 +96,37 @@ func HwExecution() {
 
 			writeOutputProps(resp)
 			return err
-		},
-	)
+		}
+
+		ctx, cancel := context.WithCancel(ctx)
+		eg, ctx := errgroup.WithContext(ctx)
+
+		// Start parent build watcher in background.
+		eg.Go(func() error {
+			if err := watchParentBuild(ctx, st.Build()); err != nil {
+				// If the parent build watcher returns an error, panic to end the build
+				// as there is no way to end the main loop gracefully.
+				err = errors.Annotate(err, "parent build watcher loop").Err()
+				logging.Errorf(ctx, "encountered error %w; panicking to end build", err)
+				panic(err)
+			}
+			return nil
+		})
+
+		// Start main loop.
+		eg.Go(func() error {
+			err := innerFunc(ctx)
+			// Cancel the build watcher once this loop finishes.
+			logging.Infof(ctx, "main loop finished; cancelling parent build watcher loop")
+			cancel()
+			if err != nil {
+				return errors.Annotate(err, "main loop").Err()
+			}
+			return err
+		})
+
+		return eg.Wait()
+	})
 }
 
 // executeHwTests executes hw tests
@@ -340,4 +374,85 @@ func validateDeadline(ctx context.Context, deadline *timestamppb.Timestamp) erro
 	common.GlobalNonInfraError = err
 
 	return err
+}
+
+// watchParentBuild polls BB for the parent build's status on a loop until the
+// given context is cancelled, sending a BB CancelBuild request for this build
+// if the parent build has ended.
+func watchParentBuild(ctx context.Context, ownBuild *buildbucketpb.Build) error {
+	parentBBID, err := getParentBBID(ownBuild)
+	if err != nil {
+		return errors.Annotate(err, "getting parent BBID").Err()
+	}
+	logging.Infof(ctx, "Parent BBID: %d", parentBBID)
+
+	bc, err := newBBClient(ctx)
+	if err != nil {
+		return errors.Annotate(err, "initializing BB client to watch parent build").Err()
+	}
+	getParentBuildReq := &buildbucketpb.GetBuildRequest{Id: parentBBID}
+	loopInterval := 1 * time.Second
+	pollInterval := 30 * time.Second
+	lastPollTime := time.Now()
+	for {
+		if ctx.Err() != nil {
+			logging.Infof(context.Background(), "ctx cancelled externally; exiting parent build watcher loop")
+			return nil
+		}
+
+		if time.Since(lastPollTime) >= pollInterval {
+			parentBuild, err := bc.GetBuild(ctx, getParentBuildReq)
+			if err != nil {
+				return errors.Annotate(err, "getting parent build").Err()
+			}
+			s := parentBuild.GetStatus()
+			logging.Infof(ctx, "got status %s for parent build %d", s.String(), parentBBID)
+			if parentBuild.GetStatus() != buildbucketpb.Status_STARTED {
+				cancelOwnBuildReq := &buildbucketpb.CancelBuildRequest{
+					Id:              ownBuild.GetId(),
+					SummaryMarkdown: fmt.Sprintf("Cancelled self after parent build ended with status %s", s.String()),
+				}
+				_, err := bc.CancelBuild(ctx, cancelOwnBuildReq)
+				return err
+			}
+			lastPollTime = time.Now()
+		}
+
+		time.Sleep(loopInterval)
+	}
+}
+
+// getParentBBID gets the parent build ID from the given Buildbucket build.
+func getParentBBID(b *buildbucketpb.Build) (int64, error) {
+	ts := b.GetTags()
+	for _, t := range ts {
+		if t.GetKey() != "parent_buildbucket_id" {
+			continue
+		}
+		parentBBID, err := strconv.ParseInt(t.GetValue(), 10, 64)
+		if err != nil {
+			return 0, errors.Annotate(err, "converting parent_buildbucket_id %s to int64", t.GetValue()).Err()
+		}
+		return parentBBID, nil
+	}
+	return 0, fmt.Errorf("no parent BBID found in build tags: %v", ts)
+}
+
+// newBBClient initializes a Buildbucket client.
+func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
+	a := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{
+		Scopes: []string{auth.OAuthScopeEmail},
+	})
+	hc, err := a.Client()
+	if err != nil {
+		return nil, errors.Annotate(err, "initializing http client").Err()
+	}
+	if err != nil {
+		return nil, errors.Annotate(err, "initializing BB client").Err()
+	}
+	pClient := &prpc.Client{
+		C:    hc,
+		Host: "cr-buildbucket.appspot.com",
+	}
+	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
 }
