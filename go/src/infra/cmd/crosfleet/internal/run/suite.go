@@ -125,7 +125,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 		printer:     c.printer,
 		cmdName:     suiteCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForSuites(args, c.tagIncludes, c.tagExcludes, c.testNameExcludes, c.testNameExcludes, c.enableAutotestSharding, c.testArgs),
+		testPlan:    testPlanForSuites(args, c.tagIncludes, c.tagExcludes, c.testNameExcludes, c.testNameExcludes, c.enableAutotestSharding, c.testArgs, c.maxInShard),
 		cliFlags:    &c.testCommonFlags,
 	}
 
@@ -143,8 +143,8 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 }
 
 // testPlanForSuites constructs a Test Platform test plan for the given tests.
-func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string, enableAutotestSharding bool, testArgs string) *test_platform.Request_TestPlan {
-	testPlan := test_platform.Request_TestPlan{}
+func testPlanForSuites(suiteNames []string, tagIncludes []string, tagExcludes []string, testNameIncludes []string, testNameExcludes []string, enableAutotestSharding bool, testArgs string, maxInShard int64) *test_platform.Request_TestPlan {
+	testPlan := test_platform.Request_TestPlan{MaxInShard: maxInShard}
 	for _, suiteName := range suiteNames {
 		suiteRequest := &test_platform.Request_Suite{Name: suiteName, TestArgs: testArgs}
 		testPlan.Suite = append(testPlan.Suite, suiteRequest)

@@ -97,6 +97,7 @@ type testCommonFlags struct {
 	tagExcludes            []string
 	testNameIncludes       []string
 	testNameExcludes       []string
+	maxInShard             int64
 }
 
 type fleetValidationResults struct {
@@ -129,6 +130,7 @@ If no account is set, tests are scheduled using -priority flag.`)
 	f.IntVar(&c.maxRetries, "max-retries", 0, "Maximum retries allowed. No retry if set to 0.")
 	f.Int64Var(&c.priority, "priority", DefaultSwarmingPriority, `Swarming scheduling priority for tests, between 50 and 255 (lower values indicate higher priorities).
 If a Quota Scheduler account is specified via -qs-account, this value is not used.`)
+	f.Int64Var(&c.maxInShard, "max-in-shard", 0, `The total number of tests allowed to be used in a shard. Only used when run via CFT pr tag_criteria is also set.`)
 	f.IntVar(&c.timeoutMins, "timeout-mins", 360, "Test run timeout.")
 	f.Var(flagx.KeyVals(&c.addedDims), "dim", "Additional scheduling dimension in format key=val or key:val; may be specified multiple times.")
 	f.Var(flagx.KeyVals(&c.addedDims), "dims", "Comma-separated additional scheduling addedDims in same format as -dim.")

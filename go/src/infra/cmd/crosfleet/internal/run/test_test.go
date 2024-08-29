@@ -88,7 +88,7 @@ func TestTestPlanForTests(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s/%s/%s)", tt.testArgs, tt.testHarness, tt.testNames), func(t *testing.T) {
 			t.Parallel()
-			gotTestPlan := testPlanForTests(tt.testArgs, tt.testHarness, tt.testNames)
+			gotTestPlan := testPlanForTests(tt.testArgs, tt.testHarness, tt.testNames, 0)
 			if diff := cmp.Diff(tt.wantTestPlan, gotTestPlan, common.CmpOpts); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
 			}
