@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -43,6 +44,7 @@ var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.Float64Var(&c.burnoutRate, "burnout", 0, "device burnout rate")
 		c.Flags.Func("location", "where the device is located", makeLocationRecorder(&c.location))
 		c.Flags.Float64Var(&c.amortizationInYears, "am", 0, "amortization time in years")
+		c.Flags.StringVar(&c.urls, "urls", "", `a ;-delimited list of URLs`)
 		return c
 	},
 }
@@ -62,6 +64,7 @@ type createCostIndicatorCommand struct {
 	location            fleetcostpb.Location
 	description         string
 	amortizationInYears float64
+	urls                string
 }
 
 // Run is the main entrypoint to the create-ci.
@@ -109,6 +112,7 @@ func (c *createCostIndicatorCommand) innerRun(ctx context.Context, a subcommands
 			Location:            c.location,
 			Description:         c.description,
 			AmortizationInYears: c.amortizationInYears,
+			ContextUrl:          strings.Split(c.urls, ";"),
 		},
 	}
 	if err := validation.ValidateCreateCostIndicatorRequest(request); err != nil {
