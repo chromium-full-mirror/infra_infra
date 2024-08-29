@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 32
+// Next Tag: 33
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -115,6 +115,9 @@ message DutState {
 
   // The type of Audio Beamforming on the DUT.
   string audio_beamforming = 31;
+
+  // State for camera on the DUT.
+  HardwareState camera_state = 32;
 }
 
 // Next Tag: 35
