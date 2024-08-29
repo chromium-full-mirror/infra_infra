@@ -21,6 +21,7 @@ message Config {
     repeated Override overrides = 6;
     int32 min_large_memory_percentage = 7;
     repeated Override large_memory_overrides = 8;
+    int32 canary_percentage = 9;
 }
 
 message Override {
