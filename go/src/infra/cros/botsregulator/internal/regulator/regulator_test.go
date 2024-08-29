@@ -222,12 +222,9 @@ func TestConfigHive(t *testing.T) {
 		t.Run("Happy path", func(t *testing.T) {
 			t.Parallel()
 			opts := &RegulatorOptions{
-				CfID:      "cloudbots-regular",
-				Hive:      "cloudbots",
 				CfIDHives: "cloudbots-e2-small:cloudbots-small,cloudbots-e2-custom-2-6144:cloudbots-large",
 			}
 			want := map[string]string{
-				"cloudbots-regular":          "cloudbots",
 				"cloudbots-e2-small":         "cloudbots-small",
 				"cloudbots-e2-custom-2-6144": "cloudbots-large",
 			}
@@ -237,26 +234,6 @@ func TestConfigHive(t *testing.T) {
 			}
 			if diff := cmp.Diff(want, got, trans); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
-			}
-		})
-		t.Run("Cfid but no hive", func(t *testing.T) {
-			t.Parallel()
-			opts := &RegulatorOptions{
-				CfID: "cloudbots-regular",
-			}
-			_, err := configHive(opts)
-			if err == nil {
-				t.Errorf("expected error but got nil")
-			}
-		})
-		t.Run("Hive but no cfid", func(t *testing.T) {
-			t.Parallel()
-			opts := &RegulatorOptions{
-				Hive: "cloudbots",
-			}
-			_, err := configHive(opts)
-			if err == nil {
-				t.Errorf("expected error but got nil")
 			}
 		})
 		t.Run("Empty", func(t *testing.T) {
@@ -284,15 +261,13 @@ func TestConfigHive(t *testing.T) {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})
-		t.Run("Cfid, hive and CfIDHives", func(t *testing.T) {
+		t.Run("CfIDHives", func(t *testing.T) {
 			t.Parallel()
 			opts := &RegulatorOptions{
-				CfID:      "cloudbots-e2-small",
-				Hive:      "cloudbots",
 				CfIDHives: "cloudbots-e2-small:cloudbots-small,cloudbots-e2-custom-2-6144:cloudbots-large",
 			}
 			_, err := configHive(opts)
-			if err == nil {
+			if err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
 		})

@@ -37,12 +37,11 @@ func TestRegulate(t *testing.T) {
 		opts := &regulator.RegulatorOptions{
 			BPI:        "bpi.endpoint",
 			UFS:        "ufs.enpoint",
-			Hive:       "cloudbots",
-			CfID:       "cloudbots-dev",
 			Namespace:  "os",
 			Swarming:   "swarming.endpoint",
 			Zone:       "ZONE_SFO36_OS",
 			BotConfigs: "skylab.py,cloudbots_config.py",
+			CfIDHives:  "cloudbots-dev:cloudbots",
 		}
 
 		ctxWithNS := clients.SetUFSNamespace(ctx, "os")

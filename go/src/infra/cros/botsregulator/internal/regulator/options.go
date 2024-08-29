@@ -29,9 +29,6 @@ type RegulatorOptions struct {
 // We never check for flag emptiness so all options must have defaults.
 func (r *RegulatorOptions) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.BPI, "bpi", clients.GcepDev, "URI endpoint of the service used to scale bots.")
-	// TODO: b/355450139 - Remove config, hive flag when config-hive is pushed to prod
-	fs.StringVar(&r.CfID, "config", "", "CloudBots config prefix.")
-	fs.StringVar(&r.Hive, "hive", "", "hive used for UFS filtering.")
 	fs.StringVar(&r.Namespace, "ufs-namespace", ufsUtil.OSNamespace, "UFS namespace.")
 	fs.StringVar(&r.UFS, "ufs", clients.UfsDev, "UFS endpoint.")
 	fs.StringVar(&r.Swarming, "swarming", clients.SwarmingDev, "Swarming server.")

@@ -60,15 +60,9 @@ func NewRegulator(ctx context.Context, opts *RegulatorOptions) (*regulator, erro
 	}, nil
 }
 
-// configHive returns config hive map from config, hive, config-hive flags.
+// configHive returns config hive map from config-hive flags.
 func configHive(opts *RegulatorOptions) (map[string]string, error) {
 	ch := make(map[string]string)
-	if opts.CfID != "" || opts.Hive != "" {
-		if opts.CfID == "" || opts.Hive == "" {
-			return nil, fmt.Errorf("the cfid and hive flags must either both be defined or both be empty. cifd: %s, hive: %s", opts.CfID, opts.Hive)
-		}
-		ch[opts.CfID] = opts.Hive
-	}
 	if opts.CfIDHives != "" {
 		for _, f := range strings.Split(opts.CfIDHives, ",") {
 			s := strings.SplitN(f, ":", 2)
