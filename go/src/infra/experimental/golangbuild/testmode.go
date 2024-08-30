@@ -304,6 +304,22 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		// in the "Steps & Logs" section.
 		return nil
 	}
+	{ // TODO(go.dev/issue/65917): Come back to this after followup discussion; this special case covers gopls v0.17.0 needs.
+		if spec.inputs.GoBranch == "release-branch.go1.21" && spec.inputs.Project == "tools" {
+			// A special case for x/tools on release-branch.go1.21:
+			// test only the x/tools/gopls nested module and nothing else in x/tools.
+			// This module should work via the default GOTOOLCHAIN=auto setting (see setupModuleEnv)
+			// and https://go.dev/doc/toolchain#select. Other parts of x/tools might
+			// not work, which is WAI since they're not supported per Go release policy.
+			// See go.dev/issue/65917.
+			modules = slices.DeleteFunc(modules, func(m module) bool {
+				return m.Path != "golang.org/x/tools/gopls"
+			})
+			if len(modules) != 1 {
+				return infraErrorf("got %d modules selected in x/tools @ 1.21, want 1: %v", len(modules), modules)
+			}
+		}
+	}
 	// Fetch module dependencies ahead of time, to mark temporary network errors as an infra
 	// failures and because 'go test' may not have network access (see spec.inputs.NoNetwork).
 	if err := fetchDependencies(ctx, spec, modules); err != nil {
