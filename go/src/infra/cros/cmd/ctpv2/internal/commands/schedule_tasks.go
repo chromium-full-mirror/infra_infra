@@ -16,7 +16,6 @@ import (
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/proto"
-	protobuf "google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
@@ -30,6 +29,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/schedulers"
+	"infra/cros/cmd/common_lib/tools/rdb"
 	"infra/cros/cmd/common_lib/tools/suitelimits"
 	"infra/cros/cmd/ctpv2/data"
 	dm "infra/device_manager/client"
@@ -316,6 +316,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 	summaries := []string{}
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
+		// Link the scheduled TestRunner to the current CTP builder so that we
+		// can show test results in MILO at the CTP level.
+		rdbClient, err := newRDBClient(ctx, cmd.BuildState.Build().Infra.GetResultdb().GetHostname())
+		if err != nil {
+			return err
+		}
+		rdb.InheritRDBInvocation(ctx, scheduledBuild.GetId(), bbClient, rdbClient)
+
 		result.BuildUrl = common.BBUrl(builderID, scheduledBuild.GetId())
 		summaries = append(summaries, fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
@@ -672,7 +680,7 @@ func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error
 		return nil, errors.Annotate(err, "extract results from build %d", from.Id).Err()
 	}
 	var r skylab_test_runner.Result
-	if err := protobuf.Unmarshal(pb, &r); err != nil {
+	if err := proto.Unmarshal(pb, &r); err != nil {
 		return nil, errors.Annotate(err, "extract results from build %d", from.Id).Err()
 	}
 	return &r, nil

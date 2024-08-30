@@ -24,6 +24,8 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
+
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 )
 
 // FilterExecutionCmd represents test execution cmd.
@@ -152,6 +154,18 @@ func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
 		Host: "cr-buildbucket.appspot.com",
 	}
 	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
+}
+
+func newRDBClient(ctx context.Context, host string) (resultpb.RecorderClient, error) {
+	hClient, err := httpClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "create recorder client").Err()
+	}
+	pClient := &prpc.Client{
+		C:    hClient,
+		Host: host,
+	}
+	return resultpb.NewRecorderPRPCClient(pClient), nil
 }
 
 func httpClient(ctx context.Context) (*http.Client, error) {
