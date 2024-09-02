@@ -812,8 +812,14 @@ message AMTManager {
   State state = 2;
 }
 
+// Camera holds info about camera of the DUT
+message Camera {
+  // State of the component.
+  HardwareState state = 1;
+}
+
 // Chrome OS specific DUT details
-// NEXT TAG: 35
+// NEXT TAG: 36
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -939,6 +945,9 @@ message ChromeOS {
 
   // AMT management info.
   AMTManager amt_manager = 34;
+
+  // Camera info
+  Camera camera = 35;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.

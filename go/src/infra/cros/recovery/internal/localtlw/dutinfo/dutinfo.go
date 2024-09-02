@@ -206,6 +206,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			FirmwareInfo:        createFirmwareInfo(ds),
 			GpuId:               ds.GetGpuId(),
 			AmtManager:          createDUTAMTManager(p, ds),
+			Camera:              createDUTCamera(ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -535,6 +536,12 @@ func createFirmwareInfo(ds *ufslab.DutState) *tlw.FirmwareInfo {
 	}
 }
 
+func createDUTCamera(ds *ufslab.DutState) *tlw.Camera {
+	return &tlw.Camera{
+		State: convertHardwareState(ds.GetCameraState()),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -752,6 +759,8 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		if amt := chromeos.GetAmtManager(); amt != nil {
 			state.AmtManagerState = convertAMTManagerStateToUFS(amt.GetState())
 		}
+
+		state.CameraState = convertHardwareStateToUFS(chromeos.GetCamera().GetState())
 
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {
