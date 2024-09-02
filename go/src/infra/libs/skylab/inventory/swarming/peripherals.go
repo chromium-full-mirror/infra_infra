@@ -221,6 +221,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 	if audioBeamforming := p.GetAudioBeamforming(); audioBeamforming != "" {
 		appendDim(dims, "label-audio_beamforming", audioBeamforming)
 	}
+
+	if cameraState := p.GetCameraState(); cameraState != inventory.HardwareState_HARDWARE_UNKNOWN {
+		if state, ok := lab.HardwareState_name[int32(cameraState)]; ok {
+			appendDim(dims, "label-camera_state", state[hardwareStatePrefixLength:])
+		}
+	}
 }
 
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -439,5 +445,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		p.AudioBeamforming = &audioBeamforming
 		delete(d, "label-audio_beamforming")
 	}
+
+	if cameraState, ok := getLastStringValue(d, "label-camera_state"); ok {
+		if labSStateVal, ok := lab.HardwareState_value["HARDWARE_"+strings.ToUpper(cameraState)]; ok {
+			state := inventory.HardwareState(labSStateVal)
+			p.CameraState = &state
+		}
+		delete(d, "label-camera_state")
+	}
+
 	return d
 }
