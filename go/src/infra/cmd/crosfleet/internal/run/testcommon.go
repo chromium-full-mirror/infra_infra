@@ -12,11 +12,14 @@ import (
 	"strings"
 	"sync"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	luciflag "go.chromium.org/luci/common/flag"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
@@ -98,6 +101,7 @@ type testCommonFlags struct {
 	testNameIncludes       []string
 	testNameExcludes       []string
 	maxInShard             int64
+	userDefinedFilters     []*api.CTPFilter
 }
 
 type fleetValidationResults struct {
@@ -151,6 +155,14 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.BoolVar(&c.trv2, "trv2", false, "Run via Trv2.")
 	f.BoolVar(&c.dynamicTrv2, "dynamic-trv2", false, "Run via Trv2.")
 	f.StringVar(&c.testArgs, "test-args", "", "Test arguments string (meaning depends on test).")
+	f.Func("user-defined-filter", "CTPv2 user defined filter as JSON. Can be repeated", func(s string) error {
+		var filter api.CTPFilter
+		if err := protojson.Unmarshal([]byte(s), &filter); err != nil {
+			return err
+		}
+		c.userDefinedFilters = append(c.userDefinedFilters, &filter)
+		return nil
+	})
 
 	if mainArgType == testCmdName {
 		f.StringVar(&c.testHarness, "harness", "", "Test harness to run tests on (e.g. tast, tauto, etc.).")
@@ -206,6 +218,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// trv2 should be false for non-cft.
 	if !c.cft && c.dynamicTrv2 {
 		errors = append(errors, "cannot run non-cft test case via dynamic trv2")
+	}
+	// userDefinedFilters is only for CTPv2, which needs both trv2 and dynamicTrv2
+	if (!c.trv2 || !c.dynamicTrv2) && len(c.userDefinedFilters) > 0 {
+		errors = append(errors, "user-defined-filters requires trv2 and dynamic-trv2")
 	}
 	// trv2 should be false for non-cft.
 	if !c.cft && c.enableAutotestSharding {
@@ -326,7 +342,7 @@ func (c *testCommonFlags) buildTagsForCTPBuilds(crosfleetTool string, mainArg st
 
 // Gets the CTPBuilder based on the env and the specified custom public ctp builder parameters.
 func (c *testCommonFlags) getCTPBuilder(env site.Environment) *buildbucketpb.BuilderID {
-	builder := *env.DefaultCTPBuilder
+	builder := proto.Clone(env.DefaultCTPBuilder).(*buildbucketpb.BuilderID)
 	if c.publicBuilderBucket != "" {
 		builder.Bucket = c.publicBuilderBucket
 	}
@@ -336,7 +352,7 @@ func (c *testCommonFlags) getCTPBuilder(env site.Environment) *buildbucketpb.Bui
 	if c.luciProject != "" {
 		builder.Project = c.luciProject
 	}
-	return &builder
+	return builder
 }
 
 // testRunLauncher contains the necessary information to launch and validate a
@@ -443,6 +459,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		TimeoutMins:          l.cliFlags.timeoutMins,
 		TRV2:                 l.cliFlags.trv2 || l.cliFlags.dynamicTrv2,
 		DynamicTRV2:          l.cliFlags.dynamicTrv2,
+		UserDefinedFilters:   l.cliFlags.userDefinedFilters,
 	}
 }
 
