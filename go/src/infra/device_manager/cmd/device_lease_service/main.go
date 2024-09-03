@@ -125,6 +125,11 @@ func main() {
 			return err
 		}
 
+		err = frontend.SetUpBQClient(srv.Context, deviceLeaseServer, srv.Options.CloudProject)
+		if err != nil {
+			return err
+		}
+
 		frontend.InstallServices(deviceLeaseServer, srv)
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
 			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
@@ -132,6 +137,10 @@ func main() {
 		cron.RegisterHandler("expire-leases", func(ctx context.Context) error {
 			return jobs.ExpireLeases(ctx, deviceLeaseServer.ServiceClients)
 		})
+		cron.RegisterHandler("persist-to-bq", func(ctx context.Context) error {
+			return jobs.PersistToBigQuery(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
+		},
+		)
 
 		logging.Debugf(srv.Context, "main: initialization finished")
 

@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/pubsub"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -43,6 +44,7 @@ type ServiceClients struct {
 	DBClient     database.Client
 	PubSubClient *pubsub.Client
 	UFSClient    ufsAPI.FleetClient
+	BQClient     *bigquery.Client
 }
 
 // NewServer returns a new Server.
@@ -88,6 +90,24 @@ func SetUpPubSubClient(ctx context.Context, server *Server, cloudProject string)
 		return err
 	}
 	server.ServiceClients.PubSubClient = client
+	return nil
+}
+
+// SetUpBQClient sets up a reusable BigQuery client for the server
+func SetUpBQClient(ctx context.Context, server *Server, cloudProject string) error {
+	var cp string
+	if cloudProject == "" {
+		cp = "fleet-device-manager-dev"
+	} else {
+		cp = cloudProject
+	}
+
+	client, err := external.NewBQClient(ctx, cp)
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDevice: cannot set up PubSub client: %s", err)
+		return err
+	}
+	server.ServiceClients.BQClient = client
 	return nil
 }
 
