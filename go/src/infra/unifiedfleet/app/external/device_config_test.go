@@ -56,13 +56,15 @@ func makeDevCfgForTesting(board, model, variant string, tams []string) *ufsdevic
 	}
 }
 
-// TestGetDeviceConfig tests behavior of the dual read client. The testing
-// environment is seeded with a single device config in datastore. It also
-// has a flexible inventory client which can return device configs. This allows
+// TestGetDeviceConfig tests behavior of the dual read client.
+
+// The testing environment is seeded with a single device config in datastore.
+// It also has a flexible inventory client which can return device configs. This allows
 // all combinations of device config existence to be tested
 func TestGetDeviceConfig(t *testing.T) {
 	tests := []struct {
 		name    string
+		inUFS   bool
 		invResp *device.Config
 		invErr  bool
 		cfgID   *ufsdevice.ConfigId
@@ -71,6 +73,7 @@ func TestGetDeviceConfig(t *testing.T) {
 	}{
 		{
 			name:    "config in UFS",
+			inUFS:   true,
 			invResp: nil,
 			invErr:  true,
 			cfgID:   configuration.GetConfigID("zork", "gumboz", ""),
@@ -78,7 +81,8 @@ func TestGetDeviceConfig(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "config in inventory and UFS", // same board/model but inventory has different TAM
+			name:  "config in inventoryv2",
+			inUFS: false,
 			invResp: &device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{Value: "zork"},
@@ -93,7 +97,24 @@ func TestGetDeviceConfig(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:  "config in inventoryv2 and UFS", // same board/model but inventoryv2 has different TAM
+			inUFS: true,
+			invResp: &device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{Value: "zork"},
+					ModelId:    &device.ModelId{Value: "gumboz"},
+					VariantId:  &device.VariantId{Value: ""},
+				},
+				Tam: []string{"inventory@google.com"},
+			},
+			invErr:  false,
+			cfgID:   configuration.GetConfigID("zork", "gumboz", ""),
+			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"}),
+			wantErr: false,
+		},
+		{
 			name:    "config nowhere",
+			inUFS:   false,
 			invResp: nil,
 			invErr:  true,
 			cfgID:   configuration.GetConfigID("other", "device", ""),
@@ -119,10 +140,12 @@ func TestGetDeviceConfig(t *testing.T) {
 				},
 			})
 			datastore.GetTestable(ctx).Consistent(true)
-			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
-			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
-			if err != nil {
-				t.Errorf("error setting up test data")
+			if tt.inUFS {
+				devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
+				_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
+				if err != nil {
+					t.Errorf("error setting up test data")
+				}
 			}
 
 			// setup inventory and dual read clients
@@ -168,6 +191,14 @@ func TestDeviceConfigExists(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "UFS has all configs",
+			invResp: nil,
+			invErr:  true,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("zork", "gumboz2", "")},
+			want:    []bool{true, true},
+			wantErr: false,
+		},
+		{
 			name:    "only inventory has some configs",
 			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
 			invErr:  false,
@@ -180,14 +211,6 @@ func TestDeviceConfigExists(t *testing.T) {
 			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: true, 1: true}},
 			invErr:  false,
 			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
-			want:    []bool{true, true},
-			wantErr: false,
-		},
-		{
-			name:    "UFS and inventory each have one config",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
-			invErr:  false,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("inventory", "device", "")},
 			want:    []bool{true, true},
 			wantErr: false,
 		},
@@ -215,11 +238,16 @@ func TestDeviceConfigExists(t *testing.T) {
 						Realm:      "chromeos:zork-gumboz",
 						Permission: util.ConfigurationsGet,
 					},
+					{
+						Realm:      "chromeos:zork-gumboz2",
+						Permission: util.ConfigurationsGet,
+					},
 				},
 			})
 			datastore.GetTestable(ctx).Consistent(true)
 			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
-			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
+			devCfg2 := makeDevCfgForTesting("zork", "gumboz2", "", []string{"test@google.com"})
+			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg, devCfg2}, configuration.BoardModelRealmAssigner)
 			if err != nil {
 				t.Errorf("error setting up test data")
 			}

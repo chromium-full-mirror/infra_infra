@@ -42,30 +42,53 @@ type DualDeviceConfigClient struct {
 }
 
 // GetDeviceConfig fetches a specific device config.
+//
+// Query UFS first, if no response, fallback to call inventoryv2.
 func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *ufsdevice.ConfigId) (*ufsdevice.Config, error) {
+	resp, err := configuration.GetDeviceConfigACL(ctx, cfgID)
+	if err == nil {
+		return resp, nil
+	}
+	logging.Debugf(ctx, "device config ID %v was not found in UFS with error: %s. falling back to inventoryv2", cfgID, err)
+
+	// if we cannot fetch from UFS, fall back to inventoryv2
 	crosCfgID, err := ufsToCrosCfgIDProto(cfgID)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to convert between ufs and inventory proto, likely proto versions are out of sync").Err()
 	}
-
-	req := &invV2Api.GetDeviceConfigRequest{
+	dc, err := c.inventoryClient.GetDeviceConfig(ctx, &invV2Api.GetDeviceConfigRequest{
 		ConfigId: crosCfgID,
+	})
+	if err == nil && dc != nil {
+		return crosToUFSDeviceConfigProto(dc)
 	}
-
-	resp, err := c.inventoryClient.GetDeviceConfig(ctx, req)
-	if err != nil || resp == nil {
-		logging.Debugf(ctx, "request for cfg: %v was not found with error: %s. falling back to ufs datastore", cfgID, err)
-
-		return configuration.GetDeviceConfigACL(ctx, cfgID)
-	}
-
-	return crosToUFSDeviceConfigProto(resp)
+	logging.Debugf(ctx, "device config ID %v was not found in inventoryv2 with error: %s.", cfgID, err)
+	return nil, err
 }
 
-// DeviceConfigsExists detects whether any number of configs exist. The return
-// is an array of booleans, where the ith boolean represents the existence of
-// the ith config.
+// DeviceConfigsExists detects whether any number of configs exist.
+
+// The return is an array of booleans, where the ith boolean represents the
+// existence of the ith config.
+// It queries UFS first, if no response, fallback to call inventoryv2.
 func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
+	ufsResultsArr, err := configuration.DeviceConfigsExistACL(ctx, cfgIDs)
+	if err == nil && allTrue(ufsResultsArr) {
+		return ufsResultsArr, nil
+	}
+	if err != nil {
+		ufsResultsArr = make([]bool, len(cfgIDs))
+		logging.Debugf(ctx, "fail to query device config IDs %v in UFS. falling back to inventoryv2", cfgIDs)
+	} else {
+		for i, r := range ufsResultsArr {
+			if !r {
+				// This is for checking if there's any missing device config ID in UFS.
+				// If not, inventoryv2 call will be deleted.
+				logging.Debugf(ctx, "device config ID %v not found in UFS. falling back to inventoryv2", cfgIDs[i])
+			}
+		}
+	}
+
 	crosCfgIDs := make([]*device.ConfigId, len(cfgIDs))
 	for i, cfgID := range cfgIDs {
 		crosCfgID, err := ufsToCrosCfgIDProto(cfgID)
@@ -75,37 +98,17 @@ func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs
 		crosCfgIDs[i] = crosCfgID
 	}
 
-	req := &invV2Api.DeviceConfigsExistsRequest{
+	resp, err := c.inventoryClient.DeviceConfigsExists(ctx, &invV2Api.DeviceConfigsExistsRequest{
 		ConfigIds: crosCfgIDs,
-	}
-	resp, err := c.inventoryClient.DeviceConfigsExists(ctx, req)
-
-	// if we cannot fetch from inventory, fall back to UFS datastore
+	})
 	if err != nil || resp == nil {
-		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s. falling back to ufs datastore", cfgIDs, err)
-
-		return configuration.DeviceConfigsExistACL(ctx, cfgIDs)
+		return ufsResultsArr, nil
 	}
-
-	// if inventory says all configs exists, can exit early
-	inventoryResultsArr := mapToSlice(len(req.ConfigIds), resp.Exists)
-	if allTrue(inventoryResultsArr) {
-		return inventoryResultsArr, nil
-	}
-
-	// otherwise we need to fetch from UFS, and OR each result
-	ufsResultsArr, err := configuration.DeviceConfigsExistACL(ctx, cfgIDs)
-	if err != nil {
-		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s in datastore", cfgIDs, err)
-		ufsResultsArr = make([]bool, len(req.ConfigIds)) // set to all false in that case
-	}
-
+	inventoryResultsArr := mapToSlice(len(crosCfgIDs), resp.Exists)
 	if len(ufsResultsArr) != len(inventoryResultsArr) {
 		return nil, errors.New("unexpected diff in return lengths between UFS and inventory device config exists")
 	}
-
 	return mergeOr(inventoryResultsArr, ufsResultsArr), nil
-
 }
 
 // ufsToCrosCfgIDProto naively marshalls then unmarshalls proto to convert
