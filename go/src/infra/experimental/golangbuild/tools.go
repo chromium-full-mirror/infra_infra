@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -142,9 +141,8 @@ golang/benchstat/${platform} latest
 	}
 
 	// Install packages.
-	cmd := exec.CommandContext(ctx, "cipd",
-		"ensure", "-root", toolsRoot, "-ensure-file", "-",
-		"-json-output", filepath.Join(os.TempDir(), "ensure_results.json"))
+	cmd := exec.CommandContext(ctx, "cipd", "ensure",
+		"-root", toolsRoot, "-ensure-file", "-", "-log-level=debug")
 	cmd.Stdin = strings.NewReader(cipdDeps)
 	if err := cmdStepRun(ctx, "cipd ensure", cmd, true); err != nil {
 		return "", err
