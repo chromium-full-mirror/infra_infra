@@ -5,19 +5,20 @@
 package firmware
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
-
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // servodStateRecord holds state of servod before apply preparation of programmer.
@@ -47,10 +48,11 @@ const (
 	ecProgrammerStm32CmdGlob = "flash_ec --chip=%s --image=%s --port=%d --bitbang_rate=57600 --verify --verbose"
 
 	// Tools and commands used for flashing AP.
-	apProgrammerToolName    = "futility"
-	apProgrammerCmdGlob     = "futility update -i %s --servo_port=%d"
-	apProgrammerWithGbbFlag = "--gbb_flags=%s"
-	apProgrammerWithForce   = "--force"
+	apProgrammerToolName       = "futility"
+	apProgrammerCmdGlob        = "futility update -i %s --servo_port=%d"
+	apProgrammerWithGbbFlag    = "--gbb_flags=%s"
+	apProgrammerWithForce      = "--force"
+	apProgrammerWithCSMEUnlock = "--quirks csme_unlock"
 )
 
 // ProgramEC programs EC firmware to devices by servo.
@@ -124,6 +126,13 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	}
 	if force {
 		cmd = append(cmd, apProgrammerWithForce)
+	}
+	useUnlock, err := needsCSMEUnlock(ctx, imagePath, p.run)
+	if err != nil {
+		return errors.Annotate(err, "check csme_unlock supported").Err()
+	}
+	if useUnlock {
+		cmd = append(cmd, apProgrammerWithCSMEUnlock)
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)
@@ -269,4 +278,41 @@ func isToolPresent(ctx context.Context, toolName string, run components.Runner) 
 	cmd := fmt.Sprintf("which %s", toolName)
 	_, err := run(ctx, 30*time.Second, cmd)
 	return errors.Annotate(err, "tool %s is not found", toolName).Err()
+}
+
+// needsCSMEUnlock looks at the image at imagePath, and returns true if csme_unlock is supported.
+func needsCSMEUnlock(ctx context.Context, imagePath string, run components.Runner) (bool, error) {
+	// futility needs CONFIG_IFD_CHIPSET to be set in the config file in cbfs or the board to be nissa.
+	// Also the idftool must exist.
+
+	out, err := run(ctx, time.Minute, "which ifdtool")
+	if err != nil {
+		log.Errorf(ctx, "idftool not found:%s", string(out))
+		return false, nil
+	}
+	// Extract the config file
+	configFile := imagePath + "-config"
+	out, err = run(ctx, time.Minute, fmt.Sprintf("cbfstool %s extract -n -f %s", imagePath, configFile))
+	if err != nil {
+		return false, fmt.Errorf("command output: %s: %w", string(out), err)
+	}
+	out, err = run(ctx, time.Minute, fmt.Sprintf("cat %s", configFile))
+	if err != nil {
+		return false, fmt.Errorf("downloading file: %w", err)
+	}
+	// Look for
+	sc := bufio.NewScanner(strings.NewReader(out))
+	for sc.Scan() {
+		cfg, value, _ := strings.Cut(sc.Text(), "=")
+		if cfg == "CONFIG_IFD_CHIPSET" {
+			log.Debugf(ctx, "Image %s has CONFIG_IFD_CHIPSET\n", imagePath)
+			return true, nil
+		}
+		if cfg == "CONFIG_IFD_BIN_PATH" && strings.Contains(value, "/nissa/") {
+			log.Debugf(ctx, "Image %s has CONFIG_IFD_BIN_PATH\n", imagePath)
+			return true, nil
+		}
+	}
+	log.Debugf(ctx, "Image %s has no CONFIG_IFD_CHIPSET\n", imagePath)
+	return false, nil
 }

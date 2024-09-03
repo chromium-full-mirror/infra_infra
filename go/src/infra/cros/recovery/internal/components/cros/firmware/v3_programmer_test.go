@@ -245,10 +245,98 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 	ctx := context.Background()
 	logger := logger.NewLogger()
 	imagePath := "image-board.bin"
-	ftt.Run("Happy path", t, func(t *ftt.Test) {
+	ftt.Run("Happy path w/o ifdtool", t, func(t *ftt.Test) {
 		runRequest := map[string]RunResponse{
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97": {},
+			"which ifdtool": {Output: `ifdtool not found`, Err: errors.Reason("failed with error code 1").Err()},
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Port().Return(97).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
+		p := &v3Programmer{
+			run:    run,
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programAP(ctx, imagePath, "", false)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
+	})
+	ftt.Run("Happy path w/o ifd config", t, func(t *ftt.Test) {
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97": {},
+			"which ifdtool": {},
+			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cat image-board.bin-config":                                    {Output: ``},
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Port().Return(97).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
+		p := &v3Programmer{
+			run:    run,
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programAP(ctx, imagePath, "", false)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
+	})
+	ftt.Run("Happy path with csme unlock chipset", t, func(t *ftt.Test) {
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
+			"which ifdtool": {},
+			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cat image-board.bin-config": {Output: `CONFIG_IFD_CHIPSET=adl
+`},
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Port().Return(97).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
+		p := &v3Programmer{
+			run:    run,
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programAP(ctx, imagePath, "", false)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
+	})
+	ftt.Run("Happy path with csme unlock ifdpath nissa", t, func(t *ftt.Test) {
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
+			"which ifdtool": {},
+			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cat image-board.bin-config": {Output: `CONFIG_IFD_BIN_PATH=/some/random/nissa/path
+`},
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Port().Return(97).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
+		p := &v3Programmer{
+			run:    run,
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programAP(ctx, imagePath, "", false)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
+	})
+	ftt.Run("Happy path with csme unlock ifdpath unsupported", t, func(t *ftt.Test) {
+		runRequest := map[string]RunResponse{
+			"which futility": {},
+			"futility update -i image-board.bin --servo_port=97": {},
+			"which ifdtool": {},
+			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cat image-board.bin-config": {Output: `CONFIG_IFD_BIN_PATH=/some/random/path
+`},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)
@@ -267,6 +355,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		runRequest := map[string]RunResponse{
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=91 --gbb_flags=0x18": {},
+			"which ifdtool": {Output: `ifdtool not found`, Err: errors.Reason("failed with error code 1").Err()},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(91).Times(1)
@@ -285,6 +374,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 		runRequest := map[string]RunResponse{
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97 --force": {},
+			"which ifdtool": {Output: `ifdtool not found`, Err: errors.Reason("failed with error code 1").Err()},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)

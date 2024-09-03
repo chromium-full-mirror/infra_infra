@@ -6,6 +6,7 @@ package firmware
 
 import (
 	"context"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -93,7 +94,8 @@ func mockRunnerWithCheck(runResponses map[string]RunResponse) (components.Runner
 			if v, ok := runResponses[cmd]; ok {
 				return v.Output, v.Err
 			}
-			return "", errors.Reason("Did not found response for %q!", cmd).Err()
+			log.Printf("Did not find response for %q!", cmd)
+			return "", errors.Reason("Did not find response for %q!", cmd).Err()
 		}, func() int {
 			return len(calls)
 		}
