@@ -807,6 +807,8 @@ message AMTManager {
     WORKING = 1;
     // Unable to connect to the WS-Management endpoint.
     BROKEN = 2;
+    // Device state is not applicable.
+    NOT_APPLICABLE = 3;
   }
 
   State state = 2;
