@@ -145,7 +145,6 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 		logging.Errorf(ctx, "ExtendLease: failed to update DeviceLeaseRecord %s: %s", updatedRec.ID, err)
 		return nil, err
 	}
-	logging.Debugf(ctx, "ExtendLease: updated Device %s successfully", updatedRec.ID)
 
 	if err = tx.Commit(); err != nil {
 		return nil, err

@@ -80,7 +80,7 @@ func GetExtendLeaseRequestByIdemKey(ctx context.Context, db *sql.DB, idemKey str
 		&expirationTime,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "GetExtendLeaseRequestByIdemKey: failed to get ExtendLeaseRequest with Idempotency Key %s: %s", idemKey, err)
+		logging.Debugf(ctx, "GetExtendLeaseRequestByIdemKey: failed to get ExtendLeaseRequest with Idempotency Key %s: %s", idemKey, err)
 		return record, err
 	}
 
