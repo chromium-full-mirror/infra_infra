@@ -1883,6 +1883,7 @@ SPECS.update({
         UniversalSource('odictliteral', '1.0.0'),
         UniversalSource('pefile', '2018.8.8'),
         UniversalSource('perfect-hash', '0.2.1'),
+        UniversalSource('perfetto', '0.9.0', pyversions=['py3']),
         UniversalSource('pg8000', '1.29.4', pyversions=['py3']),
         UniversalSource('portpicker', '1.3.0'),
         UniversalSource('portpicker', '1.3.1'),
