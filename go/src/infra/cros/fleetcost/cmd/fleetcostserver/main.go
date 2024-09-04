@@ -48,7 +48,7 @@ func main() {
 
 	server.Main(&server.Options{
 		// The Repopulate-Cache RPC takes a while.
-		DefaultRequestTimeout: 10 * time.Minute,
+		DefaultRequestTimeout: 60 * time.Minute,
 	}, mods, func(srv *server.Server) error {
 		if srv.Options.CloudProject == "" {
 			const appID = "dev~fleet-cost-dev"
