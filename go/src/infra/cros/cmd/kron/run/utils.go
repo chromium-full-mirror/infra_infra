@@ -103,6 +103,31 @@ func fetchTriggeredFortnightlyEvents(currTime common.KronTime, ingestedConfigs *
 	return nil
 }
 
+// fetchTriggeredFortnightlyEvents returns all FORTNIGHTLY configs which are triggered at
+// the current run's operating time. Logging is also wrapped within this function.
+func fetchTriggeredNDayEvents(currTime common.KronTime, ingestedConfigs *configparser.SuiteSchedulerConfigs, configs *configparser.ConfigList) error {
+	factors := common.FindFactors(currTime.StartTime.YearDay())
+
+	common.Stdout.Printf("Gathering N_DAY configs triggered at day %d hour %d\n", currTime.FortnightDay, currTime.Hour)
+	triggeredNDayConfigs := configparser.ConfigList{}
+
+	for _, interval := range factors {
+		triggeredConfigs, err := ingestedConfigs.FetchNDayByDaysHour(interval, currTime.Hour)
+		if err != nil {
+			return err
+		}
+		common.Stdout.Printf("The following %d configs are triggered at interval %d hour %d:\n", len(triggeredNDayConfigs), interval, currTime.Hour)
+		for _, config := range triggeredNDayConfigs {
+			common.Stdout.Printf("\t%s\n", config.Name)
+		}
+
+		triggeredNDayConfigs = append(triggeredNDayConfigs, triggeredConfigs...)
+	}
+
+	*configs = append(*configs, triggeredNDayConfigs...)
+	return nil
+}
+
 // fetchTimedEvents gathers all timed event config which will are triggered at
 // the provided time.
 //
@@ -125,6 +150,12 @@ func fetchTimedEvents(currTime common.KronTime, ingestedConfigs *configparser.Su
 
 	// Fortnightly
 	err = fetchTriggeredFortnightlyEvents(currTime, ingestedConfigs, &timedConfigs)
+	if err != nil {
+		return nil, err
+	}
+
+	// N_DAYS
+	err = fetchTriggeredNDayEvents(currTime, ingestedConfigs, &timedConfigs)
 	if err != nil {
 		return nil, err
 	}

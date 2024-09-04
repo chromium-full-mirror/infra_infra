@@ -51,6 +51,7 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 		dailyMap:              map[int]ConfigList{},
 		weeklyMap:             map[int]HourMap{},
 		fortnightlyMap:        map[int]HourMap{},
+		nDaysMap:              map[int]HourMap{},
 	}
 
 	for _, config := range configs {
@@ -95,6 +96,11 @@ func IngestSuSchConfigs(configs ConfigList, lab *LabConfigs) (*SuiteSchedulerCon
 			}
 		case suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY:
 			err := configDS.addConfigToFortnightlyMap(config)
+			if err != nil {
+				return nil, err
+			}
+		case suschpb.SchedulerConfig_LaunchCriteria_N_DAYS:
+			err := configDS.addConfigToNDayMap(config)
 			if err != nil {
 				return nil, err
 			}

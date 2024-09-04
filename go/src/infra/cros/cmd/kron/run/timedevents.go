@@ -123,18 +123,19 @@ func determineRequiredBuilds(configs configparser.ConfigList, suiteSchedulerConf
 // isBuildTooOld checks to make sure that the is not older than the cadence
 // period length. This will ensure that testing will only occur on untested
 // images an no duplication will occur.
-func isBuildTooOld(buildCreateTime *timestamppb.Timestamp, cadence suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile) bool {
+func isBuildTooOld(buildCreateTime *timestamppb.Timestamp, cadence suschpb.SchedulerConfig_LaunchCriteria_LaunchProfile, interval int64) bool {
 	var maxAge time.Duration
 
 	// Set the max age to the length of the cadence period.
 	switch cadence {
 	case suschpb.SchedulerConfig_LaunchCriteria_DAILY:
-		maxAge = 1 * common.Day
+		maxAge = common.Day
 	case suschpb.SchedulerConfig_LaunchCriteria_WEEKLY:
-		maxAge = 1 * common.Week
+		maxAge = common.Week
 	case suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY:
-		maxAge = 1 * common.Fortnight
-
+		maxAge = common.Fortnight
+	case suschpb.SchedulerConfig_LaunchCriteria_N_DAYS:
+		maxAge = time.Duration(interval) * common.Day
 	}
 
 	return time.Since(buildCreateTime.AsTime()) > maxAge
@@ -288,7 +289,7 @@ func logStaleBuilds(fetchedBuilds []*kronpb.Build, requiredBuildsMap map[builds.
 			//
 			// TODO: Remove bypass by prefix check once a proper
 			// flag is implemented for bypassing build age check.
-			if isBuildTooOld(fetchedBuild.GetCreateTime(), config.GetLaunchCriteria().GetLaunchProfile()) && !strings.HasPrefix(config.GetName(), "AL.") {
+			if isBuildTooOld(fetchedBuild.GetCreateTime(), config.GetLaunchCriteria().GetLaunchProfile(), int64(config.LaunchCriteria.GetDay())) && !strings.HasPrefix(config.GetName(), "AL.") {
 				common.Stdout.Printf("Build for buildTarget %s board %s at milestone %d from long term storage was too old and marked as stale for config %s.", fetchedBuild.BuildTarget, fetchedBuild.Board, fetchedBuild.Milestone, config.Name)
 				schedulingDecision := &kronpb.SchedulingDecision{
 					Type:         kronpb.DecisionType_STALE_BUILD,
@@ -326,7 +327,7 @@ func logStaleBuilds(fetchedBuilds []*kronpb.Build, requiredBuildsMap map[builds.
 func (c *CrOSTimedEventCommand) FetchTriggeredConfigs(executionTime common.KronTime) (map[builds.RequiredBuild][]*suschpb.SchedulerConfig, error) {
 	// Fetch all configs, from all TIMED_EVENT types, which are triggered at the
 	// current operating time.
-	common.Stdout.Printf("Fetching configs for time %s kron time %s\n", time.Now().String(), executionTime.String())
+	common.Stdout.Printf("Fetching configs for time %s kron time %s, and intervals %+v\n", time.Now().String(), executionTime.String(), common.FindFactors(executionTime.StartTime.YearDay()))
 	timedConfigs, err := fetchTimedEvents(executionTime, c.suiteSchedulerConfigs)
 	if err != nil {
 		return nil, err

@@ -48,6 +48,7 @@ type configParserCommand struct {
 	fortnightly bool
 	ddd         bool
 	multiDUT    bool
+	nDays       bool
 	nextNHours  time.Duration
 
 	// Bottom-Level Filters
@@ -90,6 +91,7 @@ func (c *configParserCommand) setFlags() {
 	c.Flags.BoolVar(&c.daily, "daily", false, "Fetch from { DAILY | NIGHTLY } triggered configs")
 	c.Flags.BoolVar(&c.weekly, "weekly", false, "Fetch from WEEKLY triggered configs")
 	c.Flags.BoolVar(&c.fortnightly, "fortnightly", false, "Fetch from FORTNIGHTLY triggered configs")
+	c.Flags.BoolVar(&c.nDays, "ndays", false, "Fetch from N_DAYS triggered configs")
 	c.Flags.DurationVar(&c.nextNHours, "hours-ahead",
 		common.DefaultHoursAhead, "Number of hours ahead of the current time"+
 			" to fetch configs. Format should be in <number>h, any time "+
@@ -176,17 +178,23 @@ func isSingleBool(bools []bool) bool {
 func (c *configParserCommand) validate() error {
 	// If the user did not select a top-level filter then we will assume that
 	// they are trying to search from the set of all configs.
-	c.searchAllConfigs = !(c.newBuild || c.ddd || c.multiDUT || c.daily || c.weekly || c.fortnightly || (c.nextNHours != common.DefaultHoursAhead))
+	c.searchAllConfigs = !(c.newBuild || c.ddd || c.multiDUT || c.daily || c.weekly || c.fortnightly || c.nDays || (c.nextNHours != common.DefaultHoursAhead))
 
 	// GENERAL RULES
 
 	// Only one top-level filter flag can be given for any CLI invocation.
-	if !isSingleBool([]bool{c.newBuild, c.ddd, c.multiDUT, c.daily, c.weekly, c.fortnightly, c.nextNHours != common.DefaultHoursAhead}) {
+	if !isSingleBool([]bool{c.newBuild, c.ddd, c.multiDUT, c.daily, c.weekly, c.fortnightly, c.nDays, c.nextNHours != common.DefaultHoursAhead}) {
 		return fmt.Errorf("only one type of top-level filter can be provided")
 	}
 
-	if c.day != common.DefaultInt64 && (c.day > 13 || c.day < 0) {
-		return fmt.Errorf("-day can only be within [0,6] for weekly and [0,13] for fortnightly")
+	if !c.nDays {
+		if c.day != common.DefaultInt64 && (c.day > 13 || c.day < 0) {
+			return fmt.Errorf("-day can only be within [0,6] for weekly and [0,13] for fortnightly")
+		}
+	} else {
+		if c.day != common.DefaultInt64 && (c.day > 365 || c.day < 1) {
+			return fmt.Errorf("-day can only be within [1,365] for N_DAYS configs")
+		}
 	}
 
 	if c.hour != common.DefaultInt64 && (c.hour > 23 || c.hour < 0) {
@@ -295,6 +303,7 @@ func increaseTimeByAnHour(currTime common.KronTime) common.KronTime {
 
 // FetchNextNHoursDailyConfigs returns all DAILY configs which will be triggered in
 // the next N hours after the given start time.
+// TODO: add support for weekly, fortnightly, and N_DAYS.
 func fetchNextNHoursDailyConfigs(startTime common.KronTime, hoursAhead int64, configMap *configparser.SuiteSchedulerConfigs) (CLIConfigList, error) {
 	// Validate that all input values fit within the expected bounds.
 	if err := configparser.ValidateHoursAheadArgs(startTime, hoursAhead); err != nil {
@@ -378,6 +387,8 @@ func (c *configParserCommand) sieveViaTopLevelFilter(configs *configparser.Suite
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllWeeklyConfigs()
 	} else if c.fortnightly {
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllFortnightlyConfigs()
+	} else if c.nDays {
+		filteredConfigs[c.commandExecutionTime] = configs.FetchAllNDayConfigs()
 	} else if c.searchAllConfigs {
 		filteredConfigs[c.commandExecutionTime] = configs.FetchAllConfigs()
 	} else if c.nextNHours != common.DefaultHoursAhead {

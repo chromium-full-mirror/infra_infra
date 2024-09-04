@@ -18,8 +18,7 @@ import (
 func TestIsBuildTooOldDaily(t *testing.T) {
 	tooOldCreateTime := time.Now().Add(common.Day * (-2))
 	buildCreateTime := timestamppb.New(tooOldCreateTime)
-	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_DAILY)
-
+	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_DAILY, 0)
 	if !tooOld {
 		t.Errorf("Expected %t, got %t", true, tooOld)
 		return
@@ -27,8 +26,7 @@ func TestIsBuildTooOldDaily(t *testing.T) {
 
 	validCreateTime := time.Now().Add(time.Hour * (-2))
 	buildCreateTime = timestamppb.New(validCreateTime)
-	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_DAILY)
-
+	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_DAILY, 0)
 	if tooOld {
 		t.Errorf("Expected %t, got %t", false, tooOld)
 	}
@@ -37,8 +35,7 @@ func TestIsBuildTooOldDaily(t *testing.T) {
 func TestIsBuildTooOldWeekly(t *testing.T) {
 	tooOldCreateTime := time.Now().Add(common.Week * (-2))
 	buildCreateTime := timestamppb.New(tooOldCreateTime)
-	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_WEEKLY)
-
+	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_WEEKLY, 0)
 	if !tooOld {
 		t.Errorf("Expected %t, got %t", true, tooOld)
 		return
@@ -46,8 +43,7 @@ func TestIsBuildTooOldWeekly(t *testing.T) {
 
 	validCreateTime := time.Now().Add(time.Hour * (-2))
 	buildCreateTime = timestamppb.New(validCreateTime)
-	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_WEEKLY)
-
+	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_WEEKLY, 0)
 	if tooOld {
 		t.Errorf("Expected %t, got %t", false, tooOld)
 	}
@@ -56,8 +52,7 @@ func TestIsBuildTooOldWeekly(t *testing.T) {
 func TestIsBuildTooOldFortnightly(t *testing.T) {
 	tooOldCreateTime := time.Now().Add(common.Fortnight * (-2))
 	buildCreateTime := timestamppb.New(tooOldCreateTime)
-	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY)
-
+	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, 0)
 	if !tooOld {
 		t.Errorf("Expected %t, got %t", true, tooOld)
 		return
@@ -65,7 +60,24 @@ func TestIsBuildTooOldFortnightly(t *testing.T) {
 
 	validCreateTime := time.Now().Add(time.Hour * (-2))
 	buildCreateTime = timestamppb.New(validCreateTime)
-	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY)
+	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, 0)
+	if tooOld {
+		t.Errorf("Expected %t, got %t", false, tooOld)
+	}
+}
+
+func TestIsBuildTooOldNDay(t *testing.T) {
+	tooOldCreateTime := time.Now().Add(common.Fortnight * (-2))
+	buildCreateTime := timestamppb.New(tooOldCreateTime)
+	tooOld := isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_N_DAYS, 16)
+	if !tooOld {
+		t.Errorf("Expected %t, got %t", true, tooOld)
+		return
+	}
+
+	validCreateTime := time.Now().Add(time.Hour * (-2))
+	buildCreateTime = timestamppb.New(validCreateTime)
+	tooOld = isBuildTooOld(buildCreateTime, suschpb.SchedulerConfig_LaunchCriteria_N_DAYS, 1)
 
 	if tooOld {
 		t.Errorf("Expected %t, got %t", false, tooOld)

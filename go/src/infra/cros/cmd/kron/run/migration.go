@@ -8,7 +8,6 @@ import (
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
 )
 
 var (
@@ -17,32 +16,11 @@ var (
 
 // isAllowed checks the migration rules to determine if a config has been
 // migrated to Kron or not.
+//
+// TODO(b/319273876): Remove slow migration logic upon completion of
+// transition from SuiteScheduler to Kron.
 func isAllowed(config *suschpb.SchedulerConfig) bool {
-	// NOTE: This check needs to go first so that MULTI_DUT configs with the
-	// multi dut flags are allowed to progress. We still do not want to allow
-	// multi dut type configs that are not MULTI_DUT launch criteria type
-	// configs.
-	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_MULTI_DUT {
-		return true
-	}
-
-	// Disallow configs which use firmware fields.
-	if configparser.IsFirmware(config) || configparser.IsMultiDut(config) {
-		return false
-	}
-
-	// Allow NEW_BUILD, DAILY, WEEKLY, AND FORTNIGHTLY configs.
-	if config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_NEW_BUILD || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_DAILY || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_WEEKLY || config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY {
-		return true
-	}
-
-	// Allow Explicitly included configs.
-	if _, ok := allowedConfigs[config.GetName()]; ok {
-		return true
-	}
-
-	// Exclude everything else.
-	return false
+	return true
 }
 
 // filterConfigs iterates through the triggered SuSch Configs and scrubs out all

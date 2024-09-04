@@ -133,6 +133,11 @@ type SuiteSchedulerConfigs struct {
 	dailyMap       HourMap
 	weeklyMap      map[int]HourMap
 	fortnightlyMap map[int]HourMap
+
+	// nDaysMap runs the configs every N days. The day is determined by
+	// `time.Now().YearDay() % N == 0` not according to the day that the config
+	// was added in.
+	nDaysMap map[int]HourMap
 }
 
 // addConfigToNewBuildMap takes a newBuild configuration and inserts it into the
@@ -207,7 +212,7 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *suschpb.SchedulerCon
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerConfig) error {
 	configDay := int(config.LaunchCriteria.Day)
-	err := isDayCompliant(configDay, false)
+	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
@@ -241,7 +246,7 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerCo
 // appropriate tracking lists.
 func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.SchedulerConfig) error {
 	configDay := int(config.LaunchCriteria.Day)
-	err := isDayCompliant(configDay, true)
+	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
 	if err != nil {
 		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
@@ -256,6 +261,41 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.Schedu
 	}
 
 	dayMap := s.fortnightlyMap[configDay]
+
+	if _, ok := dayMap[configHour]; !ok {
+		dayMap[configHour] = ConfigList{}
+	}
+	dayMap[configHour] = append(dayMap[configHour], config)
+
+	// Add to the array tracking all SuSch configs.
+	s.configList = append(s.configList, config)
+
+	// Add to the direct access map.
+	s.configMap[TestPlanName(config.Name)] = config
+
+	return nil
+}
+
+// addConfigToNDayMap takes an N_DAY configuration and inserts it into the
+// appropriate tracking lists.
+func (s *SuiteSchedulerConfigs) addConfigToNDayMap(config *suschpb.SchedulerConfig) error {
+	configDay := int(config.LaunchCriteria.Day)
+	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
+	if err != nil {
+		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+	}
+
+	configHour := int(config.LaunchCriteria.Hour)
+	err = isHourCompliant(configHour)
+	if err != nil {
+		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+	}
+
+	if _, ok := s.nDaysMap[configDay]; !ok {
+		s.nDaysMap[configDay] = make(HourMap)
+	}
+
+	dayMap := s.nDaysMap[configDay]
 
 	if _, ok := dayMap[configHour]; !ok {
 		dayMap[configHour] = ConfigList{}

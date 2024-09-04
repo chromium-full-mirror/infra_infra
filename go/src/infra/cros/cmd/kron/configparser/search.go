@@ -145,7 +145,7 @@ func (s *SuiteSchedulerConfigs) FetchAllWeeklyConfigs() ConfigList {
 // FetchWeeklyByDay returns all WEEKLY configs that are to be scheduled on the
 // specified DAY.
 func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day int) (ConfigList, error) {
-	err := isDayCompliant(day, false)
+	err := isDayCompliant(day, false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -165,8 +165,8 @@ func (s *SuiteSchedulerConfigs) FetchWeeklyByDay(day int) (ConfigList, error) {
 
 // FetchWeeklyByDayHour returns all WEEKLY configs that are to be scheduled on the
 // specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day int, hour int) (ConfigList, error) {
-	err := isDayCompliant(day, false)
+func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day, hour int) (ConfigList, error) {
+	err := isDayCompliant(day, false, false)
 	if err != nil {
 		return nil, err
 	}
@@ -186,8 +186,8 @@ func (s *SuiteSchedulerConfigs) FetchWeeklyByDayHour(day int, hour int) (ConfigL
 func (s *SuiteSchedulerConfigs) FetchAllFortnightlyConfigs() ConfigList {
 	tempList := ConfigList{}
 
-	for _, mapobj := range s.fortnightlyMap {
-		for _, list := range mapobj {
+	for _, mapObj := range s.fortnightlyMap {
+		for _, list := range mapObj {
 			tempList = append(tempList, list...)
 		}
 	}
@@ -198,7 +198,7 @@ func (s *SuiteSchedulerConfigs) FetchAllFortnightlyConfigs() ConfigList {
 // FetchFortnightlyByDay returns all FORTNIGHTLY configs that are to be scheduled on the
 // specified DAY.
 func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day int) (ConfigList, error) {
-	err := isDayCompliant(day, true)
+	err := isDayCompliant(day, true, false)
 	if err != nil {
 		return nil, err
 	}
@@ -217,8 +217,8 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDay(day int) (ConfigList, erro
 
 // FetchFortnightlyByDayHour returns all FORTNIGHTLY configs that are to be scheduled on the
 // specified DAY at the given HOUR.
-func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day int, hour int) (ConfigList, error) {
-	err := isDayCompliant(day, true)
+func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day, hour int) (ConfigList, error) {
+	err := isDayCompliant(day, true, false)
 	if err != nil {
 		return nil, err
 	}
@@ -231,6 +231,61 @@ func (s *SuiteSchedulerConfigs) FetchFortnightlyByDayHour(day int, hour int) (Co
 		return list, nil
 	}
 	return nil, nil
+}
+
+// FetchNDayByDays returns all N_DAYS configs that are to be scheduled on the
+// specified interval.
+func (s *SuiteSchedulerConfigs) FetchNDayByDays(interval, hour int) (ConfigList, error) {
+	err := isDayCompliant(interval, false, true)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := s.nDaysMap[interval]; !ok {
+		return nil, nil
+	}
+
+	if list, ok := s.nDaysMap[interval]; ok {
+		tempList := ConfigList{}
+
+		for _, hour := range list {
+			tempList = append(tempList, hour...)
+		}
+
+		return tempList, nil
+	}
+	return nil, nil
+}
+
+// FetchNDayByDaysHour returns all N_DAYS configs that are to be scheduled on the
+// specified interval at the given HOUR.
+func (s *SuiteSchedulerConfigs) FetchNDayByDaysHour(interval, hour int) (ConfigList, error) {
+	err := isDayCompliant(interval, false, true)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, ok := s.nDaysMap[interval]; !ok {
+		return nil, nil
+	}
+
+	if list, ok := s.nDaysMap[interval][hour]; ok {
+		return list, nil
+	}
+	return nil, nil
+}
+
+// FetchAllNDayConfigs returns all N_DAYS type configs.
+func (s *SuiteSchedulerConfigs) FetchAllNDayConfigs() ConfigList {
+	tempList := ConfigList{}
+
+	for _, mapObj := range s.nDaysMap {
+		for _, list := range mapObj {
+			tempList = append(tempList, list...)
+		}
+	}
+
+	return tempList
 }
 
 // FetchConfigByName returns the config with the name provided. If it does not
@@ -259,12 +314,12 @@ func ValidateHoursAheadArgs(startTime common.KronTime, hoursAhead int64) error {
 	// function as long as it sends over the default int64 value stored as a
 	// constant.
 	if startTime.WeeklyDay != int(common.DefaultInt64) {
-		if err := isDayCompliant(startTime.WeeklyDay, false); err != nil {
+		if err := isDayCompliant(startTime.WeeklyDay, false, false); err != nil {
 			return err
 		}
 	}
 	if startTime.FortnightDay != int(common.DefaultInt64) {
-		if err := isDayCompliant(startTime.FortnightDay, true); err != nil {
+		if err := isDayCompliant(startTime.FortnightDay, true, false); err != nil {
 			return err
 		}
 	}

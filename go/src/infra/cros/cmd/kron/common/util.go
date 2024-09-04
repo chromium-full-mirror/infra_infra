@@ -57,7 +57,7 @@ func (c *KronTime) String() string {
 		return ""
 	}
 
-	return fmt.Sprintf("hour %d weekly day %d fornightly day %d", c.Hour, c.WeeklyDay, c.FortnightDay)
+	return fmt.Sprintf("hour %d weekly day %d fortnightly day %d", c.Hour, c.WeeklyDay, c.FortnightDay)
 }
 
 // KronDayToTimeDay provides a map to translate time weekday enums to Kron
@@ -210,4 +210,16 @@ func TimestamppbNowWithoutNanos() *timestamppb.Timestamp {
 	ret.Nanos = 0
 
 	return ret
+}
+
+// FindFactors returns the list of FindFactors for the provided number.
+func FindFactors(n int) []int {
+	factors := []int{}
+	for factor := n; factor > 0; factor -= 1 {
+		if n%factor == 0 {
+			factors = append(factors, factor)
+		}
+	}
+
+	return factors
 }

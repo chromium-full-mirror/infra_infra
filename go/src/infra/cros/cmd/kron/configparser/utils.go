@@ -16,11 +16,17 @@ import (
 // isDayCompliant checks the day int type to ensure that it is within the
 // accepted bounds. A flag for fortnightly is required for calculation of day
 // range values.
-func isDayCompliant(day int, isFortnightly bool) error {
+func isDayCompliant(day int, isFortnightly, isNDays bool) error {
 	highBound := 6
+
+	if isFortnightly && isNDays {
+		return fmt.Errorf("isFortnightly and isNDays cannot both be set to true")
+	}
 
 	if isFortnightly {
 		highBound = 13
+	} else if isNDays {
+		highBound = 365
 	}
 
 	if day < 0 || day > highBound {
