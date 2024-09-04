@@ -132,15 +132,15 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	}
 
 	var (
-		idType model.DeviceIDType
-		val    string
+		idType   model.DeviceIDType
+		deviceID string
 	)
 
 	for _, v := range []model.DeviceIDType{
 		model.IDTypeDutID,
 		model.IDTypeHostname,
 	} {
-		val, err = controller.ExtractSingleValuedDimension(ctx, deviceLabels, string(v))
+		deviceID, err = controller.ExtractSingleValuedDimension(ctx, deviceLabels, string(v))
 		if err == nil {
 			idType = v
 			break
@@ -148,20 +148,10 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 		logging.Debugf(ctx, err.Error())
 	}
 
-	if val == "" {
+	if deviceID == "" {
 		return nil, status.Errorf(codes.NotFound, "LeaseDevice: dut_id and device_id labels have no values")
 	}
-
-	device, err := model.GetDeviceByID(ctx, s.ServiceClients.DBClient.Conn, idType, val)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "LeaseDevice: failed to find Device %s: %s", val, err)
-	}
-	logging.Debugf(ctx, "LeaseDevice: found Device %s: %v", val, device)
-
-	if !controller.IsDeviceAvailable(ctx, device.DeviceState) {
-		return nil, status.Errorf(codes.Unavailable, "LeaseDevice: device %s is unavailable for lease", val)
-	}
-	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, &device)
+	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, deviceID, idType)
 }
 
 // ReleaseDevice releases the leased device.

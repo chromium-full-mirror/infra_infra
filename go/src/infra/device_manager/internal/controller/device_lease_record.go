@@ -31,40 +31,44 @@ import (
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, device *model.Device) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, deviceID string, idType model.DeviceIDType) (*api.LeaseDeviceResponse, error) {
 	// TODO (b/328662436): Collect metrics
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, errors.New("LeaseDevice: failed to start database transaction")
 	}
 
+	deviceToLease := model.Device{
+		ID: deviceID,
+	}
+	updatedDevice, err := model.UpdateDeviceToLeased(ctx, tx, deviceToLease, idType)
+	if err != nil {
+		logging.Errorf(ctx, "LeaseDevice: failed to update device state to leased: %s", err)
+
+		// Handle error if Device is already leased
+		if errors.Is(err, model.ErrDeviceAlreadyLeased) {
+			return &api.LeaseDeviceResponse{
+				ErrorType:   api.LeaseDeviceResponseErrorType_LEASE_ERROR_TYPE_DEVICE_ALREADY_LEASED,
+				ErrorString: fmt.Sprintf("Device %s was already leased", deviceID),
+			}, nil
+		}
+
+		return nil, err
+	}
+	logging.Debugf(ctx, "LeaseDevice: marked Device %s as leased successfully: %v", updatedDevice.ID, updatedDevice)
+
 	newRecord := model.DeviceLeaseRecord{
 		ID:             uuid.New().String(),
 		IdempotencyKey: r.GetIdempotencyKey(),
-		DeviceID:       device.ID,
-		DeviceAddress:  device.DeviceAddress,
-		DeviceType:     device.DeviceType,
+		DeviceID:       updatedDevice.ID,
+		DeviceAddress:  updatedDevice.DeviceAddress,
+		DeviceType:     updatedDevice.DeviceType,
 	}
 	createdRecord, err := model.CreateDeviceLeaseRecord(ctx, tx, newRecord, r.GetLeaseDuration().AsDuration())
 	if err != nil {
 		logging.Errorf(ctx, "LeaseDevice: failed to create DeviceLeaseRecord %s", err)
 		return nil, err
 	}
-
-	updatedDevice := model.Device{
-		ID:            device.ID,
-		DeviceAddress: device.DeviceAddress,
-		DeviceType:    device.DeviceType,
-		DeviceState:   api.DeviceState_DEVICE_STATE_LEASED.String(),
-		IsActive:      device.IsActive,
-	}
-	err = UpdateDevice(ctx, tx, updatedDevice)
-	if err != nil {
-		logging.Errorf(ctx, "LeaseDevice: failed to update device state %s", err)
-		return nil, err
-	}
-
-	logging.Debugf(ctx, "LeaseDevice: updated Device %v", updatedDevice)
 
 	if err = tx.Commit(); err != nil {
 		return nil, err

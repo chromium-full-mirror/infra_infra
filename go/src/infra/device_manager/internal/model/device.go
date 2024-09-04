@@ -22,7 +22,10 @@ import (
 )
 
 // ErrDeviceNotFound defines a custom error when a Device is not found.
-var ErrDeviceNotFound = errors.New("device not found")
+var (
+	ErrDeviceNotFound      = errors.New("device not found")
+	ErrDeviceAlreadyLeased = errors.New("device already leased")
+)
 
 // Device contains a single row from the Devices table in the database.
 type Device struct {
@@ -131,8 +134,8 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
-			logging.Debugf(ctx, "SQLSTATE:", pgErr.Code)
-			logging.Debugf(ctx, "Error Message:", pgErr.Message)
+			logging.Debugf(ctx, "GetDeviceByID: SQLSTATE:", pgErr.Code)
+			logging.Debugf(ctx, "GetDeviceByID:", pgErr.Message)
 		}
 		if errors.Is(err, sql.ErrNoRows) || (errors.As(err, &pgErr) && pgErr.Code == "P0002") {
 			return device, ErrDeviceNotFound
@@ -379,6 +382,108 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 	}
 
 	logging.Debugf(ctx, "UpdateDevice: Device %s updated successfully", updatedDevice.ID)
+	return updatedDevice, nil
+}
+
+// UpdateDeviceToLeased updates a Device to Leased in a transaction.
+//
+// UpdateDeviceToLeased uses COALESCE to only update fields with provided
+// values. If there is no value provided, then it will use the current value of
+// the device field in the db. If no Device is returned by RETURNING, that means
+// the Device was not found or already leased.
+func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType DeviceIDType) (Device, error) {
+	var (
+		err                  error
+		updatedDevice        Device
+		createdTime          sql.NullTime
+		lastUpdatedTime      sql.NullTime
+		lastNotificationTime sql.NullTime
+		query                = `
+			UPDATE
+				"Devices"
+			SET
+				device_state='DEVICE_STATE_LEASED',
+				last_updated_time=NOW()`
+	)
+
+	switch idType {
+	case IDTypeDutID:
+		// Use DUT ID type also known as Asset Tag.
+		query += `
+			WHERE
+				jsonb_path_query_array(
+					schedulable_labels,
+					'$.dut_id.Values[0]'
+				) @> to_jsonb($1::text)`
+	case IDTypeHostname:
+		// Use hostname which is how they are stored in DB.
+		query += `
+			WHERE
+				id=$1`
+	default:
+		return Device{}, fmt.Errorf("UpdateDeviceToLeased: unsupported Device ID type: %s", idType)
+	}
+	query += `
+				AND device_state='DEVICE_STATE_AVAILABLE'
+			RETURNING
+				id,
+				device_address,
+				device_type,
+				device_state,
+				schedulable_labels,
+				is_active,
+				created_time,
+				last_updated_time,
+				last_notification_time;`
+
+	logging.Debugf(ctx, "UpdateDeviceToLeased: %s", query)
+	err = tx.QueryRowContext(ctx, query,
+		device.ID,
+	).Scan(
+		&updatedDevice.ID,
+		&updatedDevice.DeviceAddress,
+		&updatedDevice.DeviceType,
+		&updatedDevice.DeviceState,
+		&updatedDevice.SchedulableLabels,
+		&updatedDevice.IsActive,
+		&createdTime,
+		&lastUpdatedTime,
+		&lastNotificationTime,
+	)
+
+	// Handle possible null times
+	if createdTime.Valid {
+		updatedDevice.CreatedTime = createdTime.Time
+	}
+	if lastUpdatedTime.Valid {
+		updatedDevice.LastUpdatedTime = lastUpdatedTime.Time
+	}
+	if lastNotificationTime.Valid {
+		updatedDevice.LastNotificationTime = lastNotificationTime.Time
+	}
+
+	if err != nil {
+		logging.Errorf(ctx, "UpdateDeviceToLeased: failed to update Device %s to DB: %s", updatedDevice.ID, err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			logging.Debugf(ctx, "UpdateDeviceToLeased: SQLSTATE:", pgErr.Code)
+			logging.Debugf(ctx, "UpdateDeviceToLeased:", pgErr.Message)
+		}
+
+		// We know Device is found but already leased because calling this method
+		// requires a found Device.
+		if errors.Is(err, sql.ErrNoRows) || (errors.As(err, &pgErr) && pgErr.Code == "P0002") {
+			logging.Errorf(ctx, "UpdateDeviceToLeased: device is not available: %v", err)
+			return Device{}, ErrDeviceAlreadyLeased
+		}
+
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "UpdateDeviceToLeased: unable to rollback: %v", rollbackErr)
+		}
+		return Device{}, err
+	}
+
+	logging.Debugf(ctx, "UpdateDeviceToLeased: Device %s updated successfully", updatedDevice.ID)
 	return updatedDevice, nil
 }
 

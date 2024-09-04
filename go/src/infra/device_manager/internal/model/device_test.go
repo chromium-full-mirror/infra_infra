@@ -714,6 +714,205 @@ func TestUpdateDevice(t *testing.T) {
 	})
 }
 
+func TestUpdateDeviceToLeased(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	ftt.Run("UpdateDeviceToLeased", t, func(t *ftt.Test) {
+		t.Run("UpdateDeviceToLeased: valid update using DUT ID", func(t *ftt.Test) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			timeNow := time.Now()
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"is_active",
+				"created_time",
+				"last_updated_time",
+				"last_notification_time"}).
+				AddRow(
+					"test-device-1",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					false,
+					timeNow,
+					timeNow,
+					timeNow)
+
+			labelBytes, err := json.Marshal(SchedulableLabels{
+				"label-test": LabelValues{
+					Values: []string{"test-value-1"},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				UPDATE
+					"Devices"
+				SET
+					device_state='DEVICE_STATE_LEASED',
+					last_updated_time=NOW()
+				WHERE
+					jsonb_path_query_array(
+						schedulable_labels,
+						'$.dut_id.Values[0]'
+					) @> to_jsonb($1::text)
+					AND device_state='DEVICE_STATE_AVAILABLE'
+				RETURNING
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					is_active,
+					created_time,
+					last_updated_time,
+					last_notification_time;`)).
+				WithArgs(
+					"test-device-1").
+				WillReturnRows(rows)
+
+			updatedDevice, err := UpdateDeviceToLeased(ctx, tx, Device{
+				ID: "test-device-1",
+			}, IDTypeDutID)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, updatedDevice, should.Match(Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				IsActive:             false,
+				CreatedTime:          timeNow,
+				LastUpdatedTime:      timeNow,
+				LastNotificationTime: timeNow,
+			}))
+		})
+		t.Run("UpdateDeviceToLeased: valid update using Hostname", func(t *ftt.Test) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer func() {
+				mock.ExpectClose()
+				err = db.Close()
+				if err != nil {
+					t.Fatalf("failed to close db: %s", err)
+				}
+			}()
+
+			mock.ExpectBegin()
+
+			var txOpts *sql.TxOptions
+			tx, err := db.BeginTx(ctx, txOpts)
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
+			}
+
+			timeNow := time.Now()
+			rows := sqlmock.NewRows([]string{
+				"id",
+				"device_address",
+				"device_type",
+				"device_state",
+				"schedulable_labels",
+				"is_active",
+				"created_time",
+				"last_updated_time",
+				"last_notification_time"}).
+				AddRow(
+					"test-device-1",
+					"2.2.2.2:2",
+					"DEVICE_TYPE_VIRTUAL",
+					"DEVICE_STATE_LEASED",
+					`{"label-test":{"Values":["test-value-1"]}}`,
+					false,
+					timeNow,
+					timeNow,
+					timeNow)
+
+			labelBytes, err := json.Marshal(SchedulableLabels{
+				"label-test": LabelValues{
+					Values: []string{"test-value-1"},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+
+			mock.ExpectQuery(regexp.QuoteMeta(`
+				UPDATE
+					"Devices"
+				SET
+					device_state='DEVICE_STATE_LEASED',
+					last_updated_time=NOW()
+				WHERE
+					id=$1
+					AND device_state='DEVICE_STATE_AVAILABLE'
+				RETURNING
+					id,
+					device_address,
+					device_type,
+					device_state,
+					schedulable_labels,
+					is_active,
+					created_time,
+					last_updated_time,
+					last_notification_time;`)).
+				WithArgs(
+					"test-device-1").
+				WillReturnRows(rows)
+
+			updatedDevice, err := UpdateDeviceToLeased(ctx, tx, Device{
+				ID: "test-device-1",
+			}, IDTypeHostname)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, updatedDevice, should.Match(Device{
+				ID:            "test-device-1",
+				DeviceAddress: "2.2.2.2:2",
+				DeviceType:    "DEVICE_TYPE_VIRTUAL",
+				DeviceState:   "DEVICE_STATE_LEASED",
+				SchedulableLabels: SchedulableLabels{
+					"label-test": LabelValues{
+						Values: []string{"test-value-1"},
+					},
+				},
+				IsActive:             false,
+				CreatedTime:          timeNow,
+				LastUpdatedTime:      timeNow,
+				LastNotificationTime: timeNow,
+			}))
+		})
+	})
+}
+
 func TestUpsertDeviceFromUFS(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
