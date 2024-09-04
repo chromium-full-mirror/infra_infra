@@ -219,9 +219,9 @@ func validatePublicImage(ctx context.Context, board string, image string) error 
 	if image == "" {
 		return grpcStatus.Errorf(codes.InvalidArgument, "Invalid input - Image cannot be empty for public tests.")
 	}
-	// Public images for a given board are in the format : <board>-public/R
-	validPrefixForBoard := fmt.Sprintf("%s-public/R", board)
-	if !hasValidPrefix(getValidPublicImagePrefixes(), image) && !strings.HasPrefix(image, validPrefixForBoard) {
+	// Public images for a given board are in the format : <board>-public/R or <board>-public-snapshot/R.
+	validPrefixesForBoard := []string{fmt.Sprintf("%s-public/R", board), fmt.Sprintf("%s-public-snapshot/R", board)}
+	if !hasValidPrefix(getValidPublicImagePrefixes(), image) && !hasValidPrefix(validPrefixesForBoard, image) {
 		return &InvalidImageError{Image: image}
 	}
 	return nil
@@ -229,8 +229,12 @@ func validatePublicImage(ctx context.Context, board string, image string) error 
 
 func getValidPublicImagePrefixes() []string {
 	// List of Valid Public Image Prefixes in chromiumos-image-archive bucket -
-	// Ex: gs://chromiumos-image-archive/eve-public/R105-14988.0.0, gs://chromiumos-image-archive/octopus-public/R105-14988.0.0 etc
-	return []string{"eve-public/R", "octopus-public/R", "kevin64-public/R", "jacuzzi-public/R", "kevin-public/R"}
+	// Ex:
+	//  - gs://chromiumos-image-archive/eve-public/R105-14988.0.0
+	//  - gs://chromiumos-image-archive/octopus-public/R105-14988.0.0 etc
+	//  - gs://chromiumos-image-archive/jacuzzi-public-snapshot/R130-16005.0.0-70210-8739043555938506321
+	return []string{"eve-public/R", "octopus-public/R", "kevin64-public/R", "jacuzzi-public/R", "kevin-public/R",
+		"octopus-public-snapshot/R", "jacuzzi-public-snbapshot/R"}
 }
 
 func getValidQuotaSchedulerAccounts() []string {
