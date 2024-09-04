@@ -47,8 +47,9 @@ func main() {
 	}
 
 	server.Main(&server.Options{
-		// The Repopulate-Cache RPC takes a while.
 		DefaultRequestTimeout: 60 * time.Minute,
+		// The Repopulate-Cache RPC takes a while, it is a cron job, which is an internal route and uses a different deadline.
+		InternalRequestTimeout: 60 * time.Minute,
 	}, mods, func(srv *server.Server) error {
 		if srv.Options.CloudProject == "" {
 			const appID = "dev~fleet-cost-dev"
