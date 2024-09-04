@@ -206,16 +206,17 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 		swarmingInstance: "[None]",
 		status:           dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
 	}
-	if dut := lse.GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
-		b.pool = getReportPool(dut.GetPools())
-	}
-	if labstation := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation(); labstation != nil {
-		b.pool = getReportPool(labstation.GetPools())
-	}
 	switch ns {
 	case util.OSNamespace:
+		if dut := lse.GetChromeosMachineLse().GetDeviceLse().GetDut(); dut != nil {
+			b.pool = getReportPool(dut.GetPools())
+		}
+		if labstation := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation(); labstation != nil {
+			b.pool = getReportPool(labstation.GetPools())
+		}
 		b.swarmingInstance = "chromeos-swarming"
 	case util.BrowserNamespace:
+		b.pool = getReportPool(lse.GetOwnership().GetPools())
 		b.swarmingInstance = lse.GetOwnership().GetSwarmingInstance()
 	}
 	return b
