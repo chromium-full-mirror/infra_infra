@@ -86087,6 +86087,18 @@ plans:
               exec_name: cros_update_audio_latency_toolkit_state
               docs:
                 - Check the state of audio latency toolkit.
+            - name: Collect audio beamforming type (Allow to fail)
+              exec_name: cros_update_audio_beamforming_type
+              docs:
+                - Identify the type of beamforming in for audio
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
             - name: Login UI is up (time:'45s')
               exec_name: cros_stop_start_ui
               docs:

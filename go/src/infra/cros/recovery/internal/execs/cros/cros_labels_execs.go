@@ -6,6 +6,8 @@ package cros
 
 import (
 	"context"
+	"regexp"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -21,6 +23,7 @@ const (
 	moSysSkuCmd                 = "mosys platform sku"
 	crosIDSkuCmd                = "crosid -f SKU"
 	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
+	cmdAudioBeamformingCheck    = "cros_config /audio/main cras-config-dir"
 )
 
 // updateDlmSkuIdExec updates device's SKU label if not present in inventory
@@ -135,10 +138,37 @@ func updateAudioLatencyToolkitStateExec(ctx context.Context, info *execs.ExecInf
 	return nil
 }
 
+// updateAudioBeamformingTypeExec updates the DUT's Audio Beamforming type
+// based on the condition as follows:
+// if ".3mic" suffix exists: set as intelligo
+// else set as "none"
+func updateAudioBeamformingTypeExec(ctx context.Context, info *execs.ExecInfo) error {
+	res, err := info.DefaultRunner()(ctx, info.GetExecTimeout(), cmdAudioBeamformingCheck)
+	log.Debugf(ctx, "command \"%s\" shows: %s", cmdAudioBeamformingCheck, res)
+	if err != nil {
+		log.Debugf(ctx, "command \"%s\" got error: %s", cmdAudioBeamformingCheck, err)
+		return errors.Annotate(err, "unable to find the type of audio beamforming on dut.").Err()
+	}
+	resTrimmed := strings.TrimSpace(res)
+	suffixRegex := regexp.MustCompile(`\.(.*)`)
+	resSuffix := suffixRegex.FindString(resTrimmed)
+
+	log.Debugf(ctx, "suffix in output: \"%s\"", resSuffix)
+
+	switch resSuffix {
+	case ".3mic":
+		info.GetChromeos().GetAudio().Beamforming = "intelligo"
+	default:
+		info.GetChromeos().GetAudio().Beamforming = "none"
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_update_device_sku", updateDeviceSKUExec)
 	execs.Register("cros_update_dlm_sku_id", updateDlmSkuIDInvExec)
 	execs.Register("cros_is_audio_loopback_state_working", isAudioLoopBackStateWorkingExec)
 	execs.Register("cros_update_audio_loopback_state_label", updateAudioLoopbackLabelExec)
 	execs.Register("cros_update_audio_latency_toolkit_state", updateAudioLatencyToolkitStateExec)
+	execs.Register("cros_update_audio_beamforming_type", updateAudioBeamformingTypeExec)
 }

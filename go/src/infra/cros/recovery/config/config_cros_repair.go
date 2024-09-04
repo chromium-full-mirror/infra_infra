@@ -63,6 +63,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Firmware validations",
 		"Check if OS on required version for camerabox tablet",
 		"Check audio latency toolkit state",
+		"Collect audio beamforming type",
 		"Login UI is up",
 		"Can list RW VPD Keys",
 		"Verify keys of RW_VPD",
@@ -3897,6 +3898,16 @@ func crosRepairActions() map[string]*Action {
 				"Check the state of audio latency toolkit.",
 			},
 			ExecName:               "cros_update_audio_latency_toolkit_state",
+			AllowFailAfterRecovery: true,
+		},
+		"Collect audio beamforming type": {
+			Docs: []string{
+				"Identify the type of beamforming in for audio",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			ExecName:               "cros_update_audio_beamforming_type",
 			AllowFailAfterRecovery: true,
 		},
 		"Check if request labstation reboot": {
