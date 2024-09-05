@@ -15,7 +15,7 @@ type suiteFilter struct {
 
 var (
 	// After end of Q3
-	standardExemption = time.Date(2024, time.September, 17, 0, 0, 0, 0, time.UTC)
+	standardExemption = time.Date(2025, time.January, 20, 0, 0, 0, 0, time.UTC)
 
 	// Date beyond the lifetime of this builder to ensure no lapse in coverage
 	releaseLongTerm = time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC)
