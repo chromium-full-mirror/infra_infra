@@ -34,7 +34,7 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultTTCPSha             = "57486ffd9466cca130378e0953d515ae910df763f408b7c20e9635ab9e66ca89"
+	defaultTTCPSha             = "84c9107a46b8bc1aa900d2fceda1f740a700e8f7c43f5427d0e20fb70ec11ee2"
 	defaultPreProcessFilterSha = "8cd110f391e6c82c93cbd7f4f5e383b27b743928f6e67fb0bc879ed64c447b0d"
 	prodShas                   = map[string]string{
 		TtcpContainerName:             defaultTTCPSha,
