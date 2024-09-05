@@ -61,6 +61,9 @@ func determineAndSetStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if v, ok := tlw.Dolos_State_value[newState]; ok {
 		dolosInfo.State = tlw.Dolos_State(v)
 		log.Infof(ctx, "Set dolos state to be: %s", newState)
+		if dolosInfo.State == tlw.Dolos_DOLOS_NOT_PRESENT {
+			dolosInfo.SerialUsb = ""
+		}
 		return nil
 	}
 	return errors.Reason("determine dolos state: state is %q not found", newState).Err()
