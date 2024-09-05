@@ -15,6 +15,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/filesystem"
@@ -678,6 +680,73 @@ func TestLoadDependencies(t *testing.T) {
 			So(err, ShouldBeNil)
 			err = p.LoadDependencies("linux-amd64", l)
 			So(errors.Is(err, ErrPackageNotAvailable), ShouldBeTrue)
+		})
+	})
+}
+
+func TestParseExternalDependencies(t *testing.T) {
+	Convey("tool", t, func() {
+		p, err := newCreateParser("linux-arm64", []*Spec_Create{
+			{
+				Build: &Spec_Create_Build{
+					ExternalTool: []string{"infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
+				},
+			},
+		})
+		So(err, ShouldBeNil)
+		err = p.ParseExternalDependencies("something", "linux-amd64")
+		So(err, ShouldBeNil)
+		So(p.Dependencies, ShouldHaveLength, 1)
+		So(p.Dependencies[0], ShouldResemble, generators.Dependency{
+			Type: generators.DepsBuildHost,
+			Generator: &generators.CIPDExport{
+				Name: "something" + "_dep",
+				Metadata: &core.Action_Metadata{
+					Luciexe: &core.Action_Metadata_LUCIExe{
+						StepName: "infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-amd64 from cipd",
+					},
+				},
+				Ensure: ensure.File{
+					PackagesBySubdir: map[string]ensure.PackageSlice{
+						"": {
+							{PackageTemplate: "infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
+						},
+					},
+				},
+				Expander: template.Platform{OS: "linux", Arch: "amd64"}.Expander(),
+			},
+		})
+	})
+	Convey("dep", t, func() {
+		p, err := newCreateParser("linux-arm64", []*Spec_Create{
+			{
+				Build: &Spec_Create_Build{
+					ExternalDep: []string{"infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
+				},
+			},
+		})
+		So(err, ShouldBeNil)
+		err = p.ParseExternalDependencies("something", "linux-amd64")
+		So(err, ShouldBeNil)
+		So(p.Dependencies, ShouldHaveLength, 1)
+		So(p.Dependencies[0], ShouldResemble, generators.Dependency{
+			Type: generators.DepsHostTarget,
+			Generator: &generators.CIPDExport{
+				Name: "something" + "_dep",
+				Metadata: &core.Action_Metadata{
+					Luciexe: &core.Action_Metadata_LUCIExe{
+						StepName: "infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-arm64 from cipd",
+					},
+				},
+				Ensure: ensure.File{
+					PackagesBySubdir: map[string]ensure.PackageSlice{
+						"": {
+							{PackageTemplate: "infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
+						},
+					},
+				},
+				Expander: template.Platform{OS: "linux", Arch: "arm64"}.Expander(),
+			},
 		})
 	})
 }

@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/environ"
@@ -149,6 +150,9 @@ func (l *SpecLoader) FromSpec(fullName, buildCipdPlatform, hostCipdPlatform stri
 		return nil, err
 	}
 	if err := create.LoadDependencies(buildCipdPlatform, l); err != nil {
+		return nil, err
+	}
+	if err := create.ParseExternalDependencies(defDerivation.Name, buildCipdPlatform); err != nil {
 		return nil, err
 	}
 	if err := create.ParseVerifier(); err != nil {
@@ -581,6 +585,70 @@ func (p *createParser) LoadDependencies(buildCipdPlatform string, l *SpecLoader)
 	}
 	for _, dep := range build.GetDep() {
 		g, err := fromSpecByURI(dep, p.host)
+		if err != nil {
+			return err
+		}
+		p.Dependencies = append(p.Dependencies, generators.Dependency{
+			Type:      generators.DepsHostTarget,
+			Generator: g,
+		})
+	}
+
+	return nil
+}
+
+// ParseExternalDependencies is parsing Spec.Create.Build.External{Tool,Dep}
+// and converting them to CIPDExport generators.
+func (p *createParser) ParseExternalDependencies(name, buildCipdPlatform string) error {
+	build := p.create.GetBuild()
+	if build == nil {
+		return nil
+	}
+
+	cipdDep := func(dep, hostCipdPlatform string) (generators.Generator, error) {
+		// infra/tools/foo@1.3.1
+		var cipdName, ver string
+		ss := strings.SplitN(dep, "@", 2)
+		if len(ss) != 2 {
+			return nil, fmt.Errorf("invalid external dependency (must be '<CIPD_PATH>@<VERSION>'): %s", dep)
+		}
+		cipdName, ver = ss[0], ss[1]
+
+		cipdPlat, err := template.ParsePlatform(hostCipdPlatform)
+		if err != nil {
+			return nil, fmt.Errorf("invalid cipd platform: %w", err)
+		}
+
+		return &generators.CIPDExport{
+			Name: name + "_dep",
+			Metadata: &core.Action_Metadata{
+				Luciexe: &core.Action_Metadata_LUCIExe{
+					StepName: fmt.Sprintf("%s@%s:%s from cipd", cipdName, ver, hostCipdPlatform),
+				},
+			},
+			Ensure: ensure.File{
+				PackagesBySubdir: map[string]ensure.PackageSlice{
+					"": {
+						{PackageTemplate: cipdName, UnresolvedVersion: fmt.Sprintf("version:%s", ver)},
+					},
+				},
+			},
+			Expander: cipdPlat.Expander(),
+		}, nil
+	}
+
+	for _, dep := range build.GetExternalTool() {
+		g, err := cipdDep(dep, buildCipdPlatform)
+		if err != nil {
+			return err
+		}
+		p.Dependencies = append(p.Dependencies, generators.Dependency{
+			Type:      generators.DepsBuildHost,
+			Generator: g,
+		})
+	}
+	for _, dep := range build.GetExternalDep() {
+		g, err := cipdDep(dep, p.host)
 		if err != nil {
 			return err
 		}
