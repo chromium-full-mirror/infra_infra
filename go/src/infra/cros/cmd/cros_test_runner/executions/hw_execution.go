@@ -377,16 +377,17 @@ func validateDeadline(ctx context.Context, deadline *timestamppb.Timestamp) erro
 }
 
 // watchParentBuild polls BB for the parent build's status on a loop until the
-// given context is cancelled, sending a BB CancelBuild request for this build
-// if the parent build has ended.
-func watchParentBuild(ctx context.Context, ownBuild *buildbucketpb.Build) error {
+// given outer context is cancelled, sending a BB CancelBuild request for this
+// build if the parent build has ended.
+func watchParentBuild(outerCtx context.Context, ownBuild *buildbucketpb.Build) error {
+	innerCtx := context.Background()
 	parentBBID, err := getParentBBID(ownBuild)
 	if err != nil {
 		return errors.Annotate(err, "getting parent BBID").Err()
 	}
-	logging.Infof(ctx, "Parent BBID: %d", parentBBID)
+	logging.Infof(innerCtx, "Parent BBID: %d", parentBBID)
 
-	bc, err := newBBClient(ctx)
+	bc, err := newBBClient(innerCtx)
 	if err != nil {
 		return errors.Annotate(err, "initializing BB client to watch parent build").Err()
 	}
@@ -395,24 +396,24 @@ func watchParentBuild(ctx context.Context, ownBuild *buildbucketpb.Build) error 
 	pollInterval := 30 * time.Second
 	lastPollTime := time.Now()
 	for {
-		if ctx.Err() != nil {
-			logging.Infof(context.Background(), "ctx cancelled externally; exiting parent build watcher loop")
+		if outerCtx.Err() != nil {
+			logging.Infof(innerCtx, "outer context cancelled externally; exiting parent build watcher loop")
 			return nil
 		}
 
 		if time.Since(lastPollTime) >= pollInterval {
-			parentBuild, err := bc.GetBuild(ctx, getParentBuildReq)
+			parentBuild, err := bc.GetBuild(innerCtx, getParentBuildReq)
 			if err != nil {
 				return errors.Annotate(err, "getting parent build").Err()
 			}
 			s := parentBuild.GetStatus()
-			logging.Infof(ctx, "got status %s for parent build %d", s.String(), parentBBID)
+			logging.Infof(innerCtx, "got status %s for parent build %d", s.String(), parentBBID)
 			if parentBuild.GetStatus() != buildbucketpb.Status_STARTED {
 				cancelOwnBuildReq := &buildbucketpb.CancelBuildRequest{
 					Id:              ownBuild.GetId(),
 					SummaryMarkdown: fmt.Sprintf("Cancelled self after parent build ended with status %s", s.String()),
 				}
-				_, err := bc.CancelBuild(ctx, cancelOwnBuildReq)
+				_, err := bc.CancelBuild(innerCtx, cancelOwnBuildReq)
 				return err
 			}
 			lastPollTime = time.Now()
