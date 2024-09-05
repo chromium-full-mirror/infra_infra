@@ -90,6 +90,7 @@ func (s *SatlabRpcServiceServer) RunQualification(
 		IsIncrementalRun: req.GetIsIncrementalRun(),
 		Local:            true,
 		TimeoutMins:      site.MaxIshCTPTimeoutMins,
+		MaxInShard:       1,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {

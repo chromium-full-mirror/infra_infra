@@ -60,6 +60,7 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 		Local:         true,
 		TimeoutMins:   site.MaxIshCTPTimeoutMins,
 		UploadToCpcon: true,
+		MaxInShard:    1,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {

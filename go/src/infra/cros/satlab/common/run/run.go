@@ -76,6 +76,7 @@ type Run struct {
 	Tags      map[string]string
 
 	UploadToCpcon bool
+	MaxInShard    int64
 }
 
 // TriggerRun triggers the Run with the given information
@@ -160,6 +161,9 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 			// append the args to the first suite if a suite exists
 			if len(stp.Suite) > 0 && c.TestArgs != "" {
 				stp.Suite[0].TestArgs = c.TestArgs
+			}
+			if c.MaxInShard > 0 {
+				stp.MaxInShard = c.MaxInShard
 			}
 			res = append(res, &builder.CTPBuilder{
 				Image:               c.Image,
