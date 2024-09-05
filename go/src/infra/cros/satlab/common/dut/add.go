@@ -45,6 +45,7 @@ type AddDUT struct {
 	ServoSerial              string
 	ServoSetupType           string
 	ServoDockerContainerName string
+	SubrailConfig            string
 	LicenseTypes             []string
 	LicenseIds               []string
 	Pools                    []string
@@ -355,6 +356,9 @@ func makeAddShivasFlags(c *AddDUT) flagmap {
 	}
 	if c.ServoDockerContainerName != "" {
 		out["servod-docker"] = []string{c.ServoDockerContainerName}
+	}
+	if c.SubrailConfig != "" {
+		out["subrail-config"] = []string{c.SubrailConfig}
 	}
 	if len(c.Pools) != 0 {
 		out["pools"] = []string{strings.Join(c.Pools, ",")}

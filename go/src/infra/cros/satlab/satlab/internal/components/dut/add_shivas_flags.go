@@ -31,6 +31,7 @@ func registerAddShivasFlags(c *addDUTCmd) {
 	c.Flags.StringVar(&c.ServoSerial, "servo-serial", "", "serial number for the servo. Can skip for Servo V3.")
 	c.Flags.StringVar(&c.ServoSetupType, "servo-setup", "", "servo setup type. Allowed values are "+cmdhelp.ServoSetupTypeAllowedValuesString()+", UFS assigns REGULAR if unassigned.")
 	c.Flags.StringVar(&c.ServoDockerContainerName, "servod-docker", "", "servod docker container name. Required if serovd is running on docker")
+	c.Flags.StringVar(&c.SubrailConfig, "subrail-config", "", "power subrail config")
 	c.Flags.Var(utils.CSVString(&c.Pools), "pools", "comma separated pools assigned to the DUT. 'satlab-<identifier>' is used if nothing is specified")
 	c.Flags.Var(utils.CSVString(&c.LicenseTypes), "licensetype", cmdhelp.LicenseTypeHelpText)
 	c.Flags.Var(utils.CSVString(&c.LicenseIds), "licenseid", "the name of the license type. Can specify multiple comma separated values.")
