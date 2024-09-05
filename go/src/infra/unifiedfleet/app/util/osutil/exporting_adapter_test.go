@@ -250,6 +250,30 @@ var lse = ufspb.MachineLSE{
 											OwnNumber:   "456789123",
 											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
 										},
+										{
+											Iccid:       "iccid5",
+											SimPin:      "pin5",
+											SimPuk:      "puk5",
+											CarrierName: chromeosLab.NetworkProvider_NETWORK_CBRS,
+											OwnNumber:   "567891234",
+											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+										},
+										{
+											Iccid:       "iccid6",
+											SimPin:      "pin6",
+											SimPuk:      "puk6",
+											CarrierName: chromeosLab.NetworkProvider_NETWORK_POVO,
+											OwnNumber:   "678912345",
+											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+										},
+										{
+											Iccid:       "iccid7",
+											SimPin:      "pin7",
+											SimPuk:      "puk7",
+											CarrierName: chromeosLab.NetworkProvider_NETWORK_HANSHIN,
+											OwnNumber:   "789123457",
+											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+										},
 									},
 								},
 								{
@@ -580,6 +604,27 @@ common {
 				sim_puk: "puk4"
 				carrier_name: NETWORK_FI
 				own_number: "456789123"
+			}
+			profile_info {
+				iccid: "iccid5"
+				sim_pin: "pin5"
+				sim_puk: "puk5"
+				carrier_name: NETWORK_CBRS
+				own_number: "567891234"
+			}
+			profile_info {
+				iccid: "iccid6"
+				sim_pin: "pin6"
+				sim_puk: "puk6"
+				carrier_name: NETWORK_POVO
+					own_number: "678912345"
+			}
+			profile_info {
+				iccid: "iccid7"
+				sim_pin: "pin7"
+				sim_puk: "puk7"
+				carrier_name: NETWORK_HANSHIN
+				own_number: "789123457"
 			}
 		}
 		siminfo {
