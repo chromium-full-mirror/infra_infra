@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -25,6 +26,8 @@ import (
 var (
 	poolsDisallowed = []string{
 		"foilTest",
+		"foilTestBroken",
+		"satlab-0wgtfqin1850814b",
 	}
 )
 
@@ -173,6 +176,17 @@ func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	pool := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, common.LabelPool)
 	if slices.Contains(poolsDisallowed, pool) {
 		cmd.SkipReason = fmt.Sprintf("pool %s has been marked disallowed for dut state updates", pool)
+	}
+	if sk.BuildState != nil {
+		for _, tag := range sk.BuildState.Build().GetTags() {
+			switch tag.GetKey() {
+			case "analytics_name", "label-suite", "suite":
+				if strings.HasPrefix(tag.GetValue(), "AL.") {
+					cmd.SkipReason = fmt.Sprintf("Tag %s=%s has prefix 'AL.' marking disallowed for dut state updates", tag.GetKey(), tag.GetValue())
+				}
+			default:
+			}
+		}
 	}
 
 	return nil
