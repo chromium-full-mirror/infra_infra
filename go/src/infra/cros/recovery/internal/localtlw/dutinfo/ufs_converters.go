@@ -467,41 +467,18 @@ func convertSIMypeToUFS(s tlw.Cellular_SIMType) ufslab.SIMType {
 	return ufslab.SIMType_SIM_UNKNOWN
 }
 
-// simProvider maps the ufs SIM providers types to TLW SIM providers
-var simProviders = map[ufslab.NetworkProvider]tlw.Cellular_NetworkProvider{
-	ufslab.NetworkProvider_NETWORK_UNSUPPORTED: tlw.Cellular_NETWORK_UNSUPPORTED,
-	ufslab.NetworkProvider_NETWORK_TEST:        tlw.Cellular_NETWORK_TEST,
-	ufslab.NetworkProvider_NETWORK_ATT:         tlw.Cellular_NETWORK_ATT,
-	ufslab.NetworkProvider_NETWORK_TMOBILE:     tlw.Cellular_NETWORK_TMOBILE,
-	ufslab.NetworkProvider_NETWORK_VERIZON:     tlw.Cellular_NETWORK_VERIZON,
-	ufslab.NetworkProvider_NETWORK_SPRINT:      tlw.Cellular_NETWORK_SPRINT,
-	ufslab.NetworkProvider_NETWORK_DOCOMO:      tlw.Cellular_NETWORK_DOCOMO,
-	ufslab.NetworkProvider_NETWORK_SOFTBANK:    tlw.Cellular_NETWORK_SOFTBANK,
-	ufslab.NetworkProvider_NETWORK_KDDI:        tlw.Cellular_NETWORK_KDDI,
-	ufslab.NetworkProvider_NETWORK_RAKUTEN:     tlw.Cellular_NETWORK_RAKUTEN,
-	ufslab.NetworkProvider_NETWORK_VODAFONE:    tlw.Cellular_NETWORK_VODAFONE,
-	ufslab.NetworkProvider_NETWORK_EE:          tlw.Cellular_NETWORK_EE,
-	ufslab.NetworkProvider_NETWORK_AMARISOFT:   tlw.Cellular_NETWORK_AMARISOFT,
-	ufslab.NetworkProvider_NETWORK_ROGER:       tlw.Cellular_NETWORK_ROGER,
-	ufslab.NetworkProvider_NETWORK_BELL:        tlw.Cellular_NETWORK_BELL,
-	ufslab.NetworkProvider_NETWORK_TELUS:       tlw.Cellular_NETWORK_TELUS,
-	ufslab.NetworkProvider_NETWORK_FI:          tlw.Cellular_NETWORK_FI,
-}
-
 // convertSIMProviders converts UFS SIM providers to TLW SIM providers
 func convertSIMProviders(s ufslab.NetworkProvider) tlw.Cellular_NetworkProvider {
-	if ns, ok := simProviders[s]; ok {
-		return ns
+	if ns, ok := tlw.Cellular_NetworkProvider_value[s.String()]; ok {
+		return tlw.Cellular_NetworkProvider(ns)
 	}
 	return tlw.Cellular_NETWORK_UNSPECIFIED
 }
 
 // convertSIMProviderToUFS TLW SIM providers to UFS SIM providers
 func convertSIMProviderToUFS(s tlw.Cellular_NetworkProvider) ufslab.NetworkProvider {
-	for us, ls := range simProviders {
-		if ls == s {
-			return us
-		}
+	if ns, ok := ufslab.NetworkProvider_value[s.String()]; ok {
+		return ufslab.NetworkProvider(ns)
 	}
 	return ufslab.NetworkProvider_NETWORK_OTHER
 }
