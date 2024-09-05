@@ -15,7 +15,6 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
@@ -27,6 +26,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/lucictx"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 
@@ -82,7 +84,7 @@ func (f *fakeSwarming) addBot(board string, pool string) {
 }
 
 func TestNonExistentBot(t *testing.T) {
-	Convey("When arguments ask for a non-existent bot", t, func() {
+	ftt.Run("When arguments ask for a non-existent bot", t, func(t *ftt.Test) {
 		swarming := newFakeSwarming()
 		swarming.addBot("existing-board", "ChromeOSSkylab")
 		skylab := &clientImpl{
@@ -97,12 +99,12 @@ func TestNonExistentBot(t *testing.T) {
 			{Key: "label-board", Val: "nonexistent-board"},
 			{Key: "pool", Val: "ChromeOSSkylab"},
 		}
-		Convey("the validation fails.", func() {
+		t.Run("the validation fails.", func(t *ftt.Test) {
 			botExists, rejectedTaskDims, err := skylab.ValidateArgs(ctx, &args)
-			So(err, ShouldBeNil)
-			So(rejectedTaskDims, ShouldResemble, expectedRejectedTaskDims)
-			So(botExists, ShouldBeFalse)
-			So(loggerOutput(ml, logging.Warning), ShouldContainSubstring, "nonexistent-board")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rejectedTaskDims, should.Resemble(expectedRejectedTaskDims))
+			assert.Loosely(t, botExists, should.BeFalse)
+			assert.Loosely(t, loggerOutput(ml, logging.Warning), should.ContainSubstring("nonexistent-board"))
 		})
 	})
 }
@@ -124,7 +126,7 @@ func loggerOutput(ml memlogger.MemLogger, level logging.Level) string {
 }
 
 func TestExistingBot(t *testing.T) {
-	Convey("When arguments ask for an existing bot", t, func() {
+	ftt.Run("When arguments ask for an existing bot", t, func(t *ftt.Test) {
 		swarming := newFakeSwarming()
 		swarming.addBot("existing-board", "ChromeOSSkylab")
 		skylab := &clientImpl{
@@ -133,11 +135,11 @@ func TestExistingBot(t *testing.T) {
 		var args request.Args
 		args.SchedulableLabels = &inventory.SchedulableLabels{}
 		addBoard(&args, "existing-board")
-		Convey("the validation passes.", func() {
+		t.Run("the validation passes.", func(t *ftt.Test) {
 			botExists, rejectedTaskDims, err := skylab.ValidateArgs(context.Background(), &args)
-			So(err, ShouldBeNil)
-			So(rejectedTaskDims, ShouldBeNil)
-			So(botExists, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rejectedTaskDims, should.BeNil)
+			assert.Loosely(t, botExists, should.BeTrue)
 		})
 	})
 }
@@ -145,7 +147,7 @@ func TestExistingBot(t *testing.T) {
 // TestValidateArgsExplicitPool verifies behavior when a specific pool is given
 // as an argument (instead of implicitly being `ChromeOSSkylab`)
 func TestValidateArgsExplicitPool(t *testing.T) {
-	Convey("When validating args with a specific pool with no bot", t, func() {
+	ftt.Run("When validating args with a specific pool with no bot", t, func(t *ftt.Test) {
 		swarming := newFakeSwarming()
 		swarming.addBot("existing-board", "ChromeOSSkylab")
 		skylab := &clientImpl{
@@ -161,19 +163,19 @@ func TestValidateArgsExplicitPool(t *testing.T) {
 			{Key: "label-board", Val: "existing-board"},
 			{Key: "pool", Val: "OtherPool"},
 		}
-		Convey("the validation fails.", func() {
+		t.Run("the validation fails.", func(t *ftt.Test) {
 			botExists, rejectedTaskDims, err := skylab.ValidateArgs(ctx, &args)
-			So(err, ShouldBeNil)
-			So(rejectedTaskDims, ShouldResemble, expectedRejectedTaskDims)
-			So(botExists, ShouldBeFalse)
-			So(loggerOutput(ml, logging.Warning), ShouldContainSubstring, "existing-board")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rejectedTaskDims, should.Resemble(expectedRejectedTaskDims))
+			assert.Loosely(t, botExists, should.BeFalse)
+			assert.Loosely(t, loggerOutput(ml, logging.Warning), should.ContainSubstring("existing-board"))
 		})
-		Convey("Once the bot is added, the validation succeeds.", func() {
+		t.Run("Once the bot is added, the validation succeeds.", func(t *ftt.Test) {
 			swarming.addBot("existing-board", "OtherPool")
 			botExists, rejectedTaskDims, err := skylab.ValidateArgs(ctx, &args)
-			So(err, ShouldBeNil)
-			So(rejectedTaskDims, ShouldBeNil)
-			So(botExists, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rejectedTaskDims, should.BeNil)
+			assert.Loosely(t, botExists, should.BeTrue)
 		})
 	})
 }
@@ -182,87 +184,82 @@ func addBoard(args *request.Args, board string) {
 	args.SchedulableLabels.Board = &board
 }
 
-func TestLaunchRequest(t *testing.T) {
-	Convey("When a task is launched", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+func TestLaunchRequest_TaskLaunched(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		setBuilder(tf.skylab, "foo-project", "foo-bucket", "foo-builder-name")
-		args := newArgs()
-		addTestName(args, "foo-test")
+	setBuilder(tf.skylab, "foo-project", "foo-bucket", "foo-builder-name")
+	args := newArgs()
+	addTestName(args, "foo-test")
 
-		var gotRequest *buildbucket_pb.ScheduleBuildRequest
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Do(
-			func(_ context.Context, r *buildbucket_pb.ScheduleBuildRequest, opts ...grpc.CallOption) {
-				gotRequest = r
-			},
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	var gotRequest *buildbucket_pb.ScheduleBuildRequest
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Do(
+		func(_ context.Context, r *buildbucket_pb.ScheduleBuildRequest, opts ...grpc.CallOption) {
+			gotRequest = r
+		},
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.ctx = lucictx.SetResultDB(tf.ctx, &lucictx.ResultDB{
-			Hostname: "host",
-			CurrentInvocation: &lucictx.ResultDBInvocation{
-				Name:        "parent-invocation",
-				UpdateToken: "fake-token",
-			},
-		})
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		)
-		tf.rc.EXPECT().UpdateIncludedInvocations(
-			gomock.Any(),
-			gomock.Any(),
-		)
-
-		t, err := tf.skylab.LaunchTask(tf.ctx, args)
-		So(err, ShouldBeNil)
-		Convey("the BB client is called with the correct args", func() {
-			So(gotRequest, ShouldNotBeNil)
-			So(gotRequest.Properties, ShouldNotBeNil)
-			So(gotRequest.Properties.Fields, ShouldNotBeNil)
-			So(gotRequest.Properties.Fields["request"], ShouldNotBeNil)
-			req, err := structPBToTestRunnerRequest(gotRequest.Properties.Fields["request"])
-			So(err, ShouldBeNil)
-			So(req.GetTest().GetAutotest().GetName(), ShouldEqual, "foo-test")
-			Convey("and the URL is formatted correctly.", func() {
-				So(tf.skylab.URL(t), ShouldEqual,
-					"https://ci.chromium.org/p/foo-project/builders/foo-bucket/foo-builder-name/b42")
-			})
-		})
+	tf.ctx = lucictx.SetResultDB(tf.ctx, &lucictx.ResultDB{
+		Hostname: "host",
+		CurrentInvocation: &lucictx.ResultDBInvocation{
+			Name:        "parent-invocation",
+			UpdateToken: "fake-token",
+		},
 	})
-	Convey("When a child task is launched", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	)
+	tf.rc.EXPECT().UpdateIncludedInvocations(
+		gomock.Any(),
+		gomock.Any(),
+	)
 
-		setBuilder(tf.skylab, "foo-project", "foo-bucket", "foo-builder-name")
-		args := newArgs()
-		addTestName(args, "foo-test")
+	task, err := tf.skylab.LaunchTask(tf.ctx, args)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, gotRequest, should.NotBeNil)
+	assert.Loosely(t, gotRequest.Properties, should.NotBeNil)
+	assert.Loosely(t, gotRequest.Properties.Fields, should.NotBeNil)
+	assert.Loosely(t, gotRequest.Properties.Fields["request"], should.NotBeNil)
+	req, err := structPBToTestRunnerRequest(gotRequest.Properties.Fields["request"])
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, req.GetTest().GetAutotest().GetName(), should.Equal("foo-test"))
+	assert.Loosely(t, tf.skylab.URL(task), should.Equal(
+		"https://ci.chromium.org/p/foo-project/builders/foo-bucket/foo-builder-name/b42"))
+}
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Do(
-			func(ctx context.Context, r *buildbucket_pb.ScheduleBuildRequest, opts ...grpc.CallOption) {
-				//Confirm that the parent's buildbucket-token is attached.
-				md, _ := metadata.FromOutgoingContext(ctx)
-				buildToks := md.Get(buildbucket.BuildbucketTokenHeader)
-				So(len(buildToks), ShouldEqual, 1)
-				So(buildToks[0], ShouldEqual, "parent-token")
+func TestLaunchRequest_ChildTaskLaunched(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-				So(r.CanOutliveParent, ShouldEqual, buildbucket_pb.Trinary_NO)
-			},
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
-		tf.ctx = lucictx.SetBuildbucket(tf.ctx, &lucictx.Buildbucket{
-			Hostname:           "host",
-			ScheduleBuildToken: "parent-token",
-		})
+	setBuilder(tf.skylab, "foo-project", "foo-bucket", "foo-builder-name")
+	args := newArgs()
+	addTestName(args, "foo-test")
 
-		_, err := tf.skylab.LaunchTask(tf.ctx, args)
-		So(err, ShouldBeNil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Do(
+		func(ctx context.Context, r *buildbucket_pb.ScheduleBuildRequest, opts ...grpc.CallOption) {
+			//Confirm that the parent's buildbucket-token is attached.
+			md, _ := metadata.FromOutgoingContext(ctx)
+			buildToks := md.Get(buildbucket.BuildbucketTokenHeader)
+			assert.Loosely(t, len(buildToks), should.Equal(1))
+			assert.Loosely(t, buildToks[0], should.Equal("parent-token"))
+
+			assert.Loosely(t, r.CanOutliveParent, should.Equal(buildbucket_pb.Trinary_NO))
+		},
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.ctx = lucictx.SetBuildbucket(tf.ctx, &lucictx.Buildbucket{
+		Hostname:           "host",
+		ScheduleBuildToken: "parent-token",
 	})
+
+	_, err := tf.skylab.LaunchTask(tf.ctx, args)
+	assert.Loosely(t, err, should.BeNil)
 }
 
 func setBuilder(skylab *clientImpl, project string, bucket string, builder string) {
@@ -297,306 +294,278 @@ func structPBToTestRunnerRequest(from *structpb.Value) (*skylab_test_runner.Requ
 	return &req, nil
 }
 
-func TestFetchRequest(t *testing.T) {
-	Convey("When a task is launched and completes", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+func TestFetchRequest_TaskLaunchedAndCompleted(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SUCCESS,
-		}, nil)
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SUCCESS,
+	}, nil)
 
-		var gotRequest *buildbucket_pb.GetBuildRequest
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Do(
-			func(_ context.Context, r *buildbucket_pb.GetBuildRequest, opts ...grpc.CallOption) {
-				gotRequest = r
-			},
-		).Return(&buildbucket_pb.Build{}, nil)
+	var gotRequest *buildbucket_pb.GetBuildRequest
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Do(
+		func(_ context.Context, r *buildbucket_pb.GetBuildRequest, opts ...grpc.CallOption) {
+			gotRequest = r
+		},
+	).Return(&buildbucket_pb.Build{}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("as the results are fetched", func() {
-			_, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-			Convey("the BB client is called with the correct args.", func() {
-				So(gotRequest.Id, ShouldEqual, 42)
-				So(gotRequest.Fields, ShouldNotBeNil)
-				So(gotRequest.Fields.Paths, ShouldContain, "id")
-				So(gotRequest.Fields.Paths, ShouldContain, "infra.swarming.task_id")
-				So(gotRequest.Fields.Paths, ShouldContain, "output.properties")
-				So(gotRequest.Fields.Paths, ShouldContain, "status")
-				So(gotRequest.Fields.Paths, ShouldContain, "infra.backend.task.id.id")
-			})
-		})
-	})
-
-	Convey("When a task is launched and still pending", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
-
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SCHEDULED,
-		}, nil)
-
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SCHEDULED,
-		}, nil)
-
-		// GetBuild is not called because the build status is not changed.
-
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("as the results are fetched", func() {
-			_, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	_, err = tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, gotRequest.Id, should.Equal(42))
+	assert.Loosely(t, gotRequest.Fields, should.NotBeNil)
+	assert.Loosely(t, gotRequest.Fields.Paths, should.Contain("id"))
+	assert.Loosely(t, gotRequest.Fields.Paths, should.Contain("infra.swarming.task_id"))
+	assert.Loosely(t, gotRequest.Fields.Paths, should.Contain("output.properties"))
+	assert.Loosely(t, gotRequest.Fields.Paths, should.Contain("status"))
+	assert.Loosely(t, gotRequest.Fields.Paths, should.Contain("infra.backend.task.id.id"))
 }
 
-func TestFetchRequestBuildBucketFailure(t *testing.T) {
-	Convey("When a task is launched and BB GetBuildStatus Fails", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+func TestFetchRequest_LaunchedAndPending(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SCHEDULED,
+	}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(nil, errors.Reason("Transient failure").Err())
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SCHEDULED,
+	}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("as the results are fetched", func() {
-			resp, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldNotBeNil)
-			So(resp.BuildBucketTransientFailure, ShouldBeTrue)
-		})
-	})
+	// GetBuild is not called because the build status is not changed.
 
-	Convey("When a task is launched and BB GetBuild Fails", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
-
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
-
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SUCCESS,
-		}, nil)
-
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(nil, errors.Reason("Transient failure").Err())
-
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("as the results are fetched", func() {
-			resp, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldNotBeNil)
-			So(resp.BuildBucketTransientFailure, ShouldBeTrue)
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	_, err = tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
 }
 
-func TestCompletedTask(t *testing.T) {
-	Convey("When a task is launched and completes", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+func TestFetchRequestBuildBucketFailure_TaskLaunchedGetBuildStatusFails(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SUCCESS,
-		}, nil)
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(nil, errors.Reason("Transient failure").Err())
 
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id: 42,
-			Infra: &buildbucket_pb.BuildInfra{
-				Swarming: &buildbucket_pb.BuildInfra_Swarming{
-					TaskId: "foo-swarming-task-id",
-				},
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	resp, err := tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.NotBeNil)
+	assert.Loosely(t, resp.BuildBucketTransientFailure, should.BeTrue)
+}
+
+func TestFetchRequestBuildBucketFailure_TaskLaunchGetBuildFails(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
+
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SUCCESS,
+	}, nil)
+
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(nil, errors.Reason("Transient failure").Err())
+
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	resp, err := tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.NotBeNil)
+	assert.Loosely(t, resp.BuildBucketTransientFailure, should.BeTrue)
+}
+
+func TestCompletedTask_LaunchAndCompletes(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
+
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SUCCESS,
+	}, nil)
+
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id: 42,
+		Infra: &buildbucket_pb.BuildInfra{
+			Swarming: &buildbucket_pb.BuildInfra_Swarming{
+				TaskId: "foo-swarming-task-id",
 			},
-			Status: buildbucket_pb.Status_SUCCESS,
-			Output: outputProperty("foo-test-case"),
-		}, nil)
+		},
+		Status: buildbucket_pb.Status_SUCCESS,
+		Output: outputProperty("foo-test-case"),
+	}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("the task results are reported correctly.", func() {
-			res, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(res.Result, ShouldNotBeNil)
-			So(res.Result.GetAutotestResult().GetTestCases(), ShouldHaveLength, 1)
-			So(res.Result.GetAutotestResult().GetTestCases()[0].GetName(), ShouldEqual, "foo-test-case")
-			So(tf.skylab.SwarmingTaskID(task), ShouldEqual, "foo-swarming-task-id")
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	res, err := tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, res, should.NotBeNil)
+	assert.Loosely(t, res.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+	assert.Loosely(t, res.Result, should.NotBeNil)
+	assert.Loosely(t, res.Result.GetAutotestResult().GetTestCases(), should.HaveLength(1))
+	assert.Loosely(t, res.Result.GetAutotestResult().GetTestCases()[0].GetName(), should.Equal("foo-test-case"))
+	assert.Loosely(t, tf.skylab.SwarmingTaskID(task), should.Equal("foo-swarming-task-id"))
+}
 
-	Convey("When a task is launched and completes - backend build", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+func TestCompletedTask_BackendBuild(t *testing.T) {
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_SUCCESS,
-		}, nil)
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_SUCCESS,
+	}, nil)
 
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id: 42,
-			Infra: &buildbucket_pb.BuildInfra{
-				Backend: &buildbucket_pb.BuildInfra_Backend{
-					Task: &buildbucket_pb.Task{
-						Id: &buildbucket_pb.TaskID{
-							Id: "foo-swarming-task-id",
-						},
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id: 42,
+		Infra: &buildbucket_pb.BuildInfra{
+			Backend: &buildbucket_pb.BuildInfra_Backend{
+				Task: &buildbucket_pb.Task{
+					Id: &buildbucket_pb.TaskID{
+						Id: "foo-swarming-task-id",
 					},
 				},
 			},
-			Status: buildbucket_pb.Status_SUCCESS,
-			Output: outputProperty("foo-test-case"),
-		}, nil)
+		},
+		Status: buildbucket_pb.Status_SUCCESS,
+		Output: outputProperty("foo-test-case"),
+	}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("the task results are reported correctly.", func() {
-			res, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(res.Result, ShouldNotBeNil)
-			So(res.Result.GetAutotestResult().GetTestCases(), ShouldHaveLength, 1)
-			So(res.Result.GetAutotestResult().GetTestCases()[0].GetName(), ShouldEqual, "foo-test-case")
-			So(tf.skylab.SwarmingTaskID(task), ShouldEqual, "foo-swarming-task-id")
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	res, err := tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, res, should.NotBeNil)
+	assert.Loosely(t, res.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+	assert.Loosely(t, res.Result, should.NotBeNil)
+	assert.Loosely(t, res.Result.GetAutotestResult().GetTestCases(), should.HaveLength(1))
+	assert.Loosely(t, res.Result.GetAutotestResult().GetTestCases()[0].GetName(), should.Equal("foo-test-case"))
+	assert.Loosely(t, tf.skylab.SwarmingTaskID(task), should.Equal("foo-swarming-task-id"))
 }
 
 func TestCompletedTaskMissingResults(t *testing.T) {
-	Convey("When a task is launched, completes and has no results", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_INFRA_FAILURE,
-		}, nil)
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_INFRA_FAILURE,
+	}, nil)
 
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_INFRA_FAILURE,
-		}, nil)
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_INFRA_FAILURE,
+	}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("an error is not returned.", func() {
-			_, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	_, err = tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
 }
 
 func TestAbortedTask(t *testing.T) {
-	Convey("When a task is launched and reports an infra failure", t, func() {
-		tf, cleanup := newTestFixture(t)
-		defer cleanup()
+	tf, cleanup := newTestFixture(t)
+	defer cleanup()
 
-		tf.bb.EXPECT().ScheduleBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+	tf.bb.EXPECT().ScheduleBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
-		tf.bb.EXPECT().GetBuildStatus(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_INFRA_FAILURE,
-		}, nil)
+	tf.bb.EXPECT().GetBuildStatus(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_INFRA_FAILURE,
+	}, nil)
 
-		tf.bb.EXPECT().GetBuild(
-			gomock.Any(),
-			gomock.Any(),
-		).Return(&buildbucket_pb.Build{
-			Id:     42,
-			Status: buildbucket_pb.Status_INFRA_FAILURE,
-			Output: outputProperty("foo-test-case"),
-		}, nil)
+	tf.bb.EXPECT().GetBuild(
+		gomock.Any(),
+		gomock.Any(),
+	).Return(&buildbucket_pb.Build{
+		Id:     42,
+		Status: buildbucket_pb.Status_INFRA_FAILURE,
+		Output: outputProperty("foo-test-case"),
+	}, nil)
 
-		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
-		So(err, ShouldBeNil)
-		Convey("results are ignored.", func() {
-			res, err := tf.skylab.FetchResults(tf.ctx, task)
-			So(err, ShouldBeNil)
-			So(res, ShouldNotBeNil)
-			So(res.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(res.Result, ShouldNotBeNil)
-		})
-	})
+	task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+	assert.Loosely(t, err, should.BeNil)
+	res, err := tf.skylab.FetchResults(tf.ctx, task)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, res, should.NotBeNil)
+	assert.Loosely(t, res.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+	assert.Loosely(t, res.Result, should.NotBeNil)
 }
 
 type testFixture struct {
@@ -695,35 +664,35 @@ func (f *fakeUFS) addPolicy(board string) {
 }
 
 func TestFleetPolicyCheckFailed(t *testing.T) {
-	Convey("When Invalid arguments are passed to fleet check policy", t, func() {
+	ftt.Run("When Invalid arguments are passed to fleet check policy", t, func(t *ftt.Test) {
 		ufs := newFakeUFS()
 		ufs.addPolicy("board1")
-		Convey("the validation fails.", func() {
+		t.Run("the validation fails.", func(t *ftt.Test) {
 			policyResponse, err := ufs.CheckFleetTestsPolicy(context.Background(), &ufsapi.CheckFleetTestsPolicyRequest{
 				TestName: "testName",
 				Board:    "board",
 				Model:    "model",
 				Image:    "image",
 			})
-			So(err, ShouldBeNil)
-			So(policyResponse.TestStatus.Code, ShouldEqual, ufsapi.TestStatus_NOT_A_PUBLIC_BOARD)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, policyResponse.TestStatus.Code, should.Equal(ufsapi.TestStatus_NOT_A_PUBLIC_BOARD))
 		})
 	})
 }
 
 func TestFleetPolicyCheckSucceeded(t *testing.T) {
-	Convey("When valid arguments are passed to fleet check policy", t, func() {
+	ftt.Run("When valid arguments are passed to fleet check policy", t, func(t *ftt.Test) {
 		ufs := newFakeUFS()
 		ufs.addPolicy("board1")
-		Convey("the validation succeeds.", func() {
+		t.Run("the validation succeeds.", func(t *ftt.Test) {
 			policyResponse, err := ufs.CheckFleetTestsPolicy(context.Background(), &ufsapi.CheckFleetTestsPolicyRequest{
 				TestName: "testName",
 				Board:    "board1",
 				Model:    "model",
 				Image:    "image",
 			})
-			So(err, ShouldBeNil)
-			So(policyResponse.TestStatus.Code, ShouldEqual, ufsapi.TestStatus_OK)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, policyResponse.TestStatus.Code, should.Equal(ufsapi.TestStatus_OK))
 		})
 	})
 }
