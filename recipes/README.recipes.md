@@ -43,6 +43,7 @@
   * [docker_image_builder](#recipes-docker_image_builder)
   * [fleet_systems/dhcp](#recipes-fleet_systems_dhcp) &mdash; Test chrome-golo repo DHCP configs using dhcpd binaries via docker.
   * [gae_tarball_uploader](#recipes-gae_tarball_uploader)
+  * [gcs_dep_autoroller](#recipes-gcs_dep_autoroller)
   * [gerrit_hello_world](#recipes-gerrit_hello_world) &mdash; Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
   * [gerrit_plugins](#recipes-gerrit_plugins)
   * [git_cache_updater](#recipes-git_cache_updater) &mdash; Updates the Git Cache zip files.
@@ -1665,6 +1666,12 @@ Test chrome-golo repo DHCP configs using dhcpd binaries via docker.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/gae_tarball_uploader.py#45)(api, properties):**
+### *recipes* / [gcs\_dep\_autoroller](/recipes/recipes/gcs_dep_autoroller.py)
+
+[DEPS](/recipes/recipes/gcs_dep_autoroller.py#9): [depot\_tools/git][depot_tools/recipe_modules/git], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
+
+
+&mdash; **def [RunSteps](/recipes/recipes/gcs_dep_autoroller.py#19)(api, inputs):**
 ### *recipes* / [gerrit\_hello\_world](/recipes/recipes/gerrit_hello_world.py)
 
 [DEPS](/recipes/recipes/gerrit_hello_world.py#11): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]

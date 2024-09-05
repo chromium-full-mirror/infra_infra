@@ -291,3 +291,15 @@ infra.builder(
         "status": "SUCCESS",
     },
 )
+
+# (b/324418194): Temporary builder configuration to test autoroller recipe
+infra.builder(
+    bucket = "try",
+    name = "gcs_dep_autoroller_temp",
+    os = "Ubuntu",
+    executable = infra.recipe("gcs_dep_autoroller", use_python3 = True),
+    properties = {
+        "source_url": "https://chromium.googlesource.com/chromium/src.git",
+        "destination_url": "https://foo.googlesource.com/bar.git",
+    },
+)

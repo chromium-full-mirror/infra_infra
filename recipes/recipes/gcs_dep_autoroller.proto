@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package recipes.infra.gcs_dep_autoroller;
+
+// Input properties recognized by 'infra/gcs_dep_autoroller' recipe.
+message Inputs {
+  // URL of git repo of upstream project 
+  string source_url = 1;
+
+  // URL of git repo of downstream project 
+  string destination_url = 2;
+}
