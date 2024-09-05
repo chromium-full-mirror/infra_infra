@@ -335,7 +335,7 @@ message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
 
-  // NEXT TAG: 26
+  // NEXT TAG: 30
   enum Carrier {
     CARRIER_INVALID = 0;
     CARRIER_ATT = 1;
@@ -364,6 +364,9 @@ message HardwareCapabilities {
     CARRIER_CMX500 = 24;
     CARRIER_RAK = 25;
     CARRIER_CBRS = 26;
+    CARRIER_LINEMO = 27;
+    CARRIER_POVO = 28;
+    CARRIER_HANSHIN = 29;
   }
   optional Carrier carrier = 16;
   // A list of all carriers that can be tested on the DUT. This extends the carrier field which could previously only
