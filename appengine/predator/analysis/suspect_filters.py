@@ -21,7 +21,9 @@ _ROBOT_AUTHOR_REGEXS = [re.compile(r'.*-deps-roller@chromium.org'),
                         re.compile(r'ios-autoroll@chromium.org'),
                         re.compile(r'chrome-release-bot@chromium.org'),
                         re.compile(r'.*-chromium-autoroll@skia-buildbots.google'
-                                   r'.com.iam.gserviceaccount.com')]
+                                   r'.com.iam.gserviceaccount.com'),
+                        re.compile(r'v8-ci-autoroll-builder@chops-service-'
+                                   r'accounts.iam.gserviceaccount.com')]
 
 
 class SuspectFilter(object):
