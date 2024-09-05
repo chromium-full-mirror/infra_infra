@@ -44,7 +44,7 @@ message SIMProfileInfo {
   }
 }
 
-// Next Tag: 18
+// Next Tag: 22
 enum NetworkProvider {
   NETWORK_OTHER = 0;
   NETWORK_UNSUPPORTED = 5;
@@ -64,6 +64,10 @@ enum NetworkProvider {
   NETWORK_BELL = 15;
   NETWORK_TELUS = 16;
   NETWORK_FI = 17;
+  NETWORK_CBRS = 18;
+  NETWORK_LINEMO = 19;
+  NETWORK_POVO = 20;
+  NETWORK_HANSHIN = 21;
 }
 
 // Next Tag: 3
