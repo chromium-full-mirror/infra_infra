@@ -6992,12 +6992,12 @@ wheel: <
 
 ## **perfetto-py3**
 
-### 0.9.0
+### 0.10.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/perfetto-py3"
-  version: "version:0.9.0"
+  version: "version:0.10.0"
 >
 ```
 
