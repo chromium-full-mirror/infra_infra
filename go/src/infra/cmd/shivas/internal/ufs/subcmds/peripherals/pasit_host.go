@@ -163,8 +163,16 @@ func (c *managePasitHostCmd) cleanAndValidateFlags() error {
 		}
 
 		c.hostObj = &labapi.PasitHost{}
-		if err := utils.ParseJSONFile(c.hostFile, c.hostObj); err != nil {
-			return errors.Annotate(err, "json parse error").Err()
+		if strings.HasSuffix(c.hostFile, ".json") {
+			if err := utils.ParseJSONFile(c.hostFile, c.hostObj); err != nil {
+				return errors.Annotate(err, "json parse error").Err()
+			}
+		} else if strings.HasSuffix(c.hostFile, ".textproto") {
+			if err := utils.ParseTextprotoFile(c.hostFile, c.hostObj); err != nil {
+				return errors.Annotate(err, "textproto parse error").Err()
+			}
+		} else {
+			return errors.Reason("unknown topology file format: %q", c.hostFile).Err()
 		}
 	}
 	return c.validateNewHost()

@@ -16,6 +16,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -2226,6 +2227,18 @@ func ParseJSONFile(jsonFile string, pm proto.Message) error {
 		return errors.Annotate(err, "parse json file").Err()
 	}
 	return protojson.Unmarshal(rawText, proto.MessageV2(pm))
+}
+
+// ParseTextprotoFile parses a .textproto input from the user provided file.
+func ParseTextprotoFile(protoFile string, pm proto.Message) error {
+	rawText, err := os.ReadFile(protoFile)
+	if err != nil {
+		return errors.Annotate(err, "parse prototext file").Err()
+	}
+
+	return prototext.UnmarshalOptions{
+		DiscardUnknown: true,
+	}.Unmarshal(rawText, proto.MessageV2(pm))
 }
 
 // GetNextPage gets user input for to get next page of items
