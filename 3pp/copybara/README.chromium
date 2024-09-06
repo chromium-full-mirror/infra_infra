@@ -1,0 +1,16 @@
+Name: copybara
+URL: https://github.com/google/copybara
+Version: 97a24b919365c51e76d96979507003c6d3f1f59c
+Date: 2024-08-13
+Revision: 662613465
+License: Apache 2.0
+License File: LICENSE
+Security Critical: No
+Shipped: No
+License Android Compatible: Yes
+
+Description:
+Copybara is an open-source tool for transforming and moving code between repositories.
+
+Local Modifications:
+None
