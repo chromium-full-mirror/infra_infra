@@ -1,3 +1,7 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import sinon from 'sinon';
 import {assert} from 'chai';
 import {autolink} from './autolink.js';
@@ -32,12 +36,12 @@ describe('autolink', () => {
     });
 
     it('Replace crbug with found components', () => {
-      const str = 'crbug.com/monorail/1234';
+      const str = 'crbug.com/project-name/1234';
       const match = refRegs[0].exec(str);
       refRegs[0].lastIndex = 0;
       const components = {
         closedRefs: [
-          {summary: 'Issue summary', localId: 1234, projectName: 'monorail'},
+          {summary: 'Issue summary', localId: 1234, projectName: 'project-name'},
           {},
         ]};
       const actualRun = replacer(match, components);
@@ -46,7 +50,7 @@ describe('autolink', () => {
           [{
             tag: 'a',
             css: 'strike-through',
-            href: '/p/monorail/issues/detail?id=1234',
+            href: '/p/project-name/issues/detail?id=1234',
             title: 'Issue summary',
             content: str,
           }],
@@ -54,12 +58,12 @@ describe('autolink', () => {
     });
 
     it('Replace crbug with found components, with comment', () => {
-      const str = 'crbug.com/monorail/1234#c1';
+      const str = 'crbug.com/project-name/1234#c1';
       const match = refRegs[0].exec(str);
       refRegs[0].lastIndex = 0;
       const components = {
         closedRefs: [
-          {summary: 'Issue summary', localId: 1234, projectName: 'monorail'},
+          {summary: 'Issue summary', localId: 1234, projectName: 'project-name'},
           {},
         ]};
       const actualRun = replacer(match, components);
@@ -68,7 +72,7 @@ describe('autolink', () => {
           [{
             tag: 'a',
             css: 'strike-through',
-            href: '/p/monorail/issues/detail?id=1234#c1',
+            href: '/p/project-name/issues/detail?id=1234#c1',
             title: 'Issue summary',
             content: str,
           }],
@@ -143,12 +147,12 @@ describe('autolink', () => {
     });
 
     it('Replace crbug with no issue summary', () => {
-      const str = 'crbug.com/monorail/1234';
+      const str = 'crbug.com/project-name/1234';
       const match = refRegs[0].exec(str);
       refRegs[0].lastIndex = 0;
       const components = {
         closedRefs: [
-          {localId: 1234, projectName: 'monorail'},
+          {localId: 1234, projectName: 'project-name'},
           {},
         ]};
       const actualRun = replacer(match, components);
@@ -157,7 +161,7 @@ describe('autolink', () => {
           [{
             tag: 'a',
             css: 'strike-through',
-            href: '/p/monorail/issues/detail?id=1234',
+            href: '/p/project-name/issues/detail?id=1234',
             title: '',
             content: str,
           }],
@@ -168,7 +172,7 @@ describe('autolink', () => {
   describe('regular tracker component functions', () => {
     const {extractRefs, refRegs, replacer} =
       components.get('04-tracker-regular');
-    const str = 'bugs=123, monorail:234 or #345 and PROJ:#456';
+    const str = 'bugs=123, project-name:234 or #345 and PROJ:#456';
     const match = refRegs[0].exec(str);
     refRegs[0].lastIndex = 0;
 
@@ -177,15 +181,15 @@ describe('autolink', () => {
       assert.deepEqual(
           actualRefs,
           [{projectName: 'foo-project', localId: '123'},
-            {projectName: 'monorail', localId: '234'},
-            {projectName: 'monorail', localId: '345'},
+            {projectName: 'project-name', localId: '234'},
+            {projectName: 'project-name', localId: '345'},
             {projectName: 'PROJ', localId: '456'}]);
     });
 
     it('Replace tracker refs.', () => {
       const components = {
         openRefs: [
-          {summary: 'sum', projectName: 'monorail', localId: 888},
+          {summary: 'sum', projectName: 'project-name', localId: 888},
           {summary: 'ma', projectName: 'chromium', localId: '123'},
         ],
         closedRefs: [
@@ -205,7 +209,7 @@ describe('autolink', () => {
               content: '123',
             },
             {content: ', '},
-            {content: 'monorail:234'},
+            {content: 'project-name:234'},
             {content: ' or '},
             {content: '#345'},
             {content: ' and '},
@@ -223,7 +227,7 @@ describe('autolink', () => {
     it('Replace tracker refs mixed case refs.', () => {
       const components = {
         openRefs: [
-          {projectName: 'mOnOrAIl', localId: 234},
+          {projectName: 'pROjEcT-NaMe', localId: 234},
         ],
         closedRefs: [
           {projectName: 'LeMuR', localId: 123},
@@ -244,10 +248,10 @@ describe('autolink', () => {
             {content: ', '},
             {
               tag: 'a',
-              href: '/p/monorail/issues/detail?id=234',
+              href: '/p/project-name/issues/detail?id=234',
               css: '',
               title: '',
-              content: 'monorail:234',
+              content: 'project-name:234',
             },
             {content: ' or '},
             {content: '#345'},
@@ -637,7 +641,7 @@ describe('autolink', () => {
       closedRefs: [{projectName: 'chromium', localId: 99}],
     });
     componentRefs.set('04-tracker-regular', {
-      openRefs: [{summary: 'monorail', projectName: 'monorail', localId: 123}],
+      openRefs: [{summary: 'project-name', projectName: 'project-name', localId: 123}],
       closedRefs: [{projectName: 'chromium', localId: 456}],
     });
     componentRefs.set('03-user-emails', {
@@ -727,7 +731,7 @@ describe('autolink', () => {
 
     it('Only existing issues get linked', () => {
       const plainString =
-        'only existing bugs = 456, monorail:123, 234 and chromium:345 get ' +
+        'only existing bugs = 456, project-name:123, 234 and chromium:345 get ' +
         'linked';
       const actualTextRuns = markupAutolinks(
           plainString, componentRefs, 'chromium');
@@ -751,10 +755,10 @@ describe('autolink', () => {
               content: ', ',
             },
             {
-              content: 'monorail:123',
+              content: 'project-name:123',
               tag: 'a',
-              href: '/p/monorail/issues/detail?id=123',
-              title: 'monorail',
+              href: '/p/project-name/issues/detail?id=123',
+              title: 'project-name',
               css: '',
             },
             {
