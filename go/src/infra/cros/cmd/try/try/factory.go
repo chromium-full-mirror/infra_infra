@@ -94,14 +94,13 @@ func (f *factoryRun) Run(_ subcommands.Application, _ []string, _ subcommands.En
 			f.LogErr(err.Error())
 			return CmdError
 		}
+		defer os.Remove(propsFile.Name())
 	}
+	defer propsFile.Close()
+
 	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
 		f.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
-	}
-	if f.propsFile == nil {
-		defer propsFile.Close()
-		defer os.Remove(propsFile.Name())
 	}
 	f.bbAddArgs = append(f.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
