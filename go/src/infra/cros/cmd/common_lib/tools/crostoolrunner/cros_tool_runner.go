@@ -91,9 +91,9 @@ func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) 
 	ctr.wg.Add(1)
 
 	go func() {
-		err = ctr.StartCTRServer(ctx)
-		if err != nil {
-			logging.Infof(ctx, "error during starting ctr server: %s", err.Error())
+		innerErr := ctr.StartCTRServer(ctx)
+		if innerErr != nil {
+			logging.Infof(ctx, "error during starting ctr server: %s", innerErr.Error())
 		}
 		ctr.wg.Done()
 	}()
