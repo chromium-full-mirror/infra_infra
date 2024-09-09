@@ -17,6 +17,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -391,7 +392,24 @@ func watchParentBuild(outerCtx context.Context, ownBuild *buildbucketpb.Build) e
 	if err != nil {
 		return errors.Annotate(err, "initializing BB client to watch parent build").Err()
 	}
-	getParentBuildReq := &buildbucketpb.GetBuildRequest{Id: parentBBID}
+	getParentBuildReq := &buildbucketpb.GetBuildRequest{
+		Id: parentBBID,
+		Mask: &buildbucketpb.BuildMask{
+			Fields: &fieldmaskpb.FieldMask{Paths: []string{"status", "infra"}},
+		},
+	}
+	parentBuild, err := bc.GetBuild(innerCtx, getParentBuildReq)
+	if err != nil {
+		return errors.Annotate(err, "getting parent build").Err()
+	}
+	parentIsLED := parentBuild.GetInfra().GetLed() != nil
+	thisIsLED := ownBuild.GetInfra().GetLed() != nil
+	// Don't watch the parent build if this build is a LED job with a non-LED
+	// parent build, as the parent build is likely an already-ended prod build.
+	if thisIsLED && !parentIsLED {
+		return nil
+	}
+
 	loopInterval := 1 * time.Second
 	pollInterval := 30 * time.Second
 	lastPollTime := time.Now()
@@ -402,7 +420,7 @@ func watchParentBuild(outerCtx context.Context, ownBuild *buildbucketpb.Build) e
 		}
 
 		if time.Since(lastPollTime) >= pollInterval {
-			parentBuild, err := bc.GetBuild(innerCtx, getParentBuildReq)
+			parentBuild, err = bc.GetBuild(innerCtx, getParentBuildReq)
 			if err != nil {
 				return errors.Annotate(err, "getting parent build").Err()
 			}
