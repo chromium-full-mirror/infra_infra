@@ -665,7 +665,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	// and cause the main process to hang. If the async process hangs, the corrupted
 	// Xcode will be removed, and the main process will fail and exit.
 	ch := make(chan error, 1)
-	startTime := time.Now()
 	go func() {
 		if err := acceptLicense(ctx, downloadXcodePath); err != nil {
 			ch <- err
@@ -688,10 +687,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	case err := <-ch:
 		if err != nil {
 			if args.corruptedXcodePath != "" {
-				if logCollectErr := collectLogs(ctx, startTime, args.xcodeAppPath); logCollectErr != nil {
-					logging.Warningf(ctx, "Error collecting logs: %s", logCollectErr)
-				}
-
 				logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
 				if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
 					logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
@@ -705,10 +700,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		}
 	case <-time.After(MaxXcodeLaunchWaitTime):
 		if args.corruptedXcodePath != "" {
-			if logCollectErr := collectLogs(ctx, startTime, args.xcodeAppPath); logCollectErr != nil {
-				logging.Warningf(ctx, "Error collecting logs: %s", logCollectErr)
-			}
-
 			logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
 			if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
 				logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
