@@ -17,8 +17,6 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	inv "infra/cros/lab_inventory/protos"
-	fleet "infra/libs/fleet/protos"
-	ufs "infra/libs/fleet/protos/go"
 )
 
 // DeviceEntityID represents the ID of a device. We prefer use asset id as the id.
@@ -57,106 +55,6 @@ func (e *DeviceEntity) GetDutStateProto(p *lab.DutState) error {
 func (e *DeviceEntity) String() string {
 	return fmt.Sprintf("<%s:%s>", e.Hostname, e.ID)
 }
-
-/* Asset Entity and helper functions*/
-
-// AssetEntityName is the datastore entity kind for Asset entities.
-const AssetEntityName string = "Asset"
-
-// AssetEntity is a datastore entity that tracks the asset.
-type AssetEntity struct {
-	_kind    string `gae:"$kind,Asset"`
-	ID       string `gae:"$id"`
-	Lab      string
-	Location []byte         `gae:",noindex"`
-	Parent   *datastore.Key `gae:"$parent"`
-}
-
-// AssetStateEntityName is the datastore entity kind for Asset state entities.
-const AssetStateEntityName string = "AssetState"
-
-// AssetStateEntity is the datastore that tracks the asset state.
-type AssetStateEntity struct {
-	_kind   string           `gae:"$kind,AssetState"`
-	ID      string           `gae:"$id"`
-	State   fleet.AssetState `gae:",noindex"`
-	Updated time.Time
-	Parent  *datastore.Key `gae:"$parent"`
-}
-
-func (e *AssetEntity) String() string {
-	return fmt.Sprintf("<%s>:%s", e.ID, e.Lab)
-}
-
-// NewAssetEntity creates an AssetEntity object from ChopsAsset object
-func NewAssetEntity(a *fleet.ChopsAsset, parent *datastore.Key) (*AssetEntity, error) {
-	if a.GetId() == "" {
-		return nil, errors.Reason("Missing asset tag").Err()
-	}
-	location, err := proto.Marshal(a.GetLocation())
-	if err != nil {
-		return nil, err
-	}
-	return &AssetEntity{
-		ID:       a.GetId(),
-		Lab:      a.GetLocation().GetLab(),
-		Location: location,
-		Parent:   parent,
-	}, nil
-}
-
-// NewAssetStateEntity creates an AssetStateEntity object based on input.
-func NewAssetStateEntity(a *fleet.ChopsAsset, state fleet.State, updated time.Time, parent *datastore.Key) (*AssetStateEntity, error) {
-	if a.GetId() == "" {
-		return nil, errors.Reason("Missing asset tag").Err()
-	}
-	return &AssetStateEntity{
-		ID: a.GetId(),
-		State: fleet.AssetState{
-			Id:    a.GetId(),
-			State: state,
-		},
-		Updated: updated,
-		Parent:  parent,
-	}, nil
-}
-
-// ToChopsAsset returns a ChopsAsset object
-func (e *AssetEntity) ToChopsAsset() (*fleet.ChopsAsset, error) {
-	var location ufs.Location
-	err := proto.Unmarshal(e.Location, &location)
-	return &fleet.ChopsAsset{
-		Id:       e.ID,
-		Location: &location,
-	}, err
-}
-
-/* Asset Entity and helper functions end */
-
-/* Asset Info and helper funtions */
-
-// AssetInfoEntity is a datastore entity that tracks the asset info from HaRT.
-type AssetInfoEntity struct {
-	_kind    string        `gae:"$kind,AssetInfo"`
-	AssetTag string        `gae:"$id"`
-	Info     ufs.AssetInfo `gae:",noindex"`
-}
-
-// AssetInfoEntityKind is the datastore entity kind for AssetInfo entities.
-const AssetInfoEntityKind = "AssetInfo"
-
-// NewAssetInfo creates an AssetInfoEntity object from AssetInfo object
-func NewAssetInfo(a *ufs.AssetInfo) (*AssetInfoEntity, error) {
-	if a.GetAssetTag() == "" {
-		return nil, errors.Reason("Missing asset tag").Err()
-	}
-	return &AssetInfoEntity{
-		AssetTag: a.GetAssetTag(),
-		Info:     *a,
-	}, nil
-}
-
-/* Asset Info and helper functions end */
 
 /* Device Manual Repair Record Entity and helper functions */
 
