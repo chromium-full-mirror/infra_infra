@@ -614,6 +614,7 @@ func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.Field
 		case "dut.siminfo":
 		case "dut.dolos.serial.cable":
 		case "dut.dolos.serial.usb":
+		case "dut.dolos.firmware.version":
 			// valid fields, nothing to validate.
 		default:
 			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - unsupported update mask path %q", path)
