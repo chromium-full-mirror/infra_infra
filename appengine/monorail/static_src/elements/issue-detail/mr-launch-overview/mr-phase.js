@@ -251,7 +251,7 @@ export class MrPhase extends connectStore(LitElement) {
   }
 
   /**
-   * Makes an XHR request to Chromium Dash to find Chrome-specific launch data.
+   * Makes an XHR request to ChromiumDash to find Chrome-specific launch data.
    * eg. when certain Chrome milestones are planned for release.
    * @param {string} milestone A string containing a Chrome milestone number.
    * @return {Promise<void>}
