@@ -157,9 +157,10 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 	common.WriteProtoToStepLog(ctx, step, cmd.ExecuteResponses, "output_properties")
 
 	for _, suite := range suiteKeys {
+		var suiteErr error
 		testResults := cmd.AllTestResults[suite]
 		step, ctx := build.StartStep(ctx, suite)
-		defer func() { step.End(err) }()
+		defer func() { step.End(suiteErr) }()
 
 		// Get map from list and group error/non-error separately
 		testResultsMap := GetResultsMapFromList(testResults)
@@ -174,6 +175,8 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 		} else if nonErrResultErr != nil {
 			err = nonErrResultErr
 		}
+		// This will make sure the suite step is red only when there is failure within that suite run
+		suiteErr = err
 	}
 
 	// we don't want the build to fail for this step
@@ -355,21 +358,20 @@ func ToExecuteResponses(testResultMap map[string][]*data.TestResults) *steps.Exe
 	for key, results := range testResultMap {
 		consolidatedResults := []*steps.ExecuteResponse_ConsolidatedResult{}
 		taskResults := []*steps.ExecuteResponse_TaskResult{}
-		enumerationErrorFound := false
 		verdict := test_platform.TaskState_VERDICT_NO_VERDICT
 		for _, testResult := range results {
-			taskResults = append(taskResults, TrResultToErTaskResult(testResult))
+			taskResult := TrResultToErTaskResult(testResult)
+			if taskResult != nil {
+				taskResults = append(taskResults, taskResult)
+			}
 			if testResult.GetFailureErr() != nil {
-				switch (testResult.GetFailureErr()).(type) {
-				case *data.EnumerationError:
-					enumerationErrorFound = true
-				}
 				verdict = test_platform.TaskState_VERDICT_FAILED
 			} else {
 				verdict = test_platform.TaskState_VERDICT_PASSED
 			}
 		}
-		if enumerationErrorFound {
+		// If no task result, then use default one where no task level detail will be shared
+		if len(taskResults) == 0 {
 			taggedRes[key] = &steps.ExecuteResponse{State: &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, Verdict: verdict}}
 		} else {
 			// consolidated results
