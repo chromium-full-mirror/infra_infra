@@ -49,7 +49,18 @@ func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *ufs
 	if err == nil {
 		return resp, nil
 	}
-	logging.Debugf(ctx, "device config ID %v was not found in UFS with error: %s. falling back to inventoryv2", cfgID, err)
+	// Try fallback cfgID which ignores variant
+	if cfgID.GetVariantId().GetValue() != "" {
+		fallbackID := proto.Clone(cfgID).(*ufsdevice.ConfigId)
+		fallbackID.VariantId = nil
+		resp, err = configuration.GetDeviceConfigACL(ctx, fallbackID)
+		if err == nil {
+			return resp, nil
+		}
+		logging.Debugf(ctx, "GetDeviceConfig: device config IDs %v, %v not found in UFS with error: %s. falling back to inventoryv2", cfgID, fallbackID, err)
+	} else {
+		logging.Debugf(ctx, "GetDeviceConfig: device config ID %v not found in UFS with error: %s. falling back to inventoryv2", cfgID, err)
+	}
 
 	// if we cannot fetch from UFS, fall back to inventoryv2
 	crosCfgID, err := ufsToCrosCfgIDProto(cfgID)

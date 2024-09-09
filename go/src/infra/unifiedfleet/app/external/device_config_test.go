@@ -81,6 +81,15 @@ func TestGetDeviceConfig(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name:    "fallback config in UFS",
+			inUFS:   true,
+			invResp: nil,
+			invErr:  true,
+			cfgID:   configuration.GetConfigID("zork", "gumboz", "12345"),
+			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"}),
+			wantErr: false,
+		},
+		{
 			name:  "config in inventoryv2",
 			inUFS: false,
 			invResp: &device.Config{
