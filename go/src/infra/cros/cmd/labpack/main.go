@@ -160,8 +160,9 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 	lg.Infof("Using inventory namespace: %q", input.GetInventoryNamespace())
 	ctx = setupContextNamespace(ctx, input.GetInventoryNamespace())
 	useMetrics := !input.GetNoMetrics()
-	if useMetrics && input.GetInventoryNamespace() == ufsUtil.OSPartnerNamespace {
-		// Partners do nothave access for metrics service.
+	isOSPartnerNamespace := input.GetInventoryNamespace() == ufsUtil.OSPartnerNamespace
+	if useMetrics && isOSPartnerNamespace {
+		// Partners do not have access for metrics service.
 		useMetrics = false
 	}
 	var metrics metrics.Metrics
@@ -183,17 +184,20 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 		resultErrors = append(resultErrors, err)
 	}
 	lg.Infof("Finished task execution.")
-	lg.Infof("Starting uploading logs...")
-	if err := uploadLogs(ctx, input, lg); err != nil {
-		res.Success = false
-		if len(resultErrors) == 0 {
-			// We should not override runerror reason as it more important.
-			// If upload logs error is only exits then set it as reason.
-			res.FailReason = err.Error()
+	// Partners do not have access to karte service.
+	if !isOSPartnerNamespace {
+		lg.Infof("Starting uploading logs...")
+		if err := uploadLogs(ctx, input, lg); err != nil {
+			res.Success = false
+			if len(resultErrors) == 0 {
+				// We should not override runerror reason as it more important.
+				// If upload logs error is only exits then set it as reason.
+				res.FailReason = err.Error()
+			}
+			resultErrors = append(resultErrors, err)
 		}
-		resultErrors = append(resultErrors, err)
+		lg.Infof("Finished uploading logs.")
 	}
-	lg.Infof("Finished uploading logs.")
 	// if err is nil then will marked as SUCCESS
 	if len(resultErrors) == 0 {
 		// Reset reason and state as no errors detected.
