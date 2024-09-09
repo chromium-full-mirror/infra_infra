@@ -865,9 +865,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		var d1 inventory.DeviceUnderTest
 		err := proto.UnmarshalText(dutTextProto, &d1)
 		assert.Loosely(t, err, should.BeNil)
-		s1, err := inventory.WriteLabToString(&inventory.Lab{
-			Duts: []*inventory.DeviceUnderTest{&d1},
-		})
+		s1, err := inventory.WriteDUTToString(&d1)
 		assert.Loosely(t, err, should.BeNil)
 		dataCopy := proto.Clone(&data).(*ufspb.ChromeOSDeviceData)
 
@@ -902,18 +900,14 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			d.GetCommon().GetLabels().Platform = &board
 			d.GetCommon().GetLabels().OsType = &osType
 			d.GetCommon().GetLabels().Arc = &falseValue
-			s1, err := inventory.WriteLabToString(&inventory.Lab{
-				Duts: []*inventory.DeviceUnderTest{d},
-			})
+			s1, err := inventory.WriteDUTToString(d)
 			assert.Loosely(t, err, should.BeNil)
 
 			//dataCopy.LabConfig = proto.Clone(data.LabConfig).(*ufspb.MachineLSE)
 			dataCopy.GetMachine().GetChromeosMachine().BuildTarget = board
 			d2, err := AdaptToV1DutSpec(dataCopy)
 			assert.Loosely(t, err, should.BeNil)
-			s2, err := inventory.WriteLabToString(&inventory.Lab{
-				Duts: []*inventory.DeviceUnderTest{d2},
-			})
+			s2, err := inventory.WriteDUTToString(d2)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s1, should.Equal(s2))
 		})
@@ -967,9 +961,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		t.Run("happy path", func(t *ftt.Test) {
 			d, err := AdaptToV1DutSpec(&data)
 			assert.Loosely(t, err, should.BeNil)
-			s, err := inventory.WriteLabToString(&inventory.Lab{
-				Duts: []*inventory.DeviceUnderTest{d},
-			})
+			s, err := inventory.WriteDUTToString(d)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, proto.Equal(&d1, d), should.BeTrue)
 			assert.Loosely(t, s1, should.Equal(s))
@@ -1008,13 +1000,9 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			d, err := AdaptToV1DutSpec(&extLabstaion)
 			assert.Loosely(t, err, should.BeNil)
 
-			s, err := inventory.WriteLabToString(&inventory.Lab{
-				Duts: []*inventory.DeviceUnderTest{d},
-			})
+			s, err := inventory.WriteDUTToString(d)
 			assert.Loosely(t, err, should.BeNil)
-			strLabstation, err := inventory.WriteLabToString(&inventory.Lab{
-				Duts: []*inventory.DeviceUnderTest{&labstation},
-			})
+			strLabstation, err := inventory.WriteDUTToString(&labstation)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s, should.Equal(strLabstation))
 		})
