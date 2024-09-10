@@ -60,7 +60,7 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 	if f.fleetClient == nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Internal, errors.New("fleet client must exist"))
 	}
-	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req.GetHostname(), req.GetForgiveMissingEntries())
+	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req)
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}

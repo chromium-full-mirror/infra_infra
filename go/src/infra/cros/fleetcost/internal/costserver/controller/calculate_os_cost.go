@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
 	"infra/cros/fleetcost/internal/utils"
@@ -77,7 +78,9 @@ func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 // CalculateCostForOsResource calculates the cost for an OS resource.
 //
 // So far, only ChromeOS devices are supported.
-func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, hostname string, forgiveMissingEntries bool) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
+func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, req *fleetcostAPI.GetCostResultRequest) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
+	hostname := req.GetHostname()
+	forgiveMissingEntries := req.GetForgiveMissingEntries()
 	logging.Infof(ctx, "getting device data for hostname %q with forgive=%v", hostname, forgiveMissingEntries)
 	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
 	if err != nil {
