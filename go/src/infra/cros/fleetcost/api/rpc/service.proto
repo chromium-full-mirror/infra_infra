@@ -176,6 +176,17 @@ message GetCostResultRequest {
   bool force_update = 3;
   // forgive missing entries forgives entries that are missing.
   bool forgive_missing_entries = 4;
+  // If no UFS is true, then compute the answer for a generic entity (that may not exist in UFS).
+  // If no UFS is false, then do the usual thing and get information such as the board and model from UFS.
+  bool no_ufs = 5;
+  // An analysis hint is a hint provided to a cost result request when no_ufs is true
+  // that provides features for the DUT that would otherwise come from UFS.
+  //
+  // These features are:
+  //
+  // -- "chromeos"  (says that the DUT is an ordinary chromeos device)
+  // -- "pool:" ... (controls the pool)
+  repeated string analysis_hint = 6;
 }
 
 // GetCostResultResponse is the cost detail information obtained by GetCostResult.
