@@ -28,7 +28,7 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 
 	log.Println("Setting build.")
 	ru.buildStr = "brya-trunk_staging-userdebug"
-	ru.buildNum = "P79600266"
+	ru.buildNum = "12330924"
 
 	if err := GenerateDynamicUpdates(req, ru, log); err != nil {
 		log.Printf("Error while generating dynamic updates, %s", err)

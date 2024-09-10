@@ -125,7 +125,7 @@ func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx contex
 		printer:     c.printer,
 		cmdName:     suiteCmdName,
 		bbClient:    ctpBBClient,
-		testPlan:    testPlanForSuites(args, c.tagIncludes, c.tagExcludes, c.testNameExcludes, c.testNameExcludes, c.enableAutotestSharding, c.testArgs, c.maxInShard),
+		testPlan:    testPlanForSuites(args, c.tagIncludes, c.tagExcludes, c.testNameIncludes, c.testNameExcludes, c.enableAutotestSharding, c.testArgs, c.maxInShard),
 		cliFlags:    &c.testCommonFlags,
 	}
 

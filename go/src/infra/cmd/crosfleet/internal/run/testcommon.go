@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -430,6 +431,38 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 
 	if l.cliFlags.releaseRetryUrgent {
 		l.cliFlags.qsAccount = releaseP0QSaccount
+	}
+
+	if l.testPlan.Suite != nil {
+		for _, suite := range l.testPlan.GetSuite() {
+			if strings.HasPrefix(suite.GetName(), "AL.") {
+				foilFilter := &api.CTPFilter{
+					ContainerInfo: &api.ContainerInfo{
+						Container: &buildapi.ContainerImageInfo{
+							Name: "foil-filter",
+						},
+						BinaryArgs: []string{
+							"-prov-path", "us-docker.pkg.dev/cros-registry/test-services/foil-provision@sha256:96d6d9a4ca847432c4788c3b263f8b25e1c79f3b9671689581922c25908aff5a",
+							"-test-path", "us-docker.pkg.dev/cros-registry/test-services/cros-test@sha256:f0dd427b2fffd41131326d5ef3f8564c9a90a74f09a54dec44998c9dca3dbd2b",
+						},
+					},
+				}
+				alTestFinder := &api.CTPFilter{
+					ContainerInfo: &api.ContainerInfo{
+						Container: &buildapi.ContainerImageInfo{
+							Repository: &buildapi.GcrRepository{
+								Hostname: "us-docker.pkg.dev",
+								Project:  "cros-registry/test-services",
+							},
+							Name:   "cros-test-finder",
+							Digest: "sha256:8d5689f430aa2bad948c31e1675c3ba3d7afd7af7b5990f8b54b33e2114fb5e7",
+						},
+					},
+				}
+				l.cliFlags.userDefinedFilters = append(l.cliFlags.userDefinedFilters, foilFilter, alTestFinder)
+				break
+			}
+		}
 	}
 
 	return &builder.CTPBuilder{

@@ -78,8 +78,8 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *FoilRequestUpdat
 
 func updateProvisionInstallPath(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
 	req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"] = fmt.Sprintf(
-		"android-build/build_explorer/build_details/%s/%s/android-desktop-ota-packages.zip",
-		updater.buildNum, updater.buildStr)
+		"android-build/build_explorer/artifacts_list/%s/%s/brya-ota-%s.zip",
+		updater.buildNum, updater.buildStr, updater.buildNum)
 }
 
 func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
