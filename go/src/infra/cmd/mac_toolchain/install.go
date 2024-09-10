@@ -500,7 +500,6 @@ type InstallArgs struct {
 	serviceAccountJSON     string
 	packageInstallerOnBots string
 	withRuntime            bool
-	corruptedXcodePath     string
 	tmpXcodePath           string
 }
 
@@ -686,12 +685,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	select {
 	case err := <-ch:
 		if err != nil {
-			if args.corruptedXcodePath != "" {
-				logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
-				if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
-					logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
-				}
-			}
 			// if fail to accept license or launch, remove xcode
 			os.RemoveAll(args.xcodeAppPath)
 			return err
@@ -699,12 +692,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 			close(ch)
 		}
 	case <-time.After(MaxXcodeLaunchWaitTime):
-		if args.corruptedXcodePath != "" {
-			logging.Warningf(ctx, "Attempting to rename %s to %s", args.xcodeAppPath, args.corruptedXcodePath)
-			if renameErr := renameDirectory(downloadXcodePath, args.corruptedXcodePath); renameErr != nil {
-				logging.Warningf(ctx, "Error renaming corrupted Xcode directory: %s", renameErr)
-			}
-		}
 		err := os.RemoveAll(args.xcodeAppPath)
 		if err != nil {
 			return errors.Annotate(err, "failed to remove corrupted Xcode %s", args.xcodeAppPath).Err()

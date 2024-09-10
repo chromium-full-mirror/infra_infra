@@ -106,7 +106,6 @@ type installRun struct {
 	kind               KindType
 	serviceAccountJSON string
 	withRuntime        bool
-	corruptedXcodePath string
 }
 
 type uploadRun struct {
@@ -248,7 +247,6 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 		serviceAccountJSON:     c.serviceAccountJSON,
 		packageInstallerOnBots: PackageInstallerOnBots,
 		withRuntime:            c.withRuntime && c.kind == iosKind,
-		corruptedXcodePath:     c.corruptedXcodePath,
 		tmpXcodePath:           xcodeTmpApp,
 	}
 	err := installXcode(ctx, installArgs)
@@ -586,7 +584,6 @@ func installFlagVars(c *installRun) {
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
 	c.Flags.Var(&c.kind, "kind", "Installation kind: "+KindTypeEnum.Choices()+". (default: \""+string(DefaultKind)+"\")")
 	c.Flags.BoolVar(&c.withRuntime, "with-runtime", true, "Whether to install the default iOS runtime to Xcode. Only works in ios kind.")
-	c.Flags.StringVar(&c.corruptedXcodePath, "corrupted-xcode-path", "", "Optionally move the corrupted Xcode to this directory for later debugging.")
 	c.kind = DefaultKind
 }
 
