@@ -212,33 +212,24 @@ class CompletedBuildPubsubIngestorTest(AppengineTestCase):
 
   @mock.patch.object(completed_build_pubsub_ingestor,
                      '_HandlePossibleCodeCoverageBuild')
-  @mock.patch.object(FinditHttpClient, 'Post')
-  def testPushIgnoreV2Push(self, mock_post, *_):
+  def testPushV2_InvokeCodeCoverage(self, mock_code_coverage, *_):
     request_body = json.dumps({
         'message': {
             'attributes': {
-                'build_id': '123456',
                 'version': 'v2',
             },
             'data':
                 six.ensure_str(
                     base64.b64encode(
                         six.ensure_binary(
-                            json.dumps({
-                                'build': {
-                                    'project':
-                                        'chromium',
-                                    'bucket':
-                                        'luci.chromium.ci',
-                                    'status':
-                                        'COMPLETED',
-                                    'parameters_json':
-                                        '{"builder_name": "builder"}',
-                                }
-                            })))),
+                            json.dumps(
+                                {'build': {
+                                    'id': 123456,
+                                    'status': 'SUCCESS',
+                                }})))),
         },
     })
     response = self.test_app.post(
         '/index-isolated-builds?format=json', params=request_body)
-    self.assertFalse(mock_post.called)
+    self.assertTrue(mock_code_coverage.called)
     self.assertEqual(200, response.status_int)

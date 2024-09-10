@@ -9,10 +9,12 @@ import logging
 import six
 
 from google.appengine.api import taskqueue
-from google.appengine.ext import ndb
+from google.protobuf.json_format import Parse
+
+from go.chromium.org.luci.buildbucket.proto import notification_pb2
+from go.chromium.org.luci.buildbucket.proto import common_pb2
 
 from common.base_handler import BaseHandler, Permission
-
 from common.waterfall.buildbucket_client import GetV2Build
 
 
@@ -30,35 +32,53 @@ class CompletedBuildPubsubIngestor(BaseHandler):
     builder_name = None
     try:
       envelope = self.request.get_json(force=True)
+      # See the list of available 'attributes' at https://bit.ly/47fCmXC
       version = envelope['message']['attributes'].get('version')
-      if version and version != 'v1':
-        logging.info('Ignoring versions other than v1')
+      if version and (version != 'v1' and version != 'v2'):
+        logging.info('Ignoring versions other than v1 & v2')
         return
-      build_id = envelope['message']['attributes']['build_id']
-      build = json.loads(base64.b64decode(envelope['message']['data']))['build']
-      status = build['status']
-      parameters_json = json.loads(build['parameters_json'])
-      builder_name = parameters_json['builder_name']
+      if not version or version == 'v1':
+        build_id = envelope['message']['attributes']['build_id']
+        build = json.loads(base64.b64decode(
+            envelope['message']['data']))['build']
+        status = build['status']
+        parameters_json = json.loads(build['parameters_json'])
+        builder_name = parameters_json['builder_name']
+
+        # Legacy Buildbucket Status
+        # Visit https://bit.ly/3nnra8P to understand the mapping to new status
+        # enum
+        if status == 'COMPLETED':
+          # Filter the builds Findit doesn't have permission to read
+          bb_build = GetV2Build(build_id)
+          if not bb_build:
+            logging.error('Failed to download build for %s/%r.', builder_name,
+                          build_id)
+            return
+          _HandlePossibleCodeCoverageBuild(int(build_id))
+        # We don't care about pending or non-supported builds, so we accept the
+        # notification by returning 200, and prevent pubsub from retrying it.
+
+      else:
+        result = Parse(
+            base64.b64decode(envelope['message']['data']),
+            notification_pb2.BuildsV2PubSub(),
+            ignore_unknown_fields=True)
+        build_id = result.build.id
+        status = result.build.status
+        if (status
+            & common_pb2.Status.ENDED_MASK == common_pb2.Status.ENDED_MASK):
+          # We don't need to check if the build is accessible, as in the v2 we
+          # add configuration so that we only receive the builds we care about,
+          # instead of everything.
+          _HandlePossibleCodeCoverageBuild(int(build_id))
+
     except (ValueError, KeyError) as e:
       # Ignore requests with invalid message.
       logging.debug('build_id: %r', build_id)
       logging.error('Unexpected PubSub message format: %s', six.text_type(e))
       logging.debug('Post body: %s', self.request.get_json(force=True))
       return
-
-    # Legacy Buildbucket Status
-    # Visit https://bit.ly/3nnra8P to understand the mapping to new status enum
-    if status == 'COMPLETED':
-      # Checks if the build is accessable.
-      bb_build = GetV2Build(build_id)
-      if not bb_build:
-        logging.error('Failed to download build for %s/%r.', builder_name,
-                      build_id)
-        return
-
-      _HandlePossibleCodeCoverageBuild(int(build_id))
-    # We don't care about pending or non-supported builds, so we accept the
-    # notification by returning 200, and prevent pubsub from retrying it.
 
 
 def _HandlePossibleCodeCoverageBuild(build_id):  # pragma: no cover
