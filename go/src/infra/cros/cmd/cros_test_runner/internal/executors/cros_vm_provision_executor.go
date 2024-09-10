@@ -140,7 +140,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 			GceProject:               common.GceProject,
 			GceNetwork:               common.GceNetwork,
 			GceMachineType:           common.GceMachineTypeN14,
-			GceMinCpuPlatform:        common.GceMinCpuPlatform,
+			GceMinCpuPlatform:        common.GceMinCPUPlatform,
 			SubnetModeNetworkEnabled: true,
 			GceDiskSize:              getDiskSizeByBoard(img),
 		},

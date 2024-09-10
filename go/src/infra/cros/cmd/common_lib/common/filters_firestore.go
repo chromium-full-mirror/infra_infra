@@ -64,6 +64,26 @@ func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters 
 	return
 }
 
+func FetchFilterFromFirestore(ctx context.Context, creds, tag, name string) (filter *api.CTPFilter, err error) {
+	firestoreClient, err := EstablishFirestoreConnection(ctx, creds)
+	if err != nil {
+		err = errors.Annotate(err, "failed to initialize firestore client").Err()
+		return
+	}
+	defer func() {
+		closeErr := firestoreClient.Close()
+		if closeErr != nil {
+			logging.Infof(ctx, "failed to close firestore client, %w", &closeErr)
+		}
+	}()
+
+	collectionName := GetFirestoreCollection(tag)
+	collection := firestoreClient.Collection(collectionName)
+	filter, err = fetchFilterFromFirestoreCollection(ctx, collection, name)
+
+	return
+}
+
 // FetchContainerInfoFromFirestoreDoc grabs the ContainerInfoItems
 // from the provided firestore document reference.
 func FetchContainerInfoFromFirestoreDoc(ctx context.Context, docRef *firestore.DocumentRef) []*ContainerInfoItem {
@@ -109,27 +129,46 @@ func fetchFiltersFromFirestoreCollection(ctx context.Context, collection *firest
 	}
 
 	for _, documentRef := range documentRefs {
-		containerInfos := FetchContainerInfoFromFirestoreDoc(ctx, documentRef)
-		if len(containerInfos) == 0 {
-			err = fmt.Errorf("%s is missing container info", documentRef.ID)
+		filter, innerErr := buildCTPFilterFromDocumentRef(ctx, documentRef)
+		if innerErr != nil {
+			err = errors.Annotate(innerErr, "%s failed", documentRef.ID).Err()
 			return
 		}
-		// Grab most recent.
-		// Convert to CTPFilter.
-		containerInfo := containerInfos[0]
-		filters = append(filters, &api.CTPFilter{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &buildapi.ContainerImageInfo{
-					Name:   documentRef.ID,
-					Digest: containerInfo.Digest,
-					Repository: &buildapi.GcrRepository{
-						Hostname: containerInfo.RepositoryHostname,
-						Project:  containerInfo.RepositoryProject,
-					},
-				},
-			},
-		})
+
+		filters = append(filters, filter)
 	}
 
+	return
+}
+
+func buildCTPFilterFromDocumentRef(ctx context.Context, documentRef *firestore.DocumentRef) (filter *api.CTPFilter, err error) {
+	containerInfos := FetchContainerInfoFromFirestoreDoc(ctx, documentRef)
+	if len(containerInfos) == 0 {
+		err = fmt.Errorf("%s is missing container info", documentRef.ID)
+		return
+	}
+	// Grab most recent.
+	// Convert to CTPFilter.
+	containerInfo := containerInfos[0]
+	filter = &api.CTPFilter{
+		ContainerInfo: &api.ContainerInfo{
+			Container: &buildapi.ContainerImageInfo{
+				Name:   documentRef.ID,
+				Digest: containerInfo.Digest,
+				Repository: &buildapi.GcrRepository{
+					Hostname: containerInfo.RepositoryHostname,
+					Project:  containerInfo.RepositoryProject,
+				},
+			},
+		},
+	}
+	return
+}
+
+// fetchFilterFromFirestoreCollection grabs a single filter
+// from the provided firestore collection reference.
+func fetchFilterFromFirestoreCollection(ctx context.Context, collection *firestore.CollectionRef, filterName string) (filter *api.CTPFilter, err error) {
+	documentRef := collection.Doc(filterName)
+	filter, err = buildCTPFilterFromDocumentRef(ctx, documentRef)
 	return
 }
