@@ -24,7 +24,7 @@ type InventoryClient interface {
 // AdminClient is a client that knows how to respond to the GetStableVersion RPC call.
 // Its prototypical implementation is fleet.InventoryClient.
 type AdminClient interface {
-	GetStableVersion(ctx context.Context, in *fleet.GetStableVersionRequest, opts ...grpc.CallOption) (*fleet.GetStableVersionResponse, error)
+	GetRecoveryVersion(ctx context.Context, in *fleet.GetRecoveryVersionRequest, opts ...grpc.CallOption) (*fleet.GetRecoveryVersionResponse, error)
 }
 
 // Getter is a container for the clients needed to construct the host_info_store contents for a given hostname.
@@ -88,8 +88,8 @@ func (g *Getter) GetStableVersionForHostname(ctx context.Context, hostname strin
 		return nil, fmt.Errorf("hostname cannot be empty")
 	}
 
-	res, err := g.ac.GetStableVersion(ctx, &fleet.GetStableVersionRequest{
-		Hostname: hostname,
+	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
+		DeviceName: hostname,
 	})
 	if err != nil {
 		return nil, err
@@ -110,9 +110,10 @@ func (g *Getter) GetStableVersionForModel(ctx context.Context, board, model stri
 		return nil, fmt.Errorf("no Inventory client for stable version")
 	}
 
-	res, err := g.ac.GetStableVersion(ctx, &fleet.GetStableVersionRequest{
-		Model:       model,
-		BuildTarget: board,
+	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
+		DeviceName: "shivas-device",
+		Model:      model,
+		Board:      board,
 	})
 	if err != nil {
 		return nil, err
@@ -121,11 +122,10 @@ func (g *Getter) GetStableVersionForModel(ctx context.Context, board, model stri
 	return extractStableVersionFromResponse(res), nil
 }
 
-func extractStableVersionFromResponse(res *fleet.GetStableVersionResponse) map[string]string {
+func extractStableVersionFromResponse(res *fleet.GetRecoveryVersionResponse) map[string]string {
 	return map[string]string{
-		"cros":       res.GetCrosVersion(),
-		"faft":       res.GetFaftVersion(),
-		"firmware":   res.GetFirmwareVersion(),
-		"servo-cros": res.GetServoCrosVersion(),
+		"cros":     res.GetVersion().GetOsVersion(),
+		"faft":     res.GetVersion().GetFirmwareRoImagePath(),
+		"firmware": res.GetVersion().GetFirmwareRoVersion(),
 	}
 }

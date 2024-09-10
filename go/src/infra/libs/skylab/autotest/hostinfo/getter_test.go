@@ -10,9 +10,11 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	grpc "google.golang.org/grpc"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/stableversion/keys"
 	"infra/libs/skylab/inventory"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -70,8 +72,7 @@ const fullResponse = `{
 	"stable_versions": {
 		"cros": "FAKE-CROS-VERSION",
 		"faft": "FAKE-FAFT-VERSION",
-		"firmware": "FAKE-FIRMWARE-VERSION",
-		"servo-cros": "FAKE-SERVO-CROS-VERSION"
+		"firmware": "FAKE-FIRMWARE-VERSION"
 	},
 	"serializer_version": 1
 }`
@@ -90,32 +91,44 @@ func (f *FakeGetDutInfo) GetChromeOSDeviceData(ctx context.Context, req *ufsAPI.
 }
 
 type FakeGetStableVersion struct {
-	version map[string]FakeStableVersion
-}
-type FakeStableVersion struct {
-	cros      string
-	faft      string
-	firmware  string
-	servoCros string
+	version map[string]lab_platform.StableVersion
 }
 
-func (f *FakeGetStableVersion) GetStableVersion(ctx context.Context, in *fleet.GetStableVersionRequest, opts ...grpc.CallOption) (*fleet.GetStableVersionResponse, error) {
-	key := ""
-	if in.Hostname != "" {
-		key += "|hostname:" + in.Hostname
+func (f *FakeGetStableVersion) GetRecoveryVersion(ctx context.Context, in *fleet.GetRecoveryVersionRequest, opts ...grpc.CallOption) (*fleet.GetRecoveryVersionResponse, error) {
+	resp := &fleet.GetRecoveryVersionResponse{}
+	pools := append([]string{}, in.Pools...)
+	// Add empty pool for keys when pool was not specified.
+	pools = append(pools, "")
+	for _, pool := range pools {
+		key := keys.New(in.Board, in.Model, pool).String()
+		if v, ok := f.version[key]; ok {
+			resp.Version = &lab_platform.StableVersion{
+				Target: &lab_platform.StableVersionTarget{
+					Board: in.Board,
+					Model: in.Model,
+					Pool:  pool,
+				},
+				OsVersion:           v.OsVersion,
+				OsImagePath:         v.OsImagePath,
+				FirmwareRoVersion:   v.FirmwareRoVersion,
+				FirmwareRoImagePath: v.FirmwareRoImagePath,
+			}
+			return resp, nil
+		}
 	}
-	if in.BuildTarget != "" {
-		key += "|board:" + in.BuildTarget
-	}
-	if in.Model != "" {
-		key += "|model:" + in.Model
-	}
-	resp := &fleet.GetStableVersionResponse{}
-	if v, ok := f.version[key]; ok {
-		resp.CrosVersion = v.cros
-		resp.FaftVersion = v.faft
-		resp.FirmwareVersion = v.firmware
-		resp.ServoCrosVersion = v.servoCros
+	// if that is request per hostname.
+	if in.DeviceName != "" && in.Board == "" && in.Model == "" && len(in.Pools) == 0 {
+		key := "|hostname:" + in.DeviceName
+		if v, ok := f.version[key]; ok {
+			resp.Version = &lab_platform.StableVersion{
+				Target:              &lab_platform.StableVersionTarget{},
+				OsVersion:           v.OsVersion,
+				OsImagePath:         v.OsImagePath,
+				FirmwareRoVersion:   v.FirmwareRoVersion,
+				FirmwareRoImagePath: v.FirmwareRoImagePath,
+			}
+		}
+		return resp, nil
 	}
 	return resp, nil
 }
@@ -261,12 +274,11 @@ func TestGetContentsForHostname(t *testing.T) {
 			},
 		},
 		&FakeGetStableVersion{
-			version: map[string]FakeStableVersion{
+			version: map[string]lab_platform.StableVersion{
 				"|hostname:FAKE-HOSTNAME": {
-					cros:      "FAKE-CROS-VERSION",
-					faft:      "FAKE-FAFT-VERSION",
-					firmware:  "FAKE-FIRMWARE-VERSION",
-					servoCros: "FAKE-SERVO-CROS-VERSION",
+					OsVersion:           "FAKE-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE-FIRMWARE-VERSION",
 				},
 			},
 		},
@@ -290,33 +302,29 @@ func TestGetStableVersionForHostname(t *testing.T) {
 	const hostname = "FAKE-HOSTNAME"
 	const expectedErr = ""
 	expected := map[string]string{
-		"cros":       "FAKE-CROS-VERSION",
-		"faft":       "FAKE-FAFT-VERSION",
-		"firmware":   "FAKE-FIRMWARE-VERSION",
-		"servo-cros": "FAKE-SERVO-CROS-VERSION",
+		"cros":     "FAKE-CROS-VERSION",
+		"faft":     "FAKE-FAFT-VERSION",
+		"firmware": "FAKE-FIRMWARE-VERSION",
 	}
 
 	g := NewGetter(
 		nil,
 		&FakeGetStableVersion{
-			version: map[string]FakeStableVersion{
+			version: map[string]lab_platform.StableVersion{
 				"|hostname:FAKE-HOSTNAME": {
-					cros:      "FAKE-CROS-VERSION",
-					faft:      "FAKE-FAFT-VERSION",
-					firmware:  "FAKE-FIRMWARE-VERSION",
-					servoCros: "FAKE-SERVO-CROS-VERSION",
+					OsVersion:           "FAKE-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE-FIRMWARE-VERSION",
 				},
 				"|board:fake-board|model:fake-model": {
-					cros:      "FAKE1-board-mode-CROS-VERSION",
-					faft:      "FAKE1-board-mode-FAFT-VERSION",
-					firmware:  "FAKE1-board-mode-FIRMWARE-VERSION",
-					servoCros: "FAKE1-board-mode-SERVO-CROS-VERSION",
+					OsVersion:           "FAKE1-board-mode-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE1-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE1-board-mode-FIRMWARE-VERSION",
 				},
 				"|hostname:FAKE1": {
-					cros:      "FAKE2-CROS-VERSION",
-					faft:      "FAKE2-FAFT-VERSION",
-					firmware:  "FAKE2-FIRMWARE-VERSION",
-					servoCros: "FAKE2-SERVO-CROS-VERSION",
+					OsVersion:           "FAKE2-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE2-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE2-FIRMWARE-VERSION",
 				},
 			},
 		},
@@ -339,33 +347,29 @@ func TestGetStableVersionForModel(t *testing.T) {
 
 	const expectedErr = ""
 	expected := map[string]string{
-		"cros":       "FAKE2-board-mode-CROS-VERSION",
-		"faft":       "FAKE2-board-mode-FAFT-VERSION",
-		"firmware":   "FAKE2-board-mode-FIRMWARE-VERSION",
-		"servo-cros": "FAKE2-board-mode-SERVO-CROS-VERSION",
+		"cros":     "FAKE2-board-mode-CROS-VERSION",
+		"faft":     "FAKE2-board-mode-FAFT-VERSION",
+		"firmware": "FAKE2-board-mode-FIRMWARE-VERSION",
 	}
 
 	g := NewGetter(
 		nil,
 		&FakeGetStableVersion{
-			version: map[string]FakeStableVersion{
-				"|board:fake-mode|model:fake-model": {
-					cros:      "FAKE1-mode-mode-CROS-VERSION",
-					faft:      "FAKE1-mode-mode-FAFT-VERSION",
-					firmware:  "FAKE1-mode-mode-FIRMWARE-VERSION",
-					servoCros: "FAKE1-mode-mode-SERVO-CROS-VERSION",
+			version: map[string]lab_platform.StableVersion{
+				keys.New("fake-mode", "fake-model", "").String(): {
+					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
-				"|board:fake-board|model:fake-model": {
-					cros:      "FAKE2-board-mode-CROS-VERSION",
-					faft:      "FAKE2-board-mode-FAFT-VERSION",
-					firmware:  "FAKE2-board-mode-FIRMWARE-VERSION",
-					servoCros: "FAKE2-board-mode-SERVO-CROS-VERSION",
+				keys.New("fake-board", "fake-model", "").String(): {
+					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
 				},
 				"|hostname:FAKE-HOSTNAME": {
-					cros:      "FAKE3-hostname-CROS-VERSION",
-					faft:      "FAKE3-hostname-FAFT-VERSION",
-					firmware:  "FAKE3-hostname-FIRMWARE-VERSION",
-					servoCros: "FAKE3-hostname-SERVO-CROS-VERSION",
+					OsVersion:           "FAKE3-hostname-CROS-VERSION",
+					FirmwareRoImagePath: "FAKE3-hostname-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE3-hostname-FIRMWARE-VERSION",
 				},
 			},
 		},
