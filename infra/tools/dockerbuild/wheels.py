@@ -486,10 +486,17 @@ SPECS.update({
         SourceOrPrebuilt(
             'cryptography',
             '43.0.0',
+            # Cryptography 43 requires Rust, but there is no rust compiler
+            # in the container, so package the wheels that are available.
+            only_plat=[
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
             pyversions=['py3'],
-            packaged=(),
-            patch_version='chromium.1',
-            default=False,
         ),
         SourceOrPrebuilt(
             'debugpy',
