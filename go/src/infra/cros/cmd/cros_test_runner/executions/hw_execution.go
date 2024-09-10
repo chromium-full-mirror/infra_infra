@@ -186,7 +186,7 @@ func executeHwTests(
 
 	// Post process was only included in the dynamic format.
 	// Hack the command/executor into non-dynamic.
-	sk.ContainerQueue.PushBack(common_builders.BuildPostProcessContainerRequest(common.PostProcess, nil))
+	sk.ContainerQueue.PushBack(common_builders.BuildPostProcessContainerRequest(common.PostProcess))
 	sk.PostTestQueue.PushBack(common_builders.BuildPostProcessRequest(common.PostProcess))
 
 	if sk.CftTestRequest.GetPrimaryDut() != nil {

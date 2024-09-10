@@ -92,12 +92,12 @@ func (cmd *GenericPostProcessCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	if err := common.InjectDependencies(cmd.PostProcessRequest, sk.Injectables, cmd.PostProcessRequest.DynamicDeps); err != nil {
-		logging.Infof(ctx, "Warning: cmd: %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
+		logging.Warningf(ctx, "Warning: cmd: %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
 	}
 
 	cmd.Identifier = cmd.PostProcessRequest.GetDynamicIdentifier()
 	if cmd.Identifier == "" {
-		logging.Infof(ctx, "Warning: cmd: %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
+		logging.Warningf(ctx, "Warning: cmd: %q missing preferred dependency: DynamicIdentifier (required for dynamic referencing)", cmd.GetCommandType())
 	}
 
 	return nil

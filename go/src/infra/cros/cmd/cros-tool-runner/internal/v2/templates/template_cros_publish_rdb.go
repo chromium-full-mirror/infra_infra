@@ -24,7 +24,7 @@ const DockerRdbPublishServiceAcctsCredsDir = "/tmp/rdb-publish-service-creds/"
 const DockerRdbLuciContextDir = "/tmp/rdb-luci-context/"
 const DockerRdbPublishTestResultsDir = "/tmp/test/results" // Follows how cros_testexec stores test artifacts
 const DockerRdbPublishPort = "43149"
-const crosTestDirPrefix = "cros-test-"
+const CrosTestDirPrefix = "cros-test-"
 
 const LuciContext = "LUCI_CONTEXT"
 
@@ -70,7 +70,7 @@ func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRe
 		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, p.dockerServiceAcctCredsDirName))
 	}
 
-	crosTestDir, err := common.FindDirWithPrefix(t.GetPublishSrcDir(), crosTestDirPrefix)
+	crosTestDir, err := common.FindDirWithPrefix(t.GetPublishSrcDir(), CrosTestDirPrefix)
 	if err != nil {
 		fmt.Printf("Error finding cros-test dir: %v", err)
 	} else {

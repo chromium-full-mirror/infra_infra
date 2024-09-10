@@ -381,7 +381,7 @@ func ContainsFwProvisionState(state *api.ProvisionState) bool {
 
 // BuildPostProcessContainerRequest constructs a ContainerRequest for
 // post-process.
-func BuildPostProcessContainerRequest(identifier string, deps []*api.DynamicDep) *api.ContainerRequest {
+func BuildPostProcessContainerRequest(identifier string) *api.ContainerRequest {
 	return &api.ContainerRequest{
 		DynamicIdentifier: identifier,
 		Container: &api.Template{
@@ -390,7 +390,12 @@ func BuildPostProcessContainerRequest(identifier string, deps []*api.DynamicDep)
 			},
 		},
 		ContainerImageKey: common.PostProcess,
-		DynamicDeps:       deps,
+		DynamicDeps: []*api.DynamicDep{
+			{
+				Key:   "postProcess.postProcessSrcDir",
+				Value: "env-TEMPDIR",
+			},
+		},
 	}
 }
 
@@ -715,7 +720,7 @@ func DefaultDynamicPostProcessTaskWrapper() DynamicTaskBuilder {
 		return []*api.CrosTestRunnerDynamicRequest_Task{
 			{
 				OrderedContainerRequests: []*api.ContainerRequest{
-					BuildPostProcessContainerRequest(common.PostProcess, nil),
+					BuildPostProcessContainerRequest(common.PostProcess),
 				},
 				Task: &api.CrosTestRunnerDynamicRequest_Task_PostTest{
 					PostTest: BuildPostProcessRequest(common.PostProcess),
