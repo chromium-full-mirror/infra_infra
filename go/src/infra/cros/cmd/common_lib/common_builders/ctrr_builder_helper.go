@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -122,6 +123,35 @@ func (builder *DynamicTrv2FromCft) tryAppendGcsPublishTask(dynamic *DynamicTrv2B
 
 	dynamic.OrderedTaskBuilders = append(dynamic.OrderedTaskBuilders,
 		DefaultDynamicGcsPublishTask)
+}
+
+func (builder *DynamicTrv2Builder) buildCrosTestMetadata() (metadata *anypb.Any) {
+	if len(builder.TestSuites) == 0 || len(builder.TestSuites[0].GetTestCaseIds().GetTestCaseIds()) == 0 {
+		return
+	}
+
+	firstTest := builder.TestSuites[0].GetTestCaseIds().GetTestCaseIds()[0].Value
+	gcsPath := builder.GcsArtifactPath
+
+	if gcsPath != "" {
+		if !strings.HasSuffix(gcsPath, "/") {
+			gcsPath = gcsPath + "/"
+		}
+
+		if strings.HasPrefix(firstTest, "tast") {
+			arg := &api.Arg{
+				Flag:  "buildartifactsurl",
+				Value: gcsPath,
+			}
+			tastExecutionMetadata := &api.TastExecutionMetadata{
+				Args: []*api.Arg{arg},
+			}
+
+			metadata, _ = anypb.New(tastExecutionMetadata)
+		}
+	}
+
+	return
 }
 
 // BuildBaseVariant constructs the base variant for rdb publishes.
@@ -647,7 +677,9 @@ func DefaultDynamicTestTaskWrapper(containerImageKey string) DynamicTaskBuilder 
 					Test: &api.TestTask{
 						DynamicIdentifier: common.CrosTest,
 						ServiceAddress:    &labapi.IpEndpoint{},
-						TestRequest:       &api.CrosTestRequest{},
+						TestRequest: &api.CrosTestRequest{
+							Metadata: builder.buildCrosTestMetadata(),
+						},
 						DynamicDeps: []*api.DynamicDep{
 							{
 								Key:   common.ServiceAddress,
@@ -664,6 +696,10 @@ func DefaultDynamicTestTaskWrapper(containerImageKey string) DynamicTaskBuilder 
 							{
 								Key:   common.TestRequestCompanions,
 								Value: common.CompanionDevices,
+							},
+							{
+								Key:   common.TestRequestPrimary + ".dutServer",
+								Value: common.NewPrimaryDeviceIdentifier().GetCrosDutServer(),
 							},
 						},
 					},

@@ -779,7 +779,13 @@ func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck boo
 	}
 
 	if len(hwInfo.req.GetSchedulingUnits()) > 0 {
-		dims = ConvertSwarmingLabelsToDims(dims, hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels())
+		primary := hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget()
+		primaryModel := common.DutModelFromDut(primary.GetSwarmingDef().GetDutInfo())
+		if common.IsSupportedVMBoard(primaryModel.GetBuildTarget()) {
+			// GCE dims
+			return []string{"role:vmlab"}
+		}
+		dims = ConvertSwarmingLabelsToDims(dims, primary.GetSwarmingDef().GetSwarmingLabels())
 		dims = append(dims, common.GetBoardModelDims(hwInfo.req.GetSchedulingUnits()[0])...)
 	} else if len(hwInfo.oldReq.GetHwDefinition()) == 1 {
 		// TODO remove this entire `else` statement when HWRequirements is done.

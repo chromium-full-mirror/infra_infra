@@ -57,7 +57,7 @@ type DynamicTrv2Builder struct {
 	ParentRequestUid string
 	Deadline         *timestamppb.Timestamp
 	// Oneof
-	ContainerGcsPath  string
+	GcsArtifactPath   string
 	ContainerMetadata *buildapi.ContainerMetadata
 	// End Oneof
 	ContainerMetadataKey string
@@ -72,10 +72,10 @@ type DynamicTrv2Builder struct {
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
 func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
 	if builder.ContainerMetadata == nil {
-		if builder.ContainerGcsPath == "" {
-			return nil, fmt.Errorf("request missing `ContainerGcsPath`, can't fetch container metadata")
+		if builder.GcsArtifactPath == "" {
+			return nil, fmt.Errorf("request missing `GcsArtifactPath`, can't fetch container metadata")
 		}
-		containerMetadata, err := common.FetchContainerMetadata(ctx, builder.ContainerGcsPath)
+		containerMetadata, err := common.FetchContainerMetadata(ctx, builder.GcsArtifactPath+common.ContainerMetadataPath)
 		if err != nil {
 			logging.Infof(ctx, "error while fetching container metadata: %s", err)
 			return nil, err

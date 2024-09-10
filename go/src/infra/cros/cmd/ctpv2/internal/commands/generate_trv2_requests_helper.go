@@ -119,9 +119,24 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 	if err != nil {
 		return nil, errors.Annotate(err, "error while creating req: ").Err()
 	}
-	req, err := reqArgs.NewBBRequest(common.TestRunnerBuilderID(trHelper.config))
+	testRunnerBuildID := common.TestRunnerBuilderID(trHelper.config)
+	// Check for VM.
+	runAsVM := common.IsSupportedVMBoard(trHelper.primaryTarget.board)
+	if runAsVM {
+		testRunnerBuildID.Builder = common.ConvertBuilderNameToVM(testRunnerBuildID.Builder)
+	}
+	req, err := reqArgs.NewBBRequest(testRunnerBuildID)
 	if err != nil {
 		return nil, err
+	}
+
+	if runAsVM {
+		req.Dimensions = []*buildbucketpb.RequestedDimension{
+			{
+				Key:   "role",
+				Value: "vmlab",
+			},
+		}
 	}
 
 	return req, nil
@@ -670,7 +685,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 	builder := common_builders.DynamicTrv2Builder{
 		ParentBuildId:        trHelper.currBBID,
 		ParentRequestUid:     trHelper.parentRequestUID,
-		ContainerGcsPath:     trHelper.primaryTarget.gcsArtifactPath + common.ContainerMetadataPath,
+		GcsArtifactPath:      trHelper.primaryTarget.gcsArtifactPath,
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		BuildString:          trHelper.builderStr,
 		Deadline:             timestamppb.New(deadline),
@@ -691,13 +706,20 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		return nil, errors.Annotate(err, "failed to build base dynamic request").Err()
 	}
 
-	err = dynamic_updates.AddUserDefinedDynamicUpdates(
+	if err = dynamic_updates.AddUserDefinedDynamicUpdates(
 		dynamicRequest,
 		trHelper.suiteInfo.SuiteMetadata.DynamicUpdates,
-		trHelper.lookupTable)
+		trHelper.lookupTable); err != nil {
 
-	if err != nil {
 		return nil, errors.Annotate(err, "failed to add user defined dynamic updates to trv2 request").Err()
+	}
+
+	if err = dynamic_updates.AddUserDefinedDynamicUpdates(
+		dynamicRequest,
+		trHelper.schedUnit.GetSecondaryDynamicUpdates(),
+		trHelper.lookupTable); err != nil {
+
+		return nil, errors.Annotate(err, "failed to add secondary user defined dynamic updates to trv2 request").Err()
 	}
 
 	return dynamicRequest, err

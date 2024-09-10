@@ -7,7 +7,12 @@ package main
 import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
+	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision
@@ -74,7 +79,13 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan) {
 
 		// Do primary
 		primarySwarming := target.PrimaryTarget.GetSwarmingDef()
+		primaryBoard := extractDutModel(primarySwarming).GetBuildTarget()
 		addProvisionValuesToLookup(lookup, primarySwarming, lookupHelper)
+		if common.IsSupportedVMBoard(primaryBoard) {
+			generateVMDynamicProvisionRequest(target)
+			modifyTestRequestForVM(target)
+			continue
+		}
 
 		// Do Companion
 		for _, companion := range target.GetCompanionTargets() {
@@ -95,6 +106,66 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan) {
 			addProvisionValuesToLookup(lookup, hwDef, lookupHelper)
 		}
 	}
+}
+
+// generateVMDynamicProvisionRequest
+func generateVMDynamicProvisionRequest(sUnit *api.SchedulingUnit) {
+	if sUnit.SecondaryDynamicUpdates == nil {
+		sUnit.SecondaryDynamicUpdates = []*api.UserDefinedDynamicUpdate{}
+	}
+
+	generator := generators.NewInsertGenerator()
+	generator.AddInsertion(&api.CrosTestRunnerDynamicRequest_Task{
+		OrderedContainerRequests: []*api.ContainerRequest{
+			helpers.NewCacheServerContainer().Build(),
+			helpers.NewCrosDutContainer(dynamic_common.NewPrimaryDeviceIdentifier()).Build(),
+		},
+	}, dynamic_common.ReplaceTaskWrapper(dynamic_common.FindFirst(api.FocalTaskFinder_PROVISION)))
+
+	dynamic_updates.AppendUserDefinedDynamicUpdates(&sUnit.SecondaryDynamicUpdates, generator.Generate)
+}
+
+func extractDutModel(swarmingDef *api.SwarmingDefinition) *dut_api.DutModel {
+	switch dutType := swarmingDef.GetDutInfo().GetDutType().(type) {
+	case *dut_api.Dut_Chromeos:
+		return dutType.Chromeos.GetDutModel()
+	case *dut_api.Dut_Android_:
+		return dutType.Android.GetDutModel()
+	default:
+		return nil
+	}
+}
+
+// modifyTestRequestForVM modifies the cros-test task by adding
+// extra dynamic dependencies that are needed for VM runs.
+func modifyTestRequestForVM(sUnit *api.SchedulingUnit) {
+	if sUnit.SecondaryDynamicUpdates == nil {
+		sUnit.SecondaryDynamicUpdates = []*api.UserDefinedDynamicUpdate{}
+	}
+
+	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.CrosTest))
+	_ = generator.AddModification(
+		&api.DynamicDep{
+			Key:   common.TestRequestPrimary + ".dut.cacheServer.address",
+			Value: common.CacheServer,
+		},
+		map[string]string{
+			common.TestDynamicDeps: "",
+		},
+	)
+	_ = generator.AddModification(
+		&api.DynamicDep{
+			// Update the cacheServer's address string to the
+			// external host ip address.
+			Key:   common.TestRequestPrimary + ".dut.cacheServer.address.address",
+			Value: common.HostIp,
+		},
+		map[string]string{
+			common.TestDynamicDeps: "",
+		},
+	)
+
+	_ = dynamic_updates.AppendUserDefinedDynamicUpdates(&sUnit.SecondaryDynamicUpdates, generator.Generate)
 }
 
 // addProvisionValuesToLookup switches on the DUT type to add in the
