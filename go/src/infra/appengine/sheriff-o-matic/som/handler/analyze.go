@@ -330,6 +330,11 @@ func attachLUCIBisectionCompileFailureAnalyses(c context.Context, failures []*me
 			continue
 		}
 
+		// We query by LastestFailure instead of FirstFailure here SoM does not
+		// know what reason a builder is failing for. If the first build failed because of
+		// a non-compile failure, querying by the first failure will give us no result.
+		// When we query by the latest build failure, LUCI Bisection will associate it
+		// with the corresponding compile failure analysis (if existed) and return the result.
 		bbid := builder.LatestFailure
 		res, err := bisectionClient.QueryBisectionResults(c, bbid, stepName)
 		if err != nil {
