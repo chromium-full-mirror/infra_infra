@@ -138,6 +138,10 @@ type Metadata struct {
 	// BuildConfigs is content of args.gn.
 	BuildConfigs map[string]string `json:"build_configs"`
 
+	// ExplicitBuildConfigKeys is a list of build config keys specified explicitly in
+	// args.gn.
+	ExplicitBuildConfigKeys []string `json:"explicit_build_config_keys"`
+
 	// Env is environment variables.
 	Env map[string]string `json:"env"`
 

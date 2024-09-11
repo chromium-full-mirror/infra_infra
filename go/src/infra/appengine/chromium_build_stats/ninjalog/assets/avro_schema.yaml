@@ -45,6 +45,8 @@ fields:
             type: string
           - name: value
             type: string
+          - name: explicit
+            type: ["null", boolean]
   - name: log_entries
     type:
       type: array

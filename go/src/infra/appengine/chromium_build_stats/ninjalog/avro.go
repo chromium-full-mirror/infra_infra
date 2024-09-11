@@ -53,7 +53,6 @@ var timeNow = time.Now
 func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	weightedTime := WeightedTime(info.Steps)
 	steps := Dedup(info.Steps)
-
 	buildID := info.Metadata.BuildID
 	if buildID == 0 {
 		// Set random number if buildID is not set.
@@ -77,11 +76,27 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 	}
 
 	buildConfigs := make([]map[string]interface{}, 0, len(info.Metadata.BuildConfigs))
+	// Old data do not have ExplicitBuildConfigKeys in the metadata.
+	// In that case, it is better to not set `explicit=false`, which might be wrong.
+	hasExplicitKeys := len(info.Metadata.ExplicitBuildConfigKeys) > 0
+	explicitKeys := make(map[string]struct{})
+	for _, k := range info.Metadata.ExplicitBuildConfigKeys {
+		explicitKeys[k] = struct{}{}
+	}
 	for k, v := range info.Metadata.BuildConfigs {
-		buildConfigs = append(buildConfigs, map[string]interface{}{
-			"key":   k,
-			"value": v,
-		})
+		if hasExplicitKeys {
+			_, explicit := explicitKeys[k]
+			buildConfigs = append(buildConfigs, map[string]interface{}{
+				"key":      k,
+				"value":    v,
+				"explicit": explicit,
+			})
+		} else {
+			buildConfigs = append(buildConfigs, map[string]interface{}{
+				"key":   k,
+				"value": v,
+			})
+		}
 	}
 
 	// Configuring order is matter for same key.

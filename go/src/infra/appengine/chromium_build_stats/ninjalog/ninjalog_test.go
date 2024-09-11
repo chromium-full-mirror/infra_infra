@@ -147,12 +147,24 @@ var (
 		InvocationID:     "6dc52b4f-fdf9-4017-b542-8c6cf296677d",
 		ExitCode:         1,
 		BuildDurationSec: 100,
-		Platform:         "Linux",
-		Argv:             []string{"../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"},
-		Cwd:              "/b/build/Linux_x64/build/src",
-		Compiler:         "goma",
-		Exit:             0,
-		StepName:         "compile",
+		BuildConfigs: map[string]string{
+			"use_goma":           "true",
+			"is_component_build": "true",
+			"enable_nacl":        "false",
+			"host_cpu":           "\"x64\"",
+			"target_os":          "\"\"",
+			"target_cpu":         "\"\"",
+			"symbol_level":       "-1",
+			"is_debug":           "false",
+			"host_os":            "\"linux\"",
+		},
+		ExplicitBuildConfigKeys: []string{"is_debug", "use_goma"},
+		Platform:                "Linux",
+		Argv:                    []string{"../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"},
+		Cwd:                     "/b/build/Linux_x64/build/src",
+		Compiler:                "goma",
+		Exit:                    0,
+		StepName:                "compile",
 		Env: map[string]string{
 			"LANG":    "en_US.UTF-8",
 			"SHELL":   "/bin/bash",
@@ -297,7 +309,7 @@ func TestParseWithMetadata(t *testing.T) {
 287	290	0	obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp	b211d373de72f455
 
 # end of ninja log
-{"exit_code": 1, "build_duration_sec": 100, "build_id": 12345, "invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d", "user": "bob@google.com", "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"]}
+{"exit_code": 1, "build_duration_sec": 100, "build_id": 12345, "invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d", "user": "bob@google.com", "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}, "explicit_build_config_keys": ["is_debug", "use_goma"]}
 `))
 	if err != nil {
 		t.Errorf(`Parse()=_, %#v; want=_, <nil>`, err)
@@ -563,7 +575,7 @@ func TestWeightedTime(t *testing.T) {
 
 func TestParseMetadata(t *testing.T) {
 	var m Metadata
-	mJSON := `{"exit_code": 1, "build_duration_sec": 100, "jobs": 1000, "platform": "Linux", "cpu_core": 48, "targets": ["chrome"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}}`
+	mJSON := `{"exit_code": 1, "build_duration_sec": 100, "jobs": 1000, "platform": "Linux", "cpu_core": 48, "targets": ["chrome"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}, "explicit_build_config_keys": ["target_os", "use_goma"]}`
 
 	err := json.Unmarshal([]byte(mJSON), &m)
 
@@ -587,8 +599,9 @@ func TestParseMetadata(t *testing.T) {
 			"is_debug":           "false",
 			"host_os":            "\"linux\"",
 		},
-		Jobs:    1000,
-		Targets: []string{"chrome"},
+		ExplicitBuildConfigKeys: []string{"target_os", "use_goma"},
+		Jobs:                    1000,
+		Targets:                 []string{"chrome"},
 	}
 
 	if diff := cmp.Diff(m, want); diff != "" {
