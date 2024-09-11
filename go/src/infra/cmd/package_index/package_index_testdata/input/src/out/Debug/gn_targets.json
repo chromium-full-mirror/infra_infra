@@ -12,7 +12,7 @@
     ],
     "outputs": ["//out/Debug/gen/third_party/devtools-frontend/src/test-tsconfig.json"],
     "deps": ["//imported-indirection:ts"],
-    "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+    "script": "//third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py"
   },
   "//imported-indirection:ts": {
     "args": [
@@ -29,7 +29,7 @@
     ],
     "sources": ["//test.ts", "//imported.ts"],
     "outputs": ["//out/Debug/test.js", "//out/Debug/imported.js"],
-    "script": "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+    "script": "//third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py"
   },
   "//:test_mojom__generator": {
     "args": [

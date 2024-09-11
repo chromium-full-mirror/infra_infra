@@ -197,7 +197,7 @@ func tsTargetProcessor(ctx context.Context, rootPath, outDir, corpus,
 }
 
 func isTSTargetInfo(t gnTargetInfo) bool {
-	return t.Script == "//third_party/devtools-frontend/src/third_party/typescript/ts_library.py"
+	return t.Script == "//third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py"
 }
 
 func isTSTarget(t *gnTarget) bool {
