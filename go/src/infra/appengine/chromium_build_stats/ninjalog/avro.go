@@ -9,6 +9,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 	"sync"
@@ -89,12 +90,13 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 			buildConfigs = append(buildConfigs, map[string]interface{}{
 				"key":      k,
 				"value":    v,
-				"explicit": explicit,
+				"explicit": goavro.Union("boolean", explicit),
 			})
 		} else {
 			buildConfigs = append(buildConfigs, map[string]interface{}{
-				"key":   k,
-				"value": v,
+				"key":      k,
+				"value":    v,
+				"explicit": nil,
 			})
 		}
 	}
@@ -135,8 +137,29 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 
 }
 
+func writeAvro(nlog *NinjaLog, w io.Writer) error {
+	codec, err := avroCodec()
+	if err != nil {
+		return err
+	}
+
+	ocfw, err := goavro.NewOCFWriter(goavro.OCFConfig{
+		W:     w,
+		Codec: codec,
+	})
+	if err != nil {
+		return err
+	}
+
+	avro, err := toAVRO(nlog)
+	if err != nil {
+		return err
+	}
+	return ocfw.Append([]interface{}{avro})
+}
+
 // WriteNinjaLogToGCS upload ninja log to GCS in avro format.
-func WriteNinjaLogToGCS(ctx context.Context, info *NinjaLog, bucket, filename string) (rerr error) {
+func WriteNinjaLogToGCS(ctx context.Context, nlog *NinjaLog, bucket, filename string) (rerr error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return err
@@ -156,22 +179,5 @@ func WriteNinjaLogToGCS(ctx context.Context, info *NinjaLog, bucket, filename st
 		}
 	}()
 
-	codec, err := avroCodec()
-	if err != nil {
-		return err
-	}
-
-	ocfw, err := goavro.NewOCFWriter(goavro.OCFConfig{
-		W:     gcsw,
-		Codec: codec,
-	})
-	if err != nil {
-		return err
-	}
-
-	avro, err := toAVRO(info)
-	if err != nil {
-		return err
-	}
-	return ocfw.Append([]interface{}{avro})
+	return writeAvro(nlog, gcsw)
 }

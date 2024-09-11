@@ -5,10 +5,12 @@
 package ninjalog
 
 import (
+	"io"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	goavro "github.com/linkedin/goavro/v2"
 )
 
 func TestAVROCodec(t *testing.T) {
@@ -58,15 +60,15 @@ func TestToAVRO(t *testing.T) {
 	if diff := cmp.Diff(map[string]any{
 		"user": "bob@google.com",
 		"build_configs": []map[string]any{
-			{"key": "enable_nacl", "value": "false", "explicit": false},
-			{"key": "host_cpu", "value": "\"x64\"", "explicit": false},
-			{"key": "host_os", "value": "\"linux\"", "explicit": false},
-			{"key": "is_component_build", "value": "true", "explicit": false},
-			{"key": "is_debug", "value": "false", "explicit": true},
-			{"key": "symbol_level", "value": "-1", "explicit": false},
-			{"key": "target_cpu", "value": "\"\"", "explicit": false},
-			{"key": "target_os", "value": "\"\"", "explicit": false},
-			{"key": "use_goma", "value": "true", "explicit": true},
+			{"key": "enable_nacl", "value": "false", "explicit": goavro.Union("boolean", false)},
+			{"key": "host_cpu", "value": "\"x64\"", "explicit": goavro.Union("boolean", false)},
+			{"key": "host_os", "value": "\"linux\"", "explicit": goavro.Union("boolean", false)},
+			{"key": "is_component_build", "value": "true", "explicit": goavro.Union("boolean", false)},
+			{"key": "is_debug", "value": "false", "explicit": goavro.Union("boolean", true)},
+			{"key": "symbol_level", "value": "-1", "explicit": goavro.Union("boolean", false)},
+			{"key": "target_cpu", "value": "\"\"", "explicit": goavro.Union("boolean", false)},
+			{"key": "target_os", "value": "\"\"", "explicit": goavro.Union("boolean", false)},
+			{"key": "use_goma", "value": "true", "explicit": goavro.Union("boolean", true)},
 		},
 		"build_id":           int64(12345),
 		"invocation_id":      "6dc52b4f-fdf9-4017-b542-8c6cf296677d",
@@ -130,5 +132,45 @@ func TestToAVRO(t *testing.T) {
 		},
 	}, got); diff != "" {
 		t.Errorf("ToAVRO(%v) mismatch (-want +got):\n%s", info, diff)
+	}
+}
+
+func TestWriteAvro(t *testing.T) {
+	outputTestCase := append([]Step{
+		{
+			Start:   76 * time.Millisecond,
+			End:     187 * time.Millisecond,
+			Out:     "resources/inspector/devtools_api.js",
+			CmdHash: "75430546595be7c2",
+		},
+		{
+			Start:   78 * time.Millisecond,
+			End:     286 * time.Millisecond,
+			Out:     "gen/angle/commit_id_2.py",
+			CmdHash: "4ede38e2c1617d8c",
+		},
+		{
+			Start:   78 * time.Millisecond,
+			End:     286 * time.Millisecond,
+			Out:     "gen/angle/commit_id_3.py",
+			CmdHash: "4ede38e2c1617d8c",
+		}}, stepsTestCase...)
+
+	nlog := &NinjaLog{
+		Filename: ".ninja_log",
+		Start:    1,
+		Steps:    outputTestCase,
+		Metadata: metadataTestCase,
+	}
+	err := writeAvro(nlog, io.Discard)
+	if err != nil {
+		t.Errorf("writeAvro()=%v, want <nil>", err)
+	}
+
+	// Old data do not have ExplicitBuildConfigKeys.
+	nlog.Metadata.ExplicitBuildConfigKeys = nil
+	err = writeAvro(nlog, io.Discard)
+	if err != nil {
+		t.Errorf("writeAvro()=%v, want <nil>", err)
 	}
 }
