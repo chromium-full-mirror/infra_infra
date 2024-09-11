@@ -18,7 +18,7 @@ import (
 
 const (
 	dolosSubCmdUpdateFirmware     = "update-firmware"
-	dolosSubCmdUpdateFirmwareGlob = dolosSubCmdUpdateFirmware + "--firmware_version %s "
+	dolosSubCmdUpdateFirmwareGlob = dolosSubCmdUpdateFirmware + " --firmware_version %s "
 )
 
 // DolosUpdateFirmware - call doloscmd update-firmware on the host with the correct arguments to update the firmware
