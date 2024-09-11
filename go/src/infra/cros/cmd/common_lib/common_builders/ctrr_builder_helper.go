@@ -750,7 +750,12 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) 
 		return []*api.CrosTestRunnerDynamicRequest_Task{
 			{
 				OrderedContainerRequests: []*api.ContainerRequest{
-					BuildPublishContainerRequest(common.RdbPublish, api.CrosPublishTemplate_PUBLISH_RDB, nil),
+					BuildPublishContainerRequest(common.RdbPublish, api.CrosPublishTemplate_PUBLISH_RDB, []*api.DynamicDep{
+						{
+							Key:   "crosPublish.publishSrcDir",
+							Value: "env-TEMPDIR",
+						},
+					}),
 				},
 				Task: &api.CrosTestRunnerDynamicRequest_Task_Publish{
 					Publish: BuildPublishRequest(common.RdbPublish, common.RdbPublishTestArtifactDir, rdbPublishMetadata, []*api.DynamicDep{
