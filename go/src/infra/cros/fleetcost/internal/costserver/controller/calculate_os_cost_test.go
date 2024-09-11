@@ -10,6 +10,8 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
@@ -71,7 +73,7 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 		panic(err)
 	}
 
-	resp, _, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true)
+	resp, _, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true, false)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -97,4 +99,22 @@ func TestFriendlyString(t *testing.T) {
 	if str != "type=INDICATOR_TYPE_UNKNOWN primary= secondary= tertiary= loc=LOCATION_UNKNOWN" {
 		t.Errorf("unexpcted friendly string %q", str)
 	}
+}
+
+func TestCalculateCostForOsResource_NoUfs(t *testing.T) {
+	t.Parallel()
+
+	tf := testsupport.NewFixture(context.Background(), t)
+
+	req := &fleetcostAPI.GetCostResultRequest{
+		Hostname:              "arbitrary string",
+		ForgiveMissingEntries: true,
+		NoUfs:                 true,
+		AnalysisHint:          []string{"chromeos"},
+	}
+
+	result, report, err := controller.CalculateCostForOsResource(tf.Ctx, nil, nil, req)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, result, should.NotBeNil)
+	assert.Loosely(t, report, should.NotBeNil)
 }
