@@ -6,7 +6,9 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -31,8 +33,9 @@ var GetCostResultCommand *subcommands.Command = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.authFlags.RegisterIDTokenFlags(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
-		c.Flags.StringVar(&c.name, "name", "", "hostname of a DUT")
+		c.Flags.StringVar(&c.name, "name", "", "hostname of a DUT. If hints are provided, then we want the cost of a hypothetical DUT and the hostname should not be provided.")
 		c.Flags.BoolVar(&c.lax, "lax", false, "whether to forgive missing cost entries")
+		c.Flags.StringVar(&c.hints, "hints", "", "if provided, do not talk to UFS and instead use hints to generate the cost estimate. Comma-delimited.")
 		return c
 	},
 }
@@ -42,8 +45,9 @@ type getCostResultCommand struct {
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
 
-	name string
-	lax  bool
+	name  string
+	lax   bool
+	hints string
 }
 
 // Run is the main entrypoint to the ping.
@@ -78,10 +82,16 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
+	hints := strings.Split(c.hints, ",")
+	if (len(hints) == 0) == (c.name != "") {
+		return fmt.Errorf("at least one hint (%q given) or name (%q given) must be provided", c.hints, c.name)
+	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{
 		Hostname:              c.name,
 		ForgiveMissingEntries: c.lax,
+		NoUfs:                 len(hints) != 0,
+		AnalysisHint:          hints,
 	})
 	if err != nil {
 		c.commonFlags.VerboseLog(a, "RPC call failed.")
