@@ -56,7 +56,11 @@ plans:
                 - 20s reboot time allows dolos to boot ( 4-5 seconds ) and the USB devices
                 - to be re-enumerated in the labstation kernel.
               dependencies:
-                - name: Set RPM OFF (ALWAYS_RUN)
+                - name: Set dut RPM OFF (ALWAYS_RUN)
+                  exec_name: device_rpm_power_off
+                  exec_args:
+                    - device_type:dut
+                - name: Set dolos RPM OFF (ALWAYS_RUN)
                   exec_name: device_rpm_power_off
                   exec_args:
                     - device_type:dolos
@@ -66,10 +70,14 @@ plans:
                     - sleep:5
                 - name: Power cycle root servo (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_power_cycle_root_servo
-                - name: Set RPM ON (ALWAYS_RUN)
+                - name: Set dolos RPM ON (ALWAYS_RUN)
                   exec_name: device_rpm_power_on
                   exec_args:
                     - device_type:dolos
+                - name: Set dut RPM ON (ALWAYS_RUN)
+                  exec_name: device_rpm_power_on
+                  exec_args:
+                    - device_type:dut
                 - name: Sleep 20s (Allow to fail) (ALWAYS_RUN)
                   exec_name: sample_sleep
                   exec_args:

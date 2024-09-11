@@ -71,17 +71,31 @@ func dolosRepairPlan() *Plan {
 				RunControl:    RunControl_ALWAYS_RUN,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
-			"Set RPM OFF": {
+			"Set dolos RPM OFF": {
 				ExecName: "device_rpm_power_off",
 				ExecExtraArgs: []string{
 					"device_type:dolos",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"Set RPM ON": {
+			"Set dolos RPM ON": {
 				ExecName: "device_rpm_power_on",
 				ExecExtraArgs: []string{
 					"device_type:dolos",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set dut RPM OFF": {
+				ExecName: "device_rpm_power_off",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Set dut RPM ON": {
+				ExecName: "device_rpm_power_on",
+				ExecExtraArgs: []string{
+					"device_type:dut",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
@@ -124,10 +138,12 @@ func dolosRepairPlan() *Plan {
 					"to be re-enumerated in the labstation kernel.",
 				},
 				Dependencies: []string{
-					"Set RPM OFF",
+					"Set dut RPM OFF",
+					"Set dolos RPM OFF",
 					"Sleep 5s",
 					"Power cycle root servo",
-					"Set RPM ON",
+					"Set dolos RPM ON",
+					"Set dut RPM ON",
 					"Sleep 20s",
 				},
 				ExecName: "sample_pass",
