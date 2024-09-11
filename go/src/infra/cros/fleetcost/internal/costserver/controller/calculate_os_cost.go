@@ -78,27 +78,21 @@ func (attribute *indicatorAttribute) asEntity() *entities.CostIndicatorEntity {
 // CalculateCostForOsResource calculates the cost for an OS resource.
 //
 // So far, only ChromeOS devices are supported.
-func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, req *fleetcostAPI.GetCostResultRequest) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
+func CalculateCostForOsResource(ctx context.Context, ic ufsAPI.FleetClient, deviceDataRes *ufsAPI.GetDeviceDataResponse, req *fleetcostAPI.GetCostResultRequest) (*fleetcostpb.CostResult, *fleetcostpb.CostReport, error) {
 	hostname := req.GetHostname()
 	forgiveMissingEntries := req.GetForgiveMissingEntries()
 	logging.Infof(ctx, "getting device data for hostname %q with forgive=%v", hostname, forgiveMissingEntries)
-	res, err := ic.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: hostname})
-	if err != nil {
-		err := errors.Annotate(err, "calculate cost for os resource %q", hostname).Err()
-		logging.Errorf(ctx, "%s\n", err)
-		return nil, nil, err
-	}
-	switch res.GetResourceType() {
+	switch deviceDataRes.GetResourceType() {
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE:
 		logging.Infof(ctx, "detected that %q is a ChromeOS device", hostname)
-		resp, rep, err := calculateCostForSingleChromeosDut(ctx, ic, res.GetChromeOsDeviceData(), forgiveMissingEntries)
+		resp, rep, err := calculateCostForSingleChromeosDut(ctx, ic, deviceDataRes.GetChromeOsDeviceData(), forgiveMissingEntries)
 		return resp, rep, errors.Annotate(err, "calculate ChromeOS device cost").Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_ATTACHED_DEVICE:
 		return nil, nil, errors.Reason("%s is an attached device, support is not implemented yet.", hostname).Err()
 	case ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT:
 		return nil, nil, errors.Reason("%s is an scheduling unit, support is not implemented yet.", hostname).Err()
 	default:
-		return nil, nil, errors.Reason("Cannot find a valid resource type for %s: %s", hostname, res.GetResourceType()).Err()
+		return nil, nil, errors.Reason("Cannot find a valid resource type for %s: %s", hostname, deviceDataRes.GetResourceType()).Err()
 	}
 }
 

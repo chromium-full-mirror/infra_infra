@@ -19,6 +19,7 @@ import (
 	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/costserver/entities"
 	"infra/cros/fleetcost/internal/fleetcosterror"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -60,7 +61,11 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 	if f.fleetClient == nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Internal, errors.New("fleet client must exist"))
 	}
-	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, req)
+	deviceDataRes, err := f.fleetClient.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{Hostname: req.GetHostname()})
+	if err != nil {
+		return nil, errors.Annotate(err, "get cost result").Err()
+	}
+	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, deviceDataRes, req)
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}
