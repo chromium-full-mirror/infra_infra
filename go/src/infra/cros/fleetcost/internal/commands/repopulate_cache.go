@@ -71,7 +71,7 @@ func (c *repopulateCacheCommand) innerRun(ctx context.Context, a subcommands.App
 		Host: host,
 		Options: &prpc.Options{
 			Insecure:      c.commonFlags.HTTP(),
-			PerRPCTimeout: 10 * time.Minute,
+			PerRPCTimeout: 60 * time.Minute,
 		},
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
