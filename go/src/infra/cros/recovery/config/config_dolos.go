@@ -153,6 +153,7 @@ func dolosRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"dolos_update_firmware",
 				},
+				AllowFailAfterRecovery: true,
 			},
 		},
 	}
