@@ -825,7 +825,7 @@ message Camera {
 }
 
 // Chrome OS specific DUT details
-// NEXT TAG: 36
+// NEXT TAG: 37
 message ChromeOS {
   reserved 1;
   // Board name of the DUT.
@@ -954,6 +954,9 @@ message ChromeOS {
 
   // Camera info
   Camera camera = 35;
+
+  // Fingerprint MCU
+  string fingerprint_mcu = 36;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.
