@@ -47,7 +47,7 @@ fields:
             type: string
           - name: explicit
             type: ["null", boolean]
-            default: "null"
+            default: null
   - name: log_entries
     type:
       type: array
