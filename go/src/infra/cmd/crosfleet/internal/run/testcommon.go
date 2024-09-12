@@ -441,12 +441,10 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 						Container: &buildapi.ContainerImageInfo{
 							Name: "foil-filter",
 						},
-						BinaryArgs: []string{
-							"-prov-path", "us-docker.pkg.dev/cros-registry/test-services/foil-provision@sha256:96d6d9a4ca847432c4788c3b263f8b25e1c79f3b9671689581922c25908aff5a",
-							"-test-path", "us-docker.pkg.dev/cros-registry/test-services/cros-test@sha256:f0dd427b2fffd41131326d5ef3f8564c9a90a74f09a54dec44998c9dca3dbd2b",
-						},
 					},
 				}
+				// TODO(cdelagarza): Update CTPv2 filter container logic to know
+				// when to pull from firestore for cros-test-finder.
 				alTestFinder := &api.CTPFilter{
 					ContainerInfo: &api.ContainerInfo{
 						Container: &buildapi.ContainerImageInfo{

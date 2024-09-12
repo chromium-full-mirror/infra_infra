@@ -21,19 +21,16 @@ import (
 )
 
 const (
-	LabelPool                     = "label-pool"
-	AnalyticsName                 = "analytics_name"
 	DefaultChromeosBuildGcsBucket = "chromeos-image-archive"
-
-	ChromeosBuild          = "chromeos_build"
-	ChromeosBuildGcsBucket = "chromeos_build_gcs_bucket"
-	RoFirmwareBuild        = "ro_firmware_build"
-	RwFirmwareBuild        = "rw_firmware_build"
-	LacrosGcsPath          = "lacros_gcs_path"
-	AndroidImageVersion    = "android_image_version"
-	GmsCorePackage         = "gms_core_package"
-	Public                 = "PUBLIC"
-	Private                = "PRIVATE"
+	ChromeosBuild                 = "chromeos_build"
+	ChromeosBuildGcsBucket        = "chromeos_build_gcs_bucket"
+	RoFirmwareBuild               = "ro_firmware_build"
+	RwFirmwareBuild               = "rw_firmware_build"
+	LacrosGcsPath                 = "lacros_gcs_path"
+	AndroidImageVersion           = "android_image_version"
+	GmsCorePackage                = "gms_core_package"
+	Public                        = "PUBLIC"
+	Private                       = "PRIVATE"
 )
 
 var (
@@ -282,11 +279,20 @@ func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
 	} else if runWithQs {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
-	// Hardcoded check for foilTest to route into QS.
-	// TODO: remove once scheduke recognizes satlab.
-	pool := getTag(v1.GetParams().GetDecorations().GetTags(), LabelPool)
-	if pool == "foilTest" {
-		scheduler = testapi.SchedulerInfo_QSCHEDULER
+
+	// Bypass scheduke default with suite or
+	// analytics name postfixed with "QS".
+	tags := v1.GetParams().GetDecorations().GetTags()
+	tagsToCheckQS := []string{
+		getTag(tags, common.LabelSuite),
+		getTag(tags, common.Suite),
+		getTag(tags, common.AnalyticsName),
+	}
+	for _, tagToCheckQS := range tagsToCheckQS {
+		if strings.HasSuffix(tagToCheckQS, "QS") {
+			scheduler = testapi.SchedulerInfo_QSCHEDULER
+			break
+		}
 	}
 	return &testapi.SchedulerInfo{
 		// TODO(cdelagarza): Update to upstream variable.
@@ -466,12 +472,12 @@ func mapSoftwareDeps(softwareDeps []*test_platform.Request_Params_SoftwareDepend
 
 // getSchedulingPool parses the v1 request tags for the label-pool.
 func getSchedulingPool(v1 *test_platform.Request) string {
-	return getTag(v1.GetParams().GetDecorations().GetTags(), LabelPool)
+	return getTag(v1.GetParams().GetDecorations().GetTags(), common.LabelPool)
 }
 
 // getAnalyticsName parses the v1 request tags for the analytics_name.
 func getAnalyticsName(v1 *test_platform.Request) string {
-	return getTag(v1.GetParams().GetDecorations().GetTags(), AnalyticsName)
+	return getTag(v1.GetParams().GetDecorations().GetTags(), common.AnalyticsName)
 }
 
 // IsDDDSuite will return if the suite is to run in ddd.
