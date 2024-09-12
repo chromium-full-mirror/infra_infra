@@ -330,7 +330,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 25
+// NEXT TAG: 26
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -400,6 +400,7 @@ message HardwareCapabilities {
 
   // Indicating if the device has fingerprint sensor.
   optional bool fingerprint = 19;
+  optional string fingerprint_mcu = 25;
   optional bool flashrom = 14;
 
   // Next tag: 8
