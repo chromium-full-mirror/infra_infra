@@ -182,6 +182,9 @@ message Config {
     SOC_RAPTOR_LAKE = 47;
     SOC_MT8196 = 48;
     SOC_MT8189 = 49;
+    SOC_TWIN_LAKE = 50;
+    SOC_PANTHER_LAKE = 51;
+    SOC_WILDCAT_LAKE = 52;
   }
 
   SOC soc = 11;
