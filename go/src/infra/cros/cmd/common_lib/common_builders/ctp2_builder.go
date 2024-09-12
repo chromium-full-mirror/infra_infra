@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/interfaces"
 )
@@ -23,6 +24,7 @@ type CTPV2FromV1 struct {
 	v2              *testapi.CTPv2Request
 	v1              map[string]*test_platform.Request
 	manifestFetcher ManifestFetcher
+	buildState      *build.State
 }
 
 type V2WithKey struct {
@@ -34,7 +36,7 @@ func NewV2WithKey(key string, v2 *testapi.CTPRequest) *V2WithKey {
 	return &V2WithKey{Key: key, V2: v2}
 }
 
-func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request) *CTPV2FromV1 {
+func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request, buildState *build.State) *CTPV2FromV1 {
 	return &CTPV2FromV1{
 		v1: v1,
 		v2: &testapi.CTPv2Request{
@@ -42,10 +44,11 @@ func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request) *
 		},
 		ctx:             ctx,
 		manifestFetcher: GetBuilderManifestFromContainer,
+		buildState:      buildState,
 	}
 }
 
-func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]*test_platform.Request, manifestFetcher ManifestFetcher) *CTPV2FromV1 {
+func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]*test_platform.Request, manifestFetcher ManifestFetcher, buildState *build.State) *CTPV2FromV1 {
 	if manifestFetcher == nil {
 		manifestFetcher = GetBuilderManifestFromContainer
 	}
@@ -56,6 +59,7 @@ func NewCTPV2FromV1WithCustomManifestFetcher(ctx context.Context, v1 map[string]
 		},
 		ctx:             ctx,
 		manifestFetcher: manifestFetcher,
+		buildState:      buildState,
 	}
 }
 
@@ -65,7 +69,7 @@ func (builder *CTPV2FromV1) BuildRequest() (map[string]*api.CTPRequest, map[stri
 	reqKeyMap := map[string]*api.CTPRequest{}
 	dddTrackerMap := map[string]bool{}
 	for key, v1Request := range builder.v1 {
-		ctpReq := buildCTPRequest(v1Request)
+		ctpReq := buildCTPRequest(v1Request, builder.buildState)
 		builder.v2.Requests = append(builder.v2.Requests, ctpReq)
 		v2sWithKeyList = append(v2sWithKeyList, &V2WithKey{Key: key, V2: ctpReq})
 		dddTrackerMap[key] = ctpReq.GetSuiteRequest().GetDddSuite()

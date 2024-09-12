@@ -16,6 +16,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 )
@@ -256,11 +257,11 @@ func removeNonGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRe
 }
 
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.
-func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
+func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testapi.CTPRequest {
 	return &testapi.CTPRequest{
 		SuiteRequest:    buildSuiteRequest(v1),
 		ScheduleTargets: buildScheduleTargets(v1),
-		SchedulerInfo:   buildSchedulerInfo(v1),
+		SchedulerInfo:   buildSchedulerInfo(v1, buildState),
 		Pool:            getSchedulingPool(v1),
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
@@ -270,7 +271,7 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 
 // buildSchedulerInfo produces the scheduling system to be used,
 // as well as the qs account for qs scheduling.
-func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
+func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *testapi.SchedulerInfo {
 	dryRun := v1.GetParams().GetDryRunCtpv2()
 	runWithQs := v1.GetParams().GetRunCtpv2WithQs()
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
@@ -280,20 +281,14 @@ func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 
-	// Bypass scheduke default with suite or
-	// analytics name postfixed with "QS".
-	tags := v1.GetParams().GetDecorations().GetTags()
-	tagsToCheckQS := []string{
-		getTag(tags, common.LabelSuite),
-		getTag(tags, common.Suite),
-		getTag(tags, common.AnalyticsName),
-	}
-	for _, tagToCheckQS := range tagsToCheckQS {
-		if strings.HasSuffix(tagToCheckQS, "QS") {
+	// Run via QS if external CTP bucket.
+	builder := buildState.Build().GetBuilder()
+	if builder != nil {
+		if builder.Bucket != common.CTPBucket && builder.Bucket != common.CTPBucketShadow {
 			scheduler = testapi.SchedulerInfo_QSCHEDULER
-			break
 		}
 	}
+
 	return &testapi.SchedulerInfo{
 		// TODO(cdelagarza): Update to upstream variable.
 		Scheduler: scheduler,

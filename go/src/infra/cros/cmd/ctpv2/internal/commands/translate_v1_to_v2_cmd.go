@@ -26,6 +26,7 @@ type TranslateV1ToV2Cmd struct {
 	// Deps
 	CtpV1Requests map[string]*test_platform.Request
 	CtpV2Request  *api.CTPv2Request // This will be updated if isn't set by deps
+	BuildState    *build.State
 
 	// Updates
 	RequestToTargetChainMap map[string]map[string]string
@@ -76,6 +77,7 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 	ctx context.Context,
 	sk *data.PrePostFilterStateKeeper) error {
 
+	cmd.BuildState = sk.BuildState
 	if sk.CtpV2Request == nil || len(sk.CtpV2Request.GetRequests()) == 0 {
 		if sk.CtpV1Requests == nil || len(sk.CtpV1Requests) == 0 {
 			return fmt.Errorf("Cmd %q missing dependency: Either v1 or v2 request is required!", cmd.GetCommandType())
@@ -127,7 +129,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
 	common.WriteAnyObjectToStepLog(ctx, step, v1KeysMap, "RequestToBMVTargetKeyMap")
 
-	v2RequestMap, requestChainMap, dddTrackerMap := common_builders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests).BuildRequest()
+	v2RequestMap, requestChainMap, dddTrackerMap := common_builders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState).BuildRequest()
 	common.WriteAnyObjectToStepLog(ctx, step, requestChainMap, "RequestChainMap")
 	common.WriteAnyObjectToStepLog(ctx, step, dddTrackerMap, "DddTrackerMap")
 	cmd.CtpV2RequestMap = v2RequestMap // will be used to propagate the request key to each invocation

@@ -60,6 +60,8 @@ const (
 	EnumerationErrKey                      = "Enumeration Error"
 	SuiteLimitsErrKey                      = "Suite Limits Cancellation"
 	OtherErrKey                            = "Other Error"
+	CTPBucket                              = "testplatform"
+	CTPBucketShadow                        = "testplatform.shadow"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.

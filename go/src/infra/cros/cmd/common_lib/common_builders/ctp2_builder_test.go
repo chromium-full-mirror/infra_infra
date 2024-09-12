@@ -15,6 +15,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/luciexe/build"
 
 	builders "infra/cros/cmd/common_lib/common_builders"
 )
@@ -40,7 +41,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
@@ -58,7 +59,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true, false),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 2)
@@ -92,7 +93,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
@@ -115,7 +116,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false, false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 2)
@@ -139,7 +140,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false, true),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, true),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		So(result.GetRequests(), ShouldHaveLength, 1)
