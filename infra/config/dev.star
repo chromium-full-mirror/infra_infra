@@ -856,3 +856,15 @@ luci.builder(
     schedule = "triggered",
     backend_alt = "taskbackendlite",
 )
+
+adhoc_builder(
+    name = "luciod-tester",
+    os = "Ubuntu",
+    executable = luci.executable(
+        name = "luciod-expt",
+        cipd_package = "experimental/ashishgandhi_at_google.com/expt",
+        cipd_version = "latest",
+        cmd = ["./expt"],
+    ),
+    schedule = "triggered",
+)
