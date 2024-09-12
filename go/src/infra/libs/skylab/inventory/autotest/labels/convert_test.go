@@ -124,6 +124,7 @@ capabilities {
   touchpad: true
   touchscreen: true
   fingerprint: true
+  fingerprint_mcu: ""
   telephony: "telephonyval"
   storage: "storageval"
   power: "powerval"
@@ -764,6 +765,7 @@ capabilities {
   touchpad: true
   touchscreen: true
   fingerprint: true
+  fingerprint_mcu: ""
   telephony: "telephonyval"
   storage: "storageval"
   power: "powerval"

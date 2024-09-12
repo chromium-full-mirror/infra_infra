@@ -126,6 +126,7 @@ capabilities {
   gpu_id: "gpuidval"
   flashrom: true
   fingerprint: true
+  fingerprint_mcu: "fingerprintmcuval"
   detachablebase: true
   carrier: 2
   supported_carriers: 2
@@ -305,6 +306,7 @@ capabilities {
   gpu_id: "gpuidval"
   flashrom: true
   fingerprint: true
+  fingerprint_mcu: "fingerprintmcuval"
   detachablebase: true
   carrier: 2
   supported_carriers: 2
@@ -408,6 +410,7 @@ var fullDimensions = Dimensions{
 	"label-device-stable":           {"True"},
 	"label-ec_type":                 {"EC_TYPE_CHROME_OS"},
 	"label-fingerprint":             {"True"},
+	"label-fingerprint_mcu":         {"fingerprintmcuval"},
 	"label-flashrom":                {"True"},
 	"label-form_factor":             {"FORM_FACTOR_CLAMSHELL"},
 	"label-gpu_family":              {"gpufamilyval"},
