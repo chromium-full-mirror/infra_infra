@@ -192,7 +192,8 @@ def adhoc_builder(
         schedule = None,
         triggered_by = None,
         description_html = None,
-        custom_metrics = None):
+        custom_metrics = None,
+        execution_timeout = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -209,6 +210,7 @@ def adhoc_builder(
         schedule = schedule,
         triggered_by = triggered_by,
         custom_metrics = custom_metrics,
+        execution_timeout = execution_timeout,
     )
 
 adhoc_builder(
@@ -867,4 +869,5 @@ adhoc_builder(
         cmd = ["./expt"],
     ),
     schedule = "triggered",
+    execution_timeout = 3 * time.hour,
 )
