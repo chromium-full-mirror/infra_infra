@@ -1,4 +1,96 @@
 plans:
+    - name: servo_fw_update
+      criticalactions:
+        - name: Set state:MISSING_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Servo is know in the setup ('dut_servo_host_present') (RUN_ONCE)
+          dependencies:
+            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Servo serial is specified ('dut_servo_has_serial') (RUN_ONCE)
+          dependencies:
+            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
+        - name: Initialize docker container ('servo_host_servod_init') (time:'6m0s')
+          conditions:
+            - name: Uses servod container ('servo_uses_servod_container')
+          dependencies:
+            - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+          dependencies:
+            - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+        - name: Mark labstation as servod is in-use ('cros_create_servo_in_use')
+          conditions:
+            - name: Is labstation ('servo_host_is_labstation')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Has enough free disk space ('cros_has_enough_storage_space')
+          conditions:
+            - name: Servod container is not used ('servo_uses_servod_container')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:BROKEN ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Remove logs and other files ('sample_pass')
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: servo_labstation_disk_cleanup
+                - name: Remove logs older 5 days ('servo_servod_old_logs_cleanup')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Servo_v4(p1) main present ('servo_v4_root_present')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:NOT_CONNECTED ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: All servo's fw updated ('servo_fw_need_update') (time:'5m0s')
+          dependencies:
+            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+              dependencies:
+                - name: Set state:NO_SSH ('servo_set_servo_state') (ALWAYS_RUN)
+              recoveries:
+                - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
+            - name: Set state:SERVO_UPDATER_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
+          recoveries:
+            - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
+            - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
+              dependencies:
+                - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
     - name: dolos (Allow to fail)
       criticalactions:
         - name: Set dolos state:DOLOS_NOT_PRESENT ('dolos_set_dolos_state') (ALWAYS_RUN)

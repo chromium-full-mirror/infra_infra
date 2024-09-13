@@ -15,6 +15,7 @@ const (
 	PlanCrOSDeepRepair  = "cros_deep_repair"
 	PlanServo           = "servo"
 	PlanServoDeepRepair = "servo_deep_repair"
+	PlanServoFwUpdate   = "servo_fw_update"
 	PlanChameleon       = "chameleon"
 	PlanBluetoothPeer   = "bluetooth_peer"
 	PlanWifiRouter      = "wifi_router"

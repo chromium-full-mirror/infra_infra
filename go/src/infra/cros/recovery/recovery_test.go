@@ -88,6 +88,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupTypeCros,
 		buildbucket.Deploy,
 		[]string{
+			config.PlanServoFwUpdate,
 			config.PlanDolos,
 			config.PlanServo,
 			config.PlanCrOS,

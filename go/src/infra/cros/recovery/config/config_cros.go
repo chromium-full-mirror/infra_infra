@@ -73,6 +73,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 func CrosDeployConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanServoFwUpdate,
 			PlanDolos,
 			PlanServo,
 			PlanCrOS,
@@ -85,6 +86,7 @@ func CrosDeployConfig() *Configuration {
 		},
 		Plans: map[string]*Plan{
 			PlanServo:         setAllowFail(servoRepairPlan(), false),
+			PlanServoFwUpdate: setAllowFail(servoPreDeployPlan(), false),
 			PlanCrOS:          setAllowFail(crosDeployPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),

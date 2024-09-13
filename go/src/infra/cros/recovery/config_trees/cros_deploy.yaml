@@ -1,4 +1,282 @@
 plans:
+    - name: servo_fw_update
+      criticalactions:
+        - name: Set state:MISSING_CONFIG (ALWAYS_RUN)
+          exec_name: servo_set_servo_state
+          exec_args:
+            - state:MISSING_CONFIG
+        - name: Servo is know in the setup (RUN_ONCE)
+          exec_name: dut_servo_host_present
+          docs:
+            - Verify if setup data has any data related to servo-host which mean servo is present in setup.
+          dependencies:
+            - name: Set state:WRONG_CONFIG (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:WRONG_CONFIG
+        - name: Servo serial is specified (RUN_ONCE)
+          exec_name: dut_servo_has_serial
+          docs:
+            - Check if root servo serial is present.
+          dependencies:
+            - name: Set state:WRONG_CONFIG (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:WRONG_CONFIG
+        - name: Initialize docker container (time:'6m0s')
+          exec_name: servo_host_servod_init
+          exec_args:
+            - no_servod:true
+          docs:
+            - Initiate docker to have access to the host.
+            - Servod is not needed as on this stage we just verify that servo host is good.
+            - If start container with servod and root servo device is not connected it will fail.
+          conditions:
+            - name: Uses servod container
+              exec_name: servo_uses_servod_container
+              docs:
+                - Condition to check if servo uses servod container.
+          dependencies:
+            - name: Set state:NO_SSH (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:NO_SSH
+          recoveries:
+            - name: Stop servod (Allow to fail) (ALWAYS_RUN)
+              exec_name: servo_host_servod_stop
+              docs:
+                - Stop the servod daemon.
+                - Allowed to fail as can be run when servod is not running.
+              dependencies:
+                - name: Save UART capture (Allow to fail)
+                  exec_name: servod_save_uart_capture
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail)
+                      exec_name: servod_stop_uart_capture
+        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+          exec_name: cros_ssh
+          docs:
+            - Verify that device is reachable by SSH.
+            - Limited to 15 seconds.
+          dependencies:
+            - name: Set state:NO_SSH (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:NO_SSH
+          recoveries:
+            - name: Wait for labstation to load (time:'2m0s')
+              exec_name: cros_ssh
+              docs:
+                - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                - Labstation is expected to complete the reboot within 2 minutes.
+        - name: Mark labstation as servod is in-use
+          exec_name: cros_create_servo_in_use
+          docs:
+            - Create lock file is_in_use.
+          conditions:
+            - name: Is labstation
+              exec_name: servo_host_is_labstation
+              docs:
+                - Condition to check if the servohost is a labstation.
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ssh
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              dependencies:
+                - name: Set state:NO_SSH (ALWAYS_RUN)
+                  exec_name: servo_set_servo_state
+                  exec_args:
+                    - state:NO_SSH
+              recoveries:
+                - name: Wait for labstation to load (time:'2m0s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                    - Labstation is expected to complete the reboot within 2 minutes.
+            - name: Set state:SERVO_HOST_ISSUE (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:SERVO_HOST_ISSUE
+          recoveries:
+            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
+              exec_name: sample_sleep
+              exec_args:
+                - sleep:1
+            - name: Create request to reboot labstation (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Try to create reboot flag file request.
+                - The action always fails as Servo will be fixed after reboot.
+              conditions:
+                - name: Is labstation
+                  exec_name: servo_host_is_labstation
+                  docs:
+                    - Condition to check if the servohost is a labstation.
+              dependencies:
+                - name: cros_create_reboot_request
+                  exec_name: cros_create_reboot_request
+        - name: Has enough free disk space
+          exec_name: cros_has_enough_storage_space
+          exec_args:
+            - /mnt/stateful_partition:0.5
+          docs:
+            - Check if stateful partition have enough disk space that is at least 0.5GB.
+          conditions:
+            - name: Servod container is not used
+              exec_name: servo_uses_servod_container
+              exec_args:
+                - reverse:true
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ssh
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              dependencies:
+                - name: Set state:NO_SSH (ALWAYS_RUN)
+                  exec_name: servo_set_servo_state
+                  exec_args:
+                    - state:NO_SSH
+              recoveries:
+                - name: Wait for labstation to load (time:'2m0s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                    - Labstation is expected to complete the reboot within 2 minutes.
+            - name: Set state:BROKEN (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:BROKEN
+          recoveries:
+            - name: Remove logs and other files
+              exec_name: sample_pass
+              docs:
+                - Clean up the old servod files as well as labstation.
+              conditions:
+                - name: Is labstation
+                  exec_name: servo_host_is_labstation
+                  docs:
+                    - Condition to check if the servohost is a labstation.
+              dependencies:
+                - name: servo_labstation_disk_cleanup
+                  exec_name: servo_labstation_disk_cleanup
+                - name: Remove logs older 5 days
+                  exec_name: servo_servod_old_logs_cleanup
+                  exec_args:
+                    - max_days:5
+                  docs:
+                    - Clean up the old servod logs which older than 5 days.
+            - name: Create request to reboot labstation (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Try to create reboot flag file request.
+                - The action always fails as Servo will be fixed after reboot.
+              conditions:
+                - name: Is labstation
+                  exec_name: servo_host_is_labstation
+                  docs:
+                    - Condition to check if the servohost is a labstation.
+              dependencies:
+                - name: cros_create_reboot_request
+                  exec_name: cros_create_reboot_request
+        - name: Servo_v4(p1) main present
+          exec_name: servo_v4_root_present
+          exec_args:
+            - update_topology:true
+          docs:
+            - Verify that servo_v4(p1) board is present
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ssh
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              dependencies:
+                - name: Set state:NO_SSH (ALWAYS_RUN)
+                  exec_name: servo_set_servo_state
+                  exec_args:
+                    - state:NO_SSH
+              recoveries:
+                - name: Wait for labstation to load (time:'2m0s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                    - Labstation is expected to complete the reboot within 2 minutes.
+            - name: Set state:NOT_CONNECTED (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:NOT_CONNECTED
+          recoveries:
+            - name: Recover servo with Power-cycle by smart-hub (ALWAYS_RUN) (time:'2m0s')
+              exec_name: servo_power_cycle_root_servo
+              exec_args:
+                - reset_timeout:60
+                - wait_timeout:20
+                - reset_authorized:false
+              docs:
+                - Try to power-cycle the servo via smart usbhub to recover it.
+            - name: Create request to reboot labstation (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Try to create reboot flag file request.
+                - The action always fails as Servo will be fixed after reboot.
+              conditions:
+                - name: Is labstation
+                  exec_name: servo_host_is_labstation
+                  docs:
+                    - Condition to check if the servohost is a labstation.
+              dependencies:
+                - name: cros_create_reboot_request
+                  exec_name: cros_create_reboot_request
+        - name: All servo's fw updated (time:'5m0s')
+          exec_name: servo_fw_need_update
+          docs:
+            - Check whether servo devices required firmware update.
+            - Check running agains version specified by servo_updater channel.
+          dependencies:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_ssh
+              docs:
+                - Verify that device is reachable by SSH.
+                - Limited to 15 seconds.
+              dependencies:
+                - name: Set state:NO_SSH (ALWAYS_RUN)
+                  exec_name: servo_set_servo_state
+                  exec_args:
+                    - state:NO_SSH
+              recoveries:
+                - name: Wait for labstation to load (time:'2m0s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
+                    - Labstation is expected to complete the reboot within 2 minutes.
+            - name: Set state:SERVO_UPDATER_ISSUE (ALWAYS_RUN)
+              exec_name: servo_set_servo_state
+              exec_args:
+                - state:SERVO_UPDATER_ISSUE
+          recoveries:
+            - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
+              exec_name: sample_sleep
+              exec_args:
+                - sleep:1
+            - name: Update all servo's firmware (RUN_ONCE) (time:'10m0s')
+              exec_name: servo_update_servo_firmware
+              exec_args:
+                - try_attempt_count:3
+                - try_force_update_after_fail:true
+              docs:
+                - Try to update in  normal ways 3 times, if fail allow run force update.
+              dependencies:
+                - name: Stop servod daemon on servo-host (time:'6m0s')
+                  exec_name: servo_host_servod_init
+                  exec_args:
+                    - no_servod:true
+                  docs:
+                    - Make sure servod daemon is not running on servo-host.
+                    - If container then run without daemon.
+                    - If daemon is running it will be stopped.
     - name: dolos (Allow to fail)
       criticalactions:
         - name: Set dolos state:DOLOS_NOT_PRESENT (ALWAYS_RUN)
