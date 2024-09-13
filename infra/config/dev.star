@@ -862,6 +862,9 @@ luci.builder(
 adhoc_builder(
     name = "luciod-tester",
     os = "Ubuntu",
+    extra_dims = {
+        "cores": "64",
+    },
     executable = luci.executable(
         name = "luciod-expt",
         cipd_package = "experimental/ashishgandhi_at_google.com/expt",
