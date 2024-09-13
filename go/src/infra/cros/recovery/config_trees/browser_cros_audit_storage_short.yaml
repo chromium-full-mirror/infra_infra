@@ -230,7 +230,7 @@ plans:
                 - name: Device has Intel AMT ('sample_pass')
                   dependencies:
                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                    - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                    - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                       conditions:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
               dependencies:
@@ -283,7 +283,7 @@ plans:
                     - name: Device has Intel AMT ('sample_pass')
                       dependencies:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                           conditions:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
@@ -292,7 +292,7 @@ plans:
                     - name: Device has Intel AMT ('sample_pass')
                       dependencies:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                           conditions:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
@@ -310,7 +310,7 @@ plans:
                     - name: Device has Intel AMT ('sample_pass')
                       dependencies:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                           conditions:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
@@ -326,7 +326,7 @@ plans:
                     - name: Device has Intel AMT ('sample_pass')
                       dependencies:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                           conditions:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -633,7 +633,7 @@ plans:
                     - name: Device has Intel AMT ('sample_pass')
                       dependencies:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                           conditions:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                   dependencies:
@@ -686,7 +686,7 @@ plans:
                         - name: Device has Intel AMT ('sample_pass')
                           dependencies:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                               conditions:
                                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
@@ -695,7 +695,7 @@ plans:
                         - name: Device has Intel AMT ('sample_pass')
                           dependencies:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                               conditions:
                                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                     - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
@@ -713,7 +713,7 @@ plans:
                         - name: Device has Intel AMT ('sample_pass')
                           dependencies:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                               conditions:
                                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                     - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
@@ -729,7 +729,7 @@ plans:
                         - name: Device has Intel AMT ('sample_pass')
                           dependencies:
                             - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is present ('cros_flex_amt_present') (ALWAYS_RUN)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                               conditions:
                                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')

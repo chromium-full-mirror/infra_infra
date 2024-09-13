@@ -51,6 +51,6 @@ func flexAMTKnownExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func init() {
-	execs.Register("cros_flex_amt_present", flexAMTKnownExec)
+	execs.Register("cros_flex_amt_known", flexAMTKnownExec)
 	execs.Register("cros_flex_set_amt_power_state", flexSetAMTPowerStateExec)
 }

@@ -4732,35 +4732,36 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
-		"Intel AMT is present": {
+		"Are AMT details known": {
 			Docs: []string{
-				"Check if Intel AMT (vPro) is present.",
+				"Check if the DUT has the AMT manager peripheral.",
+				"Does not verify the health of AMT itself.",
 			},
 			Conditions: []string{
 				"Is Flex device",
 			},
-			ExecName:      "cros_flex_amt_present",
+			ExecName:      "cros_flex_amt_known",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Device has Intel AMT": {
 			Docs: []string{
-				"Verify that the device has Intel AMT (vPro).",
+				"DUT is a Flex device with the AMT manager peripheral.",
 			},
 			Dependencies: []string{
 				"Is Flex device",
-				"Intel AMT is present",
+				"Are AMT details known",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device does not have Intel AMT": {
 			Docs: []string{
-				"Verify that the device does not have Intel AMT (vPro).",
+				"DUT is Flex device without the AMT manager peripheral.",
 			},
 			Dependencies: []string{
 				"Is Flex device",
-				"Intel AMT is present",
+				"Are AMT details known",
 			},
 			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},

@@ -6850,7 +6850,7 @@ plans:
                 - name: Device has Intel AMT
                   exec_name: sample_pass
                   docs:
-                    - Verify that the device has Intel AMT (vPro).
+                    - DUT is a Flex device with the AMT manager peripheral.
                   dependencies:
                     - name: Is Flex device (RUN_ONCE)
                       exec_name: dut_check_board
@@ -6859,10 +6859,11 @@ plans:
                         - invert_result:false
                       docs:
                         - Check that DUT is a Flex board
-                    - name: Intel AMT is present (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_present
+                    - name: Are AMT details known (ALWAYS_RUN)
+                      exec_name: cros_flex_amt_known
                       docs:
-                        - Check if Intel AMT (vPro) is present.
+                        - Check if the DUT has the AMT manager peripheral.
+                        - Does not verify the health of AMT itself.
                       conditions:
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
@@ -7026,7 +7027,7 @@ plans:
                     - name: Device has Intel AMT
                       exec_name: sample_pass
                       docs:
-                        - Verify that the device has Intel AMT (vPro).
+                        - DUT is a Flex device with the AMT manager peripheral.
                       dependencies:
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
@@ -7035,10 +7036,11 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
+                        - name: Are AMT details known (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_known
                           docs:
-                            - Check if Intel AMT (vPro) is present.
+                            - Check if the DUT has the AMT manager peripheral.
+                            - Does not verify the health of AMT itself.
                           conditions:
                             - name: Is Flex device (RUN_ONCE)
                               exec_name: dut_check_board
@@ -7061,7 +7063,7 @@ plans:
                     - name: Device has Intel AMT
                       exec_name: sample_pass
                       docs:
-                        - Verify that the device has Intel AMT (vPro).
+                        - DUT is a Flex device with the AMT manager peripheral.
                       dependencies:
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
@@ -7070,10 +7072,11 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
+                        - name: Are AMT details known (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_known
                           docs:
-                            - Check if Intel AMT (vPro) is present.
+                            - Check if the DUT has the AMT manager peripheral.
+                            - Does not verify the health of AMT itself.
                           conditions:
                             - name: Is Flex device (RUN_ONCE)
                               exec_name: dut_check_board
@@ -7146,7 +7149,7 @@ plans:
                     - name: Device has Intel AMT
                       exec_name: sample_pass
                       docs:
-                        - Verify that the device has Intel AMT (vPro).
+                        - DUT is a Flex device with the AMT manager peripheral.
                       dependencies:
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
@@ -7155,10 +7158,11 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
+                        - name: Are AMT details known (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_known
                           docs:
-                            - Check if Intel AMT (vPro) is present.
+                            - Check if the DUT has the AMT manager peripheral.
+                            - Does not verify the health of AMT itself.
                           conditions:
                             - name: Is Flex device (RUN_ONCE)
                               exec_name: dut_check_board
@@ -7199,7 +7203,7 @@ plans:
                     - name: Device has Intel AMT
                       exec_name: sample_pass
                       docs:
-                        - Verify that the device has Intel AMT (vPro).
+                        - DUT is a Flex device with the AMT manager peripheral.
                       dependencies:
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
@@ -7208,10 +7212,11 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                        - name: Intel AMT is present (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_present
+                        - name: Are AMT details known (ALWAYS_RUN)
+                          exec_name: cros_flex_amt_known
                           docs:
-                            - Check if Intel AMT (vPro) is present.
+                            - Check if the DUT has the AMT manager peripheral.
+                            - Does not verify the health of AMT itself.
                           conditions:
                             - name: Is Flex device (RUN_ONCE)
                               exec_name: dut_check_board
