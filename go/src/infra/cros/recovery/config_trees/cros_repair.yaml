@@ -58518,7 +58518,7 @@ plans:
                 - name: Has live carrier (RUN_ONCE)
                   exec_name: carrier_not_in
                   exec_args:
-                    - carriers:CMW500,CMX500,PINLOCK,TESTESIM,STARFISH
+                    - carriers:CMW500,CMX500,PINLOCK,TESTESIM,STARFISH,STARFISHPLUS,ROAMSIM,MULTISIM,ESIM
                   docs:
                     - Verify that DUT has a connectable carrier and not a test device.
                   conditions:

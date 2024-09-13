@@ -1525,7 +1525,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "carrier_not_in",
 			ExecExtraArgs: []string{
-				"carriers:CMW500,CMX500,PINLOCK,TESTESIM,STARFISH",
+				"carriers:CMW500,CMX500,PINLOCK,TESTESIM,STARFISH,STARFISHPLUS,ROAMSIM,MULTISIM,ESIM",
 			},
 			RunControl: RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{
