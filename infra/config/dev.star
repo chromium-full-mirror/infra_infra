@@ -872,5 +872,5 @@ adhoc_builder(
         cmd = ["./expt"],
     ),
     schedule = "triggered",
-    execution_timeout = 3 * time.hour,
+    execution_timeout = 5 * time.hour,
 )
