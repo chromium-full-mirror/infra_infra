@@ -277,6 +277,56 @@ plans:
                     - Make sure servod daemon is not running on servo-host.
                     - If container then run without daemon.
                     - If daemon is running it will be stopped.
+        - name: Start servod daemon with recovery (time:'2m0s')
+          exec_name: servo_host_servod_init
+          exec_args:
+            - recovery_mode:true
+          docs:
+            - Start servod daemon on servo-host with recovery mode.
+          recoveries:
+            - name: Stop servod (Allow to fail) (ALWAYS_RUN)
+              exec_name: servo_host_servod_stop
+              docs:
+                - Stop the servod daemon.
+                - Allowed to fail as can be run when servod is not running.
+              dependencies:
+                - name: Save UART capture (Allow to fail)
+                  exec_name: servod_save_uart_capture
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail)
+                      exec_name: servod_stop_uart_capture
+            - name: Create request to reboot labstation (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Try to create reboot flag file request.
+                - The action always fails as Servo will be fixed after reboot.
+              conditions:
+                - name: Is labstation
+                  exec_name: servo_host_is_labstation
+                  docs:
+                    - Condition to check if the servohost is a labstation.
+              dependencies:
+                - name: cros_create_reboot_request
+                  exec_name: cros_create_reboot_request
+        - name: Servo Poweron Default Set (Allow to fail)
+          exec_name: servo_set_poweron_defaults
+          docs:
+            - Configure servo to have correct default config values on power on
+            - Set direction to servo-host ( current and default ) if Dolos configured for testbed.
+          conditions:
+            - name: is_servo_v4p1
+              exec_name: is_servo_v4p1
+        - name: Stop servod (Allow to fail) (ALWAYS_RUN)
+          exec_name: servo_host_servod_stop
+          docs:
+            - Stop the servod daemon.
+            - Allowed to fail as can be run when servod is not running.
+          dependencies:
+            - name: Save UART capture (Allow to fail)
+              exec_name: servod_save_uart_capture
+              dependencies:
+                - name: Stop UART capture (Allow to fail)
+                  exec_name: servod_stop_uart_capture
     - name: dolos (Allow to fail)
       criticalactions:
         - name: Set dolos state:DOLOS_NOT_PRESENT (ALWAYS_RUN)

@@ -91,6 +91,26 @@ plans:
             - name: Update all servo's firmware ('servo_update_servo_firmware') (RUN_ONCE) (time:'10m0s')
               dependencies:
                 - name: Stop servod daemon on servo-host ('servo_host_servod_init') (time:'6m0s')
+        - name: Start servod daemon with recovery ('servo_host_servod_init') (time:'2m0s')
+          recoveries:
+            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+              dependencies:
+                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+                  dependencies:
+                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+            - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
+              conditions:
+                - name: Is labstation ('servo_host_is_labstation')
+              dependencies:
+                - name: cros_create_reboot_request
+        - name: Servo Poweron Default Set (Allow to fail) ('servo_set_poweron_defaults')
+          conditions:
+            - name: is_servo_v4p1
+        - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+          dependencies:
+            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
+              dependencies:
+                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
     - name: dolos (Allow to fail)
       criticalactions:
         - name: Set dolos state:DOLOS_NOT_PRESENT ('dolos_set_dolos_state') (ALWAYS_RUN)

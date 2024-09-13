@@ -65,6 +65,9 @@ func servoPreDeployPlan() *Plan {
 			"Has enough free disk space",
 			"Servo_v4(p1) main present",
 			"All servo's fw updated",
+			"Start servod daemon with recovery",
+			"Servo Poweron Default Set",
+			"Stop servod",
 		},
 		Actions: servoPlanActions(),
 	}
@@ -175,6 +178,20 @@ func servoPlanActions() map[string]*Action {
 				"Reset EC from DUT and stop",
 				"Reflash Cr50 fw and stop",
 				"Reset GSC from DUT and stop servod",
+				"Create request to reboot labstation",
+			},
+		},
+		"Start servod daemon with recovery": {
+			Docs: []string{
+				"Start servod daemon on servo-host with recovery mode.",
+			},
+			ExecName: "servo_host_servod_init",
+			ExecExtraArgs: []string{
+				"recovery_mode:true",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 120},
+			RecoveryActions: []string{
+				"Stop servod",
 				"Create request to reboot labstation",
 			},
 		},
