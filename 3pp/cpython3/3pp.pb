@@ -11,8 +11,9 @@ create {
       repo: "https://chromium.googlesource.com/external/github.com/python/cpython"
       tag_pattern: "v%s",
 
-      # Pin to 3.11.x for now.
-      version_restriction: { op: LT val: "3.12a0"}
+      # Pin to last bugfix release of the Python 3.11 with windows binaries
+      # TODO(crbug.com/365481207): Update latest cpython3 to 3.12.
+      version_restriction: { op: LT val: "3.11.10"}
     }
     patch_dir: "patches"
   }

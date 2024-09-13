@@ -60,7 +60,7 @@ def get_installer_suffix(platform):
 
 
 # Only look at versions in 3.11.x for now.
-_VERSION_LIMIT = packaging.version.parse("3.12.0a0")
+_VERSION_LIMIT = packaging.version.parse("3.11.10")
 
 
 def do_latest(platform):
