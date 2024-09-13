@@ -14,22 +14,6 @@ import (
 	"infra/cros/recovery/internal/execs"
 )
 
-// flexAMTPresentExec returns true if Intel AMT (vPro) is present.
-func flexAMTPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := getFlexAMTClient(info)
-	if err != nil {
-		return errors.Reason("flex AMT present: failed to create client").Err()
-	}
-	present, err := client.AMTPresent(ctx)
-	if err != nil {
-		return errors.Annotate(err, "flex AMT present").Err()
-	}
-	if !present {
-		return errors.Reason("flex AMT present: not found").Err()
-	}
-	return nil
-}
-
 // flexSetAMTPowerStateExec sets the specified power state.
 func flexSetAMTPowerStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	args := info.GetActionArgs(ctx)
@@ -58,7 +42,15 @@ func getFlexAMTClient(info *execs.ExecInfo) (*amt.AMTClient, error) {
 	return amt.NewAMTClient(hostname, "admin", "P@ssword1"), nil
 }
 
+// flexAMTKnownExec checks if AMT management details are present for the DUT.
+func flexAMTKnownExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetDut().GetChromeos().GetAmtManager() == nil {
+		return errors.Reason("flex AMT present: amt_manager is not supported").Err()
+	}
+	return nil
+}
+
 func init() {
-	execs.Register("cros_flex_amt_present", flexAMTPresentExec)
+	execs.Register("cros_flex_amt_present", flexAMTKnownExec)
 	execs.Register("cros_flex_set_amt_power_state", flexSetAMTPowerStateExec)
 }

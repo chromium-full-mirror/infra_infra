@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/beevik/etree"
 	dac "github.com/xinsnake/go-http-digest-auth-client"
@@ -85,25 +84,6 @@ func (c AMTClient) post(ctx context.Context, request string) (string, error) {
 	body, _ := io.ReadAll(resp.Body)
 	log.Debugf(ctx, "Received HTTP response: %s", body)
 	return string(body), nil
-}
-
-// AMTPresent returns true if the client URI is accessible.
-func (c AMTClient) AMTPresent(ctx context.Context) (bool, error) {
-	client := http.Client{
-		Timeout: 500 * time.Millisecond,
-	}
-	resp, err := client.Get(c.uri)
-	if err != nil {
-		return false, err
-	}
-	// Is the URI is not found then AMT is not enabled.
-	if resp.StatusCode == http.StatusNotFound {
-		return false, nil
-	} else if resp.StatusCode == http.StatusUnauthorized {
-		return true, nil
-	} else {
-		return false, errors.Reason("responded with status %d", resp.StatusCode).Err()
-	}
 }
 
 // GetPowerState returns the power state as an int.
