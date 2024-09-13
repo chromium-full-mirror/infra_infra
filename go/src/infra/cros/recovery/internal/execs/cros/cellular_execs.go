@@ -15,6 +15,7 @@ import (
 	"infra/cros/recovery/internal/components/cros/cellular"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
@@ -191,13 +192,20 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 
 	runner := info.DefaultRunner()
 	argsMap := info.GetActionArgs(ctx)
-	waitTimeout := argsMap.AsDuration(ctx, "wait_connected_timeout", 120, time.Second)
+
+	// When we connect successfully, it doesn't tend to take very long,
+	// if it takes longer than 30 seconds we will probably never connect.
+	waitTimeout := argsMap.AsDuration(ctx, "wait_connected_timeout", 30, time.Second)
 
 	// Action requires at least 1 minute more than wait_connected_timeout to successfully complete the action.
 	if waitTimeout+time.Minute > info.GetExecTimeout() {
 		return errors.Reason("audit cellular connection: exec timeout must be >= wait_connected_timeout + 60s").Err()
 	}
 
+	connectAttempts := argsMap.AsInt(ctx, "connect_attempts", 2)
+	resetCmdTimeout := argsMap.AsDuration(ctx, "reset_command_timeout", 5, time.Second)
+	resetDelay := argsMap.AsDuration(ctx, "reset_delay", 10, time.Second)
+	resetWaitTimeout := argsMap.AsDuration(ctx, "reset_wait_timeout", 30, time.Second)
 	for _, si := range c.GetSimInfos() {
 		if len(si.GetProfileInfos()) != 1 {
 			// Only support SIMs with 1 profile for now since we don't support profile activation.
@@ -208,16 +216,28 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 		pi := si.GetProfileInfos()[0]
 		if pi.GetIccid() == "" {
 			// Don't try to connect to any profiles with empty ICCIDs.
-			log.Debugf(ctx, "Skipping profile: empty ICCID")
+			log.Debugf(ctx, "Skipping profile: empty ICCID in slot: %q", si.GetSlotId())
 			continue
 		}
 
 		if err := cellular.SwitchSIMSlot(ctx, runner, si.GetSlotId()); err != nil {
 			return errors.Annotate(err, "audit cellular connection").Err()
 		}
+		time.Sleep(5 * time.Second)
 
-		if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err != nil {
-			log.Debugf(ctx, "Failed to connect to SIM profile", pi.GetIccid())
+		if err := retry.LimitCount(ctx, connectAttempts, time.Second, func() error {
+			if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err == nil {
+				return nil
+			} else {
+				log.Errorf(ctx, "Failed connection attempt, resetting modem: %w", err)
+			}
+
+			if err := cellular.ResetModem(ctx, runner, resetCmdTimeout, resetDelay, resetWaitTimeout); err != nil {
+				return errors.Annotate(err, "failed to restart modem after connection failure").Err()
+			}
+			return errors.Reason("connect to default service").Err()
+		}, "wait for modemmanager"); err != nil {
+			log.Debugf(ctx, "Failed to connect to SIM profile: %q", pi.GetIccid())
 		}
 
 		if err := reportCellularConnectionInfo(ctx, info, 15*time.Second, pi); err != nil {

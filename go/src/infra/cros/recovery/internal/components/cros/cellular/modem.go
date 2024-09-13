@@ -28,11 +28,9 @@ const (
 	modemManagerJobPresentCmd = "initctl status modemmanager"
 	restartModemManagerCmd    = "restart modemmanager"
 	getSignalStrengthCmd      = "mmcli -m a --signal-get -J"
+	resetModemCmd             = "mmcli -m a -r"
 	startModemManagerCmd      = "start modemmanager"
 	shillInterface            = "org.chromium.flimflam"
-	getCellularServiceCmd     = "gdbus call --system --dest=org.chromium.flimflam" +
-		" -o / -m org.chromium.flimflam.Manager.FindMatchingService" +
-		" \"{'Type': 'cellular'}\" | cut -d\"'\" -f2"
 )
 
 // SIM state aliases.
@@ -76,22 +74,50 @@ func RestartModemManager(ctx context.Context, runner components.Runner, timeout 
 	return nil
 }
 
+// ResetModem resets the modem via modemmanager.
+func ResetModem(ctx context.Context, runner components.Runner, commandTimeout, delay, waitTimeout time.Duration) error {
+	if _, err := runner(ctx, commandTimeout, resetModemCmd); err != nil {
+		return errors.Annotate(err, "reset modem").Err()
+	}
+
+	// We should delay before rechecking the modem's state since it may take a couple
+	// of seconds before starting the reset.
+	time.Sleep(delay)
+	if _, err := WaitForModemInfo(ctx, runner, waitTimeout); err != nil {
+		return errors.Annotate(err, "reset modem").Err()
+	}
+	return nil
+}
+
 // ConnectToDefaultService attempts a simple connection to the default cellular service.
 func ConnectToDefaultService(ctx context.Context, runner components.Runner, timeout time.Duration) error {
-	info, err := WaitForModemInfo(ctx, runner, 15*time.Second)
+	mi, err := WaitForModemInfo(ctx, runner, 15*time.Second)
 	if err != nil {
 		return errors.Annotate(err, "connect to default service: get modem info").Err()
 	}
 
+	si, err := GetSIMInfo(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "connect to default service: failed to get SIM info").Err()
+	}
+	if si == nil || len(si.GetProfileInfos()) == 0 {
+		return errors.Reason("connect to default service: no SIM active").Err()
+	}
+	iccid := si.GetProfileInfos()[0].GetIccid()
+
 	// skip if already in connected state
-	if strings.EqualFold(info.GetState(), string(ModemStateConnected)) {
+	if strings.EqualFold(mi.GetState(), string(ModemStateConnected)) {
 		log.Infof(ctx, "connect to default service: modem is already connected to service")
 		return nil
 	}
 
 	// don't attempt to connect if in "connecting" state
-	if !strings.EqualFold(info.GetState(), string(ModemStateConnecting)) {
-		serviceName, err := runner(ctx, 5*time.Second, getCellularServiceCmd)
+	if !strings.EqualFold(mi.GetState(), string(ModemStateConnecting)) {
+		getServiceCmd := fmt.Sprintf(
+			`dbus-send --system --fixed --print-reply --dest=org.chromium.flimflam`+
+				` / org.chromium.flimflam.Manager.FindMatchingService`+
+				` dict:string:variant:"Cellular.ICCID",string:"%s","Connectable",boolean:true`, iccid)
+		serviceName, err := runner(ctx, 5*time.Second, getServiceCmd)
 		if err != nil {
 			return errors.Annotate(err, "connect to default service: get service name").Err()
 		}
