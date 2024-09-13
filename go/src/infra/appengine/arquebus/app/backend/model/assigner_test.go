@@ -158,7 +158,7 @@ func TestEnsureScheduledTasks(t *testing.T) {
 				// Verify the existing Task is still marked as Scheduled.
 				assert.Loosely(t, existingTask.Status, should.Equal(TaskStatus_Scheduled))
 				assert.Loosely(t, newTask.Status, should.Equal(TaskStatus_Scheduled))
-				assert.Loosely(t, newTask.ExpectedStart, should.Equal(cl.Now().Add(assigner.Interval)))
+				assert.That(t, newTask.ExpectedStart, should.Match(cl.Now().Add(assigner.Interval)))
 			})
 		})
 
@@ -179,8 +179,8 @@ func TestEnsureScheduledTasks(t *testing.T) {
 			assert.Loosely(t, len(tasks), should.Equal(1))
 			newTask := tasks[0]
 
-			assert.Loosely(t,
-				newTask.ExpectedStart, should.Equal(
+			assert.That(t,
+				newTask.ExpectedStart, should.Match(
 					now.Add(scheduleAssignerCronInterval*2),
 				))
 		})
@@ -197,7 +197,7 @@ func TestEnsureScheduledTasks(t *testing.T) {
 				// each should assigner.Interval further away from the previous
 				// schedule.
 				start := now.Add(assigner.Interval * time.Duration(i+1))
-				assert.Loosely(t, tasks[i].ExpectedStart, should.Equal(start))
+				assert.That(t, tasks[i].ExpectedStart, should.Match(start))
 			}
 		})
 

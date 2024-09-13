@@ -29,7 +29,7 @@ func TestGetLastScannedTime(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			res, err := GetLastScannedTime(ctx)
-			assert.Loosely(t, res.LastScanned, should.Equal(e.LastScanned))
+			assert.That(t, res.LastScanned, should.Match(e.LastScanned))
 			assert.Loosely(t, err, should.BeNil)
 
 			// Clean up test
@@ -55,13 +55,13 @@ func TestSaveLastScannedTime(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			res, err := GetLastScannedTime(ctx)
-			assert.Loosely(t, res.LastScanned, should.Equal(lastScannedTime))
+			assert.That(t, res.LastScanned, should.Match(lastScannedTime))
 			assert.Loosely(t, err, should.BeNil)
 		})
 		t.Run("Update metadata entity", func(t *ftt.Test) {
 			oldScannedTime := time.Date(2020, 01, 01, 12, 34, 56, 0, time.UTC)
 			res, err := GetLastScannedTime(ctx)
-			assert.Loosely(t, res.LastScanned, should.Equal(oldScannedTime))
+			assert.That(t, res.LastScanned, should.Match(oldScannedTime))
 			assert.Loosely(t, err, should.BeNil)
 
 			newScannedTime := time.Date(2020, 01, 01, 01, 00, 00, 0, time.UTC)
@@ -69,7 +69,7 @@ func TestSaveLastScannedTime(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			res, err = GetLastScannedTime(ctx)
-			assert.Loosely(t, res.LastScanned, should.Equal(newScannedTime))
+			assert.That(t, res.LastScanned, should.Match(newScannedTime))
 			assert.Loosely(t, err, should.BeNil)
 		})
 	})

@@ -106,7 +106,7 @@ func TestAddRecord(t *testing.T) {
 				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(records[i].GetUpdatedTime())
-				assert.Loosely(t, r.Entity.UpdatedTime, should.Equal(updatedTime))
+				assert.That(t, r.Entity.UpdatedTime, should.Match(updatedTime))
 			}
 
 			res = GetDeviceManualRepairRecords(ctx, ids1)
@@ -118,7 +118,7 @@ func TestAddRecord(t *testing.T) {
 				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(records[i].GetUpdatedTime())
-				assert.Loosely(t, r.Entity.UpdatedTime, should.Equal(updatedTime))
+				assert.That(t, r.Entity.UpdatedTime, should.Match(updatedTime))
 			}
 		})
 		t.Run("Add existing record to datastore", func(t *ftt.Test) {
