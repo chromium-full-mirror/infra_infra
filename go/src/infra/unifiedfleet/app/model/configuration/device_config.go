@@ -177,10 +177,9 @@ func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, fi
 		}
 		dc := pm.(*ufsdevice.Config)
 		if keysOnly {
-			DutState := &ufsdevice.Config{
+			res = append(res, &ufsdevice.Config{
 				Id: dc.Id,
-			}
-			res = append(res, DutState)
+			})
 		} else {
 			res = append(res, dc)
 		}
@@ -200,6 +199,18 @@ func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, fi
 		nextPageToken = nextCur.String()
 	}
 	return
+}
+
+// BatchDeleteDeviceConfigsACL deletes a batch of device configs and check ACLs
+//
+// This is a non-atomic operation. Must be used within a transaction.
+// Will lead to partial deletes if not used in a transaction.
+func BatchDeleteDeviceConfigsACL(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) error {
+	protos := make([]proto.Message, len(cfgIDs))
+	for i, id := range cfgIDs {
+		protos[i] = &ufsdevice.Config{Id: id}
+	}
+	return ufsds.BatchDeleteACL(ctx, protos, newDeviceConfigRealmEntityFunc(BlankRealmAssigner), util.ConfigurationsDelete)
 }
 
 // GetDeviceConfigIDStr returns a string as device config short name.

@@ -63,7 +63,7 @@ func syncDeviceConfigs(ctx context.Context) (err error) {
 
 	failed_ns := []string{}
 	for ns, realmFunc := range namespaceToRealmAssignerMap {
-		if err := insertConfigInNamespace(ctx, cfgs, ns, realmFunc); err != nil {
+		if err := updateConfigInNamespace(ctx, cfgs, ns, realmFunc); err != nil {
 			failed_ns = append(failed_ns, ns)
 		}
 	}
@@ -104,9 +104,8 @@ func downloadDeviceConfigFromGitiles(ctx context.Context, client external.GitTil
 	return rsp.Contents, nil
 }
 
-// insertConfigInNamespace sets the context to the appropriate namespace
-// and inserts configs
-func insertConfigInNamespace(ctx context.Context, cfgs []*ufsdevice.Config, ns string, realmFunc configuration.RealmAssignerFunc) error {
+// updateConfigInNamespace sets the context to the appropriate namespace
+func updateConfigInNamespace(ctx context.Context, cfgs []*ufsdevice.Config, ns string, realmFunc configuration.RealmAssignerFunc) error {
 	ctx, err := util.SetupDatastoreNamespace(ctx, ns)
 	if err != nil {
 		return errors.Annotate(err, "failed to set namespace").Err()
@@ -116,5 +115,26 @@ func insertConfigInNamespace(ctx context.Context, cfgs []*ufsdevice.Config, ns s
 		return errors.Annotate(err, "failed to insert configs to datastore in namespace %s", ns).Err()
 	}
 	logging.Debugf(ctx, "Successfully inserted DeviceConfigs to UFS datastore in namespace %s", ns)
-	return nil
+
+	cfgMap := make(map[string]*ufsdevice.Config)
+	for _, cfg := range cfgs {
+		cfgMap[configuration.GetDeviceConfigIDStr(cfg.GetId())] = cfg
+	}
+	toDeleteDCIDs := make([]*ufsdevice.ConfigId, 0)
+	for startToken := ""; ; {
+		res, nextToken, err := configuration.ListDeviceConfigs(ctx, pageSize, startToken, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "get all DeviceConfigs").Err()
+		}
+		for _, r := range res {
+			if _, ok := cfgMap[configuration.GetDeviceConfigIDStr(r.GetId())]; !ok {
+				toDeleteDCIDs = append(toDeleteDCIDs, r.GetId())
+			}
+		}
+		if nextToken == "" {
+			break
+		}
+		startToken = nextToken
+	}
+	return configuration.BatchDeleteDeviceConfigsACL(ctx, toDeleteDCIDs)
 }

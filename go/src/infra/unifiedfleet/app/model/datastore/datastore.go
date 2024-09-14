@@ -517,6 +517,58 @@ func BatchDelete(ctx context.Context, es []proto.Message, nf NewFunc) error {
 	return nil
 }
 
+// BatchDeleteACL removes the entities from the datastore after ensuring the
+// user can access them
+//
+// This is a non-atomic operation, returns error even if partial delete succeeds.
+// Must be used within a Transaction so that partial deletes are rolled back.
+// If any entity is not accessible to the user, this will return no data and an error.
+func BatchDeleteACL(ctx context.Context, es []proto.Message, nf NewRealmEntityFunc, neededPerm realms.Permission) error {
+	if len(es) == 0 {
+		return nil
+	}
+	entities := make([]RealmEntity, len(es))
+	for i, e := range es {
+		entity, err := nf(ctx, e)
+		if err != nil {
+			return err
+		}
+		entities[i] = entity
+	}
+
+	if err := datastore.Get(ctx, entities); err != nil {
+		var valErrs errors.MultiError
+		if errors.As(err, &valErrs) {
+			for i, e := range err.(errors.MultiError) {
+				if e != nil {
+					logging.Debugf(ctx, "BatchGet for %s: %s", entities[i], e.Error())
+					return errors.Annotate(e, "Fail to get %q", entities[i]).Tag(grpcutil.FailedPreconditionTag).Err()
+				}
+			}
+		} else {
+			return errors.Annotate(err, "Fail to get entity").Tag(grpcutil.FailedPreconditionTag).Err()
+		}
+	}
+
+	for _, e := range entities {
+		has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+			return status.Errorf(codes.Internal, "Fail to fetch auth permissions: %s", err)
+		}
+		if !has {
+			logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
+			return status.Errorf(codes.PermissionDenied, "Permission denied")
+		}
+	}
+
+	if err := datastore.Delete(ctx, entities); err != nil {
+		logging.Errorf(ctx, "Failed to delete entities from datastore: %s", err)
+		return status.Errorf(codes.Internal, fmt.Sprintf("fail to delete entities with ACL: %s", err.Error()))
+	}
+	return nil
+}
+
 // DeleteAll removes the entities from the datastore
 func DeleteAll(ctx context.Context, es []proto.Message, nf NewFunc) *OpResults {
 	allRes := make(OpResults, len(es))

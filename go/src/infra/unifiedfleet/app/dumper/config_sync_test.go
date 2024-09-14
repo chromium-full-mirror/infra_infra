@@ -34,6 +34,10 @@ func grantRealmPerms(ctx context.Context, realms ...string) context.Context {
 			Realm:      r,
 			Permission: util.ConfigurationsGet,
 		})
+		perms = append(perms, authtest.RealmPermission{
+			Realm:      r,
+			Permission: util.ConfigurationsDelete,
+		})
 	}
 
 	newCtx := auth.WithState(ctx, &authtest.FakeState{
@@ -69,7 +73,17 @@ func TestSyncDeviceConfigs(t *testing.T) {
 			},
 		})
 
-		err := syncDeviceConfigs(ctx)
+		devCfg := &ufsdevice.Config{
+			Id: configuration.GetConfigID("board3", "model3", ""),
+		}
+		_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, ConstantRealmAssigner)
+		assert.Loosely(t, err, should.BeNil)
+
+		cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board3", "model3", ""))
+		assert.Loosely(t, cfg, should.Match(devCfg))
+		assert.Loosely(t, err, should.BeNil)
+
+		err = syncDeviceConfigs(ctx)
 		assert.Loosely(t, err, should.BeNil)
 
 		t.Run("DeviceConfigs should be fetchable in all namespaces specified", func(t *ftt.Test) {
@@ -95,6 +109,16 @@ func TestSyncDeviceConfigs(t *testing.T) {
 			cfg2, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board2", "model2", ""))
 			assert.Loosely(t, cfg2, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
+		})
+		t.Run("Non-existing device config shouldn't be fetchable", func(t *ftt.Test) {
+			for ns := range namespaceToRealmAssignerMap {
+				ctx, err := util.SetupDatastoreNamespace(ctx, ns)
+				assert.Loosely(t, err, should.BeNil)
+
+				cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board3", "model3", ""))
+				assert.Loosely(t, cfg, should.BeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+			}
 		})
 	})
 }
