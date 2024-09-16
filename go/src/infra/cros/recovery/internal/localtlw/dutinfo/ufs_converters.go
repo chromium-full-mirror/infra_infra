@@ -509,10 +509,11 @@ func convertStarfishStateToUFS(s tlw.Cellular_StarfishState) ufslab.PeripheralSt
 
 // simonnectionStates maps the ufs connection states to tlw connection states.
 var simStates = map[ufslab.SIMProfileInfo_State]tlw.Cellular_SIMProfileInfo_State{
-	ufslab.SIMProfileInfo_BROKEN:     tlw.Cellular_SIMProfileInfo_BROKEN,
-	ufslab.SIMProfileInfo_LOCKED:     tlw.Cellular_SIMProfileInfo_LOCKED,
-	ufslab.SIMProfileInfo_NO_NETWORK: tlw.Cellular_SIMProfileInfo_NO_NETWORK,
-	ufslab.SIMProfileInfo_WORKING:    tlw.Cellular_SIMProfileInfo_WORKING,
+	ufslab.SIMProfileInfo_BROKEN:       tlw.Cellular_SIMProfileInfo_BROKEN,
+	ufslab.SIMProfileInfo_LOCKED:       tlw.Cellular_SIMProfileInfo_LOCKED,
+	ufslab.SIMProfileInfo_NO_NETWORK:   tlw.Cellular_SIMProfileInfo_NO_NETWORK,
+	ufslab.SIMProfileInfo_WORKING:      tlw.Cellular_SIMProfileInfo_WORKING,
+	ufslab.SIMProfileInfo_WRONG_CONFIG: tlw.Cellular_SIMProfileInfo_WRONG_CONFIG,
 }
 
 // convertSIMState converts UFS connection states to TLW connection states.

@@ -645,6 +645,10 @@ message Cellular {
     string own_number = 5;
     // The state of the cellular network connection.
     State state = 6;
+    // The ICCID detected during repair.
+    string detected_iccid = 7;
+    // The OwnNumber detected during repair.
+    string detected_own_number = 8;
 
     // The allowed cellular connection states as reported by the modem.
     enum State {
@@ -658,6 +662,8 @@ message Cellular {
       NO_NETWORK = 3;
       // The device is registered with a network provider, and data connections and messaging may be available for use.
       WORKING = 4;
+      // The configuration in UFS doesn't match what is on the SIM or is incomplete.
+      WRONG_CONFIG = 5;
     }
   }
 
