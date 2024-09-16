@@ -240,7 +240,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk3",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_SPRINT,
 											OwnNumber:   "345678912",
-											State:       chromeosLab.SIMProfileInfo_NO_NETWORK,
+											State:       chromeosLab.SIMProfileInfo_WRONG_CONFIG,
 										},
 										{
 											Iccid:       "iccid4",
@@ -264,7 +264,7 @@ var lse = ufspb.MachineLSE{
 											SimPuk:      "puk6",
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_POVO,
 											OwnNumber:   "678912345",
-											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+											State:       chromeosLab.SIMProfileInfo_BROKEN,
 										},
 										{
 											Iccid:       "iccid7",
@@ -708,7 +708,7 @@ common {
 			bluetooth_state: HARDWARE_NORMAL,
 			cellular_modem_state: HARDWARE_NORMAL
 			working_sims: 1
-			sim_state: BROKEN
+			sim_state: WRONG_CONFIG
 			starfish_state: BROKEN
 			wificell: true
 			router_802_11ax: true

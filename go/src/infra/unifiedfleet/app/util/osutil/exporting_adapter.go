@@ -508,19 +508,24 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 	for _, si := range sim {
 		for _, pi := range si.GetProfileInfo() {
 			state := pi.GetState()
-			if state == chromeosLab.SIMProfileInfo_UNSPECIFIED {
+			switch state {
+			case chromeosLab.SIMProfileInfo_UNSPECIFIED:
 				continue
+			case chromeosLab.SIMProfileInfo_WORKING:
+				count++
+			case chromeosLab.SIMProfileInfo_WRONG_CONFIG:
+				simState = inventory.PeripheralState_WRONG_CONFIG
+			default:
+				// Don't override WRONG_CONFIG with BROKEN.
+				if simState == inventory.PeripheralState_UNKNOWN {
+					simState = inventory.PeripheralState_BROKEN
+				}
 			}
-			if state != chromeosLab.SIMProfileInfo_WORKING {
-				simState = inventory.PeripheralState_BROKEN
-				continue
-			}
-			count++
 		}
 	}
 
 	// If we have at leasts one SIM and it is working then change from UNSPECIFIED to WORKING.
-	if count > 0 && simState != inventory.PeripheralState_BROKEN {
+	if count > 0 && simState == inventory.PeripheralState_UNKNOWN {
 		simState = inventory.PeripheralState_WORKING
 	}
 	p.WorkingSims = &count
