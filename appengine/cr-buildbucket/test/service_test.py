@@ -86,8 +86,6 @@ class BuildBucketServiceTest(testing.AppengineTestCase):
         return_value=future(service_config_pb2.SettingsCfg())
     )
 
-    self.patch('search.TagIndex.random_shard_index', return_value=0)
-
     test_util.build_bundle(id=1).infra.put()
 
   def mock_no_perm(self, perm):
