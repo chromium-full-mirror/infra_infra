@@ -41,6 +41,8 @@ message SIMProfileInfo {
     NO_NETWORK = 3;
     // The device is registered with a network provider, and data connections and messaging may be available for use.
     WORKING = 4;
+    // The device has an invalid configuration in UFS.
+    WRONG_CONFIG = 5;
   }
 }
 
