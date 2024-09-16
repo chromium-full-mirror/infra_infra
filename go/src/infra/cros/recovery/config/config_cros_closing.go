@@ -146,6 +146,14 @@ func crosRepairClosingActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
+		"Update AMT state": {
+			Docs: []string{
+				"Update the AMT state for DUTs without AMT.",
+			},
+			ExecName:               "amt_manager_update_state",
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Update peripheral wifi state": {
 			Docs: []string{
 				"Update peripheral wifi state based on wifi router states",

@@ -29756,6 +29756,7 @@ plans:
         - name: Set AMT state to WORKING ('amt_manager_set_state')
     - name: close (Allow to fail)
       criticalactions:
+        - name: Update AMT state (Allow to fail) ('amt_manager_update_state')
         - name: Update peripheral wifi state (Allow to fail) ('update_peripheral_wifi_state')
         - name: Update wifi router features (Allow to fail) ('update_wifi_router_features')
         - name: Update chameleon state for chameleonless dut (Allow to fail) ('chameleon_state_not_applicable')

@@ -98915,6 +98915,10 @@ plans:
             - state:WORKING
     - name: close (Allow to fail)
       criticalactions:
+        - name: Update AMT state (Allow to fail)
+          exec_name: amt_manager_update_state
+          docs:
+            - Update the AMT state for DUTs without AMT.
         - name: Update peripheral wifi state (Allow to fail)
           exec_name: update_peripheral_wifi_state
           docs:

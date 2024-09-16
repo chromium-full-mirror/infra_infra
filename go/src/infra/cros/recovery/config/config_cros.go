@@ -103,6 +103,7 @@ func CrosDeployConfig() *Configuration {
 func crosClosePlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Update AMT state",
 			"Update peripheral wifi state",
 			"Update wifi router features",
 			"Update chameleon state for chameleonless dut",
