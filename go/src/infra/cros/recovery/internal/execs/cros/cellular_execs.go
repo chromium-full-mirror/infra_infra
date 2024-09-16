@@ -22,6 +22,7 @@ import (
 
 func init() {
 	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
+	execs.Register("cros_audit_cellular_configuration", auditCellularConfigExec)
 	execs.Register("cros_collect_supported_carriers", collectSupportedCarriersExec)
 	execs.Register("cros_update_cellular_modem_labels", updateCellularModemLabelsExec)
 	execs.Register("cros_update_cellular_sim_labels", updateCellularSIMLabelsExec)
@@ -183,6 +184,68 @@ func reportCellularConnectionInfo(ctx context.Context, info *execs.ExecInfo, tim
 	return nil
 }
 
+// auditCellularConfigExec verifies that the cellular SIM information in UFS is complete and accurate.
+func auditCellularConfigExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("imei empty: cellular data is not present in dut info").Err()
+	}
+
+	for _, si := range c.GetSimInfos() {
+		for j, pi := range si.GetProfileInfos() {
+			// All SIMs should have ICCID populated.
+			if pi.GetIccid() == "" {
+				pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+				return errors.Reason("audit cellular configs: missing ICCCID for sim: %q, profile: %d", si.GetSlotId(), j).Err()
+			}
+
+			// Check if the ICCID for this SIM slot matches, if it doesn't then the SIM was likely replaced
+			// at some time and the labels weren't updated.
+			if pi.GetDetectedIccid() != "" && !strings.EqualFold(pi.GetDetectedIccid(), pi.GetIccid()) {
+				pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+				return errors.Reason("audit cellular configs: Mismatched OwnNumber for ICCID %q, got %q, expected: %q",
+					pi.GetIccid(), pi.GetDetectedIccid(), pi.GetIccid()).Err()
+			}
+
+			switch c.GetCarrier() {
+			// If the DUT is a ATT/TMOBILE/VERIZON device, then it will be used for SMS tests so we need
+			// to verify that the OwnNumber is accurate
+			case "TMOBILE", "ATT", "VERIZON":
+				if pi.GetOwnNumber() == "" {
+					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+					return errors.Reason("audit cellular configs: missing OwnNumber for ICCID: %q", pi.GetIccid()).Err()
+				}
+				if pi.GetDetectedIccid() != "" && pi.GetOwnNumber() != pi.GetDetectedOwnNumber() {
+					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+					return errors.Reason("audit cellular configs: Mismatched OwnNumber for ICCID %q, got %q, expected: %q",
+						pi.GetIccid(), pi.GetDetectedOwnNumber(), pi.GetOwnNumber()).Err()
+				}
+			// If the DUT is a PINLOCK device, then we need the PIN/PUK locks to be populated.
+			case "PINLOCK":
+				if pi.GetSimPin() == "" {
+					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+					return errors.Reason("audit cellular configs: missing PIN for ICCID: %q", pi.GetIccid()).Err()
+				}
+				if pi.GetSimPuk() == "" {
+					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
+					return errors.Reason("audit cellular configs: missing PUK for ICCID: %q", pi.GetIccid()).Err()
+				}
+				// We don't manage PINLOCK DUTs connection states in auditCEllularConnectionExec like we do for other devices
+				// so we should just set it to WORKING
+				pi.State = tlw.Cellular_SIMProfileInfo_WORKING
+			default:
+				// If state is still default value then just convert to working. This means
+				// that we don't have a specific audit available for this carrier but we
+				// would still like to schedule against it so set it to WORKING.
+				if pi.State == tlw.Cellular_SIMProfileInfo_UNSPECIFIED {
+					pi.State = tlw.Cellular_SIMProfileInfo_WORKING
+				}
+			}
+		}
+	}
+	return nil
+}
+
 // auditCellularConnectionExec verifies that the device is able to connect to the provided cellular network.
 func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
@@ -224,6 +287,14 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 			return errors.Annotate(err, "audit cellular connection").Err()
 		}
 		time.Sleep(5 * time.Second)
+
+		// Optional, cache some of the SIM info that we found.
+		if detectedSi, err := cellular.GetSIMInfo(ctx, runner); err != nil {
+			log.Errorf(ctx, "Failed to detect SIM info after switching slogs, skipping ICCID verification: %w", err)
+		} else if detectedSi != nil && len(detectedSi.GetProfileInfos()) == 1 {
+			pi.DetectedIccid = detectedSi.GetProfileInfos()[0].GetIccid()
+			pi.DetectedOwnNumber = detectedSi.GetProfileInfos()[0].GetOwnNumber()
+		}
 
 		if err := retry.LimitCount(ctx, connectAttempts, time.Second, func() error {
 			if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err == nil {
