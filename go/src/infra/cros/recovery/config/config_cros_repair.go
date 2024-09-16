@@ -88,7 +88,6 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 	}
 	actions = append(actions,
 		"Verify bootId and compare",
-		"Validate chromebook X label",
 		"All repair-requests resolved",
 		"Reset DUT-state reason",
 		"Servo is in WORKING state",
@@ -2187,32 +2186,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_update_dlm_sku_id",
 			AllowFailAfterRecovery: true,
-		},
-		"Validate chromebook X label": {
-			Docs: []string{
-				"Verify if DUT chromebook X state matches UFS data.",
-			},
-			Conditions: []string{
-				"Is Chromebook X supported",
-				"cros_check_cbx_device_is_hb",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
-			ExecName:               "cros_verify_cbx_matches_ufs",
-			AllowFailAfterRecovery: true,
-		},
-		"Is Chromebook X supported": {
-			Docs: []string{
-				"Chromebook X features are available starting from R115 version of ChromeOS on the DUT.",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
-			ExecName: "cros_is_on_expected_version",
-			ExecExtraArgs: []string{
-				"min_version:115",
-			},
 		},
 		"Servo USB-Key needs to be reflashed": {
 			Docs: []string{
