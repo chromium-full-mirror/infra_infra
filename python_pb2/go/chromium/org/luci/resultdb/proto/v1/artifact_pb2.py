@@ -22,11 +22,76 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n5go.chromium.org/luci/resultdb/proto/v1/artifact.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x38go.chromium.org/luci/resultdb/proto/v1/test_result.proto\"\xff\x01\n\x08\x41rtifact\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x61rtifact_id\x18\x02 \x01(\t\x12\x11\n\tfetch_url\x18\x03 \x01(\t\x12\x38\n\x14\x66\x65tch_url_expiration\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x12\x12\n\nsize_bytes\x18\x06 \x01(\x03\x12\x15\n\x08\x63ontents\x18\x07 \x01(\x0c\x42\x03\xe0\x41\x04\x12\x0f\n\x07gcs_uri\x18\x08 \x01(\t\x12\x31\n\x0btest_status\x18\t \x01(\x0e\x32\x1c.luci.resultdb.v1.TestStatusB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n5go.chromium.org/luci/resultdb/proto/v1/artifact.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x38go.chromium.org/luci/resultdb/proto/v1/test_result.proto\"\x92\x02\n\x08\x41rtifact\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x61rtifact_id\x18\x02 \x01(\t\x12\x11\n\tfetch_url\x18\x03 \x01(\t\x12\x38\n\x14\x66\x65tch_url_expiration\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x14\n\x0c\x63ontent_type\x18\x05 \x01(\t\x12\x12\n\nsize_bytes\x18\x06 \x01(\x03\x12\x15\n\x08\x63ontents\x18\x07 \x01(\x0c\x42\x03\xe0\x41\x04\x12\x0f\n\x07gcs_uri\x18\x08 \x01(\t\x12\x31\n\x0btest_status\x18\t \x01(\x0e\x32\x1c.luci.resultdb.v1.TestStatus\x12\x11\n\thas_lines\x18\x0b \x01(\x08\"\xaa\x02\n\x0c\x41rtifactLine\x12\x0e\n\x06number\x18\x01 \x01(\x03\x12-\n\ttimestamp\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x39\n\x08severity\x18\x03 \x01(\x0e\x32\'.luci.resultdb.v1.ArtifactLine.Severity\x12\x0f\n\x07\x63ontent\x18\x04 \x01(\x0c\"\x8e\x01\n\x08Severity\x12\x18\n\x14SEVERITY_UNSPECIFIED\x10\x00\x12\x0b\n\x07VERBOSE\x10\n\x12\t\n\x05TRACE\x10\x14\x12\t\n\x05\x44\x45\x42UG\x10\x1e\x12\x08\n\x04INFO\x10(\x12\n\n\x06NOTICE\x10\x32\x12\x0b\n\x07WARNING\x10<\x12\t\n\x05\x45RROR\x10\x46\x12\x0c\n\x08\x43RITICAL\x10P\x12\t\n\x05\x46\x41TAL\x10ZB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
   ,
   dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__result__pb2.DESCRIPTOR,])
 
 
+
+_ARTIFACTLINE_SEVERITY = _descriptor.EnumDescriptor(
+  name='Severity',
+  full_name='luci.resultdb.v1.ArtifactLine.Severity',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='SEVERITY_UNSPECIFIED', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='VERBOSE', index=1, number=10,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='TRACE', index=2, number=20,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='DEBUG', index=3, number=30,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='INFO', index=4, number=40,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='NOTICE', index=5, number=50,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='WARNING', index=6, number=60,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ERROR', index=7, number=70,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CRITICAL', index=8, number=80,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='FATAL', index=9, number=90,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=633,
+  serialized_end=775,
+)
+_sym_db.RegisterEnumDescriptor(_ARTIFACTLINE_SEVERITY)
 
 
 _ARTIFACT = _descriptor.Descriptor(
@@ -100,6 +165,13 @@ _ARTIFACT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='has_lines', full_name='luci.resultdb.v1.Artifact.has_lines', index=9,
+      number=11, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -113,12 +185,70 @@ _ARTIFACT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=200,
-  serialized_end=455,
+  serialized_end=474,
+)
+
+
+_ARTIFACTLINE = _descriptor.Descriptor(
+  name='ArtifactLine',
+  full_name='luci.resultdb.v1.ArtifactLine',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='number', full_name='luci.resultdb.v1.ArtifactLine.number', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='luci.resultdb.v1.ArtifactLine.timestamp', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='severity', full_name='luci.resultdb.v1.ArtifactLine.severity', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='content', full_name='luci.resultdb.v1.ArtifactLine.content', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _ARTIFACTLINE_SEVERITY,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=477,
+  serialized_end=775,
 )
 
 _ARTIFACT.fields_by_name['fetch_url_expiration'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _ARTIFACT.fields_by_name['test_status'].enum_type = go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__result__pb2._TESTSTATUS
+_ARTIFACTLINE.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_ARTIFACTLINE.fields_by_name['severity'].enum_type = _ARTIFACTLINE_SEVERITY
+_ARTIFACTLINE_SEVERITY.containing_type = _ARTIFACTLINE
 DESCRIPTOR.message_types_by_name['Artifact'] = _ARTIFACT
+DESCRIPTOR.message_types_by_name['ArtifactLine'] = _ARTIFACTLINE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Artifact = _reflection.GeneratedProtocolMessageType('Artifact', (_message.Message,), {
@@ -127,6 +257,13 @@ Artifact = _reflection.GeneratedProtocolMessageType('Artifact', (_message.Messag
   # @@protoc_insertion_point(class_scope:luci.resultdb.v1.Artifact)
   })
 _sym_db.RegisterMessage(Artifact)
+
+ArtifactLine = _reflection.GeneratedProtocolMessageType('ArtifactLine', (_message.Message,), {
+  'DESCRIPTOR' : _ARTIFACTLINE,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.artifact_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.ArtifactLine)
+  })
+_sym_db.RegisterMessage(ArtifactLine)
 
 
 DESCRIPTOR._options = None

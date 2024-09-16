@@ -11,6 +11,8 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
+from go.chromium.org.luci.resultdb.proto.v1 import invocation_pb2 as go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_invocation__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,8 +21,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n9go.chromium.org/luci/resultdb/proto/v1/notification.proto\x12\x10luci.resultdb.v1\"D\n\x1fInvocationFinalizedNotification\x12\x12\n\ninvocation\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x02 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
-)
+  serialized_pb=b'\n9go.chromium.org/luci/resultdb/proto/v1/notification.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x37go.chromium.org/luci/resultdb/proto/v1/invocation.proto\"\xa4\x01\n\x1fInvocationFinalizedNotification\x12\x12\n\ninvocation\x18\x01 \x01(\t\x12\r\n\x05realm\x18\x02 \x01(\t\x12\x16\n\x0eis_export_root\x18\x03 \x01(\x08\x12\x15\n\rresultdb_host\x18\x04 \x01(\t\x12/\n\x0b\x63reate_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\x85\x02\n$InvocationReadyForExportNotification\x12\x15\n\rresultdb_host\x18\x06 \x01(\t\x12\x17\n\x0froot_invocation\x18\x01 \x01(\t\x12\x1d\n\x15root_invocation_realm\x18\x02 \x01(\t\x12\x34\n\x10root_create_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x12\n\ninvocation\x18\x03 \x01(\t\x12\x18\n\x10invocation_realm\x18\x04 \x01(\t\x12*\n\x07sources\x18\x05 \x01(\x0b\x32\x19.luci.resultdb.v1.SourcesB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_invocation__pb2.DESCRIPTOR,])
 
 
 
@@ -47,6 +50,27 @@ _INVOCATIONFINALIZEDNOTIFICATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_export_root', full_name='luci.resultdb.v1.InvocationFinalizedNotification.is_export_root', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='resultdb_host', full_name='luci.resultdb.v1.InvocationFinalizedNotification.resultdb_host', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='create_time', full_name='luci.resultdb.v1.InvocationFinalizedNotification.create_time', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -59,11 +83,89 @@ _INVOCATIONFINALIZEDNOTIFICATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=79,
-  serialized_end=147,
+  serialized_start=170,
+  serialized_end=334,
 )
 
+
+_INVOCATIONREADYFOREXPORTNOTIFICATION = _descriptor.Descriptor(
+  name='InvocationReadyForExportNotification',
+  full_name='luci.resultdb.v1.InvocationReadyForExportNotification',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='resultdb_host', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.resultdb_host', index=0,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='root_invocation', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.root_invocation', index=1,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='root_invocation_realm', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.root_invocation_realm', index=2,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='root_create_time', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.root_create_time', index=3,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='invocation', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.invocation', index=4,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='invocation_realm', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.invocation_realm', index=5,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='sources', full_name='luci.resultdb.v1.InvocationReadyForExportNotification.sources', index=6,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=337,
+  serialized_end=598,
+)
+
+_INVOCATIONFINALIZEDNOTIFICATION.fields_by_name['create_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_INVOCATIONREADYFOREXPORTNOTIFICATION.fields_by_name['root_create_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_INVOCATIONREADYFOREXPORTNOTIFICATION.fields_by_name['sources'].message_type = go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_invocation__pb2._SOURCES
 DESCRIPTOR.message_types_by_name['InvocationFinalizedNotification'] = _INVOCATIONFINALIZEDNOTIFICATION
+DESCRIPTOR.message_types_by_name['InvocationReadyForExportNotification'] = _INVOCATIONREADYFOREXPORTNOTIFICATION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 InvocationFinalizedNotification = _reflection.GeneratedProtocolMessageType('InvocationFinalizedNotification', (_message.Message,), {
@@ -72,6 +174,13 @@ InvocationFinalizedNotification = _reflection.GeneratedProtocolMessageType('Invo
   # @@protoc_insertion_point(class_scope:luci.resultdb.v1.InvocationFinalizedNotification)
   })
 _sym_db.RegisterMessage(InvocationFinalizedNotification)
+
+InvocationReadyForExportNotification = _reflection.GeneratedProtocolMessageType('InvocationReadyForExportNotification', (_message.Message,), {
+  'DESCRIPTOR' : _INVOCATIONREADYFOREXPORTNOTIFICATION,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.notification_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.InvocationReadyForExportNotification)
+  })
+_sym_db.RegisterMessage(InvocationReadyForExportNotification)
 
 
 DESCRIPTOR._options = None
