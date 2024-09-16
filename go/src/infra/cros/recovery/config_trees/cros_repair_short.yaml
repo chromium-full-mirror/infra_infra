@@ -19759,6 +19759,10 @@ plans:
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+            - name: Audit cellular configuration (Allow to fail) ('cros_audit_cellular_configuration')
+              conditions:
+                - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
+                - name: has_cellular_info
             - name: Collect additional cellular labels (Allow to fail) ('cros_collect_supported_carriers')
               conditions:
                 - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)

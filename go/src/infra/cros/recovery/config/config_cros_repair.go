@@ -1664,6 +1664,18 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_collect_supported_carriers",
 			AllowFailAfterRecovery: true,
 		},
+		"Audit cellular configuration": {
+			Docs: []string{
+				"Verifies that cellular configuration in UFS is complete and",
+				"matches what is detected on the DUT.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName:               "cros_audit_cellular_configuration",
+			AllowFailAfterRecovery: true,
+		},
 		"Audit cellular": {
 			Docs: []string{
 				"Audit cellular peripherals states and report metrics.",
@@ -1677,6 +1689,7 @@ func crosRepairActions() map[string]*Action {
 				"Update cellular modem labels if missing",
 				"Audit cellular network connection",
 				"Audit cellular starfish",
+				"Audit cellular configuration",
 				"Collect additional cellular labels",
 				"Collect var/log/messages from DUT",
 				"Collect var/log/net.log from DUT",

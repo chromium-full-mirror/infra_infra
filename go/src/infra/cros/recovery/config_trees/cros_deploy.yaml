@@ -73995,6 +73995,20 @@ plans:
                               docs:
                                 - Try to wait device to be sshable after the device being rebooted.
                                 - Waiting time 150 seconds.
+                - name: Audit cellular configuration (Allow to fail)
+                  exec_name: cros_audit_cellular_configuration
+                  docs:
+                    - Verifies that cellular configuration in UFS is complete and
+                    - matches what is detected on the DUT.
+                  conditions:
+                    - name: Is in cellular pool (RUN_ONCE)
+                      exec_name: dut_is_in_pool_regex
+                      exec_args:
+                        - regex:(?i)^cellular
+                      docs:
+                        - Verify that DUT is not in a cellular pool.
+                    - name: has_cellular_info
+                      exec_name: has_cellular_info
                 - name: Collect additional cellular labels (Allow to fail)
                   exec_name: cros_collect_supported_carriers
                   docs:
