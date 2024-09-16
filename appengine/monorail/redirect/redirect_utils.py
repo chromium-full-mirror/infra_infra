@@ -30,6 +30,7 @@ PROJECT_REDIRECT_MAP = {
     'llvm': 'https://issuetracker.google.com',
     'monorail': 'https://issuetracker.google.com',
     'nativeclient': 'https://issuetracker.google.com',
+    'oss-fuzz': 'https://issues.oss-fuzz.com',
     'pdfium': 'https://issues.chromium.org',
     'pigweed': 'https://issues.pigweed.dev',
     'project-zero': 'https://project-zero.issues.chromium.org',
