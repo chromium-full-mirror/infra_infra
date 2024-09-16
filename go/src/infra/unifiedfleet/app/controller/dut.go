@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/chromiumos/config/go/test/dut"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -23,7 +24,6 @@ import (
 	"infra/libs/fleet/boxster/swarming"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -412,7 +412,7 @@ func assignServoPortIfMissing(labstation *ufspb.MachineLSE, newServo *chromeosLa
 //
 // Checks if the device configuration is known by querying IV2. Returns error if the device config doesn't exist.
 func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
-	var devCfgIds []*ufsdevice.ConfigId
+	var devCfgIds []*deviceconfig.ConfigId
 	devConfigID, err := extractDeviceConfigID(dut)
 	if err != nil {
 		return err
@@ -442,7 +442,7 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 }
 
 // extractDeviceConfigID returns a corresponding ConfigID object from machine.
-func extractDeviceConfigID(dut *ufspb.Machine) (*ufsdevice.ConfigId, error) {
+func extractDeviceConfigID(dut *ufspb.Machine) (*deviceconfig.ConfigId, error) {
 	crosMachine := dut.GetChromeosMachine()
 	if crosMachine == nil {
 		return nil, errors.Reason("Invalid machine type. Not a chrome OS machine").Err()
@@ -450,26 +450,26 @@ func extractDeviceConfigID(dut *ufspb.Machine) (*ufsdevice.ConfigId, error) {
 	// Convert the build target and model to lower case to avoid mismatch due to case.
 	buildTarget := strings.ToLower(crosMachine.GetBuildTarget())
 	model := strings.ToLower(crosMachine.GetModel())
-	devConfigID := &ufsdevice.ConfigId{
-		PlatformId: &ufsdevice.PlatformId{
+	devConfigID := &deviceconfig.ConfigId{
+		PlatformId: &deviceconfig.PlatformId{
 			Value: buildTarget,
 		},
-		ModelId: &ufsdevice.ModelId{
+		ModelId: &deviceconfig.ModelId{
 			Value: model,
 		},
 	}
 	sku := strings.ToLower(crosMachine.GetSku())
 	if sku != "" {
-		devConfigID.VariantId = &ufsdevice.VariantId{
+		devConfigID.VariantId = &deviceconfig.VariantId{
 			Value: sku,
 		}
 	}
 	return devConfigID, nil
 }
 
-func getFallbackDeviceConfigID(oldConfigID *ufsdevice.ConfigId) *ufsdevice.ConfigId {
+func getFallbackDeviceConfigID(oldConfigID *deviceconfig.ConfigId) *deviceconfig.ConfigId {
 	if oldConfigID.GetVariantId().GetValue() != "" {
-		fallbackID := proto.Clone(oldConfigID).(*ufsdevice.ConfigId)
+		fallbackID := proto.Clone(oldConfigID).(*deviceconfig.ConfigId)
 		fallbackID.VariantId = nil
 		return fallbackID
 	}
@@ -1062,14 +1062,13 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	data := &ufspb.ChromeOSDeviceData{
 		LabConfig:                         lse,
 		Machine:                           machine,
-		DeviceConfig:                      devConfig,
 		ManufacturingConfig:               mfgConfig,
 		HwidData:                          hwidData,
 		DutState:                          dutState,
 		SchedulableLabels:                 schedulableLabels,
 		RespectAutomatedSchedulableLabels: enableUFSSchedulableLabels,
 	}
-	dutV1, err := osutil.AdaptToV1DutSpec(data)
+	dutV1, err := osutil.AdaptToV1DutSpec(data, devConfig)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Cannot AdaptToV1DutSpec %s", err)
 	}
@@ -1080,7 +1079,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 }
 
 // getDeviceConfig get device config form InvV2
-func getDeviceConfig(ctx context.Context, devCfgClient external.DeviceConfigClient, machine *ufspb.Machine) (*ufsdevice.Config, error) {
+func getDeviceConfig(ctx context.Context, devCfgClient external.DeviceConfigClient, machine *ufspb.Machine) (*deviceconfig.Config, error) {
 	devConfigID, err := extractDeviceConfigID(machine)
 	if err != nil {
 		return nil, err
@@ -1097,7 +1096,7 @@ func getStability(ctx context.Context, model string) (bool, error) {
 	return true, err
 }
 
-func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *ufsdevice.Config) {
+func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *deviceconfig.Config) {
 	// TODO(b/308477445): currently AssetInfo does not work for partners as it
 	// is based off of HaRT data tied to an Asset ID not relevant for partner
 	// DUTs. As a result, we want to fallback to device configs data.
@@ -1113,18 +1112,18 @@ func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *
 		logging.Warningf(ctx, "Asset for %s not found. Error: %s", id, err)
 	}
 	if asset != nil {
-		var features []ufsdevice.Config_HardwareFeature
+		var features []deviceconfig.Config_HardwareFeature
 		if asset.GetInfo().GetTouchScreen() {
-			features = append(features, ufsdevice.Config_HARDWARE_FEATURE_TOUCHSCREEN)
+			features = append(features, deviceconfig.Config_HARDWARE_FEATURE_TOUCHSCREEN)
 		}
 		if asset.GetInfo().GetFingerprintSensor() {
-			features = append(features, ufsdevice.Config_HARDWARE_FEATURE_FINGERPRINT)
+			features = append(features, deviceconfig.Config_HARDWARE_FEATURE_FINGERPRINT)
 		}
 		for _, f := range devConfig.HardwareFeatures {
-			if f == ufsdevice.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+			if f == deviceconfig.Config_HARDWARE_FEATURE_TOUCHSCREEN {
 				continue
 			}
-			if f == ufsdevice.Config_HARDWARE_FEATURE_FINGERPRINT {
+			if f == deviceconfig.Config_HARDWARE_FEATURE_FINGERPRINT {
 				continue
 			}
 			features = append(features, f)

@@ -8,11 +8,11 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/configuration"
@@ -49,14 +49,14 @@ func syncDeviceConfigs(ctx context.Context) (err error) {
 	}
 
 	logging.Debugf(ctx, "Downloading the device config file %s:%s:%s from gitiles repo", cronCfg.Project, cronCfg.Committish, cronCfg.ConfigsPath)
-	var allCfgs ufsdevice.AllConfigs
+	var allCfgs deviceconfig.AllConfigs
 	err = fetchConfigProtoFromGitiles(ctx, gc, cronCfg.Project, cronCfg.Committish, cronCfg.ConfigsPath, &allCfgs)
 	if err != nil {
 		return errors.Annotate(err, "failed fetch from %s:%s:%s", cronCfg.Project, cronCfg.Committish, cronCfg.ConfigsPath).Err()
 	}
 	logging.Debugf(ctx, "Fetched %d DeviceConfigs from gitiles", len(allCfgs.GetConfigs()))
 
-	cfgs := make([]*ufsdevice.Config, len(allCfgs.GetConfigs()))
+	cfgs := make([]*deviceconfig.Config, len(allCfgs.GetConfigs()))
 	for i, c := range allCfgs.GetConfigs() {
 		cfgs[i] = c
 	}
@@ -75,7 +75,7 @@ func syncDeviceConfigs(ctx context.Context) (err error) {
 
 // fetchConfigProtoFromGitiles fetches device configs and unmarshalls the raw
 // string into an array of proto messages
-func fetchConfigProtoFromGitiles(ctx context.Context, client external.GitTilesClient, project, committish, path string, cfgs *ufsdevice.AllConfigs) error {
+func fetchConfigProtoFromGitiles(ctx context.Context, client external.GitTilesClient, project, committish, path string, cfgs *deviceconfig.AllConfigs) error {
 	req := &gitilespb.DownloadFileRequest{
 		Project:    project,
 		Committish: committish,
@@ -105,7 +105,7 @@ func downloadDeviceConfigFromGitiles(ctx context.Context, client external.GitTil
 }
 
 // updateConfigInNamespace sets the context to the appropriate namespace
-func updateConfigInNamespace(ctx context.Context, cfgs []*ufsdevice.Config, ns string, realmFunc configuration.RealmAssignerFunc) error {
+func updateConfigInNamespace(ctx context.Context, cfgs []*deviceconfig.Config, ns string, realmFunc configuration.RealmAssignerFunc) error {
 	ctx, err := util.SetupDatastoreNamespace(ctx, ns)
 	if err != nil {
 		return errors.Annotate(err, "failed to set namespace").Err()
@@ -116,11 +116,11 @@ func updateConfigInNamespace(ctx context.Context, cfgs []*ufsdevice.Config, ns s
 	}
 	logging.Debugf(ctx, "Successfully inserted DeviceConfigs to UFS datastore in namespace %s", ns)
 
-	cfgMap := make(map[string]*ufsdevice.Config)
+	cfgMap := make(map[string]*deviceconfig.Config)
 	for _, cfg := range cfgs {
 		cfgMap[configuration.GetDeviceConfigIDStr(cfg.GetId())] = cfg
 	}
-	toDeleteDCIDs := make([]*ufsdevice.ConfigId, 0)
+	toDeleteDCIDs := make([]*deviceconfig.ConfigId, 0)
 	for startToken := ""; ; {
 		res, nextToken, err := configuration.ListDeviceConfigs(ctx, pageSize, startToken, nil, false)
 		if err != nil {

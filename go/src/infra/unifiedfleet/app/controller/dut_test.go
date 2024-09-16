@@ -21,7 +21,6 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -3105,13 +3104,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 	dutState := mockDutState("machine-1", "lse-1")
 	UpdateDutState(ctx, dutState)
 
-	devCfg := &device.Config{
-		Id: &device.ConfigId{
-			PlatformId: &device.PlatformId{Value: "test"},
-			ModelId:    &device.ModelId{Value: "test"},
-		},
-	}
-
 	mfgCfgBase := &ufsmanufacturing.ManufacturingConfig{
 		ManufacturingId: &ufsmanufacturing.ConfigID{Value: "test"},
 		HwidComponent:   []string{"test_component/test_component_value"},
@@ -3148,7 +3140,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelse))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machine))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutState))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfgBase))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidMockData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3166,7 +3157,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelse))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machine))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutState))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfgBase))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidMockData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3189,7 +3179,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelse))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machine))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutState))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfgBase))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidMockData))
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.Resemble(map[string]*ufspb.SchedulableLabelValues(nil)))
@@ -3382,7 +3371,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelseExp))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machineExp))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutStateExp))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfg))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(expiredHwidData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3455,7 +3443,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelseHwid))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machineHwid))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutStateHwid))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfgBase))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidMockData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3508,7 +3495,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelseThrottle))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machineThrottle))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutStateThrottle))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.BeNil)
 			assert.Loosely(t, resp.GetHwidData(), should.BeNil)
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3557,7 +3543,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelseNoThrottle))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machineNoThrottle))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutStateNoThrottle))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfg))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidNoCachedMockData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
@@ -3618,7 +3603,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(dutMachinelseLegacyHwid))
 			assert.Loosely(t, resp.GetMachine(), should.Resemble(machineLegacyHwid))
 			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutStateLegacyHwid))
-			assert.Loosely(t, resp.GetDeviceConfig(), should.Resemble(devCfg))
 			assert.Loosely(t, resp.GetManufacturingConfig(), should.Resemble(mfgCfg))
 			assert.Loosely(t, resp.GetHwidData(), should.Resemble(hwidCachedLegacyData))
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")

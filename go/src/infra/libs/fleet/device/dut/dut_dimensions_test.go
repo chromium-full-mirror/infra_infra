@@ -11,11 +11,13 @@ import (
 	"testing"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"infra/cros/dutstate"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
+
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	"infra/unifiedfleet/app/util/osutil"
@@ -170,28 +172,29 @@ var devUFSState = lab.DutState{
 	RpmState:               lab.PeripheralState_WORKING,
 }
 
+var deviceConfig = &device.Config{
+	Id: &device.ConfigId{
+		PlatformId: &device.PlatformId{
+			Value: "coral",
+		},
+		ModelId: &device.ModelId{
+			Value: "test_model",
+		},
+		VariantId: &device.VariantId{
+			Value: "test_variant",
+		},
+	},
+	Power:   device.Config_POWER_SUPPLY_AC_ONLY,
+	Storage: device.Config_STORAGE_SSD,
+	VideoAccelerationSupports: []device.Config_VideoAcceleration{
+		device.Config_VIDEO_ACCELERATION_ENC_H264,
+	},
+	Cpu: device.Config_ARM64,
+}
+
 var osDeviceData = ufspb.ChromeOSDeviceData{
 	LabConfig: &lse,
 	DutState:  &devUFSState,
-	DeviceConfig: &device.Config{
-		Id: &device.ConfigId{
-			PlatformId: &device.PlatformId{
-				Value: "coral",
-			},
-			ModelId: &device.ModelId{
-				Value: "test_model",
-			},
-			VariantId: &device.VariantId{
-				Value: "test_variant",
-			},
-		},
-		Power:   device.Config_POWER_SUPPLY_AC_ONLY,
-		Storage: device.Config_STORAGE_SSD,
-		VideoAccelerationSupports: []device.Config_VideoAcceleration{
-			device.Config_VIDEO_ACCELERATION_ENC_H264,
-		},
-		Cpu: device.Config_ARM64,
-	},
 	HwidData: &ufspb.HwidData{
 		Sku:     "test_sku",
 		Variant: "test_variant",
@@ -336,8 +339,8 @@ var fullDUTDims = swarming.Dimensions{
 	"ufs_zone":                         {"UFS_TEST_ZONE"},
 }
 
-func getMockDUTDeviceData(data *ufspb.ChromeOSDeviceData) *ufspb.ChromeOSDeviceData {
-	dutV1, err := osutil.AdaptToV1DutSpec(data)
+func getMockDUTDeviceData(data *ufspb.ChromeOSDeviceData, dc *deviceconfig.Config) *ufspb.ChromeOSDeviceData {
+	dutV1, err := osutil.AdaptToV1DutSpec(data, dc)
 	if err != nil {
 		return nil
 	}
@@ -357,7 +360,7 @@ func TestGetDUTBotDimensions(t *testing.T) {
 		{
 			name:         "empty DUT state",
 			dutState:     dutstate.Info{},
-			ufsData:      getMockDUTDeviceData(&osDeviceData),
+			ufsData:      getMockDUTDeviceData(&osDeviceData, deviceConfig),
 			expectedDims: baseDUTDims,
 		},
 		{
@@ -365,7 +368,7 @@ func TestGetDUTBotDimensions(t *testing.T) {
 			dutState: dutstate.Info{
 				State: dutstate.Ready,
 			},
-			ufsData:      getMockDUTDeviceData(&osDeviceData),
+			ufsData:      getMockDUTDeviceData(&osDeviceData, deviceConfig),
 			expectedDims: fullDUTDims,
 		},
 	}

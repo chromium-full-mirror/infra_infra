@@ -10,13 +10,13 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
@@ -403,15 +403,15 @@ var devboardLSE = ufspb.MachineLSE{
 	},
 }
 
-var labstationDevConfig = device.Config{
-	Id: &device.ConfigId{
-		PlatformId: &device.PlatformId{
+var labstationDevConfig = deviceconfig.Config{
+	Id: &deviceconfig.ConfigId{
+		PlatformId: &deviceconfig.PlatformId{
 			Value: "guado",
 		},
-		ModelId: &device.ModelId{
+		ModelId: &deviceconfig.ModelId{
 			Value: "test_model",
 		},
-		VariantId: &device.VariantId{
+		VariantId: &deviceconfig.VariantId{
 			Value: "",
 		},
 	},
@@ -423,37 +423,38 @@ var labstationManufacturingconfig = manufacturing.ManufacturingConfig{
 	},
 }
 
+var DeviceConfig = &deviceconfig.Config{
+	Id: &deviceconfig.ConfigId{
+		PlatformId: &deviceconfig.PlatformId{
+			Value: "coral",
+		},
+		ModelId: &deviceconfig.ModelId{
+			Value: "test_model",
+		},
+		VariantId: &deviceconfig.VariantId{
+			Value: "test_variant",
+		},
+	},
+	FormFactor: deviceconfig.Config_FORM_FACTOR_CHROMEBASE,
+	GpuFamily:  "test_gpu",
+	Graphics:   deviceconfig.Config_GRAPHICS_GLE,
+	HardwareFeatures: []deviceconfig.Config_HardwareFeature{
+		deviceconfig.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
+		deviceconfig.Config_HARDWARE_FEATURE_FINGERPRINT,
+	},
+	Power:   deviceconfig.Config_POWER_SUPPLY_AC_ONLY,
+	Storage: deviceconfig.Config_STORAGE_SSD,
+	VideoAccelerationSupports: []deviceconfig.Config_VideoAcceleration{
+		deviceconfig.Config_VIDEO_ACCELERATION_ENC_H264,
+		deviceconfig.Config_VIDEO_ACCELERATION_ENC_VP8,
+		deviceconfig.Config_VIDEO_ACCELERATION_ENC_VP9,
+	},
+	Cpu: deviceconfig.Config_ARM64,
+}
+
 var data = ufspb.ChromeOSDeviceData{
 	LabConfig: &lse,
 	DutState:  &devUFSState,
-	DeviceConfig: &device.Config{
-		Id: &device.ConfigId{
-			PlatformId: &device.PlatformId{
-				Value: "coral",
-			},
-			ModelId: &device.ModelId{
-				Value: "test_model",
-			},
-			VariantId: &device.VariantId{
-				Value: "test_variant",
-			},
-		},
-		FormFactor: device.Config_FORM_FACTOR_CHROMEBASE,
-		GpuFamily:  "test_gpu",
-		Graphics:   device.Config_GRAPHICS_GLE,
-		HardwareFeatures: []device.Config_HardwareFeature{
-			device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
-			device.Config_HARDWARE_FEATURE_FINGERPRINT,
-		},
-		Power:   device.Config_POWER_SUPPLY_AC_ONLY,
-		Storage: device.Config_STORAGE_SSD,
-		VideoAccelerationSupports: []device.Config_VideoAcceleration{
-			device.Config_VIDEO_ACCELERATION_ENC_H264,
-			device.Config_VIDEO_ACCELERATION_ENC_VP8,
-			device.Config_VIDEO_ACCELERATION_ENC_VP9,
-		},
-		Cpu: device.Config_ARM64,
-	},
 	HwidData: &ufspb.HwidData{
 		Sku:      "test_sku",
 		Variant:  "test_variant",
@@ -873,50 +874,31 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		dataCopy := proto.Clone(&data).(*ufspb.ChromeOSDeviceData)
 
 		t.Run("empty input", func(t *ftt.Test) {
-			_, err := AdaptToV1DutSpec(&ufspb.ChromeOSDeviceData{})
+			_, err := AdaptToV1DutSpec(&ufspb.ChromeOSDeviceData{}, nil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("chromeosdevicedata is nil to adapt"))
 		})
 		t.Run("empty hwid data", func(t *ftt.Test) {
 			dataCopy.HwidData = nil
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
 		t.Run("empty device config", func(t *ftt.Test) {
 			dataCopy.DeviceConfig = nil
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
 		t.Run("empty manufacturing config", func(t *ftt.Test) {
 			dataCopy.ManufacturingConfig = nil
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.GetCommon().GetHostname(), should.Equal("test_host"))
 		})
-		t.Run("may os_type", func(t *ftt.Test) {
-			board := "fizz-moblab"
-			osType := inventory.SchedulableLabels_OS_TYPE_MOBLAB
-			d := proto.Clone(&d1).(*inventory.DeviceUnderTest)
-			d.GetCommon().GetLabels().Board = &board
-			d.GetCommon().GetLabels().Platform = &board
-			d.GetCommon().GetLabels().OsType = &osType
-			d.GetCommon().GetLabels().Arc = &falseValue
-			s1, err := inventory.WriteDUTToString(d)
-			assert.Loosely(t, err, should.BeNil)
-
-			//dataCopy.LabConfig = proto.Clone(data.LabConfig).(*ufspb.MachineLSE)
-			dataCopy.GetMachine().GetChromeosMachine().BuildTarget = board
-			d2, err := AdaptToV1DutSpec(dataCopy)
-			assert.Loosely(t, err, should.BeNil)
-			s2, err := inventory.WriteDUTToString(d2)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s1, should.Equal(s2))
-		})
 		t.Run("servo_state is UNKNOWN/false by default", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState, should.Equal(inventory.PeripheralState_UNKNOWN))
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.BeFalse)
@@ -924,7 +906,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		t.Run("servo_state is broken", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_BROKEN
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				should.Equal(
@@ -934,7 +916,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		t.Run("servo_state is wrong_config", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_WRONG_CONFIG
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				should.Equal(
@@ -944,7 +926,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		t.Run("servo_state is working", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_WORKING
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				should.Equal(
@@ -954,7 +936,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 		t.Run("servo_state is not_connected", func(t *ftt.Test) {
 			dataCopy.DutState = &chromeosLab.DutState{}
 			dataCopy.DutState.Servo = chromeosLab.PeripheralState_NOT_CONNECTED
-			d, err := AdaptToV1DutSpec(dataCopy)
+			d, err := AdaptToV1DutSpec(dataCopy, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().ServoState,
 				should.Equal(
@@ -962,7 +944,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			assert.Loosely(t, *d.GetCommon().GetLabels().GetPeripherals().Servo, should.Equal(false))
 		})
 		t.Run("happy path", func(t *ftt.Test) {
-			d, err := AdaptToV1DutSpec(&data)
+			d, err := AdaptToV1DutSpec(&data, DeviceConfig)
 			assert.Loosely(t, err, should.BeNil)
 			s, err := inventory.WriteDUTToString(d)
 			assert.Loosely(t, err, should.BeNil)
@@ -976,11 +958,10 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			extLabstaion := ufspb.ChromeOSDeviceData{
 				LabConfig:           &labstationLSE,
 				Machine:             &labstationMachine,
-				DeviceConfig:        &labstationDevConfig,
 				ManufacturingConfig: &labstationManufacturingconfig,
 				DutState:            nil,
 			}
-			d, err := AdaptToV1DutSpec(&extLabstaion)
+			d, err := AdaptToV1DutSpec(&extLabstaion, &labstationDevConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.GetCommon().GetLabels().GetPeripherals().GetServo(), should.Equal(false))
 			assert.Loosely(t, d.GetCommon().GetLabels().GetPeripherals().GetServoState(), should.Equal(invServoStateUnknown))
@@ -996,11 +977,10 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			extLabstaion := ufspb.ChromeOSDeviceData{
 				LabConfig:           &labstationLSE,
 				Machine:             &labstationMachine,
-				DeviceConfig:        &labstationDevConfig,
 				ManufacturingConfig: &labstationManufacturingconfig,
 				DutState:            &devUFSState,
 			}
-			d, err := AdaptToV1DutSpec(&extLabstaion)
+			d, err := AdaptToV1DutSpec(&extLabstaion, &labstationDevConfig)
 			assert.Loosely(t, err, should.BeNil)
 
 			s, err := inventory.WriteDUTToString(d)
@@ -1016,11 +996,10 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			extDevboard := ufspb.ChromeOSDeviceData{
 				LabConfig:           &devboardLSE,
 				Machine:             &devboardMachine,
-				DeviceConfig:        &labstationDevConfig,
 				ManufacturingConfig: &labstationManufacturingconfig,
 				DutState:            nil,
 			}
-			d, err := AdaptToV1DutSpec(&extDevboard)
+			d, err := AdaptToV1DutSpec(&extDevboard, &labstationDevConfig)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.GetCommon().GetLabels().GetSelfServePools(), should.Resemble([]string{"devboard_main"}))
 			assert.Loosely(t, d.GetCommon().GetLabels().GetBoard(), should.Equal("andreiboard-devboard"))

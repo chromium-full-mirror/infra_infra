@@ -14,11 +14,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -38,7 +38,7 @@ type DeviceConfigEntity struct {
 
 // GetProto returns the unmarshaled DeviceConfig.
 func (e *DeviceConfigEntity) GetProto() (proto.Message, error) {
-	var p ufsdevice.Config
+	var p deviceconfig.Config
 	if err := proto.Unmarshal(e.DeviceConfig, &p); err != nil {
 		return nil, err
 	}
@@ -56,21 +56,21 @@ func (e *DeviceConfigEntity) GetRealm() string {
 }
 
 // RealmAssignerFunc holds logic for associating a `DeviceConfig` with a realm.
-type RealmAssignerFunc func(*ufsdevice.Config) string
+type RealmAssignerFunc func(*deviceconfig.Config) string
 
 // BlankRealmAssigner is a RealmAssignerFunc for situations where associating a
 // realm is not import, ex. fetching an entity.
-func BlankRealmAssigner(d *ufsdevice.Config) string {
+func BlankRealmAssigner(d *deviceconfig.Config) string {
 	return ""
 }
 
 // BoardModelRealmAssigner constructs the realm of deviceconfig based on the board and model
-func BoardModelRealmAssigner(d *ufsdevice.Config) string {
+func BoardModelRealmAssigner(d *deviceconfig.Config) string {
 	return fmt.Sprintf("chromeos:%s-%s", strings.ToLower(d.Id.PlatformId.Value), strings.ToLower(d.Id.ModelId.Value))
 }
 
 // CrOSRealmAssigner constructs the realm
-func CrOSRealmAssigner(d *ufsdevice.Config) string {
+func CrOSRealmAssigner(d *deviceconfig.Config) string {
 	return util.AtlLabAdminRealm
 }
 
@@ -101,7 +101,7 @@ func newDeviceConfigRealmEntityFunc(realmAssigner RealmAssignerFunc) ufsds.NewRe
 // newDeviceConfig creates a DeviceConfig entity, with realms assigned via
 // realmAssigner.
 func newDeviceConfig(ctx context.Context, pm proto.Message, realmAssigner RealmAssignerFunc) (*DeviceConfigEntity, error) {
-	p := pm.(*ufsdevice.Config)
+	p := pm.(*deviceconfig.Config)
 
 	// configs must have model and platform
 	if p.Id.GetModelId().GetValue() == "" || p.Id.GetPlatformId().GetValue() == "" {
@@ -124,17 +124,17 @@ func newDeviceConfig(ctx context.Context, pm proto.Message, realmAssigner RealmA
 
 // GetDeviceConfigACL fetches a single device config if it is visible to the
 // user.
-func GetDeviceConfigACL(ctx context.Context, cfgID *ufsdevice.ConfigId) (*ufsdevice.Config, error) {
-	pm, err := ufsds.GetACL(ctx, &ufsdevice.Config{Id: cfgID}, newDeviceConfigRealmEntityFunc(BlankRealmAssigner), util.ConfigurationsGet)
+func GetDeviceConfigACL(ctx context.Context, cfgID *deviceconfig.ConfigId) (*deviceconfig.Config, error) {
+	pm, err := ufsds.GetACL(ctx, &deviceconfig.Config{Id: cfgID}, newDeviceConfigRealmEntityFunc(BlankRealmAssigner), util.ConfigurationsGet)
 	if err == nil {
-		return pm.(*ufsdevice.Config), err
+		return pm.(*deviceconfig.Config), err
 	}
 	return nil, err
 }
 
 // DeviceConfigsExistACL returns an array of bools. The ith value in this array
 // represents whether the ith entry in cfgIDs exists and is visible to the user
-func DeviceConfigsExistACL(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
+func DeviceConfigsExistACL(ctx context.Context, cfgIDs []*deviceconfig.ConfigId) ([]bool, error) {
 	entities := make([]ufsds.RealmEntity, len(cfgIDs))
 	for i, id := range cfgIDs {
 		idString := GetDeviceConfigIDStr(id)
@@ -147,7 +147,7 @@ func DeviceConfigsExistACL(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([
 // BatchUpdateDeviceConfigs upserts all configs. The `realmAssigner` determines
 // the logic for adding realms to these configs, and can be different in
 // different namespaces.
-func BatchUpdateDeviceConfigs(ctx context.Context, configs []*ufsdevice.Config, realmAssigner RealmAssignerFunc) ([]*ufsdevice.Config, error) {
+func BatchUpdateDeviceConfigs(ctx context.Context, configs []*deviceconfig.Config, realmAssigner RealmAssignerFunc) ([]*deviceconfig.Config, error) {
 	protos := make([]proto.Message, len(configs))
 	for i, cfg := range configs {
 		protos[i] = cfg
@@ -163,7 +163,7 @@ func BatchUpdateDeviceConfigs(ctx context.Context, configs []*ufsdevice.Config, 
 //
 // Does a query over device config entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
-func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufsdevice.Config, nextPageToken string, err error) {
+func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*deviceconfig.Config, nextPageToken string, err error) {
 	q, err := ufsds.ListQuery(ctx, DeviceConfigKind, pageSize, pageToken, filterMap, keysOnly)
 	if err != nil {
 		return nil, "", err
@@ -175,9 +175,9 @@ func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, fi
 			logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
 			return nil
 		}
-		dc := pm.(*ufsdevice.Config)
+		dc := pm.(*deviceconfig.Config)
 		if keysOnly {
-			res = append(res, &ufsdevice.Config{
+			res = append(res, &deviceconfig.Config{
 				Id: dc.Id,
 			})
 		} else {
@@ -205,16 +205,16 @@ func ListDeviceConfigs(ctx context.Context, pageSize int32, pageToken string, fi
 //
 // This is a non-atomic operation. Must be used within a transaction.
 // Will lead to partial deletes if not used in a transaction.
-func BatchDeleteDeviceConfigsACL(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) error {
+func BatchDeleteDeviceConfigsACL(ctx context.Context, cfgIDs []*deviceconfig.ConfigId) error {
 	protos := make([]proto.Message, len(cfgIDs))
 	for i, id := range cfgIDs {
-		protos[i] = &ufsdevice.Config{Id: id}
+		protos[i] = &deviceconfig.Config{Id: id}
 	}
 	return ufsds.BatchDeleteACL(ctx, protos, newDeviceConfigRealmEntityFunc(BlankRealmAssigner), util.ConfigurationsDelete)
 }
 
 // GetDeviceConfigIDStr returns a string as device config short name.
-func GetDeviceConfigIDStr(cfgid *ufsdevice.ConfigId) string {
+func GetDeviceConfigIDStr(cfgid *deviceconfig.ConfigId) string {
 	var platformID, modelID, variantID string
 	if v := cfgid.GetPlatformId(); v != nil {
 		platformID = strings.ToLower(v.GetValue())
@@ -229,10 +229,10 @@ func GetDeviceConfigIDStr(cfgid *ufsdevice.ConfigId) string {
 }
 
 // GetConfigID creates ConfigId from the board/model/variant strings.
-func GetConfigID(board, model, variant string) *ufsdevice.ConfigId {
-	return &ufsdevice.ConfigId{
-		PlatformId: &ufsdevice.PlatformId{Value: board},
-		ModelId:    &ufsdevice.ModelId{Value: model},
-		VariantId:  &ufsdevice.VariantId{Value: variant},
+func GetConfigID(board, model, variant string) *deviceconfig.ConfigId {
+	return &deviceconfig.ConfigId{
+		PlatformId: &deviceconfig.PlatformId{Value: board},
+		ModelId:    &deviceconfig.ModelId{Value: model},
+		VariantId:  &deviceconfig.VariantId{Value: variant},
 	}
 }

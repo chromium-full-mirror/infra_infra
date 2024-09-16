@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -17,7 +18,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/configuration"
@@ -49,7 +49,7 @@ func grantRealmPerms(ctx context.Context, realms ...string) context.Context {
 }
 
 // ConstantRealmAssigner assigns a single realm to all device configs.
-func ConstantRealmAssigner(d *ufsdevice.Config) string {
+func ConstantRealmAssigner(d *deviceconfig.Config) string {
 	return "chromeos:realm"
 }
 
@@ -73,10 +73,10 @@ func TestSyncDeviceConfigs(t *testing.T) {
 			},
 		})
 
-		devCfg := &ufsdevice.Config{
+		devCfg := &deviceconfig.Config{
 			Id: configuration.GetConfigID("board3", "model3", ""),
 		}
-		_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, ConstantRealmAssigner)
+		_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{devCfg}, ConstantRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
 
 		cfg, err := configuration.GetDeviceConfigACL(ctx, configuration.GetConfigID("board3", "model3", ""))
@@ -127,8 +127,8 @@ func TestSyncDeviceConfigs(t *testing.T) {
 // will be blank on any issue with the configs
 var expectedConfigs = getExpectedConfigs()
 
-func getExpectedConfigs() []*ufsdevice.Config {
-	cfgs := &ufsdevice.AllConfigs{}
+func getExpectedConfigs() []*deviceconfig.Config {
+	cfgs := &deviceconfig.AllConfigs{}
 	content, err := os.ReadFile("../frontend/fake/device_config.cfg")
 	if err != nil {
 		return cfgs.Configs

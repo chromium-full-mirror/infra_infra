@@ -10,6 +10,7 @@ import (
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/protobuf/proto"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
@@ -17,6 +18,7 @@ import (
 	bqlib "infra/cros/lab_inventory/bq"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	apibq "infra/unifiedfleet/api/v1/models/bigquery"
+	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/model/caching"
 	"infra/unifiedfleet/app/model/configuration"
@@ -539,8 +541,12 @@ func getAllDeviceConfigMsgs(ctx context.Context) ([]proto.Message, error) {
 			return nil, errors.Annotate(err, "get all DeviceConfigs").Err()
 		}
 		for _, r := range res {
+			ufsCfg, err := crosToUFSDeviceCfgProto(r)
+			if err != nil {
+				return nil, errors.Annotate(err, "fail to convert device config to ufs format: %s", err).Err()
+			}
 			msgs = append(msgs, &apibq.DeviceConfigRow{
-				DeviceConfig: r,
+				DeviceConfig: ufsCfg,
 			})
 		}
 		if nextToken == "" {
@@ -549,6 +555,17 @@ func getAllDeviceConfigMsgs(ctx context.Context) ([]proto.Message, error) {
 		startToken = nextToken
 	}
 	return msgs, nil
+}
+
+func crosToUFSDeviceCfgProto(cfg *deviceconfig.Config) (*ufsdevice.Config, error) {
+	s, err := proto.Marshal(cfg)
+	if err != nil {
+		return nil, err
+	}
+	var ufsCfg ufsdevice.Config
+	err = proto.Unmarshal(s, &ufsCfg)
+
+	return &ufsCfg, err
 }
 
 // getAllHwidData gets all the HwidData from datastore and creates BQ messages.

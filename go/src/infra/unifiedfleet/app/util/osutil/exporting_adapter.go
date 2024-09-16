@@ -12,13 +12,12 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/lab_inventory/deviceconfig"
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
@@ -278,7 +277,7 @@ func setManufacturingConfig(l *inventory.SchedulableLabels, m *ufsmanufacturing.
 	l.HwidComponent = hwidComponent
 }
 
-func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
+func setDeviceConfig(labels *inventory.SchedulableLabels, d *deviceconfig.Config) {
 	c := labels.GetCapabilities()
 	if d == nil {
 		return
@@ -286,34 +285,34 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 	c.GpuFamily = &(d.GpuFamily)
 	var graphics string
 	switch d.Graphics {
-	case device.Config_GRAPHICS_GL:
+	case deviceconfig.Config_GRAPHICS_GL:
 		graphics = "gl"
-	case device.Config_GRAPHICS_GLE:
+	case deviceconfig.Config_GRAPHICS_GLE:
 		graphics = "gles"
 	}
 	c.Graphics = &graphics
 
 	for _, f := range d.GetHardwareFeatures() {
 		switch f {
-		case device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD:
+		case deviceconfig.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD:
 			c.Detachablebase = &trueValue
-		case device.Config_HARDWARE_FEATURE_FINGERPRINT:
+		case deviceconfig.Config_HARDWARE_FEATURE_FINGERPRINT:
 			c.Fingerprint = &trueValue
-		case device.Config_HARDWARE_FEATURE_FLASHROM:
+		case deviceconfig.Config_HARDWARE_FEATURE_FLASHROM:
 			c.Flashrom = &trueValue
-		case device.Config_HARDWARE_FEATURE_HOTWORDING:
+		case deviceconfig.Config_HARDWARE_FEATURE_HOTWORDING:
 			c.Hotwording = &trueValue
-		case device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY:
+		case deviceconfig.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY:
 			c.InternalDisplay = &trueValue
-		case device.Config_HARDWARE_FEATURE_LUCID_SLEEP:
+		case deviceconfig.Config_HARDWARE_FEATURE_LUCID_SLEEP:
 			c.Lucidsleep = &trueValue
-		case device.Config_HARDWARE_FEATURE_WEBCAM:
+		case deviceconfig.Config_HARDWARE_FEATURE_WEBCAM:
 			c.Webcam = &trueValue
 		}
 	}
 
-	if st := d.GetStorage(); st != device.Config_STORAGE_UNSPECIFIED {
-		// Extract the storge type, e.g. "STORAGE_SSD" -> "ssd".
+	if st := d.GetStorage(); st != deviceconfig.Config_STORAGE_UNSPECIFIED {
+		// Extract the storage type, e.g. "STORAGE_SSD" -> "ssd".
 		storage := strings.ToLower(strings.SplitAfterN(st.String(), "_", 2)[1])
 		c.Storage = &storage
 	}
@@ -328,14 +327,14 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 
 	// Set CTS_ABI & CTS_CPU.
 	switch d.GetCpu() {
-	case device.Config_X86, device.Config_X86_64:
+	case deviceconfig.Config_X86, deviceconfig.Config_X86_64:
 		labels.CtsAbi = []inventory.SchedulableLabels_CTSABI{
 			inventory.SchedulableLabels_CTS_ABI_X86,
 		}
 		labels.CtsCpu = []inventory.SchedulableLabels_CTSCPU{
 			inventory.SchedulableLabels_CTS_CPU_X86,
 		}
-	case device.Config_ARM, device.Config_ARM64:
+	case deviceconfig.Config_ARM, deviceconfig.Config_ARM64:
 		labels.CtsAbi = []inventory.SchedulableLabels_CTSABI{
 			inventory.SchedulableLabels_CTS_ABI_ARM,
 		}
@@ -346,19 +345,19 @@ func setDeviceConfig(labels *inventory.SchedulableLabels, d *device.Config) {
 
 	// Set Form_Factor
 	switch d.GetFormFactor() {
-	case device.Config_FORM_FACTOR_CLAMSHELL:
+	case deviceconfig.Config_FORM_FACTOR_CLAMSHELL:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CLAMSHELL.Enum()
-	case device.Config_FORM_FACTOR_CONVERTIBLE:
+	case deviceconfig.Config_FORM_FACTOR_CONVERTIBLE:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CONVERTIBLE.Enum()
-	case device.Config_FORM_FACTOR_DETACHABLE:
+	case deviceconfig.Config_FORM_FACTOR_DETACHABLE:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_DETACHABLE.Enum()
-	case device.Config_FORM_FACTOR_CHROMEBASE:
+	case deviceconfig.Config_FORM_FACTOR_CHROMEBASE:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBASE.Enum()
-	case device.Config_FORM_FACTOR_CHROMEBOX:
+	case deviceconfig.Config_FORM_FACTOR_CHROMEBOX:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBOX.Enum()
-	case device.Config_FORM_FACTOR_CHROMEBIT:
+	case deviceconfig.Config_FORM_FACTOR_CHROMEBIT:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMEBIT.Enum()
-	case device.Config_FORM_FACTOR_CHROMESLATE:
+	case deviceconfig.Config_FORM_FACTOR_CHROMESLATE:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_CHROMESLATE.Enum()
 	default:
 		c.FormFactor = inventory.HardwareCapabilities_FORM_FACTOR_UNSPECIFIED.Enum()
@@ -660,23 +659,23 @@ func setTrrsType(s chromeosLab.Chameleon_TRRSType) *inventory.Peripherals_TRRSTy
 	return &target
 }
 
-func setPower(labels *inventory.SchedulableLabels, p *chromeosLab.Peripherals, d *device.Config) {
+func setPower(labels *inventory.SchedulableLabels, p *chromeosLab.Peripherals, d *deviceconfig.Config) {
 	c := labels.GetCapabilities()
 	var power string
 	if p.GetDolos().GetHostname() != "" {
 		power = "dolos"
 	} else {
 		switch pr := d.GetPower(); pr {
-		case device.Config_POWER_SUPPLY_AC_ONLY:
+		case deviceconfig.Config_POWER_SUPPLY_AC_ONLY:
 			power = "AC_only"
-		case device.Config_POWER_SUPPLY_BATTERY:
+		case deviceconfig.Config_POWER_SUPPLY_BATTERY:
 			power = "battery"
 		}
 	}
 	c.Power = &power
 }
 
-func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
+func createDutLabels(machine *ufspb.Machine, devConfig *deviceconfig.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
 	// Use GetXXX in case any object is nil.
 	platform := machine.GetChromeosMachine().GetBuildTarget()
 	brand := strings.ToLower(devConfig.GetId().GetBrandId().GetValue())
@@ -700,10 +699,8 @@ func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *i
 	}
 
 	ecTypeCros := inventory.SchedulableLabels_EC_TYPE_CHROME_OS
-	mappedPlatform := deviceconfig.BoardToPlatformMap[platform]
-
 	boardsHasCrosEc := stringset.NewFromSlice(crosEcTypeBoards...)
-	if boardsHasCrosEc.Has(platform) || boardsHasCrosEc.Has(mappedPlatform) {
+	if boardsHasCrosEc.Has(platform) {
 		labels.EcType = &ecTypeCros
 	}
 	// See b/343614317, IAD65 doesn't have wifi network setup for test yet.
@@ -716,7 +713,7 @@ func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *i
 // AdaptToV1DutSpec adapts ChromeOSDeviceData to inventory.DeviceUnderTest of
 // inventory v1 defined in
 // https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/libs/skylab/inventory/device.proto
-func AdaptToV1DutSpec(data *ufspb.ChromeOSDeviceData) (dut *inventory.DeviceUnderTest, err error) {
+func AdaptToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *deviceconfig.Config) (dut *inventory.DeviceUnderTest, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.Reason("Recovered from %v\n%s", r, debug.Stack()).Err()
@@ -727,10 +724,10 @@ func AdaptToV1DutSpec(data *ufspb.ChromeOSDeviceData) (dut *inventory.DeviceUnde
 		return nil, errors.Reason("chromeosdevicedata is nil to adapt").Err()
 	}
 	if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
-		return adaptV2DutToV1DutSpec(data)
+		return adaptV2DutToV1DutSpec(data, devConfig)
 	}
 	if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
-		return adaptV2LabstationToV1DutSpec(data)
+		return adaptV2LabstationToV1DutSpec(data, devConfig)
 	}
 	if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDevboard() != nil {
 		return adaptV2DevboardToV1DutSpec(data)
@@ -738,10 +735,9 @@ func AdaptToV1DutSpec(data *ufspb.ChromeOSDeviceData) (dut *inventory.DeviceUnde
 	panic("We should never reach here!")
 }
 
-func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnderTest, error) {
+func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *deviceconfig.Config) (*inventory.DeviceUnderTest, error) {
 	lse := data.GetLabConfig()
 	machine := data.GetMachine()
-	devConfig := data.GetDeviceConfig()
 	dut := lse.GetChromeosMachineLse().GetDeviceLse().GetDut()
 	p := dut.GetPeripherals()
 	sn := machine.GetSerialNumber()
@@ -807,10 +803,9 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	return deviceUnderTest, nil
 }
 
-func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnderTest, error) {
+func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *deviceconfig.Config) (*inventory.DeviceUnderTest, error) {
 	lse := data.GetLabConfig()
 	machine := data.GetMachine()
-	devConfig := data.GetDeviceConfig()
 	l := lse.GetChromeosMachineLse().GetDeviceLse().GetLabstation()
 	sn := machine.GetSerialNumber()
 

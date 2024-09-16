@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"testing"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -17,7 +18,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -25,15 +25,15 @@ import (
 // makeDevCfgForTesting creates a basic DeviceConfig. These configs have no
 // guarantee to make sense at a domain level, but can be used to verify code
 // behavior.
-func makeDevCfgForTesting(board, model, variant string, tams []string) *ufsdevice.Config {
-	return &ufsdevice.Config{
+func makeDevCfgForTesting(board, model, variant string, tams []string) *deviceconfig.Config {
+	return &deviceconfig.Config{
 		Id:  GetConfigID(board, model, variant),
 		Tam: tams,
 	}
 }
 
 // boardRealmAssigner just sets the realm to be equal to the board.
-func boardRealmAssigner(c *ufsdevice.Config) string {
+func boardRealmAssigner(c *deviceconfig.Config) string {
 	return c.Id.PlatformId.Value
 }
 
@@ -57,7 +57,7 @@ func grantRealmPerms(ctx context.Context, realms ...string) context.Context {
 }
 
 // constantRealmAssigner assigns all devices to a specific realm.
-func constantRealmAssigner(d *ufsdevice.Config) string {
+func constantRealmAssigner(d *deviceconfig.Config) string {
 	return "chromeos:realm"
 }
 
@@ -69,22 +69,22 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	ftt.Run("When a valid config is added", t, func(t *ftt.Test) {
-		cfgs := make([]*ufsdevice.Config, 2)
+		cfgs := make([]*deviceconfig.Config, 2)
 		for i := 0; i < 2; i++ {
 			cfgs[i] = makeDevCfgForTesting(fmt.Sprintf("board%d", i), fmt.Sprintf("model%d", i), fmt.Sprintf("variant%d", i), []string{fmt.Sprintf("test-%d", i)})
 		}
-		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfgs[0]}, constantRealmAssigner)
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfgs[0]}, constantRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*ufsdevice.Config{cfgs[0]}))
+		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfgs[0]}))
 		t.Run("That config is written to datastore", func(t *ftt.Test) {
 			cfg0, err := GetDeviceConfigACL(ctx, GetConfigID("board0", "model0", "variant0"))
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, cfg0, should.Resemble(cfgs[0]))
 		})
 		t.Run("When both that config and another config is added", func(t *ftt.Test) {
-			resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfgs[0], cfgs[1]}, constantRealmAssigner)
+			resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfgs[0], cfgs[1]}, constantRealmAssigner)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufsdevice.Config{cfgs[0], cfgs[1]}))
+			assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfgs[0], cfgs[1]}))
 			t.Run("Both configs are accessible", func(t *ftt.Test) {
 				cfg0, err := GetDeviceConfigACL(ctx, GetConfigID("board0", "model0", "variant0"))
 				assert.Loosely(t, err, should.BeNil)
@@ -97,10 +97,10 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 	})
 
 	ftt.Run("When an invalid config is added in a batch request", t, func(t *ftt.Test) {
-		badCfg := &ufsdevice.Config{}
+		badCfg := &deviceconfig.Config{}
 		goodCfg := makeDevCfgForTesting("board0", "model0", "variant", []string{"email"})
 
-		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{badCfg, goodCfg}, constantRealmAssigner)
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{badCfg, goodCfg}, constantRealmAssigner)
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
 		t.Run("No configs from that request are added", func(t *ftt.Test) {
@@ -113,9 +113,9 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		cfg := makeDevCfgForTesting("board", "model", "variant", []string{"email"})
 
 		// note boardRealmAssigner
-		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfg}, constantRealmAssigner)
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg}, constantRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*ufsdevice.Config{cfg}))
+		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg}))
 		t.Run("Entity in datastore has correct realm", func(t *ftt.Test) {
 			entity := &DeviceConfigEntity{
 				ID: GetDeviceConfigIDStr(GetConfigID("board", "model", "variant")),
@@ -135,9 +135,9 @@ func TestGetDeviceConfig(t *testing.T) {
 	cfg := makeDevCfgForTesting("board", "model", "variant", []string{"email"})
 
 	ftt.Run("When a config is added", t, func(t *ftt.Test) {
-		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfg}, BoardModelRealmAssigner)
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg}, BoardModelRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*ufsdevice.Config{cfg}))
+		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg}))
 		t.Run("That config can be accessed", func(t *ftt.Test) {
 			cfg_resp, err := GetDeviceConfigACL(ctx, GetConfigID("board", "model", "variant"))
 			assert.Loosely(t, err, should.BeNil)
@@ -150,7 +150,7 @@ func TestGetDeviceConfig(t *testing.T) {
 			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
 		t.Run("A config with an invalid ID cannot be accessed", func(t *ftt.Test) {
-			cfg_resp, err := GetDeviceConfigACL(ctx, &ufsdevice.ConfigId{})
+			cfg_resp, err := GetDeviceConfigACL(ctx, &deviceconfig.ConfigId{})
 			assert.Loosely(t, cfg_resp, should.BeNil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(InternalError))
@@ -174,18 +174,18 @@ func TestDeviceConfigsExist(t *testing.T) {
 	cfg1 := makeDevCfgForTesting("board-hidden", "model-hidden", "variant", []string{"email"})
 
 	ftt.Run("When a config is added", t, func(t *ftt.Test) {
-		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfg, cfg1}, BoardModelRealmAssigner)
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg, cfg1}, BoardModelRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*ufsdevice.Config{cfg, cfg1}))
+		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg, cfg1}))
 		t.Run("DeviceConfigsExist should correctly report that config exists, and other config does not", func(t *ftt.Test) {
-			cfgIDs := []*ufsdevice.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("non", "existant", "config")}
+			cfgIDs := []*deviceconfig.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("non", "existant", "config")}
 			exists, err := DeviceConfigsExistACL(ctx, cfgIDs)
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, exists, should.Resemble([]bool{true, false}))
 		})
 		t.Run("DeviceConfigsExist should only report that configs the user can see are returned", func(t *ftt.Test) {
-			cfgIDs := []*ufsdevice.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("board-hidden", "model-hidden", "variant")}
+			cfgIDs := []*deviceconfig.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("board-hidden", "model-hidden", "variant")}
 			exists, err := DeviceConfigsExistACL(ctx, cfgIDs)
 
 			assert.Loosely(t, err, should.BeNil)
@@ -214,7 +214,7 @@ func TestGetDeviceConfigIDStr(t *testing.T) {
 		assert.Loosely(t, id, should.Equal("board.model."))
 	})
 	ftt.Run("test empty config", t, func(t *ftt.Test) {
-		cfgID := &ufsdevice.ConfigId{}
+		cfgID := &deviceconfig.ConfigId{}
 		id := GetDeviceConfigIDStr(cfgID)
 		assert.Loosely(t, id, should.Equal(".."))
 	})

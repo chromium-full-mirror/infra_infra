@@ -13,20 +13,19 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/infra/proto/go/device"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/util"
 )
 
 type fakeInventoryClient struct {
-	GetDeviceConfigResp    *device.Config
+	GetDeviceConfigResp    *deviceconfig.Config
 	GetDeviceConfigErr     bool
 	DeviceConfigExistsResp *invV2Api.DeviceConfigsExistsResponse
 	DeviceConfigExistsErr  bool
@@ -39,7 +38,7 @@ func (ic *fakeInventoryClient) DeviceConfigsExists(ctx context.Context, in *invV
 	return ic.DeviceConfigExistsResp, nil
 }
 
-func (ic *fakeInventoryClient) GetDeviceConfig(ctx context.Context, in *invV2Api.GetDeviceConfigRequest, opts ...grpc.CallOption) (*device.Config, error) {
+func (ic *fakeInventoryClient) GetDeviceConfig(ctx context.Context, in *invV2Api.GetDeviceConfigRequest, opts ...grpc.CallOption) (*deviceconfig.Config, error) {
 	if ic.GetDeviceConfigErr {
 		return nil, errors.New("error fetching device config")
 	}
@@ -49,8 +48,8 @@ func (ic *fakeInventoryClient) GetDeviceConfig(ctx context.Context, in *invV2Api
 // makeDevCfgForTesting creates a basic DeviceConfig. These configs have no
 // guarantee to make sense at a domain level, but can be used to verify code
 // behavior.
-func makeDevCfgForTesting(board, model, variant string, tams []string) *ufsdevice.Config {
-	return &ufsdevice.Config{
+func makeDevCfgForTesting(board, model, variant string, tams []string) *deviceconfig.Config {
+	return &deviceconfig.Config{
 		Id:  configuration.GetConfigID(board, model, variant),
 		Tam: tams,
 	}
@@ -65,10 +64,10 @@ func TestGetDeviceConfig(t *testing.T) {
 	tests := []struct {
 		name    string
 		inUFS   bool
-		invResp *device.Config
+		invResp *deviceconfig.Config
 		invErr  bool
-		cfgID   *ufsdevice.ConfigId
-		want    *ufsdevice.Config
+		cfgID   *deviceconfig.ConfigId
+		want    *deviceconfig.Config
 		wantErr bool
 	}{
 		{
@@ -92,11 +91,11 @@ func TestGetDeviceConfig(t *testing.T) {
 		{
 			name:  "config in inventoryv2",
 			inUFS: false,
-			invResp: &device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{Value: "zork"},
-					ModelId:    &device.ModelId{Value: "gumboz"},
-					VariantId:  &device.VariantId{Value: ""},
+			invResp: &deviceconfig.Config{
+				Id: &deviceconfig.ConfigId{
+					PlatformId: &deviceconfig.PlatformId{Value: "zork"},
+					ModelId:    &deviceconfig.ModelId{Value: "gumboz"},
+					VariantId:  &deviceconfig.VariantId{Value: ""},
 				},
 				Tam: []string{"inventory@google.com"},
 			},
@@ -108,11 +107,11 @@ func TestGetDeviceConfig(t *testing.T) {
 		{
 			name:  "config in inventoryv2 and UFS", // same board/model but inventoryv2 has different TAM
 			inUFS: true,
-			invResp: &device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{Value: "zork"},
-					ModelId:    &device.ModelId{Value: "gumboz"},
-					VariantId:  &device.VariantId{Value: ""},
+			invResp: &deviceconfig.Config{
+				Id: &deviceconfig.ConfigId{
+					PlatformId: &deviceconfig.PlatformId{Value: "zork"},
+					ModelId:    &deviceconfig.ModelId{Value: "gumboz"},
+					VariantId:  &deviceconfig.VariantId{Value: ""},
 				},
 				Tam: []string{"inventory@google.com"},
 			},
@@ -151,7 +150,7 @@ func TestGetDeviceConfig(t *testing.T) {
 			datastore.GetTestable(ctx).Consistent(true)
 			if tt.inUFS {
 				devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
-				_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
+				_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{devCfg}, configuration.BoardModelRealmAssigner)
 				if err != nil {
 					t.Errorf("error setting up test data")
 				}
@@ -172,7 +171,7 @@ func TestGetDeviceConfig(t *testing.T) {
 				t.Errorf("DualDeviceConfigClient.GetDeviceConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreUnexported(ufsdevice.Config{}, ufsdevice.ConfigId{}, ufsdevice.PlatformId{}, ufsdevice.ModelId{}, ufsdevice.VariantId{})); diff != "" {
+			if diff := cmp.Diff(tt.want, got, cmpopts.IgnoreUnexported(deviceconfig.Config{}, deviceconfig.ConfigId{}, deviceconfig.PlatformId{}, deviceconfig.ModelId{}, deviceconfig.VariantId{})); diff != "" {
 				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
@@ -187,7 +186,7 @@ func TestDeviceConfigExists(t *testing.T) {
 		name    string
 		invResp *invV2Api.DeviceConfigsExistsResponse
 		invErr  bool
-		cfgIDs  []*ufsdevice.ConfigId
+		cfgIDs  []*deviceconfig.ConfigId
 		want    []bool
 		wantErr bool
 	}{
@@ -195,7 +194,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			name:    "only UFS has some configs",
 			invResp: nil,
 			invErr:  true,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("zork", "gumboz", "")},
+			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("zork", "gumboz", "")},
 			want:    []bool{false, true},
 			wantErr: false,
 		},
@@ -203,7 +202,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			name:    "UFS has all configs",
 			invResp: nil,
 			invErr:  true,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("zork", "gumboz2", "")},
+			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("zork", "gumboz2", "")},
 			want:    []bool{true, true},
 			wantErr: false,
 		},
@@ -211,7 +210,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			name:    "only inventory has some configs",
 			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
 			invErr:  false,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{false, true},
 			wantErr: false,
 		},
@@ -219,7 +218,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			name:    "inventory has all configs",
 			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: true, 1: true}},
 			invErr:  false,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{true, true},
 			wantErr: false,
 		},
@@ -227,7 +226,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			name:    "neither have configs",
 			invResp: nil,
 			invErr:  true,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{false, false},
 			wantErr: false,
 		},
@@ -256,7 +255,7 @@ func TestDeviceConfigExists(t *testing.T) {
 			datastore.GetTestable(ctx).Consistent(true)
 			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
 			devCfg2 := makeDevCfgForTesting("zork", "gumboz2", "", []string{"test@google.com"})
-			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg, devCfg2}, configuration.BoardModelRealmAssigner)
+			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{devCfg, devCfg2}, configuration.BoardModelRealmAssigner)
 			if err != nil {
 				t.Errorf("error setting up test data")
 			}
