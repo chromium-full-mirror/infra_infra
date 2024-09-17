@@ -6,20 +6,31 @@ package ctr
 
 import (
 	"context"
+	"fmt"
+
+	"google.golang.org/grpc"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/recovery/internal/log"
 )
 
 // BaseContainer describe API to work with containers.
 type BaseContainer interface {
 	Name() string
 	Exec(ctx context.Context, cmd string) (outstd, errstd string, err error)
-	Stop(ctx context.Context) error
+	Close(ctx context.Context) error
 	IsClosed() bool
+	GetClient(ctx context.Context) (*grpc.ClientConn, error)
 }
 type baseContainerImpl struct {
 	name string
 	ci   *serviceInfoImpl
+
+	// With delay.
+	serviceAddr string
+	conn        *grpc.ClientConn
 }
 
 // Name returns the name of container.
@@ -35,13 +46,15 @@ func (c *baseContainerImpl) Exec(ctx context.Context, cmd string) (outstd, errst
 	return "", "", errors.Reason("run: not implemented").Err()
 }
 
-// Close stops container and mark it as closed.
-func (c *baseContainerImpl) Stop(ctx context.Context) error {
-	if c.ci == nil || c.ci.ctr == nil {
+// Close closes active resources.
+func (c *baseContainerImpl) Close(ctx context.Context) error {
+	if c.IsClosed() {
 		return nil
 	}
-	if err := c.ci.ctr.StopContainer(ctx, c.name); err != nil {
-		return errors.Annotate(err, "stop container").Err()
+	if c.conn != nil {
+		if err := c.conn.Close(); err != nil {
+			return errors.Annotate(err, "close container %q", c.Name()).Err()
+		}
 	}
 	c.ci = nil
 	return nil
@@ -49,5 +62,45 @@ func (c *baseContainerImpl) Stop(ctx context.Context) error {
 
 // IsClosed tells if the container was closed.
 func (c *baseContainerImpl) IsClosed() bool {
-	return c.ci == nil
+	return c == nil || c.ci == nil
+}
+
+// GetClient creates and return client to work with a secrvice running in the container.
+func (c *baseContainerImpl) GetClient(ctx context.Context) (*grpc.ClientConn, error) {
+	if c.conn != nil {
+		return c.conn, nil
+	}
+	addr, err := c.serviceAddress(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "get client %q", c.Name()).Err()
+	}
+	conn, err := common.ConnectWithService(ctx, addr)
+	if err != nil {
+		return nil, errors.Annotate(err, "get client %q", c.Name()).Err()
+	}
+	c.conn = conn
+	log.Debugf(ctx, "Client for %q created!", c.Name())
+	return c.conn, nil
+}
+
+// serviceAddress reads an address of the service running in the container.
+func (c *baseContainerImpl) serviceAddress(ctx context.Context) (string, error) {
+	if c.IsClosed() {
+		return "", errors.Reason("service address: container is closed").Err()
+	}
+	if c.serviceAddr == "" {
+		res, err := c.ci.ctr.GetContainer(ctx, c.Name())
+		if err != nil {
+			return "", errors.Annotate(err, "service address").Err()
+		}
+		for _, p := range res.GetContainer().GetPortBindings() {
+			if p.GetHostIp() == "" || p.GetHostPort() == 0 || p.GetProtocol() != "tcp" {
+				continue
+			}
+			c.serviceAddr = fmt.Sprintf("%s:%d", p.GetHostIp(), p.GetHostPort())
+			log.Debugf(ctx, "Container %q: service runs on %q address", c.Name(), c.serviceAddr)
+			break
+		}
+	}
+	return c.serviceAddr, nil
 }

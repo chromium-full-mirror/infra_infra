@@ -53,7 +53,7 @@ func startADBContainer(ctx context.Context, info *execs.ExecInfo) error {
 		Network: networkName,
 		// ArtifactDir: c.artifactsDir, defined below in the call.
 	}
-	if _, err := ctrInfo.GetContainer(ctx, req); err != nil {
+	if _, err := ctrInfo.CreateContainer(ctx, req); err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	log.Infof(ctx, "Container %q started!", req.Name)

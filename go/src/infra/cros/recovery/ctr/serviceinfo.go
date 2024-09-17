@@ -29,8 +29,9 @@ const (
 // ServiceInfo describes abilities of CTR service.
 type ServiceInfo interface {
 	Stop(ctx context.Context) error
-	GetContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (BaseContainer, error)
 	GetNetwork(ctx context.Context, name string) (Network, error)
+	CreateContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (BaseContainer, error)
+	GetContainer(ctx context.Context, name string) (BaseContainer, error)
 	IsUp() bool
 }
 
@@ -100,7 +101,7 @@ func (c *serviceInfoImpl) Stop(ctx context.Context) error {
 	errs := []error{}
 	log.Infof(ctx, "Try to stop CTR service...")
 	for _, v := range c.containerCache {
-		if err := v.Stop(ctx); err != nil {
+		if err := v.Close(ctx); err != nil {
 			errs = append(errs, errors.Annotate(err, "stop").Err())
 		}
 	}
@@ -149,15 +150,34 @@ func (c *serviceInfoImpl) GetNetwork(ctx context.Context, name string) (_ Networ
 }
 
 // GetContainer create requested container.
-func (c *serviceInfoImpl) GetContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (_ BaseContainer, rErr error) {
-	if req.GetName() == "" {
-		return nil, errors.Reason("get container: invalid request").Err()
-	} else if c.ctr.CtrClient == nil {
-		return nil, errors.Reason("get container: ctr-client not found, probably server is not started").Err()
+func (c *serviceInfoImpl) GetContainer(ctx context.Context, name string) (BaseContainer, error) {
+	if container, ok := c.containerCache[name]; ok {
+		log.Infof(ctx, "Got container %q from cache!", name)
+		return container, nil
 	}
-	if existContainer, ok := c.containerCache[req.GetName()]; ok && !existContainer.IsClosed() {
-		log.Infof(ctx, "Got container %q from cache!", existContainer.Name())
-		return existContainer, nil
+	// If container created outside the call then we can find it at docker level.
+	if _, err := c.ctr.GetContainer(ctx, name); err != nil {
+		return nil, errors.Annotate(err, "service address").Err()
+	}
+	// If no errors then container is exist.
+	container := &baseContainerImpl{
+		name: name,
+		ci:   c,
+	}
+	return container, errors.Reason("get container: probably not created yet").Err()
+}
+
+// GetContainer create a requested container.
+func (c *serviceInfoImpl) CreateContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (_ BaseContainer, rErr error) {
+	if req.GetName() == "" {
+		return nil, errors.Reason("create container: invalid request").Err()
+	} else if c.ctr.CtrClient == nil {
+		return nil, errors.Reason("create container %q: ctr-client not found, probably server is not started", req.GetName()).Err()
+	}
+	if container, err := c.GetContainer(ctx, req.GetName()); err != nil {
+		log.Infof(ctx, "Container %q isn't exist yet! Error: %s", req.GetName(), err)
+	} else {
+		return container, nil
 	}
 	container := &baseContainerImpl{
 		name: req.GetName(),
@@ -169,7 +189,7 @@ func (c *serviceInfoImpl) GetContainer(ctx context.Context, req *api.StartTempla
 		return nil, errors.Annotate(err, "get container %q", container.name).Err()
 	}
 	c.containerCache[container.name] = container
-	log.Infof(ctx, "Container %q started: %v", container.name, res)
+	log.Infof(ctx, "Container %q created: %v", container.name, res)
 	return container, nil
 }
 

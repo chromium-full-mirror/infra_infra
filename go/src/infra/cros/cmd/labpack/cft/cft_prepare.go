@@ -64,13 +64,13 @@ func Prepare(ctx context.Context, in *Info, mt metrics.Metrics, lg logger.Logger
 		return nil, nil, errors.Annotate(err, "prepare cft").Err()
 	}
 	closer := func(nCtx context.Context) error {
-		return stop(nCtx, in, mt, lg)
+		return stop(nCtx, ctrInfo, in, mt, lg)
 	}
 	return ctrInfo, closer, nil
 }
 
 // Stop stop CFT tools.
-func stop(ctx context.Context, in *Info, mt metrics.Metrics, lg logger.Logger) (rErr error) {
+func stop(ctx context.Context, ctrInfo ctr.ServiceInfo, in *Info, mt metrics.Metrics, lg logger.Logger) (rErr error) {
 	lg.Infof("Start stopping CFT tools...")
 	if in.CreateStep {
 		var step *build.Step
@@ -93,12 +93,7 @@ func stop(ctx context.Context, in *Info, mt metrics.Metrics, lg logger.Logger) (
 			}
 		})()
 	}
-	info, ok := ctr.Get(ctx)
-	if !ok {
-		lg.Infof("CTF Was not started, so nothing to stop!")
-		return nil
-	}
-	if err := info.Stop(ctx); err != nil {
+	if err := ctrInfo.Stop(ctx); err != nil {
 		lg.Debugf("CTF stop failed: %s", err)
 		return errors.Annotate(err, "stop cft").Err()
 	}
