@@ -25,7 +25,7 @@ var migrateSeenInfo cron.LastSeenConfig
 func main() {
 	mods := []module.Module{
 		scron.NewModuleFromFlags(),
-		cfgmodule.NewModule(&cfgmodule.ModuleOptions{ServiceHost: "luci-config.appspot.com"}),
+		cfgmodule.NewModule(&cfgmodule.ModuleOptions{ServiceHost: "config.luci.app"}),
 	}
 
 	r := regulator.RegulatorOptions{}
