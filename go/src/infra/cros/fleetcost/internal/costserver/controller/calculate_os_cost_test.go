@@ -87,20 +87,6 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 	}
 }
 
-// TestFriendlyString tests the zero but not nil string.
-//
-// The expansion is actually not very friendly, but it *is* comprehensible.
-// TODO(gregorynisbet): make the friendly string friendlier.
-func TestFriendlyString(t *testing.T) {
-	t.Parallel()
-
-	str := (&controller.IndicatorAttribute{}).FriendlyString()
-
-	if str != "type=INDICATOR_TYPE_UNKNOWN primary= secondary= tertiary= loc=LOCATION_UNKNOWN" {
-		t.Errorf("unexpcted friendly string %q", str)
-	}
-}
-
 func TestCalculateCostForOsResource_NoUfs(t *testing.T) {
 	t.Parallel()
 

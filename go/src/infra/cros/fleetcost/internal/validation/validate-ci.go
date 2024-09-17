@@ -51,7 +51,7 @@ func validateCostIndicatorAmortizationTime(request *fleetcostAPI.CreateCostIndic
 	}
 	return fmt.Errorf(
 		"cost indicator %q has cadence %s and amortization %f, which is invalid",
-		utils.FriendlyString(request.GetCostIndicator()),
+		utils.IndicatorToString(request.GetCostIndicator()),
 		request.GetCostIndicator().GetCostCadence().String(),
 		request.CostIndicator.GetAmortizationInYears(),
 	)

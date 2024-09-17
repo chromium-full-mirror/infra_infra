@@ -31,7 +31,7 @@ import (
 //	         We don't want strict and lax cache entries interfering with each other.
 func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
 	logging.Infof(ctx, "Begin GetCostResult for hostname=%q", req.GetHostname())
-	if req.GetForceUpdate() {
+	if req.GetNoUfs() || req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
 	}
 	ent, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())

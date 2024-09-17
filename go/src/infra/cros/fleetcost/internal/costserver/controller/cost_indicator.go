@@ -129,7 +129,7 @@ func getCostIndicatorValue(ctx context.Context, attribute *indicatorAttribute, u
 	}
 
 	if forgiveMissingEntries {
-		logging.Debugf(ctx, "forgiving missing attribute: %q", attribute.FriendlyString())
+		logging.Debugf(ctx, "forgiving missing attribute: %q", attribute.String())
 		return nil, nil
 	}
 
