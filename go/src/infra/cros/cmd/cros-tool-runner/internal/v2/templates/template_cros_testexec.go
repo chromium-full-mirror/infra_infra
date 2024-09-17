@@ -70,11 +70,11 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 			volumes = append(volumes, fmt.Sprintf("%s:%s", dockerSock, dockerSock))
 		}
 	}
-	var envvars []string
+	var envVars []string
 	// Add cloudbots related options
 	if env.IsCloudBot() {
 		cloudbotsOptions := cloudbotsAdditionalOptionsCrosTest()
-		envvars = append(envvars, cloudbotsOptions.Env...)
+		envVars = append(envVars, cloudbotsOptions.Env...)
 		volumes = append(volumes, cloudbotsOptions.Volume...)
 	}
 	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
@@ -84,14 +84,17 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", path, path))
 		var tlsVars = []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
-		envvars = append(envvars, tlsVars...)
+		envVars = append(envVars, tlsVars...)
 	}
+
+	// Get GCE Metadata Server env vars
+	envVars = append(envVars, gceMetadataEnvVars()...)
 
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,
 		Volume:  volumes,
-		Env:     envvars,
+		Env:     envVars,
 	}
 	// It is necessary to do sudo here because /tmp/test is owned by root inside docker
 	// when docker mount /tmp/test. However, the user that is running cros-test is
