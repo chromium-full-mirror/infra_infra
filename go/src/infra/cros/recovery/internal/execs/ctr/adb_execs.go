@@ -7,41 +7,45 @@ package ctr
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/ctr"
+	"infra/cros/recovery/internal/components/cft"
+	"infra/cros/recovery/internal/components/cft/adb"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
 
-const (
-	networkPrefix      = "network-%s"
-	adbContainerPrefix = "adb-%s"
-)
-
-func startADBContainer(ctx context.Context, info *execs.ExecInfo) error {
+func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 	ctrInfo, ok := ctr.Get(ctx)
 	if !ok {
-		return errors.Reason("start adb container").Err()
+		return errors.Reason("start adb container: ctr is not started").Err()
 	}
-	networkName := fmt.Sprintf(networkPrefix, info.GetDut().Name)
-	containerName := fmt.Sprintf(adbContainerPrefix, info.GetDut().Name)
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("start adb container: dut is not provided").Err()
+	}
+	networkName := cft.NetworkName(dut)
 	if _, err := ctrInfo.GetNetwork(ctx, networkName); err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
+	containerName := cft.ADBName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,
-		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/adb-base:prod",
+		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/adb-base:otabekCLv2",
 		Template: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
-					BinaryName: "tail",
+					BinaryName: "base-adb",
 					BinaryArgs: []string{
-						"-f",
-						"/dev/null",
+						"server",
+						"-port",
+						"80",
+						"-device",
+						dut.Name,
 					},
 					AdditionalVolumes: []string{
 						"/creds:/creds",
@@ -60,6 +64,119 @@ func startADBContainer(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// adbCommandExec execs custom command with arguments.
+func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
+	ctrInfo, ok := ctr.Get(ctx)
+	if !ok {
+		return errors.Reason("adb connect: ctr is not started").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("adb connect: dut is not provided").Err()
+	}
+	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	if err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	// Minus 5 seconds as we expect 5 seconds to get container info.
+	timeout := info.GetExecTimeout() - (5 * time.Second)
+	argsMap := info.GetActionArgs(ctx)
+	command := argsMap.AsString(ctx, "command", "")
+	commandArgs := argsMap.AsStringSlice(ctx, "args", []string{})
+	_, err = adb.ExecCommand(ctx, adbClient, timeout, command, commandArgs...)
+	return errors.Annotate(err, "adb command").Err()
+}
+
+func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
+	ctrInfo, ok := ctr.Get(ctx)
+	if !ok {
+		return errors.Reason("adb connect: ctr is not started").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("adb connect: dut is not provided").Err()
+	}
+	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	if err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	argsMap := info.GetActionArgs(ctx)
+	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
+	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "devices"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "kill-server"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "start-server"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "connect", dut.Name); err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "root"); err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "devices"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
+	return nil
+}
+
+func readAndroidVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	ctrInfo, ok := ctr.Get(ctx)
+	if !ok {
+		return errors.Reason("adb connect: ctr is not started").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("adb connect: dut is not provided").Err()
+	}
+	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	if err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	// Minus 5 seconds as we expect 5 seconds to get container info.
+	// Device to 2 calls.
+	timeout := (info.GetExecTimeout() - (5 * time.Second)) / 2
+	if res, err := adb.ShellCommand(ctx, adbClient, timeout, "getprop", "ro.build.version.release"); err != nil {
+		return errors.Annotate(err, "adb command").Err()
+	} else {
+		log.Infof(ctx, "ro.build.version.release: %s", res.GetStdout())
+	}
+	if res, err := adb.ShellCommand(ctx, adbClient, timeout, "getprop", "ro.build.version.sdk"); err != nil {
+		return errors.Annotate(err, "adb command").Err()
+	} else {
+		log.Infof(ctx, "ro.build.version.release: %s", res.GetStdout())
+	}
+	return nil
+}
+
+// makeAwakeAlwaysExec sets flag to keep android awake always.
+func makeAwakeAlwaysExec(ctx context.Context, info *execs.ExecInfo) error {
+	ctrInfo, ok := ctr.Get(ctx)
+	if !ok {
+		return errors.Reason("adb connect: ctr is not started").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("adb connect: dut is not provided").Err()
+	}
+	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	if err != nil {
+		return errors.Annotate(err, "adb connect").Err()
+	}
+	// Minus 5 seconds as we expect 5 seconds to get container info.
+	timeout := info.GetExecTimeout() - (5 * time.Second)
+	_, err = adb.ShellCommand(ctx, adbClient, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "3")
+	return errors.Annotate(err, "adb command").Err()
+}
+
 func init() {
-	execs.Register("ctr_start_adb_container", startADBContainer)
+	execs.Register("ctr_start_adb_container", startADBContainerExec)
+	execs.Register("ctr_adb_command", adbCommandExec)
+	execs.Register("ctr_adb_connect", adbConnectExec)
+	execs.Register("ctr_read_android_version", readAndroidVersionExec)
+	execs.Register("ctr_make_awake_always", makeAwakeAlwaysExec)
 }
