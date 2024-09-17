@@ -237,20 +237,30 @@ func cmdStartStep(ctx context.Context, stepName string, cmd *exec.Cmd) (*build.S
 	return step, ctx, nil
 }
 
-func infraErrorf(s string, args ...any) error {
-	return build.AttachStatus(fmt.Errorf(s, args...), bbpb.Status_INFRA_FAILURE, nil)
+// infraErrorf formats according to a format specifier and
+// returns an error with INFRA_FAILURE status attached.
+func infraErrorf(format string, args ...any) error {
+	return build.AttachStatus(fmt.Errorf(format, args...), bbpb.Status_INFRA_FAILURE, nil)
 }
 
+// infraWrap attaches an INFRA_FAILURE status to err and returns the result.
+// This is a no-op if the error is nil.
 func infraWrap(err error) error {
 	return build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
 }
 
+// endStep calls step.End with *errp.
+// errp must be non-nil, but *errp may be a nil error.
 func endStep(step *build.Step, errp *error) {
 	step.End(*errp)
 }
 
+// endInfraStep modifies *errp to attach an INFRA_FAILURE status
+// and calls step.End with *errp.
+// errp must be non-nil, but *errp may be a nil error.
 func endInfraStep(step *build.Step, errp *error) {
-	step.End(infraWrap(*errp))
+	*errp = infraWrap(*errp) // Any failure is an infrastructure failure.
+	step.End(*errp)
 }
 
 // attachLinks attaches name/url pairs as links to the error.
