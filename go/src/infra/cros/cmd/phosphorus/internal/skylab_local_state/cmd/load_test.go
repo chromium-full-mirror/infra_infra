@@ -12,13 +12,14 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -26,7 +27,7 @@ import (
 )
 
 func TestConvertAttachedDeviceDutTopologyToHostInfoForAndroid(t *testing.T) {
-	Convey("When attached device DUT topology is converted to host info the result is correct.", t, func() {
+	ftt.Run("When attached device DUT topology is converted to host info the result is correct.", t, func(t *ftt.Test) {
 		associatedHostname := "dummy_associated_hostname"
 		board := "dummy_board"
 		hostname := "dummy_hostname"
@@ -60,8 +61,8 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForAndroid(t *testing.T) {
 
 		got, err := convertDutTopologyToHostInfo(&input)
 
-		So(got, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, got, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		want := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{},
@@ -79,12 +80,12 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForAndroid(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		So(want, ShouldResembleProto, got)
+		assert.Loosely(t, want, should.Resemble(got))
 	})
 }
 
 func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
-	Convey("When attached device DUT topology is converted to host info the result is correct.", t, func() {
+	ftt.Run("When attached device DUT topology is converted to host info the result is correct.", t, func(t *ftt.Test) {
 		board := "dummy_board"
 		model := "dummy_model"
 		servo_address := "dummy_servo_ip_address"
@@ -138,8 +139,8 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
 
 		got, err := convertDutTopologyToHostInfo(&input)
 
-		So(got, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, got, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		want := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{
@@ -163,12 +164,12 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		So(want, ShouldResembleProto, got)
+		assert.Loosely(t, want, should.Resemble(got))
 	})
 }
 
 func TestConvertDutTopologyWithMultipleDutsToHostInfo(t *testing.T) {
-	Convey("When DUT topology contains multiple DUTs, conversion to host info fails.", t, func() {
+	ftt.Run("When DUT topology contains multiple DUTs, conversion to host info fails.", t, func(t *ftt.Test) {
 		input := labapi.DutTopology{
 			Id: &labapi.DutTopology_Id{
 				Value: "dummy_dut_topology_id",
@@ -189,13 +190,13 @@ func TestConvertDutTopologyWithMultipleDutsToHostInfo(t *testing.T) {
 
 		got, err := convertDutTopologyToHostInfo(&input)
 
-		So(got, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, got, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestConvertChromeOsDeviceInfoToHostInfo(t *testing.T) {
-	Convey("When DUT device info is converted to host info the result is correct.", t, func() {
+	ftt.Run("When DUT device info is converted to host info the result is correct.", t, func(t *ftt.Test) {
 		board := "dummy_board"
 		sku := "dummy_sku"
 		osType := inventory.SchedulableLabels_OS_TYPE_CROS
@@ -224,7 +225,7 @@ func TestConvertChromeOsDeviceInfoToHostInfo(t *testing.T) {
 
 		got := hostInfoFromDeviceInfo(&input)
 
-		So(got, ShouldNotBeNil)
+		assert.Loosely(t, got, should.NotBeNil)
 
 		want := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{
@@ -244,12 +245,12 @@ func TestConvertChromeOsDeviceInfoToHostInfo(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		So(want, ShouldResembleProto, got)
+		assert.Loosely(t, want, should.Resemble(got))
 	})
 }
 
 func TestConvertAttachedDeviceInfoToHostInfo(t *testing.T) {
-	Convey("When attached device info is converted to host info the result is correct.", t, func() {
+	ftt.Run("When attached device info is converted to host info the result is correct.", t, func(t *ftt.Test) {
 		associatedHostname := "dummy_associated_hostname"
 		board := "dummy_board"
 		hostname := "dummy_hostname"
@@ -297,7 +298,7 @@ func TestConvertAttachedDeviceInfoToHostInfo(t *testing.T) {
 
 		got := hostInfoFromDeviceInfo(&input)
 
-		So(got, ShouldNotBeNil)
+		assert.Loosely(t, got, should.NotBeNil)
 
 		want := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{},
@@ -315,12 +316,12 @@ func TestConvertAttachedDeviceInfoToHostInfo(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		So(want, ShouldResembleProto, got)
+		assert.Loosely(t, want, should.Resemble(got))
 	})
 }
 
 func TestAddBotStateToHostInfo(t *testing.T) {
-	Convey("When host info is updated from bot info the resulting labels and attributes are correct.", t, func() {
+	ftt.Run("When host info is updated from bot info the resulting labels and attributes are correct.", t, func(t *ftt.Test) {
 		hostInfo := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{
 				"attribute1": "value1",
@@ -357,7 +358,7 @@ func TestAddBotStateToHostInfo(t *testing.T) {
 			SerializerVersion: 1,
 		}
 
-		So(want, ShouldResembleProto, hostInfo)
+		assert.Loosely(t, want, should.Resemble(hostInfo))
 	})
 }
 

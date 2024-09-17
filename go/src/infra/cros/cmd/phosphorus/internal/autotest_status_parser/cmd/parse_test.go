@@ -10,9 +10,10 @@ package cmd
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 const verdictPass = skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS
@@ -24,17 +25,17 @@ const verdictNoVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_
 // parseResultsFile tests
 
 func TestEmptyResultFile(t *testing.T) {
-	Convey("When an empty status.log is parsed, there are no results.", t, func() {
+	ftt.Run("When an empty status.log is parsed, there are no results.", t, func(t *ftt.Test) {
 		input := ""
 		got := parseResultsFile(input)
 
 		want := []*skylab_test_runner.Result_Autotest_TestCase(nil)
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestPass(t *testing.T) {
-	Convey("When status.log contains a GOOD status with a test name, a passing test is returned.", t, func() {
+	ftt.Run("When status.log contains a GOOD status with a test name, a passing test is returned.", t, func(t *ftt.Test) {
 		// Input format: each line consists of strings separated by tab characters,
 		// the first three strings in a line represent the test status, test
 		// directory and test name, the last string when present represents a
@@ -49,12 +50,12 @@ END GOOD	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Pass", verdictPass, ""),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestWarn(t *testing.T) {
-	Convey("When status.log contains a WARN status, a passing test with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains a WARN status, a passing test with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	----	Warn
 	WARN	----	----	This is a warning.
@@ -65,12 +66,12 @@ END WARN	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Warn", verdictPass, "This is a warning.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestFail(t *testing.T) {
-	Convey("When status.log contains a FAIL status, a test failure with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains a FAIL status, a test failure with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	----	Fail
 	FAIL	----	----	Something failed.
@@ -81,12 +82,12 @@ END FAIL	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail", verdictFail, "Something failed.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestFailWithStackTrace(t *testing.T) {
-	Convey("When status.log contains a FAIL status with a stack trace, a test failure with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains a FAIL status with a stack trace, a test failure with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	Fail.suspend	Fail.suspend
 	FAIL	Fail.suspend	Fail.suspend	ValueError: max() arg is an empty sequence
@@ -101,12 +102,12 @@ END FAIL	Fail.suspend	Fail.suspend
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail.suspend", verdictFail, "ValueError: max() arg is an empty sequence\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestError(t *testing.T) {
-	Convey("When status.log contains an ERROR status, a test failure with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains an ERROR status, a test failure with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	----	Error
 	ERROR	----	----	An error occured.
@@ -117,12 +118,12 @@ END ERROR	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Error", verdictError, "An error occured.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestTestNA(t *testing.T) {
-	Convey("When status.log contains an TEST_NA status, a test failure with a comment is returned (crbug.com/846770).", t, func() {
+	ftt.Run("When status.log contains an TEST_NA status, a test failure with a comment is returned (crbug.com/846770).", t, func(t *ftt.Test) {
 		input := `
 START	----	TestNA
 	TEST_NA	----	----	The DUT is missing a necessary gadget.
@@ -133,12 +134,12 @@ END TEST_NA	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("TestNA", verdictNoVerdict, "The DUT is missing a necessary gadget.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestUnrecognizedEventType(t *testing.T) {
-	Convey("When status.log contains an unrecognized event, a test failure without a comment is returned.", t, func() {
+	ftt.Run("When status.log contains an unrecognized event, a test failure without a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	----	WeirdStatus
 	WEIRD	----	----	Comments about unrecognized status values are ignored.
@@ -149,12 +150,12 @@ END WEIRD	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("WeirdStatus", verdictFail, ""),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestNameless(t *testing.T) {
-	Convey("When a test has no name the directory name is used instead.", t, func() {
+	ftt.Run("When a test has no name the directory name is used instead.", t, func(t *ftt.Test) {
 		input := `
 Fall back to dir name for nameless tests.
 START	NamelessDir	----
@@ -166,12 +167,12 @@ END GOOD	Ignored	Ignored
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("NamelessDir", verdictPass, ""),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestComments(t *testing.T) {
-	Convey("When there are comments, only the ones from specific event lines are surfaced.", t, func() {
+	ftt.Run("When there are comments, only the ones from specific event lines are surfaced.", t, func(t *ftt.Test) {
 		input := `
 Comments that don't match the event line format (at least 3 strings separated by tabs) are ignored.
 START	----	WithoutComments
@@ -193,12 +194,12 @@ More logging that is ignored.
 			testCase("WithoutComments", verdictPass, ""),
 			testCase("WithComments", verdictPass, "This is a warning.\nThere's more to say about the warning.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestIgnoredFields(t *testing.T) {
-	Convey("When a test name is provided in the START event, directory name is ignored and test name provided in other events is also ignored.", t, func() {
+	ftt.Run("When a test name is provided in the START event, directory name is ignored and test name provided in other events is also ignored.", t, func(t *ftt.Test) {
 		input := `
 START	Ignored	Test-Name
 	INFO	Ignored	Ignored	Ignored.
@@ -211,12 +212,12 @@ END FAIL	Ignored	Ignored
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Test-Name", verdictFail, "Not ignored.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestIgnoredTestNames(t *testing.T) {
-	Convey("When a test name is 'reboot', 'suspend' or both test name and directory name are missing, ignore the test.", t, func() {
+	ftt.Run("When a test name is 'reboot', 'suspend' or both test name and directory name are missing, ignore the test.", t, func(t *ftt.Test) {
 		input := `
 START	----	----
 	FAIL	Ignored	Ignored	Something failed.
@@ -234,13 +235,13 @@ END FAIL	Ignored	Ignored
 `
 		got := parseResultsFile(input)
 
-		So(got, ShouldBeNil)
+		assert.Loosely(t, got, should.BeNil)
 	})
 }
 
 func TestNestedTestCases(t *testing.T) {
-	Convey("When the test cases are nested, the verdicts are correctly attributed to test cases.",
-		t, func() {
+	ftt.Run("When the test cases are nested, the verdicts are correctly attributed to test cases.",
+		t, func(t *ftt.Test) {
 			input := `
 START	----	NestedTest
 	START	----	SubTest1
@@ -263,13 +264,13 @@ END FAIL	----	----
 				testCase("SubTest2", verdictPass, ""),
 				testCase("NestedTest", verdictFail, "A failure of the outer test.\n"),
 			}
-			So(got, ShouldResemble, want)
+			assert.Loosely(t, got, should.Resemble(want))
 		})
 }
 
 func TestUnfinishedTestCases(t *testing.T) {
-	Convey("When test cases don't have an 'END ...' event, declare them aborted.",
-		t, func() {
+	ftt.Run("When test cases don't have an 'END ...' event, declare them aborted.",
+		t, func(t *ftt.Test) {
 			input := `
 START	----	CrashedOuter
 	START	----	CrashedMiddle
@@ -285,13 +286,13 @@ START	----	CrashedOuter
 				testCase("CrashedMiddle", verdictAbort, ""),
 				testCase("CrashedOuter", verdictAbort, ""),
 			}
-			So(got, ShouldResemble, want)
+			assert.Loosely(t, got, should.Resemble(want))
 		})
 }
 
 func TestContradictoryVerdicts(t *testing.T) {
-	Convey("When an event string disagrees with the 'END ' string, the ends string wins.",
-		t, func() {
+	ftt.Run("When an event string disagrees with the 'END ' string, the ends string wins.",
+		t, func(t *ftt.Test) {
 			input := `
 START	----	ActuallyPasses
 	FAIL	----	----	This test actually succeeds.
@@ -307,12 +308,12 @@ END ERROR	----	----
 				testCase("ActuallyPasses", verdictPass, "This test actually succeeds.\n"),
 				testCase("ActuallyFails", verdictError, ""),
 			}
-			So(got, ShouldResemble, want)
+			assert.Loosely(t, got, should.Resemble(want))
 		})
 }
 
 func TestInterruptedTestCase(t *testing.T) {
-	Convey("When status.log contains an interrupted test case without an END event line, the test is still returned but declare it aborted.", t, func() {
+	ftt.Run("When status.log contains an interrupted test case without an END event line, the test is still returned but declare it aborted.", t, func(t *ftt.Test) {
 		input := `
 START	----	----
 	START	----	Fail
@@ -322,35 +323,35 @@ START	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail", verdictAbort, ""),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 // Exit code file tests
 
 func TestExitedWithoutErrors(t *testing.T) {
-	Convey("When exit code is zero, report no exit errors",
-		t, func() {
+	ftt.Run("When exit code is zero, report no exit errors",
+		t, func(t *ftt.Test) {
 			// Input format: three lines, each containing an integer. The integer on
 			// the second line is the exit status code.
 			input := "42\n0\n0"
 
-			So(exitedWithErrors(input), ShouldResemble, false)
+			assert.Loosely(t, exitedWithErrors(input), should.Resemble(false))
 		})
 }
 
 func TestExitedWithErrors(t *testing.T) {
-	Convey("When the server job was aborted, report exit error",
-		t, func() {
+	ftt.Run("When the server job was aborted, report exit error",
+		t, func(t *ftt.Test) {
 			// 256 = Exited with status 1.
 			input := "42\n256\n0"
 
-			So(exitedWithErrors(input), ShouldResemble, true)
+			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
 		})
 }
 
 func TestAborted(t *testing.T) {
-	Convey("When status.log contains an ABORT status, a test failure with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains an ABORT status, a test failure with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	----	ActuallyAbort
 	START	----	reboot
@@ -364,12 +365,12 @@ END FAIL	----	ActuallyAbort
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("ActuallyAbort", verdictAbort, "Host did not return from reboot\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestInnerAbortedStep(t *testing.T) {
-	Convey("When status.log contains an inner ABORT step, a test failure with a comment is returned.", t, func() {
+	ftt.Run("When status.log contains an inner ABORT step, a test failure with a comment is returned.", t, func(t *ftt.Test) {
 		input := `
 START	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	timestamp=1655978455	localtime=Jun 23 03:00:55
 	START	----	reboot	timestamp=1655978465	localtime=Jun 23 03:01:05
@@ -385,34 +386,34 @@ END ERROR	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("cheets_CTS_P.internal.arm.CtsTheme", verdictAbort, "Autotest client terminated unexpectedly: DUT is pingable, SSHable and did NOT restart un-expectedly. We probably lost connectivity during the test.\n"),
 		}
-		So(got, ShouldResemble, want)
+		assert.Loosely(t, got, should.Resemble(want))
 	})
 }
 
 func TestFailedToParseExitCode(t *testing.T) {
-	Convey("When the exit code is not an integer, report exit error.",
-		t, func() {
+	ftt.Run("When the exit code is not an integer, report exit error.",
+		t, func(t *ftt.Test) {
 			input := "42\nnot_an_integer\n0"
 
-			So(exitedWithErrors(input), ShouldResemble, true)
+			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
 		})
 }
 
 func TestMissingExitCode(t *testing.T) {
-	Convey("When the exit code is missing, report exit error.",
-		t, func() {
+	ftt.Run("When the exit code is missing, report exit error.",
+		t, func(t *ftt.Test) {
 			input := "42"
 
-			So(exitedWithErrors(input), ShouldResemble, true)
+			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
 		})
 }
 
 func TestEmptyExitStatusFile(t *testing.T) {
-	Convey("When the exit status file is empty, report exit error.",
-		t, func() {
+	ftt.Run("When the exit status file is empty, report exit error.",
+		t, func(t *ftt.Test) {
 			input := ""
 
-			So(exitedWithErrors(input), ShouldResemble, true)
+			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
 		})
 }
 

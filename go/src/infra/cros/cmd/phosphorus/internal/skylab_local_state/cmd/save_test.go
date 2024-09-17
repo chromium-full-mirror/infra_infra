@@ -9,14 +9,16 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestNewDutStateFromHostInfo(t *testing.T) {
-	Convey("When a DUT state is updated only provisionable labels and attributes are changed.", t, func() {
+	ftt.Run("When a DUT state is updated only provisionable labels and attributes are changed.", t, func(t *ftt.Test) {
 		i := &skylab_local_state.AutotestHostInfo{
 			Attributes: map[string]string{
 				"dummy-attribute": "dummy-value",
@@ -39,7 +41,7 @@ func TestNewDutStateFromHostInfo(t *testing.T) {
 			},
 		}
 
-		So(want, ShouldResemble, state)
+		assert.Loosely(t, want, should.Resemble(state))
 	})
 }
 
