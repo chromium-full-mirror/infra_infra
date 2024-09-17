@@ -85,6 +85,7 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
+		c.Flags.BoolVar(&c.devOptionActive, "dev-active", true, `Set DevOption Active. Default true.`)
 		return c
 	},
 }
@@ -107,7 +108,8 @@ type localRecoveryRun struct {
 	generateLogFiles      bool
 	taskName              string
 
-	devPrintProto bool
+	devPrintProto   bool
+	devOptionActive bool
 
 	swarmingID string
 	bbID       string
@@ -172,7 +174,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	e := c.envFlags.Env()
 	logger.Debugf("Init DEV options!")
 	ctx = setDevOptions(ctx, &devOptions{
-		active:         true,
+		active:         c.devOptionActive,
 		printDUTProtos: c.devPrintProto,
 	})
 	logger.Debugf("Init Karte!")
