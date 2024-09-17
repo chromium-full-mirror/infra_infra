@@ -130,7 +130,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []*
 		g.SetLimit(runtime.NumCPU())
 		var testErrors = make([]error, len(ports))
 		for i, p := range ports {
-			i, p := i, p
 			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			// TODO(go.dev/issue/62067): Dump the raw JSON to a file and log it once `go build -json` is
 			// available.
@@ -385,9 +384,8 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 	g.SetLimit(runtime.NumCPU())
 	var testErrors = make([]error, len(ports)*len(modules))
 	for i, p := range ports {
-		i := i
 		portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
-		for _, m := range modules {
+		for j, m := range modules {
 			portContext := setupModuleEnv(portContext, m)
 			stepName := fmt.Sprintf("test %s module", m.Path)
 			if len(ports) > 1 || !proto.Equal(p, spec.inputs.Target) {
@@ -401,7 +399,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 				testCmd = command(portContext, "echo", "(skipped)")
 			}
 			g.Go(func() error {
-				testErrors[i] = cmdStepRun(portContext, stepName, testCmd, false)
+				testErrors[i*len(modules)+j] = cmdStepRun(portContext, stepName, testCmd, false)
 				return nil
 			})
 		}

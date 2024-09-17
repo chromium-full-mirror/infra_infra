@@ -10,10 +10,10 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"go/format"
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"runtime"
 	"slices"
 	"sync"
@@ -44,7 +44,6 @@ func main() {
 	var testTimesMu sync.Mutex
 	testTimes := make(map[string]time.Duration)
 	for _, testName := range tests {
-		testName := testName
 		eg.Go(func() error {
 			// Run the test.
 			dt, err := goDistTestTime(testName, false)
@@ -69,7 +68,6 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, testName := range raceTests {
-		testName := testName
 		if _, ok := testTimes[testName]; ok {
 			// Don't measure tests we've already measured again.
 			continue
