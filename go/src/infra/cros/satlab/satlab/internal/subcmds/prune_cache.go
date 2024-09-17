@@ -35,7 +35,7 @@ type prune_base struct {
 
 // Cleaning cache memory for Artifact downloader.
 func cleanVolume() error {
-	cli, err := client.NewClientWithOpts(client.FromEnv)
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
