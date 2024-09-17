@@ -241,16 +241,23 @@ func (c *clientImpl) ValidateArgs(ctx context.Context, args *request.Args) (botE
 		err = errors.Annotate(err, "validate dependencies").Err()
 		return
 	}
-	botExists, err = c.swarmingClient.BotExists(ctx, dims)
+	// Take out dut_state dim before checking bot availability
+	potentialRejectedTaskDims := []types.TaskDimKeyVal{}
+	dimsWithoutDutState := []*swarmingapi.SwarmingRpcsStringPair{}
+	for _, dim := range dims {
+		if dim.Key != "dut_state" {
+			dimsWithoutDutState = append(dimsWithoutDutState, dim)
+			potentialRejectedTaskDims = append(potentialRejectedTaskDims, types.TaskDimKeyVal{Key: dim.Key, Val: dim.Value})
+		}
+	}
+	logging.Infof(ctx, "Checking if bot exists for dims: %v", potentialRejectedTaskDims)
+	botExists, err = c.swarmingClient.BotExists(ctx, dimsWithoutDutState)
 	if err != nil {
 		err = errors.Annotate(err, "validate dependencies").Err()
 		return
 	}
 	if !botExists {
-		rejectedTaskDims = []types.TaskDimKeyVal{}
-		for _, dim := range dims {
-			rejectedTaskDims = append(rejectedTaskDims, types.TaskDimKeyVal{Key: dim.Key, Val: dim.Value})
-		}
+		rejectedTaskDims = potentialRejectedTaskDims
 		// sort by key, then by val
 		sort.Slice(rejectedTaskDims, func(i, j int) bool {
 			if rejectedTaskDims[i].Key != rejectedTaskDims[j].Key {
