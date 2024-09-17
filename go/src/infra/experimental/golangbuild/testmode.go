@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	goversion "go/version"
 	"hash/crc32"
 	"io"
 	"io/fs"
@@ -24,6 +25,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
 
+	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -293,12 +295,38 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		return infraErrorf("runSubrepoTests called for a main Go repo builder")
 	}
 
-	// Test this specific subrepo.
-	// If testing any one nested module or port fails, keep going and report all at the end.
-	modules, err := repoToModules(ctx, spec, repoDir)
+	// Discover all modules in the subrepo,
+	// then select modules to be tested.
+	allModules, err := repoToModules(ctx, spec, repoDir)
 	if err != nil {
 		return err
-	} else if len(modules) == 0 {
+	}
+	var modules []module // Modules to test.
+	for _, m := range allModules {
+		// When testing on release branches like "release-branch.go1.23", check
+		// the release branch Go version meets the module's minimum requirement.
+		// If it doesn't and 'GOTOOLCHAIN=local' is set, log it visibly and skip
+		// instead of failing with something like:
+		//
+		//	go: go.mod requires go >= 1.23.0 (running go 1.22.7; GOTOOLCHAIN=local)
+		//
+		// We never do this kind of skip for Go tip, so each module will be tested
+		// on at least one builder regardless of its go directive (to catch it being
+		// accidentally too high of a value).
+		//
+		// See go.dev/issue/69332.
+		if goBranchVersion, ok := strings.CutPrefix(spec.inputs.GoBranch, "release-branch."); ok &&
+			environ.FromCtx(setupModuleEnv(ctx, m)).Get("GOTOOLCHAIN") == "local" &&
+			goversion.Compare(goBranchVersion+".999", m.Minimum) < 0 {
+			logSkippedModule(ctx, m.Path, fmt.Sprintf("skipping because module requires %s but this builder "+
+				"is testing with GOTOOLCHAIN=local and local toolchain %s.x", m.Minimum, goBranchVersion))
+			continue
+		}
+
+		// In all other cases, include m to be tested.
+		modules = append(modules, m)
+	}
+	if len(modules) == 0 {
 		// No modules to test were discovered. Return early to avoid needing to handle this
 		// case of having nothing to test below and to avoid having meaningless empty steps
 		// in the "Steps & Logs" section.
@@ -320,11 +348,15 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 			}
 		}
 	}
+
 	// Fetch module dependencies ahead of time, to mark temporary network errors as an infra
 	// failures and because 'go test' may not have network access (see spec.inputs.NoNetwork).
 	if err := fetchDependencies(ctx, spec, modules); err != nil {
 		return err
 	}
+
+	// Test modules in this specific subrepo.
+	// If testing any one nested module or port fails, keep going and report all at the end.
 	if spec.inputs.CompileOnly {
 		return compileTestsInParallel(ctx, spec, modules, ports)
 	} else if len(ports) != 1 || !proto.Equal(ports[0], spec.inputs.Target) {
@@ -340,6 +372,12 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		}
 	}
 	return attachTestsFailed(errors.Join(testErrors...))
+}
+
+func logSkippedModule(ctx context.Context, modulePath, skipReason string) {
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("skip testing %s module", modulePath))
+	_, _ = io.WriteString(step.Log("skip reason"), skipReason)
+	step.End(nil)
 }
 
 func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []module, ports []*golangbuildpb.Port) error {
@@ -376,9 +414,15 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 type module struct {
 	RootDir string // Module root directory on disk.
 	Path    string // Module path specified in go.mod.
+	Minimum string // Minimum Go toolchain version for the module. With the "go" prefix included, like "go1.22.0".
 }
 
 // repoToModules discovers and reports modules in repoDir to be tested.
+//
+// It also moves nested modules such that their relative paths are not
+// predictable. This is done to catch unintended cases where a test in
+// a given module accidentally depends on something outside its module
+// boundary.
 func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (modules []module, err error) {
 	step, ctx := build.StartStep(ctx, "discover modules")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
@@ -390,16 +434,18 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		}
 		if d.IsDir() && (strings.HasPrefix(d.Name(), ".") || strings.HasPrefix(d.Name(), "_") || d.Name() == "testdata") {
 			// Skip directories that we're not looking to support having testable modules in.
+			// TODO(go.dev/issue/65267): Move nested untestable modules too.
 			return fs.SkipDir
 		}
 		if goModFile := d.Name() == "go.mod" && !d.IsDir(); goModFile {
-			modPath, err := modPath(path)
+			modPath, goVersion, err := modPathAndGo(path)
 			if err != nil {
 				return err
 			}
 			modules = append(modules, module{
 				RootDir: filepath.Dir(path),
 				Path:    modPath,
+				Minimum: goVersion,
 			})
 		}
 		return nil
@@ -408,7 +454,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 	}
 	moduleList := fmt.Sprint(modules)
 	if len(modules) == 0 {
-		moduleList = "(no modules to test discovered)"
+		moduleList = "(no modules discovered)"
 	}
 	if _, err := io.WriteString(step.Log("modules"), moduleList); err != nil {
 		return nil, err
@@ -445,19 +491,25 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 	return modules, nil
 }
 
-// modPath reports the module path in the given go.mod file.
-func modPath(goModFile string) (string, error) {
+// modPathAndGo reports the module path and Go version in the given go.mod file.
+// The returned Go version has a "go" prefix included, like "go1.22.0".
+func modPathAndGo(goModFile string) (modPath string, goVersion string, _ error) {
 	b, err := os.ReadFile(goModFile)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	f, err := modfile.ParseLax(goModFile, b, nil)
 	if err != nil {
-		return "", err
+		return "", "", err
 	} else if f.Module == nil {
-		return "", fmt.Errorf("go.mod file %q has no module statement", goModFile)
+		return "", "", fmt.Errorf("go.mod file %q has no module statement", goModFile)
 	}
-	return f.Module.Mod.Path, nil
+	if f.Go == nil {
+		// If the go directive is missing, go 1.16 is implied.
+		// See https://go.dev/ref/mod#go-mod-file-go.
+		return f.Module.Mod.Path, "go1.16", nil
+	}
+	return f.Module.Mod.Path, "go" + f.Go.Version, nil
 }
 
 // goDistList uses 'go tool dist list' to get a list of all non-broken ports,
@@ -626,17 +678,4 @@ func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) boo
 	}
 	// The default policy decision is not to opt out.
 	return performCompileOnlyTestingAsUsual
-}
-
-func min(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
-	if x < y {
-		return x
-	}
-	return y
-}
-func max(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
-	if x > y {
-		return x
-	}
-	return y
 }
