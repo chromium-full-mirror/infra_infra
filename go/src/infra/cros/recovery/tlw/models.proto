@@ -833,7 +833,9 @@ message Camera {
 // Chrome OS specific DUT details
 // NEXT TAG: 37
 message ChromeOS {
-  reserved 1;
+  // Is OS based on Android.
+  // If not then based on Chrome.
+  bool is_android_based = 1;
   // Board name of the DUT.
   string board = 2;
   // Model name of the DUT.
