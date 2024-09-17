@@ -42,9 +42,7 @@ project already. If this is not the case, you might want to read
 to get some background information. In particular,
 [_depot_tools_ needs to be installed](http://dev.chromium.org/developers/how-tos/install-depot-tools).
 
-First, generate and populate a .gitcookies file to provide authentication for
-accessing the repos. Visit chromium.googlesource.com/new-password, choose to
-authenticate only chromium.googlesource.com, and follow the provided directions.
+Make sure you have [access set up](https://www.chromium.org/developers/gerrit-guide/)
 
 The proper way to check out the non-GitHub repositories is to run:
 
