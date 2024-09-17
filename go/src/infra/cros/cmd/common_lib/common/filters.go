@@ -19,12 +19,13 @@ import (
 )
 
 var (
-	TtcpContainerName             = "cros-ddd-filter" // ttcp-demo
-	LegacyHWContainerName         = "cros-legacy-hw-filter"
-	ProvisionContainerName        = "provision-filter"
-	TestFinderContainerName       = "cros-test-finder"
-	UseFlagFilterContainerName    = "use_flag_filter"
-	PreProcessFilterContainerName = "pre-process-filter"
+	TtcpContainerName                    = "cros-ddd-filter" // ttcp-demo
+	LegacyHWContainerName                = "cros-legacy-hw-filter"
+	ProvisionContainerName               = "provision-filter"
+	TestFinderContainerName              = "cros-test-finder"
+	UseFlagFilterContainerName           = "use_flag_filter"
+	PreProcessFilterContainerName        = "pre-process-filter"
+	AutoVMTestShifterFilterContainerName = "autovm_test_shifter_filter"
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
@@ -34,22 +35,25 @@ var (
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
-	defaultTTCPSha             = "30c0fa7a6e1e91fbcce1e6d73b10d09e6dfcce16c01b094b1db76a3ca744daeb"
-	defaultPreProcessFilterSha = "8cd110f391e6c82c93cbd7f4f5e383b27b743928f6e67fb0bc879ed64c447b0d"
-	prodShas                   = map[string]string{
-		TtcpContainerName:             defaultTTCPSha,
-		PreProcessFilterContainerName: defaultPreProcessFilterSha,
+	defaultTTCPSha                    = "30c0fa7a6e1e91fbcce1e6d73b10d09e6dfcce16c01b094b1db76a3ca744daeb"
+	defaultPreProcessFilterSha        = "8cd110f391e6c82c93cbd7f4f5e383b27b743928f6e67fb0bc879ed64c447b0d"
+	defaultAutoVMTestShifterFilterSha = "6de8ac982dc1851b90937126bf854a410f2d737bcdd9972b4007f7d89a39133d"
+	prodShas                          = map[string]string{
+		TtcpContainerName:                    defaultTTCPSha,
+		PreProcessFilterContainerName:        defaultPreProcessFilterSha,
+		AutoVMTestShifterFilterContainerName: defaultAutoVMTestShifterFilterSha,
 	}
 
 	binaryLookup = map[string]string{
-		TtcpContainerName:             "solver_service",
-		TestFinderContainerName:       "test_finder_filter",
-		PreProcessFilterContainerName: "pre-process-filter",
+		TtcpContainerName:                    "solver_service",
+		TestFinderContainerName:              "test_finder_filter",
+		PreProcessFilterContainerName:        "pre-process-filter",
+		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
 	}
 )
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
-func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []string {
+func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string) []string {
 	hwFilter := ""
 	if suiteReq.GetDddSuite() {
 		hwFilter = TtcpContainerName
@@ -65,6 +69,9 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest) []strin
 			filters = append(filters, filter)
 
 		}
+	}
+	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) {
+		filters = append(filters, AutoVMTestShifterFilterContainerName)
 	}
 
 	return filters
@@ -278,4 +285,14 @@ func ListToJson(list *list.List) []byte {
 	}
 
 	return retBytes
+}
+
+// isExperimentEnabled checks is a given exp is present in experiments list
+func isExperimentEnabled(exp string, experiments []string) bool {
+	for _, e := range experiments {
+		if e == exp {
+			return true
+		}
+	}
+	return false
 }

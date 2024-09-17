@@ -29,10 +29,10 @@ type PrepareFilterContainersInfoCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpReq     *testapi.CTPRequest
-	CredsFile  string
-	CTPversion string
-
+	CtpReq      *testapi.CTPRequest
+	CredsFile   string
+	CTPversion  string
+	Experiments []string
 	// Updates
 	ContainerInfoQueue   *list.List
 	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
@@ -84,7 +84,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	if sk.CtpReq == nil {
 		return fmt.Errorf("Cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
 	}
-
+	cmd.Experiments = sk.BuildState.Build().Input.Experiments
 	cmd.CTPversion = sk.CTPversion
 	cmd.CredsFile = sk.DockerKeyFile
 	cmd.CtpReq = sk.CtpReq
@@ -160,7 +160,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// -- Create ctp filters from default and input filters --
 
 	ctpFilters := make([]*api.CTPFilter, 0)
-	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest())
+	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)
 
 	karbonFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, cmd.CtpReq.GetKarbonFilters(), build)
 	if err != nil {
