@@ -8,9 +8,9 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func crosRepairPlan() *Plan {
+func crosRepairPlan(isDeployment bool) *Plan {
 	return &Plan{
-		CriticalActions: crosRepairCriticalActions(false),
+		CriticalActions: crosRepairCriticalActions(isDeployment),
 		Actions:         crosRepairActions(),
 	}
 }

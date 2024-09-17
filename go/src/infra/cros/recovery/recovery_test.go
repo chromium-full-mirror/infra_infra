@@ -91,6 +91,7 @@ var dutPlansCases = []struct {
 			config.PlanServoFwUpdate,
 			config.PlanDolos,
 			config.PlanServo,
+			config.PlanCrOSDeploy,
 			config.PlanCrOS,
 			config.PlanChameleon,
 			config.PlanBluetoothPeer,

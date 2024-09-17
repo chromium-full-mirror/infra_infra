@@ -25,16 +25,12 @@ func crosDeployPlan() *Plan {
 			"DUT has expected firmware version",
 			"Deployment checks",
 			"Collect DUT labels",
-			"DUT verify",
 		},
 		Actions: crosDeployAndRepairActions(),
 	}
 }
 
 func deployActions() map[string]*Action {
-	// Prepare critical actions as part of DUT verify.
-	repairCriticalActions := crosRepairCriticalActions(true)
-
 	return map[string]*Action{
 		"Device is pingable before deploy": {
 			Docs: []string{
@@ -288,13 +284,6 @@ func deployActions() map[string]*Action {
 				// The other reason why it fail on good DUT is that USB-key has not good image.
 				"Download stable image to USB-key",
 			},
-		},
-		"DUT verify": {
-			Docs: []string{
-				"Run all repair critcal actions.",
-			},
-			Dependencies: repairCriticalActions,
-			ExecName:     "sample_pass",
 		},
 		"Install OS in DEV mode": {
 			Docs: []string{
