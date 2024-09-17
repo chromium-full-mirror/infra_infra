@@ -310,6 +310,8 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			tags = AppendTags(tags, "requester", testCaseInfo.Requester)
 
 			tags = configTestMetadataTags(ctx, tags, testCaseInfo.GetTestCaseResult().GetTestCaseMetadata())
+			tags = configAVLInfoTags(tags, testCaseInfo.GetAvlInfo())
+			tags = configGSCInfoTags(tags, testCaseInfo.GetGscInfo())
 		}
 
 		timeInfo := testRun.TimeInfo
@@ -589,6 +591,49 @@ func configTestMetadataTags(ctx context.Context, tags []*pb.StringPair, testMeta
 	newTags := make([]*pb.StringPair, 0, len(tags)+len(metadataTags))
 	newTags = append(newTags, tags...)
 	newTags = append(newTags, metadataTags...)
+	return newTags
+}
+
+// configAVLInfoTags configs test result tags based on the AVL info.
+func configAVLInfoTags(tags []*pb.StringPair, avlInfo *artifactpb.AvlInfo) []*pb.StringPair {
+	if avlInfo == nil {
+		return tags
+	}
+
+	newTags := make([]*pb.StringPair, 0, len(tags)+avlInfo.ProtoReflect().Descriptor().Fields().Len())
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "avl_part_model", avlInfo.GetAvlPartModel())
+	newTags = AppendTags(newTags, "avl_part_firmware", avlInfo.GetAvlPartFirmware())
+	newTags = AppendTags(newTags, "avl_component_type", avlInfo.GetAvlComponentType())
+
+	return newTags
+}
+
+// configGSCInfoTags configs test result tags based on the GSC devboard info.
+func configGSCInfoTags(tags []*pb.StringPair, gscInfo *artifactpb.GscInfo) []*pb.StringPair {
+	if gscInfo == nil {
+		return tags
+	}
+
+	newTags := make([]*pb.StringPair, 0, len(tags)+gscInfo.ProtoReflect().Descriptor().Fields().Len())
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "gsc_buildurl", gscInfo.GetGscBuildurl())
+	newTags = AppendTags(newTags, "gsc_ccd_serial", gscInfo.GetGscCcdSerial())
+	newTags = AppendTags(newTags, "gsc_devboardservice_version", gscInfo.GetGscDevboardserviceVersion())
+	newTags = AppendTags(newTags, "gsc_hyperdebug_serial", gscInfo.GetGscHyperdebugSerial())
+	newTags = AppendTags(newTags, "gsc_hyperdebug_version", gscInfo.GetGscHyperdebugVersion())
+	newTags = AppendTags(newTags, "gsc_opentitantool_version", gscInfo.GetGscOpentitantoolVersion())
+	newTags = AppendTags(newTags, "gsc_ro_version", gscInfo.GetGscRoVersion())
+	newTags = AppendTags(newTags, "gsc_rw_branch", gscInfo.GetGscRwBranch())
+	newTags = AppendTags(newTags, "gsc_rw_rev", gscInfo.GetGscRwRev())
+	newTags = AppendTags(newTags, "gsc_rw_sha", gscInfo.GetGscRwSha())
+	newTags = AppendTags(newTags, "gsc_rw_version", gscInfo.GetGscRwVersion())
+	newTags = AppendTags(newTags, "gsc_tast_version", gscInfo.GetGscTastVersion())
+	newTags = AppendTags(newTags, "gsc_testbed_serial", gscInfo.GetGscTestbedSerial())
+	newTags = AppendTags(newTags, "gsc_testbed_type", gscInfo.GetGscTestbedType())
+
 	return newTags
 }
 

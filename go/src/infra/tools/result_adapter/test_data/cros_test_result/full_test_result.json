@@ -182,7 +182,28 @@
                 "contacts": ["user@google.com"],
                 "suite": "arc-cts-vm",
                 "channel": "DEV",
-                "requester": "ldap@google.com"
+                "requester": "ldap@google.com",
+                "avl_info": {
+                    "avl_part_model": "0x0000f5 MMC32G",
+                    "avl_part_firmware": "0xa200000000000000",
+                    "avl_component_type": "storage"
+                },
+                "gsc_info": {
+                    "gsc_buildurl": "latest-tot",
+                    "gsc_ccd_serial": "1482903f-4c2ac261",
+                    "gsc_devboardservice_version": "1.30",
+                    "gsc_hyperdebug_serial": "206636793452",
+                    "gsc_hyperdebug_version": "hyperdebug_20230517_01",
+                    "gsc_opentitantool_version": "123",
+                    "gsc_ro_version": "0.0.59",
+                    "gsc_rw_branch": "tot:v0.0",
+                    "gsc_rw_rev": "1495",
+                    "gsc_rw_sha": "-2fdf6034",
+                    "gsc_rw_version": "0.26.112",
+                    "gsc_tast_version": "R125-15837.0.0",
+                    "gsc_testbed_serial": "123882-0008",
+                    "gsc_testbed_type": "gsc_dt_shield"
+                }
             },
             "logs_info":[
                 {
