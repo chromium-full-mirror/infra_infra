@@ -6,13 +6,14 @@ package utils
 
 import (
 	"flag"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetUpdateMask(t *testing.T) {
-	Convey("test flags - happy path", t, func() {
+	ftt.Run("test flags - happy path", t, func(t *ftt.Test) {
 		f := &flag.FlagSet{}
 		var testTrue, testFalse bool
 		var testStrExist, testStrEmtpy string
@@ -29,10 +30,10 @@ func TestGetUpdateMask(t *testing.T) {
 			"test-str-empty": "mask-str-empty",
 		}
 		mask := GetUpdateMask(f, paths)
-		So(mask.Paths, ShouldResemble, []string{"mask-bool-true", "mask-str-exist"})
+		assert.Loosely(t, mask.Paths, should.Resemble([]string{"mask-bool-true", "mask-str-exist"}))
 	})
 
-	Convey("test flags - duplicated paths", t, func() {
+	ftt.Run("test flags - duplicated paths", t, func(t *ftt.Test) {
 		f := &flag.FlagSet{}
 		var testTrue, testTrue2 bool
 		var testStrExist, testStrEmtpy string
@@ -50,6 +51,6 @@ func TestGetUpdateMask(t *testing.T) {
 			"test-str-empty": "mask-str-empty",
 		}
 		mask := GetUpdateMask(f, paths)
-		So(mask.Paths, ShouldResemble, []string{"mask-bool", "mask-str-exist"})
+		assert.Loosely(t, mask.Paths, should.Resemble([]string{"mask-bool", "mask-str-exist"}))
 	})
 }

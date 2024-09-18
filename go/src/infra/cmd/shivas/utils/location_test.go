@@ -5,13 +5,14 @@
 package utils
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestIsLocation(t *testing.T) {
-	Convey("test standard chromeos location", t, func() {
+	ftt.Run("test standard chromeos location", t, func(t *ftt.Test) {
 		location := []string{
 			"chromeos1-row2-rack3-host4",
 			"chromeos1-row2-rack3-hostxxx",
@@ -25,12 +26,12 @@ func TestIsLocation(t *testing.T) {
 			"chromeos6-row2-rack23-labstation",
 		}
 		for _, l := range location {
-			So(IsLocation(l), ShouldBeTrue)
+			assert.Loosely(t, IsLocation(l), should.BeTrue)
 		}
 	})
 
-	Convey("test invalid chromeos location", t, func() {
+	ftt.Run("test invalid chromeos location", t, func(t *ftt.Test) {
 		location := "chromeos1-row2-rack3"
-		So(IsLocation(location), ShouldBeFalse)
+		assert.Loosely(t, IsLocation(location), should.BeFalse)
 	})
 }

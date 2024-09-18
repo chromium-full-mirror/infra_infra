@@ -7,33 +7,35 @@ package utils
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestVerifyByteUnit(t *testing.T) {
-	Convey("Test Valid Byte Unit String", t, func() {
+	ftt.Run("Test Valid Byte Unit String", t, func(t *ftt.Test) {
 		byteUnits := []string{
 			"B",
 			"KiB",
 		}
 		for _, bu := range byteUnits {
-			So(VerifyByteUnit(bu), ShouldBeNil)
+			assert.Loosely(t, VerifyByteUnit(bu), should.BeNil)
 		}
 	})
-	Convey("Test Invalid Byte Unit String", t, func() {
+	ftt.Run("Test Invalid Byte Unit String", t, func(t *ftt.Test) {
 		byteUnits := []string{
 			"",
 			"mb",
 			"chrome",
 		}
 		for _, bu := range byteUnits {
-			So(VerifyByteUnit(bu), ShouldNotBeNil)
+			assert.Loosely(t, VerifyByteUnit(bu), should.NotBeNil)
 		}
 	})
 }
 
 func TestTrimByteString(t *testing.T) {
-	Convey("Test Trimming", t, func() {
+	ftt.Run("Test Trimming", t, func(t *ftt.Test) {
 		byteStrings := map[string]string{
 			"   5,000 MB   ": "5000MB",
 			"6.000 GB   ":    "6000GB",
@@ -41,43 +43,43 @@ func TestTrimByteString(t *testing.T) {
 			"a\\&*c":         "a\\&*c",
 		}
 		for k, v := range byteStrings {
-			So(TrimByteString(k), ShouldEqual, v)
+			assert.Loosely(t, TrimByteString(k), should.Equal(v))
 		}
 	})
 }
 
 func TestConvertToBytes(t *testing.T) {
-	Convey("Test Byte String Conversion", t, func() {
-		Convey("Empty String", func() {
+	ftt.Run("Test Byte String Conversion", t, func(t *ftt.Test) {
+		t.Run("Empty String", func(t *ftt.Test) {
 			bytes, err := ConvertToBytes("0")
-			So(err, ShouldBeNil)
-			So(bytes, ShouldBeZeroValue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bytes, should.BeZero)
 		})
-		Convey("Valid String with Unit Suffix", func() {
+		t.Run("Valid String with Unit Suffix", func(t *ftt.Test) {
 			bytes, err := ConvertToBytes("500KB")
-			So(err, ShouldBeNil)
-			So(bytes, ShouldEqual, 500000)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bytes, should.Equal(500000))
 		})
-		Convey("Valid String No Unit Suffix", func() {
+		t.Run("Valid String No Unit Suffix", func(t *ftt.Test) {
 			bytes, err := ConvertToBytes("1000")
-			So(err, ShouldBeNil)
-			So(bytes, ShouldEqual, 1000)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bytes, should.Equal(1000))
 		})
-		Convey("Invalid Numeric", func() {
+		t.Run("Invalid Numeric", func(t *ftt.Test) {
 			bytes, err := ConvertToBytes("E39")
-			So(err, ShouldNotBeNil)
-			So(bytes, ShouldEqual, 0)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, bytes, should.BeZero)
 		})
-		Convey("Invalid Unit Suffix", func() {
+		t.Run("Invalid Unit Suffix", func(t *ftt.Test) {
 			bytes, err := ConvertToBytes("100Giraffe")
-			So(err, ShouldNotBeNil)
-			So(bytes, ShouldEqual, 0)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, bytes, should.BeZero)
 		})
 	})
 }
 
 func TestGetMultipleForByteUnit(t *testing.T) {
-	Convey("Test Fetching Multiple for Valid Byte Unit", t, func() {
+	ftt.Run("Test Fetching Multiple for Valid Byte Unit", t, func(t *ftt.Test) {
 		byteUnits := map[string]int64{
 			"B":   1,
 			"KiB": 1024,
@@ -85,11 +87,11 @@ func TestGetMultipleForByteUnit(t *testing.T) {
 		}
 		for k, v := range byteUnits {
 			multiple, err := GetMultipleForByteUnit(k)
-			So(err, ShouldBeNil)
-			So(multiple, ShouldEqual, v)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, multiple, should.Equal(v))
 		}
 	})
-	Convey("Test Fetching Multiple for Invalid Byte Unit", t, func() {
+	ftt.Run("Test Fetching Multiple for Invalid Byte Unit", t, func(t *ftt.Test) {
 		byteUnits := []string{
 			"",
 			"mb",
@@ -97,8 +99,8 @@ func TestGetMultipleForByteUnit(t *testing.T) {
 		}
 		for _, byteUnit := range byteUnits {
 			multiple, err := GetMultipleForByteUnit(byteUnit)
-			So(err, ShouldNotBeNil)
-			So(multiple, ShouldEqual, 0)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, multiple, should.BeZero)
 		}
 	})
 }
