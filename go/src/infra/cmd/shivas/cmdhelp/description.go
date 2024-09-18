@@ -2426,7 +2426,7 @@ Add adds the specified AMT manager to the DUT.
 Delete deletes the AMT manager from the DUT.
 
 Examples:
-shivas add peripheral-amt -dut {DUT name} -amt-hostname {amt hostname}
+shivas add peripheral-amt -dut {DUT name} -amt-hostname {amt hostname} -use-tls
 shivas delete peripheral-amt -dut {DUT name}
 `
 )

@@ -32,7 +32,7 @@ var (
 // amtManagerCmd creates a command for adding, removing or updating AMT details for a DUT.
 func amtManagerCmd(mode action) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: "peripheral-amt -dut {DUT name} -amt-hostname {amt hostname}",
+		UsageLine: "peripheral-amt -dut {DUT name} -amt-hostname {amt hostname} [-use-tls]",
 		ShortDesc: "Manage AMT details for a DUT",
 		LongDesc:  cmdhelp.ManagePeripheralAMTLongDesc,
 		CommandRun: func() subcommands.CommandRun {
@@ -43,6 +43,7 @@ func amtManagerCmd(mode action) *subcommands.Command {
 
 			c.Flags.StringVar(&c.dutName, "dut", "", "DUT name to update")
 			c.Flags.StringVar(&c.amtHostname, "amt-hostname", "", "AMT hostname.")
+			c.Flags.BoolVar(&c.useTLS, "use-tls", false, "Connect to AMT using TLS on port 16993.")
 			return &c
 		},
 	}
@@ -57,6 +58,7 @@ type manageAmtManagerCmd struct {
 
 	dutName     string
 	amtHostname string
+	useTLS      bool
 	amtObj      *lab.AMTManager
 
 	mode action
@@ -130,7 +132,8 @@ func (c *manageAmtManagerCmd) cleanAndValidateFlags() error {
 		if c.amtHostname == "" {
 			errStrs = append(errStrs, "'-amt-hostname' is required")
 		}
-		c.amtObj = &lab.AMTManager{Hostname: c.amtHostname}
+		c.amtObj = &lab.AMTManager{Hostname: c.amtHostname,
+			UseTls: c.useTLS}
 	case actionDelete:
 		c.amtObj = nil
 	default:
