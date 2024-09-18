@@ -1035,3 +1035,16 @@ message CallServodResponse {
   chromiumos.config.api.test.xmlrpc.Value value = 1;
   bool fault = 2;
 }
+
+// RepairRequest describes different repair-requests.
+enum RepairRequest {
+	REPAIR_REQUEST_UNKNOWN = 0;
+  // Request to re-provision DUT.
+  REPAIR_REQUEST_PROVISION = 1;
+  // Request to reimage DUT by USB-key.
+  REPAIR_REQUEST_REIMAGE_BY_USBKEY = 2;
+  // Request to re-download image to USB-key.
+  REPAIR_REQUEST_UPDATE_USBKEY_IMAGE = 3;
+  // Request to re-flash firmware of the DUT.
+  REPAIR_REQUEST_REFLASH_FW = 4;
+}

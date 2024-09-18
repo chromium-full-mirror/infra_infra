@@ -2703,7 +2703,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -3158,7 +3159,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -3693,6 +3695,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Set dev_boot_usb is enabled (Allow to fail) ('cros_update_crossystem') (RUN_ONCE)
           conditions:
             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -3823,7 +3826,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -4220,7 +4224,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -4714,7 +4719,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -5059,7 +5065,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: DUT has expected RW firmware version ('cros_is_on_rw_firmware_stable_version') (ALWAYS_RUN)
               recoveries:
                 - name: Fix FW on the DUT to match stable-version and wait to boot ('sample_pass')
@@ -5139,7 +5146,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Deployment checks ('sample_pass')
           conditions:
             - name: Not Satlab device ('sample_fail')
@@ -5374,7 +5382,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -5781,7 +5790,8 @@ plans:
                                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -6207,7 +6217,8 @@ plans:
                                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -6677,6 +6688,7 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
@@ -7117,7 +7129,8 @@ plans:
                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -7533,7 +7546,8 @@ plans:
                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -7933,7 +7947,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -8477,7 +8492,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9422,7 +9438,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9848,7 +9865,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -10391,7 +10409,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -10996,6 +11015,7 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
@@ -11321,7 +11341,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -11867,7 +11888,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -12613,6 +12635,7 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
@@ -12938,7 +12961,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -13484,7 +13508,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -14309,7 +14334,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -15349,7 +15375,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -16030,7 +16057,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -16688,7 +16716,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -17550,7 +17579,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -17963,7 +17993,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -18386,7 +18417,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -18813,7 +18845,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -19239,7 +19272,8 @@ plans:
                                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -19663,7 +19697,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -20085,7 +20120,8 @@ plans:
                                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -20506,7 +20542,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -20904,7 +20941,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -21320,7 +21358,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -21718,7 +21757,8 @@ plans:
                                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -22137,7 +22177,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -22539,7 +22580,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -22933,7 +22975,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -23331,7 +23374,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -23735,7 +23779,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -24229,7 +24274,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: RO Firmware version matches the recovery-version (Allow to fail) ('cros_is_on_ro_firmware_stable_version')
               conditions:
                 - name: Check stable firmware version exists ('has_stable_version_fw_version')
@@ -24369,7 +24415,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -24863,7 +24910,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Verify servo keyboard firmware (Allow to fail) ('cros_run_shell_command')
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -25041,7 +25089,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -25587,7 +25636,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -26581,7 +26631,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -26987,7 +27038,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -27570,7 +27622,8 @@ plans:
                                 - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                            - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28224,7 +28277,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28670,7 +28724,8 @@ plans:
                         - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -29179,7 +29234,8 @@ plans:
                             - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)

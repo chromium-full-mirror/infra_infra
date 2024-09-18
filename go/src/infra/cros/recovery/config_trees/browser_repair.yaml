@@ -1001,6 +1001,12 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) (ALWAYS_RUN)
               exec_name: sample_pass
               docs:

@@ -22,15 +22,15 @@ var resetRepairRequestsExecCases = []struct {
 	},
 	{
 		"unknow",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN},
 	},
 	{
 		"provision",
-		[]tlw.RepairRequest{tlw.RepairRequestProvision},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_PROVISION},
 	},
 	{
 		"multiple",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestProvision, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_PROVISION, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
 	},
 }
 
@@ -68,26 +68,26 @@ var removeRepairRequestsExecCases = []struct {
 	{
 		"empty",
 		"",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestProvision, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestProvision, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_PROVISION, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_PROVISION, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
 	},
 	{
 		"unknow",
 		"requests:unknow",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown},
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN},
 	},
 	{
 		"exist provision",
 		"requests:provision",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestProvision, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_PROVISION, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
 	},
 	{
 		"not exist provision",
 		"requests:provision",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown, tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestReimageByUSBKey},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY},
 	},
 }
 
@@ -139,29 +139,29 @@ var addRepairRequestsExecCases = []struct {
 	{
 		"unknow",
 		"requests:unknow",
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown},
-		[]tlw.RepairRequest{tlw.RepairRequestUnknown},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN},
 		true,
 	},
 	{
 		"exist provision",
 		"requests:provision,",
 		[]tlw.RepairRequest{},
-		[]tlw.RepairRequest{tlw.RepairRequestProvision},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_PROVISION},
 		false,
 	},
 	{
 		"add only valid request",
 		"requests:provision,bad,update_usbkey_image",
-		[]tlw.RepairRequest{tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestUpdateUSBKeyImage},
-		[]tlw.RepairRequest{tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestUpdateUSBKeyImage, tlw.RepairRequestProvision},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE, tlw.RepairRequest_REPAIR_REQUEST_PROVISION},
 		true,
 	},
 	{
 		"add only valid request",
 		"requests:provision,update_usbkey_image",
-		[]tlw.RepairRequest{tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestUpdateUSBKeyImage},
-		[]tlw.RepairRequest{tlw.RepairRequestReimageByUSBKey, tlw.RepairRequestUpdateUSBKeyImage, tlw.RepairRequestProvision},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE},
+		[]tlw.RepairRequest{tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY, tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE, tlw.RepairRequest_REPAIR_REQUEST_PROVISION},
 		false,
 	},
 }

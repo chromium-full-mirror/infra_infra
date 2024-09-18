@@ -378,14 +378,16 @@ func convertServoTopologyToUFS(st *tlw.ServoTopology) *ufslab.ServoTopology {
 }
 
 var ufsRepairRequstsToTlw = map[ufslab.DutState_RepairRequest]tlw.RepairRequest{
-	ufslab.DutState_REPAIR_REQUEST_PROVISION:           tlw.RepairRequestProvision,
-	ufslab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY:   tlw.RepairRequestReimageByUSBKey,
-	ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE: tlw.RepairRequestUpdateUSBKeyImage,
+	ufslab.DutState_REPAIR_REQUEST_PROVISION:           tlw.RepairRequest_REPAIR_REQUEST_PROVISION,
+	ufslab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY:   tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY,
+	ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE: tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE,
+	ufslab.DutState_REPAIR_REQUEST_REFLASH_FW:          tlw.RepairRequest_REPAIR_REQUEST_REFLASH_FW,
 }
 var tlwRepairRequestsToUFS = map[tlw.RepairRequest]ufslab.DutState_RepairRequest{
-	tlw.RepairRequestProvision:         ufslab.DutState_REPAIR_REQUEST_PROVISION,
-	tlw.RepairRequestReimageByUSBKey:   ufslab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY,
-	tlw.RepairRequestUpdateUSBKeyImage: ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE,
+	tlw.RepairRequest_REPAIR_REQUEST_PROVISION:           ufslab.DutState_REPAIR_REQUEST_PROVISION,
+	tlw.RepairRequest_REPAIR_REQUEST_REIMAGE_BY_USBKEY:   ufslab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY,
+	tlw.RepairRequest_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE: ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE,
+	tlw.RepairRequest_REPAIR_REQUEST_REFLASH_FW:          ufslab.DutState_REPAIR_REQUEST_REFLASH_FW,
 }
 
 func convertRepairRequestsFromUFS(s []ufslab.DutState_RepairRequest) []tlw.RepairRequest {

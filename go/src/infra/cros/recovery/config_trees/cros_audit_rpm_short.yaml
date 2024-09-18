@@ -2208,7 +2208,8 @@ plans:
                     - name: Recovery version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)

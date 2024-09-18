@@ -291,6 +291,28 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Place REIMAGE_BY_USBKEY repair-requests": {
+			Docs: []string{
+				"Place repair-request: reimage the DUT from USB.",
+				"The request will be applied when plan restarted and reached action to address it.",
+			},
+			ExecName: "dut_add_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REIMAGE_BY_USBKEY",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Place REFLASH_FW repair-requests": {
+			Docs: []string{
+				"Place repair-request: reflash firmware of the DUT.",
+				"The request will be applied when plan restarted and reached action to address it.",
+			},
+			ExecName: "dut_add_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REFLASH_FW",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Audit storage (SMART only)": {
 			Docs: []string{
 				"Quick audit internal storage by reading SMART data.",
@@ -469,6 +491,18 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
+		"Has repair-request for reflash-firmware by USB-key": {
+			Docs: []string{
+				"Check if REFLASH_FW repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REFLASH_FW",
+			},
+			RecoveryActions: []string{
+				"Update FW from fw-image by servo and wait for boot",
+			},
+		},
 		"Remove PROVISION repair-request": {
 			Docs: []string{
 				"Remove a PROVISION repair-request.",
@@ -498,6 +532,17 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "dut_remove_repair_requests",
 			ExecExtraArgs: []string{
 				"requests:UPDATE_USBKEY_IMAGE",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Remove REFLASH_FW repair-request": {
+			Docs: []string{
+				"Remove REFLASH_FW repair-requests.",
+			},
+			ExecName: "dut_remove_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REFLASH_FW",
 			},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -2764,6 +2809,7 @@ func crosRepairActions() map[string]*Action {
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
 				"Remove REIMAGE_BY_USBKEY repair-request",
+				"Remove REFLASH_FW repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -3482,7 +3528,8 @@ func crosRepairActions() map[string]*Action {
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) with GBB 0x18 by servo",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be pingable (normal boot)",
+				"Remove REFLASH_FW repair-request",
 			},
 			ExecName: "sample_pass",
 		},
@@ -4548,6 +4595,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
+				"Remove REFLASH_FW repair-request",
 			},
 			ExecName: "sample_pass",
 		},
@@ -4641,6 +4689,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash AP (FW) with GBB 0x18 by servo",
 				"Sleep 60 seconds",
 				"Install OS in DEV mode by USB-drive",
+				"Remove REFLASH_FW repair-request",
 			},
 			ExecName: "sample_pass",
 		},

@@ -25,7 +25,7 @@ func hasNoRepairRequestsExec(ctx context.Context, info *execs.ExecInfo) error {
 		return nil
 	}
 	for _, rr := range info.GetDut().RepairRequests {
-		if rr != tlw.RepairRequestUnknown {
+		if rr != tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN {
 			return errors.Reason("has no repair-requests: found %q repair-request", rr).Err()
 		}
 	}
@@ -47,15 +47,16 @@ func hasAnyRepairRequestsExec(ctx context.Context, info *execs.ExecInfo) error {
 		if r == "" {
 			continue
 		}
-		er := tlw.RepairRequest(strings.ToUpper(r))
-		if er == tlw.RepairRequestUnknown {
+		er := tlw.RepairRequest_value["REPAIR_REQUEST_"+strings.ToUpper(r)]
+		rr := tlw.RepairRequest(er)
+		if rr == tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN {
 			continue
 		}
-		requestMap[er] = true
+		requestMap[rr] = true
 	}
 	for _, rr := range info.GetDut().RepairRequests {
 		if _, ok := requestMap[rr]; ok {
-			return errors.Reason("has any repair-requests: found %v", rr).Err()
+			return errors.Reason("has any repair-requests: found %v", rr.String()).Err()
 		}
 	}
 	return nil
@@ -77,11 +78,12 @@ func removeRepairRequestsExec(ctx context.Context, info *execs.ExecInfo) error {
 		if r == "" {
 			continue
 		}
-		er := tlw.RepairRequest(strings.ToUpper(r))
-		if er == tlw.RepairRequestUnknown {
+		er := tlw.RepairRequest_value["REPAIR_REQUEST_"+strings.ToUpper(r)]
+		rr := tlw.RepairRequest(er)
+		if rr == tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN {
 			continue
 		}
-		requestMap[er] = true
+		requestMap[rr] = true
 	}
 	var newRepairRequests []tlw.RepairRequest
 	for _, rr := range info.GetDut().RepairRequests {
@@ -125,17 +127,17 @@ func addRepairRequestsExec(ctx context.Context, info *execs.ExecInfo) error {
 			// Skip empty values.
 			continue
 		}
-		er := tlw.RepairRequest(e)
+		er := tlw.RepairRequest(tlw.RepairRequest_value["REPAIR_REQUEST_"+e])
 		switch er {
-		case tlw.RepairRequestProvision, tlw.RepairRequestUpdateUSBKeyImage, tlw.RepairRequestReimageByUSBKey:
+		case tlw.RepairRequest_REPAIR_REQUEST_UNKNOWN:
+			return errors.Reason("add repair-requests: unsupported request %q", er).Err()
+		default:
 			if _, ok := requestMap[er]; ok {
 				log.Debugf(ctx, "The repair-request %q already present", er)
 			} else {
 				info.GetDut().RepairRequests = append(info.GetDut().RepairRequests, er)
 				requestMap[er] = true
 			}
-		default:
-			return errors.Reason("add repair-requests: unsupported request %q", er).Err()
 		}
 	}
 	return nil

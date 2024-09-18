@@ -7968,11 +7968,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -9526,11 +9532,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -11233,6 +11245,12 @@ plans:
                         - requests:PROVISION,REIMAGE_BY_USBKEY
                       docs:
                         - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
         - name: Set dev_boot_usb is enabled (Allow to fail) (RUN_ONCE)
           exec_name: cros_update_crossystem
           exec_args:
@@ -11657,11 +11675,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -13000,11 +13024,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -14678,11 +14708,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -15854,11 +15890,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
             - name: DUT has expected RW firmware version (ALWAYS_RUN)
               exec_name: cros_is_on_rw_firmware_stable_version
               exec_args:
@@ -16118,11 +16160,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
         - name: Deployment checks
           exec_name: sample_pass
           docs:
@@ -16869,11 +16917,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -18238,11 +18292,17 @@ plans:
                                           exec_name: has_stable_version_service_path
                                           docs:
                                             - Verify if we have access to the service provided access to the stable version
-                                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                                  exec_name: cros_ssh
+                                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                                  exec_name: cros_ping
                                   docs:
-                                    - Try to wait device to be sshable after the device being rebooted.
+                                    - Wait DUT to be pingable after some action on it.
                                     - Waiting time 150 seconds.
+                                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                                  exec_name: dut_remove_repair_requests
+                                  exec_args:
+                                    - requests:REFLASH_FW
+                                  docs:
+                                    - Remove REFLASH_FW repair-requests.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -19659,11 +19719,17 @@ plans:
                                           exec_name: has_stable_version_service_path
                                           docs:
                                             - Verify if we have access to the service provided access to the stable version
-                                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                                  exec_name: cros_ssh
+                                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                                  exec_name: cros_ping
                                   docs:
-                                    - Try to wait device to be sshable after the device being rebooted.
+                                    - Wait DUT to be pingable after some action on it.
                                     - Waiting time 150 seconds.
+                                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                                  exec_name: dut_remove_repair_requests
+                                  exec_args:
+                                    - requests:REFLASH_FW
+                                  docs:
+                                    - Remove REFLASH_FW repair-requests.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -21250,6 +21316,12 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -22656,11 +22728,17 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
               exec_name: cros_install_in_recovery_mode
               exec_args:
@@ -24066,11 +24144,17 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
               exec_name: cros_install_in_recovery_mode
               exec_args:
@@ -25418,11 +25502,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -27245,11 +27335,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -30450,11 +30546,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -31878,11 +31980,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -33691,11 +33799,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -35743,6 +35857,12 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -36815,11 +36935,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -38648,11 +38774,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -41174,6 +41306,12 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
             - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -42246,11 +42384,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -44079,11 +44223,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -46835,11 +46985,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -50338,11 +50494,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -52636,11 +52798,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -54847,11 +55015,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -57740,11 +57914,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -59120,11 +59300,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -60530,11 +60716,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -61953,11 +62145,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -63374,11 +63572,17 @@ plans:
                                           exec_name: has_stable_version_service_path
                                           docs:
                                             - Verify if we have access to the service provided access to the stable version
-                                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                                  exec_name: cros_ssh
+                                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                                  exec_name: cros_ping
                                   docs:
-                                    - Try to wait device to be sshable after the device being rebooted.
+                                    - Wait DUT to be pingable after some action on it.
                                     - Waiting time 150 seconds.
+                                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                                  exec_name: dut_remove_repair_requests
+                                  exec_args:
+                                    - requests:REFLASH_FW
+                                  docs:
+                                    - Remove REFLASH_FW repair-requests.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -64784,11 +64988,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -66190,11 +66400,17 @@ plans:
                                           exec_name: has_stable_version_service_path
                                           docs:
                                             - Verify if we have access to the service provided access to the stable version
-                                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                                  exec_name: cros_ssh
+                                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                                  exec_name: cros_ping
                                   docs:
-                                    - Try to wait device to be sshable after the device being rebooted.
+                                    - Wait DUT to be pingable after some action on it.
                                     - Waiting time 150 seconds.
+                                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                                  exec_name: dut_remove_repair_requests
+                                  exec_args:
+                                    - requests:REFLASH_FW
+                                  docs:
+                                    - Remove REFLASH_FW repair-requests.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -67596,11 +67812,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -68939,11 +69161,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -70332,11 +70560,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -71675,11 +71909,17 @@ plans:
                                           exec_name: has_stable_version_service_path
                                           docs:
                                             - Verify if we have access to the service provided access to the stable version
-                                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                                  exec_name: cros_ssh
+                                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                                  exec_name: cros_ping
                                   docs:
-                                    - Try to wait device to be sshable after the device being rebooted.
+                                    - Wait DUT to be pingable after some action on it.
                                     - Waiting time 150 seconds.
+                                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                                  exec_name: dut_remove_repair_requests
+                                  exec_args:
+                                    - requests:REFLASH_FW
+                                  docs:
+                                    - Remove REFLASH_FW repair-requests.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -73075,11 +73315,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -74439,11 +74685,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -75775,11 +76027,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -77121,11 +77379,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -78491,11 +78755,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -80158,11 +80428,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
             - name: RO Firmware version matches the recovery-version (Allow to fail)
               exec_name: cros_is_on_ro_firmware_stable_version
               exec_args:
@@ -80626,11 +80902,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -82293,11 +82575,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
             - name: Verify servo keyboard firmware (Allow to fail)
               exec_name: cros_run_shell_command
               exec_args:
@@ -82874,11 +83162,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -84707,11 +85001,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -88069,11 +88369,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -89435,11 +89741,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -91420,11 +91732,17 @@ plans:
                                       exec_name: has_stable_version_service_path
                                       docs:
                                         - Verify if we have access to the service provided access to the stable version
-                            - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                              exec_name: cros_ssh
+                            - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                              exec_name: cros_ping
                               docs:
-                                - Try to wait device to be sshable after the device being rebooted.
+                                - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                            - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                              exec_name: dut_remove_repair_requests
+                              exec_args:
+                                - requests:REFLASH_FW
+                              docs:
+                                - Remove REFLASH_FW repair-requests.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -93662,11 +93980,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -95191,11 +95515,17 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                    - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:REFLASH_FW
+                      docs:
+                        - Remove REFLASH_FW repair-requests.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -96933,11 +97263,17 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ping
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+                        - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:REFLASH_FW
+                          docs:
+                            - Remove REFLASH_FW repair-requests.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
