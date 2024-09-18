@@ -42,7 +42,7 @@ class TestRedirectUtils(unittest.TestCase):
         ])
     expected = (
         'component=1590116&title=this+is+a+summary&description=task&'
-        'cc=c1%40google.com%2Cc2%40google.com&assignee=test')
+        'cc=c1%40google.com%2Cc2%40google.com&assignee=test&noWizard=True')
 
     get = redirect_utils.GetNewIssueParams(params, 'boringssl')
     self.assertEqual(expected, get)
@@ -139,6 +139,14 @@ class TestRedirectUtils(unittest.TestCase):
     params = werkzeug.datastructures.MultiDict([('test', 'this is a test')])
     expected = ''
     get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueParamsWithNoWizard(self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = None, None
+    params = werkzeug.datastructures.MultiDict([('test', 'this is a test')])
+    expected = 'component=1570784&noWizard=True'
+    get = redirect_utils.GetNewIssueParams(params, 'dawn')
     self.assertEqual(expected, get)
 
   @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")

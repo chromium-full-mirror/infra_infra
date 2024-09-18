@@ -148,7 +148,8 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
           'new', project_name, label)
       if field_label and field_value:
         new_issue_params.append((field_label, field_value))
-
+  if project_name in PROJECT_COMPONENT_ID_MAP.keys():
+    new_issue_params.append(('noWizard', True))
   # TODO(b/283983843): redirect when custom field settled. (components)
   return urllib.parse.urlencode(new_issue_params)
 
