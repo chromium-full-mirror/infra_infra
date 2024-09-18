@@ -43,7 +43,7 @@ var Jobs = []*cron.CronTab{
 	{
 		// Dump snapshots to BQ
 		Name:     "ufs.snapshot_msg.BqDump",
-		Time:     10 * time.Minute,
+		Time:     200 * 365 * 24 * time.Hour, // Temp stop this job. Stop the leaks
 		TrigType: cron.EVERY,
 		Job:      dumpChangeSnapshots,
 	},
