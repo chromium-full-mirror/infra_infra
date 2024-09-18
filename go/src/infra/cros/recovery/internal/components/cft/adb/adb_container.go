@@ -26,7 +26,7 @@ type ADBResponse interface {
 }
 
 // ExecCommand execs a raw command by ADB.
-func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, command string, args ...string) (response ADBResponse, rErr error) {
+func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, command string, args ...string) (ADBResponse, error) {
 	if command == "" {
 		return nil, errors.Reason("exec adb command: command is empty").Err()
 	}
@@ -34,7 +34,7 @@ func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout ti
 	if len(args) > 0 {
 		fullCmd += " " + strings.Join(args, " ")
 	}
-	log.Infof(ctx, "Prepare to run adb command %q ...", fullCmd)
+	log.Infof(ctx, "Prepare to run adb command: %q", fullCmd)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	res, err := adbClient.ExecCommand(ctx, &api.ADBCommandRequest{
@@ -42,8 +42,8 @@ func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout ti
 		Args:    args,
 	})
 	if res != nil {
-		log.Infof(ctx, "STDOUT: %s", response.GetStdout())
-		log.Infof(ctx, "STDERR: %s", response.GetStderr())
+		log.Infof(ctx, "STDOUT: %s", res.GetStdout())
+		log.Infof(ctx, "STDERR: %s", res.GetStderr())
 	}
 	return res, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
 }
