@@ -337,15 +337,15 @@ func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (
 	// It's viable to default to non-infra unless a known-infra error is seen, or vice versa,
 	// so use whichever strikes a better balance of low false positives and maintenance costs.
 	var infra bool
-	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	step, ctx, startStepErr := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
 			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
-	if err != nil {
-		return err
+	if startStepErr != nil {
+		return startStepErr
 	}
 	var stdout bytes.Buffer
 	cmd.Stdout = io.MultiWriter(step.Log("stdout"), &stdout)
