@@ -539,7 +539,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 
 	// Input validations
 	if len(testCases) == 0 {
-		errStr := "no test is found so, rejecting task"
+		errStr := "no test found for retry, no retry will be attempted"
 		logging.Infof(ctx, errStr)
 		err = fmt.Errorf(errStr)
 		return nil, err

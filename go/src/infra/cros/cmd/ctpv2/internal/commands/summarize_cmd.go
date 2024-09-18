@@ -406,7 +406,7 @@ func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse
 		return nil
 	}
 	r := &steps.ExecuteResponse_TaskResult{
-		Name: testResult.Name,
+		Name: common.GetTautoTestCaseNameOrDefault(testResult.Results.GetAutotestResult().GetTestCases(), testResult.Name),
 		State: &test_platform.TaskState{
 			LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, // at this point the task must be in completed state
 			Verdict:   common.GetTaskStateVerdict(testResult.Results),

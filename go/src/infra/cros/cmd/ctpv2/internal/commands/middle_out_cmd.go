@@ -47,6 +47,10 @@ type MiddleOutRequestCmd struct {
 	BuildState *build.State
 }
 
+const (
+	TautoTastPrefix = "tauto.tast"
+)
+
 // ExtractDependencies (Boiler plate)
 func (cmd *MiddleOutRequestCmd) ExtractDependencies(
 	ctx context.Context,
@@ -671,6 +675,9 @@ func shard(alltests []string, maxInShard int) (shards [][]string) {
 
 // extracts the harness out of the test name.
 func getHarness(t string) string {
+	if strings.HasPrefix(t, TautoTastPrefix) {
+		return TautoTastPrefix
+	}
 	v := strings.Split(t, ".")
 	// if there is less than 2 parts to the name, then its not a known test format.
 	// so just return "unknown"
@@ -963,6 +970,12 @@ func flattenList(ctx context.Context, allHw []*api.SchedulingUnitOptions) map[ui
 	return flatHW
 }
 
+// requiresNewShard defines logic based on harness when we would require isolated shards
+func requiresNewShard(currentPodHarness, currentTestHarness string) bool {
+	// if tautoTast harness or harnesses doesn't match, force isolated shard
+	return currentTestHarness == TautoTastPrefix || currentPodHarness != currentTestHarness
+}
+
 // getDevices finds a device from the devicepool + hwEquivalenceMap to satsify the need for the test
 // It will first look for a matching device with a non-full shard that fits,
 // otherwise it will look for a device with the most availability in the lab.
@@ -980,7 +993,8 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 			continue
 		}
 
-		if solverData.flatHWUUIDMap[device].shardHarness != harness {
+		// if requires new shard, force it
+		if requiresNewShard(solverData.flatHWUUIDMap[device].shardHarness, harness) {
 			continue
 		}
 

@@ -228,6 +228,15 @@ func TestCasesToTestCaseResult(tcs []*skylab_test_runner.Result_Autotest_TestCas
 	return ret
 }
 
+func GetTautoTestCaseNameOrDefault(tcs []*skylab_test_runner.Result_Autotest_TestCase, defaultName string) string {
+	for _, tc := range tcs {
+		if strings.HasPrefix(tc.GetName(), "tauto.tast") {
+			return tc.GetName()
+		}
+	}
+	return defaultName
+}
+
 var liftPreJobVerdict = map[skylab_test_runner.Result_Prejob_Step_Verdict]test_platform.TaskState_Verdict{
 	skylab_test_runner.Result_Prejob_Step_VERDICT_PASS:      test_platform.TaskState_VERDICT_PASSED,
 	skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL:      test_platform.TaskState_VERDICT_FAILED,
