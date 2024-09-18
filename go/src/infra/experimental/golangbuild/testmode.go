@@ -613,6 +613,14 @@ func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) boo
 			// Dependency "github.com/chzyer/readline" fails to build.
 			return optOut
 		}
+	case "example":
+		if strings.HasPrefix(modulePath, "golang.org/x/example/ragserver/") {
+			switch p.Goarch {
+			case "386", "arm", "mips", "mipsle", "wasm":
+				// Dependency "github.com/weaviate/weaviate" fails to build on 32-bit ports.
+				return optOut
+			}
+		}
 	case "exp":
 		switch modulePath {
 		case "golang.org/x/exp/event":
