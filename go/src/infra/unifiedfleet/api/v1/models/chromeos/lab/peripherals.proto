@@ -243,4 +243,6 @@ message AudioLatencyToolkit {
 message AMTManager {
   // Hostname for the AMT management port.
   string hostname = 1;
+  // Connect to AMT on port 16993 with TLS enabled.
+  bool use_tls = 3;
 }
