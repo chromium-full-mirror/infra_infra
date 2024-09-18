@@ -89,6 +89,8 @@ message DutState {
     REPAIR_REQUEST_REIMAGE_BY_USBKEY = 2;
     // Request to re-download image to USB-key.
     REPAIR_REQUEST_UPDATE_USBKEY_IMAGE = 3;
+    // Request to re-flash firmware of the DUT.
+    REPAIR_REQUEST_REFLASH_FW = 4;
   }
   // List of repair-requestes specified by external services for AutoRepair.
   repeated RepairRequest repair_requests = 19;
