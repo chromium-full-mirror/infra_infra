@@ -822,6 +822,9 @@ message AMTManager {
   }
 
   State state = 2;
+
+  // Connect to AMT on port 16993 with TLS enabled.
+  bool use_tls = 3;
 }
 
 // Camera holds info about camera of the DUT
