@@ -98,7 +98,7 @@ var Jobs = []*cron.CronTab{
 	{
 		// Sync ENC bot and security configs
 		Name:     "ufs.sync_bot_config.sync",
-		Time:     10 * time.Minute,
+		Time:     200 * 365 * 24 * time.Hour,
 		TrigType: cron.EVERY,
 		Job:      getBotConfigs,
 	},
