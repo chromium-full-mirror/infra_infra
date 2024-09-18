@@ -1689,6 +1689,28 @@ SPECS.update({
             },
         ),
         Prebuilt(
+            'pillow',
+            '10.4.0',
+            [
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux_2_17_aarch64'],
+                'linux-arm64-py3.11': ['manylinux_2_17_aarch64']
+            },
+        ),
+        Prebuilt(
             'pywin32',
             '300',
             ['windows-x86-py3.8', 'windows-x64-py3.8'],
