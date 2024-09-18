@@ -98,8 +98,8 @@ func updateProvisionInstallPath(req *api.InternalTestplan, log *log.Logger) {
 		log.Println("Setting build target and latest green build number")
 		boardTarget := board + "-trunk_staging-userdebug"
 		installPath := fmt.Sprintf(
-			"android-build/build_explorer/artifacts_list/%s/%s/brya-ota-%s.zip",
-			strconv.Itoa(latestGreenBuild), boardTarget, strconv.Itoa(latestGreenBuild))
+			"android-build/build_explorer/artifacts_list/%s/%s/%s-ota-%s.zip",
+			strconv.Itoa(latestGreenBuild), boardTarget, strconv.Itoa(latestGreenBuild), board)
 		log.Printf("InstallPath value: %s", installPath)
 		req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"] = installPath
 	}
