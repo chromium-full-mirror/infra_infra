@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cft/adb"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -83,6 +84,7 @@ type hostAccess struct {
 	host   string
 	user   string
 	access tlw.Access
+	dut    *tlw.Dut
 }
 
 // DefaultHostAccess returns HostAccess for current resource name specified per plan.
@@ -98,6 +100,7 @@ func (ei *ExecInfo) NewHostAccess(host string) *hostAccess {
 	return &hostAccess{
 		host:   host,
 		access: ei.GetAccess(),
+		dut:    ei.GetDut(),
 	}
 }
 
@@ -133,21 +136,55 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	} else {
 		log.Debugf(ctx, "Prepare to run command: %q", fullCmd)
 	}
-	res := b.access.Run(ctx, &tlw.RunRequest{
-		Resource:     b.host,
-		Timeout:      durationpb.New(timeout),
-		Command:      command,
-		Args:         args,
-		InBackground: inBackground,
-	})
-	log.Debugf(ctx, "Run %q completed with exit code %d", res.Command, res.ExitCode)
+	// TODO(otabek): apply code logic from SSH run.
+	adbRun := func() (components.SSHRunResponse, *errors.Annotator) {
+		client, err := adb.FromScope(ctx, b.dut)
+		if err != nil {
+			return &adbResponse{
+				err:  err.Error(),
+				code: -1,
+			}, errors.Annotate(err, "runner")
+		}
+		params := []string{command}
+		if len(args) > 0 {
+			params = append(params, args...)
+		}
+		// Response doe snot contains exit code.
+		res, err := adb.ShellCommand(ctx, client, timeout, params...)
+		if err != nil {
+			return &adbResponse{
+				err:  err.Error(),
+				code: 1,
+			}, errors.Annotate(err, "runner")
+		}
+		return &adbResponse{
+			out:  string(res.GetStdout()),
+			err:  string(res.GetStderr()),
+			code: 0,
+		}, nil
+	}
+	var errAnnotator *errors.Annotator
+	var res components.SSHRunResponse
+	if b.host == b.dut.Name && b.dut.Chromeos.GetIsAndroidBased() {
+		res, errAnnotator = adbRun()
+	} else {
+		res = b.access.Run(ctx, &tlw.RunRequest{
+			Resource:     b.host,
+			Timeout:      durationpb.New(timeout),
+			Command:      command,
+			Args:         args,
+			InBackground: inBackground,
+		})
+	}
+	log.Debugf(ctx, "Run %q completed with exit code %d", fullCmd, res.GetExitCode())
 	log.Debugf(ctx, "Run output:\n%s", strings.TrimSpace(res.GetStdout()))
 	if res.GetExitCode() == 0 {
 		// Success execution.
 		return res, nil
 	}
-	// Something wrong, so we need create error.
-	errAnnotator := errors.Reason("runner: command %q completed with exit code %d", fullCmd, res.GetExitCode())
+	if errAnnotator == nil {
+		errAnnotator = errors.Reason("runner: command %q completed with exit code %d", fullCmd, res.GetExitCode())
+	}
 	// Note: here the exitCode is stored in the field named
 	// 'Value' of the TagValue structure. This field is an
 	// empty interface. Since we are storing an exitCode of
@@ -180,6 +217,27 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 		errAnnotator.Tag(GeneralError)
 	}
 	return res, errAnnotator.Err()
+}
+
+// adbResponse implements components.SSHRunResponse interface
+type adbResponse struct {
+	code     int32
+	out, err string
+}
+
+// Provides exit code.
+func (r *adbResponse) GetExitCode() int32 {
+	return r.code
+}
+
+// Provides standard output.
+func (r *adbResponse) GetStdout() string {
+	return r.out
+}
+
+// Provides standard error output.
+func (r *adbResponse) GetStderr() string {
+	return r.err
 }
 
 // Ping the host.

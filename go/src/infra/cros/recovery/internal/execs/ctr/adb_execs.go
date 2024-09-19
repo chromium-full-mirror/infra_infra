@@ -61,7 +61,12 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	log.Infof(ctx, "Container %q started!", req.Name)
-	return nil
+	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	if err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
+	err = adb.ToScope(ctx, dut, adbClient)
+	return errors.Annotate(err, "start adb container").Err()
 }
 
 func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -83,111 +88,76 @@ func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // adbCommandExec execs custom command with arguments.
 func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
-	ctrInfo, ok := ctr.Get(ctx)
-	if !ok {
-		return errors.Reason("adb connect: ctr is not started").Err()
-	}
-	dut := info.GetDut()
-	if dut == nil {
-		return errors.Reason("adb connect: dut is not provided").Err()
-	}
-	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	client, err := adb.FromScope(ctx, info.GetDut())
 	if err != nil {
-		return errors.Annotate(err, "adb connect").Err()
+		return errors.Annotate(err, "adb command").Err()
 	}
 	// Minus 5 seconds as we expect 5 seconds to get container info.
 	timeout := info.GetExecTimeout() - (5 * time.Second)
 	argsMap := info.GetActionArgs(ctx)
 	command := argsMap.AsString(ctx, "command", "")
 	commandArgs := argsMap.AsStringSlice(ctx, "args", []string{})
-	_, err = adb.ExecCommand(ctx, adbClient, timeout, command, commandArgs...)
+	_, err = adb.ExecCommand(ctx, client, timeout, command, commandArgs...)
 	return errors.Annotate(err, "adb command").Err()
 }
 
 func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
-	ctrInfo, ok := ctr.Get(ctx)
-	if !ok {
-		return errors.Reason("adb connect: ctr is not started").Err()
-	}
 	dut := info.GetDut()
 	if dut == nil {
 		return errors.Reason("adb connect: dut is not provided").Err()
 	}
-	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	client, err := adb.FromScope(ctx, dut)
 	if err != nil {
 		return errors.Annotate(err, "adb connect").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
 	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "devices"); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
 		log.Debugf(ctx, "adb devices error: %s", err)
 	}
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "kill-server"); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
 		log.Debugf(ctx, "adb devices error: %s", err)
 	}
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "start-server"); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
 		log.Debugf(ctx, "adb devices error: %s", err)
 	}
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "connect", dut.Name); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "connect", dut.Name); err != nil {
 		return errors.Annotate(err, "adb connect").Err()
 	}
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "root"); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
 		return errors.Annotate(err, "adb connect").Err()
 	}
-	if _, err := adb.ExecCommand(ctx, adbClient, timeout, "devices"); err != nil {
+	if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
 		log.Debugf(ctx, "adb devices error: %s", err)
 	}
 	return nil
 }
 
 func readAndroidVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	ctrInfo, ok := ctr.Get(ctx)
-	if !ok {
-		return errors.Reason("adb connect: ctr is not started").Err()
-	}
-	dut := info.GetDut()
-	if dut == nil {
-		return errors.Reason("adb connect: dut is not provided").Err()
-	}
-	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
-	if err != nil {
-		return errors.Annotate(err, "adb connect").Err()
-	}
-	// Minus 5 seconds as we expect 5 seconds to get container info.
-	// Device to 2 calls.
-	timeout := (info.GetExecTimeout() - (5 * time.Second)) / 2
-	if res, err := adb.ShellCommand(ctx, adbClient, timeout, "getprop", "ro.build.version.release"); err != nil {
-		return errors.Annotate(err, "adb command").Err()
+	run := info.NewRunner(info.GetDut().Name)
+	argsMap := info.GetActionArgs(ctx)
+	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
+	if out, err := run(ctx, timeout, "getprop", "ro.build.version.release"); err != nil {
+		return errors.Annotate(err, "read android version").Err()
 	} else {
-		log.Infof(ctx, "ro.build.version.release: %s", res.GetStdout())
+		log.Infof(ctx, "ro.build.version.release: %s", out)
 	}
-	if res, err := adb.ShellCommand(ctx, adbClient, timeout, "getprop", "ro.build.version.sdk"); err != nil {
-		return errors.Annotate(err, "adb command").Err()
+	if out, err := run(ctx, timeout, "getprop", "ro.build.version.sdk"); err != nil {
+		return errors.Annotate(err, "read android version").Err()
 	} else {
-		log.Infof(ctx, "ro.build.version.release: %s", res.GetStdout())
+		log.Infof(ctx, "ro.build.version.release: %s", out)
 	}
 	return nil
 }
 
 // makeAwakeAlwaysExec sets flag to keep android awake always.
 func makeAwakeAlwaysExec(ctx context.Context, info *execs.ExecInfo) error {
-	ctrInfo, ok := ctr.Get(ctx)
-	if !ok {
-		return errors.Reason("adb connect: ctr is not started").Err()
-	}
-	dut := info.GetDut()
-	if dut == nil {
-		return errors.Reason("adb connect: dut is not provided").Err()
-	}
-	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
-	if err != nil {
-		return errors.Annotate(err, "adb connect").Err()
-	}
-	// Minus 5 seconds as we expect 5 seconds to get container info.
-	timeout := info.GetExecTimeout() - (5 * time.Second)
-	_, err = adb.ShellCommand(ctx, adbClient, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "3")
-	return errors.Annotate(err, "adb command").Err()
+	argsMap := info.GetActionArgs(ctx)
+	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
+	run := info.NewRunner(info.GetDut().Name)
+	_, err := run(ctx, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "3")
+	return errors.Annotate(err, "make awake always").Err()
 }
 
 func init() {
