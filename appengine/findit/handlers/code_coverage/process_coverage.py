@@ -853,7 +853,8 @@ class ProcessCodeCoverageData(BaseHandler):
             'labels': {
                 'Code-Coverage': -1
             },
-            'message': "\n".join([msg_header, msg_body, "", msg_footer])
+            'message': "\n".join([msg_header, msg_body, "", msg_footer]),
+            'notify': 'OWNER'
         }
         logging.info(('Adding CodeCoverage-1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
@@ -867,7 +868,8 @@ class ProcessCodeCoverageData(BaseHandler):
             'labels': {
                 'Code-Coverage': +1
             },
-            'message': 'This change meets the code coverage requirements.'
+            'message': 'This change meets the code coverage requirements.',
+            'notify': 'OWNER'
         }
         logging.info(('Adding CodeCoverage+1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
