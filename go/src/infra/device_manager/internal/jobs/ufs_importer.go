@@ -266,7 +266,11 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		return
 	}
 	deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
-
+	err = deviceModel.SetDutIDFromLabels(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to set DUT ID using schedulable labels for Device %s: %s", deviceModel.ID, err)
+		return
+	}
 	dbDevice, err := model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
 
 	// System error in looking up device
@@ -345,6 +349,10 @@ func areLabelsOrActiveStateDifferent(ctx context.Context, d1, d2 model.Device) b
 	}
 	if d1.IsActive != d2.IsActive {
 		logging.Debugf(ctx, "%s IsActive is different", d1.ID)
+		return true
+	}
+	if d1.DutID != d2.DutID {
+		logging.Debugf(ctx, "%s DUT ID is different", d1.ID)
 		return true
 	}
 	return false

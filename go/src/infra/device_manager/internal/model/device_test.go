@@ -935,6 +935,7 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 				INSERT INTO "Devices" AS d
 					(
 						id,
+						dut_id,
 						device_address,
 						device_type,
 						device_state,
@@ -942,18 +943,20 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 						last_updated_time,
 						is_active
 					)
-				VALUES ($1, $2, $3, $4, $5, NOW(), $6)
+				VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7)
 				ON CONFLICT(id)
 				DO UPDATE SET
+					dut_id=COALESCE(EXCLUDED.dut_id, d.dut_id),
 					schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
 					last_updated_time=NOW(),
 					is_active=COALESCE(EXCLUDED.is_active, d.is_active);`)).
 				WithArgs(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`,
 					false).
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -963,6 +966,9 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"test-dut-id"},
+					},
 					"label-test": LabelValues{
 						Values: []string{"test-value-1"},
 					},
@@ -991,5 +997,55 @@ func TestDUTID(t *testing.T) {
 		dutID, err := d.DUTID()
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, dutID, should.Match("bar"))
+	})
+}
+
+func TestSetDutIDFromLabels(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	ftt.Run("SetDutIDFromLabels should set the dut_id label", t, func(t *ftt.Test) {
+		t.Run("SetDutIDFromLabels: valid dut_id", func(t *ftt.Test) {
+			d := Device{
+				ID: "foo",
+				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"bar"},
+					},
+					"hostname": LabelValues{
+						Values: []string{"baz", "lol"},
+					},
+				},
+			}
+			err := d.SetDutIDFromLabels(ctx)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, d.DutID, should.Match("bar"))
+		})
+		t.Run("SetDutIDFromLabels: invalid dut_id; no labels", func(t *ftt.Test) {
+			d := Device{
+				ID: "foo",
+				SchedulableLabels: SchedulableLabels{
+					"hostname": LabelValues{
+						Values: []string{"baz", "lol"},
+					},
+				},
+			}
+			err := d.SetDutIDFromLabels(ctx)
+			assert.Loosely(t, err, should.ErrLike("failed to get dut_id from Device foo"))
+			assert.Loosely(t, d.DutID, should.Match(""))
+		})
+		t.Run("SetDutIDFromLabels: invalid dut_id; too many labels", func(t *ftt.Test) {
+			d := Device{
+				ID: "foo",
+				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"baz", "lol"},
+					},
+				},
+			}
+			err := d.SetDutIDFromLabels(ctx)
+			assert.Loosely(t, err, should.ErrLike("multiple values for DUT ID found for Device foo"))
+			assert.Loosely(t, d.DutID, should.Match(""))
+		})
 	})
 }

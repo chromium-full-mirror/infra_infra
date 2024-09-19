@@ -30,6 +30,7 @@ var (
 // Device contains a single row from the Devices table in the database.
 type Device struct {
 	ID                string
+	DutID             string
 	DeviceAddress     string
 	DeviceType        string
 	DeviceState       string
@@ -494,10 +495,17 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 // information except for device_address, device_type, and device_state. Those
 // three will not be updated on conflict but should be inserted for new Devices.
 func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
+	err := device.SetDutIDFromLabels(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "UpsertDeviceFromUFS: failed to set DUT ID for Device %s: %s", device.ID, err)
+		return err
+	}
+
 	result, err := db.ExecContext(ctx, `
 		INSERT INTO "Devices" AS d
 			(
 				id,
+				dut_id,
 				device_address,
 				device_type,
 				device_state,
@@ -505,13 +513,15 @@ func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
 				last_updated_time,
 				is_active
 			)
-		VALUES ($1, $2, $3, $4, $5, NOW(), $6)
+		VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7)
 		ON CONFLICT(id)
 		DO UPDATE SET
+			dut_id=COALESCE(EXCLUDED.dut_id, d.dut_id),
 			schedulable_labels=COALESCE(EXCLUDED.schedulable_labels, d.schedulable_labels),
 			last_updated_time=NOW(),
 			is_active=COALESCE(EXCLUDED.is_active, d.is_active);`,
 		device.ID,
+		device.DutID,
 		device.DeviceAddress,
 		device.DeviceType,
 		device.DeviceState,
@@ -542,4 +552,36 @@ func (d *Device) DUTID() (string, error) {
 		return "", fmt.Errorf("found multiple DUT IDs for device %v", d.ID)
 	}
 	return idLabel.Values[0], nil
+}
+
+// SetDutIDFromLabels takes dut_id (asset tag) from the schedulable labels.
+//
+// SetDutIDFromLabels take the label and sets it to the Device model. If no
+// labels are found, then the DUT ID will also not be set.
+func (d *Device) SetDutIDFromLabels(ctx context.Context) error {
+	if len(d.DutID) != 0 {
+		logging.Warningf(ctx, "dut_id %s will be overridden by the schedulable label value", d.DutID)
+		d.DutID = ""
+	}
+
+	if d.SchedulableLabels == nil {
+		return fmt.Errorf("no labels provided")
+	}
+
+	// Extract DUT ID from labels and set DutID.
+	dutIDLabel, ok := d.SchedulableLabels["dut_id"]
+	if !ok {
+		return fmt.Errorf("failed to get dut_id from Device %s", d.ID)
+	}
+	dutIDVals := dutIDLabel.Values
+	switch len(dutIDVals) {
+	case 1:
+		logging.Debugf(ctx, "Extracted dut_id from schedulable labels: %s", dutIDVals[0])
+		d.DutID = dutIDVals[0]
+		return nil
+	case 0:
+		return fmt.Errorf("no value for DUT ID found for Device %s", d.ID)
+	default:
+		return fmt.Errorf("multiple values for DUT ID found for Device %s", d.ID)
+	}
 }
