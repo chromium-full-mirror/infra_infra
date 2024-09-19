@@ -27,7 +27,6 @@ func crosBasePlan(pt basePlanType) *Plan {
 	ca = append(ca,
 		"DUT has board info",
 		"DUT has model info",
-		"CrosToolRunner is up",
 		"Start ADB container",
 	)
 	return &Plan{
@@ -56,6 +55,9 @@ func crosBaseActions() map[string]*Action {
 		"Start ADB container": {
 			Docs: []string{
 				"Pull and run adb-base container",
+			},
+			Conditions: []string{
+				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
 				// Always first stop in case somethine left out from last run.
