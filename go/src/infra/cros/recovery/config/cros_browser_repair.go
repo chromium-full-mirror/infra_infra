@@ -45,11 +45,11 @@ func CrOSBrowserDUTRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM and wait",
+				"Power cycle DUT by RPM and wait for ping",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Power cycle DUT by RPM and wait": {
+		"Power cycle DUT by RPM and wait for ping": {
 			Docs: []string{
 				"Perform RPM cycle and wait to device to boot back.",
 			},

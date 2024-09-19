@@ -42,7 +42,7 @@ func deployActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
 				"Cold reset DUT by servo and wait to boot",
-				"Power cycle DUT by RPM and wait",
+				"Power cycle DUT by RPM and wait for ping",
 			},
 		},
 		"DUT is on test channel OS": {

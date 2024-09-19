@@ -4,7 +4,7 @@ plans:
         - name: 'Set state: needs_repair (''dut_set_state'') (ALWAYS_RUN)'
         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
           recoveries:
-            - name: Cold reset by servo and wait for SSH ('sample_pass') (ALWAYS_RUN)
+            - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -21,7 +21,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -132,13 +132,13 @@ plans:
                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
               conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present')
                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                       conditions:
                         - name: Setup has servo info ('dut_servo_host_present')
-                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servo USB key detected ('servo_usbkey_is_detected')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -408,7 +408,7 @@ plans:
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               recoveries:
-                - name: Cold reset by servo and wait for SSH ('sample_pass') (ALWAYS_RUN)
+                - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -425,7 +425,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -536,13 +536,13 @@ plans:
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
                         - name: Setup has servo info ('dut_servo_host_present')
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servo USB key detected ('servo_usbkey_is_detected')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)

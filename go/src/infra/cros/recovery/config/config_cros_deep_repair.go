@@ -107,7 +107,7 @@ func deepRepairServoPlan() *Plan {
 					"Create lock file is_in_use.",
 				},
 				Conditions: []string{
-					"is_labstation",
+					"Is labstation",
 				},
 				ExecName: "cros_create_servo_in_use",
 				RecoveryActions: []string{
@@ -241,12 +241,12 @@ func deepRepairServoPlan() *Plan {
 				},
 				Conditions: []string{
 					"Device is SSHable",
-					"is_labstation",
+					"Is labstation",
 				},
 				ExecName:   "cros_create_reboot_request",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"is_labstation": {
+			"Is labstation": {
 				Docs: []string{
 					"Condition to check if the servohost is a labstation.",
 				},

@@ -104,7 +104,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
-				"servo_host_is_labstation",
+				"Is labstation",
 			},
 			Dependencies: []string{
 				"Labstation is SSHable",
@@ -119,7 +119,7 @@ func crosRepairActions() map[string]*Action {
 				"Limited to 15 seconds.",
 			},
 			Dependencies: []string{
-				"servo_host_is_labstation",
+				"Is labstation",
 			},
 			ExecName: "cros_ssh",
 			ExecExtraArgs: []string{
@@ -128,6 +128,12 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout:   &durationpb.Duration{Seconds: 15},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Is labstation": {
+			Docs: []string{
+				"Condition to check if the servohost is a labstation.",
+			},
+			ExecName: "servo_host_is_labstation",
 		},
 		"Set state: ready": {
 			Docs: []string{
@@ -201,10 +207,10 @@ func crosRepairActions() map[string]*Action {
 				Seconds: 15,
 			},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
-				"Pulse GSC_RST_L with servo and wait for SSH",
-				"Reset servo_v4.1 ethernet and wait for SSH",
-				"Power cycle DUT by RPM and wait",
+				"Cold reset by servo and wait for ping",
+				"Pulse GSC_RST_L with servo and wait for ping",
+				"Reset servo_v4.1 ethernet and wait for ping",
+				"Power cycle DUT by RPM and wait for ping",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
@@ -231,8 +237,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
-				// The DUT is pingable, so no need extra reboot actions.
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
@@ -443,7 +448,7 @@ func crosRepairActions() map[string]*Action {
 				Seconds: 15,
 			},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -491,7 +496,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
-		"Has repair-request for reflash-firmware by USB-key": {
+		"Has repair-request for reflash-firmware": {
 			Docs: []string{
 				"Check if REFLASH_FW repair-request is present.",
 			},
@@ -604,8 +609,8 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_battery_chargable_or_good_level",
 			RecoveryActions: []string{
 				"Recover by disabling factory settings",
-				"Power cycle DUT by RPM and wait",
-				"Cold reset by servo and wait for SSH",
+				"Power cycle DUT by RPM and wait for ping",
+				"Cold reset by servo and wait for ping",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
@@ -675,8 +680,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_ac_power_connected",
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM and wait",
-				"Cold reset by servo and wait for SSH",
+				"Power cycle DUT by RPM and wait for ping",
+				"Cold reset by servo and wait for ping",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
@@ -895,7 +900,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_stop_start_ui",
 			ExecTimeout: &durationpb.Duration{Seconds: 45},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -1478,7 +1483,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_audit_wifi",
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -1494,7 +1499,7 @@ func crosRepairActions() map[string]*Action {
 				"cmd_timeout:30",
 			},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -1618,7 +1623,7 @@ func crosRepairActions() map[string]*Action {
 				"wait_manager_when_expected:15",
 			},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 180,
@@ -2072,7 +2077,7 @@ func crosRepairActions() map[string]*Action {
 				"paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted",
 			},
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -2089,7 +2094,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_has_critical_kernel_error",
 			RecoveryActions: []string{
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -2505,8 +2510,8 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				"Is servod running",
 				"Is a Chromebook",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Trigger kernel panic by servod",
@@ -2573,7 +2578,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Setup has servo info",
-				"servo_host_is_labstation",
+				"Is labstation",
 			},
 			ExecName: "servo_main_device_is_gsc",
 		},
@@ -2641,7 +2646,7 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
 		},
-		"Power cycle DUT by RPM and wait": {
+		"Power cycle DUT by RPM and wait for ping": {
 			Docs: []string{
 				"Perform RPM cycle and wait to device to boot back.",
 			},
@@ -2695,7 +2700,10 @@ func crosRepairActions() map[string]*Action {
 				"This action wraps the recovery action and waits for the device to come back online.",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
 				"Is servod running",
+				"DUT has CrOS EC",
+				"cros_is_battery_expected",
 			},
 			Dependencies: []string{
 				"Servo recover AC power",
@@ -3025,17 +3033,16 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Cold reset by servo and wait for SSH": {
+		"Cold reset by servo and wait for ping": {
 			Docs: []string{
 				"This repair action will use servod command to reset power_state on the DUT.",
-				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
 				"Is servod running",
 			},
 			Dependencies: []string{
 				"Cold reset DUT by servo",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -3049,7 +3056,7 @@ func crosRepairActions() map[string]*Action {
 				"reverse:true",
 			},
 		},
-		"Pulse GSC_RST_L with servo and wait for SSH": {
+		"Pulse GSC_RST_L with servo and wait for ping": {
 			Docs: []string{
 				"This repair action call `gsc_reset:on sleep:1 gsc_reset:off` by servo.",
 				"The action works with servo_micro/c2d2 if gsc_reset present.",
@@ -3064,7 +3071,7 @@ func crosRepairActions() map[string]*Action {
 				"Assert GSC_RST_L by servo",
 				"Sleep 1 seconds",
 				"Deassert GSC_RST_L by servo",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -3624,8 +3631,8 @@ func crosRepairActions() map[string]*Action {
 				"The goal to force update fingerprint fw when devices booted from USB-stick",
 			},
 			Conditions: []string{
-				"Is servod running",
 				"Is a Chromebook",
+				"Is servod running",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -4382,7 +4389,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_kernel_priority_has_not_changed",
 			RecoveryActions: []string{
 				"Simple reboot to right kernel",
-				"Cold reset by servo and wait for SSH",
+				"Cold reset by servo and wait for ping",
 			},
 		},
 		"Simple reboot to right kernel": {
@@ -4474,8 +4481,8 @@ func crosRepairActions() map[string]*Action {
 				"Logic establishe from b/277637455.",
 			},
 			Conditions: []string{
-				"Is servod running",
 				"Is a Chromebook",
+				"Is servod running",
 				"is_servo_type_ccd",
 				"DUT is G3/S5 powerstate",
 			},
@@ -4549,7 +4556,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
-		"Reset servo_v4.1 ethernet and wait for SSH": {
+		"Reset servo_v4.1 ethernet and wait for ping": {
 			Docs: []string{
 				"This repair action will reset servo ethernet power and wait for ssh, applicable to servo_v4.1 only",
 			},
@@ -4559,7 +4566,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Reset servo_v4.1 ethernet power",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be pingable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,

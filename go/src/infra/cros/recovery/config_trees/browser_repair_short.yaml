@@ -4,7 +4,7 @@ plans:
         - name: 'Set state: repair_failed (''dut_set_state'') (RUN_ONCE)'
         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
           recoveries:
-            - name: Power cycle DUT by RPM and wait ('sample_pass') (ALWAYS_RUN)
+            - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: has_rpm_info
               dependencies:
@@ -18,7 +18,7 @@ plans:
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
-                    - name: Power cycle DUT by RPM and wait ('sample_pass') (ALWAYS_RUN)
+                    - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: has_rpm_info
                       dependencies:

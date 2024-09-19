@@ -49,7 +49,7 @@ plans:
             - Verify that device is reachable by SSH.
             - Limited to 15 seconds.
           recoveries:
-            - name: Power cycle DUT by RPM and wait (ALWAYS_RUN)
+            - name: Power cycle DUT by RPM and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
                 - Perform RPM cycle and wait to device to boot back.
@@ -78,7 +78,7 @@ plans:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
               recoveries:
-                - name: Power cycle DUT by RPM and wait (ALWAYS_RUN)
+                - name: Power cycle DUT by RPM and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
                     - Perform RPM cycle and wait to device to boot back.

@@ -6102,11 +6102,10 @@ plans:
             - Verify that device is reachable by SSH.
             - Limited to 15 seconds.
           recoveries:
-            - name: Cold reset by servo and wait for SSH (ALWAYS_RUN)
+            - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
                 - This repair action will use servod command to reset power_state on the DUT.
-                - 'TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.'
               conditions:
                 - name: Is servod running (ALWAYS_RUN)
                   exec_name: sample_pass
@@ -6145,10 +6144,10 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
             - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) (ALWAYS_RUN)
               exec_name: sample_pass
@@ -6533,6 +6532,13 @@ plans:
               docs:
                 - The goal to force update fingerprint fw when devices booted from USB-stick
               conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
                 - name: Is servod running (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -6547,13 +6553,6 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
                   exec_args:
