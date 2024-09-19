@@ -26350,6 +26350,7 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+        - name: Collect fingerprint_mcu (Allow to fail) ('cros_collect_fingerprint_mcu')
         - name: Update Servo NIC mac address (Allow to fail) ('servo_audit_nic_mac_address')
           conditions:
             - name: Setup has servo info ('dut_servo_host_present')

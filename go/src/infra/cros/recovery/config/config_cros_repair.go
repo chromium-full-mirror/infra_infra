@@ -75,6 +75,7 @@ func crosRepairCriticalActions(isDeployment bool) []string {
 		"Verify system info",
 		"Collect firmware target",
 		"Collect gpu_id",
+		"Collect fingerprint_mcu",
 		"Update Servo NIC mac address",
 		"Backup CBI",
 		"Check CBI",
@@ -4745,6 +4746,13 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_ALWAYS_RUN,
+		},
+		"Collect fingerprint_mcu": {
+			Docs: []string{
+				"Collect fingerprint_mcu from DUT from cros_config, add to UFS and recoveries's label FingerprintMcu.",
+			},
+			ExecName:               "cros_collect_fingerprint_mcu",
+			AllowFailAfterRecovery: true,
 		},
 		"Power-off the DUT using AMT": {
 			Docs: []string{

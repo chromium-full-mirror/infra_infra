@@ -87846,6 +87846,10 @@ plans:
                       docs:
                         - Try to wait device to be sshable after the device being rebooted.
                         - Waiting time 150 seconds.
+        - name: Collect fingerprint_mcu (Allow to fail)
+          exec_name: cros_collect_fingerprint_mcu
+          docs:
+            - Collect fingerprint_mcu from DUT from cros_config, add to UFS and recoveries's label FingerprintMcu.
         - name: Update Servo NIC mac address (Allow to fail)
           exec_name: servo_audit_nic_mac_address
           docs:
