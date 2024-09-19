@@ -759,6 +759,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -769,22 +770,26 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 				"last_notification_time"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`,
 					false,
 					timeNow,
 					timeNow,
 					timeNow)
 
 			labelBytes, err := json.Marshal(SchedulableLabels{
+				"dut_id": LabelValues{
+					Values: []string{"test-dut-id"},
+				},
 				"label-test": LabelValues{
 					Values: []string{"test-value-1"},
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`))
 
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
@@ -800,6 +805,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 					AND device_state='DEVICE_STATE_AVAILABLE'
 				RETURNING
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -809,19 +815,23 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 					last_updated_time,
 					last_notification_time;`)).
 				WithArgs(
-					"test-device-1").
+					"test-dut-id").
 				WillReturnRows(rows)
 
 			updatedDevice, err := UpdateDeviceToLeased(ctx, tx, Device{
-				ID: "test-device-1",
+				ID: "test-dut-id",
 			}, IDTypeDutID)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, updatedDevice, should.Match(Device{
 				ID:            "test-device-1",
+				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"test-dut-id"},
+					},
 					"label-test": LabelValues{
 						Values: []string{"test-value-1"},
 					},
@@ -856,6 +866,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -866,22 +877,26 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 				"last_notification_time"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`,
 					false,
 					timeNow,
 					timeNow,
 					timeNow)
 
 			labelBytes, err := json.Marshal(SchedulableLabels{
+				"dut_id": LabelValues{
+					Values: []string{"test-dut-id"},
+				},
 				"label-test": LabelValues{
 					Values: []string{"test-value-1"},
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`))
 
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
@@ -894,6 +909,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 					AND device_state='DEVICE_STATE_AVAILABLE'
 				RETURNING
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -912,10 +928,14 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, updatedDevice, should.Match(Device{
 				ID:            "test-device-1",
+				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"test-dut-id"},
+					},
 					"label-test": LabelValues{
 						Values: []string{"test-value-1"},
 					},

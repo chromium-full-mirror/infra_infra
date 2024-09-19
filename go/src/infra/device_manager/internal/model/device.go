@@ -442,6 +442,7 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 				AND device_state='DEVICE_STATE_AVAILABLE'
 			RETURNING
 				id,
+				dut_id,
 				device_address,
 				device_type,
 				device_state,
@@ -456,6 +457,7 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 		device.ID,
 	).Scan(
 		&updatedDevice.ID,
+		&updatedDevice.DutID,
 		&updatedDevice.DeviceAddress,
 		&updatedDevice.DeviceType,
 		&updatedDevice.DeviceState,
