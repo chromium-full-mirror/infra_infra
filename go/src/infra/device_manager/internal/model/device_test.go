@@ -624,6 +624,7 @@ func TestUpdateDevice(t *testing.T) {
 			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -634,37 +635,43 @@ func TestUpdateDevice(t *testing.T) {
 				"last_notification_time"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`,
 					false,
 					timeNow,
 					timeNow,
 					timeNow)
 
 			labelBytes, err := json.Marshal(SchedulableLabels{
+				"dut_id": LabelValues{
+					Values: []string{"test-dut-id"},
+				},
 				"label-test": LabelValues{
 					Values: []string{"test-value-1"},
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, string(labelBytes), should.Match(`{"label-test":{"Values":["test-value-1"]}}`))
+			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id"]},"label-test":{"Values":["test-value-1"]}}`))
 
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
 					"Devices"
 				SET
-					device_address=COALESCE(NULLIF($2, ''), device_address),
-					device_type=COALESCE(NULLIF($3, ''), device_type),
-					device_state=COALESCE(NULLIF($4, ''), device_state),
-					schedulable_labels=COALESCE($5::jsonb, schedulable_labels),
+					dut_id=COALESCE(NULLIF($2, ''), device_address),
+					device_address=COALESCE(NULLIF($3, ''), device_address),
+					device_type=COALESCE(NULLIF($4, ''), device_type),
+					device_state=COALESCE(NULLIF($5, ''), device_state),
+					schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
 					last_updated_time=NOW(),
-					is_active=COALESCE($6, is_active)
+					is_active=COALESCE($7, is_active)
 				WHERE
 					id=$1
 				RETURNING
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -675,6 +682,7 @@ func TestUpdateDevice(t *testing.T) {
 					last_notification_time;`)).
 				WithArgs(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
@@ -684,10 +692,14 @@ func TestUpdateDevice(t *testing.T) {
 
 			updatedDevice, err := UpdateDevice(ctx, tx, Device{
 				ID:            "test-device-1",
+				DutID:         "test-dut-id-no-change", // this should not change DUT ID
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"test-dut-id"},
+					},
 					"label-test": LabelValues{
 						Values: []string{"test-value-1"},
 					},
@@ -697,10 +709,14 @@ func TestUpdateDevice(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, updatedDevice, should.Match(Device{
 				ID:            "test-device-1",
+				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: SchedulableLabels{
+					"dut_id": LabelValues{
+						Values: []string{"test-dut-id"},
+					},
 					"label-test": LabelValues{
 						Values: []string{"test-value-1"},
 					},

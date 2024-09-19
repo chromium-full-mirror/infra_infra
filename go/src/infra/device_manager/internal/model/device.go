@@ -303,6 +303,10 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 // UpdateDevice uses COALESCE to only update fields with provided values. If
 // there is no value provided, then it will use the current value of the device
 // field in the db.
+//
+// DUT ID (asset tag) will be extracted from the schedulable labels. This is the
+// only way to update the field. Trying to set Device.DutID will result in no
+// change.
 func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
 	var (
 		err                  error
@@ -315,16 +319,18 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 			UPDATE
 				"Devices"
 			SET
-				device_address=COALESCE(NULLIF($2, ''), device_address),
-				device_type=COALESCE(NULLIF($3, ''), device_type),
-				device_state=COALESCE(NULLIF($4, ''), device_state),
-				schedulable_labels=COALESCE($5::jsonb, schedulable_labels),
+				dut_id=COALESCE(NULLIF($2, ''), device_address),
+				device_address=COALESCE(NULLIF($3, ''), device_address),
+				device_type=COALESCE(NULLIF($4, ''), device_type),
+				device_state=COALESCE(NULLIF($5, ''), device_state),
+				schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
 				last_updated_time=NOW(),
-				is_active=COALESCE($6, is_active)
+				is_active=COALESCE($7, is_active)
 			WHERE
 				id=$1
 			RETURNING
 				id,
+				dut_id,
 				device_address,
 				device_type,
 				device_state,
@@ -335,10 +341,16 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 				last_notification_time;`
 	)
 
-	// Marshal labels and set to null
 	if device.SchedulableLabels != nil {
+		// Marshal labels and set to null
 		labelBytes, err = json.Marshal(device.SchedulableLabels)
 		if err != nil {
+			return Device{}, err
+		}
+
+		err = device.SetDutIDFromLabels(ctx)
+		if err != nil {
+			logging.Errorf(ctx, "UpdateDevice: failed to set DUT ID for Device %s: %s", device.ID, err)
 			return Device{}, err
 		}
 	}
@@ -346,6 +358,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 	logging.Debugf(ctx, "UpdateDevice: %s", query)
 	err = tx.QueryRowContext(ctx, query,
 		device.ID,
+		device.DutID,
 		device.DeviceAddress,
 		device.DeviceType,
 		device.DeviceState,
@@ -353,6 +366,7 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 		device.IsActive,
 	).Scan(
 		&updatedDevice.ID,
+		&updatedDevice.DutID,
 		&updatedDevice.DeviceAddress,
 		&updatedDevice.DeviceType,
 		&updatedDevice.DeviceState,

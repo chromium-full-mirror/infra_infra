@@ -605,6 +605,7 @@ func TestUpdateDevice(t *testing.T) {
 			timeNow := time.Now()
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -615,10 +616,11 @@ func TestUpdateDevice(t *testing.T) {
 				"last_notification_time"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"dut_id":{"Values":["test-dut-id-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id"]}}`,
 					false,
 					timeNow,
 					timeNow,
@@ -626,26 +628,28 @@ func TestUpdateDevice(t *testing.T) {
 
 			labelBytes, err := json.Marshal(model.SchedulableLabels{
 				"dut_id": model.LabelValues{
-					Values: []string{"test-dut-id-1"},
+					Values: []string{"test-dut-id"},
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id-1"]}}`))
+			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id"]}}`))
 
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				UPDATE
 					"Devices"
 				SET
-					device_address=COALESCE(NULLIF($2, ''), device_address),
-					device_type=COALESCE(NULLIF($3, ''), device_type),
-					device_state=COALESCE(NULLIF($4, ''), device_state),
-					schedulable_labels=COALESCE($5::jsonb, schedulable_labels),
+					dut_id=COALESCE(NULLIF($2, ''), device_address),
+					device_address=COALESCE(NULLIF($3, ''), device_address),
+					device_type=COALESCE(NULLIF($4, ''), device_type),
+					device_state=COALESCE(NULLIF($5, ''), device_state),
+					schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
 					last_updated_time=NOW(),
-					is_active=COALESCE($6, is_active)
+					is_active=COALESCE($7, is_active)
 				WHERE
 					id=$1
 				RETURNING
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -656,6 +660,7 @@ func TestUpdateDevice(t *testing.T) {
 					last_notification_time;`)).
 				WithArgs(
 					"test-device-1",
+					"test-dut-id",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
@@ -665,12 +670,13 @@ func TestUpdateDevice(t *testing.T) {
 
 			err = UpdateDevice(ctx, tx, model.Device{
 				ID:            "test-device-1",
+				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
 				SchedulableLabels: model.SchedulableLabels{
 					"dut_id": model.LabelValues{
-						Values: []string{"test-dut-id-1"},
+						Values: []string{"test-dut-id"},
 					},
 				},
 				IsActive: false,
