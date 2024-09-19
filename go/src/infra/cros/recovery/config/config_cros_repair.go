@@ -233,17 +233,6 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Set state: needs_repair": {
-			Docs: []string{
-				"The action set devices with state means that repair tsk did not success to recover the devices.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:needs_repair",
-			},
-			RunControl:    RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
 		"Set state: repair_failed": {
 			Docs: []string{
 				"The action set devices with state means that repair tsk did not success to recover the devices.",
@@ -298,6 +287,17 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
+		"Device is pingable (simple)": {
+			Docs: []string{
+				"Verify that device is reachable by ping.",
+				"Limited to 15 seconds.",
+			},
+			ExecName: "cros_ping",
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 15,
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Device is SSHable": {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
@@ -319,6 +319,15 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
+		},
+		"Device is SSHable (simple)": {
+			Docs: []string{
+				"Verify that device is reachable by SSH.",
+				"Limited to 15 seconds.",
+			},
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 15},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Device Uptime": {
 			Docs: []string{
@@ -404,6 +413,22 @@ func crosRepairActions() map[string]*Action {
 				"requests:REFLASH_FW,REIMAGE_BY_USBKEY",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Audit storage": {
+			Docs: []string{
+				"Audit DUT internal storage.",
+			},
+			Conditions: []string{
+				"Is Chrome based",
+			},
+			Dependencies: []string{
+				"Device is SSHable (simple)",
+				// Just to be sure that audit executed on good OS version.
+				"DUT has correct cros image version",
+				"Audit storage (SMART only)",
+				"Audit device storage using badblocks",
+			},
+			ExecName: "sample_pass",
 		},
 		"Audit storage (SMART only)": {
 			Docs: []string{
@@ -1541,7 +1566,11 @@ func crosRepairActions() map[string]*Action {
 				"Run badblocks to test USB-drive from DUT side.",
 				"Timeout is 1 hour.",
 			},
+			Conditions: []string{
+				"Is Chrome based",
+			},
 			Dependencies: []string{
+				"Device is SSHable (simple)",
 				"Servo state is working",
 				"Is servod running",
 				"Device NOT booted from USB-drive",
@@ -3858,11 +3887,13 @@ func crosRepairActions() map[string]*Action {
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				// If rpm info is not provided then we just want to set a state and skip verification.
 				"RPM set state: MISSING_CONFIG",
 				"RPM config present",
 			},
 			Dependencies: []string{
+				"Device is SSHable (simple)",
 				"Audit RPM config (with battery)",
 				"Audit RPM config (without battery)",
 			},

@@ -27,7 +27,7 @@ func CrosRepairConfig() *Configuration {
 		},
 		Plans: map[string]*Plan{
 			PlanServo:         setAllowFail(servoRepairPlan(), true),
-			PlanCrOSBase:      setAllowFail(crosBasePlan(true), false),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeRepair), false),
 			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
@@ -61,7 +61,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			// We allow CrOSDeepRepair to fail(so the task continue) as some of actions in it may result to a later normal repair success.
 			PlanCrOSDeepRepair: setAllowFail(deepRepairCrosPlan(), true),
 			PlanServo:          setAllowFail(servoRepairPlan(), true),
-			PlanCrOSBase:       setAllowFail(crosBasePlan(true), false),
+			PlanCrOSBase:       setAllowFail(crosBasePlan(basePlanTypeRepair), false),
 			PlanCrOS:           setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:      setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer:  setAllowFail(btpeerRepairPlan(), true),
@@ -94,7 +94,7 @@ func CrosDeployConfig() *Configuration {
 			PlanServo:         setAllowFail(servoRepairPlan(), false),
 			PlanServoFwUpdate: setAllowFail(servoPreDeployPlan(), false),
 			PlanCrOSDeploy:    setAllowFail(crosDeployPlan(), false),
-			PlanCrOSBase:      setAllowFail(crosBasePlan(false), false),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeDeploy), false),
 			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),

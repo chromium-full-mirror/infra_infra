@@ -15220,6 +15220,8 @@ plans:
                 - Not applicable for cr50 servos based on b/205728276
                 - Action is not critical as it updates own state.
               conditions:
+                - name: Is Chrome based (ALWAYS_RUN)
+                  exec_name: cros_is_chrome_based
                 - name: 'RPM set state: MISSING_CONFIG'
                   exec_name: set_rpm_state
                   exec_args:
@@ -15233,6 +15235,11 @@ plans:
                     - Verifies that the RPM configuration provides some data for the hostname and outlet.
                     - This action does not verify the correctness of the data.
               dependencies:
+                - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Verify that device is reachable by SSH.
+                    - Limited to 15 seconds.
                 - name: Audit RPM config (with battery) (time:'10m0s')
                   exec_name: rpm_audit_with_battery
                   docs:

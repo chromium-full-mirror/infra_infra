@@ -4880,9 +4880,11 @@ plans:
             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
             - name: Verify RPM config ('sample_pass')
               conditions:
+                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                 - name: 'RPM set state: MISSING_CONFIG (''set_rpm_state'')'
                 - name: RPM config present ('device_has_rpm_info')
               dependencies:
+                - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Audit RPM config (with battery) ('rpm_audit_with_battery') (time:'10m0s')
                   conditions:
                     - name: Battery is present on device ('cros_is_battery_present') (ALWAYS_RUN)

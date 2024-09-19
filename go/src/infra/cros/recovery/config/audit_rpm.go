@@ -8,17 +8,18 @@ package config
 func CrosAuditRPMConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanCrOSBase,
 			PlanServo,
 			PlanCrOSAudit,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
-			PlanServo: setAllowFail(servoRepairPlan(), true),
+			PlanServo:    setAllowFail(servoRepairPlan(), true),
+			PlanCrOSBase: setAllowFail(crosBasePlan(basePlanTypeAudit), false),
 			PlanCrOSAudit: {
 				CriticalActions: []string{
-					// Set a repair failed state to call auto-repair after that task is completed.
-					"Set state: needs_repair",
-					"Device is SSHable",
+					"Device is pingable (simple)",
+					"Mark as Android based on ADB",
 					"Verify RPM config",
 				},
 				Actions:   crosRepairActions(),

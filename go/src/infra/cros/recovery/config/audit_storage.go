@@ -8,17 +8,16 @@ package config
 func CrosAuditStorageConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanCrOSBase,
 			PlanCrOSAudit,
 		},
 		Plans: map[string]*Plan{
+			PlanCrOSBase: setAllowFail(crosBasePlan(basePlanTypeAudit), false),
 			PlanCrOSAudit: {
 				CriticalActions: []string{
-					"Set state: needs_repair",
-					"Device is SSHable",
-					// Just to be sure that audit executed on good OS version.
-					"DUT has correct cros image version",
-					"Audit storage (SMART only)",
-					"Audit device storage using badblocks",
+					"Device is pingable (simple)",
+					"Mark as Android based on ADB",
+					"Audit storage",
 				},
 				Actions: crosRepairActions(),
 			},
