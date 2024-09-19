@@ -32,6 +32,7 @@ type ServiceInfo interface {
 	GetNetwork(ctx context.Context, name string) (Network, error)
 	CreateContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (BaseContainer, error)
 	GetContainer(ctx context.Context, name string) (BaseContainer, error)
+	StopContainer(ctx context.Context, name string) error
 	IsUp() bool
 }
 
@@ -157,14 +158,26 @@ func (c *serviceInfoImpl) GetContainer(ctx context.Context, name string) (BaseCo
 	}
 	// If container created outside the call then we can find it at docker level.
 	if _, err := c.ctr.GetContainer(ctx, name); err != nil {
-		return nil, errors.Annotate(err, "service address").Err()
+		return nil, errors.Annotate(err, "get container %q: probably not created yet", name).Err()
 	}
 	// If no errors then container is exist.
 	container := &baseContainerImpl{
 		name: name,
 		ci:   c,
 	}
-	return container, errors.Reason("get container: probably not created yet").Err()
+	c.containerCache[name] = container
+	return container, nil
+}
+
+// GetContainer create requested container.
+func (c *serviceInfoImpl) StopContainer(ctx context.Context, name string) error {
+	if err := c.ctr.StopContainer(ctx, name); err != nil {
+		return errors.Annotate(err, "stop container %q", name).Err()
+	}
+	// Clear the cache if it is listed there.
+	delete(c.containerCache, name)
+	log.Infof(ctx, "Container %q stopped!", name)
+	return nil
 }
 
 // GetContainer create a requested container.

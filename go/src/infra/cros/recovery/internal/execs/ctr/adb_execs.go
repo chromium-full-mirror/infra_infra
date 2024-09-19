@@ -64,6 +64,23 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
+	ctrInfo, ok := ctr.Get(ctx)
+	if !ok {
+		return errors.Reason("stop adb container: ctr is not started").Err()
+	}
+	dut := info.GetDut()
+	if dut == nil {
+		return errors.Reason("stop adb container: dut is not provided").Err()
+	}
+	containerName := cft.ADBName(dut)
+	if err := ctrInfo.StopContainer(ctx, containerName); err != nil {
+		return errors.Annotate(err, "stop adb container").Err()
+	}
+	log.Infof(ctx, "Container %q stopped!", containerName)
+	return nil
+}
+
 // adbCommandExec execs custom command with arguments.
 func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	ctrInfo, ok := ctr.Get(ctx)
@@ -175,6 +192,7 @@ func makeAwakeAlwaysExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func init() {
 	execs.Register("ctr_start_adb_container", startADBContainerExec)
+	execs.Register("ctr_stop_adb_container", stopADBContainerExec)
 	execs.Register("ctr_adb_command", adbCommandExec)
 	execs.Register("ctr_adb_connect", adbConnectExec)
 	execs.Register("ctr_read_android_version", readAndroidVersionExec)
