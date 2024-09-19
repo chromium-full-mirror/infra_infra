@@ -28,7 +28,7 @@ func collectFingerprintMcu(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "fingerprint_mcu before update: %s", cros.GetFingerprintMcu())
 
 	// command to grab the fingerprint_mcu from dut
-	const fingerprintMcuCmd = `ectool --name=cros_fp chipinfo | grep "name: " | awk '{print $2}'`
+	const fingerprintMcuCmd = `ectool --name=cros_fp chipinfo | awk '/name:/{print $2}'`
 	fingerprintMcu, err := r(ctx, info.GetExecTimeout(), fingerprintMcuCmd)
 	if err != nil {
 		return errors.Annotate(err, "collect fingerprint_mcu").Err()
