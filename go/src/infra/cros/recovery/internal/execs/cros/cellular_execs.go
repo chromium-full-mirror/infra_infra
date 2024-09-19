@@ -215,7 +215,7 @@ func auditCellularConfigExec(ctx context.Context, info *execs.ExecInfo) error {
 					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
 					return errors.Reason("audit cellular configs: missing OwnNumber for ICCID: %q", pi.GetIccid()).Err()
 				}
-				if pi.GetDetectedIccid() != "" && pi.GetOwnNumber() != pi.GetDetectedOwnNumber() {
+				if pi.GetDetectedIccid() != "" && pi.GetDetectedOwnNumber() != "" && pi.GetOwnNumber() != pi.GetDetectedOwnNumber() {
 					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
 					return errors.Reason("audit cellular configs: Mismatched OwnNumber for ICCID %q, got %q, expected: %q",
 						pi.GetIccid(), pi.GetDetectedOwnNumber(), pi.GetOwnNumber()).Err()
@@ -230,7 +230,7 @@ func auditCellularConfigExec(ctx context.Context, info *execs.ExecInfo) error {
 					pi.State = tlw.Cellular_SIMProfileInfo_WRONG_CONFIG
 					return errors.Reason("audit cellular configs: missing PUK for ICCID: %q", pi.GetIccid()).Err()
 				}
-				// We don't manage PINLOCK DUTs connection states in auditCEllularConnectionExec like we do for other devices
+				// We don't manage PINLOCK DUTs connection states in auditCellularConnectionExec like we do for other devices
 				// so we should just set it to WORKING
 				pi.State = tlw.Cellular_SIMProfileInfo_WORKING
 			default:
