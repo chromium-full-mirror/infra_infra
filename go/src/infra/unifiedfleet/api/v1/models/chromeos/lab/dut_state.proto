@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 34
+// Next Tag: 36
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -121,8 +121,14 @@ message DutState {
   // State for camera on the DUT.
   HardwareState camera_state = 32;
 
+  // The type of Fingerprint board on the DUT.
+  string fingerprint_board = 33;
+
   // The type of Fingerprint MCU on the DUT.
-  string fingerprint_mcu = 33;
+  string fingerprint_mcu = 34;
+
+  // The type of Fingerprint sensor on the DUT.
+  string fingerprint_sensor = 35;
 }
 
 // Next Tag: 35
