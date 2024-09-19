@@ -90,7 +90,7 @@ func deepRepairServoPlan() *Plan {
 					// makes power-cycle the entire device unnecessary.
 					"Serial number is not servo_v4p1",
 					// We try restart only if we lost network to the dut.
-					"DUT is not SSHable",
+					"DUT is not pingable",
 				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
@@ -205,12 +205,23 @@ func deepRepairServoPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				RunControl:  RunControl_ALWAYS_RUN,
 			},
-			"DUT is not SSHable": {
+			"DUT is pingable": {
+				Docs: []string{
+					"verify if DUT is SSH-able",
+				},
+				ExecName: "cros_ping",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 15},
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"DUT is not pingable": {
 				Docs: []string{
 					"Verify if DUT is not SSH-able",
 				},
 				Conditions: []string{
-					"DUT is SSHable",
+					"DUT is pingable",
 				},
 				ExecName:   "sample_fail",
 				RunControl: RunControl_ALWAYS_RUN,

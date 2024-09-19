@@ -1812,12 +1812,23 @@ func servoPlanActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"DUT is not SSHable": {
+		"DUT is pingable": {
+			Docs: []string{
+				"verify if DUT is SSH-able",
+			},
+			ExecName: "cros_ping",
+			ExecExtraArgs: []string{
+				"device_type:dut",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 15},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"DUT is not pingable": {
 			Docs: []string{
 				"Verify if DUT is not SSH-able",
 			},
 			Conditions: []string{
-				"DUT is SSHable",
+				"DUT is pingable",
 			},
 			ExecName:   "sample_fail",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -1876,7 +1887,7 @@ func servoPlanActions() map[string]*Action {
 			},
 			Conditions: []string{
 				// We try restart only if we lost network to the dut.
-				"DUT is not SSHable",
+				"DUT is not pingable",
 			},
 			Dependencies: []string{
 				"Device is SSHable",

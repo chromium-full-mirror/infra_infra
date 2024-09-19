@@ -579,13 +579,15 @@ plans:
           docs:
             - Try to reset(power-cycle) the servo via smart usbhub.
           conditions:
-            - name: DUT is not SSHable (ALWAYS_RUN)
+            - name: DUT is not pingable (ALWAYS_RUN)
               exec_name: sample_fail
               docs:
                 - Verify if DUT is not SSH-able
               conditions:
-                - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                - name: DUT is pingable (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_ping
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
           dependencies:

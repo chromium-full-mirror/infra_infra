@@ -24,7 +24,24 @@ import (
 
 // pingExec verifies the DUT is pingable.
 func pingExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, info.DefaultPinger(), info.NewLogger())
+	argsMap := info.GetActionArgs(ctx)
+	deviceType := argsMap.AsString(ctx, "device_type", "")
+	var pinger components.Pinger
+	switch deviceType {
+	case "dut":
+		pinger = info.NewPinger(info.GetDut().Name)
+	case "servo":
+		name := info.GetChromeos().GetServo().GetName()
+		if name == "" {
+			return errors.Reason("ssh: servod host is not specified").Err()
+		}
+		pinger = info.NewPinger(name)
+	case "":
+		pinger = info.DefaultPinger()
+	default:
+		return errors.Reason("ssh: unsupported device-type %q", deviceType).Err()
+	}
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, pinger, info.NewLogger())
 }
 
 // sshExec verifies ssh access to the current plan's device (named by the default resource name).
