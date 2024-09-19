@@ -26,8 +26,9 @@ const (
 
 // ALProvisionRequestUpdater struct stores
 type ALProvisionRequestUpdater struct {
-	ProvisionPath   string
-	ProvisionBinary string
+	ProvisionPath string
+
+	LatestBuildsByBoard map[string]int
 }
 
 func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
@@ -71,7 +72,9 @@ func processContainerPath(ctx context.Context, creds, path, firestoreName string
 }
 
 func main() {
-	provisionRequestUpdater := &ALProvisionRequestUpdater{}
+	provisionRequestUpdater := &ALProvisionRequestUpdater{
+		LatestBuildsByBoard: make(map[string]int),
+	}
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
 	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", common.LabelProd, "SHA256 value for provision container")
 	err := server.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")

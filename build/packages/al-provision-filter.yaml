@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2-filters/al-provision-filter/${platform}
+description: CTPv2 filter responsible for updating the
+  dynamic trv2 request for foil provisioning.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/al-provision-filter
+root: ../../go/bin
+data:
+  - file: al-provision-filter${exe_suffix}
+  - version_file: .versions/al-provision-filter${exe_suffix}.cipd_version

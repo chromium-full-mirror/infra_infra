@@ -22,13 +22,13 @@ import (
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
 func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	modifyProvisionRequest(req, updater, log)
-	updateProvisionInstallPath(req, log)
+	updateProvisionInstallPath(req, updater, log)
 	return nil
 }
 
 func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	log.Printf("Adding AL provisioning dynamic updates...")
-	if updater.ProvisionPath == "" && updater.ProvisionBinary == "" {
+	if updater.ProvisionPath == "" {
 		return
 	}
 
@@ -37,13 +37,9 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		dynamic_common.FindByDynamicIdentifier(
 			taskID.Id))
 
-	binary := common.CrosProvision
-	if updater.ProvisionBinary != "" {
-		binary = updater.ProvisionBinary
-	}
 	provisionContainerBuilder := dynamic_builders.NewContainerBuilder(
 		taskID.Id, common.CrosProvision, updater.ProvisionPath,
-		"/tmp/provisionservice", fmt.Sprintf("%s server -port 0", binary))
+		"/tmp/provisionservice", "foil-provision server -port 0")
 
 	containers := []*api.ContainerRequest{}
 	container := provisionContainerBuilder.Build()
@@ -67,7 +63,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	}
 }
 
-func updateProvisionInstallPath(req *api.InternalTestplan, log *log.Logger) {
+func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	log.Printf("Updating provision install path...")
 
 	suiteInfo := req.GetSuiteInfo()
@@ -86,22 +82,27 @@ func updateProvisionInstallPath(req *api.InternalTestplan, log *log.Logger) {
 		board, ok := su.GetDynamicUpdateLookupTable()["board"]
 		if !ok {
 			log.Printf("board not found")
-
 		}
-		latestGreenBuild, err := androidapi.GetLatestGreenBuildNumber(androidapi.Container, buildGetReq(board))
-		if err != nil {
-			log.Printf("Error getting latest green build number: %v", err)
-			continue
+		var latestGreenBuild int
+		var err error
+		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
+			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.Container, buildGetReq(board))
+			if err != nil {
+				log.Printf("Error getting latest green build number: %v", err)
+				continue
+			}
 		}
+		su.DynamicUpdateLookupTable["buildNumber"] = fmt.Sprint(latestGreenBuild)
 		log.Printf("Latest green build number: %d\n", latestGreenBuild)
 
 		log.Println("Setting build target and latest green build number")
 		boardTarget := board + "-trunk_staging-userdebug"
 		installPath := fmt.Sprintf(
 			"android-build/build_explorer/artifacts_list/%s/%s/%s-ota-%s.zip",
-			strconv.Itoa(latestGreenBuild), boardTarget, strconv.Itoa(latestGreenBuild), board)
+			strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
 		log.Printf("InstallPath value: %s", installPath)
-		req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"] = installPath
+		su.DynamicUpdateLookupTable["crosInstallPath"] = su.DynamicUpdateLookupTable["installPath"]
+		su.DynamicUpdateLookupTable["installPath"] = installPath
 	}
 
 }

@@ -12,7 +12,6 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
-	dynamic_builders "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
 	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 
@@ -20,12 +19,10 @@ import (
 )
 
 func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) error {
-	modifyProvisionRequest(req, updater, log)
 	modifyTestRequest(req, updater, log)
 	filterOutFaultyTests(req, updater, log)
 	removePostProcess(req, log)
-	modifyRdbPublishRequest(req, updater, log)
-	updateProvisionInstallPath(req, updater, log)
+	modifyRdbPublishRequest(req, log)
 	return nil
 }
 
@@ -37,49 +34,6 @@ func removePostProcess(req *api.InternalTestplan, log *log.Logger) {
 	if err != nil {
 		log.Printf("Error while creating remove update, %s", err)
 	}
-}
-
-func modifyProvisionRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
-	if updater.ProvisionPath == "" && updater.ProvisionBinary == "" {
-		return
-	}
-
-	taskID := dynamic_common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
-	generator := generators.NewModifyGenerator(
-		dynamic_common.FindByDynamicIdentifier(
-			taskID.Id))
-
-	binary := common.CrosProvision
-	if updater.ProvisionBinary != "" {
-		binary = updater.ProvisionBinary
-	}
-	provisionContainerBuilder := dynamic_builders.NewContainerBuilder(
-		taskID.Id, common.CrosProvision, updater.ProvisionPath,
-		"/tmp/provisionservice", fmt.Sprintf("%s server -port 0", binary))
-
-	containers := []*api.ContainerRequest{}
-	container := provisionContainerBuilder.Build()
-	container.Network = "adb-network"
-	containers = append(containers, container)
-	generator.AddModification(
-		&api.CrosTestRunnerDynamicRequest_Task{
-			OrderedContainerRequests: containers,
-		},
-		map[string]string{
-			"orderedContainerRequests": "orderedContainerRequests",
-		},
-	)
-
-	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
-	if err != nil {
-		log.Printf("Error while modifying provision request, %s", err)
-	}
-}
-
-func updateProvisionInstallPath(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
-	req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"] = fmt.Sprintf(
-		"android-build/build_explorer/artifacts_list/%s/%s/brya-ota-%s.zip",
-		updater.buildNum, updater.buildStr, updater.buildNum)
 }
 
 func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
@@ -107,14 +61,14 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 	}
 }
 
-func modifyRdbPublishRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
+func modifyRdbPublishRequest(req *api.InternalTestplan, log *log.Logger) {
 	log.Println("Modifying rdb publish request")
 
 	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.RdbPublish))
 	generator.AddModification(
 		&api.DynamicDep{
 			Key:   "publishRequest.metadata.testResult.testInvocation.primaryExecutionInfo.buildInfo.name",
-			Value: fmt.Sprintf("FMT=%s/%s", updater.buildStr, updater.buildNum),
+			Value: fmt.Sprintf("FMT=%s-trunk_staging-userdebug/%s", dynamic_common.SetPlaceholder("board"), dynamic_common.SetPlaceholder("buildNumber")),
 		},
 		map[string]string{
 			"publish.dynamicDeps": "",
@@ -123,7 +77,7 @@ func modifyRdbPublishRequest(req *api.InternalTestplan, updater *FoilRequestUpda
 	generator.AddModification(
 		&api.DynamicDep{
 			Key:   "publishRequest.metadata.sources.gsPath",
-			Value: fmt.Sprintf("FMT=%s", req.SuiteInfo.SuiteMetadata.SchedulingUnits[0].DynamicUpdateLookupTable["installPath"]+"/metadata/sources.jsonpb"),
+			Value: fmt.Sprintf("FMT=%s", dynamic_common.SetPlaceholder("crosInstallPath")+"/metadata/sources.jsonpb"),
 		},
 		map[string]string{
 			"publish.dynamicDeps": "",

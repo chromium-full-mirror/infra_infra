@@ -18,21 +18,12 @@ import (
 )
 
 type FoilRequestUpdater struct {
-	ProvisionPath   string
-	ProvisionBinary string
-	TestPath        string
-	FilterTests     bool
-
-	buildStr string
-	buildNum string
+	TestPath    string
+	FilterTests bool
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
-
-	log.Println("Setting build.")
-	ru.buildStr = "brya-trunk_staging-userdebug"
-	ru.buildNum = "12330924"
 
 	ctx := context.Background()
 
@@ -41,10 +32,6 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	ru.ProvisionPath, err = processContainerPath(ctx, dockerKeyFile, ru.ProvisionPath, "foil-provision")
-	if err != nil {
-		return req, err
-	}
 	ru.TestPath, err = processContainerPath(ctx, dockerKeyFile, ru.TestPath, "foil-test")
 	if err != nil {
 		return req, err
@@ -77,8 +64,6 @@ func processContainerPath(ctx context.Context, creds, path, firestoreName string
 func main() {
 	requestUpdater := &FoilRequestUpdater{}
 	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
-	fs.StringVar(&requestUpdater.ProvisionPath, "prov-path", common.LabelProd, "SHA256 value for provision container")
-	fs.StringVar(&requestUpdater.ProvisionBinary, "prov-bin", "foil-provision", "Binary called within provision container")
 	fs.StringVar(&requestUpdater.TestPath, "test-path", common.LabelProd, "SHA256 value for test container")
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 
