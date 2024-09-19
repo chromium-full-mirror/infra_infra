@@ -73,8 +73,14 @@ func boolCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 
 func stringCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	c := ls.GetCapabilities()
+	if v := c.GetFingerprintBoard(); v != "" {
+		dims["label-fingerprint_board"] = []string{v}
+	}
 	if v := c.GetFingerprintMcu(); v != "" {
 		dims["label-fingerprint_mcu"] = []string{v}
+	}
+	if v := c.GetFingerprintSensor(); v != "" {
+		dims["label-fingerprint_sensor"] = []string{v}
 	}
 	if v := c.GetGpuFamily(); v != "" {
 		dims["label-gpu_family"] = []string{v}
@@ -104,7 +110,9 @@ func stringCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabel
 
 func stringCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	c := ls.Capabilities
+	d = assignLastStringValueAndDropKey(d, c.FingerprintBoard, "label-fingerprint_board")
 	d = assignLastStringValueAndDropKey(d, c.FingerprintMcu, "label-fingerprint_mcu")
+	d = assignLastStringValueAndDropKey(d, c.FingerprintSensor, "label-fingerprint_sensor")
 	d = assignLastStringValueAndDropKey(d, c.GpuFamily, "label-gpu_family")
 	d = assignLastStringValueAndDropKey(d, c.GpuId, "label-gpu_id")
 	d = assignLastStringValueAndDropKey(d, c.Graphics, "label-graphics")
