@@ -575,9 +575,19 @@ func setGpuId(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	c.GpuId = &(s.GpuId)
 }
 
+func setFingerprintBoard(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
+	c := l.GetCapabilities()
+	c.FingerprintBoard = &(s.FingerprintBoard)
+}
+
 func setFingerprintMcu(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	c := l.GetCapabilities()
 	c.FingerprintMcu = &(s.FingerprintMcu)
+}
+
+func setFingerprintSensor(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
+	c := l.GetCapabilities()
+	c.FingerprintSensor = &(s.FingerprintSensor)
 }
 
 func setHardwareState(s chromeosLab.HardwareState) *inventory.HardwareState {
@@ -620,7 +630,9 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	}
 	setCr50Configs(l, s)
 	setGpuId(l, s)
+	setFingerprintBoard(l, s)
 	setFingerprintMcu(l, s)
+	setFingerprintSensor(l, s)
 }
 
 // TODO(echoyang@): Add CBX branding
@@ -833,7 +845,9 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *dev
 		Carrier:             &carrierInvalid,
 		Detachablebase:      &falseValue,
 		Fingerprint:         &falseValue,
+		FingerprintBoard:    &emptyString,
 		FingerprintMcu:      &emptyString,
+		FingerprintSensor:   &emptyString,
 		Flashrom:            &falseValue,
 		GpuFamily:           &emptyString,
 		GpuId:               &emptyString,

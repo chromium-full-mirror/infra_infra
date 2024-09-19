@@ -323,7 +323,9 @@ var devUFSState = chromeosLab.DutState{
 	GpuId:                    "test_gpu_id",
 	AudioBeamforming:         "intelligo",
 	CameraState:              chromeosLab.HardwareState_HARDWARE_NORMAL,
+	FingerprintBoard:         "test_fingerprint_board",
 	FingerprintMcu:           "test_fingerprint_mcu",
+	FingerprintSensor:        "test_fingerprint_sensor",
 }
 
 var labstationMachine = ufspb.Machine{
@@ -540,7 +542,9 @@ common {
 			cbx_branding: CBX_BRANDING_UNSPECIFIED
 			detachablebase: true
 			fingerprint: true
+			fingerprint_board: "test_fingerprint_board"
 			fingerprint_mcu: "test_fingerprint_mcu"
+			fingerprint_sensor: "test_fingerprint_sensor"
 			form_factor: FORM_FACTOR_CHROMEBASE
 			gpu_family: "test_gpu"
 			gpu_id: "test_gpu_id"
@@ -783,7 +787,9 @@ common {
 			carrier: CARRIER_INVALID
 			detachablebase: false
 			fingerprint: false
+			fingerprint_board: "test_fingerprint_board"
 			fingerprint_mcu: "test_fingerprint_mcu"
+			fingerprint_sensor: "test_fingerprint_sensor"
 			flashrom: false
 			gpu_family: ""
 			gpu_id: "test_gpu_id"
