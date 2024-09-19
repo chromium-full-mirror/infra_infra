@@ -154,6 +154,11 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, deviceID, idType)
 }
 
+// BulkLeaseDevices takes a BulkLeaseDevicesRequest and leases a corresponding device.
+func (s *Server) BulkLeaseDevices(ctx context.Context, r *api.BulkLeaseDevicesRequest) (*api.BulkLeaseDevicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "BulkLeaseDevices is not implemented")
+}
+
 // ReleaseDevice releases the leased device.
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
 	return controller.ReleaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r)
