@@ -130,7 +130,7 @@ func FixBatteryCutOffConfig() *Configuration {
 				},
 				Actions: crosRepairActions(),
 			},
-			PlanCrOS:          setAllowFail(crosRepairPlan(false), false),
+			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),

@@ -14,6 +14,7 @@ func setAllowFail(p *Plan, allowFail bool) *Plan {
 func CrosRepairConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanCrOSBase,
 			PlanDolos,
 			PlanServo,
 			PlanBluetoothPeer,
@@ -26,7 +27,8 @@ func CrosRepairConfig() *Configuration {
 		},
 		Plans: map[string]*Plan{
 			PlanServo:         setAllowFail(servoRepairPlan(), true),
-			PlanCrOS:          setAllowFail(crosRepairPlan(false), false),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(true), false),
+			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
@@ -41,6 +43,7 @@ func CrosRepairConfig() *Configuration {
 func CrosRepairWithDeepRepairConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanCrOSBase,
 			PlanDolos,
 			PlanServoDeepRepair,
 			PlanCrOSDeepRepair,
@@ -58,7 +61,8 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			// We allow CrOSDeepRepair to fail(so the task continue) as some of actions in it may result to a later normal repair success.
 			PlanCrOSDeepRepair: setAllowFail(deepRepairCrosPlan(), true),
 			PlanServo:          setAllowFail(servoRepairPlan(), true),
-			PlanCrOS:           setAllowFail(crosRepairPlan(false), false),
+			PlanCrOSBase:       setAllowFail(crosBasePlan(true), false),
+			PlanCrOS:           setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:      setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer:  setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:     setAllowFail(wifiRouterRepairPlan(), true),
@@ -73,6 +77,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 func CrosDeployConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
+			PlanCrOSBase,
 			PlanServoFwUpdate,
 			PlanDolos,
 			PlanServo,
@@ -89,7 +94,8 @@ func CrosDeployConfig() *Configuration {
 			PlanServo:         setAllowFail(servoRepairPlan(), false),
 			PlanServoFwUpdate: setAllowFail(servoPreDeployPlan(), false),
 			PlanCrOSDeploy:    setAllowFail(crosDeployPlan(), false),
-			PlanCrOS:          setAllowFail(crosRepairPlan(true), false),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(false), false),
+			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),

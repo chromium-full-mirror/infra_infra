@@ -8,107 +8,187 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-func crosRepairPlan(isDeployment bool) *Plan {
+func crosRepairPlan() *Plan {
 	return &Plan{
-		CriticalActions: crosRepairCriticalActions(isDeployment),
+		CriticalActions: crosRepairCriticalActions(),
 		Actions:         crosRepairActions(),
 	}
 }
 
-func crosRepairCriticalActions(isDeployment bool) []string {
-	isRepair := !isDeployment
-	var actions []string
-	if isRepair {
-		actions = append(actions,
-			"Set state: repair_failed",
-			"Enable verbose network logging for cellular DUTs",
-			"Collect logs and crashinfo",
-		)
-	}
-	actions = append(actions,
+func crosRepairCriticalActions() []string {
+	actions := []string{
 		"Mark labstation as servod is in-use",
 		"Has repair-request for re-image USB-key",
+		"Has repair-request for reflash-firmware",
 		"Has repair-request for re-image by USB-key",
+		"Mark as Android based on ADB",
 		"Device is pingable",
-		"Device is SSHable",
-		"Device Uptime",
-	)
-	if isRepair {
-		actions = append(actions, "Verify access to cache")
-	}
-	actions = append(actions,
-		"Read bootId",
-		"Verify internal storage",
-		"Set dev_boot_usb is enabled",
-		"Verify if booted from priority kernel",
-		"Verify rootfs is on fs-verity",
-		"Check KVM is enabled",
-		"Has repair-request for re-provision",
-		"Check if last provision was good",
-		"Python is present",
-		"Verify that device is not enrolled",
-		"Check power sources",
-		"Check TPM statuses",
-		"Read TPM ownership",
-		"Verify tpm_fwver is updated correctly",
-		"Verify tpm_kernver is updated correctly",
-		"Verify present of gsctool",
-		"Audit battery",
-		"Audit storage (SMART only)",
-		"Audit wifi",
-		"Audit bluetooth",
-		"Audit cellular",
-		"Audit cellular modem on non-cellular pools",
-		"Stop if DUT needs replacement",
-		"Firmware validations",
-		"Check if OS on required version for camerabox tablet",
-		"Check audio latency toolkit state",
-		"Collect audio beamforming type",
-		"Login UI is up",
-		"Can list RW VPD Keys",
-		"Verify keys of RW_VPD",
-		"Set VPD region:us",
-		"Check VPD has value for stable_device_secret_DO_NOT_SHARE",
-		"Verify RO_VPD sku_number",
-		"Verify RO_VPD dsm_calib",
-		"Verify RO_VPD data on DUT",
-		"Verify system info",
-		"Collect firmware target",
-		"Collect gpu_id",
-		"Collect fingerprint_mcu",
-		"Update Servo NIC mac address",
-		"Backup CBI",
-		"Check CBI",
-		"Update provisioned info",
-		"Is crosid readable",
-		"Update special device labels",
-		"Collect dmesg logs from DUT",
-	)
-	if isRepair {
-		actions = append(actions, "Disable verbose network logging for cellular DUTs")
-	}
-	actions = append(actions,
-		"Verify bootId and compare",
+		"Chrome OS checks",
+		"Android OS checks",
 		"All repair-requests resolved",
 		"Reset DUT-state reason",
 		"Servo is in WORKING state",
 		"Set state: ready",
-	)
+	}
 	return actions
 }
 
 func crosRepairActions() map[string]*Action {
 	return map[string]*Action{
+		"Android OS checks": {
+			Docs: []string{
+				"Run DUT readiness checks for Android based DUTs.",
+			},
+			Conditions: []string{
+				"Is Andoid based",
+			},
+			Dependencies: []string{
+				"Android is accessable",
+				"ADB set Android as always awake",
+				"Read bootId",
+				"Device Uptime",
+			},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Chrome OS checks": {
+			Docs: []string{
+				"Run DUT readiness checks for Chrome based DUTs.",
+			},
+			Conditions: []string{
+				"Is Chrome based",
+			},
+			Dependencies: []string{
+				"Enable verbose network logging for cellular DUTs",
+				"Collect logs and crashinfo",
+				"Device is SSHable",
+				"Read bootId",
+				"Device Uptime",
+				"Verify access to cache",
+				"Set dev_boot_usb is enabled",
+				"Verify internal storage",
+				"Verify if booted from priority kernel",
+				"Verify rootfs is on fs-verity",
+				"Check KVM is enabled",
+				"Has repair-request for re-provision",
+				"Check if last provision was good",
+				"Python is present",
+				"Verify that device is not enrolled",
+				"Check power sources",
+				"Check TPM statuses",
+				"Read TPM ownership",
+				"Verify tpm_fwver is updated correctly",
+				"Verify tpm_kernver is updated correctly",
+				"Verify present of gsctool",
+				"Audit battery",
+				"Audit storage (SMART only)",
+				"Audit wifi",
+				"Audit bluetooth",
+				"Audit cellular",
+				"Audit cellular modem on non-cellular pools",
+				"Stop if DUT needs replacement",
+				"Firmware validations",
+				"Check if OS on required version for camerabox tablet",
+				"Check audio latency toolkit state",
+				"Collect audio beamforming type",
+				"Login UI is up",
+				"Can list RW VPD Keys",
+				"Verify keys of RW_VPD",
+				"Set VPD region:us",
+				"Check VPD has value for stable_device_secret_DO_NOT_SHARE",
+				"Verify RO_VPD sku_number",
+				"Verify RO_VPD dsm_calib",
+				"Verify RO_VPD data on DUT",
+				"Verify system info",
+				"Collect firmware target",
+				"Collect gpu_id",
+				"Update Servo NIC mac address",
+				"Backup CBI",
+				"Check CBI",
+				"Update provisioned info",
+				"Is crosid readable",
+				"Update special device labels",
+				"Collect dmesg logs from DUT",
+				"Disable verbose network logging for cellular DUTs",
+				"Verify bootId and compare",
+			},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Mark as Android based on ADB": {
+			Docs: []string{
+				"Mark DUT as Android, based on ADB responses.",
+			},
+			Conditions: []string{
+				"Is Chrome based",
+			},
+			Dependencies: []string{
+				"ADB Connect DUT",
+			},
+			ExecName:               "cros_set_as_android_based",
+			AllowFailAfterRecovery: true,
+		},
+		"Mark as Chrome based OS": {
+			Docs: []string{
+				"Mark DUT as Chrome based.",
+			},
+			ExecName:   "cros_set_as_chrome_based",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"ADB Connect DUT": {
+			Docs: []string{
+				"Exec ADB connect to the DUT by ethernet on port 5555.",
+			},
+			ExecName: "ctr_adb_connect",
+		},
+		"Android is accessable": {
+			Docs: []string{
+				"Validate is Andoid OS is accessable by reading data from the host.",
+			},
+			Conditions: []string{
+				"Is Andoid based",
+			},
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 15},
+			RunControl:  RunControl_ALWAYS_RUN,
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for ping",
+				"Reset servo_v4.1 ethernet and wait for ping",
+				"Power cycle DUT by RPM and wait for ping",
+				"Force reimage to Chrome based OS",
+			},
+		},
+		"ADB set Android as always awake": {
+			Docs: []string{
+				"Set Android to be awake always.",
+			},
+			Conditions: []string{
+				"Is Andoid based",
+			},
+			ExecName: "ctr_make_awake_always",
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for ping",
+				"Reset servo_v4.1 ethernet and wait for ping",
+				"Power cycle DUT by RPM and wait for ping",
+				"Force reimage to Chrome based OS",
+			},
+		},
+		"Is Andoid based": {
+			ExecName:      "cros_is_android_based",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Is Chrome based": {
+			ExecName:      "cros_is_chrome_based",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
 		"Mark labstation as servod is in-use": {
 			Docs: []string{
 				"Create lock file is_in_use.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
 				"Is labstation",
-			},
-			Dependencies: []string{
-				"Labstation is SSHable",
 			},
 			ExecName:               "cros_create_servo_in_use",
 			AllowFailAfterRecovery: true,
@@ -134,7 +214,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Condition to check if the servohost is a labstation.",
 			},
-			ExecName: "servo_host_is_labstation",
+			ExecName:      "servo_host_is_labstation",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Set state: ready": {
 			Docs: []string{
@@ -184,24 +266,10 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_RUN_ONCE,
 		},
-		"DUT has board info": {
-			ExecName:      "dut_has_board_name",
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"DUT has model info": {
-			ExecName:      "dut_has_model_name",
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
 		"Device is pingable": {
 			Docs: []string{
 				"Verify that device is reachable by ping.",
 				"Limited to 15 seconds.",
-			},
-			Dependencies: []string{
-				"DUT has board info",
-				"DUT has model info",
 			},
 			ExecName: "cros_ping",
 			ExecTimeout: &durationpb.Duration{
@@ -316,6 +384,24 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "dut_add_repair_requests",
 			ExecExtraArgs: []string{
 				"requests:REFLASH_FW",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Force reimage to Chrome based OS": {
+			Docs: []string{
+				"Mark DUT as Chrome based.",
+				"Place repair-request: reflash firmware of the DUT and re-image by USB-drive.",
+				"The request will be applied when plan restarted and reached action to address it.",
+			},
+			Conditions: []string{
+				"Is Andoid based",
+			},
+			Dependencies: []string{
+				"Mark as Chrome based OS",
+			},
+			ExecName: "dut_add_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REFLASH_FW,REIMAGE_BY_USBKEY",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
@@ -1384,13 +1470,13 @@ func crosRepairActions() map[string]*Action {
 				"Check battery on the DUT is normal and update battery hardware state accordingly.",
 			},
 			Conditions: []string{
+				//TODO(b:234761994, Flex device does not have charge_full file)
+				"Is a Chromebook",
 				"cros_is_battery_expected",
 				"cros_is_not_virtual_machine",
 				"Battery is expected on device",
 				"Battery is present on device",
 				"Internal storage is responsive",
-				//TODO(b:234761994, Flex device does not have charge_full file)
-				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Battery temperature below threshold",
@@ -2781,14 +2867,16 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
+				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Is servod running",
-				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Mark as Chrome based OS",
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
 				"Remove REIMAGE_BY_USBKEY repair-request",
@@ -2809,6 +2897,7 @@ func crosRepairActions() map[string]*Action {
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
+				"Mark as Chrome based OS",
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
@@ -2829,6 +2918,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Recovery version has OS image path",
 				"Is servod running",
 				"Is a Chromebook",
@@ -2837,6 +2927,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Mark as Chrome based OS",
 				"Boot DUT in recovery and install from USB-drive (no storage check)",
 				"Wait to be SSHable (normal boot)",
 				"Remove REIMAGE_BY_USBKEY repair-request",
@@ -2852,12 +2943,14 @@ func crosRepairActions() map[string]*Action {
 				"When DUT sees USB-key it will always try to boot from it.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Is Flex device",
 				"Is servod running",
 				"Is servo USB key detected",
 				"Device has Intel AMT",
 			},
 			Dependencies: []string{
+				"Mark as Chrome based OS",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Direct USB-drive to DUT",
@@ -2974,13 +3067,15 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
+				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Is servod running",
-				"Is a Chromebook",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Boot DUT from USB in DEV mode",
+				"Mark as Chrome based OS",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
 				"Wait to be SSHable (normal boot)",
@@ -3030,7 +3125,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Cold reset DUT by servo",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be pingable (normal boot)",
 			},
 			ExecName: "sample_pass",
 		},
@@ -3527,9 +3622,10 @@ func crosRepairActions() map[string]*Action {
 				"actions into a single repair action.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
+				"Is a Chromebook",
 				"Recovery version has firmware image path",
 				"Is servod running",
-				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo (allowed failed)",
@@ -3632,6 +3728,7 @@ func crosRepairActions() map[string]*Action {
 				"The goal to force update fingerprint fw when devices booted from USB-stick",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Is a Chromebook",
 				"Is servod running",
 				"Is servo USB key detected",
@@ -4005,9 +4102,6 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
 			ExecName: "cros_update_crossystem",
 			ExecExtraArgs: []string{
 				"command:dev_boot_usb",
@@ -4228,6 +4322,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is in cellular pool",
+				"Device is SSHable",
 			},
 			Dependencies: []string{
 				"Enable verbose shill logs",
@@ -4636,7 +4731,6 @@ func crosRepairActions() map[string]*Action {
 				"Connection checked from the DUT.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
 				"Not Satlab device",
 			},
 			ExecName:               "cache_download_check",

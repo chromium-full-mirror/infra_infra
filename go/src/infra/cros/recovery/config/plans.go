@@ -11,6 +11,7 @@ package config
 const (
 	PlanAndroid         = "android"
 	PlanCrOS            = "cros"
+	PlanCrOSBase        = "cros_base"
 	PlanCrOSDeploy      = "cros_deploy"
 	PlanCrOSAudit       = "cros_audit"
 	PlanCrOSDeepRepair  = "cros_deep_repair"

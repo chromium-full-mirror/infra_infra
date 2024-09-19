@@ -72,6 +72,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupTypeCros,
 		buildbucket.Recovery,
 		[]string{
+			config.PlanCrOSBase,
 			config.PlanDolos,
 			config.PlanServo,
 			config.PlanBluetoothPeer,
@@ -88,6 +89,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupTypeCros,
 		buildbucket.Deploy,
 		[]string{
+			config.PlanCrOSBase,
 			config.PlanServoFwUpdate,
 			config.PlanDolos,
 			config.PlanServo,
@@ -211,6 +213,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupTypeCros,
 		buildbucket.DeepRecovery,
 		[]string{
+			config.PlanCrOSBase,
 			config.PlanDolos,
 			config.PlanServoDeepRepair,
 			config.PlanCrOSDeepRepair,
@@ -279,6 +282,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupTypeCros,
 		buildbucket.PostTest,
 		[]string{
+			config.PlanCrOSBase,
 			config.PlanDolos,
 			config.PlanServo,
 			config.PlanBluetoothPeer,

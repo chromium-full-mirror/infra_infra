@@ -467,6 +467,8 @@ plans:
                 - This action installs the test image on DUT utilizing the features of servo.
                 - DUT will be booted in recovery mode.
               conditions:
+                - name: Is Chrome based (ALWAYS_RUN)
+                  exec_name: cros_is_chrome_based
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:
@@ -642,6 +644,10 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
+                - name: Mark as Chrome based OS (ALWAYS_RUN)
+                  exec_name: cros_set_as_chrome_based
+                  docs:
+                    - Mark DUT as Chrome based.
                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -747,6 +753,10 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
+                - name: Mark as Chrome based OS (ALWAYS_RUN)
+                  exec_name: cros_set_as_chrome_based
+                  docs:
+                    - Mark DUT as Chrome based.
                 - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
@@ -1015,6 +1025,8 @@ plans:
                 - Uses Intel AMT (vPro) to power off and power on the DUT.
                 - When DUT sees USB-key it will always try to boot from it.
               conditions:
+                - name: Is Chrome based (ALWAYS_RUN)
+                  exec_name: cros_is_chrome_based
                 - name: Is Flex device (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -1084,6 +1096,10 @@ plans:
                           docs:
                             - Check that DUT is a Flex board
               dependencies:
+                - name: Mark as Chrome based OS (ALWAYS_RUN)
+                  exec_name: cros_set_as_chrome_based
+                  docs:
+                    - Mark DUT as Chrome based.
                 - name: Servo USB-Key needs to be reflashed
                   exec_name: sample_pass
                   docs:
@@ -1532,6 +1548,15 @@ plans:
                   docs:
                     - This action installs the test image on DUT after booking the DUT in dev mode.
                   conditions:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
                     - name: Recovery version has OS image path
                       exec_name: has_stable_version_cros_image
                       docs:
@@ -1555,13 +1580,6 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                    - name: Is a Chromebook (RUN_ONCE)
-                      exec_name: dut_check_board
-                      exec_args:
-                        - string_values:aurora,reven
-                        - invert_result:true
-                      docs:
-                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -1598,6 +1616,10 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
+                    - name: Mark as Chrome based OS (ALWAYS_RUN)
+                      exec_name: cros_set_as_chrome_based
+                      docs:
+                        - Mark DUT as Chrome based.
                     - name: Run install after boot from USB-drive (ALWAYS_RUN) (time:'20m0s')
                       exec_name: cros_run_chromeos_install_command_after_boot_usbdrive
                       docs:
