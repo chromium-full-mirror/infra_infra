@@ -118,5 +118,11 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/use_flag_filter/${platform}"),
 			},
 		},
+		{
+			Name: "al-provision-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/al-provision-filter/${platform}"),
+			},
+		},
 	}
 }

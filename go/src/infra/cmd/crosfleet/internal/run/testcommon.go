@@ -436,6 +436,13 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 	if l.testPlan.Suite != nil {
 		for _, suite := range l.testPlan.GetSuite() {
 			if strings.HasPrefix(suite.GetName(), "AL.") {
+				alProvisionFilter := &api.CTPFilter{
+					ContainerInfo: &api.ContainerInfo{
+						Container: &buildapi.ContainerImageInfo{
+							Name: "al-provision-filter",
+						},
+					},
+				}
 				foilFilter := &api.CTPFilter{
 					ContainerInfo: &api.ContainerInfo{
 						Container: &buildapi.ContainerImageInfo{
@@ -457,7 +464,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 						},
 					},
 				}
-				l.cliFlags.userDefinedFilters = append(l.cliFlags.userDefinedFilters, foilFilter, alTestFinder)
+				l.cliFlags.userDefinedFilters = append(l.cliFlags.userDefinedFilters, alProvisionFilter, foilFilter, alTestFinder)
 				break
 			}
 		}
