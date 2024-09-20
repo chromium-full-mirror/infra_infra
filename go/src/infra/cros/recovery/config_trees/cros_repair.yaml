@@ -96456,6 +96456,10 @@ plans:
               exec_name: cros_uptime_print
               docs:
                 - Print uptime of the DUT.
+            - name: Reset provisioned info
+              exec_name: cros_reset_provision_info
+              docs:
+                - Reset all provision info.
         - name: All repair-requests resolved
           exec_name: dut_has_no_repair_requests
           docs:

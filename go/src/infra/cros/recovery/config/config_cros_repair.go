@@ -47,6 +47,7 @@ func crosRepairActions() map[string]*Action {
 				"ADB set Android as always awake",
 				"Read bootId",
 				"Device Uptime",
+				"Reset provisioned info",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
@@ -2525,6 +2526,12 @@ func crosRepairActions() map[string]*Action {
 				"Sleep 1s",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Reset provisioned info": {
+			Docs: []string{
+				"Reset all provision info.",
+			},
+			ExecName: "cros_reset_provision_info",
 		},
 		"Switch to secure-mode and reboot": {
 			Docs: []string{

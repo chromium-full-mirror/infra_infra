@@ -32977,6 +32977,7 @@ plans:
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
+            - name: Reset provisioned info ('cros_reset_provision_info')
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Servo is in WORKING state ('servo_match_state')

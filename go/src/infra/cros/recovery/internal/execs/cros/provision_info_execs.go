@@ -48,6 +48,15 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
+func resetProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error {
+	log.Debugf(ctx, "Provision info reseted!")
+	info.GetDut().ProvisionedInfo = &tlw.ProvisionedInfo{
+		CrosVersion: " ",
+		JobRepoUrl:  " ",
+	}
+	return nil
+}
+
 // gsCrOSImageBucket is the base URL for the Google Storage bucket for
 // ChromeOS image archives.
 var gsCrOSImageBucket string
@@ -63,4 +72,5 @@ func init() {
 		gsCrOSImageBucket = fmt.Sprintf("gs://%s", gcsBucket)
 	}
 	execs.Register("cros_update_provision_info", updateProvisionedInfoExec)
+	execs.Register("cros_reset_provision_info", resetProvisionedInfoExec)
 }
