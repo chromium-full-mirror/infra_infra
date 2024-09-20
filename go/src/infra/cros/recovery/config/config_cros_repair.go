@@ -1804,7 +1804,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_audit_cellular_connection",
 			ExecExtraArgs: []string{
-				"wait_connected_timeout:120",
+				"wait_connected_timeout:40",
+				"connect_attempts:3",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 180,

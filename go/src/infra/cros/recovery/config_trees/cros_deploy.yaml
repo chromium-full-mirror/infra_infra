@@ -71679,7 +71679,8 @@ plans:
                 - name: Audit cellular network connection (Allow to fail) (time:'3m0s')
                   exec_name: cros_audit_cellular_connection
                   exec_args:
-                    - wait_connected_timeout:120
+                    - wait_connected_timeout:40
+                    - connect_attempts:3
                   docs:
                     - Verify DUT is able to connect to the default cellular network.
                   conditions:
