@@ -25,7 +25,7 @@ func collectFingerprintMcu(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("collect fingerprint_mcu: only for chromeos devices").Err()
 	}
 
-	log.Debugf(ctx, "fingerprint_mcu before update: %s", cros.GetFingerprintMcu())
+	log.Debugf(ctx, "fingerprint_mcu before update: %s", cros.GetFingerprint().GetMcu())
 
 	// command to grab the fingerprint_mcu from dut
 	const fingerprintMcuCmd = `ectool --name=cros_fp chipinfo | awk '/name:/{print $2}'`
@@ -38,7 +38,7 @@ func collectFingerprintMcu(ctx context.Context, info *execs.ExecInfo) error {
 	if fingerprintMcu == "" {
 		fingerprintMcu = "None"
 	}
-	cros.FingerprintMcu = strings.ToUpper(fingerprintMcu)
+	cros.Fingerprint.Mcu = strings.ToUpper(fingerprintMcu)
 	return nil
 }
 

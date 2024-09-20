@@ -207,7 +207,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			GpuId:               ds.GetGpuId(),
 			AmtManager:          createDUTAMTManager(p, ds),
 			Camera:              createDUTCamera(ds),
-			FingerprintMcu:      ds.GetFingerprintMcu(),
+			Fingerprint:         createDUTFingerprint(ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -543,6 +543,14 @@ func createDUTCamera(ds *ufslab.DutState) *tlw.Camera {
 	}
 }
 
+func createDUTFingerprint(ds *ufslab.DutState) *tlw.Fingerprint {
+	return &tlw.Fingerprint{
+		Board:  ds.GetFingerprintBoard(),
+		Mcu:    ds.GetFingerprintMcu(),
+		Sensor: ds.GetFingerprintSensor(),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -667,7 +675,6 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.FwEcTarget = ""
 	state.GpuId = ""
 	state.AmtManagerState = ufslab.PeripheralState_UNKNOWN
-	state.FingerprintMcu = ""
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
@@ -763,7 +770,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		}
 
 		state.CameraState = convertHardwareStateToUFS(chromeos.GetCamera().GetState())
-		state.FingerprintMcu = chromeos.GetFingerprintMcu()
+		state.FingerprintBoard = chromeos.GetFingerprint().GetBoard()
+		state.FingerprintMcu = chromeos.GetFingerprint().GetMcu()
+		state.FingerprintSensor = chromeos.GetFingerprint().GetSensor()
 
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {

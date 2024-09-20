@@ -805,6 +805,18 @@ message FirmwareInfo {
   string ap_target = 2;
 }
 
+// Fingerprint holds info about the fingerprint hw on the dut.
+message Fingerprint {
+  // Fingerprint Board
+  string board = 1;
+
+  // Fingerprint MCU
+  string mcu = 2;
+
+  // Fingerprint Sensor
+  string sensor = 3;
+}
+
 // AMTManager holds info about AMT management on the DUT.
 message AMTManager {
   // Hostname for the AMT management port.
@@ -834,7 +846,7 @@ message Camera {
 }
 
 // Chrome OS specific DUT details
-// NEXT TAG: 37
+// NEXT TAG: 39
 message ChromeOS {
   // Is OS based on Android.
   // If not then based on Chrome.
@@ -966,8 +978,8 @@ message ChromeOS {
   // Camera info
   Camera camera = 35;
 
-  // Fingerprint MCU
-  string fingerprint_mcu = 36;
+  // Fingerprint
+  Fingerprint fingerprint = 36;
 }
 
 // TestbedCapability specifies whether the testbed can execute certain tests.
