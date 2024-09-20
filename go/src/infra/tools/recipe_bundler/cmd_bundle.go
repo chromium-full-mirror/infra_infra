@@ -415,7 +415,7 @@ func (c *cmdBundle) run(ctx context.Context) error {
 						fspec := fetchSpec{spec.revision, specref}
 						resolvedSpecs, err := repo.resolveSpec(ctx, fspec)
 						if err != nil {
-							err = errors.Annotate(err, "resolving git spec: %+v", fspec).Err()
+							err = errors.Annotate(err, "resolving git spec: %+v Reponame:%s", fspec, repoName).Err()
 							chSpec <- func() error {
 								return err
 							}
