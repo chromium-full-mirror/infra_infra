@@ -119,7 +119,7 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		})
 	}
 
-	return map[string]interface{}{
+	av := map[string]interface{}{
 		"user":               info.Metadata.User,
 		"targets":            info.Metadata.getTargets(),
 		"build_id":           buildID,
@@ -133,7 +133,20 @@ func toAVRO(info *NinjaLog) (map[string]interface{}, error) {
 		"build_configs":      buildConfigs,
 		"log_entries":        logEntries,
 		"created_at":         timeNow(),
-	}, nil
+	}
+	// Old data may not have the following fields.
+	// Set them to AVRO data only the filds exist so that false and null can be distinguished.
+	if info.Metadata.IsCloudtop != nil {
+		av["is_cloudtop"] = goavro.Union("boolean", *info.Metadata.IsCloudtop)
+	}
+	if info.Metadata.GCEMachineType != "" {
+		av["gce_machine_type"] = goavro.Union("string", info.Metadata.GCEMachineType)
+	}
+	if info.Metadata.IsCog != nil {
+		av["is_cog"] = goavro.Union("boolean", *info.Metadata.IsCog)
+	}
+
+	return av, nil
 
 }
 

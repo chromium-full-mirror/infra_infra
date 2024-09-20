@@ -34,6 +34,15 @@ fields:
     type: string
   - name: cpu_core
     type: int
+  - name: is_cloudtop
+    type: ["null", boolean]
+    default: null
+  - name: gce_machine_type
+    type: ["null", string]
+    default: null
+  - name: is_cog
+    type: ["null", boolean]
+    default: null
   - name: build_configs
     type:
       type: array

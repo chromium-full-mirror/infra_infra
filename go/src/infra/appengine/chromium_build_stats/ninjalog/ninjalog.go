@@ -135,6 +135,15 @@ type Metadata struct {
 	// CPUCore is the number of cpu cores.
 	CPUCore int32 `json:"cpu_core"`
 
+	// IsCloudtop is whether the host machine is a Cloudtop.
+	IsCloudtop *bool `json:"is_cloudtop"`
+
+	// GCEMachineType is the GCE machine type of the host machine.
+	GCEMachineType string `json:"gce_machine_type"`
+
+	// IsCog is whether the workspace is CoG.
+	IsCog *bool `json:"is_cog"`
+
 	// BuildConfigs is content of args.gn.
 	BuildConfigs map[string]string `json:"build_configs"`
 

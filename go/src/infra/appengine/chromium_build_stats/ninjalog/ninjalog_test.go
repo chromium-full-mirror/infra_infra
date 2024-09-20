@@ -18,6 +18,8 @@ import (
 )
 
 var (
+	trueValue = true
+
 	logTestCase = `# ninja log v6
 76	187	0	resources/inspector/devtools_extension_api.js	75430546595be7c2
 80	284	0	gen/autofill_regex_constants.cc	fa33c8d7ce1d8791
@@ -165,6 +167,9 @@ var (
 		Compiler:                "goma",
 		Exit:                    0,
 		StepName:                "compile",
+		IsCloudtop:              &trueValue,
+		GCEMachineType:          "n2d-standard-9999",
+		IsCog:                   &trueValue,
 		Env: map[string]string{
 			"LANG":    "en_US.UTF-8",
 			"SHELL":   "/bin/bash",
@@ -309,7 +314,7 @@ func TestParseWithMetadata(t *testing.T) {
 287	290	0	obj/third_party/angle/src/copy_scripts.actions_rules_copies.stamp	b211d373de72f455
 
 # end of ninja log
-{"exit_code": 1, "build_duration_sec": 100, "build_id": 12345, "invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d", "user": "bob@google.com", "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}, "explicit_build_config_keys": ["is_debug", "use_goma"]}
+{"exit_code": 1, "build_duration_sec": 100, "build_id": 12345, "invocation_id": "6dc52b4f-fdf9-4017-b542-8c6cf296677d", "user": "bob@google.com", "platform": "Linux", "argv": ["../../../scripts/compile.py", "--target", "Release", "--clobber", "--compiler=goma", "--", "all"], "exit": 0, "step_name": "compile", "is_cloudtop": true, "gce_machine_type": "n2d-standard-9999", "is_cog": true, "env": {"LANG": "en_US.UTF-8", "SHELL": "/bin/bash", "HOME": "/home/chrome-bot", "PWD": "/b/build/Linux_x64/build", "LOGNAME": "chrome-bot", "USER": "chrome-bot", "PATH": "/home/chrome-bot/bin:/b/depot_tools:/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin" }, "cwd": "/b/build/Linux_x64/build/src", "compiler": "goma", "jobs": 50, "targets": ["all"], "build_configs": {"use_goma": "true", "target_cpu": "\"\"", "is_component_build": "true", "symbol_level": "-1", "is_debug": "false", "enable_nacl": "false", "host_cpu": "\"x64\"", "host_os": "\"linux\"", "target_os": "\"\""}, "explicit_build_config_keys": ["is_debug", "use_goma"]}
 `))
 	if err != nil {
 		t.Errorf(`Parse()=_, %#v; want=_, <nil>`, err)

@@ -79,6 +79,9 @@ func TestToAVRO(t *testing.T) {
 		"jobs":               50,
 		"os":                 "LINUX",
 		"step_name":          "compile",
+		"is_cloudtop":        goavro.Union("boolean", true),
+		"gce_machine_type":   goavro.Union("string", "n2d-standard-9999"),
+		"is_cog":             goavro.Union("boolean", true),
 		"targets":            []string{"all"},
 		"log_entries": []map[string]any{
 			{
