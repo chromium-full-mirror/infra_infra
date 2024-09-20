@@ -265,7 +265,8 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 		return errors.Reason("audit cellular connection: exec timeout must be >= wait_connected_timeout + 60s").Err()
 	}
 
-	connectAttempts := argsMap.AsInt(ctx, "connect_attempts", 2)
+	connectAttempts := argsMap.AsInt(ctx, "connect_attempts", 1)
+	attemptDelay := argsMap.AsDuration(ctx, "attempt_delay", 5, time.Second)
 	resetCmdTimeout := argsMap.AsDuration(ctx, "reset_command_timeout", 5, time.Second)
 	resetDelay := argsMap.AsDuration(ctx, "reset_delay", 10, time.Second)
 	resetWaitTimeout := argsMap.AsDuration(ctx, "reset_wait_timeout", 30, time.Second)
@@ -296,7 +297,7 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 			pi.DetectedOwnNumber = detectedSi.GetProfileInfos()[0].GetOwnNumber()
 		}
 
-		if err := retry.LimitCount(ctx, connectAttempts, time.Second, func() error {
+		if err := retry.LimitCount(ctx, connectAttempts, attemptDelay, func() error {
 			if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err == nil {
 				return nil
 			} else {
