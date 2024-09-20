@@ -51,7 +51,7 @@ func (rt RunType) String() string {
 // The rt parameter specifies the environment, determining whether the client is used on a bot with an attached Service Account (SA),
 // within a container, or in a local environment.
 func GetAndroidOnePlatformClient(rt RunType) (*http.Client, error) {
-	creds, err := fetchCredentials(rt)
+	creds, err := FetchCredentials(rt)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching credentials: %w", err)
 	}
@@ -74,8 +74,8 @@ func getAuthorizedHTTP(credentials *oauth2.TokenSource, timeout time.Duration) (
 	return client, nil
 }
 
-// fetchCredentials fetches creds for authentication.
-func fetchCredentials(rt RunType) (*google.Credentials, error) {
+// FetchCredentials fetches creds for authentication.
+func FetchCredentials(rt RunType) (*google.Credentials, error) {
 	switch rt {
 	case Local:
 		return fetchCredentialsFromJSON(true)
