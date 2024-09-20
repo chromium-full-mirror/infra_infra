@@ -95,9 +95,10 @@ func dumpChangeSnapshots(ctx context.Context) (err error) {
 	defer func() {
 		dumpChangeSnapshotTick.Add(ctx, 1, err == nil)
 	}()
-	ctx = logging.SetLevel(ctx, logging.Info)
+	//TODO(b/368319251): Temp enable logs
+	ctx = logging.SetLevel(ctx, logging.Debug)
 	logging.Debugf(ctx, "Dumping change snapshots to BQ")
-	return exportToBQ(ctx, dumpChangeSnapshotHelper)
+	return exportToBQ(ctx, dumpChangeSnapshotHelperBatched)
 }
 
 func dumpCrosNetwork(ctx context.Context) (err error) {

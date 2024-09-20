@@ -15,6 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/gae/service/datastore"
 
 	bqlib "infra/cros/lab_inventory/bq"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -27,6 +28,7 @@ import (
 )
 
 const pageSize = 500
+const batchSize = 500
 
 type dumperFrequency int32
 
@@ -67,6 +69,201 @@ func dumpChangeEventHelper(ctx context.Context, bqClient *bigquery.Client) error
 		return err
 	}
 	logging.Debugf(ctx, "Finish deleting successfully")
+	return nil
+}
+
+func dumpChangeSnapshotHelperBatched(ctx context.Context, bqClient *bigquery.Client) error {
+	var curTimeStr string
+	var currCursor datastore.Cursor
+	proConfig, err := configuration.GetProjectConfig(ctx, getProject(ctx))
+	if err != nil {
+		curTimeStr = bqlib.GetPSTTimeStamp(time.Now())
+	} else {
+		curTimeStr = proConfig.DailyDumpTimeStr
+	}
+
+	for {
+		q := datastore.NewQuery(history.SnapshotMsgKind).Limit(batchSize).FirestoreMode(true)
+		if currCursor != nil {
+			q.Start(currCursor)
+		}
+		msgs := make(map[string][]proto.Message, 0)
+		count := 0
+		var snapshots []*history.SnapshotMsgEntity
+		f := func(s history.SnapshotMsgEntity, cb datastore.CursorCB) error {
+			snapshots = append(snapshots, &s)
+			resourceType := util.GetPrefix(s.ResourceName)
+			logging.Debugf(ctx, "handling %s", s.ResourceName)
+			count += 1
+			switch resourceType {
+			case util.MachineCollection:
+				var data ufspb.Machine
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["machines"] = append(msgs["machines"], &apibq.MachineRow{
+					Machine: &data,
+					Delete:  s.Delete,
+				})
+			case util.NicCollection:
+				var data ufspb.Nic
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["nics"] = append(msgs["nics"], &apibq.NicRow{
+					Nic:    &data,
+					Delete: s.Delete,
+				})
+			case util.DracCollection:
+				var data ufspb.Drac
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["dracs"] = append(msgs["dracs"], &apibq.DracRow{
+					Drac:   &data,
+					Delete: s.Delete,
+				})
+			case util.RackCollection:
+				var data ufspb.Rack
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["racks"] = append(msgs["racks"], &apibq.RackRow{
+					Rack:   &data,
+					Delete: s.Delete,
+				})
+			case util.KVMCollection:
+				var data ufspb.KVM
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["kvms"] = append(msgs["kvms"], &apibq.KVMRow{
+					Kvm:    &data,
+					Delete: s.Delete,
+				})
+			case util.SwitchCollection:
+				var data ufspb.Switch
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["switches"] = append(msgs["switches"], &apibq.SwitchRow{
+					Switch: &data,
+					Delete: s.Delete,
+				})
+			case util.HostCollection:
+				var data ufspb.MachineLSE
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["machine_lses"] = append(msgs["machine_lses"], &apibq.MachineLSERow{
+					MachineLse: &data,
+					Delete:     s.Delete,
+				})
+			case util.VMCollection:
+				var data ufspb.VM
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["vms"] = append(msgs["vms"], &apibq.VMRow{
+					Vm:     &data,
+					Delete: s.Delete,
+				})
+			case util.DHCPCollection:
+				var data ufspb.DHCPConfig
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["dhcps"] = append(msgs["dhcps"], &apibq.DHCPConfigRow{
+					DhcpConfig: &data,
+					Delete:     s.Delete,
+				})
+			case util.StateCollection:
+				var data ufspb.StateRecord
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["state_records"] = append(msgs["state_records"], &apibq.StateRecordRow{
+					StateRecord: &data,
+					Delete:      s.Delete,
+				})
+			case util.DutStateCollection:
+				var data chromeoslab.DutState
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["dutstates"] = append(msgs["dutstates"], &apibq.DUTStateRecordRow{
+					State: &data,
+				})
+			case util.CachingServiceCollection:
+				var data ufspb.CachingService
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["caching_services"] = append(msgs["caching_services"], &apibq.CachingServiceRow{
+					CachingService: &data,
+					Delete:         s.Delete,
+				})
+			case util.MachineLSEDeploymentCollection:
+				var data ufspb.MachineLSEDeployment
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["machine_lse_deployments"] = append(msgs["machine_lse_deployments"], &apibq.MachineLSEDeploymentRow{
+					MachineLseDeployment: &data,
+					Delete:               s.Delete,
+				})
+			case util.SchedulingUnitCollection:
+				var data ufspb.SchedulingUnit
+				if err := s.GetProto(&data); err != nil {
+					logging.Debugf(ctx, "Wrong data type error: %s", err)
+					return nil
+				}
+				msgs["scheduling_units"] = append(msgs["scheduling_units"], &apibq.SchedulingUnitRow{
+					SchedulingUnit: &data,
+					Delete:         s.Delete,
+				})
+			}
+			if count >= batchSize {
+				if currCursor, err = cb(); err != nil {
+					return err
+				}
+				return datastore.Stop
+			}
+			return nil
+		}
+		if err := datastore.Run(ctx, q, f); err != nil {
+			logging.Errorf(ctx, "Failed to get snapshots from BQ. %s", err)
+			return err
+		}
+		for tableName, ms := range msgs {
+			table := fmt.Sprintf("%s$%s", tableName, curTimeStr)
+			if err := uploadDumpToBQ(ctx, bqClient, ms, table); err != nil {
+				return err
+			}
+		}
+		logging.Debugf(ctx, "Finish uploading the snapshots successfully")
+		logging.Debugf(ctx, "Deleting the uploaded snapshots")
+		if err := history.DeleteSnapshotMsgEntities(ctx, snapshots); err != nil {
+			logging.Debugf(ctx, "fail to delete snapshot msg entities: %s", err.Error())
+			return err
+		}
+		if currCursor == nil {
+			break
+		}
+	}
 	return nil
 }
 
