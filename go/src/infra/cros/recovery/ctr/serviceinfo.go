@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/internal/env"
 	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/scopes"
@@ -262,11 +263,14 @@ func (c *serviceInfoImpl) gcloudAuth(ctx context.Context) error {
 	if c.ctr == nil || c.serverAddress == "" {
 		return errors.Reason("gcloud auth: service is not started").Err()
 	}
-	// File is not available at workstation, so we do not use it for local run.
-	dockerFileLocation := "/creds/service_accounts/skylab-drone.json"
-	useDockerKey := !dev.IsActive(ctx)
-	if !useDockerKey {
+	var dockerFileLocation string
+	useDockerKey := false
+	if dev.IsActive(ctx) {
 		dockerFileLocation = ""
+	} else if env.IsCloudBot() {
+		dockerFileLocation = common.VmLabDockerKeyFileLocation
+	} else {
+		dockerFileLocation = common.LabDockerKeyFileLocation
 	}
 	res, err := c.ctr.GcloudAuth(ctx, dockerFileLocation, useDockerKey)
 	if err != nil {
