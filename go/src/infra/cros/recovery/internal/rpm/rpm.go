@@ -131,7 +131,7 @@ func SetPowerStateHTTP(ctx context.Context, req *RPMPowerRequest) error {
 func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
 	// TODO(echoyang): Reenable cert checks once RPM devices have proper certs
 	httpTransport := http.DefaultTransport.(*http.Transport).Clone()
-	httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true, MinVersion: tls.VersionTLS11}
+	httpTransport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	httpClient := &http.Client{
 		Transport: httpTransport,
 		Timeout:   setPowerTimeout,
