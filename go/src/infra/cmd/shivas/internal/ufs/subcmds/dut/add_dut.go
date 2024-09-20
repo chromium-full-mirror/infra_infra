@@ -506,26 +506,38 @@ var shortZoneStringToZone = map[string]ufspb.Zone{
 	"chrome-chromeos8":                ufspb.Zone_ZONE_SFO36_OS,
 	"chrome-perf-pinpoint-chromeos8":  ufspb.Zone_ZONE_SFO36_OS,
 	"chrome-perf-waterfall-chromeos8": ufspb.Zone_ZONE_SFO36_OS,
+	"cri":                             ufspb.Zone_ZONE_IAD65_OS,
 }
-var dutZoneRegex = regexp.MustCompile(`^(chromium-|chrome-|chrome-perf-waterfall-|chrome-perf-pinpoint-)?(chromeos[0-9]{1,2})-.*$`)
+
+var dutZoneRegex = []*regexp.Regexp{
+	// Wrap the capturing groups to avoid string concat.
+	regexp.MustCompile(`^((chromium-|chrome-|chrome-perf-waterfall-|chrome-perf-pinpoint-)?(chromeos[0-9]{1,2}))-.*$`),
+	regexp.MustCompile(`^(cri)[0-9]{1,2}-[0-9]{1,2}$`),
+}
 
 func validateDutAndAssetLocation(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) error {
 	dutName := dutParam.DUT.GetName()
-	matches := dutZoneRegex.FindStringSubmatch(dutName)
-	if len(matches) == 0 || len(matches[2]) == 0 {
-		fmt.Printf("Warning: Could not verify zone from DUT name %q. Continuing.\n", dutName)
+	var matches []string
+	for _, regex := range dutZoneRegex {
+		matches = regex.FindStringSubmatch(dutName)
+		if len(matches) == 0 || len(matches[1]) == 0 {
+			continue
+		}
+		dutZonePrefix := matches[1]
+		dutZone, ok := shortZoneStringToZone[dutZonePrefix]
+		if !ok {
+			continue
+		}
+		assetZone, err := getAssetZoneForUpdatedDut(ctx, ic, dutParam)
+		if err != nil {
+			return err
+		}
+		if assetZone != dutZone {
+			return fmt.Errorf("the DUT prefix %q and asset zone %q do not match. Please update the asset", dutZonePrefix, assetZone)
+		}
 		return nil
 	}
-	dutZonePrefix := matches[1] + matches[2]
-	dutZone := shortZoneStringToZone[dutZonePrefix]
-
-	assetZone, err := getAssetZoneForUpdatedDut(ctx, ic, dutParam)
-	if err != nil {
-		return err
-	}
-	if assetZone != dutZone {
-		return fmt.Errorf("the DUT prefix %q and asset zone %q do not match. Please update the asset", dutZonePrefix, assetZone)
-	}
+	fmt.Printf("Warning: Could not verify zone from DUT name %q. Continuing.\n", dutName)
 	return nil
 }
 
