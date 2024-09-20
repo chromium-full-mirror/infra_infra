@@ -17,6 +17,7 @@ import (
 	"infra/cros/cmd/labpack/cft"
 	"infra/cros/cmd/labpack/internal/site"
 	"infra/cros/recovery"
+	"infra/cros/recovery/ctr"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/scopes"
@@ -69,12 +70,15 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoo
 		SwarmingTaskID: in.SwarmingTaskId,
 		BBID:           in.Bbid,
 	}
-	// TODO(otabek): Make it critical after testing.
-	cft, cftCloser, err := cft.Prepare(ctx, cftInfor, metrics, lg)
-	if err != nil {
-		lg.Infof("(NOT critical) Fail to prepare CFT containers!")
-	} else {
-		params[scopes.ParamKeyCTRClient] = cft
+	var cftCloser cft.CftCloser
+	if !in.GetDisableCft() {
+		var cftService ctr.ServiceInfo
+		cftService, cftCloser, err = cft.Prepare(ctx, cftInfor, metrics, lg)
+		if err != nil {
+			lg.Infof("Fail to prepare CTR service to manager CFT containers!")
+			return nil, nil, nil, errors.Annotate(err, "create tlw access: fail to prepare cft").Err()
+		}
+		params[scopes.ParamKeyCTRClient] = cftService
 	}
 	ctx = scopes.WithParams(ctx, params)
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
