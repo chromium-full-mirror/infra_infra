@@ -43,6 +43,7 @@ func (g *gitRepo) resolveSpec(ctx context.Context, spec fetchSpec) (ret []fetchS
 	cmd := exec.CommandContext(ctx, "git", "ls-remote", "--symref", "https://"+g.remoteRepo, spec.ref)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
+		err = errors.Annotate(err, "%s", out).Err()
 		return
 	}
 	// output looks like:
