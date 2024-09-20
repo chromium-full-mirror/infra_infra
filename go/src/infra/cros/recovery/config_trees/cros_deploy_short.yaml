@@ -6,6 +6,7 @@ plans:
         - name: DUT has model info ('dut_has_model_name')
         - name: Start ADB container ('ctr_start_adb_container')
           conditions:
+            - name: Is not cloudbot ('env_is_not_cloudbot')
             - name: CrosToolRunner is up ('ctr_is_up')
           dependencies:
             - name: Stop ADB container (Allow to fail) ('ctr_stop_adb_container')
@@ -6641,6 +6642,7 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Mark as Android based on ADB (Allow to fail) ('cros_set_as_android_based')
           conditions:
+            - name: Is not cloudbot ('env_is_not_cloudbot')
             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
           dependencies:
             - name: ADB Connect DUT ('ctr_adb_connect')

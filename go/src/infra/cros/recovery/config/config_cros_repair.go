@@ -120,6 +120,7 @@ func crosRepairActions() map[string]*Action {
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
+				"Is not cloudbot",
 				"Is Chrome based",
 			},
 			Dependencies: []string{
@@ -127,6 +128,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_set_as_android_based",
 			AllowFailAfterRecovery: true,
+		},
+		"Is not cloudbot": {
+			Docs: []string{
+				"Check if the process doesn't run on cloudbot.",
+			},
+			ExecName: "env_is_not_cloudbot",
 		},
 		"Mark as Chrome based OS": {
 			Docs: []string{

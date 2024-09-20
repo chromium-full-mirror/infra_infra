@@ -57,6 +57,7 @@ func crosBaseActions() map[string]*Action {
 				"Pull and run adb-base container",
 			},
 			Conditions: []string{
+				"Is not cloudbot",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
@@ -64,6 +65,12 @@ func crosBaseActions() map[string]*Action {
 				"Stop ADB container",
 			},
 			ExecName: "ctr_start_adb_container",
+		},
+		"Is not cloudbot": {
+			Docs: []string{
+				"Check if the process doesn't run on cloudbot.",
+			},
+			ExecName: "env_is_not_cloudbot",
 		},
 		"Stop ADB container": {
 			Docs: []string{

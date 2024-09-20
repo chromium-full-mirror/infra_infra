@@ -14,6 +14,7 @@ import (
 	_ "infra/cros/recovery/internal/execs/ctr"
 	_ "infra/cros/recovery/internal/execs/dolos"
 	_ "infra/cros/recovery/internal/execs/dut"
+	_ "infra/cros/recovery/internal/execs/env"
 	_ "infra/cros/recovery/internal/execs/human_motion_robot"
 	_ "infra/cros/recovery/internal/execs/metrics"
 	_ "infra/cros/recovery/internal/execs/rpm"
