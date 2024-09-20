@@ -570,7 +570,7 @@ class MainPage(BasePage):
   @utils.requires_login
   @utils.requires_read_access
   def get(self):
-    self.redirect('https://ci.chromium.org/ui/labs/tree-status/' +
+    self.redirect('https://ci.chromium.org/ui/tree-status/' +
                   tree_name_for_prpc())
 
   @utils.requires_login
