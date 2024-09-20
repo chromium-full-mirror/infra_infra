@@ -164,6 +164,8 @@ import (
 	"infra/experimental/golangbuild/golangbuildpb"
 )
 
+var ioProps = build.RegisterSplitProperty[*golangbuildpb.Inputs, *golangbuildpb.Outputs]("")
+
 func main() {
 	// If we're just performing setup for a gomote, skip the luciexe protocol stuff.
 	if builderName := os.Getenv("GOMOTE_SETUP"); builderName != "" {
@@ -181,11 +183,9 @@ func main() {
 		return
 	}
 
-	inputs := new(golangbuildpb.Inputs)
-	var writeOutputProps func(*golangbuildpb.Outputs)
-	build.Main(inputs, &writeOutputProps, nil, func(ctx context.Context, args []string, st *build.State) error {
+	build.Main(func(ctx context.Context, args []string, st *build.State) error {
 		ctx = withTopLevelLogger(ctx, st)
-		spec, runErr := run(ctx, args, st, inputs)
+		spec, runErr := run(ctx, args, st, ioProps.GetInput(ctx))
 
 		// Extract any links from the error. nil errors are OK and have no links.
 		links := extractLinks(runErr)
@@ -211,7 +211,7 @@ func main() {
 				outpb.Sources = append(outpb.Sources, spec.subrepoSrc.asSource())
 			}
 		}
-		writeOutputProps(&outpb)
+		ioProps.SetOutput(ctx, &outpb)
 
 		// Set summary markdown.
 		var sb strings.Builder

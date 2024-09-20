@@ -24,7 +24,7 @@ var UpdateShaStorage = internal.UpdateShaStorage
 
 // LuciBuildExecution represents build executions.
 func LuciBuildExecution() {
-	build.Main(nil, nil, nil,
+	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
 			isProd := false
 			for _, arg := range args {

@@ -40,23 +40,19 @@ import (
 	"infra/cros/cmd/cros_test_runner/protos"
 )
 
+var ioProps = build.RegisterSplitProperty[*steps.RunTestsRequest, *steps.RunTestsResponse]("")
+var ctrInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
+
 // TODO : Re-structure different execution flow properly later.
 // HwExecution represents hw executions.
 func HwExecution() {
-	// Set input property reader functions
-	var ctrCipdInfoReader func(context.Context) *protos.CipdVersionInfo
-	build.MakePropertyReader(common.HwTestCtrInputPropertyName, &ctrCipdInfoReader)
-	input := &steps.RunTestsRequest{}
+	build.Main(func(ctx context.Context, args []string, st *build.State) error {
+		input := ioProps.GetInput(ctx)
 
-	// Set output props writer functions
-	var writeOutputProps func(*steps.RunTestsResponse)
-	var mergeOutputProps func(*steps.RunTestsResponse)
-
-	build.Main(input, &writeOutputProps, &mergeOutputProps, func(ctx context.Context, args []string, st *build.State) error {
 		log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 		innerFunc := func(ctx context.Context) error {
 			logging.Infof(ctx, "have input %v", input)
-			ctrCipdInfo := ctrCipdInfoReader(ctx)
+			ctrCipdInfo := ctrInputProp.GetInput(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp := &steps.RunTestsResponse{}
@@ -95,7 +91,7 @@ func HwExecution() {
 				resp.ErrorSummaryMarkdown = err.Error()
 			}
 
-			writeOutputProps(resp)
+			ioProps.SetOutput(ctx, resp)
 			return err
 		}
 

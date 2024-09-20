@@ -34,28 +34,22 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 )
 
+var ioProps = build.RegisterSplitProperty[*steps.CTPv2BinaryBuildInput, *steps.CTPv2BinaryBuildOutput]("")
+
+var ctrInputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
+var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtpv2InputPropertyName)
+
 // TODO : Re-structure different execution flow properly later.
 // LuciBuildExecution represents build executions.
 func LuciBuildExecution() {
-	// Set input property reader functions
-	var ctrCipdInfoReader func(context.Context) *protos.CipdVersionInfo
-	var ctpv2CipdInfoReader func(context.Context) *protos.CipdVersionInfo
-	build.MakePropertyReader(common.HwTestCtrInputPropertyName, &ctrCipdInfoReader)
-	build.MakePropertyReader(common.HwTestCtpv2InputPropertyName, &ctpv2CipdInfoReader)
-	input := &steps.CTPv2BinaryBuildInput{}
-
-	// Set output props writer functions
-	// TODO: add the fields to the response that is responsible for
-	// feeding the test results to upstream.
-	var writeOutputProps func(*steps.CTPv2BinaryBuildOutput)
-	var mergeOutputProps func(*steps.CTPv2BinaryBuildOutput)
-
-	build.Main(input, &writeOutputProps, &mergeOutputProps,
+	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
+			input := ioProps.GetInput(ctx)
+
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
-			ctrCipdInfo := ctrCipdInfoReader(ctx)
-			ctpv2CipdInfo := ctpv2CipdInfoReader(ctx)
+			ctrCipdInfo := ctrInputVersion.GetInput(ctx)
+			ctpv2CipdInfo := ctpv2InputVersion.GetInput(ctx)
 			logging.Infof(ctx, "ctpv2 label: %s", ctpv2CipdInfo.GetVersion().GetCipdLabel())
 			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {
@@ -70,7 +64,7 @@ func LuciBuildExecution() {
 				resp.ErrorSummaryMarkdown = err.Error()
 			}
 
-			writeOutputProps(resp)
+			ioProps.SetOutput(ctx, resp)
 			return err
 		},
 	)

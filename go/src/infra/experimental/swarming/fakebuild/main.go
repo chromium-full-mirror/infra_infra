@@ -33,10 +33,12 @@ import (
 	"infra/experimental/swarming/fakebuild/fakebuildpb"
 )
 
-func main() {
-	inputs := &fakebuildpb.Inputs{}
+var inputProps = build.RegisterInputProperty[*fakebuildpb.Inputs]("")
 
-	build.Main(inputs, nil, nil, func(ctx context.Context, args []string, st *build.State) error {
+func main() {
+	build.Main(func(ctx context.Context, args []string, st *build.State) error {
+		inputs := inputProps.GetInput(ctx)
+
 		for i := 0; i < int(inputs.Steps); i++ {
 			sleepStep(ctx, inputs, i)
 		}

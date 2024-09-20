@@ -49,17 +49,14 @@ const DescribeMyDirectoryAndEnvironment = true
 // DescriptionCommand describes the environment where labpack was run. It must write all of its output to stdout.
 const DescriptionCommand = `( echo BEGIN; echo PWD; pwd ; echo FIND; find . ; echo ENV; env; echo END )`
 
-type ResponseUpdater func(*lab.LabpackResponse)
+var ioProps = build.RegisterSplitProperty[*lab.LabpackInput, *lab.LabpackResponse]("")
 
 func main() {
 	log.SetPrefix(fmt.Sprintf("%s: ", filepath.Base(os.Args[0])))
 	log.Printf("Running version: %s", site.VersionNumber)
 	log.Printf("Running in buildbucket mode")
 
-	input := &lab.LabpackInput{}
-	var writeOutputProps ResponseUpdater
-	var mergeOutputProps ResponseUpdater
-	build.Main(input, &writeOutputProps, &mergeOutputProps,
+	build.Main(
 		func(ctx context.Context, args []string, state *build.State) error {
 			// Right after instantiating the logger, but inside build.Main's callback,
 			// make sure that we log what our environment looks like.
@@ -78,7 +75,7 @@ func main() {
 			// Log the input string as JSON so we can see exactly which fields are populated with what in prod.
 			b := protojson.MarshalOptions{
 				Indent: "  ",
-			}.Format(input)
+			}.Format(ioProps.GetInput(ctx))
 			log.Printf("%s\n", string(b))
 
 			// Set up logger.
@@ -97,7 +94,7 @@ func main() {
 			eg, ctx := errgroup.WithContext(ctx)
 			eg.Go(func() error {
 				defer cancel()
-				return mainRunInternal(ctx, logRoot, lg, input, state, writeOutputProps)
+				return mainRunInternal(ctx, logRoot, lg, ioProps.GetInput(ctx), state)
 			})
 			eg.Go(func() error {
 				return watchDMLease(ctx, lg, state)
@@ -110,7 +107,7 @@ func main() {
 }
 
 // mainRun runs function for BB and provide result.
-func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, input *lab.LabpackInput, state *build.State, writeOutputProps ResponseUpdater) error {
+func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, input *lab.LabpackInput, state *build.State) error {
 	// Result errors which specify the result of main run.
 	var resultErrors []error
 
@@ -122,7 +119,7 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 	}
 	defer func() {
 		// Write result as last step.
-		writeOutputProps(res)
+		ioProps.SetOutput(ctx, res)
 	}()
 	lg.Infof("Prepare print input params...")
 	if err := printInputs(ctx, input); err != nil {

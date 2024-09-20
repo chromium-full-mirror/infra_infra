@@ -26,6 +26,8 @@ import (
 const envEnableLuciexe = "PKGBUILD_ENABLE_LUCIEXE"
 
 func main() {
+	inputProps := build.RegisterInputProperty[*Input]("")
+
 	ctx := context.Background()
 	actions.NewReexecRegistry().Intercept(ctx)
 
@@ -43,9 +45,8 @@ func main() {
 	}
 
 	if os.Getenv(envEnableLuciexe) != "" {
-		var input Input
-		build.Main(&input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
-			proto.Merge(app.Input, &input) // Merge with default values
+		build.Main(func(ctx context.Context, userArgs []string, state *build.State) error {
+			proto.Merge(app.Input, inputProps.GetInput(ctx)) // Merge with default values
 			app.BuildID = state.Build().Id
 			return Main(ctx, app, userArgs)
 		})

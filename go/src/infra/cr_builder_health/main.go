@@ -107,11 +107,13 @@ func Run(ctx context.Context, input *healthpb.InputParams) error {
 	return nil
 }
 
+// TODO: note that luciexeGenerateRun.Run complete ignores these parameters.
+// Likely a bug?
+var inProps = build.RegisterInputProperty[*healthpb.InputParams]("")
+
 // Called by bb invocation
 func (r *luciexeGenerateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	input := healthpb.InputParams{}
-
-	build.Main(&input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
+	build.Main(func(ctx context.Context, userArgs []string, state *build.State) error {
 		input, err := r.generateRun.ParseFlags(ctx)
 		if err != nil {
 			return err

@@ -93,7 +93,7 @@ func Run(ctx context.Context) error {
 
 // Called by bb invocation
 func (r *luciexeGenerateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	build.Main(nil, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
+	build.Main(func(ctx context.Context, userArgs []string, state *build.State) error {
 		return Run(ctx)
 	})
 

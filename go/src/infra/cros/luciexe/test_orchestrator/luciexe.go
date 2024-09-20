@@ -21,10 +21,11 @@ import (
 	"infra/cros/internal/testorchestrator"
 )
 
+var inProps = build.RegisterInputProperty[*tpv2.Request]("")
+
 func main() {
-	request := &tpv2.Request{}
-	build.Main(request, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
-		return RunOrch(ctx, request)
+	build.Main(func(ctx context.Context, userArgs []string, state *build.State) error {
+		return RunOrch(ctx, inProps.GetInput(ctx))
 	})
 }
 
