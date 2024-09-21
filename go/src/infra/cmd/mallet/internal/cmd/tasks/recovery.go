@@ -40,6 +40,7 @@ var Recovery = &subcommands.Command{
 		c.Flags.StringVar(&c.configFile, "config", "", "Path to the custom json config file.")
 		c.Flags.BoolVar(&c.noStepper, "no-stepper", false, "Block steper from using. This will prevent by using steps and you can only see logs.")
 		c.Flags.BoolVar(&c.useCsa, "use-csa", true, "Use CSA Service or not.")
+		c.Flags.BoolVar(&c.disableCft, "disable-cft", false, "Disable CFT.")
 		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Run deploy task. By default run recovery task.")
 		c.Flags.BoolVar(&c.updateUFS, "update-ufs", false, "Update result to UFS. By default no.")
 		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
@@ -61,6 +62,7 @@ type recoveryRun struct {
 	updateUFS    bool
 	latest       bool
 	adminSession string
+	disableCft   bool
 }
 
 func (c *recoveryRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -148,6 +150,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 				NoStepper:        c.noStepper,
 				NoMetrics:        false,
 				Configuration:    configuration,
+				DisableCft:       c.disableCft,
 				ExtraTags: []string{
 					sessionTag,
 					fmt.Sprintf("task:%s", task),

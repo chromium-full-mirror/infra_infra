@@ -66,6 +66,7 @@ func TestScheduleDeployTask(t *testing.T) {
 					Fields: map[string]*structpb.Value{
 						"admin_service":       structpb.NewStringValue("skylab-staging-bot-fleet.appspot.com"),
 						"configuration":       structpb.NewStringValue(""),
+						"disable_cft":         structpb.NewBoolValue(false),
 						"enable_recovery":     structpb.NewBoolValue(true),
 						"inventory_service":   structpb.NewStringValue("staging.ufs.api.cr.dev"),
 						"inventory_namespace": structpb.NewStringValue("os"),
@@ -96,6 +97,7 @@ func TestScheduleDeployTask(t *testing.T) {
 					Fields: map[string]*structpb.Value{
 						"admin_service":       structpb.NewStringValue(""),
 						"configuration":       structpb.NewStringValue(""),
+						"disable_cft":         structpb.NewBoolValue(false),
 						"enable_recovery":     structpb.NewBoolValue(true),
 						"inventory_service":   structpb.NewStringValue("staging.ufs.api.cr.dev"),
 						"inventory_namespace": structpb.NewStringValue("os-partner"),
@@ -126,6 +128,7 @@ func TestScheduleDeployTask(t *testing.T) {
 					Fields: map[string]*structpb.Value{
 						"admin_service":       structpb.NewStringValue("skylab-staging-bot-fleet.appspot.com"),
 						"configuration":       structpb.NewStringValue(""),
+						"disable_cft":         structpb.NewBoolValue(false),
 						"enable_recovery":     structpb.NewBoolValue(true),
 						"inventory_service":   structpb.NewStringValue("staging.ufs.api.cr.dev"),
 						"inventory_namespace": structpb.NewStringValue("os"),
@@ -153,7 +156,6 @@ func TestScheduleDeployTask(t *testing.T) {
 			tt.deployParams.SessionTag = "test-session"
 			tt.deployParams.UseLatestVersion = false
 			err := ScheduleDeployTask(tt.ctx, *tt.deployParams)
-
 			if err != nil {
 				t.Errorf("unexpected err: %s", err)
 			}

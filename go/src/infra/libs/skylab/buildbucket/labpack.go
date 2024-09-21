@@ -44,6 +44,8 @@ type Params struct {
 	NoStepper bool
 	// NoMetrics determines whether metrics recording (Karte) is in effect.
 	NoMetrics bool
+	// Disable CFT as part of task preparation.
+	DisableCft bool
 	// ExpectedState is the state that the DUT must be in in order for the task to trigger.
 	// For example, a repair task MUST NOT be eligible to run on a "ready" DUT since that would
 	// be a waste of resources.
@@ -70,6 +72,7 @@ func (p *Params) AsMap() map[string]interface{} {
 		"no_metrics":          p.NoMetrics,
 		"configuration":       p.Configuration,
 		"inventory_namespace": p.InventoryNamespace,
+		"disable_cft":         p.DisableCft,
 	}
 }
 
