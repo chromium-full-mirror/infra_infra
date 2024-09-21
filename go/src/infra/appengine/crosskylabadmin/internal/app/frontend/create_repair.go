@@ -159,6 +159,7 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 		builderBucket: poolCfg.GetBuilderBucket(),
 		botPrefix:     poolCfg.GetBotPrefix(),
 		ufsNamespace:  poolCfg.UFSCtxNamespace(),
+		disableCft:    heuristics.LooksLikeLabstation(dutName),
 	}
 
 	karteC, err := createKarteClient(ctx)
@@ -250,6 +251,8 @@ type createBuildbucketTaskRequest struct {
 	botPrefix string
 	// UFS namespace to be used for the given bot
 	ufsNamespace string
+	// Disable CFT.
+	disableCft bool
 }
 
 // CreateBuildbucketTask creates a new task (repair by default) for the provided DUT.
@@ -295,8 +298,9 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 		NoMetrics:          false,
 		UpdateInventory:    true,
 		ExpectedState:      params.expectedState,
-		// TODO(gregorynisbet): Pass config file to labpack task.
+		// Config used only for manual testing!.
 		Configuration: "",
+		DisableCft:    params.disableCft,
 	}
 	url, _, err := buildbucket.CreateTask(ctx, bc, sc, params.taskType, p, "crosskylabadmin")
 	if err != nil {
