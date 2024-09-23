@@ -52,12 +52,12 @@ func ConvertAttachedDeviceToTlw(data *ufsAPI.AttachedDeviceData) (dut *tlw.Dut, 
 		return nil, errors.Reason("convert attached device to tlw: unexpected case!").Err()
 	}
 	// Determine type of device.
-	setup := tlw.DUTSetupTypeUnspecified
+	setup := tlw.DUTSetupType_UNSPECIFIED
 	switch dt := machine.GetAttachedDevice().GetDeviceType(); dt {
 	case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_PHONE, ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_ANDROID_TABLET:
-		setup = tlw.DUTSetupTypeAndroid
+		setup = tlw.DUTSetupType_ANDROID
 	// case ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE, ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_TABLET:
-	// 	setup = tlw.DUTSetupTypeIOS
+	// 	setup = tlw.DUTSetupType_IOS
 	default:
 		panic(fmt.Sprintf("Not supported device type %q", dt.String()))
 	}
@@ -148,17 +148,17 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			supplyType = tlw.ChromeOS_AC_ONLY
 		}
 	}
-	setup := tlw.DUTSetupTypeCros
+	setup := tlw.DUTSetupType_CROS
 	// TODO(b/270274087): return DUT setup type from lab service directly
 	if strings.Contains(name, "jetstream") {
-		setup = tlw.DUTSetupTypeJetstream
+		setup = tlw.DUTSetupType_JETSTREAM
 	}
 	if machine.GetChromeosMachine().GetModel() == "betty" {
-		setup = tlw.DUTSetupTypeCrosVM
+		setup = tlw.DUTSetupType_CROSVM
 	}
 	// Check hostname to see if it's DUTs for browser testing
 	if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
-		setup = tlw.DUTSetupTypeCrosBrowser
+		setup = tlw.DUTSetupType_CROS_BROWSER
 	}
 
 	audio := &tlw.DUTAudio{
@@ -282,7 +282,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	d := &tlw.Dut{
 		Id:        machine.GetName(),
 		Name:      name,
-		SetupType: tlw.DUTSetupTypeLabstation,
+		SetupType: tlw.DUTSetupType_LABSTATION,
 		Chromeos: &tlw.ChromeOS{
 			Board:           machine.GetChromeosMachine().GetBuildTarget(),
 			Model:           machine.GetChromeosMachine().GetModel(),
@@ -326,7 +326,7 @@ func adaptUfsDevBoardToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) 
 	d := &tlw.Dut{
 		Id:        machine.GetName(),
 		Name:      name,
-		SetupType: tlw.DUTSetupTypeDevBoard,
+		SetupType: tlw.DUTSetupType_DEV_BOARD,
 		DevBoard: &tlw.DevBoard{
 			Board:        board,
 			Model:        board,

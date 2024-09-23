@@ -68,13 +68,13 @@ func (c *printConfigRun) innerRun(a subcommands.Application, args []string, env 
 	var ds tlw.DUTSetupType
 	switch c.deviceType {
 	case "labstation":
-		ds = tlw.DUTSetupTypeLabstation
+		ds = tlw.DUTSetupType_LABSTATION
 	case "android":
-		ds = tlw.DUTSetupTypeAndroid
+		ds = tlw.DUTSetupType_ANDROID
 	case "cros":
-		ds = tlw.DUTSetupTypeCros
+		ds = tlw.DUTSetupType_CROS
 	case "browser":
-		ds = tlw.DUTSetupTypeCrosBrowser
+		ds = tlw.DUTSetupType_CROS_BROWSER
 	default:
 		return errors.Reason("upsupported device type %s", c.deviceType).Err()
 	}

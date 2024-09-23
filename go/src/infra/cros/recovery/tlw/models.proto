@@ -1060,3 +1060,24 @@ enum RepairRequest {
   // Request to re-flash firmware of the DUT.
   REPAIR_REQUEST_REFLASH_FW = 4;
 }
+
+// DUTSetupType describes different DUT setups.
+enum DUTSetupType {
+  UNSPECIFIED = 0;
+	// Special setup of servo-host represented as labstation.
+	LABSTATION = 1;
+	// Special setup for routers.
+	JETSTREAM = 2;
+	// Special setup for ChromeOS devices.
+	CROS = 3;
+	// Special setup for ChromeOS devices for browser testing.
+	CROS_BROWSER = 4;
+	// Special setup for Android devices.
+	ANDROID = 5;
+	// Special setup for IOS devices.
+	IOS = 6;
+	// Special setup for CrOSVM fake devices.
+	CROSVM = 7;
+	// Special setup for DevBoard devices.
+	DEV_BOARD = 8;
+}

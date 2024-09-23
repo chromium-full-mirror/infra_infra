@@ -62,29 +62,6 @@ type Access interface {
 	Close(ctx context.Context) error
 }
 
-// DUTSetupType describes different DUT setups.
-type DUTSetupType string
-
-const (
-	DUTSetupTypeUnspecified DUTSetupType = "UNSPECIFIED"
-	// Special setup of servo-host represented as labstation.
-	DUTSetupTypeLabstation DUTSetupType = "LABSTATION"
-	// Special setup for routers.
-	DUTSetupTypeJetstream DUTSetupType = "JETSTREAM"
-	// Special setup for ChromeOS devices.
-	DUTSetupTypeCros DUTSetupType = "CROS"
-	// Special setup for ChromeOS devices for browser testing.
-	DUTSetupTypeCrosBrowser DUTSetupType = "CROS_BROWSER"
-	// Special setup for Android devices.
-	DUTSetupTypeAndroid DUTSetupType = "ANDROID"
-	// Special setup for IOS devices.
-	DUTSetupTypeIOS DUTSetupType = "IOS"
-	// Special setup for CrOSVM fake devices.
-	DUTSetupTypeCrosVM DUTSetupType = "CROSVM"
-	// Special setup for DevBoard devices.
-	DUTSetupTypeDevBoard DUTSetupType = "DEV_BOARD"
-)
-
 const (
 	// Extra attributes for DUT to provide custom info.
 	ExtraAttributePools          = "POOLS"

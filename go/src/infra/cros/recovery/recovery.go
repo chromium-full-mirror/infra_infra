@@ -230,17 +230,17 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	switch tn {
 	case buildbucket.Recovery:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupType_CROS:
 			return config.CrosRepairConfig(), nil
-		case tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosBrowserDUTRepairConfig(), nil
-		case tlw.DUTSetupTypeLabstation:
+		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationRepairConfig(), nil
-		case tlw.DUTSetupTypeAndroid:
+		case tlw.DUTSetupType_ANDROID:
 			return config.AndroidRepairConfig(), nil
-		case tlw.DUTSetupTypeCrosVM:
+		case tlw.DUTSetupType_CROSVM:
 			return config.CrosVMSuccessConfig(), nil
-		case tlw.DUTSetupTypeDevBoard:
+		case tlw.DUTSetupType_DEV_BOARD:
 			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
@@ -248,59 +248,59 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	case buildbucket.DeepRecovery:
 		// No need to keep the configurations for deep recovery as the same as normal recovery.
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupType_CROS:
 			return config.CrosRepairWithDeepRepairConfig(), nil
-		case tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosBrowserDUTRepairConfig(), nil
-		case tlw.DUTSetupTypeLabstation:
+		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationRepairConfig(), nil
-		case tlw.DUTSetupTypeAndroid:
+		case tlw.DUTSetupType_ANDROID:
 			return config.AndroidRepairConfig(), nil
-		case tlw.DUTSetupTypeCrosVM:
+		case tlw.DUTSetupType_CROSVM:
 			return config.CrosVMSuccessConfig(), nil
-		case tlw.DUTSetupTypeDevBoard:
+		case tlw.DUTSetupType_DEV_BOARD:
 			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case buildbucket.Deploy:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupType_CROS:
 			return config.CrosDeployConfig(), nil
-		case tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosBrowserDUTDeployConfig(), nil
-		case tlw.DUTSetupTypeLabstation:
+		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationDeployConfig(), nil
-		case tlw.DUTSetupTypeAndroid:
+		case tlw.DUTSetupType_ANDROID:
 			return config.AndroidDeployConfig(), nil
-		case tlw.DUTSetupTypeDevBoard:
+		case tlw.DUTSetupType_DEV_BOARD:
 			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case buildbucket.AuditRPM:
 		switch ds {
-		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosAuditRPMConfig(), nil
-		case tlw.DUTSetupTypeCrosVM:
+		case tlw.DUTSetupType_CROSVM:
 			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case buildbucket.AuditStorage:
 		switch ds {
-		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosAuditStorageConfig(), nil
-		case tlw.DUTSetupTypeCrosVM:
+		case tlw.DUTSetupType_CROSVM:
 			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case buildbucket.AuditUSB:
 		switch ds {
-		case tlw.DUTSetupTypeCros, tlw.DUTSetupTypeCrosBrowser:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosAuditUSBConfig(), nil
-		case tlw.DUTSetupTypeCrosVM:
+		case tlw.DUTSetupType_CROSVM:
 			return config.CrosVMSuccessConfig(), nil
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
@@ -311,7 +311,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
 	case buildbucket.PostTest:
 		switch ds {
-		case tlw.DUTSetupTypeCros:
+		case tlw.DUTSetupType_CROS:
 			return config.CrosRepairConfig(), nil
 		}
 		return nil, errors.Reason("post test is not yet supported on desetup type %q", ds).Err()
