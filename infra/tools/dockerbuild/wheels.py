@@ -489,6 +489,8 @@ SPECS.update({
             # Cryptography 43 requires Rust, but there is no rust compiler
             # in the container, so package the wheels that are available.
             only_plat=[
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
                 'mac-x64-py3.8',
                 'mac-x64-py3.11',
                 'windows-x64-py3.8',
@@ -497,6 +499,22 @@ SPECS.update({
                 'windows-x86-py3.11',
             ],
             pyversions=['py3'],
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools >= 40.6.0',
+                    'wheel',
+                ],
+                local=[
+                    SourceOrPrebuilt(
+                        'cffi',
+                        '1.15.1',
+                        packaged=(),
+                        pyversions=['py2', 'py3'],
+                        tpp_libs_cb=_CffiTppLibs,
+                        patch_version='chromium.2',
+                    )
+                ],
+            ),
         ),
         SourceOrPrebuilt(
             'debugpy',
