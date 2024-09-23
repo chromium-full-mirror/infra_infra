@@ -41,6 +41,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -52,6 +53,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -66,6 +68,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,
@@ -85,6 +88,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				DeviceLease: &api.DeviceLeaseRecord{
 					Id:             "test-lease-record-1",
 					IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					DutId:          "test-dut-id",
 					DeviceId:       "test-device-1",
 					DeviceAddress: &api.DeviceAddress{
 						Host: "1.1.1.1",
@@ -115,6 +119,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -126,6 +131,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -140,6 +146,7 @@ func TestCheckLeaseIdempotency(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,

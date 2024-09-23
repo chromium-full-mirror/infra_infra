@@ -23,12 +23,14 @@ type DeviceLeaseRecordData struct {
 // DeviceLeaseRecord contains a single row from the DeviceLeaseRecords table in
 // the database.
 type DeviceLeaseRecord struct {
-	ID              string
-	IdempotencyKey  string
-	DeviceID        string
-	DeviceAddress   string
-	DeviceType      string
-	OwnerID         string
+	ID             string
+	IdempotencyKey string
+	DutID          string
+	DeviceID       string
+	DeviceAddress  string
+	DeviceType     string
+	OwnerID        string
+
 	LeasedTime      time.Time
 	ReleasedTime    time.Time
 	ExpirationTime  time.Time
@@ -48,6 +50,7 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 			(
 				id,
 				idempotency_key,
+				dut_id,
 				device_id,
 				device_address,
 				device_type,
@@ -57,10 +60,11 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 				last_updated_time
 			)
 		VALUES
-			($1, $2, $3, $4, $5, $6, NOW(), NOW() + $7, NOW())
+			($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW())
 		RETURNING
 			id,
 			idempotency_key,
+			dut_id,
 			device_id,
 			device_address,
 			device_type,
@@ -70,6 +74,7 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 			last_updated_time;`,
 		record.ID,
 		record.IdempotencyKey,
+		record.DutID,
 		record.DeviceID,
 		record.DeviceAddress,
 		record.DeviceType,
@@ -78,6 +83,7 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 	).Scan(
 		&newRecord.ID,
 		&newRecord.IdempotencyKey,
+		&newRecord.DutID,
 		&newRecord.DeviceID,
 		&newRecord.DeviceAddress,
 		&newRecord.DeviceType,
@@ -123,6 +129,7 @@ func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) 
 		SELECT
 			id,
 			idempotency_key,
+			dut_id,
 			device_id,
 			device_address,
 			device_type,
@@ -135,6 +142,7 @@ func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) 
 		WHERE id=$1;`, recordID).Scan(
 		&record.ID,
 		&record.IdempotencyKey,
+		&record.DutID,
 		&record.DeviceID,
 		&record.DeviceAddress,
 		&record.DeviceType,
@@ -181,6 +189,7 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 		SELECT
 			id,
 			idempotency_key,
+			dut_id,
 			device_id,
 			device_address,
 			device_type,
@@ -193,6 +202,7 @@ func GetDeviceLeaseRecordByIdemKey(ctx context.Context, db *sql.DB, idemKey stri
 		WHERE idempotency_key=$1;`, idemKey).Scan(
 		&record.ID,
 		&record.IdempotencyKey,
+		&record.DutID,
 		&record.DeviceID,
 		&record.DeviceAddress,
 		&record.DeviceType,
@@ -256,6 +266,7 @@ func ListLeases(ctx context.Context, db *sql.DB, pageToken database.PageToken, p
 
 		err := rows.Scan(
 			&lease.ID,
+			&lease.DutID,
 			&lease.DeviceID,
 			&lease.DeviceAddress,
 			&lease.DeviceType,
@@ -310,6 +321,7 @@ func buildListLeasesQuery(ctx context.Context, pageToken database.PageToken, pag
 	query := `
 		SELECT
 			id,
+			dut_id,
 			device_id,
 			device_address,
 			device_type,

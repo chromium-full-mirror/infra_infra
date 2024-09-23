@@ -47,6 +47,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -57,6 +58,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -71,6 +73,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 					(
 						id,
 						idempotency_key,
+						dut_id,
 						device_id,
 						device_address,
 						device_type,
@@ -80,10 +83,11 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 						last_updated_time
 					)
 				VALUES
-					($1, $2, $3, $4, $5, $6, NOW(), NOW() + $7, NOW())
+					($1, $2, $3, $4, $5, $6, $7, NOW(), NOW() + $8, NOW())
 				RETURNING
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,
@@ -94,6 +98,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 				WithArgs(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -105,6 +110,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 			newRec, err := CreateDeviceLeaseRecord(ctx, tx, DeviceLeaseRecord{
 				ID:             "test-lease-record-1",
 				IdempotencyKey: "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+				DutID:          "test-dut-id",
 				DeviceID:       "test-device-1",
 				DeviceAddress:  "1.1.1.1:1",
 				DeviceType:     "DEVICE_TYPE_PHYSICAL",
@@ -114,6 +120,7 @@ func TestCreateDeviceLeaseRecord(t *testing.T) {
 			assert.Loosely(t, newRec, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+				DutID:           "test-dut-id",
 				DeviceID:        "test-device-1",
 				DeviceAddress:   "1.1.1.1:1",
 				DeviceType:      "DEVICE_TYPE_PHYSICAL",
@@ -148,6 +155,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -159,6 +167,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -173,6 +182,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,
@@ -191,6 +201,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+				DutID:           "test-dut-id",
 				DeviceID:        "test-device-1",
 				DeviceAddress:   "1.1.1.1:1",
 				DeviceType:      "DEVICE_TYPE_PHYSICAL",
@@ -217,6 +228,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -230,6 +242,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,
@@ -272,6 +285,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -283,6 +297,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				AddRow(
 					"test-lease-record-1",
 					"fe20140c-b1aa-4953-90fc-d15677df0c6a",
+					"test-dut-id",
 					"test-device-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
@@ -297,6 +312,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,
@@ -315,6 +331,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
+				DutID:           "test-dut-id",
 				DeviceID:        "test-device-1",
 				DeviceAddress:   "1.1.1.1:1",
 				DeviceType:      "DEVICE_TYPE_PHYSICAL",
@@ -341,6 +358,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 			rows := sqlmock.NewRows([]string{
 				"id",
 				"idempotency_key",
+				"dut_id",
 				"device_id",
 				"device_address",
 				"device_type",
@@ -354,6 +372,7 @@ func TestGetDeviceLeaseRecordByIdemKey(t *testing.T) {
 				SELECT
 					id,
 					idempotency_key,
+					dut_id,
 					device_id,
 					device_address,
 					device_type,

@@ -55,11 +55,11 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 
 		return nil, err
 	}
-	logging.Debugf(ctx, "LeaseDevice: marked Device %s as leased successfully: %v", updatedDevice.ID, updatedDevice)
 
 	newRecord := model.DeviceLeaseRecord{
 		ID:             uuid.New().String(),
 		IdempotencyKey: r.GetIdempotencyKey(),
+		DutID:          updatedDevice.DutID,
 		DeviceID:       updatedDevice.ID,
 		DeviceAddress:  updatedDevice.DeviceAddress,
 		DeviceType:     updatedDevice.DeviceType,
@@ -74,11 +74,15 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 		return nil, err
 	}
 
+	// log success after commit success
+	logging.Debugf(ctx, "LeaseDevice: marked Device %s as leased successfully: %v", updatedDevice.ID, updatedDevice)
 	logging.Debugf(ctx, "LeaseDevice: created DeviceLeaseRecord %v", newRecord)
+
 	return &api.LeaseDeviceResponse{
 		DeviceLease: &api.DeviceLeaseRecord{
 			Id:             createdRecord.ID,
 			IdempotencyKey: createdRecord.IdempotencyKey,
+			DutId:          createdRecord.DutID,
 			DeviceId:       createdRecord.DeviceID,
 			DeviceAddress: &api.DeviceAddress{
 				Host: createdRecord.DeviceAddress,
@@ -150,7 +154,9 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 		return nil, err
 	}
 
+	// log success after commit success
 	logging.Debugf(ctx, "ExtendLease: created ExtendLeaseRequest %v", newRequest)
+
 	return &api.ExtendLeaseResponse{
 		LeaseId:        r.GetLeaseId(),
 		ExpirationTime: timestamppb.New(newRequest.ExpirationTime),
@@ -234,7 +240,9 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 		return nil, err
 	}
 
+	// log success after commit success
 	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s", r.GetLeaseId(), record.DeviceID)
+
 	return &api.ReleaseDeviceResponse{
 		LeaseId: r.GetLeaseId(),
 	}, nil
@@ -259,6 +267,7 @@ func CheckLeaseIdempotency(ctx context.Context, db *sql.DB, idemKey string) (*ap
 				DeviceLease: &api.DeviceLeaseRecord{
 					Id:              existingRecord.ID,
 					IdempotencyKey:  existingRecord.IdempotencyKey,
+					DutId:           existingRecord.DutID,
 					DeviceId:        existingRecord.DeviceID,
 					DeviceAddress:   addr,
 					DeviceType:      api.DeviceType_DEVICE_TYPE_PHYSICAL,
