@@ -484,39 +484,6 @@ SPECS.update({
             ],
         ),
         SourceOrPrebuilt(
-            'cryptography',
-            '43.0.0',
-            # Cryptography 43 requires Rust, but there is no rust compiler
-            # in the container, so package the wheels that are available.
-            only_plat=[
-                'mac-arm64-py3.8',
-                'mac-arm64-py3.11',
-                'mac-x64-py3.8',
-                'mac-x64-py3.11',
-                'windows-x64-py3.8',
-                'windows-x64-py3.11',
-                'windows-x86-py3.8',
-                'windows-x86-py3.11',
-            ],
-            pyversions=['py3'],
-            build_deps=BuildDependencies(
-                remote=[
-                    'setuptools >= 40.6.0',
-                    'wheel',
-                ],
-                local=[
-                    SourceOrPrebuilt(
-                        'cffi',
-                        '1.15.1',
-                        packaged=(),
-                        pyversions=['py2', 'py3'],
-                        tpp_libs_cb=_CffiTppLibs,
-                        patch_version='chromium.2',
-                    )
-                ],
-            ),
-        ),
-        SourceOrPrebuilt(
             'debugpy',
             '1.5.1',
             only_plat=[
@@ -1527,6 +1494,33 @@ from .wheel_wheel import Prebuilt
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'Prebuilt',
+        # From cryptography 43 requires Rust, but there is no rust compiler
+        # in the container, so package the wheels that are available.
+        Prebuilt(
+            'cryptography',
+            '43.0.0',
+            [
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+            ],
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
+                'mac-arm64-py3.8': ['macosx_10_9_arm64'],
+                'mac-arm64-py3.11': ['macosx_10_9_arm64'],
+            },
+            pyversions=['py3'],
+        ),
         # We can't build this ourselves as the build depends on Bazel.
         # dm-tree 0.1.8 needed for python 3.11.
         Prebuilt(
