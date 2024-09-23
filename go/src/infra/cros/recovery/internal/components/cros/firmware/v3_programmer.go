@@ -292,7 +292,7 @@ func needsCSMEUnlock(ctx context.Context, imagePath string, run components.Runne
 	}
 	// Extract the config file
 	configFile := imagePath + "-config"
-	out, err = run(ctx, time.Minute, fmt.Sprintf("cbfstool %s extract -n -f %s", imagePath, configFile))
+	out, err = run(ctx, time.Minute, fmt.Sprintf("cbfstool %s extract -n config -f %s", imagePath, configFile))
 	if err != nil {
 		return false, fmt.Errorf("command output: %s: %w", string(out), err)
 	}

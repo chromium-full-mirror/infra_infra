@@ -269,8 +269,8 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97": {},
 			"which ifdtool": {},
-			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
-			"cat image-board.bin-config":                                    {Output: ``},
+			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
+			"cat image-board.bin-config": {Output: ``},
 		}
 		servod := mocks.NewMockServod(ctrl)
 		servod.EXPECT().Port().Return(97).Times(1)
@@ -290,7 +290,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
 			"which ifdtool": {},
-			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
 			"cat image-board.bin-config": {Output: `CONFIG_IFD_CHIPSET=adl
 `},
 		}
@@ -312,7 +312,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
 			"which ifdtool": {},
-			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
 			"cat image-board.bin-config": {Output: `CONFIG_IFD_BIN_PATH=/some/random/nissa/path
 `},
 		}
@@ -334,7 +334,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 			"which futility": {},
 			"futility update -i image-board.bin --servo_port=97": {},
 			"which ifdtool": {},
-			"cbfstool image-board.bin extract -n -f image-board.bin-config": {},
+			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
 			"cat image-board.bin-config": {Output: `CONFIG_IFD_BIN_PATH=/some/random/path
 `},
 		}
