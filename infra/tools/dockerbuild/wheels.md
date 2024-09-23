@@ -8657,6 +8657,20 @@ wheel: <
 
 * *universal*
 
+## **pyopenssl-py3**
+
+### 24.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyopenssl-py3"
+  version: "version:24.2.1"
+>
+```
+
+
+* *universal*
+
 ## **pyparsing**
 
 ### 2.2.0

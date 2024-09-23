@@ -2381,6 +2381,7 @@ SPECS.update({
         Universal('pyopenssl', '17.2.0'),
         Universal('pyopenssl', '19.0.0'),
         Universal('pyopenssl', '20.0.0'),
+        Universal('pyopenssl', '24.2.1', pyversions=['py3']),
         Universal('pyparsing', '2.2.0'),
         Universal('pyparsing', '2.4.7'),
         Universal('pyparsing', '3.0.7', pyversions=['py3']),
