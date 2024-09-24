@@ -215,6 +215,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					BuildInfo: &artifactpb.BuildInfo{
 						Name:        "hatch-cq/R106-15048.0.0",
 						Board:       "hatch",
+						BoardType:   "VM",
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
@@ -392,6 +393,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "label-chameleon_connection_types", Value: "CHAMELEON_CONNECTION_TYPE_HDMI"},
 					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V3"},
 					{Key: "id", Value: "cloudbots-prod-1715342009263-7kz6"},
+					{Key: "role", Value: "vmlab"},
 				},
 			}},
 		}
@@ -543,6 +545,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					BuildInfo: &artifactpb.BuildInfo{
 						Name:        "hatch-cq/R106-15048.0.0",
 						Board:       "hatch",
+						BoardType:   "HW",
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
@@ -610,6 +613,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildInfo: &artifactpb.BuildInfo{
 							Name:        "hatch-cq/R106-15048.0.0",
 							Board:       "dedede",
+							BoardType:   "HW",
 							BuildTarget: "dedede",
 							BuildMetadata: &artifactpb.BuildMetadata{
 								Sku: &artifactpb.BuildMetadata_Sku{
@@ -873,6 +877,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			TestInvocation: &artifactpb.TestInvocation{
 				PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
 					BuildInfo: &artifactpb.BuildInfo{
+						BoardType: "HW",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku:      &artifactpb.BuildMetadata_Sku{},
 							Chipset:  &artifactpb.BuildMetadata_Chipset{},

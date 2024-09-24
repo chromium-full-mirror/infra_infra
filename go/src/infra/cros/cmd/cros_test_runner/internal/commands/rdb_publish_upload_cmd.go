@@ -254,6 +254,16 @@ func populateBuildInfo(
 		}
 	}
 
+	// Populate the board type.
+	buildInfo.BoardType = "HW"
+
+	// All bots running in the VM lab via test_runner_gce set the bot role to
+	// "vmlab".
+	role := getSingleTagValue(botDims, "role")
+	if role == "vmlab" {
+		buildInfo.BoardType = "VM"
+	}
+
 	populateBuildMetadata(ctx, buildInfo, sk, botDims, dut)
 }
 
