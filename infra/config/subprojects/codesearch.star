@@ -229,7 +229,6 @@ builder(
             "codesearch-gen-chromium-cronet",
             "codesearch-gen-chromium-fuchsia",
             "codesearch-gen-chromium-ios",
-            "codesearch-gen-chromium-lacros",
             "codesearch-gen-chromium-linux",
             "codesearch-gen-chromium-mac",
             "codesearch-gen-chromium-webview",
@@ -379,21 +378,6 @@ chromium_genfiles(
     cpu = "arm64",
     machine_type = "n1-highcpu-8",
     xcode_build_version = "15a240d",
-)
-
-chromium_genfiles(
-    short_name = "lcr",
-    name = "codesearch-gen-chromium-lacros",
-    recipe_properties = {
-        "compile_targets": ["all"],
-        "platform": "lacros",
-        "sync_generated_files": True,
-        "gen_repo_branch": "main",
-        # Generated files will end up in out/lacros-Debug/gen.
-        "gen_repo_out_dir": "lacros-Debug",
-        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
-        "build_config": "lacros",
-    },
 )
 
 chromium_genfiles(
