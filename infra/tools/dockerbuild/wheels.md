@@ -9756,6 +9756,20 @@ wheel: <
 
 * *universal*
 
+## **service-identity-py3**
+
+### 24.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/service-identity-py3"
+  version: "version:24.1.0"
+>
+```
+
+
+* *universal*
+
 ## **setuptools**
 
 ### 34.3.2
