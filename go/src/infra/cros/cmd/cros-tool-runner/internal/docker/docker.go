@@ -41,6 +41,11 @@ const (
 	dockerRegistry   = "us-docker.pkg.dev"
 	lockFile         = "/var/lock/go-lock.lock"
 	RETRYNUM         = 2
+
+	// GCE env var consts
+	gceMetadataHost = "GCE_METADATA_HOST"
+	gceMetadataIP   = "GCE_METADATA_IP"
+	gceMetadataRoot = "GCE_METADATA_ROOT"
 )
 
 // Docker holds data to perform the docker manipulations.
@@ -238,6 +243,10 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	if env.IsCloudBot() {
 		args = append(args, cloudbotsDockerArgs()...)
 	}
+
+	// Add gce metadata env vars
+	args = append(args, getGceMetadataEnvVars()...)
+
 	// Add Satlab related args such as env var, volume.
 	if droneName := os.Getenv("DRONE_AGENT_HIVE"); strings.Contains(droneName, "satlab") {
 		args = append(args, satlabTLSDockerArgs()...)
@@ -340,6 +349,22 @@ func cloudbotsDockerArgs() []string {
 		args = append(args, "-v", fmt.Sprintf("%s:%s", hostSSHConfig, cntSSHConfig))
 	}
 	return args
+}
+
+// getGceMetadataEnvVars returns the gce metadata server env vars
+func getGceMetadataEnvVars() []string {
+	// Get GCE Metadata Server env vars
+	envVars := []string{}
+	if host, present := os.LookupEnv(gceMetadataHost); present {
+		envVars = append(envVars, "--env", fmt.Sprintf("%s=%s", gceMetadataHost, host))
+	}
+	if ip, present := os.LookupEnv(gceMetadataIP); present {
+		envVars = append(envVars, "--env", fmt.Sprintf("%s=%s", gceMetadataIP, ip))
+	}
+	if root, present := os.LookupEnv(gceMetadataRoot); present {
+		envVars = append(envVars, "--env", fmt.Sprintf("%s=%s", gceMetadataRoot, root))
+	}
+	return envVars
 }
 
 // satlabTLSDockerArgs returns Satlab specific args such as env vars and volume.
