@@ -12,6 +12,7 @@
                 "chrome_os_version":"15048.0.0",
                 "source":"hatch-cq",
                 "board":"hatch",
+                "board_type": "HW",
                 "build_metadata":{
                     "firmware":{
                         "ro_version":"Google_Voema.13672.224.0",

@@ -445,6 +445,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("avl_part_firmware", "0xa200000000000000"),
 						pbutil.StringPair("avl_component_type", "storage"),
 						pbutil.StringPair("board", "hatch"),
+						pbutil.StringPair("board_type", "HW"),
 						pbutil.StringPair("bot_config", "cloudbots_config.py"),
 						pbutil.StringPair("bot_id", "cloudbots-prod-1715342009263-7kz6"),
 						pbutil.StringPair("branch", "main"),

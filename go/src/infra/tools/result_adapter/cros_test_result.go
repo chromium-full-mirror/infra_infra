@@ -225,12 +225,13 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 		if primaryExecInfo != nil {
 			buildInfo := primaryExecInfo.GetBuildInfo()
 			if buildInfo != nil {
-				buildName := buildInfo.GetName()
+				buildName := buildInfo.Name
 				tags = AppendTags(tags, "image", buildName)
 				tags = AppendTags(tags, "build", strings.Split(buildName, "/")[1])
-				tags = AppendTags(tags, "board", buildInfo.GetBoard())
+				tags = AppendTags(tags, "board", buildInfo.Board)
+				tags = AppendTags(tags, "board_type", buildInfo.BoardType)
 
-				tags = configBuildMetaDataTags(tags, buildInfo.GetBuildMetadata())
+				tags = configBuildMetaDataTags(tags, buildInfo.BuildMetadata)
 			}
 
 			dutInfo := primaryExecInfo.GetDutInfo()
