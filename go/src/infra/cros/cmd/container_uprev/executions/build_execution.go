@@ -24,6 +24,7 @@ var UpdateShaStorage = internal.UpdateShaStorage
 
 // LuciBuildExecution represents build executions.
 func LuciBuildExecution() {
+	build.RegisterInputProperty[*struct{}]("")
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
 			isProd := false
