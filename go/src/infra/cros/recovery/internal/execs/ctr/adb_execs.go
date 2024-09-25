@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/internal/components/cft/adb"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 )
 
 func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -110,26 +111,36 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "adb connect").Err()
 	}
+
 	argsMap := info.GetActionArgs(ctx)
+	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
+	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
-	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
-	if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
+	timeout := argsMap.AsDuration(ctx, "timeout", 5, time.Second)
+	connect := func() error {
+		if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
+		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
+		if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
+		log.Debugf(ctx, "Try to connect to %q by adb", dut.Name)
+		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", dut.Name); err != nil {
+			return err
+		}
+		if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
+			return err
+		}
+		if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
+		return nil
 	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
-	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
-	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "connect", dut.Name); err != nil {
-		return errors.Annotate(err, "adb connect").Err()
-	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
-		return errors.Annotate(err, "adb connect").Err()
-	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
+	if retryErr := retry.LimitCount(ctx, retryCount, retryinterval, connect, "adb connect"); retryErr != nil {
+		return errors.Annotate(retryErr, "adb connect").Err()
 	}
 	return nil
 }
