@@ -461,7 +461,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 								Project:  "cros-registry/test-services",
 							},
 							Name:   "cros-test-finder",
-							Digest: "sha256:2fd003fd98edac93a4c208f818c84fc3a46a7dc677afc904357c5f630a8ec23d",
+							Digest: "sha256:08f67cac732b45cea7cd774fabee7c0ba49f71a66bdadca6f3ed87333aa7c118",
 						},
 					},
 				}
