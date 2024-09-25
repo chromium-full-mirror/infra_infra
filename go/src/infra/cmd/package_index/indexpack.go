@@ -46,7 +46,7 @@ type indexPack struct {
 	ctx context.Context
 
 	// Accumulated stats about the IndexPack, keyed by language.
-	stats map[string]indexPackLanguageStats
+	stats map[string]*indexPackLanguageStats
 }
 
 // newIndexPack initializes a new indexPack struct.
@@ -64,7 +64,7 @@ func newIndexPack(ctx context.Context, outputFile, rootPath, outDir, compDBPath,
 		buildConfig:           buildConfig,
 		clangTargetArch:       clangTargetArch,
 		ctx:                   ctx,
-		stats:                 make(map[string]indexPackLanguageStats),
+		stats:                 make(map[string]*indexPackLanguageStats),
 	}
 	ip.hashMaps = NewFileHashMap()
 	return ip

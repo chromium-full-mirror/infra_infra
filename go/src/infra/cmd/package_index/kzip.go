@@ -381,19 +381,19 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 			continue
 		}
 		ls, present := ip.stats[entry.cuLanguage]
-		ls.numCompilationUnits++
 		if !present {
-			ls.requiredInputs = make(map[string]bool)
-			ls.sourceFiles = make(map[string]bool)
+			ls = &indexPackLanguageStats{
+				requiredInputs: make(map[string]bool),
+				sourceFiles:    make(map[string]bool),
+			}
+			ip.stats[entry.cuLanguage] = ls
 		}
+		ls.numCompilationUnits++
 		for _, d := range entry.cuRequiredInputs {
 			ls.requiredInputs[d] = true
 		}
 		for _, f := range entry.cuSourceFiles {
 			ls.sourceFiles[f] = true
-		}
-		if !present {
-			ip.stats[entry.cuLanguage] = ls
 		}
 	}
 
