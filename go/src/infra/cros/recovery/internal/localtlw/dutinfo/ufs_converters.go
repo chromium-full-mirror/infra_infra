@@ -262,8 +262,9 @@ func convertAudioLatencyToolkitStatesToUFS(s tlw.AudioLatencyToolkit_State) ufsl
 }
 
 var amtManagerStates = map[ufslab.PeripheralState]tlw.AMTManager_State{
-	ufslab.PeripheralState_WORKING: tlw.AMTManager_WORKING,
-	ufslab.PeripheralState_BROKEN:  tlw.AMTManager_BROKEN,
+	ufslab.PeripheralState_WORKING:        tlw.AMTManager_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.AMTManager_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.AMTManager_NOT_APPLICABLE,
 }
 
 // converts AMTManager UFS state to TLW state
