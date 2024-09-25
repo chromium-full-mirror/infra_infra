@@ -7,8 +7,12 @@ package model
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
+
+	"github.com/jackc/pgconn"
 
 	"go.chromium.org/luci/common/logging"
 
@@ -113,6 +117,133 @@ func CreateDeviceLeaseRecord(ctx context.Context, tx *sql.Tx, record DeviceLease
 
 	logging.Debugf(ctx, "CreateDeviceLeaseRecord: DeviceLeaseRecord %s for Device %s created successfully", newRecord.ID, newRecord.DeviceID)
 	return newRecord, nil
+}
+
+// BulkCreateDeviceLeaseRecords creates multiple DeviceLeaseRecords in the DB.
+//
+// BulkCreateDeviceLeaseRecords takes a list of DeviceLeaseRecord models and
+// attempts to bulk insert them into the database. On conflict of the
+// idempotency key, it will do nothing.
+func BulkCreateDeviceLeaseRecords(ctx context.Context, tx *sql.Tx, records []DeviceLeaseRecord, leaseDurs []time.Duration) (map[string]*DeviceLeaseRecord, map[string]error, error) {
+	var (
+		// A map for DUT ID to created lease record
+		createSuccess = map[string]*DeviceLeaseRecord{}
+		// A map for DUT ID to error
+		createErrs = map[string]error{}
+		query      = `
+			INSERT INTO "DeviceLeaseRecords"
+				(
+					id,
+					idempotency_key,
+					dut_id,
+					device_id,
+					device_address,
+					device_type,
+					owner_id,
+					leased_time,
+					expiration_time,
+					last_updated_time
+				)
+			VALUES %s
+			ON CONFLICT (idempotency_key)
+			DO NOTHING
+			RETURNING
+				id,
+				idempotency_key,
+				dut_id,
+				device_id,
+				device_address,
+				device_type,
+				owner_id,
+				leased_time,
+				expiration_time,
+				last_updated_time;`
+	)
+
+	// Populate temporary table.
+	var (
+		valueStrings []string
+		valueArgs    []interface{}
+	)
+	for i, r := range records {
+		l := len(valueArgs)
+		valueStrings = append(
+			valueStrings,
+			fmt.Sprintf("($%d, $%d, $%d, $%d, $%d, $%d, $%d, NOW(), NOW() + $%d, NOW())", l+1, l+2, l+3, l+4, l+5, l+6, l+7, l+8),
+		)
+		valueArgs = append(
+			valueArgs,
+			r.ID,
+			r.IdempotencyKey,
+			r.DutID,
+			r.DeviceID,
+			r.DeviceAddress,
+			r.DeviceType,
+			r.OwnerID,
+			leaseDurs[i],
+		)
+	}
+
+	if len(valueStrings) == 0 {
+		return nil, nil, errors.New("BulkCreateDeviceLeaseRecords: no new leases to be created")
+	}
+
+	stmt := fmt.Sprintf(query, strings.Join(valueStrings, ","))
+	logging.Debugf(ctx, "BulkCreateDeviceLeaseRecords: insert statement: %s\n with value arguments: %+v", stmt, valueArgs)
+	rows, err := tx.QueryContext(ctx, stmt, valueArgs...)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return nil, nil, fmt.Errorf("unable to rollback: %w", rollbackErr)
+		}
+		return nil, nil, fmt.Errorf("failed to insert batch into DeviceLeaseRecords table: %w", err)
+	}
+	defer rows.Close()
+
+	// Process Devices and populate actually leased Devices
+	for rows.Next() {
+		var (
+			newRecord       DeviceLeaseRecord
+			leasedTime      sql.NullTime
+			expirationTime  sql.NullTime
+			lastUpdatedTime sql.NullTime
+		)
+		err := rows.Scan(
+			&newRecord.ID,
+			&newRecord.IdempotencyKey,
+			&newRecord.DutID,
+			&newRecord.DeviceID,
+			&newRecord.DeviceAddress,
+			&newRecord.DeviceType,
+			&newRecord.OwnerID,
+			&leasedTime,
+			&expirationTime,
+			&lastUpdatedTime,
+		)
+
+		// Handle possible null times
+		if leasedTime.Valid {
+			newRecord.LeasedTime = leasedTime.Time
+		}
+		if expirationTime.Valid {
+			newRecord.ExpirationTime = expirationTime.Time
+		}
+		if lastUpdatedTime.Valid {
+			newRecord.LastUpdatedTime = lastUpdatedTime.Time
+		}
+
+		if err != nil {
+			logging.Errorf(ctx, "BulkCreateDeviceLeaseRecords: failed to create lease record: %w", err)
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				logging.Debugf(ctx, "BulkCreateDeviceLeaseRecords: SQLSTATE:", pgErr.Code)
+				logging.Debugf(ctx, "BulkCreateDeviceLeaseRecords:", pgErr.Message)
+			}
+			continue
+		}
+		createSuccess[newRecord.DutID] = &newRecord
+		createErrs[newRecord.DutID] = nil
+	}
+	return createSuccess, createErrs, nil
 }
 
 // GetDeviceLeaseRecordByID gets a DeviceLeaseRecord from the database by name.

@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgconn"
@@ -502,6 +503,102 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 
 	logging.Debugf(ctx, "UpdateDeviceToLeased: Device %s updated successfully", updatedDevice.ID)
 	return updatedDevice, nil
+}
+
+// BulkUpdateDevicesToLeased marks a list of Devices as leased.
+//
+// BulkUpdateDevicesToLeased takes a list of Device IDs (either dut_id asset tag
+// or hostname) and marks them as LEASED. The query only tries to mark
+// DEVICE_STATE_AVAILABLE Devices. Anything no found by the query is considered
+// to be already leased. A list of updated Devices and associated errors are
+// returned.
+//
+// TODO (justinsuen): Need a way to know which ones are not found.
+func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []string, idType DeviceIDType) (map[string]*Device, map[string]error, error) {
+	var (
+		// A map for DUT ID to updated Device
+		updateSuccess = map[string]*Device{}
+		// A map for DUT ID to error
+		updateErrs = map[string]error{}
+		query      = `
+			UPDATE
+				"Devices"
+			SET
+				device_state='DEVICE_STATE_LEASED',
+				last_updated_time=NOW()
+			WHERE
+				dut_id IN (%s)
+				AND device_state='DEVICE_STATE_AVAILABLE'
+			RETURNING
+				id,
+				dut_id,
+				device_address,
+				device_type,
+				device_state,
+				schedulable_labels,
+				is_active,
+				created_time,
+				last_updated_time,
+				last_notification_time;`
+	)
+
+	logging.Debugf(ctx, "UpdateDeviceToLeased: update statement: %s\n with Devices %+v", query, deviceIDs)
+	query = fmt.Sprintf(query, strings.Join(deviceIDs, ", "))
+	rows, err := tx.QueryContext(ctx, query)
+	if err != nil {
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			return nil, nil, fmt.Errorf("unable to rollback: %w", rollbackErr)
+		}
+		return nil, nil, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	// Process Devices and populate actually leased Devices
+	for rows.Next() {
+		var (
+			updatedDevice        Device
+			createdTime          sql.NullTime
+			lastUpdatedTime      sql.NullTime
+			lastNotificationTime sql.NullTime
+		)
+		err := rows.Scan(
+			&updatedDevice.ID,
+			&updatedDevice.DutID,
+			&updatedDevice.DeviceAddress,
+			&updatedDevice.DeviceType,
+			&updatedDevice.DeviceState,
+			&updatedDevice.SchedulableLabels,
+			&updatedDevice.IsActive,
+			&createdTime,
+			&lastUpdatedTime,
+			&lastNotificationTime,
+		)
+
+		// Handle possible null times
+		if createdTime.Valid {
+			updatedDevice.CreatedTime = createdTime.Time
+		}
+		if lastUpdatedTime.Valid {
+			updatedDevice.LastUpdatedTime = lastUpdatedTime.Time
+		}
+		if lastNotificationTime.Valid {
+			updatedDevice.LastNotificationTime = lastNotificationTime.Time
+		}
+
+		updateErrs[updatedDevice.DutID] = ErrDeviceAlreadyLeased
+		if err != nil {
+			logging.Errorf(ctx, "UpdateDeviceToLeased: failed to update Device to DB: %w", err)
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) {
+				logging.Debugf(ctx, "UpdateDeviceToLeased: SQLSTATE:", pgErr.Code)
+				logging.Debugf(ctx, "UpdateDeviceToLeased:", pgErr.Message)
+			}
+			continue
+		}
+		updateSuccess[updatedDevice.DutID] = &updatedDevice
+		updateErrs[updatedDevice.DutID] = nil
+	}
+	return updateSuccess, updateErrs, nil
 }
 
 // UpsertDeviceFromUFS upserts a Device in a transaction.

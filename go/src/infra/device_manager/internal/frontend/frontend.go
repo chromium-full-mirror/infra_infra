@@ -128,7 +128,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	// for the device to lease.
 	deviceLabels := r.GetHardwareDeviceReqs().GetSchedulableLabels()
 	if len(deviceLabels) == 0 {
-		return nil, status.Errorf(codes.NotFound, "LeaseDevice: schedulable labels are empty")
+		return nil, status.Errorf(codes.InvalidArgument, "LeaseDevice: schedulable labels are empty")
 	}
 
 	var (
@@ -149,14 +149,23 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	}
 
 	if deviceID == "" {
-		return nil, status.Errorf(codes.NotFound, "LeaseDevice: dut_id and device_id labels have no values")
+		return nil, status.Errorf(codes.InvalidArgument, "LeaseDevice: dut_id and device_id labels have no values")
 	}
 	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, deviceID, idType)
 }
 
 // BulkLeaseDevices takes a BulkLeaseDevicesRequest and leases a corresponding device.
+//
+// BulkLeaseDevices currently only supported leasing with DUT ID.
 func (s *Server) BulkLeaseDevices(ctx context.Context, r *api.BulkLeaseDevicesRequest) (*api.BulkLeaseDevicesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "BulkLeaseDevices is not implemented")
+	logging.Debugf(ctx, "BulkLeaseDevices: received BulkLeaseDevicesRequest %v", r)
+
+	if len(r.GetLeaseDeviceRequests()) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "BulkLeaseDevices: no lease device requests provided")
+	}
+
+	logging.Debugf(ctx, "BulkLeaseDevices: controller processing BulkLeaseDevicesRequests")
+	return controller.BulkLeaseDevices(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r)
 }
 
 // ReleaseDevice releases the leased device.

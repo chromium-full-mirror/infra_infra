@@ -96,6 +96,126 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 	}, nil
 }
 
+// BulkLeaseDevices leases multiple Devices specified by the request.
+//
+// The function executes as a transaction. It attempts to create lease records
+// on available Devices. Then it updates the Devices' state to LEASED and
+// publishes to a PubSub stream. The transaction is then committed.
+func BulkLeaseDevices(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.BulkLeaseDevicesRequest) (*api.BulkLeaseDevicesResponse, error) {
+	// TODO (b/328662436): Collect metrics
+
+	// A map for DUT ID to lease record
+	reqMap := make(map[string]*api.LeaseDeviceRequest)
+	resp := api.BulkLeaseDevicesResponse{}
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.New("BulkLeaseDevices: failed to start database transaction")
+	}
+
+	// Extract device IDs for bulk leasing.
+	logging.Debugf(ctx, "BulkLeaseDevices: extracting DUT IDs from requests")
+	var (
+		deviceIDs       []string
+		deviceIDsQuoted []string
+	)
+	for _, leaseReq := range r.GetLeaseDeviceRequests() {
+		deviceLabels := leaseReq.GetHardwareDeviceReqs().GetSchedulableLabels()
+		if len(deviceLabels) == 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "BulkLeaseDevices: schedulable labels are empty")
+		}
+		dutID, err := ExtractSingleValuedDimension(ctx, deviceLabels, string(model.IDTypeDutID))
+		if err != nil {
+			logging.Debugf(ctx, err.Error())
+			continue
+		}
+		deviceIDs = append(deviceIDs, dutID)
+		deviceIDsQuoted = append(deviceIDsQuoted, fmt.Sprintf("'%s'", dutID))
+		reqMap[dutID] = leaseReq
+	}
+
+	logging.Debugf(ctx, "BulkLeaseDevices: bulk updating Devices to leased")
+	updatedDevices, updateDeviceErrs, err := model.BulkUpdateDevicesToLeased(ctx, tx, deviceIDsQuoted, model.IDTypeDutID)
+	if err != nil {
+		logging.Errorf(ctx, "BulkLeaseDevices: %w. Failed to lease Devices %v", err, deviceIDs)
+		return &api.BulkLeaseDevicesResponse{
+			ErrorType:   api.BulkLeaseDevicesResponseErrorType_BULK_LEASE_ERROR_TYPE_INTERNAL_DATABASE_ERR,
+			ErrorString: fmt.Sprintf("Database error: %s. Could not lease Devices %v", err, deviceIDs),
+		}, nil
+	}
+
+	newRecords := make([]model.DeviceLeaseRecord, 0, len(updatedDevices))
+	leaseDursMap := make([]time.Duration, 0, len(updatedDevices))
+	for k, d := range updatedDevices {
+		newRecords = append(newRecords, model.DeviceLeaseRecord{
+			ID:             uuid.New().String(),
+			IdempotencyKey: reqMap[k].GetIdempotencyKey(),
+			DutID:          d.DutID,
+			DeviceID:       d.ID,
+			DeviceAddress:  d.DeviceAddress,
+			DeviceType:     d.DeviceType,
+		})
+		leaseDursMap = append(leaseDursMap, reqMap[k].GetLeaseDuration().AsDuration())
+	}
+
+	logging.Debugf(ctx, "BulkLeaseDevices: bulk creating lease records for Devices")
+	createdRecords, createDeviceErrs, err := model.BulkCreateDeviceLeaseRecords(ctx, tx, newRecords, leaseDursMap)
+	if err != nil {
+		logging.Errorf(ctx, "BulkLeaseDevices: failed to bulk create DeviceLeaseRecords: %w", err)
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	// log success after commit success
+	logging.Debugf(ctx, "BulkLeaseDevices: successfully bulk created lease records for Devices %+v", deviceIDs)
+
+	resp.LeaseDeviceResponses = make([]*api.LeaseDeviceResponse, 0, len(r.LeaseDeviceRequests))
+	for i, dutID := range deviceIDs {
+		// check Device resp and then check DeviceLeaseRecord resp
+		if err, ok := updateDeviceErrs[dutID]; ok && err != nil {
+			logging.Debugf(ctx, "BulkLeaseDevices: failed to lease Device %s: %w", dutID, err)
+			if errors.Is(err, model.ErrDeviceAlreadyLeased) {
+				resp.LeaseDeviceResponses[i] = &api.LeaseDeviceResponse{
+					ErrorType:   api.LeaseDeviceResponseErrorType_LEASE_ERROR_TYPE_DEVICE_ALREADY_LEASED,
+					ErrorString: fmt.Sprintf("Device %s was already leased", dutID),
+				}
+			}
+			continue
+		}
+
+		// TODO (justinsuen): creating lease records in bulk does not return any
+		// meaningful individual errors at the moment.
+		if err, ok := createDeviceErrs[dutID]; ok && err != nil {
+			logging.Debugf(ctx, "BulkLeaseDevices: failed to lease Device %s: %w", dutID, err)
+			continue
+		}
+
+		resp.LeaseDeviceResponses = append(
+			resp.LeaseDeviceResponses,
+			&api.LeaseDeviceResponse{
+				DeviceLease: &api.DeviceLeaseRecord{
+					Id:             createdRecords[dutID].ID,
+					IdempotencyKey: createdRecords[dutID].IdempotencyKey,
+					DutId:          createdRecords[dutID].DutID,
+					DeviceId:       createdRecords[dutID].DeviceID,
+					DeviceAddress: &api.DeviceAddress{
+						Host: createdRecords[dutID].DeviceAddress,
+					},
+					DeviceType:      stringToDeviceType(ctx, createdRecords[dutID].DeviceType),
+					LeasedTime:      timestamppb.New(createdRecords[dutID].LeasedTime),
+					ReleasedTime:    timestamppb.New(createdRecords[dutID].ReleasedTime),
+					ExpirationTime:  timestamppb.New(createdRecords[dutID].ExpirationTime),
+					LastUpdatedTime: timestamppb.New(createdRecords[dutID].LastUpdatedTime),
+				},
+			},
+		)
+	}
+	return &resp, nil
+}
+
 // ExtendLease attempts to extend the lease on a device.
 //
 // ExtendLease checks the requested lease to verify that it is unexpired. If
