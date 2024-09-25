@@ -236,9 +236,15 @@ enum HardwareState {
 }
 
 // This proto define common version info we want to record from a device.
-// Next Tag: 4
+// Next Tag: 5
 message VersionInfo {
   string os = 1;
   string ro_firmware = 2;
   string rw_firmware = 3;
+  enum OsType {
+    UNKNOWN = 0;
+    CHROMEOS = 1;
+    ANDROID = 2;
+  }
+  OsType os_type = 4;
 }
