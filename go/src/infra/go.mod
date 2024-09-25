@@ -97,6 +97,7 @@ require (
 	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
 	go.chromium.org/chromiumos/ctp v0.0.0-00010101000000-000000000000
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240530000842-7d34be97f98c
+	go.chromium.org/chromiumos/lro v0.0.0-00010101000000-000000000000
 	go.chromium.org/chromiumos/test v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20240531181147-0c7c729b2fcf
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.53.0
@@ -294,7 +295,7 @@ replace (
 // Update by replacing version with `latest` and calling `go mod tidy`.
 replace (
 	go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4
-	go.chromium.org/chromiumos/lro => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20240603175638-a3a60d9d4bb5
+	go.chromium.org/chromiumos/lro => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20240923220542-88622113c473
 	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240907003610-e12836c84d94
 	go.chromium.org/tast => go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20240530193934-ca093604b833
 )
