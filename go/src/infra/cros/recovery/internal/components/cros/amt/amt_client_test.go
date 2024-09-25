@@ -5,6 +5,8 @@
 package amt
 
 import (
+	"context"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,4 +24,30 @@ func TestFindPowerState(t *testing.T) {
 	pstate, _ := findPowerState(response)
 
 	assert.Equal(t, 2, pstate)
+}
+
+func TestNewAmtClient(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	testCases := []struct {
+		useTLSValue bool
+		expectedURI string
+	}{
+		{
+			true,
+			"https://192.168.231.123:16993/wsman",
+		},
+		{
+			false,
+			"http://192.168.231.123:16992/wsman",
+		},
+	}
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(strconv.FormatBool(tt.useTLSValue), func(t *testing.T) {
+			t.Parallel()
+			amt := NewAMTClient(ctx, "192.168.231.123", "admin", "P@ssword123", tt.useTLSValue)
+			assert.Equal(t, tt.expectedURI, amt.uri)
+		})
+	}
 }

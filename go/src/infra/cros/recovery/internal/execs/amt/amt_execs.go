@@ -49,8 +49,9 @@ func healthCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	if hostname == "" {
 		return errors.Reason("check amt_manager health: hostname is empty").Err()
 	}
+	useTLS := dut.GetChromeos().GetAmtManager().GetUseTls()
 	// b/353671548: Store the AMT password somewhere else.
-	client := amt.NewAMTClient(hostname, "admin", "P@ssword1")
+	client := amt.NewAMTClient(ctx, hostname, "admin", "P@ssword1", useTLS)
 	//TODO(b/353283943): Implement a more granular AMT health check.
 	//
 	// Use this as a health check for now, since it implicity verifies that we can

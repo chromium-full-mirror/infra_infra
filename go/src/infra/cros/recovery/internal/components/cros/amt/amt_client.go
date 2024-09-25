@@ -52,14 +52,18 @@ func findPowerState(response string) (int, error) {
 // AMTClient holds WS-Management connection data.
 type AMTClient struct {
 	uri, username, password string
+	useTLS                  bool
 }
 
 // NewAMTClient returns a new AMTClient instance.
-func NewAMTClient(hostname string, username string, password string) *AMTClient {
-	protocol := "http"
-	port := 16992
+func NewAMTClient(ctx context.Context, hostname string, username string, password string, useTLS bool) *AMTClient {
+	protocol, port := "http", 16992
+	if useTLS {
+		protocol, port = "https", 16993
+	}
 	uri := fmt.Sprintf("%s://%s:%d/wsman", protocol, hostname, port)
-	return &AMTClient{uri, username, password}
+	log.Infof(ctx, "Using AMT manager URI: %s", uri)
+	return &AMTClient{uri, username, password, useTLS}
 }
 
 func (c AMTClient) post(ctx context.Context, request string) (string, error) {

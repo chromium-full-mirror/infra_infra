@@ -21,7 +21,7 @@ func flexSetAMTPowerStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if newState == "" {
 		return errors.Reason("flex set AMT power state: state is not provided").Err()
 	}
-	client, err := getFlexAMTClient(info)
+	client, err := getFlexAMTClient(ctx, info)
 	if err != nil {
 		return errors.Reason("flex set AMT power state: failed to create client").Err()
 	}
@@ -29,7 +29,7 @@ func flexSetAMTPowerStateExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // Configure and return an AMTClient.
-func getFlexAMTClient(info *execs.ExecInfo) (*amt.AMTClient, error) {
+func getFlexAMTClient(ctx context.Context, info *execs.ExecInfo) (*amt.AMTClient, error) {
 	dut := info.GetDut()
 	if dut.GetChromeos().GetAmtManager() == nil {
 		return nil, errors.Reason("flex get AMT client: amt_manager is not supported").Err()
@@ -38,8 +38,9 @@ func getFlexAMTClient(info *execs.ExecInfo) (*amt.AMTClient, error) {
 	if hostname == "" {
 		return nil, errors.Reason("flex get AMT client: hostname is empty").Err()
 	}
+	useTLS := dut.GetChromeos().GetAmtManager().GetUseTls()
 	// b/353671548: Store the AMT password somewhere else.
-	return amt.NewAMTClient(hostname, "admin", "P@ssword1"), nil
+	return amt.NewAMTClient(ctx, hostname, "admin", "P@ssword1", useTLS), nil
 }
 
 // flexAMTKnownExec checks if AMT management details are present for the DUT.
