@@ -122,10 +122,10 @@ message DutState {
   HardwareState camera_state = 32;
 
   // The type of Fingerprint board on the DUT.
-  string fingerprint_board = 33;
+  string fingerprint_board = 34;
 
   // The type of Fingerprint MCU on the DUT.
-  string fingerprint_mcu = 34;
+  string fingerprint_mcu = 33;
 
   // The type of Fingerprint sensor on the DUT.
   string fingerprint_sensor = 35;
