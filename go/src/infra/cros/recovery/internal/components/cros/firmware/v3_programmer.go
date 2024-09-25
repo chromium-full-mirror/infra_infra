@@ -52,7 +52,7 @@ const (
 	apProgrammerCmdGlob        = "futility update -i %s --servo_port=%d"
 	apProgrammerWithGbbFlag    = "--gbb_flags=%s"
 	apProgrammerWithForce      = "--force"
-	apProgrammerWithCSMEUnlock = "--quirks csme_unlock"
+	apProgrammerWithCSMEUnlock = "--quirks unlock_csme"
 )
 
 // ProgramEC programs EC firmware to devices by servo.

@@ -288,7 +288,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 	ftt.Run("Happy path with csme unlock chipset", t, func(t *ftt.Test) {
 		runRequest := map[string]RunResponse{
 			"which futility": {},
-			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
+			"futility update -i image-board.bin --servo_port=97 --quirks unlock_csme": {},
 			"which ifdtool": {},
 			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
 			"cat image-board.bin-config": {Output: `CONFIG_IFD_CHIPSET=adl
@@ -310,7 +310,7 @@ func TestProgrammerV3ProgramAP(t *testing.T) {
 	ftt.Run("Happy path with csme unlock ifdpath nissa", t, func(t *ftt.Test) {
 		runRequest := map[string]RunResponse{
 			"which futility": {},
-			"futility update -i image-board.bin --servo_port=97 --quirks csme_unlock": {},
+			"futility update -i image-board.bin --servo_port=97 --quirks unlock_csme": {},
 			"which ifdtool": {},
 			"cbfstool image-board.bin extract -n config -f image-board.bin-config": {},
 			"cat image-board.bin-config": {Output: `CONFIG_IFD_BIN_PATH=/some/random/nissa/path
