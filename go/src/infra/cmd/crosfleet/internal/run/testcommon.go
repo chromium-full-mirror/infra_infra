@@ -433,6 +433,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		l.cliFlags.qsAccount = releaseP0QSaccount
 	}
 
+	filters := l.cliFlags.userDefinedFilters
 	if l.testPlan.Suite != nil {
 		for _, suite := range l.testPlan.GetSuite() {
 			if strings.HasPrefix(suite.GetName(), "AL.") {
@@ -460,11 +461,11 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 								Project:  "cros-registry/test-services",
 							},
 							Name:   "cros-test-finder",
-							Digest: "sha256:8d5689f430aa2bad948c31e1675c3ba3d7afd7af7b5990f8b54b33e2114fb5e7",
+							Digest: "sha256:2fd003fd98edac93a4c208f818c84fc3a46a7dc677afc904357c5f630a8ec23d",
 						},
 					},
 				}
-				l.cliFlags.userDefinedFilters = append(l.cliFlags.userDefinedFilters, alProvisionFilter, foilFilter, alTestFinder)
+				filters = append(filters, alProvisionFilter, foilFilter, alTestFinder)
 				break
 			}
 		}
@@ -497,7 +498,7 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 		TimeoutMins:          l.cliFlags.timeoutMins,
 		TRV2:                 l.cliFlags.trv2 || l.cliFlags.dynamicTrv2,
 		DynamicTRV2:          l.cliFlags.dynamicTrv2,
-		UserDefinedFilters:   l.cliFlags.userDefinedFilters,
+		UserDefinedFilters:   filters,
 	}
 }
 
