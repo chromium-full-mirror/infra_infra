@@ -7,10 +7,12 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+	"text/tabwriter"
 	"time"
 
 	"go.chromium.org/luci/common/data/stringset"
@@ -213,6 +215,25 @@ func main() {
 
 	// Write all data file and unit proto entries to kzip.
 	err = ip.writeToKzip(kzipEntryChannel)
+
+	// Print stats regardless of success.
+	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 3, '-', tabwriter.AlignRight|tabwriter.Debug)
+	fmt.Fprintln(tw, "Language\tCompilationUnits\tRequiredInputs\tSourceFiles")
+	numUnits := 0
+	numRequiredInputs := 0
+	numSourceFiles := 0
+	for l, st := range ip.stats {
+		nri := len(st.requiredInputs)
+		nsf := len(st.sourceFiles)
+		fmt.Fprintf(tw, "%s\t%d\t%d\t%d\n", l, st.numCompilationUnits, nri, nsf)
+		numUnits += st.numCompilationUnits
+		numRequiredInputs += nri
+		numSourceFiles += nsf
+	}
+	fmt.Fprintf(tw, "Total\t%d\t%d\t%d\n", numUnits, numRequiredInputs, numSourceFiles)
+	if tw.Flush() != nil {
+		logging.Warningf(ctx, "failed to flush stats to stdout")
+	}
 	if err != nil {
 		panic(err)
 	}

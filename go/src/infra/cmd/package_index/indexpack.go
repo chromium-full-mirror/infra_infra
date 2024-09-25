@@ -8,6 +8,13 @@ import (
 	"context"
 )
 
+type indexPackLanguageStats struct {
+	numCompilationUnits int
+	// Store the following in maps so they will be deduped.
+	requiredInputs map[string]bool
+	sourceFiles    map[string]bool
+}
+
 // indexPack contains the information necessary to assemble the kzip.
 type indexPack struct {
 	// Path to which the index pack will be written.
@@ -37,6 +44,9 @@ type indexPack struct {
 
 	// Used for logging.
 	ctx context.Context
+
+	// Accumulated stats about the IndexPack, keyed by language.
+	stats map[string]indexPackLanguageStats
 }
 
 // newIndexPack initializes a new indexPack struct.
@@ -54,6 +64,7 @@ func newIndexPack(ctx context.Context, outputFile, rootPath, outDir, compDBPath,
 		buildConfig:           buildConfig,
 		clangTargetArch:       clangTargetArch,
 		ctx:                   ctx,
+		stats:                 make(map[string]indexPackLanguageStats),
 	}
 	ip.hashMaps = NewFileHashMap()
 	return ip

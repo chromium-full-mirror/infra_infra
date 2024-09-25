@@ -38,8 +38,11 @@ var corruptedCUSuffixes = []string{
 
 // kzipEntry stores the path to a file to be written in the kzip and its contents.
 type kzipEntry struct {
-	path    string
-	content []byte
+	path             string
+	content          []byte
+	cuLanguage       string   // The language, only set for compilation units.
+	cuRequiredInputs []string // CompilationUnit.required_input.info.digest
+	cuSourceFiles    []string // CompilationUnit.source_file
 }
 
 // mergeExistingKzips iterates through files inside existingJavaKzipsPath
@@ -222,7 +225,7 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 			continue
 		}
 
-		kzipEntryChannel <- kzipEntry{filesDir + filepath.Base(file.Name), content}
+		kzipEntryChannel <- kzipEntry{filesDir + filepath.Base(file.Name), content, "", nil, nil}
 		logging.Debugf(ctx, "Added %s from kzip", file.Name)
 
 		rc.Close()
@@ -313,7 +316,7 @@ func (ip *indexPack) dataFileToKzipEntry(ctx context.Context,
 			hashFname := filesDir + hash
 			logging.Debugf(ctx, "Including source file %s as %s for compilation", fname, hashFname)
 
-			kzipEntryChannel <- kzipEntry{hashFname, content}
+			kzipEntryChannel <- kzipEntry{hashFname, content, "", nil, nil}
 		}
 	}
 
@@ -330,7 +333,11 @@ func indexedCompilationToKzipEntry(indexedCompilationProto *kpb.IndexedCompilati
 	}
 	hash := sha256.Sum256(content)
 	path := unitsDir + hex.EncodeToString(hash[:])
-	return kzipEntry{path, content}, nil
+	reqInputDigests := make([]string, len(indexedCompilationProto.Unit.GetRequiredInput()))
+	for i, fi := range indexedCompilationProto.Unit.GetRequiredInput() {
+		reqInputDigests[i] = fi.Info.Digest
+	}
+	return kzipEntry{path, content, indexedCompilationProto.Unit.VName.Language, reqInputDigests, indexedCompilationProto.Unit.GetSourceFile()}, nil
 }
 
 // writeToKzip first creates the kzip file with the appropriate directory structure
@@ -367,6 +374,26 @@ func (ip *indexPack) writeToKzip(kzipEntryChannel <-chan kzipEntry) error {
 		_, err = f.Write(entry.content)
 		if err != nil {
 			return err
+		}
+
+		// Update stats.
+		if entry.cuLanguage == "" {
+			continue
+		}
+		ls, present := ip.stats[entry.cuLanguage]
+		ls.numCompilationUnits++
+		if !present {
+			ls.requiredInputs = make(map[string]bool)
+			ls.sourceFiles = make(map[string]bool)
+		}
+		for _, d := range entry.cuRequiredInputs {
+			ls.requiredInputs[d] = true
+		}
+		for _, f := range entry.cuSourceFiles {
+			ls.sourceFiles[f] = true
+		}
+		if !present {
+			ip.stats[entry.cuLanguage] = ls
 		}
 	}
 
