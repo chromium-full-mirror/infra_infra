@@ -294,6 +294,25 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		return infraErrorf("runSubrepoTests called for a main Go repo builder")
 	}
 
+	// skippedByGoTool reports whether the go tool's ignoring behavior, quoted below,
+	// applies to the '/'-separated path.
+	//
+	//	Directory and file names that begin with "." or "_" are ignored by the go tool,
+	//	as are directories named "testdata".
+	//
+	// See https://pkg.go.dev/cmd/go#hdr-Package_lists_and_patterns.
+	skippedByGoTool := func(path string) (skip bool, why string) {
+		for i, pathElem := range strings.Split(path, "/") {
+			switch {
+			case strings.HasPrefix(pathElem, "."), strings.HasPrefix(pathElem, "_"):
+				return true, fmt.Sprintf("path element %q begins with %q", pathElem, pathElem[0])
+			case pathElem == "testdata":
+				return true, fmt.Sprintf(`path element at index %d is "testdata"`, i)
+			}
+		}
+		return false, ""
+	}
+
 	// Discover all modules in the subrepo,
 	// then select modules to be tested.
 	allModules, err := repoToModules(ctx, spec, repoDir)
@@ -302,6 +321,15 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 	}
 	var modules []module // Modules to test.
 	for _, m := range allModules {
+		// Skip directories that we're not looking to support having testable modules in.
+		if skip, why := skippedByGoTool(m.RepoRelativeGoMod); skip {
+			logSkippedModule(ctx, m.Path, fmt.Sprintf(`skipping because module %q (defined in {repo root}/%s) is inside a directory that the go tool ignores: %s
+
+See https://pkg.go.dev/cmd/go#hdr-Package_lists_and_patterns.
+Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRelativeGoMod, why))
+			continue
+		}
+
 		// When testing on release branches like "release-branch.go1.23", check
 		// the release branch Go version meets the module's minimum requirement.
 		// If it doesn't and 'GOTOOLCHAIN=local' is set, log it visibly and skip
@@ -374,7 +402,7 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 }
 
 func logSkippedModule(ctx context.Context, modulePath, skipReason string) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("skip testing %s module", modulePath))
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("skip testing %q module", modulePath))
 	_, _ = io.WriteString(step.Log("skip reason"), skipReason)
 	step.End(nil)
 }
@@ -413,9 +441,16 @@ type module struct {
 	RootDir string // Module root directory on disk.
 	Path    string // Module path specified in go.mod.
 	Minimum string // Minimum Go toolchain version for the module. With the "go" prefix included, like "go1.22.0".
+	// RepoRelativeGoMod is a '/'-separated path indicating the go.mod file
+	// original location within the repository, relative to repository root.
+	// For example, "go.mod" for a top-level module like golang.org/x/tools,
+	// and "gopls/go.mod" for a nested module like golang.org/x/tools/gopls.
+	RepoRelativeGoMod string
 }
 
-// repoToModules discovers and reports modules in repoDir to be tested.
+// repoToModules discovers and reports all existing modules in repoDir.
+// The caller is responsible for deciding if any of the modules should
+// be skipped rather than tested.
 //
 // It also moves nested modules such that their relative paths are not
 // predictable. This is done to catch unintended cases where a test in
@@ -425,25 +460,25 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 	step, ctx := build.StartStep(ctx, "discover modules")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	// Discover all modules that we wish to test. See go.dev/issue/32528.
+	// Discover all modules that exist; the caller will decide which to test. See go.dev/issue/32528.
 	if err := filepath.WalkDir(repoDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-		if d.IsDir() && (strings.HasPrefix(d.Name(), ".") || strings.HasPrefix(d.Name(), "_") || d.Name() == "testdata") {
-			// Skip directories that we're not looking to support having testable modules in.
-			// TODO(go.dev/issue/65267): Move nested untestable modules too.
-			return fs.SkipDir
 		}
 		if goModFile := d.Name() == "go.mod" && !d.IsDir(); goModFile {
 			modPath, goVersion, err := modPathAndGo(path)
 			if err != nil {
 				return err
 			}
+			rel, err := filepath.Rel(repoDir, path)
+			if err != nil {
+				return err
+			}
 			modules = append(modules, module{
-				RootDir: filepath.Dir(path),
-				Path:    modPath,
-				Minimum: goVersion,
+				RootDir:           filepath.Dir(path),
+				Path:              modPath,
+				Minimum:           goVersion,
+				RepoRelativeGoMod: filepath.ToSlash(rel),
 			})
 		}
 		return nil
@@ -463,6 +498,11 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		"telemetry": true, // A local replace directive in x/telemetry/godev as of 2023-06-08.
 		"exp":       true, // A local replace directive in x/exp/slog/benchmarks/{zap,zerolog}_benchmarks as of 2023-06-08.
 		"oscar":     true, // A local module reference via go.work in x/oscar as of 2024-08-05.
+
+		"debug":           true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 1 as of 2024-09-18.
+		"pkgsite":         true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 1 as of 2024-09-18.
+		"pkgsite-metrics": true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 3 as of 2024-09-18.
+		"vuln":            true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 9 as of 2024-09-18.
 	}
 	if !keepNestedModsInsideRepo[spec.inputs.Project] || spec.experiment("golang.force_test_outside_repository") {
 		// Move nested modules to directories that aren't predictably-relative to each other
