@@ -503,6 +503,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		"pkgsite":         true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 1 as of 2024-09-18.
 		"pkgsite-metrics": true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 3 as of 2024-09-18.
 		"vuln":            true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 9 as of 2024-09-18.
+		"vulndb":          true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 6 as of 2024-09-25.
 	}
 	if !keepNestedModsInsideRepo[spec.inputs.Project] || spec.experiment("golang.force_test_outside_repository") {
 		// Move nested modules to directories that aren't predictably-relative to each other
