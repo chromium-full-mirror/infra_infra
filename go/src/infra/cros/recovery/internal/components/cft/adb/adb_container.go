@@ -23,6 +23,7 @@ import (
 type ADBResponse interface {
 	GetStdout() []byte
 	GetStderr() []byte
+	GetExitCode() int32
 }
 
 // ExecCommand execs a raw command by ADB.
@@ -42,8 +43,12 @@ func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout ti
 		Args:    args,
 	})
 	if res != nil {
-		log.Infof(ctx, "STDOUT: %s", res.GetStdout())
-		log.Infof(ctx, "STDERR: %s", res.GetStderr())
+		log.Debugf(ctx, "STDOUT: %s", res.GetStdout())
+		log.Debugf(ctx, "STDERR: %s", res.GetStderr())
+		log.Debugf(ctx, "EXITCODE: %d", res.GetExitCode())
+	}
+	if err != nil && res.GetExitCode() != 0 {
+		err = errors.Reason("failed execute command %q, finished with exit code: %d", fullCmd, res.GetExitCode()).Err()
 	}
 	return res, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
 }

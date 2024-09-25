@@ -138,6 +138,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	}
 	// TODO(otabek): apply code logic from SSH run.
 	adbRun := func() (components.SSHRunResponse, *errors.Annotator) {
+		fullCmd = "adb shell " + fullCmd
 		client, err := adb.FromScope(ctx, b.dut)
 		if err != nil {
 			return &adbResponse{
@@ -160,7 +161,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 		return &adbResponse{
 			out:  string(res.GetStdout()),
 			err:  string(res.GetStderr()),
-			code: 0,
+			code: res.GetExitCode(),
 		}, nil
 	}
 	var errAnnotator *errors.Annotator

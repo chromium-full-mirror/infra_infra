@@ -7,6 +7,7 @@ package ctr
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -120,7 +121,7 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
-	timeout := argsMap.AsDuration(ctx, "timeout", 5, time.Second)
+	timeout := argsMap.AsDuration(ctx, "timeout", 2, time.Second)
 	connect := func() error {
 		if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
 			log.Debugf(ctx, "adb devices error: %s", err)
@@ -133,13 +134,20 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 		log.Debugf(ctx, "Try to connect to %q by adb", dut.Name)
 		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", dut.Name); err != nil {
-			return err
+			return errors.Annotate(err, "fail to connect").Err()
 		}
 		if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
-			return err
+			return errors.Annotate(err, "fail to root service, event when expected").Err()
 		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
+		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
+			return errors.Annotate(err, "fail to read adb devices, after connection").Err()
+		} else if out := string(res.GetStdout()); out != "" {
+			expectedStr := dut.Name + ":"
+			if !strings.Contains(out, expectedStr) {
+				return errors.Reason("fail to find connected device %q in list of devices", dut.Name).Err()
+			}
+		} else {
+			return errors.Reason("fail to read adb devices, after connection").Err()
 		}
 		return nil
 	}
