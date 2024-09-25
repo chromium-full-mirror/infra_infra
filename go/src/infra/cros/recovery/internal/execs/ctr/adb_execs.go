@@ -33,10 +33,16 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 	if _, err := ctrInfo.GetNetwork(ctx, networkName); err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
+	argsMap := info.GetActionArgs(ctx)
+	// TODO(otabek): use prod as default value.
+	containerTag := argsMap.AsString(ctx, "container_tag", "otabekCLv2")
+	containerImage := "us-docker.pkg.dev/cros-registry/test-services/adb-base:" + containerTag
+	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
+	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/adb")
 	containerName := cft.ADBName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,
-		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/adb-base:otabekCLv2",
+		ContainerImage: containerImage,
 		Template: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
@@ -48,10 +54,8 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 						"-device",
 						dut.Name,
 					},
-					AdditionalVolumes: []string{
-						"/creds:/creds",
-					},
-					DockerArtifactDir: "/tmp/adb",
+					AdditionalVolumes: volumes,
+					DockerArtifactDir: artifactDir,
 				},
 			},
 		},
