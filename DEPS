@@ -28,7 +28,7 @@ deps = {
 
   "luci":
      "{chromium_git}/infra/luci/luci-py@" +
-     "ffbb772632a6acfa69e0a13281ce02a5dfd09572",
+     "1ccb49bb0d327a67168bb5fead5afcc71f0fbd9a",
 
   "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
