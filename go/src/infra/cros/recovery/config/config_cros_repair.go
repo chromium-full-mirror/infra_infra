@@ -21,8 +21,8 @@ func crosRepairCriticalActions() []string {
 		"Has repair-request for re-image USB-key",
 		"Has repair-request for reflash-firmware",
 		"Has repair-request for re-image by USB-key",
-		"Mark as Android based on ADB",
 		"Device is pingable",
+		"Is Android based",
 		"Chrome OS checks",
 		"Android OS checks",
 		"All repair-requests resolved",
@@ -116,13 +116,14 @@ func crosRepairActions() map[string]*Action {
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Mark as Android based on ADB": {
+		"Is Android based": {
 			Docs: []string{
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
 				"Is not cloudbot",
-				"Is Chrome based",
+				// Always reset first.
+				"Mark as Chrome based OS",
 			},
 			Dependencies: []string{
 				"ADB Connect DUT",
@@ -140,14 +141,20 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Mark DUT as Chrome based.",
 			},
-			ExecName:   "cros_set_as_chrome_based",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:               "cros_set_as_chrome_based",
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"ADB Connect DUT": {
 			Docs: []string{
 				"Exec ADB connect to the DUT by ethernet on port 5555.",
 			},
 			ExecName: "ctr_adb_connect",
+			ExecExtraArgs: []string{
+				"retry_count:3",
+				"retry_interval:3",
+				"timeout:5",
+			},
 		},
 		"Android is accessable": {
 			Docs: []string{
@@ -163,7 +170,8 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for ping",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
-				"Force reimage to Chrome based OS",
+				"Force reimage to ChromeOS in DEV mode",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
 		"ADB set Android as always awake": {
@@ -178,7 +186,8 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for ping",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
-				"Force reimage to Chrome based OS",
+				"Force reimage to ChromeOS in DEV mode",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
 		"Is Andoid based": {
@@ -404,7 +413,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Force reimage to Chrome based OS": {
+		"Force reimage to ChromeOS in DEV mode": {
 			Docs: []string{
 				"Mark DUT as Chrome based.",
 				"Place repair-request: reflash firmware of the DUT and re-image by USB-drive.",
@@ -412,14 +421,28 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is Andoid based",
+				"Is a Chromebook",
+				"Recovery version has OS image path",
+				"Recovery version has firmware image path",
+				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Mark as Chrome based OS",
+				"Mark labstation as servod is in-use",
+				"Flash EC (FW) by servo (allowed failed)",
+				"Sleep 60 seconds",
+				"Disable software write protection via servo",
+				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Remove REFLASH_FW repair-request",
+				"Boot DUT from USB in DEV mode",
+				"Run install after boot from USB-drive",
+				"Cold reset DUT by servo and wait to boot",
+				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
-			ExecName: "dut_add_repair_requests",
-			ExecExtraArgs: []string{
-				"requests:REFLASH_FW,REIMAGE_BY_USBKEY",
-			},
+			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Audit storage": {
@@ -2776,6 +2799,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_ALWAYS_RUN,
 		},
 		"Power cycle DUT by RPM and wait for ping": {
 			Docs: []string{
@@ -4511,6 +4535,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_disable_software_write_protection_by_servo",
 			ExecTimeout:            &durationpb.Duration{Seconds: 60},
 			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_ALWAYS_RUN,
 		},
 		"Has a stable-version service": {
 			Docs: []string{

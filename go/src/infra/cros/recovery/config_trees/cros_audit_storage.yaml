@@ -13,6 +13,9 @@ plans:
           exec_name: dut_has_model_name
         - name: Start ADB container
           exec_name: ctr_start_adb_container
+          exec_args:
+            - container_tag:otabekCLv3
+            - artifact_dir:/tmp/adb-path
           docs:
             - Pull and run adb-base container
           conditions:
@@ -37,7 +40,7 @@ plans:
           docs:
             - Verify that device is reachable by ping.
             - Limited to 15 seconds.
-        - name: Mark as Android based on ADB (Allow to fail)
+        - name: Is Android based (Allow to fail)
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android, based on ADB responses.
@@ -46,11 +49,17 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check if the process doesn't run on cloudbot.
-            - name: Is Chrome based (ALWAYS_RUN)
-              exec_name: cros_is_chrome_based
+            - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+              exec_name: cros_set_as_chrome_based
+              docs:
+                - Mark DUT as Chrome based.
           dependencies:
             - name: ADB Connect DUT
               exec_name: ctr_adb_connect
+              exec_args:
+                - retry_count:3
+                - retry_interval:3
+                - timeout:5
               docs:
                 - Exec ADB connect to the DUT by ethernet on port 5555.
         - name: Audit storage
@@ -336,7 +345,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -458,7 +467,7 @@ plans:
                           exec_name: sample_sleep
                           exec_args:
                             - sleep:60
-                        - name: Disable software write protection via servo (Allow to fail) (time:'1m0s')
+                        - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                           exec_name: cros_disable_software_write_protection_by_servo
                           docs:
                             - Disable software write protection(for flash firmware) via servo.
@@ -783,7 +792,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -902,7 +911,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -1342,7 +1351,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -1558,7 +1567,7 @@ plans:
                           docs:
                             - Verify if we have access to the service provided access to the stable version
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) (time:'5m0s')
+                    - name: Set GBB flags to 0x18 by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_set_gbb_by_servo
                       exec_args:
                         - gbb_flags:0x18
@@ -1653,7 +1662,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -1893,7 +1902,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -2066,7 +2075,7 @@ plans:
                       exec_name: sample_sleep
                       exec_args:
                         - sleep:60
-                    - name: Disable software write protection via servo (Allow to fail) (time:'1m0s')
+                    - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                       exec_name: cros_disable_software_write_protection_by_servo
                       docs:
                         - Disable software write protection(for flash firmware) via servo.
@@ -2199,7 +2208,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as Chrome based OS (ALWAYS_RUN)
+                        - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.

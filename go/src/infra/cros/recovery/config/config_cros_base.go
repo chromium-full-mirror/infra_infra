@@ -65,6 +65,10 @@ func crosBaseActions() map[string]*Action {
 				"Stop ADB container",
 			},
 			ExecName: "ctr_start_adb_container",
+			ExecExtraArgs: []string{
+				"container_tag:otabekCLv3",
+				"artifact_dir:/tmp/adb-path",
+			},
 		},
 		"Is not cloudbot": {
 			Docs: []string{

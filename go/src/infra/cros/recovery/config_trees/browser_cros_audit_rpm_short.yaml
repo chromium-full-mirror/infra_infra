@@ -2093,10 +2093,10 @@ plans:
     - name: cros_audit
       criticalactions:
         - name: Device is pingable (simple) ('cros_ping') (ALWAYS_RUN) (time:'15s')
-        - name: Mark as Android based on ADB (Allow to fail) ('cros_set_as_android_based')
+        - name: Is Android based (Allow to fail) ('cros_set_as_android_based')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot')
-            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+            - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
           dependencies:
             - name: ADB Connect DUT ('ctr_adb_connect')
         - name: Verify RPM config ('sample_pass')

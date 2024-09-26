@@ -13,6 +13,9 @@ plans:
           exec_name: dut_has_model_name
         - name: Start ADB container
           exec_name: ctr_start_adb_container
+          exec_args:
+            - container_tag:otabekCLv3
+            - artifact_dir:/tmp/adb-path
           docs:
             - Pull and run adb-base container
           conditions:
@@ -6126,7 +6129,7 @@ plans:
           docs:
             - Verify that device is reachable by ping.
             - Limited to 15 seconds.
-        - name: Mark as Android based on ADB (Allow to fail)
+        - name: Is Android based (Allow to fail)
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android, based on ADB responses.
@@ -6135,11 +6138,17 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check if the process doesn't run on cloudbot.
-            - name: Is Chrome based (ALWAYS_RUN)
-              exec_name: cros_is_chrome_based
+            - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+              exec_name: cros_set_as_chrome_based
+              docs:
+                - Mark DUT as Chrome based.
           dependencies:
             - name: ADB Connect DUT
               exec_name: ctr_adb_connect
+              exec_args:
+                - retry_count:3
+                - retry_interval:3
+                - timeout:5
               docs:
                 - Exec ADB connect to the DUT by ethernet on port 5555.
         - name: Audit USB-drive from DUT (time:'1h0m0s')

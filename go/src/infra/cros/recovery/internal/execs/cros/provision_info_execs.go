@@ -51,8 +51,8 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 func resetProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Provision info reseted!")
 	info.GetDut().ProvisionedInfo = &tlw.ProvisionedInfo{
-		CrosVersion: " ",
-		JobRepoUrl:  " ",
+		CrosVersion: "",
+		JobRepoUrl:  "",
 	}
 	return nil
 }

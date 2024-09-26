@@ -192,7 +192,7 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                     - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Mark as Chrome based OS ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Boot DUT in recovery and install from USB-drive (no storage check) ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -220,7 +220,7 @@ plans:
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
               dependencies:
-                - name: Mark as Chrome based OS ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -234,7 +234,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                 - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
-                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (time:'1m0s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -319,7 +319,7 @@ plans:
                       conditions:
                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
               dependencies:
-                - name: Mark as Chrome based OS ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Servo USB-Key needs to be reflashed ('sample_pass')
                   conditions:
                     - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
@@ -438,7 +438,7 @@ plans:
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
               dependencies:
-                - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (time:'5m0s')
+                - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -471,7 +471,7 @@ plans:
                     - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
                       dependencies:
                         - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Mark as Chrome based OS ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
                     - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
                       conditions:
