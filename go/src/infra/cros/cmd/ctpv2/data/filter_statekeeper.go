@@ -37,6 +37,9 @@ type FilterStateKeeper struct {
 	// suite metadata in the request.
 	RequestKey string
 
+	// Al run related
+	AlStateInfo *AlStateInfo
+
 	// Build related
 	BuildState *build.State
 

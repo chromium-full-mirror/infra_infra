@@ -77,6 +77,13 @@ const (
 	FilePermission = 0644
 )
 
+// AL related constants
+const (
+	ATPSupportedTimeFormat         = time.RFC3339
+	ATPSwitcherProjectIDAlpha      = "google.com:atp-switcher-alpha"
+	ATPSwitcherTestJobEventTopicID = "test_job_event"
+)
+
 // Constants relating to dynamic dependency storage.
 const (
 	// Base task identifiers and image metadata keys.

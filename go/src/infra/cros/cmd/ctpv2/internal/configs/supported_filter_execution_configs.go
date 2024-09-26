@@ -31,11 +31,14 @@ var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPaired
 var MiddleOut_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.MiddleoutExecutionType, ExecutorType: common_executors.NoExecutorType}
 var GenerateTrv2Reqs_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenerateTrv2RequestsCmdType, ExecutorType: common_executors.NoExecutorType}
 var ScheduleTasks_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ScheduleTasksCmdType, ExecutorType: common_executors.NoExecutorType}
+var AlStatusUpdate_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AlStatusUpdateCmdType, ExecutorType: common_executors.NoExecutorType}
 
 // GenerateFilterConfigs generates cmd execution for ctpv2.
 func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
+	// Update AL first for AL runs
+	mainConfigs = append(mainConfigs, AlStatusUpdate_NoExecutor)
 	// Translate request
 	mainConfigs = append(mainConfigs,
 		TranslateRequest_NoExecutor)
@@ -61,7 +64,9 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 
 	// Schedule tasks
 	mainConfigs = append(mainConfigs, GenerateTrv2Reqs_NoExecutor)
+	mainConfigs = append(mainConfigs, AlStatusUpdate_NoExecutor)
 	mainConfigs = append(mainConfigs, ScheduleTasks_NoExecutor)
+	mainConfigs = append(mainConfigs, AlStatusUpdate_NoExecutor)
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
 }

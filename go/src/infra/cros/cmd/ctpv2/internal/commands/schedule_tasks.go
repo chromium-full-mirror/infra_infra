@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -62,6 +63,7 @@ type ScheduleTasksCmd struct {
 
 	// Updates
 	TestResults map[string]*data.TestResults
+	AlStateInfo *data.AlStateInfo // will be used as dep as well
 
 	// For logging
 	BQClient              *bigquery.Client
@@ -134,6 +136,10 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
+	if sk.AlStateInfo == nil {
+		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
+	}
+
 	if sk.BQClient != nil {
 		cmd.BQClient = sk.BQClient
 	}
@@ -151,6 +157,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
+	cmd.AlStateInfo = sk.AlStateInfo
 	// Assign scheduler
 	switch s := sk.Scheduler; s {
 	case api.SchedulerInfo_QSCHEDULER:
@@ -171,7 +178,71 @@ func (cmd *ScheduleTasksCmd) updateScheduleStateKeeper(ctx context.Context, sk *
 		sk.SuiteTestResults = cmd.TestResults
 	}
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
+
+	// Update current test job event
+	cmd.updateCurrentTestJobEvent()
+
 	return nil
+}
+
+func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
+	if cmd.AlStateInfo == nil || cmd.AlStateInfo.CurrentTestJobEvent == nil {
+		return
+	}
+	currTestJobEvent := cmd.AlStateInfo.CurrentTestJobEvent
+
+	// Get test counts
+	totalTestCount := 0
+	totalFailedTestCount := 0
+	totalFailedTestRunCount := 0 // TODO (azrahman:atp): add run count when available; currently returning 0
+
+	tasks := []*common.TestTaskMessage{}
+	// TODO (azrahman): handle rety logic when ctp level retries are enabled
+	totalShards := int64(len(cmd.TestResults))
+	for _, results := range cmd.TestResults {
+		currTestCount, currFailedTestCount, currFailedTestRunCount := results.GetTestCounts()
+		totalTestCount = totalTestCount + currTestCount
+		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
+		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
+		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
+		buildIdStr := strconv.FormatInt(results.BuildID, 10)
+
+		// As no rety is enabled now, different results means different shards
+		task := &common.TestTaskMessage{
+			Id:                buildIdStr,
+			TestTaskState:     "COMPLETED",
+			Shards:            totalShards,
+			ShardIndex:        int64(results.ShardIndex),
+			CreationTimestamp: results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
+			StartTimestamp:    results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
+			EndTimestamp:      results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+			Attempts: []*common.TestTaskAttemptMessage{
+				{
+					Id:                 fmt.Sprintf("%s_%d", results.Key, results.BuildID),
+					TotalTestCount:     int64(totalTestCount),
+					FailedTestCount:    int64(totalFailedTestCount),
+					FailedTestRunCount: int64(totalFailedTestRunCount),
+					CreationTimestamp:  results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
+					StartTimestamp:     results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
+					EndTimestamp:       results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+					AttemptInfo:        []*common.KeyValuesMessage{{Key: "summary", Values: []string{summary}}},
+				},
+			},
+		}
+
+		tasks = append(tasks, task)
+	}
+
+	// update test job event
+	// TODO (azrahman:atp): curate the states based on real state of test results
+	currTestJobEvent.State = "COMPLETED"
+	currTestJobEvent.TotalTestCount = int64(totalTestCount)
+	currTestJobEvent.FailedTestCount = int64(totalFailedTestCount)
+	currTestJobEvent.FailedTestRunCount = int64(totalFailedTestRunCount)
+	currTestJobEvent.Summary = "test_job_completed"
+	currTestJobEvent.TestJob.EndTimestamp = time.Now().Format(common.ATPSupportedTimeFormat)
+	currTestJobEvent.TestJob.TestJobState = "COMPLETED"
+	currTestJobEvent.TestJob.Tasks = tasks
 }
 
 // Execute executes the command.
@@ -260,7 +331,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	defer func() { step.End(err) }()
 
 	// Construct test results
-	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s-shard-%d", suiteName, buildReq.ShardNum)}
+	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s-shard-%d", suiteName, buildReq.ShardNum), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now()}
 
 	if buildReq.Err != nil {
 		err = buildReq.Err
@@ -316,6 +387,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 	summaries := []string{}
 	if scheduledBuild != nil && scheduledBuild.GetId() != 0 {
+		result.StartTimestamp = time.Now()
 		// Link the scheduled TestRunner to the current CTP builder so that we
 		// can show test results in MILO at the CTP level.
 		rdbClient, err := newRDBClient(ctx, cmd.BuildState.Build().Infra.GetResultdb().GetHostname())
@@ -324,7 +396,9 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		}
 		rdb.InheritRDBInvocation(ctx, scheduledBuild.GetId(), bbClient, rdbClient)
 
+		result.BuildID = scheduledBuild.GetId()
 		result.BuildUrl = common.BBUrl(builderID, scheduledBuild.GetId())
+
 		summaries = append(summaries, fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
 	} else {
@@ -340,9 +414,9 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Re-init the data for the run build step. Keep the previously populated data.
 	cmd.ObserveTrBuildStart(ctx, buildReq)
 
-	// // Since the requests are combined in CTPv2 and untangled later we need to
-	// // fetch the real request key name so that we can separate the merged
-	// // requests.
+	// Since the requests are combined in CTPv2 and untangled later we need to
+	// fetch the real request key name so that we can separate the merged
+	// requests.
 	target, err := suitelimits.ExtractTarget(result.Key)
 	if err != nil {
 		return err
@@ -419,6 +493,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 		// The build ended so we extract results now
 		common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
+		result.EndTimestamp = time.Now()
 
 		// Log success as we found a completed build. The status is not of the child build itself.
 		cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo)

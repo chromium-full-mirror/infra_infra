@@ -16,13 +16,20 @@ import (
 
 type TestResults struct {
 	Suite         string
+	ShardIndex    int
 	Key           string // [board-model-variant]-shard-%d
 	TopLevelError error
 	Results       *skylab_test_runner.Result
 	Attempt       int // 0 means no retry
 	BuildUrl      string
+	BuildID       int64
 	RequestKey    string // this is used to link back the results to original request
 	Name          string
+
+	// For ATP reporting
+	CreationTimestamp time.Time
+	StartTimestamp    time.Time
+	EndTimestamp      time.Time
 }
 
 func (t *TestResults) GetFailureErr() error {
@@ -30,6 +37,7 @@ func (t *TestResults) GetFailureErr() error {
 		return t.TopLevelError
 	}
 
+	// TODO (TSE): update this when modules are added here
 	testResults, ok := t.Results.GetAutotestResults()["original_test"]
 	if !ok {
 		// the test results from trv2 should be here, if not,
@@ -44,6 +52,32 @@ func (t *TestResults) GetFailureErr() error {
 	}
 
 	return nil
+}
+
+func (t *TestResults) GetTestCounts() (int, int, int) {
+	if t.TopLevelError != nil {
+		return 0, 0, 0
+	}
+
+	testResults, ok := t.Results.GetAutotestResults()["original_test"]
+	if !ok {
+		// the test results from trv2 should be here, if not,
+		// something else failed before test execution. so fail.
+		return 0, 0, 0
+	}
+
+	totalTestCount := 0
+	totalFailedTestCount := 0
+	totalFailedTestRunCount := 0 // TODO: add run count when available; currently returning 0
+
+	for _, testCase := range testResults.GetTestCases() {
+		totalTestCount++
+		if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+			totalFailedTestCount++
+		}
+	}
+
+	return totalTestCount, totalFailedTestCount, totalFailedTestRunCount
 }
 
 type ByAttempt []*TestResults

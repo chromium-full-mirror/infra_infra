@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"strconv"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
@@ -30,6 +31,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
+
+	"cloud.google.com/go/pubsub"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 )
@@ -231,6 +234,25 @@ func executeFiltersInLuciBuild(
 	executorCfg := configs.NewExecutorConfig(ctr, nil)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
+	alStateInfo := &data.AlStateInfo{}
+
+	if isReqFromATP(req) {
+		buildIdStr := strconv.FormatInt(buildState.Build().Id, 10)
+		// TODO (azrahman:atp): infer this from the new test job field; create a deep copy for current state
+		inputTestJob := &common.TestJobMessage{Id: buildIdStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
+		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIdStr, TestJob: inputTestJob, State: "QUEUED", Type: "STATE_CHANGED", ResultLinks: []string{"hello link", "this is crazy"}}
+		// create pubsub client
+		// Create client
+		client, err := pubsub.NewClient(ctx, common.ATPSwitcherProjectIDAlpha)
+		if err != nil {
+			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDAlpha, err)
+		}
+		defer client.Close()
+		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJob, CurrentTestJob: inputTestJob, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client}
+	} else {
+		alStateInfo = nil
+	}
+
 	sk := &data.FilterStateKeeper{
 		CtpReq:             req,
 		Ctr:                ctr,
@@ -243,6 +265,7 @@ func executeFiltersInLuciBuild(
 		RequestKey:         reqKey,
 		DockerKeyFile:      dockerKeyFile,
 		CTPversion:         ctpVersion,
+		AlStateInfo:        alStateInfo,
 	}
 
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments), common.DefaultKoffeeFilterNames)
@@ -297,4 +320,8 @@ func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilt
 	}
 
 	return len(filterSet)
+}
+
+func isReqFromATP(req *api.CTPRequest) bool {
+	return req.IsAlRun && req.EncodedAtpTestJobMsg != ""
 }

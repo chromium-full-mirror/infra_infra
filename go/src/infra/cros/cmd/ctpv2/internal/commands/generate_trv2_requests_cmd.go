@@ -42,6 +42,7 @@ type GenerateTrv2RequestsCmd struct {
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
 	TestResults map[string]*data.TestResults
+	AlStateInfo *data.AlStateInfo // will be used as dep as well
 
 	// For logging
 	BQClient          *bigquery.Client
@@ -122,11 +123,16 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: RequestKey", cmd.GetCommandType())
 	}
 
+	if sk.AlStateInfo == nil {
+		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
+	}
+
 	cmd.RequestKey = sk.RequestKey
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
+	cmd.AlStateInfo = sk.AlStateInfo
 
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
@@ -145,6 +151,11 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 	// testResults.
 	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
 		sk.SuiteTestResults = cmd.TestResults
+	}
+
+	if cmd.AlStateInfo != nil && cmd.AlStateInfo.CurrentTestJobEvent != nil {
+		// update it's state only
+		cmd.AlStateInfo.CurrentTestJobEvent.State = "RUNNING"
 	}
 	return nil
 }

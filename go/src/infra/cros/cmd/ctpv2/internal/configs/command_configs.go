@@ -61,6 +61,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.SummarizeCmdType:
 		cmd = commands.NewSummarizeCmd()
 
+	case commands.AlStatusUpdateCmdType:
+		cmd = commands.NewAlStatusUpdateCmd()
+
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {

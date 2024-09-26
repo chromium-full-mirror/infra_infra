@@ -28,6 +28,9 @@ type PrePostFilterStateKeeper struct {
 	ExecuteResponses        *steps.ExecuteResponses
 	DddTrackerMap           map[string]bool // v1 request key 3d bool map
 
+	// Al run related
+	AlStateInfo *AlStateInfo
+
 	// Results
 	AllTestResults map[string][]*TestResults
 
