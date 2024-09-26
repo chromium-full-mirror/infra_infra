@@ -86,7 +86,7 @@ func (cc *CLICommand) validate() error {
 
 // Run runs the commands to publish test results
 func (cc *CLICommand) Run() error {
-	log.Printf("Running CLI Mode:")
+	log.Printf("Running CLI Mode")
 
 	ctx := context.Background()
 	out := &api.PublishResponse{

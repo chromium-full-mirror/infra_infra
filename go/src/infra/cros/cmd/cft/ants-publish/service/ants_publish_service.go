@@ -8,32 +8,33 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
-	"go.chromium.org/chromiumos/config/go/test/artifact"
 	common_utils "go.chromium.org/chromiumos/test/publish/cmd/common-utils"
 )
 
 type AntsPublishService struct {
-	RetryCount           int
-	CurrentInvocationID  string
-	TestResultProto      *artifact.TestResult
-	TesthausURL          string
-	TempDirPath          string
-	BaseVariant          map[string]string
-	PostProcessResponses *api.RunActivitiesResponse
+	RetryCount       int
+	InvocationID     string
+	ParentWorkUnitID string
+	AccountID        int
 }
 
 // NewAntsPublishService creates a new publish service to interact with Ants.
-// TODO(srinivashegde): Use AntsMetadata once ready.
 func NewAntsPublishService(req *api.PublishRequest) (*AntsPublishService, error) {
 	m, err := unpackMetadata(req)
 	if err != nil {
 		return nil, err
 	}
 
-	if err = common_utils.ValidateRDBPublishRequest(req, m); err != nil {
+	if err = common_utils.ValidateGenericPublishRequest(req); err != nil {
+		return nil, err
+	}
+
+	if err = validateAntsPublishRequest(m); err != nil {
 		return nil, err
 	}
 
@@ -42,25 +43,41 @@ func NewAntsPublishService(req *api.PublishRequest) (*AntsPublishService, error)
 		retryCount = int(req.GetRetryCount())
 	}
 
+	accountID, err := strconv.Atoi(m.GetAccountId())
+	if err != nil {
+		return nil, err
+	}
+
 	return &AntsPublishService{
-		RetryCount:           retryCount,
-		CurrentInvocationID:  m.GetCurrentInvocationId(),
-		TestResultProto:      m.GetTestResult(),
-		TesthausURL:          m.GetTesthausUrl(),
-		BaseVariant:          m.GetBaseVariant(),
-		PostProcessResponses: m.GetPostProcessResponses(),
+		RetryCount:       retryCount,
+		InvocationID:     m.GetAntsInvocationId(),
+		ParentWorkUnitID: m.GetParentWorkUnitId(),
+		AccountID:        accountID,
 	}, nil
 }
 
 // UploadToAnts uploads test results to ResultDB.
 func (rps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	// TODO(srinivashegde): Implement this
+	log.Printf("Uploading to AnTS")
+	return nil
+}
+
+func validateAntsPublishRequest(metadata *metadata.PublishAntsMetadata) error {
+	if metadata.GetAntsInvocationId() == "" {
+		return fmt.Errorf("ants invocation id is required")
+	} else if metadata.GetParentWorkUnitId() == "" {
+		return fmt.Errorf("parent workunit id is required")
+	} else if metadata.GetAccountId() == "" {
+		return fmt.Errorf("partner account id is required")
+	}
+
 	return nil
 }
 
 // unpackMetadata unpacks the Any metadata field into PublishGcsMetadata
-func unpackMetadata(req *api.PublishRequest) (*metadata.PublishRdbMetadata, error) {
-	var m metadata.PublishRdbMetadata
+func unpackMetadata(req *api.PublishRequest) (*metadata.PublishAntsMetadata, error) {
+	var m metadata.PublishAntsMetadata
 	if err := req.Metadata.UnmarshalTo(&m); err != nil {
 		return &m, fmt.Errorf("improperly formatted input proto metadata: %w", err)
 	}

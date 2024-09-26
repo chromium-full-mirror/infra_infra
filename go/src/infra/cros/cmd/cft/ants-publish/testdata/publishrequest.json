@@ -1,0 +1,440 @@
+{
+  "artifactDirPath":  {
+    "hostType":  "LOCAL",
+    "path":  "/tmp/rdb-publish-test-artifacts/"
+  },
+  "metadata":  {
+    "@type":  "type.googleapis.com/chromiumos.test.api.metadata.PublishRdbMetadata",
+    "currentInvocationId":  "invocations/build-8736245378387242129",
+    "testResult":  {
+      "testInvocation":  {
+        "dutTopology":  {
+          "id":  {
+            "value":  "chromeos15-row4-rack11-host6"
+          },
+          "duts":  [
+            {
+              "id":  {
+                "value":  "chromeos15-row4-rack11-host6"
+              },
+              "chromeos":  {
+                "ssh":  {
+                  "address":  "chromeos15-row4-rack11-host6",
+                  "port":  22
+                },
+                "dutModel":  {
+                  "buildTarget":  "trogdor",
+                  "modelName":  "lazor"
+                },
+                "servo":  {
+                  "present":  true,
+                  "servodAddress":  {
+                    "address":  "chromeos15-row4-rack11-labstation",
+                    "port":  9906
+                  },
+                  "serial":  "C1903145395"
+                },
+                "chameleon":  {
+                  "state":  "NOT_APPLICABLE"
+                },
+                "audio":  {},
+                "wifi":  {
+                  "environment":  "WIFI_CELL",
+                  "antenna":  {
+                    "connection":  "OTA"
+                  }
+                },
+                "touch":  {},
+                "cellular":  {},
+                "hwidComponent":  [
+                  "battery/battery_266_407",
+                  "camera/camera_871_5324",
+                  "display_panel/display_panel_762_1303",
+                  "dram/dram_93_132",
+                  "storage/storage_1507_2615",
+                  "stylus/stylus_2973_5434",
+                  "touchpad/touchpad_881_5390",
+                  "touchscreen/touchscreen_2973_5434"
+                ],
+                "bluetoothPeers":  [
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer1",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer2",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer3",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer4",
+                    "state":  "WORKING"
+                  }
+                ],
+                "sku":  "lazor_QSIP7180-Lite_4GB",
+                "hwid":  "LAZOR-FHYR D5B-B2A-E4F-R2X-A3P",
+                "phase":  "PVT",
+                "modemInfo":  {}
+              },
+              "cacheServer":  {
+                "address":  {
+                  "address":  "100.115.21.212",
+                  "port":  8082
+                }
+              }
+            }
+          ]
+        },
+        "primaryExecutionInfo":  {
+          "buildInfo":  {
+            "name":  "trogdor-release/R131-16039.0.0",
+            "buildTarget":  "trogdor",
+            "board":  "trogdor",
+            "buildMetadata":  {
+              "firmware":  {},
+              "kernel":  {},
+              "sku":  {
+                "hwidSku":  "lazor_QSIP7180-Lite_4GB"
+              },
+              "chipset":  {
+                "wifiChip":  "QC_WCN3991",
+                "wifiRouterModels":  "gale"
+              },
+              "cellular":  {},
+              "lacros":  {},
+              "modemInfo":  {},
+              "chameleonInfo":  {}
+            }
+          },
+          "dutInfo":  {
+            "dut":  {
+              "id":  {
+                "value":  "chromeos15-row4-rack11-host6"
+              },
+              "chromeos":  {
+                "ssh":  {
+                  "address":  "chromeos15-row4-rack11-host6",
+                  "port":  22
+                },
+                "dutModel":  {
+                  "buildTarget":  "trogdor",
+                  "modelName":  "lazor"
+                },
+                "servo":  {
+                  "present":  true,
+                  "servodAddress":  {
+                    "address":  "chromeos15-row4-rack11-labstation",
+                    "port":  9906
+                  },
+                  "serial":  "C1903145395"
+                },
+                "chameleon":  {
+                  "state":  "NOT_APPLICABLE"
+                },
+                "audio":  {},
+                "wifi":  {
+                  "environment":  "WIFI_CELL",
+                  "antenna":  {
+                    "connection":  "OTA"
+                  }
+                },
+                "touch":  {},
+                "cellular":  {},
+                "hwidComponent":  [
+                  "battery/battery_266_407",
+                  "camera/camera_871_5324",
+                  "display_panel/display_panel_762_1303",
+                  "dram/dram_93_132",
+                  "storage/storage_1507_2615",
+                  "stylus/stylus_2973_5434",
+                  "touchpad/touchpad_881_5390",
+                  "touchscreen/touchscreen_2973_5434"
+                ],
+                "bluetoothPeers":  [
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer1",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer2",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer3",
+                    "state":  "WORKING"
+                  },
+                  {
+                    "hostname":  "chromeos15-row4-rack11-host6-btpeer4",
+                    "state":  "WORKING"
+                  }
+                ],
+                "sku":  "lazor_QSIP7180-Lite_4GB",
+                "hwid":  "LAZOR-FHYR D5B-B2A-E4F-R2X-A3P",
+                "phase":  "PVT",
+                "modemInfo":  {}
+              },
+              "cacheServer":  {
+                "address":  {
+                  "address":  "100.115.21.212",
+                  "port":  8082
+                }
+              }
+            }
+          },
+          "inventoryInfo":  {
+            "ufsZone":  "ZONE_CHROMEOS15"
+          }
+        },        
+        "isCftRun":  true,
+        "isTrv2Run":  true,
+        "projectTrackerMetadata":  {},
+        "partnerInfo":  {}
+      },
+      "testRuns":  [
+        {
+          "testCaseInfo":  {
+            "testCaseResult":  {
+              "testCaseId":  {
+                "value":  "tast.wifi.UdevRename"
+              },
+              "resultDirPath":  {
+                "hostType":  "LOCAL",
+                "path":  "/tmp/test/results/tast/tests/wifi.UdevRename"
+              },
+              "pass":  {},
+              "testHarness":  {
+                "tast":  {}
+              },
+              "startTime":  "2024-09-20T20:32:25.910825773Z",
+              "duration":  "1.443872187s",
+              "testCaseMetadata":  {
+                "testCase":  {
+                  "id":  {
+                    "value":  "tast.wifi.UdevRename"
+                  },
+                  "name":  "wifi.UdevRename",
+                  "tags":  [
+                    {
+                      "value":  "group:mainline"
+                    },
+                    {
+                      "value":  "group:wificell"
+                    },
+                    {
+                      "value":  "wificell_func"
+                    },
+                    {
+                      "value":  "name:wifi.UdevRename"
+                    },
+                    {
+                      "value":  "bundle:cros"
+                    },
+                    {
+                      "value":  "dep:wifi"
+                    }
+                  ],
+                  "dependencies":  [
+                    {
+                      "value":  "wifi_state:NORMAL"
+                    }
+                  ]
+                },
+                "testCaseExec":  {
+                  "testHarness":  {
+                    "tast":  {}
+                  }
+                },
+                "testCaseInfo":  {
+                  "owners":  [
+                    {
+                      "email":  "chromeos-wifi-champs@google.com"
+                    }
+                  ],
+                  "requirements":  [
+                    {
+                      "value":  "wifi-proc-0009-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0012-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0013-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0014-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0018-v01"
+                    }
+                  ],
+                  "bugComponent":  {
+                    "value":  "b:893827"
+                  },
+                  "criteria":  {
+                    "value":  "Verifies that network interfaces remain intact after udev restart and WiFi driver rebind"
+                  },
+                  "hwAgnostic":  {},
+                  "lifeCycleStage":  {},
+                  "variantCategory":  {
+                    "value":  "{\"name\": \"WifiBtChipset_Soc_Kernel\"}"
+                  },
+                  "extraInfo":  {
+                    "fixture":  "wiphyEnabled"
+                  }
+                }
+              }
+            },
+            "displayName":  "trogdor-release/R131-16039.0.0/wifi_matfunc-shard-2",
+            "suite":  "wifi_matfunc",
+            "requester":  "chromeos-test-infra-prod@chromeos-bot.iam.gserviceaccount.com"
+          },
+          "logsInfo":  [
+            {
+              "hostType":  "GS",
+              "path":  "gs://chromeos-test-logs/test-runner/prod/2024-09-20/a30657fe-01aa-4818-b287-63e5f7633bfa"
+            }
+          ],
+          "timeInfo":  {
+            "queuedTime":  "2024-09-20T20:30:05.527311Z",
+            "startedTime":  "2024-09-20T20:32:25.910825773Z",
+            "duration":  "1.443872187s"
+          },
+          "executionMetadata":  {
+            "testArgs":  {
+              "":  ""
+            }
+          }
+        },
+        {
+          "testCaseInfo":  {
+            "testCaseResult":  {
+              "testCaseId":  {
+                "value":  "tast.wifi.WPAValidity"
+              },
+              "resultDirPath":  {
+                "hostType":  "LOCAL",
+                "path":  "/tmp/test/results/tast/tests/wifi.WPAValidity"
+              },
+              "pass":  {},
+              "testHarness":  {
+                "tast":  {}
+              },
+              "startTime":  "2024-09-20T20:32:27.417825200Z",
+              "duration":  "0.646462083s",
+              "testCaseMetadata":  {
+                "testCase":  {
+                  "id":  {
+                    "value":  "tast.wifi.WPAValidity"
+                  },
+                  "name":  "wifi.WPAValidity",
+                  "tags":  [
+                    {
+                      "value":  "group:mainline"
+                    },
+                    {
+                      "value":  "group:wificell"
+                    },
+                    {
+                      "value":  "wificell_func"
+                    },
+                    {
+                      "value":  "group:cq-medium"
+                    },
+                    {
+                      "value":  "name:wifi.WPAValidity"
+                    },
+                    {
+                      "value":  "bundle:cros"
+                    },
+                    {
+                      "value":  "dep:wifi"
+                    }
+                  ],
+                  "dependencies":  [
+                    {
+                      "value":  "wifi_state:NORMAL"
+                    }
+                  ]
+                },
+                "testCaseExec":  {
+                  "testHarness":  {
+                    "tast":  {}
+                  }
+                },
+                "testCaseInfo":  {
+                  "owners":  [
+                    {
+                      "email":  "chromeos-wifi-champs@google.com"
+                    }
+                  ],
+                  "requirements":  [
+                    {
+                      "value":  "wifi-proc-0009-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0012-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0013-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0014-v01"
+                    },
+                    {
+                      "value":  "wifi-proc-0018-v01"
+                    }
+                  ],
+                  "bugComponent":  {
+                    "value":  "b:893827"
+                  },
+                  "criteria":  {
+                    "value":  "Verifies wpa_supplicant is up and running"
+                  },
+                  "hwAgnostic":  {},
+                  "lifeCycleStage":  {},
+                  "variantCategory":  {
+                    "value":  "{\"name\": \"WifiBtChipset_Soc_Kernel\"}"
+                  },
+                  "extraInfo":  {
+                    "fixture":  "wiphyEnabled"
+                  }
+                }
+              }
+            },
+            "displayName":  "trogdor-release/R131-16039.0.0/wifi_matfunc-shard-2",
+            "suite":  "wifi_matfunc",
+            "requester":  "chromeos-test-infra-prod@chromeos-bot.iam.gserviceaccount.com"
+          },
+          "logsInfo":  [
+            {
+              "hostType":  "GS",
+              "path":  "gs://chromeos-test-logs/test-runner/prod/2024-09-20/a30657fe-01aa-4818-b287-63e5f7633bfa"
+            }
+          ],
+          "timeInfo":  {
+            "queuedTime":  "2024-09-20T20:30:05.527311Z",
+            "startedTime":  "2024-09-20T20:32:27.417825200Z",
+            "duration":  "0.646462083s"
+          },
+          "executionMetadata":  {
+            "testArgs":  {
+              "":  ""
+            }
+          }
+        }
+      ]
+    },
+    "testhausUrl":  "https://tests.chromeos.goog/p/chromeos/logs/unified/chromeos-test-logs/test-runner/prod/2024-09-20/a30657fe-01aa-4818-b287-63e5f7633bfa",
+    "sources":  {
+      "gsPath":  "gs://chromeos-image-archive/trogdor-release/R131-16039.0.0/metadata/sources.jsonpb"
+    },
+    "baseVariant":  {
+      "board":  "trogdor",
+      "build_target":  "trogdor",
+      "model":  "lazor"
+    }
+  }
+}
