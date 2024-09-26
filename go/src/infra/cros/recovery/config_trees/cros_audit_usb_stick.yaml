@@ -11,7 +11,7 @@ plans:
           exec_name: dut_has_board_name
         - name: DUT has model info
           exec_name: dut_has_model_name
-        - name: Start ADB container
+        - name: Start ADB container (Allow to fail)
           exec_name: ctr_start_adb_container
           exec_args:
             - container_tag:otabekCLv3

@@ -69,6 +69,7 @@ func crosBaseActions() map[string]*Action {
 				"container_tag:otabekCLv3",
 				"artifact_dir:/tmp/adb-path",
 			},
+			AllowFailAfterRecovery: true,
 		},
 		"Is not cloudbot": {
 			Docs: []string{

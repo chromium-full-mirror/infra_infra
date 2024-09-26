@@ -170,7 +170,7 @@ func (c *serviceInfoImpl) GetContainer(ctx context.Context, name string) (BaseCo
 	return container, nil
 }
 
-// GetContainer create requested container.
+// StopContainer stops a container.
 func (c *serviceInfoImpl) StopContainer(ctx context.Context, name string) error {
 	if err := c.ctr.StopContainer(ctx, name); err != nil {
 		return errors.Annotate(err, "stop container %q", name).Err()
@@ -181,7 +181,7 @@ func (c *serviceInfoImpl) StopContainer(ctx context.Context, name string) error 
 	return nil
 }
 
-// GetContainer create a requested container.
+// CreateContainer creates a requested container.
 func (c *serviceInfoImpl) CreateContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (_ BaseContainer, rErr error) {
 	if req.GetName() == "" {
 		return nil, errors.Reason("create container: invalid request").Err()

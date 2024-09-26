@@ -4,7 +4,7 @@ plans:
         - name: 'Set state: repair_failed (''dut_set_state'')'
         - name: DUT has board info ('dut_has_board_name')
         - name: DUT has model info ('dut_has_model_name')
-        - name: Start ADB container ('ctr_start_adb_container')
+        - name: Start ADB container (Allow to fail) ('ctr_start_adb_container')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot')
             - name: CrosToolRunner is up ('ctr_is_up')
