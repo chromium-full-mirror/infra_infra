@@ -37,6 +37,7 @@ const (
 var (
 	ExcludedChromeosBuildPrefixes  = []string{"staging", "dev"}
 	ExcludedChromeosBuildPostfixes = []string{"main"}
+	ExcludedVariantPostfixes       = []string{"sdknext"}
 )
 
 // GroupV2Requests filters CTP requests list by manifest. "PUBLIC" manifest will
@@ -534,8 +535,15 @@ func GetVariant(softwareDeps []*test_platform.Request_Params_SoftwareDependency)
 				return ""
 			}
 			// Remove base board and build type.
-			chromeosBuildParts = chromeosBuildParts[1 : len(chromeosBuildParts)-1]
-			return strings.Join(chromeosBuildParts, "-")
+			variantParts := chromeosBuildParts[1 : len(chromeosBuildParts)-1]
+			if len(variantParts) == 0 {
+				return ""
+			}
+			// Strip excluded variant post-fixes.
+			if slices.Contains(ExcludedVariantPostfixes, variantParts[len(variantParts)-1]) {
+				variantParts = variantParts[:len(variantParts)-1]
+			}
+			return strings.Join(variantParts, "-")
 		}
 	}
 	return ""
