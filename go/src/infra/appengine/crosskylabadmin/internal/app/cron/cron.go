@@ -194,7 +194,7 @@ func dumpStableVersionToDatastoreHandler(c *router.Context) error {
 	inv := &frontend.ServerImpl{}
 	req := &fleet.DumpStableVersionToDatastoreRequest{}
 	if _, err := inv.DumpStableVersionToDatastore(c.Request.Context(), req); err != nil {
-		logging.Infof(c.Request.Context(), "Dump StableVersion failed with error: %w", err)
+		logging.Infof(c.Request.Context(), "Dump StableVersion failed with error: %s", err)
 		return err
 	}
 	logging.Infof(c.Request.Context(), "Dump StableVersion finished successfully!")

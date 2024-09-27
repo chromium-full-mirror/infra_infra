@@ -71,36 +71,35 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 		return nil
 	}
 	versionMap := removeBadVersions(ctx, versions)
+	logging.Infof(ctx, "Found %d good version records to save!", len(versionMap))
 	var oldRecords []*StableVersionEntity
 	if err := datastore.GetAll(ctx, datastore.NewQuery(StableVersionKind), &oldRecords); err != nil {
 		return errors.Annotate(err, "write versions: fail to read record from datastore").Err()
 	}
-	if len(oldRecords) > 0 {
-		var notValidRecords []*StableVersionEntity
-		for _, record := range oldRecords {
-			key := targetToKey(record.Version)
-			if versionMap[key.String()] == nil {
-				notValidRecords = append(notValidRecords, record)
-			}
-		}
-		if len(notValidRecords) > 0 {
-			if err := datastore.Delete(ctx, notValidRecords); err != nil {
+	logging.Infof(ctx, "Service has %d version records before update.", len(oldRecords))
+	for _, record := range oldRecords {
+		key := targetToKey(record.Version)
+		v := versionMap[key.String()]
+		if v == nil {
+			logging.Infof(ctx, "Version: %q doesn't exist anymore! Removing...", key.String())
+			if err := datastore.Delete(ctx, record); err != nil {
 				return errors.Annotate(err, "write versions: fail to remove expired records").Err()
 			}
 		}
 	}
-	var newRecords []*StableVersionEntity
-	for key, v := range versionMap {
-		newRecords = append(newRecords, &StableVersionEntity{
-			ID:      key,
-			Version: v,
-		})
-	}
-	if len(newRecords) > 0 {
-		if err := datastore.Put(ctx, newRecords); err != nil {
-			return errors.Annotate(err, "write versions: fail to save new records").Err()
+
+	if len(versionMap) > 0 {
+		logging.Infof(ctx, "Total records to update: %d!", len(versionMap))
+		for key, v := range versionMap {
+			if err := datastore.Put(ctx, &StableVersionEntity{
+				ID:      key,
+				Version: v,
+			}); err != nil {
+				return errors.Annotate(err, "write versions: fail to save new records").Err()
+			}
 		}
 	}
+	logging.Infof(ctx, "Finished saving versions!")
 	return nil
 }
 

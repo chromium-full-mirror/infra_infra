@@ -404,11 +404,8 @@ func dumpStableVersionToDatastoreImpl(ctx context.Context, getFile func(context.
 		}
 	}
 	logging.Infof(ctx, "successfully wrote legacy stable versions")
-	if err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
-		err := dssv.WriteVersions(ctx, stableVersions.GetVersions())
-		return errors.Annotate(err, "dump stable version: fail update new versions").Err()
-	}, nil); err != nil {
-		return nil, err
+	if err := dssv.WriteVersions(ctx, stableVersions.GetVersions()); err != nil {
+		return nil, errors.Annotate(err, "dump stable version: new versions").Err()
 	}
 	logging.Infof(ctx, "successfully wrote new stable versions")
 	return &fleet.DumpStableVersionToDatastoreResponse{}, nil
