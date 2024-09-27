@@ -69,12 +69,16 @@ func updateAMTStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	amtManager := chromeos.GetAmtManager()
 	presentState := tlw.AMTManager_NOT_APPLICABLE
 	if amtManager != nil {
+		log.Infof(ctx, "Current amt_manager state: %s", amtManager.GetState())
 		if amtManager.GetState() != tlw.AMTManager_WORKING {
 			presentState = tlw.AMTManager_BROKEN
 		}
 	} else {
+		log.Infof(ctx, "Creating new amt_manager")
 		amtManager = &tlw.AMTManager{} // new object
 	}
+
+	log.Infof(ctx, "Setting amt_manager state to: %s", presentState)
 	amtManager.State = presentState
 	return nil
 }
