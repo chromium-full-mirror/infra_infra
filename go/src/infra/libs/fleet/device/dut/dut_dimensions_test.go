@@ -170,6 +170,13 @@ var devUFSState = lab.DutState{
 	WorkingBluetoothBtpeer: 3,
 	WifiState:              lab.HardwareState_HARDWARE_ACCEPTABLE,
 	RpmState:               lab.PeripheralState_WORKING,
+	DolosState:             lab.PeripheralState_WORKING,
+	VersionInfo: &lab.VersionInfo{
+		OsType:     lab.VersionInfo_CHROMEOS,
+		Os:         "coral-release/R100.12000.00",
+		RwFirmware: "Google_Coral.10068.101.0",
+		RoFirmware: "Google_Coral.10068.101.0",
+	},
 }
 
 var deviceConfig = &device.Config{
@@ -271,6 +278,10 @@ var baseDUTDims = swarming.Dimensions{
 	"label-working_bluetooth_btpeer":   {"1", "2", "3"},
 	"serial_number":                    {"test_serial"},
 	"ufs_zone":                         {"UFS_TEST_ZONE"},
+	"version_info_os_type":             {"CHROMEOS"},
+	"version_info_os":                  {"coral-release/R100.12000.00"},
+	"version_info_rw_firmware":         {"Google_Coral.10068.101.0"},
+	"version_info_ro_firmware":         {"Google_Coral.10068.101.0"},
 }
 
 var fullDUTDims = swarming.Dimensions{
@@ -337,6 +348,10 @@ var fullDUTDims = swarming.Dimensions{
 	"label-working_bluetooth_btpeer":   {"1", "2", "3"},
 	"serial_number":                    {"test_serial"},
 	"ufs_zone":                         {"UFS_TEST_ZONE"},
+	"version_info_os_type":             {"CHROMEOS"},
+	"version_info_os":                  {"coral-release/R100.12000.00"},
+	"version_info_rw_firmware":         {"Google_Coral.10068.101.0"},
+	"version_info_ro_firmware":         {"Google_Coral.10068.101.0"},
 }
 
 func getMockDUTDeviceData(data *ufspb.ChromeOSDeviceData, dc *deviceconfig.Config) *ufspb.ChromeOSDeviceData {
