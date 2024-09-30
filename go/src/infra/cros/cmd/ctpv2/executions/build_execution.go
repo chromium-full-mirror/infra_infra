@@ -27,6 +27,7 @@ import (
 	"infra/cros/cmd/common_lib/analytics"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/common_lib/tools/outputprops"
 	"infra/cros/cmd/common_lib/tools/suitelimits"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
@@ -42,8 +43,9 @@ var ioProps = build.RegisterSplitProperty[*steps.CTPv2BinaryBuildInput, *steps.C
 var ctrInputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
 var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtpv2InputPropertyName)
 
-// TODO : Re-structure different execution flow properly later.
 // LuciBuildExecution represents build executions.
+//
+// TODO : Re-structure different execution flow properly later.
 func LuciBuildExecution() {
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
@@ -53,6 +55,7 @@ func LuciBuildExecution() {
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrInputVersion.GetInput(ctx)
 			ctpv2CipdInfo := ctpv2InputVersion.GetInput(ctx)
+			outputprops.CTPv2PassFail.SetOutput(ctx, nil)
 			logging.Infof(ctx, "ctpv2 label: %s", ctpv2CipdInfo.GetVersion().GetCipdLabel())
 			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {

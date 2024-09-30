@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/outputprops"
 	"infra/cros/cmd/ctpv2/data"
 )
 
@@ -23,6 +24,8 @@ type AlStatusUpdateCmd struct {
 
 	// Deps
 	AlStateInfo *data.AlStateInfo
+
+	SuiteTestResults map[string]*data.TestResults
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -65,6 +68,7 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.AlStateInfo = sk.AlStateInfo
+	cmd.SuiteTestResults = sk.SuiteTestResults
 
 	return nil
 }
@@ -101,6 +105,35 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	if err != nil {
 		common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while publishing with id %s: %s", id, err.Error()), "pubsub publish error")
 		err = nil
+	}
+
+	// If there are results in the map (after the schedule tests step) then
+	// write the result totals to the output props.
+	if cmd.SuiteTestResults != nil {
+		// Collect the results from the each the the test results
+		summaryTotals := outputprops.SummaryMap{}
+
+		for _, testResult := range cmd.SuiteTestResults {
+			// TODO(juahurta): Only track the last attempt. In the future we do want
+			// to count the results if the test was retried.
+			key := testResult.Suite
+			if _, ok := summaryTotals[key]; !ok {
+				summaryTotals[key] = &outputprops.SummaryItem{
+					TotalTestCount:          0,
+					TotalFailedTestCount:    0,
+					TotalFailedTestRunCount: 0,
+				}
+			}
+
+			// Get and add the totals to the tracking map.
+			totalTestCount, totalFailedTestCount, totalFailedTestRunCount := testResult.GetTestCounts()
+			summaryTotals[key].TotalTestCount += totalTestCount
+			summaryTotals[key].TotalFailedTestCount += totalFailedTestCount
+			summaryTotals[key].TotalFailedTestRunCount += totalFailedTestRunCount
+		}
+
+		// Write the pass/fail summary map to the sub-build's output properties.
+		outputprops.CTPv2PassFail.SetOutput(ctx, summaryTotals)
 	}
 
 	return err
