@@ -527,6 +527,7 @@ func createDUTAMTManager(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.AMTMan
 	return &tlw.AMTManager{
 		Hostname: pAMTManager.GetHostname(),
 		State:    convertAMTManagerStateToTLW(ds.GetAmtManagerState()),
+		UseTls:   pAMTManager.GetUseTls(),
 	}
 }
 
