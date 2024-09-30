@@ -26,7 +26,8 @@ func TestMetadata(t *testing.T) {
 
 		// Creates new file.
 		err = modifyMetadata(ctx, tmp, func(m *cacheMetadata) {
-			So(m, ShouldResemble, &cacheMetadata{})
+			So(m.Created.IsZero(), ShouldBeTrue)
+			So(m.Touched.IsZero(), ShouldBeTrue)
 			m.Created = ts
 			m.Touched = ts
 		})
@@ -34,10 +35,8 @@ func TestMetadata(t *testing.T) {
 
 		// Reads the existing file, writes back modifications.
 		err = modifyMetadata(ctx, tmp, func(m *cacheMetadata) {
-			So(m, ShouldResemble, &cacheMetadata{
-				Created: ts,
-				Touched: ts,
-			})
+			So(m.Created.Equal(ts), ShouldBeTrue)
+			So(m.Touched.Equal(ts), ShouldBeTrue)
 			m.Touched = ts.Add(10 * time.Second)
 		})
 		So(err, ShouldBeNil)
@@ -45,9 +44,7 @@ func TestMetadata(t *testing.T) {
 		// Verify it is updated.
 		m, err := readMetadata(ctx, tmp)
 		So(err, ShouldBeNil)
-		So(m, ShouldResemble, cacheMetadata{
-			Created: ts,
-			Touched: ts.Add(10 * time.Second),
-		})
+		So(m.Created.Equal(ts), ShouldBeTrue)
+		So(m.Touched.Equal(ts.Add(10*time.Second)), ShouldBeTrue)
 	})
 }

@@ -71,10 +71,8 @@ func TestCache(t *testing.T) {
 			entryDir := filepath.Join(cache.Root, hex.EncodeToString(src.SHA256()))
 			m, err := readMetadata(ctx, entryDir)
 			So(err, ShouldBeNil)
-			So(m, ShouldResemble, cacheMetadata{
-				Created: testTime,
-				Touched: testTime,
-			})
+			So(m.Created.Equal(testTime), ShouldBeTrue)
+			So(m.Touched.Equal(testTime), ShouldBeTrue)
 
 			tc.Add(time.Minute)
 
@@ -85,10 +83,8 @@ func TestCache(t *testing.T) {
 			// Updated the metadata
 			m, err = readMetadata(ctx, entryDir)
 			So(err, ShouldBeNil)
-			So(m, ShouldResemble, cacheMetadata{
-				Created: testTime,
-				Touched: testTime.Add(time.Minute),
-			})
+			So(m.Created.Equal(testTime), ShouldBeTrue)
+			So(m.Touched.Equal(testTime.Add(time.Minute)), ShouldBeTrue)
 		})
 
 		Convey("WithTarball wrong hash", func() {
