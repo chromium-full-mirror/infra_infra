@@ -97651,9 +97651,14 @@ plans:
     - name: close (Allow to fail)
       criticalactions:
         - name: Update AMT state (Allow to fail)
-          exec_name: amt_manager_update_state
+          exec_name: amt_manager_set_state
+          exec_args:
+            - state:NOT_APPLICABLE
           docs:
             - Update the AMT state for DUTs without AMT.
+          conditions:
+            - name: amt_manager_not_present
+              exec_name: amt_manager_not_present
         - name: Update peripheral wifi state (Allow to fail)
           exec_name: update_peripheral_wifi_state
           docs:

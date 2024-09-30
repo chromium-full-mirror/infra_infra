@@ -150,7 +150,13 @@ func crosRepairClosingActions() map[string]*Action {
 			Docs: []string{
 				"Update the AMT state for DUTs without AMT.",
 			},
-			ExecName:               "amt_manager_update_state",
+			Conditions: []string{
+				"amt_manager_not_present",
+			},
+			ExecName: "amt_manager_set_state",
+			ExecExtraArgs: []string{
+				"state:NOT_APPLICABLE",
+			},
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},

@@ -60,31 +60,17 @@ func healthCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "flex AMT is not healthy").Err()
 }
 
-// updateAMTStateExec updates the AMT manager state.
-func updateAMTStateExec(ctx context.Context, info *execs.ExecInfo) error {
-	chromeos := info.GetChromeos()
-	if chromeos == nil {
-		return errors.Reason("update amt_manager state: chromeos is not present").Err()
+// amtManagerNotPresentExec checks if the AMT manager is absent.
+// returns an error if the AMT manager is present.
+func amtManagerNotPresentExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetAmtManager().GetHostname() != "" {
+		return errors.Reason("amt_manager not present: hostname exists").Err()
 	}
-	amtManager := chromeos.GetAmtManager()
-	presentState := tlw.AMTManager_NOT_APPLICABLE
-	if amtManager != nil {
-		log.Infof(ctx, "Current amt_manager state: %s", amtManager.GetState())
-		if amtManager.GetState() != tlw.AMTManager_WORKING {
-			presentState = tlw.AMTManager_BROKEN
-		}
-	} else {
-		log.Infof(ctx, "Creating new amt_manager")
-		amtManager = &tlw.AMTManager{} // new object
-	}
-
-	log.Infof(ctx, "Setting amt_manager state to: %s", presentState)
-	amtManager.State = presentState
 	return nil
 }
 
 func init() {
 	execs.Register("amt_manager_is_healthy", healthCheckExec)
 	execs.Register("amt_manager_set_state", setAMTStateExec)
-	execs.Register("amt_manager_update_state", updateAMTStateExec)
+	execs.Register("amt_manager_not_present", amtManagerNotPresentExec)
 }
