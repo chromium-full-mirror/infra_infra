@@ -32,6 +32,7 @@ import (
 	"infra/libs/git"
 	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/inventory"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // StableVersionGitClientFactory is a constructor for a git client pointed at the source of truth
@@ -202,11 +203,16 @@ func deviceInfo(ctx context.Context, hostname string) (*ufs.DeviceInfo, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "device info: fail create http client").Err()
 	}
-	client, err := ufs.NewClient(ctx, httpClient, cfg.GetUFS().GetHost())
+	// We only support chromeos DUTs at this point.
+	// TODO: Create RPC interpreters to read the namespace from the header.
+	namespace := ufsUtil.OSNamespace
+	ufsCtx := ufs.ContextWithNamespace(ctx, namespace)
+	logging.Infof(ctx, "Set namespace %q for UFS client before getting device info: %q", namespace, hostname)
+	client, err := ufs.NewClient(ufsCtx, httpClient, cfg.GetUFS().GetHost())
 	if err != nil {
 		return nil, errors.Annotate(err, "device info: fail create ufs client").Err()
 	}
-	return ufs.GetDeviceInfo(ctx, client, hostname)
+	return ufs.GetDeviceInfo(ufsCtx, client, hostname)
 }
 
 // getVersionImpl finds recovery version for request api.
@@ -241,6 +247,7 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 		}
 	}
 	if hostname != "" && (board == "" || model == "") {
+		logging.Infof(ctx, "No board/model provided, so try to find device by hostname: %q", hostname)
 		// Only read data for internal usage, no partners at this point.
 		di, err := deviceInfo(ctx, hostname)
 		if err != nil {
