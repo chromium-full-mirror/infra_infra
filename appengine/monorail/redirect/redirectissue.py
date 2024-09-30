@@ -12,7 +12,7 @@ class RedirectIssue(ndb.Model):
   RedirectID = ndb.StringProperty()
 
   @classmethod
-  def Get(cls, project, issue_local_id):
+  def Get(cls, project: str, issue_local_id: int) -> str:
     key = project + ':' + str(issue_local_id)
     redirect_issue_entity = ndb.Key('RedirectIssue', key).get()
     if not redirect_issue_entity:

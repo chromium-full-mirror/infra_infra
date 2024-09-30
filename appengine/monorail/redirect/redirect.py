@@ -81,6 +81,14 @@ def GenerateRedirectApp():
     return flask.redirect('https://issues.chromium.org/issues/wizard')
   redirect_app.route('/p/<string:project_name>/issues/wizard')(IssueWizard)
 
+  # RESTful API that maps Monorail local issue IDs to redirected issue IDs.
+  def MappingApi(project_name: str, local_id: int) -> str:
+    redirect_id = redirectissue.RedirectIssue.Get(project_name, local_id)
+    if redirect_id:
+      return redirect_id
+    flask.abort(404)
+  redirect_app.route('/<string:project_name>/<int:local_id>')(MappingApi)
+
   return redirect_app
 
 
