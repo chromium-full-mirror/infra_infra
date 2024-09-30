@@ -86,7 +86,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.Container, buildGetReq(board))
+			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.CONTAINER, buildGetReq(board))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				continue

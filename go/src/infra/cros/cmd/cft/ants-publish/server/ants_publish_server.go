@@ -80,7 +80,7 @@ func (ps *AntsPublishServer) Publish(ctx context.Context, req *api.PublishReques
 		}
 	}()
 
-	gps, err := service.NewAntsPublishService(req)
+	aps, err := service.NewAntsPublishService(ctx, req)
 	if err != nil {
 		log.Printf("failed to create new ants publish service: %s", err)
 		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
@@ -88,7 +88,7 @@ func (ps *AntsPublishServer) Publish(ctx context.Context, req *api.PublishReques
 		return op, fmt.Errorf("failed to create new ants publish service: %w", err)
 	}
 
-	if err := gps.UploadToAnts(context.Background()); err != nil {
+	if err := aps.UploadToAnts(context.Background()); err != nil {
 		log.Printf("upload to ants failed: %s", err)
 		out.Status = api.PublishResponse_STATUS_FAILURE
 		out.Message = fmt.Sprintf("failed upload to ants: %s", err.Error())

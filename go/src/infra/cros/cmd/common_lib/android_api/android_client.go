@@ -28,19 +28,19 @@ type RunType int
 
 // Define constants for RunType
 const (
-	Local RunType = iota
-	Container
-	ServiceAccount
+	LOCAL RunType = iota
+	CONTAINER
+	SERVICEACCOUNT
 )
 
 // String method to get a string representation of RunType
 func (rt RunType) String() string {
 	switch rt {
-	case Local:
+	case LOCAL:
 		return "local"
-	case Container:
+	case CONTAINER:
 		return "container"
-	case ServiceAccount:
+	case SERVICEACCOUNT:
 		return "serviceAccount"
 	default:
 		return "unknown"
@@ -77,11 +77,11 @@ func getAuthorizedHTTP(credentials *oauth2.TokenSource, timeout time.Duration) (
 // FetchCredentials fetches creds for authentication.
 func FetchCredentials(rt RunType) (*google.Credentials, error) {
 	switch rt {
-	case Local:
+	case LOCAL:
 		return fetchCredentialsFromJSON(true)
-	case Container:
+	case CONTAINER:
 		return fetchCredentialsFromJSON(false)
-	case ServiceAccount:
+	case SERVICEACCOUNT:
 		return fetchDefaultCredentialsFromSA()
 	default:
 		return nil, fmt.Errorf("unknown run type")

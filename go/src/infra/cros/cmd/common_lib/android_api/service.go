@@ -17,6 +17,7 @@ const (
 	// defaultMaxResults is the default max number of results to be returned
 	// by the list endpoints in android build API.
 	defaultMaxResults = int64(1000)
+	quotaProject      = "chromeos-bot"
 )
 
 var (
@@ -28,7 +29,9 @@ var (
 // All sub services share the same client, so the caller needs to initialize it
 // when the service is first used.
 type Service struct {
-	WorkUnitService WorkUnitService
+	WorkUnitService   WorkUnitService
+	InvocationService InvocationService
+	TestResultService TestResultService
 }
 
 // AndroidBuildAPIOptions represents the common request options
@@ -51,12 +54,19 @@ func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
 		return nil, err
 	}
 
-	client, err := androidbuildinternal.NewService(ctx, option.WithTokenSource(creds.TokenSource))
+	opts := []option.ClientOption{
+		option.WithTokenSource(creds.TokenSource),
+		option.WithQuotaProject(quotaProject),
+	}
+
+	client, err := androidbuildinternal.NewService(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 
 	service := &Service{}
 	service.WorkUnitService = &WorkUnitServiceImpl{client.Workunit}
+	service.InvocationService = &InvocationServiceImpl{client.Invocation}
+	service.TestResultService = &TestResultServiceImpl{client.Testresult}
 	return service, nil
 }

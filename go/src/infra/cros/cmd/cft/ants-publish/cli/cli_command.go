@@ -93,7 +93,7 @@ func (cc *CLICommand) Run() error {
 		Status: api.PublishResponse_STATUS_SUCCESS,
 	}
 
-	ps, err := service.NewAntsPublishService(cc.inputProto)
+	ps, err := service.NewAntsPublishService(ctx, cc.inputProto)
 	if err != nil {
 		log.Printf("failed to create new ants publish service: %s", err)
 		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
