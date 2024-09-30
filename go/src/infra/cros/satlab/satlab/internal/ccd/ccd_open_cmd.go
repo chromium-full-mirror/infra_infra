@@ -273,9 +273,53 @@ func (c *ccdOpenRun) getSerialDevice(
 	}
 	if gscSerialDev, ok := m[relatedUSBHubID]["gsc_serial_dev"]; ok {
 		return gscSerialDev, nil
-	} else {
-		return "", errors.New("No GSC serial device detected.")
 	}
+	return "", errors.New("No GSC serial device detected. Try flipping the USB-C plug or plugging the cable into a different USB-C port of the DUT.")
+}
+
+func (c *ccdOpenRun) getRDDKeepAlive() (bool, error) {
+	if err := c.goexpectSession.Send("rddkeepalive\n"); err != nil {
+		return false, errors.Annotate(err, "send rddkeepalive command").Err()
+	}
+	output, _, err := c.goexpectSession.Expect(reCcd, timeout)
+	if err != nil {
+		return false, errors.Annotate(err, "expect output from rddkeepalive command").Err()
+	}
+	if strings.Contains(output, "KeepAlive: enabled") || strings.Contains(output, "Rdd: keepalive") {
+		fmt.Println("RDD keep-alive: enabled")
+		return true, nil
+	}
+	if strings.Contains(output, "KeepAlive: disabled") || strings.Contains(output, "Rdd: connected") {
+		fmt.Println("RDD keep-alive: disabled")
+		return false, nil
+	}
+	fmt.Println("RDD keep-alive: unknown state")
+	return false, nil
+}
+
+func (c *ccdOpenRun) setRDDKeepAlive() error {
+	KeepAliveEnabled, err := c.getRDDKeepAlive()
+	if err != nil {
+		return errors.Annotate(err, "get rdd keep-alive status").Err()
+	}
+	if KeepAliveEnabled {
+		return nil
+	}
+	fmt.Println("Enabling RDD keep-alive...")
+	if err := c.goexpectSession.Send("rddkeepalive true\n"); err != nil {
+		return errors.Annotate(err, "send rddkeepalive true command").Err()
+	}
+	if _, _, err := c.goexpectSession.Expect(reCcd, timeout); err != nil {
+		return errors.Annotate(err, "expect ccd console prompt after executing rddkeepalive true command").Err()
+	}
+	KeepAliveEnabled, err = c.getRDDKeepAlive()
+	if err != nil {
+		return errors.Annotate(err, "get rdd keep-alive status").Err()
+	}
+	if KeepAliveEnabled {
+		return nil
+	}
+	return errors.New("Enabling RDD keep-alive failed.")
 }
 
 func (c *ccdOpenRun) prepareCCD(
@@ -298,6 +342,10 @@ func (c *ccdOpenRun) prepareCCD(
 	}
 	if err := c.prepareTerminal(port); err != nil {
 		return errors.Annotate(err, "prepare terminal").Err()
+	}
+	if err := c.setRDDKeepAlive(); err != nil {
+		// Don't fail as it's not critical to set this parameter.
+		fmt.Println(error.Error(err))
 	}
 	ccdOpened, err := c.checkIfCCDOpened()
 	if err != nil {
