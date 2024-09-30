@@ -1747,9 +1747,8 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/uni
 
 Example:
 
-shivas get stable-version {hostname1}
+shivas get stable-version -name {hostname1}
 shivas get stable-version -board board1 -model model1
-shivas get stable-version -model model1
 
 Gets the stable version and prints the output in user format.`
 	//AddCachingServiceLongDesc long description for AddCachingServiceCmd

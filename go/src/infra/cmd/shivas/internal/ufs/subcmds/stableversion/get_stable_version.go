@@ -6,8 +6,6 @@ package stableversion
 
 import (
 	"fmt"
-	"sort"
-	"text/tabwriter"
 
 	"github.com/maruel/subcommands"
 
@@ -27,16 +25,20 @@ import (
 // GetStableVersionCmd get stable version for given host and board/model.
 var GetStableVersionCmd = &subcommands.Command{
 	UsageLine: "stable-version ...",
-	ShortDesc: "Get stable version details for DUT/labstation/model",
+	ShortDesc: "Get stable version used for auto-repair.",
 	LongDesc:  cmdhelp.GetStableVersionText,
 	CommandRun: func() subcommands.CommandRun {
-		c := &getStableVersion{}
+		c := &getStableVersion{
+			pools: []string{},
+		}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.commonFlags.Register(&c.Flags)
 
-		c.Flags.StringVar(&c.board, "board", "", "Name of the board using for getting stable version. If board is not provided then model will be used as board.")
-		c.Flags.StringVar(&c.model, "model", "", "Name of the model using for getting stable version")
+		c.Flags.StringVar(&c.hostname, "name", "", "Hostname which used to get version.")
+		c.Flags.StringVar(&c.board, "board", "", "Name of the board used to get version.")
+		c.Flags.StringVar(&c.model, "model", "", "Name of the model used to get version.")
+		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma separated pools used to get version.")
 
 		return c
 	},
@@ -48,8 +50,10 @@ type getStableVersion struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	board string
-	model string
+	board    string
+	model    string
+	pools    []string
+	hostname string
 }
 
 func (c *getStableVersion) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -65,9 +69,12 @@ func (c *getStableVersion) innerRun(a subcommands.Application, args []string, en
 	if err != nil {
 		return err
 	}
-
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	ns, err := getNamespace(&c.envFlags)
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -87,52 +94,38 @@ func (c *getStableVersion) innerRun(a subcommands.Application, args []string, en
 	)
 	g := hostinfo.NewGetter(nil, invWithSVClient)
 
-	for _, hostname := range args {
-		sv, err := g.GetStableVersionForHostname(ctx, hostname)
-		if err != nil && c.commonFlags.Verbose() {
-			return err
-		}
-		if len(sv) > 0 {
-			fmt.Printf("Stable version for host:%s\n", hostname)
-			printStableVersion(a, sv)
-		}
+	version, err := g.GetStableVersion(ctx, c.hostname, c.board, c.model, c.pools)
+	if err != nil {
+		return err
 	}
-
-	if c.model != "" {
-		board := c.board
-		if board == "" {
-			board = c.model
-		}
-		sv, err := g.GetStableVersionForModel(ctx, board, c.model)
-		if err != nil && c.commonFlags.Verbose() {
-			return err
-		}
-		if len(sv) > 0 {
-			fmt.Printf("Stable version for %s:%s\n", c.board, c.model)
-			printStableVersion(a, sv)
-		}
-	}
+	fmt.Printf("Stable version for host:%s\n", c.hostname)
+	fmt.Printf("\t %s: %s\n", "OsVersion", version.GetOsVersion())
+	fmt.Printf("\t %s: %s\n", "OsImagePath", version.GetOsImagePath())
+	fmt.Printf("\t %s: %s\n", "FwRoVersion", version.GetFirmwareRoVersion())
+	fmt.Printf("\t %s: %s\n", "FwRoImagePath", version.GetFirmwareRoImagePath())
 	return nil
 }
 
 func (c *getStableVersion) validateArgs(args []string) error {
-	if len(args) == 0 && c.model == "" {
-		return cmdlib.NewUsageError(c.Flags, "Please provide hostname or board/model.")
+	if len(args) > 0 {
+		return cmdlib.NewUsageError(c.Flags, "Please use -name to provide hostname of the device.")
+	}
+	switch {
+	case c.hostname != "":
+		// We have name that should enough.
+		return nil
+	case c.board == "" || c.model == "":
+		return cmdlib.NewUsageError(c.Flags, "Please provide hostname of the device or board+model.")
 	}
 	return nil
 }
 
-func printStableVersion(a subcommands.Application, sv map[string]string) {
-	keys := make([]string, 0, len(sv))
-	for k := range sv {
-		keys = append(keys, k)
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func getNamespace(c *site.EnvFlags) (string, error) {
+	if c == nil {
+		return ufsUtil.OSNamespace, nil
 	}
-	sort.Strings(keys)
-
-	tw := tabwriter.NewWriter(a.GetOut(), 0, 2, 2, ' ', 0)
-	defer tw.Flush()
-	for _, k := range keys {
-		fmt.Fprintf(tw, "%s:\t%s\n", k, sv[k])
-	}
-	fmt.Fprintf(tw, "\n")
+	return c.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }

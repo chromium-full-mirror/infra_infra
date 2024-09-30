@@ -10,6 +10,8 @@ import (
 
 	grpc "google.golang.org/grpc"
 
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	models "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -67,10 +69,11 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 	// Devboard device does not have stable version.
 	// Only obtains stable version when device is not a devboard.
 	if crosDeviceData.GetMachine().GetDevboard() == nil {
-		hi.StableVersions, err = g.GetStableVersionForHostname(ctx, hostname)
+		version, err := g.GetStableVersion(ctx, hostname, "", "", nil)
 		if err != nil {
 			return "", err
 		}
+		hi.StableVersions = versionToMap(version)
 	}
 	bytes, err := MarshalIndent(hi)
 	if err != nil {
@@ -79,53 +82,35 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 	return string(bytes), nil
 }
 
-// GetStableVersionForHostname gets the stable version info for a given hostname.
-func (g *Getter) GetStableVersionForHostname(ctx context.Context, hostname string) (map[string]string, error) {
+// GetStableVersion gets the stable version info.
+func (g *Getter) GetStableVersion(ctx context.Context, hostname, board, model string, pools []string) (*lab_platform.StableVersion, error) {
 	if g.ac == nil {
 		return nil, fmt.Errorf("no Inventory client for stable version")
 	}
 	if hostname == "" {
-		return nil, fmt.Errorf("hostname cannot be empty")
+		hostname = "shivas-device"
 	}
 
 	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
 		DeviceName: hostname,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return extractStableVersionFromResponse(res), nil
-}
-
-// GetStableVersionForModel gets the stable version info for a given board/model.
-func (g *Getter) GetStableVersionForModel(ctx context.Context, board, model string) (map[string]string, error) {
-	if board == "" {
-		return nil, fmt.Errorf("board cannot be empty")
-	}
-	if model == "" {
-		return nil, fmt.Errorf("model cannot be empty")
-	}
-	if g.ac == nil {
-		return nil, fmt.Errorf("no Inventory client for stable version")
-	}
-
-	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
-		DeviceName: "shivas-device",
 		Model:      model,
 		Board:      board,
+		Pools:      pools,
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	return extractStableVersionFromResponse(res), nil
+	if res.GetVersion() == nil {
+		return nil, fmt.Errorf("response do not containe version info")
+	}
+	return res.GetVersion(), nil
 }
 
-func extractStableVersionFromResponse(res *fleet.GetRecoveryVersionResponse) map[string]string {
+func versionToMap(ver *lab_platform.StableVersion) map[string]string {
 	return map[string]string{
-		"cros":     res.GetVersion().GetOsVersion(),
-		"faft":     res.GetVersion().GetFirmwareRoImagePath(),
-		"firmware": res.GetVersion().GetFirmwareRoVersion(),
+		"OsVersion":     ver.GetOsVersion(),
+		"OsImagePath":   ver.GetOsImagePath(),
+		"FwRoVersion":   ver.GetFirmwareRoVersion(),
+		"FwRoImagePath": ver.GetFirmwareRoImagePath(),
 	}
 }

@@ -10,8 +10,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/stableversion/keys"
@@ -70,9 +72,10 @@ const fullResponse = `{
 		"servo_type": "servo_v4_with_ccd_cr50"
 	},
 	"stable_versions": {
-		"cros": "FAKE-CROS-VERSION",
-		"faft": "FAKE-FAFT-VERSION",
-		"firmware": "FAKE-FIRMWARE-VERSION"
+		"FwRoImagePath": "FAKE-FAFT-VERSION",
+		"FwRoVersion": "FAKE-FIRMWARE-VERSION",
+		"OsImagePath": "FAKE-CROS-PATH",
+		"OsVersion": "FAKE-CROS-VERSION"
 	},
 	"serializer_version": 1
 }`
@@ -91,7 +94,7 @@ func (f *FakeGetDutInfo) GetChromeOSDeviceData(ctx context.Context, req *ufsAPI.
 }
 
 type FakeGetStableVersion struct {
-	version map[string]lab_platform.StableVersion
+	version map[string]*lab_platform.StableVersion
 }
 
 func (f *FakeGetStableVersion) GetRecoveryVersion(ctx context.Context, in *fleet.GetRecoveryVersionRequest, opts ...grpc.CallOption) (*fleet.GetRecoveryVersionResponse, error) {
@@ -274,9 +277,10 @@ func TestGetContentsForHostname(t *testing.T) {
 			},
 		},
 		&FakeGetStableVersion{
-			version: map[string]lab_platform.StableVersion{
+			version: map[string]*lab_platform.StableVersion{
 				"|hostname:FAKE-HOSTNAME": {
 					OsVersion:           "FAKE-CROS-VERSION",
+					OsImagePath:         "FAKE-CROS-PATH",
 					FirmwareRoImagePath: "FAKE-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE-FIRMWARE-VERSION",
 				},
@@ -301,28 +305,32 @@ func TestGetStableVersionForHostname(t *testing.T) {
 
 	const hostname = "FAKE-HOSTNAME"
 	const expectedErr = ""
-	expected := map[string]string{
-		"cros":     "FAKE-CROS-VERSION",
-		"faft":     "FAKE-FAFT-VERSION",
-		"firmware": "FAKE-FIRMWARE-VERSION",
+	expected := &lab_platform.StableVersion{
+		OsVersion:           "FAKE-CROS-VERSION",
+		OsImagePath:         "FAKE-CROS-PATH",
+		FirmwareRoImagePath: "FAKE-FAFT-VERSION",
+		FirmwareRoVersion:   "FAKE-FIRMWARE-VERSION",
 	}
 
 	g := NewGetter(
 		nil,
 		&FakeGetStableVersion{
-			version: map[string]lab_platform.StableVersion{
+			version: map[string]*lab_platform.StableVersion{
 				"|hostname:FAKE-HOSTNAME": {
 					OsVersion:           "FAKE-CROS-VERSION",
+					OsImagePath:         "FAKE-CROS-PATH",
 					FirmwareRoImagePath: "FAKE-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE-FIRMWARE-VERSION",
 				},
 				"|board:fake-board|model:fake-model": {
 					OsVersion:           "FAKE1-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE1-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-board-mode-FIRMWARE-VERSION",
 				},
 				"|hostname:FAKE1": {
 					OsVersion:           "FAKE2-CROS-VERSION",
+					OsImagePath:         "FAKE2-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE2-FIRMWARE-VERSION",
 				},
@@ -330,10 +338,61 @@ func TestGetStableVersionForHostname(t *testing.T) {
 		},
 	)
 
-	out, e := g.GetStableVersionForHostname(bg, hostname)
+	out, e := g.GetStableVersion(bg, hostname, "", "", nil)
 	eMsg := errToString(e)
+	// Reset target as not important!
+	out.Target = nil
 
-	if diff := cmp.Diff(expected, out); diff != "" {
+	if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
+		t.Errorf("wanted: (%v) \ngot: (%v)\n(%s)", expected, out, diff)
+	}
+
+	if diff := cmp.Diff(expectedErr, eMsg); diff != "" {
+		t.Errorf("wanted: (%s) \ngot: (%s)\n(%s)", expectedErr, eMsg, diff)
+	}
+}
+
+func TestGetStableVersionForModel(t *testing.T) {
+	bg := context.Background()
+
+	const expectedErr = ""
+	expected := &lab_platform.StableVersion{
+		FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
+		FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
+		OsImagePath:         "FAKE2-board-mode-CROS-PATH",
+		OsVersion:           "FAKE2-board-mode-CROS-VERSION",
+	}
+
+	g := NewGetter(
+		nil,
+		&FakeGetStableVersion{
+			version: map[string]*lab_platform.StableVersion{
+				keys.New("fake-mode", "fake-model", "").String(): {
+					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
+					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
+				},
+				keys.New("fake-board", "fake-model", "").String(): {
+					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
+				},
+				"|hostname:FAKE-HOSTNAME": {
+					OsVersion:           "FAKE3-hostname-CROS-VERSION",
+					OsImagePath:         "FAKE3-hostname-CROS-PATH",
+					FirmwareRoImagePath: "FAKE3-hostname-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE3-hostname-FIRMWARE-VERSION",
+				},
+			},
+		},
+	)
+
+	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", nil)
+	eMsg := errToString(e)
+	out.Target = nil
+	if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
 		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
 	}
 
@@ -342,32 +401,42 @@ func TestGetStableVersionForHostname(t *testing.T) {
 	}
 }
 
-func TestGetStableVersionForModel(t *testing.T) {
+func TestGetStableVersionForModelAndPool(t *testing.T) {
 	bg := context.Background()
 
 	const expectedErr = ""
-	expected := map[string]string{
-		"cros":     "FAKE2-board-mode-CROS-VERSION",
-		"faft":     "FAKE2-board-mode-FAFT-VERSION",
-		"firmware": "FAKE2-board-mode-FIRMWARE-VERSION",
+	expected := &lab_platform.StableVersion{
+		OsVersion:           "FAKE4-board-mode-CROS-VERSION",
+		OsImagePath:         "FAKE4-board-mode-CROS-PATH",
+		FirmwareRoImagePath: "FAKE4-board-mode-FAFT-VERSION",
+		FirmwareRoVersion:   "FAKE4-board-mode-FIRMWARE-VERSION",
 	}
 
 	g := NewGetter(
 		nil,
 		&FakeGetStableVersion{
-			version: map[string]lab_platform.StableVersion{
+			version: map[string]*lab_platform.StableVersion{
 				keys.New("fake-mode", "fake-model", "").String(): {
 					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
+					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
 				keys.New("fake-board", "fake-model", "").String(): {
 					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
 				},
+				keys.New("fake-board", "fake-model", "fake-pool").String(): {
+					OsVersion:           "FAKE4-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE4-board-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE4-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE4-board-mode-FIRMWARE-VERSION",
+				},
 				"|hostname:FAKE-HOSTNAME": {
 					OsVersion:           "FAKE3-hostname-CROS-VERSION",
+					OsImagePath:         "FAKE3-hostname-CROS-PATH",
 					FirmwareRoImagePath: "FAKE3-hostname-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE3-hostname-FIRMWARE-VERSION",
 				},
@@ -375,10 +444,10 @@ func TestGetStableVersionForModel(t *testing.T) {
 		},
 	)
 
-	out, e := g.GetStableVersionForModel(bg, "fake-board", "fake-model")
+	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", []string{"fake-pool"})
 	eMsg := errToString(e)
-
-	if diff := cmp.Diff(expected, out); diff != "" {
+	out.Target = nil
+	if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
 		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
 	}
 
@@ -432,4 +501,9 @@ func hardwarestate(hardwareState inventory.HardwareState) *inventory.HardwareSta
 // Pointer to phase, for building protos.
 func phase(phase inventory.SchedulableLabels_Phase) *inventory.SchedulableLabels_Phase {
 	return &phase
+}
+
+func protoToString(msq *lab_platform.StableVersion) string {
+	b, _ := (&protojson.MarshalOptions{}).Marshal(msq)
+	return string(b)
 }
