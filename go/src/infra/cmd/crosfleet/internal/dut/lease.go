@@ -92,6 +92,13 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	// Set correct pool if hostname-based lease, as our default pool value may be
 	// incorrect.
 	if c.host != "" {
+		c.printer.WriteTextStderr(`#################################################################
+# NOTE: DUTs that appear free in Swarming are not always free.  #
+# To obtain a DUT as quickly as possible in the future, request #
+# your lease with the -pool and -dims flags only, which gives   #
+# crosfleet a better chance at finding the first free DUT that  #
+# is compatible with your use-case.                             #
+#################################################################`)
 		c.host = heuristics.NormalizeBotNameToDeviceName(c.host)
 		pool, err := hostnameToPool(ctx, swarmingBotsClient, c.host)
 		if err != nil {
