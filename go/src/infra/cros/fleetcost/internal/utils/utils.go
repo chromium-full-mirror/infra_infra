@@ -332,3 +332,17 @@ func SumCostReportItem(items ...*fleetcostpb.CostReportItem) float64 {
 	}
 	return out
 }
+
+// SplitComma splits a string on commas.
+func SplitComma(msg string) []string {
+	words := strings.Split(msg, ",")
+	var out []string
+	for _, x := range words {
+		x = strings.TrimSpace(x)
+		if len(x) == 0 {
+			continue
+		}
+		out = append(out, x)
+	}
+	return out
+}

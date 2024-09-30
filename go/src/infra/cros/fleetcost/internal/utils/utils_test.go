@@ -12,6 +12,8 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -310,4 +312,16 @@ func TestConsumeChannel(t *testing.T) {
 	if n := tally.Load(); n != 1000 {
 		t.Errorf("bad number of iterations: %d", n)
 	}
+}
+
+func TestSplitComma(t *testing.T) {
+	t.Parallel()
+
+	assert.Loosely(t, utils.SplitComma(""), should.BeNil)
+	assert.Loosely(t, utils.SplitComma(","), should.BeNil)
+	assert.Loosely(t, utils.SplitComma("a,"), should.Match([]string{"a"}))
+	assert.Loosely(t, utils.SplitComma("a, "), should.Match([]string{"a"}))
+	assert.Loosely(t, utils.SplitComma(" a, "), should.Match([]string{"a"}))
+	assert.Loosely(t, utils.SplitComma(" a, , "), should.Match([]string{"a"}))
+	assert.Loosely(t, utils.SplitComma("a,b"), should.Match([]string{"a", "b"}))
 }

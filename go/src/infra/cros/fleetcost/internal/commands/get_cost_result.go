@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -21,6 +20,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/site"
+	"infra/cros/fleetcost/internal/utils"
 )
 
 // GetCostResultCommand pings UFS via the fleet cost service.
@@ -36,6 +36,7 @@ var GetCostResultCommand *subcommands.Command = &subcommands.Command{
 		c.Flags.StringVar(&c.name, "name", "", "hostname of a DUT. If hints are provided, then we want the cost of a hypothetical DUT and the hostname should not be provided.")
 		c.Flags.BoolVar(&c.lax, "lax", false, "whether to forgive missing cost entries")
 		c.Flags.StringVar(&c.hints, "hints", "", "if provided, do not talk to UFS and instead use hints to generate the cost estimate. Comma-delimited.")
+		c.Flags.BoolVar(&c.forceUpdate, "forceupdate", false, "if provided, force update the cache entry (false by default)")
 		return c
 	},
 }
@@ -45,9 +46,10 @@ type getCostResultCommand struct {
 	authFlags   authcli.Flags
 	commonFlags site.CommonFlags
 
-	name  string
-	lax   bool
-	hints string
+	name        string
+	lax         bool
+	hints       string
+	forceUpdate bool
 }
 
 // Run is the main entrypoint to the ping.
@@ -82,9 +84,12 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 			PerRPCTimeout: 30 * time.Second,
 		},
 	}
-	hints := strings.Split(c.hints, ",")
-	if (len(hints) == 0) == (c.name != "") {
+	hints := utils.SplitComma(c.hints)
+	if (len(hints) == 0) && (c.name == "") {
 		return fmt.Errorf("at least one hint (%q given) or name (%q given) must be provided", c.hints, c.name)
+	}
+	if (len(hints) != 0) && (c.name != "") {
+		return fmt.Errorf("at most one hint (%q given) or one name (%q given) can be provided", c.hints, c.name)
 	}
 	fleetCostClient := fleetcostAPI.NewFleetCostPRPCClient(prpcClient)
 	resp, err := fleetCostClient.GetCostResult(ctx, &fleetcostAPI.GetCostResultRequest{
@@ -92,6 +97,7 @@ func (c *getCostResultCommand) innerRun(ctx context.Context, a subcommands.Appli
 		ForgiveMissingEntries: c.lax,
 		NoUfs:                 len(hints) != 0,
 		AnalysisHint:          hints,
+		ForceUpdate:           c.forceUpdate,
 	})
 	if err != nil {
 		c.commonFlags.VerboseLog(a, "RPC call failed.")
