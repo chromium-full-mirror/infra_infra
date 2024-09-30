@@ -249,18 +249,19 @@ func dumpChangeSnapshotHelperBatched(ctx context.Context, bqClient *bigquery.Cli
 			return err
 		}
 		for tableName, ms := range msgs {
+			logging.Debugf(ctx, "Uploading %d entries to %v", len(ms), tableName)
 			table := fmt.Sprintf("%s$%s", tableName, curTimeStr)
 			if err := uploadDumpToBQ(ctx, bqClient, ms, table); err != nil {
 				return err
 			}
 		}
 		logging.Debugf(ctx, "Finish uploading the snapshots successfully")
-		logging.Debugf(ctx, "Deleting the uploaded snapshots")
+		logging.Debugf(ctx, "Deleting the %d uploaded snapshots", len(snapshots))
 		if err := history.DeleteSnapshotMsgEntities(ctx, snapshots); err != nil {
 			logging.Debugf(ctx, "fail to delete snapshot msg entities: %s", err.Error())
 			return err
 		}
-		if currCursor == nil {
+		if currCursor == nil || count < batchSize {
 			break
 		}
 	}
