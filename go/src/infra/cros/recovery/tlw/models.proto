@@ -846,7 +846,7 @@ message Camera {
 }
 
 // Chrome OS specific DUT details
-// NEXT TAG: 39
+// NEXT TAG: 37
 message ChromeOS {
   // Is OS based on Android.
   // If not then based on Chrome.
@@ -1080,4 +1080,19 @@ enum DUTSetupType {
 	CROSVM = 7;
 	// Special setup for DevBoard devices.
 	DEV_BOARD = 8;
+}
+
+// This proto define common version info we want to record from a device.
+// Next Tag: 5
+message VersionInfo {
+  string os = 1;
+  string ro_firmware = 2;
+  string rw_firmware = 3;
+  // Need to exactly matches VersionInfo_OsType in UFS dut_state.
+  enum OsType {
+    UNKNOWN = 0;
+    CHROMEOS = 1;
+    ANDROID = 2;
+  }
+  OsType os_type = 4;
 }

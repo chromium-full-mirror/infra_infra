@@ -577,3 +577,17 @@ func convertDolosHWMajorRevision(v ufslab.DolosHWMajorRevision) tlw.Dolos_DolosH
 	}
 	return tlw.Dolos_DOLOS_UNSPECIFIED
 }
+
+func convertVersionInfoOsType(t ufslab.VersionInfo_OsType) tlw.VersionInfo_OsType {
+	if osType, ok := tlw.VersionInfo_OsType_value[t.String()]; ok {
+		return tlw.VersionInfo_OsType(osType)
+	}
+	return tlw.VersionInfo_UNKNOWN
+}
+
+func convertVersionInfoOsTypeToUFS(t tlw.VersionInfo_OsType) ufslab.VersionInfo_OsType {
+	if osType, ok := ufslab.VersionInfo_OsType_value[t.String()]; ok {
+		return ufslab.VersionInfo_OsType(osType)
+	}
+	return ufslab.VersionInfo_UNKNOWN
+}

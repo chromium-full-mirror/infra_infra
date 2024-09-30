@@ -213,6 +213,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			tlw.ExtraAttributePools: dut.GetPools(),
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
+		VersionInfo:     createDUTVersionInfo(ds.GetVersionInfo()),
 	}
 	d.GetChromeos().WifiRouterFeatures = p.GetWifi().GetWifiRouterFeatures()
 
@@ -302,6 +303,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 			tlw.ExtraAttributePools: l.GetPools(),
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
+		VersionInfo:     createDUTVersionInfo(ds.GetVersionInfo()),
 	}
 	if ds.GetDutStateReason() != "" {
 		d.DutStateReason = tlw.DutStateReason(ds.GetDutStateReason())
@@ -552,6 +554,15 @@ func createDUTFingerprint(ds *ufslab.DutState) *tlw.Fingerprint {
 	}
 }
 
+func createDUTVersionInfo(v *ufslab.VersionInfo) *tlw.VersionInfo {
+	return &tlw.VersionInfo{
+		Os:         v.GetOs(),
+		RwFirmware: v.GetRwFirmware(),
+		RoFirmware: v.GetRoFirmware(),
+		OsType:     convertVersionInfoOsType(v.GetOsType()),
+	}
+}
+
 func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
 	for _, f := range dc.GetHardwareFeatures() {
 		if f == hf {
@@ -774,6 +785,14 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 		state.FingerprintBoard = chromeos.GetFingerprint().GetBoard()
 		state.FingerprintMcu = chromeos.GetFingerprint().GetMcu()
 		state.FingerprintSensor = chromeos.GetFingerprint().GetSensor()
+		if v := dut.GetVersionInfo(); v != nil {
+			state.VersionInfo = &ufslab.VersionInfo{
+				Os:         v.GetOs(),
+				RwFirmware: v.GetRwFirmware(),
+				RoFirmware: v.GetRoFirmware(),
+				OsType:     convertVersionInfoOsTypeToUFS(v.GetOsType()),
+			}
+		}
 
 	} else if devboard := dut.GetDevBoard(); devboard != nil {
 		if s := devboard.GetServo(); s != nil {

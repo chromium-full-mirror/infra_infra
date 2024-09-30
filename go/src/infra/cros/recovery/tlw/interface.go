@@ -81,7 +81,10 @@ type Dut struct {
 	// State of the DUT.
 	State dutstate.State
 	// ProvisionedInfo tells provisioned info for the DUT.
+	// TODO: Remove this once confirmed new VersionInfo works from end-to-end.
 	ProvisionedInfo *ProvisionedInfo
+	// VersionInfo tells current system version(e.g. OS, firmware) info for the DUT.
+	VersionInfo *VersionInfo
 	// Explain why the DUT state was set.
 	// The value may not be available, and is used to indicate reason of a bad
 	// state.
@@ -126,4 +129,11 @@ func (d *Dut) GetDevBoard() *DevBoard {
 		return nil
 	}
 	return d.DevBoard
+}
+
+func (d *Dut) GetVersionInfo() *VersionInfo {
+	if d == nil {
+		return nil
+	}
+	return d.VersionInfo
 }

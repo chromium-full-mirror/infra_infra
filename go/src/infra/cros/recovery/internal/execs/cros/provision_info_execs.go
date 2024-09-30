@@ -32,7 +32,13 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 		return errors.Annotate(err, "update provision info").Err()
 	}
 	log.Debugf(ctx, "ChromeOS version on the dut: %s.", osVersion)
+	// TODO: Remove this once confirmed new VersionInfo works from end-to-end.
 	info.GetDut().ProvisionedInfo.CrosVersion = osVersion
+
+	// Apply new UFS dut_state VersionInfo.
+	// TODO: Refactor ProvisionedInfo related execs to propoerly handle Android based devices.
+	info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_CHROMEOS
+	info.GetDut().GetVersionInfo().Os = osVersion
 
 	argsMap := info.GetActionArgs(ctx)
 	if argsMap.AsBool(ctx, "update_job_repo_url", false) {
@@ -50,10 +56,16 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 
 func resetProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 	log.Debugf(ctx, "Provision info reseted!")
+	// TODO: Remove old logic that uses ProvisionedInfo once confirmed new VersionInfo
+	// workflow WAI.
 	info.GetDut().ProvisionedInfo = &tlw.ProvisionedInfo{
 		CrosVersion: "",
 		JobRepoUrl:  "",
 	}
+	info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_UNKNOWN
+	info.GetDut().GetVersionInfo().Os = ""
+	info.GetDut().GetVersionInfo().RwFirmware = ""
+	info.GetDut().GetVersionInfo().RoFirmware = ""
 	return nil
 }
 
