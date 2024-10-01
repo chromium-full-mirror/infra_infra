@@ -83,6 +83,7 @@ def RunSteps(api, inputs):
         f' b/{destination_rel_path}')
 
   with api.context(cwd=destination_dir):
+    api.git.new_branch('autoroller-branch', name='new-branch')
     diff_step = api.git(
         'diff', stdout=api.raw_io.output_text(), step_test_data=step_test_data)
     diff_step.presentation.logs['stdout'] = diff_step.stdout
