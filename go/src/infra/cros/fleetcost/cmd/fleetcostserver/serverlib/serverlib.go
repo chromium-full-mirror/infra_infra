@@ -1,0 +1,87 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package serverlib contains the main server loop and the modules used.
+package serverlib
+
+import (
+	"net/http"
+	"strings"
+
+	"cloud.google.com/go/bigquery"
+
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/module"
+
+	"google.golang.org/api/option"
+
+	"infra/cros/fleetcost/internal/costserver"
+	"infra/libs/bqwrapper"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+)
+
+// GetModules computes the modules needed to run the service from the command-line flags.
+func GetModules() []module.Module {
+	return []module.Module{
+		gaeemulation.NewModuleFromFlags(),
+		cfgmodule.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
+	}
+}
+
+// getUFSName gets the name of the UFS service corresponding to the current cloud project if there is one.
+func getUFSName(cloudProject string) string {
+	if strings.HasSuffix(cloudProject, "prod") {
+		return "ufs.api.cr.dev"
+	}
+	return "ufs.api.cr.dev"
+}
+
+// ServerMain is the main event loop.
+func ServerMain(srv *server.Server) error {
+	if srv.Options.CloudProject == "" {
+		const appID = "dev~fleet-cost-dev"
+		srv.Context = memory.UseWithAppID(srv.Context, appID)
+		datastore.GetTestable(srv.Context).Consistent(true)
+	}
+	ufsHostname := getUFSName(srv.Options.CloudProject)
+	t, err := auth.GetRPCTransport(srv.Context, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
+	if err != nil {
+		return errors.Annotate(err, "setting up UFS client").Err()
+	}
+	httpClient := &http.Client{
+		Transport: t,
+	}
+	prpcClient := &prpc.Client{
+		C:    httpClient,
+		Host: ufsHostname,
+	}
+	ufsClient := ufsAPI.NewFleetPRPCClient(prpcClient)
+	fleetCostFrontend := costserver.NewFleetCostFrontend().(*costserver.FleetCostFrontend)
+	costserver.SetUFSClient(fleetCostFrontend, ufsClient)
+	costserver.SetUFSHostname(fleetCostFrontend, ufsHostname)
+	bqClient, err := bigquery.NewClient(
+		srv.Context,
+		srv.Options.CloudProject,
+		option.WithHTTPClient(httpClient),
+	)
+	if err != nil {
+		return errors.Annotate(err, "setting up bigquery client").Err()
+	}
+	costserver.SetBQClient(fleetCostFrontend, bqwrapper.NewCloudBQ(bqClient))
+	costserver.InstallServices(fleetCostFrontend, srv)
+	costserver.SetProjectID(fleetCostFrontend, srv.Options.CloudProject)
+	costserver.InstallCron(fleetCostFrontend)
+	logging.Infof(srv.Context, "Initialization finished.")
+	return nil
+}
