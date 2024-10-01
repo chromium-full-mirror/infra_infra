@@ -55,7 +55,7 @@ func LuciBuildExecution() {
 			logging.Infof(ctx, "have input %v", input)
 			ctrCipdInfo := ctrInputVersion.GetInput(ctx)
 			ctpv2CipdInfo := ctpv2InputVersion.GetInput(ctx)
-			outputprops.CTPv2PassFail.SetOutput(ctx, nil)
+			outputprops.CTPv2AtpUpdate.SetOutput(ctx, nil)
 			logging.Infof(ctx, "ctpv2 label: %s", ctpv2CipdInfo.GetVersion().GetCipdLabel())
 			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {

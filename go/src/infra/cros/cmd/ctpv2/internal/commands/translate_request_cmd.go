@@ -315,5 +315,9 @@ func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 	}
 
 	args.Args = things
+
+	// append any kind of direct metadata provided in suite req
+	args.Args = append(args.Args, req.GetSuiteRequest().GetTestSuite().GetExecutionMetadata().GetArgs()...)
+
 	return args
 }

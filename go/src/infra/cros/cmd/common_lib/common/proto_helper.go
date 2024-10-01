@@ -5,6 +5,10 @@
 package common
 
 import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/dynamicpb"
@@ -25,4 +29,29 @@ func CheckIfFieldDefinitionExists(msg proto.Message, fieldName string) (bool, er
 	}
 
 	return dynMsg.Descriptor().Fields().ByName(protoreflect.Name(fieldName)) != nil, nil
+}
+
+// EncodeAnyObj encodes any type object using URL-safe base64 json encoding
+func EncodeAnyObj(anyObj any) (string, error) {
+	// Ensure the input is not empty
+	if anyObj == nil {
+		return "", fmt.Errorf("cannot encode nil message")
+	}
+
+	// Encode the message using json
+	jsonData, err := json.Marshal(anyObj)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal message: %w", err)
+	}
+
+	// Ensure the JSON data is in binary format (byte array)
+	binaryData := []byte(jsonData)
+
+	// Encode the binary data using URL-safe base64 encoding
+	encodedData := base64.URLEncoding.EncodeToString(binaryData)
+
+	// Ensure the encoded data is a string
+	encodedString := string(encodedData)
+
+	return encodedString, nil
 }

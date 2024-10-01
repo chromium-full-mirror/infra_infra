@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -205,27 +204,29 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
 		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
-		buildIdStr := strconv.FormatInt(results.BuildID, 10)
 
 		// As no rety is enabled now, different results means different shards
 		task := &common.TestTaskMessage{
-			Id:                buildIdStr,
+			Id:                results.Key,
 			TestTaskState:     "COMPLETED",
 			Shards:            totalShards,
 			ShardIndex:        int64(results.ShardIndex),
 			CreationTimestamp: results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
 			StartTimestamp:    results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
 			EndTimestamp:      results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+			UpdateTimestamp:   results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
 			Attempts: []*common.TestTaskAttemptMessage{
 				{
-					Id:                 fmt.Sprintf("%s_%d", results.Key, results.BuildID),
-					TotalTestCount:     int64(totalTestCount),
-					FailedTestCount:    int64(totalFailedTestCount),
-					FailedTestRunCount: int64(totalFailedTestRunCount),
-					CreationTimestamp:  results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
-					StartTimestamp:     results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
-					EndTimestamp:       results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
-					AttemptInfo:        []*common.KeyValuesMessage{{Key: "summary", Values: []string{summary}}},
+					Id:                   fmt.Sprintf("%s_%d", results.Key, results.BuildID),
+					TestTaskAttemptState: "COMPLETED",
+					TotalTestCount:       int64(totalTestCount),
+					FailedTestCount:      int64(totalFailedTestCount),
+					FailedTestRunCount:   int64(totalFailedTestRunCount),
+					CreationTimestamp:    results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
+					StartTimestamp:       results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
+					EndTimestamp:         results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+					UpdateTimestamp:      results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+					AttemptInfo:          []*common.KeyValuesMessage{{Key: "summary", Values: []string{summary}}},
 				},
 			},
 		}

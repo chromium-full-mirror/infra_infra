@@ -24,8 +24,6 @@ type AlStatusUpdateCmd struct {
 
 	// Deps
 	AlStateInfo *data.AlStateInfo
-
-	SuiteTestResults map[string]*data.TestResults
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -68,7 +66,6 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.AlStateInfo = sk.AlStateInfo
-	cmd.SuiteTestResults = sk.SuiteTestResults
 
 	return nil
 }
@@ -100,6 +97,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Al Status Update")
 	defer func() { step.End(err) }()
 
+	// Publish to pub/sub
 	common.WriteAnyObjectToStepLog(ctx, step, currTestJobEvent, "current test job event state")
 	id, err := common.PublishToTestJobEventPubSub(ctx, cmd.AlStateInfo.TestJobEventPubSubClient, currTestJobEvent)
 	if err != nil {
@@ -107,33 +105,21 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		err = nil
 	}
 
-	// If there are results in the map (after the schedule tests step) then
-	// write the result totals to the output props.
-	if cmd.SuiteTestResults != nil {
-		// Collect the results from the each the the test results
-		summaryTotals := outputprops.SummaryMap{}
-
-		for _, testResult := range cmd.SuiteTestResults {
-			// TODO(juahurta): Only track the last attempt. In the future we do want
-			// to count the results if the test was retried.
-			key := testResult.Suite
-			if _, ok := summaryTotals[key]; !ok {
-				summaryTotals[key] = &outputprops.SummaryItem{
-					TotalTestCount:          0,
-					TotalFailedTestCount:    0,
-					TotalFailedTestRunCount: 0,
-				}
-			}
-
-			// Get and add the totals to the tracking map.
-			totalTestCount, totalFailedTestCount, totalFailedTestRunCount := testResult.GetTestCounts()
-			summaryTotals[key].TotalTestCount += totalTestCount
-			summaryTotals[key].TotalFailedTestCount += totalFailedTestCount
-			summaryTotals[key].TotalFailedTestRunCount += totalFailedTestRunCount
+	// Update output props
+	if cmd.AlStateInfo.CurrentTestJobEvent.TestJob != nil {
+		updateItems := &outputprops.UpdateItems{TestJobMsgJson: cmd.AlStateInfo.CurrentTestJobEvent.TestJob}
+		encodedTestJobMsg, err := common.EncodeAnyObj(cmd.AlStateInfo.CurrentTestJobEvent.TestJob)
+		if err != nil {
+			common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while encoding test job msg: %s", err.Error()), "encoding error")
+			err = nil
+		} else {
+			common.WriteAnyObjectToStepLog(ctx, step, encodedTestJobMsg, "encoded msg")
+			updateItems.EncodedTestJobMsg = encodedTestJobMsg
 		}
 
-		// Write the pass/fail summary map to the sub-build's output properties.
-		outputprops.CTPv2PassFail.SetOutput(ctx, summaryTotals)
+		// DO NOT CHANGE `TestJobInfo` key until multiple request support is added for ATP flow.
+		// It will be changed to SuiteName when that support will be introduced. Currently, ATP depends on this key.
+		outputprops.CTPv2AtpUpdate.SetOutput(ctx, outputprops.SummaryMap{"TestJobInfo": updateItems})
 	}
 
 	return err

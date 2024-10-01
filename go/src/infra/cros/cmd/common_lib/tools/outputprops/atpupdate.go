@@ -7,20 +7,20 @@
 package outputprops
 
 import (
+	"infra/cros/cmd/common_lib/common"
+
 	"go.chromium.org/luci/luciexe/build"
 )
 
 // The luciexe/build API will handle the actual definition of these functions.
 // We just need to define a function pointer to pass in.
 
-// SummaryItem is used in the tracking map to aggregate results for test run
-// totals.
-type SummaryItem struct {
-	TotalTestCount          int
-	TotalFailedTestCount    int
-	TotalFailedTestRunCount int
+// UpdateItems is used capture the items that we need to update for ATP.
+type UpdateItems struct {
+	EncodedTestJobMsg string
+	TestJobMsgJson    *common.TestJobMessage
 }
 
-type SummaryMap map[string]*SummaryItem
+type SummaryMap map[string]*UpdateItems
 
-var CTPv2PassFail = build.RegisterOutputProperty[SummaryMap]("$ctpv2/passFail")
+var CTPv2AtpUpdate = build.RegisterOutputProperty[SummaryMap]("$ctpv2/atp_update")
