@@ -37,7 +37,7 @@ var (
 	// Default shas for backwards compatibility
 	defaultTTCPSha                    = "10c64dfbe37f45ff04f746d5af99f46471f2416a9f57360b19de49e4bddd432f"
 	defaultPreProcessFilterSha        = "8cd110f391e6c82c93cbd7f4f5e383b27b743928f6e67fb0bc879ed64c447b0d"
-	defaultAutoVMTestShifterFilterSha = "f626b856292ea9e25fe55ac47f81b5c91d29bd7f750f7fcd2429ae45aacced4a"
+	defaultAutoVMTestShifterFilterSha = "e1b14589aaa8fe45b753eb37e85d5f0f4740475f95529d8af8f3bcfd2437adb5"
 	prodShas                          = map[string]string{
 		TtcpContainerName:                    defaultTTCPSha,
 		PreProcessFilterContainerName:        defaultPreProcessFilterSha,
