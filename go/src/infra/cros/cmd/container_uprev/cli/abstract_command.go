@@ -29,13 +29,15 @@ type AbstractCommand interface {
 // ParseInputs is a helper method which parses input arguments. It is
 // effectively a factory method.
 func ParseInputs() (AbstractCommand, error) {
-	if len(os.Args) < 1 {
+	// At least 2 arguments as first is the name of CLI.
+	if len(os.Args) < 2 {
 		return nil, errors.New("CLI arguments must be specified")
 	}
 
 	cmds := []AbstractCommand{
 		NewCLICommand(),
 		NewRevertCommand(),
+		NewHelpCommand(),
 		NewBuildCommand(),
 	}
 

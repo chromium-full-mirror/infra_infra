@@ -30,12 +30,11 @@ func NewCLICommand() *CLICommand {
 	cc := &CLICommand{
 		flagSet: flag.NewFlagSet("cli", flag.ContinueOnError),
 	}
-
 	return cc
 }
 
 func (cc *CLICommand) Is(group string) bool {
-	return strings.HasPrefix(group, "c")
+	return strings.HasPrefix(group, "cli")
 }
 
 func (cc *CLICommand) Name() string {

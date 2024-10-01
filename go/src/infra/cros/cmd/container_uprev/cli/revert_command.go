@@ -32,7 +32,7 @@ func NewRevertCommand() *RevertCommand {
 }
 
 func (cc *RevertCommand) Is(group string) bool {
-	return strings.HasPrefix(group, "r")
+	return strings.HasPrefix(group, "revert")
 }
 
 func (cc *RevertCommand) Name() string {
