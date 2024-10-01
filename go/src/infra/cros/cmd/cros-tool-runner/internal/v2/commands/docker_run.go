@@ -53,6 +53,7 @@ func (c *DockerRun) compose() ([]string, error) {
 		}
 	}
 	args = append(args, c.ContainerImage)
+	args = append(args, "timeout", "30h")
 	args = append(args, c.StartCommand...)
 	return args, nil
 }

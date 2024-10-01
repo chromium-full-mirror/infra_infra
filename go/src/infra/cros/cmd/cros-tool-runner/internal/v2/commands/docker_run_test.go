@@ -27,7 +27,7 @@ func TestDockerRun_basic(t *testing.T) {
 		&api.StartContainerRequest{ContainerImage: image},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW hello-world:latest"
+	expect := "run -d --rm --cap-add=NET_RAW hello-world:latest timeout 30h"
 	check(t, args, expect)
 }
 
@@ -38,7 +38,7 @@ func TestDockerRun_withName(t *testing.T) {
 		&api.StartContainerRequest{ContainerImage: image, Name: name},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW --name my-hello-world hello-world:latest"
+	expect := "run -d --rm --cap-add=NET_RAW --name my-hello-world hello-world:latest timeout 30h"
 	check(t, args, expect)
 }
 
@@ -49,7 +49,7 @@ func TestDockerRun_withStartCommand(t *testing.T) {
 		&api.StartContainerRequest{ContainerImage: image, StartCommand: command},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW cros-dut:latest cros-dut -port 80"
+	expect := "run -d --rm --cap-add=NET_RAW cros-dut:latest timeout 30h cros-dut -port 80"
 	check(t, args, expect)
 }
 
@@ -63,7 +63,7 @@ func TestDockerRun_withNetwork(t *testing.T) {
 			AdditionalOptions: options},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW --network mynet cros-dut:latest cros-dut -port 80"
+	expect := "run -d --rm --cap-add=NET_RAW --network mynet cros-dut:latest timeout 30h cros-dut -port 80"
 	check(t, args, expect)
 }
 
@@ -79,7 +79,7 @@ func TestDockerRun_withVolume(t *testing.T) {
 			AdditionalOptions: options},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW --volume /tmp/build123/test:/cros-test cros-test:latest cros-test"
+	expect := "run -d --rm --cap-add=NET_RAW --volume /tmp/build123/test:/cros-test cros-test:latest timeout 30h cros-test"
 	check(t, args, expect)
 }
 
@@ -92,7 +92,7 @@ func TestDockerRun_withEnv(t *testing.T) {
 			AdditionalOptions: options},
 	}
 	args, _ := dockerRun.compose()
-	expect := "run -d --rm --cap-add=NET_RAW --env VAR1=1 --env VAR2=2 cros-dut:latest cros-dut -port 80"
+	expect := "run -d --rm --cap-add=NET_RAW --env VAR1=1 --env VAR2=2 cros-dut:latest timeout 30h cros-dut -port 80"
 	check(t, args, expect)
 }
 
