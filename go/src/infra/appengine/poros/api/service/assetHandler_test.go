@@ -9,10 +9,12 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -49,58 +51,58 @@ func TestAssetCreateWithValidData(t *testing.T) {
 	t.Parallel()
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "Test ResourceId", "Test Alias Name")}
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
-	Convey("Create an asset in datastore", t, func() {
+	ftt.Run("Create an asset in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		err := createDefaultResources(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		want := []string{assetRequest.GetName(), assetRequest.GetDescription(), assetRequest.GetAssetType()}
 		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
-		So(get, ShouldResemble, want)
-		So(response.GetAssetResources(), ShouldHaveLength, 1)
-		So(response.GetAssetResources(), ShouldResemble, assetResourcesToSave)
+		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, response.GetAssetResources(), should.HaveLength(1))
+		assert.Loosely(t, response.GetAssetResources(), should.Resemble(assetResourcesToSave))
 	})
 }
 
 func TestAssetCreateWithInvalidName(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Create an asset with invalid name in datastore", t, func() {
+	ftt.Run("Create an asset with invalid name in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAssetCreateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Asset", "", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Create an asset with invalid description in datastore", t, func() {
+	ftt.Run("Create an asset with invalid description in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAssetCreateWithInvalidAssetType(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "", []*proto.AssetResourceModel{})
-	Convey("Create an asset with invalid asset_type in datastore", t, func() {
+	ftt.Run("Create an asset with invalid asset_type in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -108,13 +110,13 @@ func TestAssetCreateWithInvalidAssetResource(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Name", "Test Description", "active_directory",
 		[]*proto.AssetResourceModel{mockAssetResource("", "", "", "")})
-	Convey("Create an asset with invalid asset_resource in datastore", t, func() {
+	ftt.Run("Create an asset with invalid asset_resource in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -123,13 +125,13 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
 	assetResourcesToDelete := []*proto.AssetResourceModel{}
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", assetResourcesToSave)
-	Convey("Update an asset with valid data in datastore", t, func() {
+	ftt.Run("Update an asset with valid data in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		createAssetesponse, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Update asset with some new value and the operation should not throw any error
 		entity := createAssetesponse.GetAsset()
@@ -147,7 +149,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 			AssetResourcesToDelete:  assetResourcesToDelete,
 		}
 		updateAssetResponse, err := handler.Update(ctx, updateRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Retrieve the updated asset and make sure that the values were correctly updated
 		getRequest := &proto.GetAssetRequest{
@@ -156,7 +158,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		want := []string{"Test Asset Name Updated", "Test Asset Description Updated", "active_directory_updated"}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
-		So(get, ShouldResemble, want)
+		assert.Loosely(t, get, should.Resemble(want))
 
 		//Retrieve the updated asset_resource to make sure the update goes through
 		assetResourceHanlder := &AssetResourceHandler{}
@@ -165,20 +167,20 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		readAssetResource, err := assetResourceHanlder.Get(ctx, req)
 		want = []string{"ResourceId Updated", "Alias Name Updated"}
 		get = []string{readAssetResource.GetResourceId(), readAssetResource.GetAliasName()}
-		So(get, ShouldResemble, want)
+		assert.Loosely(t, get, should.Resemble(want))
 	})
 }
 
 func TestAssetUpdateWithInvalidName(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Update an asset with invalid name in datastore", t, func() {
+	ftt.Run("Update an asset with invalid name in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		entity := response.GetAsset()
 		entity.Name = ""
 		entity.Description = "Test Asset Description"
@@ -193,20 +195,20 @@ func TestAssetUpdateWithInvalidName(t *testing.T) {
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the asset as name is empty
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAssetUpdateWithInvalidDescription(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Update an asset with invalid name in datastore", t, func() {
+	ftt.Run("Update an asset with invalid name in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		entity := response.GetAsset()
 		entity.Name = "Test Asset Name"
 		entity.Description = ""
@@ -221,20 +223,20 @@ func TestAssetUpdateWithInvalidDescription(t *testing.T) {
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the asset as name is empty
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAssetUpdateWithInvalidAssetType(t *testing.T) {
 	t.Parallel()
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Update an asset with invalid name in datastore", t, func() {
+	ftt.Run("Update an asset with invalid name in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		entity := response.GetAsset()
 		entity.Name = "Test Asset Name"
 		entity.Description = "Test Asset description"
@@ -249,7 +251,7 @@ func TestAssetUpdateWithInvalidAssetType(t *testing.T) {
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the asset as name is empty
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -258,13 +260,13 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 	assetResourcesToSave := []*proto.AssetResourceModel{mockAssetResource("", "", "ResourceId", "Alias name")}
 	assetResourcesToDelete := []*proto.AssetResourceModel{}
 	assetRequest := mockCreateAssetRequest("Test Asset Name", "Test Asset description", "active_directory", assetResourcesToSave)
-	Convey("Update an asset with invalid name in datastore", t, func() {
+	ftt.Run("Update an asset with invalid name in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		assetResourcesToSave[0].ResourceId = ""
 
 		updateRequest := &proto.UpdateAssetRequest{
@@ -276,28 +278,28 @@ func TestAssetUpdateWithInvalidAssetResource(t *testing.T) {
 		}
 		_, err = handler.Update(ctx, updateRequest)
 		// should not save the asset as the asset_resource is invalid
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGetAssetWithValidData(t *testing.T) {
 	assetRequest := mockCreateAssetRequest("Test Asset", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Get an assets based on id from datastore", t, func() {
+	ftt.Run("Get an assets based on id from datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		response, err := handler.Create(ctx, assetRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		getRequest := &proto.GetAssetRequest{
 			AssetId: response.GetAsset().GetAssetId(),
 		}
 		readEntity, err := handler.Get(ctx, getRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		want := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
-		So(get, ShouldResemble, want)
+		assert.Loosely(t, get, should.Resemble(want))
 	})
 }
 
@@ -305,96 +307,96 @@ func TestListAssets(t *testing.T) {
 	t.Parallel()
 	assetRequest1 := mockCreateAssetRequest("Test Asset1", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
 	assetRequest2 := mockCreateAssetRequest("Test Asset2", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Get all assets from datastore", t, func() {
+	ftt.Run("Get all assets from datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		handler := &AssetHandler{}
 		_, err := handler.Create(ctx, assetRequest1)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		_, err = handler.Create(ctx, assetRequest2)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		// Verify
 		response, err := handler.List(ctx, &proto.ListAssetsRequest{})
-		So(err, ShouldBeNil)
-		So(response.GetAssets(), ShouldHaveLength, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, response.GetAssets(), should.HaveLength(2))
 		assets := response.GetAssets()
 		want := []string{"Test Asset1", "Test Asset2"}
 		get := []string{assets[0].GetName(), assets[1].GetName()}
 		sort.Strings(get)
-		So(get, ShouldResemble, want)
+		assert.Loosely(t, get, should.Resemble(want))
 	})
 }
 
 func TestAssetConfigWithValidDetails(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test Generated Asset Configuration with valid data", t, func() {
+	ftt.Run("Test Generated Asset Configuration with valid data", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 		asset, _, _, err := generateAssetAndResources(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		handler := &AssetHandler{}
 		mockRequest := mockGetAssetConfigRequest(asset.AssetId)
 		res, err := handler.GetAssetConfiguration(ctx, mockRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		assetConfig := &proto.AssetConfiguration{}
 		err = protojson.Unmarshal([]byte(res.Config), assetConfig)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(assetConfig.AssetId, ShouldEqual, asset.AssetId)
+		assert.Loosely(t, assetConfig.AssetId, should.Equal(asset.AssetId))
 
-		So(len(assetConfig.Resources), ShouldEqual, 1)
+		assert.Loosely(t, len(assetConfig.Resources), should.Equal(1))
 	})
 }
 
 func TestHostConfigWithValidDetails(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test Generated Host Configuration with valid data", t, func() {
+	ftt.Run("Test Generated Host Configuration with valid data", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 
 		_, _, resource, err := generateAssetAndResources(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		handler := &AssetHandler{}
 		mockRequest := mockGetHostConfigRequest([]string{resource.ResourceId})
 		res, err := handler.GetHostConfiguration(ctx, mockRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		hostConfig := &proto.HostConfiguration{}
 		err = protojson.Unmarshal([]byte(res.Config), hostConfig)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(len(hostConfig.Resources), ShouldEqual, 1)
+		assert.Loosely(t, len(hostConfig.Resources), should.Equal(1))
 	})
 }
 
 func TestDefaultResourcesWithActiveDirectory(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test GetDefaultResources with Asset type active_directory", t, func() {
+	ftt.Run("Test GetDefaultResources with Asset type active_directory", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		datastore.GetTestable(ctx).Consistent(true)
 		createDefaultResources(ctx)
 
 		_, _, _, err := generateAssetAndResources(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		handler := &AssetHandler{}
 		resourceRequest := &proto.GetDefaultResourcesRequest{AssetType: "active_directory"}
 		response, err := handler.GetDefaultResources(ctx, resourceRequest)
 		defaultResources := response.GetAssetResources()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		want := []string{"primary", "test1.com", "domain-controll", "Joe"}
 		get := []string{defaultResources[0].GetAliasName(), defaultResources[1].GetAliasName(), defaultResources[2].GetAliasName(), defaultResources[3].GetAliasName()}
-		So(defaultResources, ShouldHaveLength, 4)
-		So(want, ShouldResemble, get)
+		assert.Loosely(t, defaultResources, should.HaveLength(4))
+		assert.Loosely(t, want, should.Resemble(get))
 	})
 }
 
@@ -448,17 +450,17 @@ func generateAssetAndResources(ctx context.Context) (*proto.AssetModel, *proto.A
 func TestAssetDeleteWithValidData(t *testing.T) {
 	t.Parallel()
 	createRequest := mockCreateAssetRequest("Test Asset1", "Test Asset description", "active_directory", []*proto.AssetResourceModel{})
-	Convey("Create an asset in datastore", t, func() {
+	ftt.Run("Create an asset in datastore", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 		handler := &AssetHandler{}
 		model, err := handler.Create(ctx, createRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		deleteRequest := &proto.DeleteAssetRequest{AssetId: model.Asset.AssetId}
 		_, err = handler.Delete(ctx, deleteRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		getRequest := &proto.GetAssetRequest{AssetId: model.Asset.AssetId}
 		readEntity, err := handler.Get(ctx, getRequest)
-		So(err, ShouldBeNil)
-		So(readEntity.Deleted, ShouldEqual, true)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, readEntity.Deleted, should.Equal(true))
 	})
 }
