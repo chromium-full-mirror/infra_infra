@@ -41,7 +41,7 @@ func listLeasesFromScheduke(ctx context.Context, authOpts auth.Options, dev bool
 
 // leaseDeviceFromScheduke sends a lease request to Scheduke and waits for the
 // request to be fulfilled before returning a device name.
-func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64) (string, error) {
+func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64, leaseIDChan chan int64) (string, error) {
 	user, err := getUserEmail(ctx, authOpts)
 	if err != nil {
 		return "", err
@@ -68,6 +68,9 @@ func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims ma
 	if !ok {
 		return "", fmt.Errorf("respose %v from Scheduke did not include an ID for the requested lease", scheduleResp)
 	}
+
+	// Send the lease ID back to the caller early via a channel.
+	leaseIDChan <- leaseID
 
 	leaseIDsList := []int64{leaseID}
 	for {

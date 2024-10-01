@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -143,7 +144,18 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		for key, val := range botDims {
 			listDims[key] = []string{val}
 		}
-		leaseInfo, allInfoFound, err = common.Lease(ctx, authOpts, listDims, c.durationMins)
+		leaseIDChan := make(chan int64)
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			leaseInfo, allInfoFound, err = common.Lease(ctx, authOpts, listDims, c.durationMins, leaseIDChan)
+		}()
+		// Get the lease ID before the lease is obtained, in case the user wants to
+		// cancel the lease.
+		leaseID := <-leaseIDChan
+		c.printer.WriteTextStderr("Internal Scheduke lase ID (can be used for cancellation): %d", leaseID)
+		wg.Wait()
 		if err != nil {
 			return err
 		}

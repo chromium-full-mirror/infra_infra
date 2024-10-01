@@ -43,7 +43,7 @@ type LeaseInfo struct {
 // Abandon sends a cancellation request to Scheduke for the given device names,
 // releasing all leased devices for the current user if no devices are
 // specified.
-func Abandon(ctx context.Context, authOpts auth.Options, deviceNames []string, dev bool) error {
+func Abandon(ctx context.Context, authOpts auth.Options, deviceNames []string, taskStateIDs []int64, dev bool) error {
 	user, err := getUserEmail(ctx, authOpts)
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func Abandon(ctx context.Context, authOpts auth.Options, deviceNames []string, d
 		return err
 	}
 
-	return sc.CancelTasks(nil, []string{user}, deviceNames)
+	return sc.CancelTasks(taskStateIDs, []string{user}, deviceNames)
 }
 
 // UFSDeviceInfo returns device information from UFS for the device with the
@@ -70,8 +70,8 @@ func UFSDeviceInfo(ctx context.Context, deviceName string, authOpts auth.Options
 
 // Lease leases a device from Scheduke and returns information about the device,
 // and a bool indicating whether full device information was retrieved.
-func Lease(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64) (*LeaseInfo, bool, error) {
-	deviceName, err := leaseDeviceFromScheduke(ctx, authOpts, dims, mins)
+func Lease(ctx context.Context, authOpts auth.Options, dims map[string][]string, mins int64, leaseIDChan chan int64) (*LeaseInfo, bool, error) {
+	deviceName, err := leaseDeviceFromScheduke(ctx, authOpts, dims, mins, leaseIDChan)
 	if err != nil {
 		return nil, false, err
 	}

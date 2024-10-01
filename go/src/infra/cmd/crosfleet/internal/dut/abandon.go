@@ -15,6 +15,7 @@ import (
 
 	"infra/cmd/crosfleet/internal/buildbucket"
 	crosfleetcommon "infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/flagx"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cros/cmd/common_lib/common"
 	"infra/libs/skylab/common/heuristics"
@@ -23,7 +24,7 @@ import (
 const abandonCmd = "abandon"
 
 var abandon = &subcommands.Command{
-	UsageLine: fmt.Sprintf("%s [HOST...]", abandonCmd),
+	UsageLine: fmt.Sprintf("%s [-lease-ids id1,id2,...] [HOST...]", abandonCmd),
 	ShortDesc: "abandon DUTs which were previously leased via 'dut lease'",
 	LongDesc: `Abandon DUTs which were previously leased via 'dut lease'.
 
@@ -38,16 +39,18 @@ Do not build automation around this subcommand.`,
 		c.envFlags.Register(&c.Flags)
 		c.printer.Register(&c.Flags)
 		c.Flags.StringVar(&c.reason, "reason", "", "Optional reason for abandoning.")
+		c.Flags.Var(flagx.Int64Slice(&c.internalLeaseIDs), "lease-ids", "Comma-separated internal lease IDs to abandon.")
 		return c
 	},
 }
 
 type abandonRun struct {
 	subcommands.CommandRunBase
-	reason    string
-	authFlags authcli.Flags
-	envFlags  crosfleetcommon.EnvFlags
-	printer   crosfleetcommon.CLIPrinter
+	internalLeaseIDs []int64
+	reason           string
+	authFlags        authcli.Flags
+	envFlags         crosfleetcommon.EnvFlags
+	printer          crosfleetcommon.CLIPrinter
 }
 
 func (c *abandonRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -96,14 +99,21 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	err = common.Abandon(ctx, authOpts, correctedDeviceNames, c.envFlags.UseDev())
+	err = common.Abandon(ctx, authOpts, correctedDeviceNames, c.internalLeaseIDs, c.envFlags.UseDev())
 	if err != nil {
 		return err
 	}
+
+	if len(correctedDeviceNames) == 0 && len(c.internalLeaseIDs) == 0 {
+		c.printer.WriteTextStdout("Cancelled all leases by the current user")
+		return nil
+	}
+
 	if len(correctedDeviceNames) > 0 {
 		c.printer.WriteTextStdout("Cancelled all leases for devices %s by the current user", strings.Join(correctedDeviceNames, ", "))
-	} else {
-		c.printer.WriteTextStdout("Cancelled all leases by the current user")
+	}
+	if len(c.internalLeaseIDs) > 0 {
+		c.printer.WriteTextStdout("Cancelled leases %v", c.internalLeaseIDs)
 	}
 
 	return nil
