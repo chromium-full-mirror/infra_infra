@@ -23,7 +23,7 @@ import (
 var UpdateShaStorage = internal.UpdateShaStorage
 
 // LuciBuildExecution represents build executions.
-func LuciBuildExecution() {
+func LuciBuildExecution(targetConfig string) {
 	build.RegisterInputProperty[*struct{}]("")
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
@@ -39,7 +39,7 @@ func LuciBuildExecution() {
 			if isProd {
 				label = common.LabelProd
 			}
-			err := executeContainerUprev(ctx, dockerKeyFile, label, label)
+			err := executeContainerUprev(ctx, dockerKeyFile, label, label, targetConfig)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -50,7 +50,7 @@ func LuciBuildExecution() {
 }
 
 // LocalBuildExecution performs local building of the images.
-func LocalBuildExecution(cipdLabel, imageTag string, runAsAdmin bool) {
+func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bool) {
 	execPath, _ := os.Executable()
 	logDir, _ := os.MkdirTemp(path.Dir(execPath), "uprev")
 	emptyBuild := &buildbucketpb.Build{}
@@ -76,7 +76,7 @@ func LocalBuildExecution(cipdLabel, imageTag string, runAsAdmin bool) {
 		}
 	}
 
-	err = executeContainerUprev(ctx, "", cipdLabel, imageTag)
+	err = executeContainerUprev(ctx, "", cipdLabel, imageTag, targetConfig)
 	if err != nil {
 		logging.Infof(ctx, "%s", err)
 	}
@@ -84,10 +84,15 @@ func LocalBuildExecution(cipdLabel, imageTag string, runAsAdmin bool) {
 
 // executeContainerUprev steps through the uprev configs, creates a new container,
 // and uploads its sha to the storage.
-func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag string) (err error) {
+func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag, targetConfig string) (err error) {
 	containerInfos := map[string]*common.ContainerInfoItem{}
 	configs := internal.GetConfigs()
 	for _, config := range configs {
+		if targetConfig != "" && config.Name != targetConfig {
+			logging.Infof(ctx, "Skipping build of %q", config.Name)
+			continue
+		}
+		logging.Infof(ctx, "Running build for %q", config.Name)
 		if err = internal.GcloudAuth(ctx, config.RepositoryHostname, dockerKeyFile); err != nil {
 			err = errors.Annotate(err, "failed to Gcloud auth").Err()
 			return

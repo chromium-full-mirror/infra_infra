@@ -8,6 +8,7 @@ package cli
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -21,9 +22,10 @@ type CLICommand struct {
 }
 
 type cliArgs struct {
-	cipdLabel  string
-	imageTag   string
-	runAsAdmin bool
+	cipdLabel    string
+	imageTag     string
+	targetConfig string
+	runAsAdmin   bool
 }
 
 func NewCLICommand() *CLICommand {
@@ -47,6 +49,7 @@ func (cc *CLICommand) Init(args []string) error {
 	cc.flagSet.StringVar(&a.cipdLabel, "label", "latest", "the CIPD label to be used. Overridden if package has predefined cipd label")
 	cc.flagSet.StringVar(&a.imageTag, "tag", "", "tag the image will be tagged with. Defaults to ${USER}-test")
 	cc.flagSet.BoolVar(&a.runAsAdmin, "admin", false, "remove restrictions for staging/prod labels and allow upload to sha storage")
+	cc.flagSet.StringVar(&a.targetConfig, "target", "", "define config name to reduce build to particular config")
 
 	err := cc.flagSet.Parse(args)
 	if err != nil {
@@ -61,6 +64,14 @@ func (cc *CLICommand) Run() error {
 	if tag == "" {
 		tag = fmt.Sprintf("%s-test", os.Getenv("USER"))
 	}
-	executions.LocalBuildExecution(cc.args.cipdLabel, tag, cc.args.runAsAdmin)
+	log.Printf("Using container tag: %q", tag)
+	log.Printf("Using CIPD tag: %q", cc.args.cipdLabel)
+	if n := cc.args.targetConfig; n != "" {
+		log.Printf("Target to build only %q config.", n)
+	}
+	if cc.args.runAsAdmin {
+		log.Printf("Run command as Admin!")
+	}
+	executions.LocalBuildExecution(cc.args.cipdLabel, tag, cc.args.targetConfig, cc.args.runAsAdmin)
 	return nil
 }

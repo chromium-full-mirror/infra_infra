@@ -16,6 +16,11 @@ import (
 // recipes invocation.
 type BuildCommand struct {
 	flagSet *flag.FlagSet
+	args    *buildArgs
+}
+
+type buildArgs struct {
+	targetConfig string
 }
 
 func NewBuildCommand() *BuildCommand {
@@ -36,10 +41,13 @@ func (cc *BuildCommand) Name() string {
 }
 
 func (cc *BuildCommand) Init(args []string) error {
+	ba := buildArgs{}
+	cc.flagSet.StringVar(&ba.targetConfig, "target", "", "define config name to reduce build to particular config")
 	err := cc.flagSet.Parse(args)
 	if err != nil {
 		return err
 	}
+	cc.args = &ba
 
 	return nil
 }
@@ -47,9 +55,12 @@ func (cc *BuildCommand) Init(args []string) error {
 // Run runs the commands to publish test results
 func (cc *BuildCommand) Run() error {
 	log.Printf("Running build Mode:")
+	if n := cc.args.targetConfig; n != "" {
+		log.Printf("Target to build only %q config.", n)
+	}
 
 	// execute hw tests.
-	executions.LuciBuildExecution()
+	executions.LuciBuildExecution(cc.args.targetConfig)
 
 	return nil
 }
