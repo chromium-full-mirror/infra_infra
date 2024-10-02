@@ -124,5 +124,11 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/al-provision-filter/${platform}"),
 			},
 		},
+		{
+			Name: "adb-base",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/base-adb/${platform}"),
+			},
+		},
 	}
 }
