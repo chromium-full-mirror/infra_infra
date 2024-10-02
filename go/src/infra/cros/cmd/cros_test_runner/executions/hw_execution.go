@@ -30,6 +30,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -47,6 +48,12 @@ var ctrInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.H
 // HwExecution represents hw executions.
 func HwExecution() {
 	build.Main(func(ctx context.Context, args []string, st *build.State) error {
+		// Get current invocation name
+		invocationName := ""
+		rdb := lucictx.GetResultDB(ctx)
+		if rdb != nil && rdb.GetCurrentInvocation() != nil {
+			invocationName = rdb.GetCurrentInvocation().GetName()
+		}
 		input := ioProps.GetInput(ctx)
 
 		log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
@@ -61,16 +68,16 @@ func HwExecution() {
 			var err error
 			if input.CrosTestRunnerDynamicRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
-				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
 				crosTestRunnerRequest, err := common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
 				if err == nil {
-					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 				}
 			} else {
 				// If the request is a CrosTestRunner non-dynamic request...
-				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
+				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 			}
 			if skylabResult != nil {
 				m, _ := proto.Marshal(skylabResult)
@@ -133,6 +140,7 @@ func executeHwTests(
 	commonConfig *skylab_test_runner.CommonConfig,
 	ctrCipdVersion string,
 	gsRoot string,
+	invocationName string,
 	buildState *build.State) (*skylab_test_runner.Result, error) {
 
 	// Validation
@@ -177,7 +185,7 @@ func executeHwTests(
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.RdbPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsURL = gcsurl
-	sk.TesthausURL = common.GetTesthausURL(gcsurl)
+	sk.TesthausURL = common.GetTesthausURL(invocationName, gcsurl)
 	sk.ContainerImages = containerImagesMap
 
 	// Post process was only included in the dynamic format.
@@ -196,7 +204,7 @@ func executeHwTests(
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", protoutil.MustBotDimensions(buildState.Build())))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(invocationName, gcsurl)))
 
 	// Generate config
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
@@ -224,6 +232,7 @@ func executeHwTestsV2(
 	commonConfig *skylab_test_runner.CommonConfig,
 	ctrCipdVersion string,
 	gsRoot string,
+	invocationName string,
 	buildState *build.State) (*skylab_test_runner.Result, error) {
 
 	// Validation
@@ -272,7 +281,7 @@ func executeHwTestsV2(
 	sk.CpconPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.RdbPublishSrcDir = os.Getenv("TEMPDIR")
 	sk.GcsURL = gcsurl
-	sk.TesthausURL = common.GetTesthausURL(gcsurl)
+	sk.TesthausURL = common.GetTesthausURL(invocationName, gcsurl)
 	sk.ContainerImages = containerImagesMap
 	sk.PrimaryDutModel = req.GetParams().GetPrimaryDut()
 	sk.CompanionDutModels = req.GetParams().GetCompanionDuts()
@@ -281,7 +290,7 @@ func executeHwTestsV2(
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(gcsurl)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(invocationName, gcsurl)))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("host-ip", sk.HostIp))
 
 	populateRequestQueues(sk, req)

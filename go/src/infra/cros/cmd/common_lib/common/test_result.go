@@ -131,9 +131,14 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 	return value
 }
 
-// GetTesthausURL gets testhaus log viewer url.
-func GetTesthausURL(gcsURL string) string {
-	return fmt.Sprintf("%s%s", TesthausURLPrefix, gcsURL[len("gs://"):])
+// GetTesthausURL gets testhaus log viewer url based on the invocation name.
+// If invocation name is empty, it constructs the URL based on gcs URL instead.
+func GetTesthausURL(invocationName string, gcsURL string) string {
+	postfix := invocationName
+	if invocationName == "" {
+		postfix = gcsURL[len("gs://"):]
+	}
+	return fmt.Sprintf("%s%s", TesthausURLPrefix, postfix)
 }
 
 // GetGcsURL gets gcs url where all the artifacts will be uploaded.
