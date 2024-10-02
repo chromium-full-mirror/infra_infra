@@ -128,6 +128,10 @@ func compareThresholds(ctx context.Context, row *Row, problemSpec *ProblemSpec) 
 			continue
 		}
 		compareThresholdsHelper(row, problemSpec, metric, threshold)
+
+		if metric.HealthScore != UNSET_SCORE && metric.HealthScore < row.HealthScore {
+			row.HealthScore = metric.HealthScore
+		}
 	}
 
 	return stepErr
@@ -141,13 +145,9 @@ func compareThresholdsHelper(row *Row, problemSpec *ProblemSpec, metric *Metric,
 	if metric.HealthScore == UNSET_SCORE {
 		metric.HealthScore = HEALTHY_SCORE
 	}
-	if threshold == UNSET_THRESHOLD {
-		metric.Threshold = threshold
-	}
+	metric.Threshold = threshold
 	if metric.Value > threshold {
 		metric.HealthScore = problemSpec.Score
-		metric.Threshold = threshold
-		row.HealthScore = problemSpec.Score
 	}
 }
 

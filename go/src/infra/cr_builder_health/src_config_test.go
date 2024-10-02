@@ -22,6 +22,7 @@ func TestSrcConfig(t *testing.T) {
 			{
 				Name:       "Unhealthy",
 				PeriodDays: 1,
+				Score:      UNHEALTHY_SCORE,
 				Thresholds: Thresholds{
 					TestPendingTime: PercentileThresholds{P50Mins: 60, P95Mins: 120},
 					PendingTime:     PercentileThresholds{P50Mins: 60, P95Mins: 120},
@@ -33,6 +34,7 @@ func TestSrcConfig(t *testing.T) {
 			{
 				Name:       "Low Value",
 				PeriodDays: 1,
+				Score:      LOW_VALUE_SCORE,
 				Thresholds: Thresholds{
 					FailRate:      AverageThresholds{Average: 0.99},
 					InfraFailRate: AverageThresholds{Average: 0.99},
@@ -508,6 +510,8 @@ func TestSrcConfig(t *testing.T) {
 		assert.Loosely(t, ps[0].Score, should.Equal(UNHEALTHY_SCORE))
 	})
 	ftt.Run("Compare Thresholds Helper", t, func(t *ftt.Test) {
+		ctx := context.Background()
+
 		const unhealthyIndex = 0
 		const lowValueIndex = 1
 		row := Row{
@@ -520,10 +524,10 @@ func TestSrcConfig(t *testing.T) {
 		}
 		ps := testSrcConfig["project"].BucketSpecs[row.Bucket][row.Builder].ProblemSpecs
 
-		compareThresholdsHelper(&row, &ps[unhealthyIndex], row.Metrics[0], ps[unhealthyIndex].Thresholds.FailRate.Average)
+		compareThresholds(ctx, &row, &ps[unhealthyIndex])
 		assert.Loosely(t, row.HealthScore, should.Equal(UNHEALTHY_SCORE))
 
-		compareThresholdsHelper(&row, &ps[lowValueIndex], row.Metrics[0], ps[lowValueIndex].Thresholds.FailRate.Average)
+		compareThresholds(ctx, &row, &ps[lowValueIndex])
 		assert.Loosely(t, row.HealthScore, should.Equal(LOW_VALUE_SCORE))
 	})
 }

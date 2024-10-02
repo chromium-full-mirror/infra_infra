@@ -299,12 +299,29 @@ func isWeekend(date civil.Date) bool {
 	return time.Weekday() == 0 || time.Weekday() == 6
 }
 
+func calcBusinessDays(from time.Time, to time.Time) int {
+	days := 0
+	for {
+		if from.Equal(to) || from.After(to) {
+			return days
+		}
+		if from.Weekday() != time.Saturday && from.Weekday() != time.Sunday {
+			days++
+		}
+		from = from.Add(time.Hour * 24)
+	}
+}
+
 func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, rows []Row, srcConfigs map[string]SrcConfig) ([]Row, error) {
 	var stepErr error
 	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
 	defer func() { step.End(stepErr) }()
 
-	mostRecentRows := make(map[string]Row)
+	type BuilderHealth struct {
+		MostRecentRow Row
+		Scores        map[ProblemSpec]int
+	}
+	builderHealth := make(map[string]BuilderHealth)
 
 	for _, row := range rows {
 		if isWeekend(row.Date) {
@@ -312,12 +329,13 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 		}
 
 		var builderID = builderID(row.Project, row.Bucket, row.Builder)
-		mostRecentRow, ok := mostRecentRows[builderID]
+		health, ok := builderHealth[builderID]
 		if !ok {
-			// As rows are sorted by date in descending order, this row represents the most recent date
-			mostRecentRow = row
+			health = BuilderHealth{
+				MostRecentRow: row,
+				Scores:        make(map[ProblemSpec]int),
+			}
 		}
-
 		if srcConfig, ok := srcConfigs[row.Project]; !ok {
 			continue
 		} else if bucketSpec, ok := srcConfig.BucketSpecs[row.Bucket]; !ok {
@@ -328,37 +346,49 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 			for _, problemSpec := range builderSpec.ProblemSpecs {
 				var periodDays = problemSpec.PeriodDays
 
-				diffDate := civil.DateOf(input.Date.AsTime().UTC()).DaysSince(row.Date)
+				diffDate := calcBusinessDays(row.Date.In(time.UTC), input.Date.AsTime())
 				if diffDate > periodDays {
 					continue
 				}
 
-				// Let period_days of the unhealthy spec and low-value spec be 7
+				// Let period_days of the unhealthy spec and low-value spec be 5
 				// and 90, respectively, and their scores be 5 and 1,
 				// respectively.
-				// If any score in the last 7 days is greater than 5, the
+				// If any score in the last 5 days is greater than 5, the
 				// builder is considered healthy.
 				// If any score in the last 90 days is greater than 1, the
 				// builder is considered unhealthy.
 				// Otherwise, the builder is considered low-value.
-				mostRecentRow.HealthScore = max(mostRecentRow.HealthScore, row.HealthScore)
-				mostRecentRows[builderID] = mostRecentRow
+				currentScore, exists := health.Scores[problemSpec]
+				if !exists || row.HealthScore > currentScore {
+					health.Scores[problemSpec] = max(row.HealthScore, problemSpec.Score)
+				}
 			}
-
 		}
+
+		builderHealth[builderID] = health
 	}
 
-	rowsWithIndicators := make([]Row, 0, len(mostRecentRows))
+	rowsWithIndicators := make([]Row, 0, len(builderHealth))
 
 	inactiveBuilders := 0
 	healthyBuilders := 0
 	unhealthyBuilders := 0
 	lowValueBuilders := 0
 
-	for builderID, row := range mostRecentRows {
+	for builderID, health := range builderHealth {
+		row := health.MostRecentRow
+
+		// Take the min score between the problem specs
+		minScore := 10
+		for _, score := range health.Scores {
+			if score != 0 && score < minScore {
+				minScore = score
+			}
+		}
+		row.HealthScore = minScore
 		row.ScoreExplanation = scoreExplanation(row, srcConfigs)
 
-		rowsWithIndicators = append(rowsWithIndicators, row)
 		if row.HealthScore > 5 {
 			healthyBuilders += 1
 		} else if row.HealthScore > 1 {
@@ -370,6 +400,8 @@ func calculateIndicators(buildCtx context.Context, input *healthpb.InputParams, 
 		} else {
 			inactiveBuilders += 1
 		}
+
+		rowsWithIndicators = append(rowsWithIndicators, row)
 	}
 
 	logging.Errorf(ctx, "Total healthy builders: %d", healthyBuilders)

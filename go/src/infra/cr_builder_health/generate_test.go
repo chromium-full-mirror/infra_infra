@@ -104,7 +104,7 @@ func TestCalculateIndicators(t *testing.T) {
 						ProblemSpecs: []ProblemSpec{
 							{
 								Name:       "Unhealthy",
-								PeriodDays: 7,
+								PeriodDays: 5,
 								Score:      UNHEALTHY_SCORE,
 								Thresholds: Thresholds{
 									FailRate: AverageThresholds{Average: 0.2},
@@ -112,7 +112,33 @@ func TestCalculateIndicators(t *testing.T) {
 							},
 							{
 								Name:       "Low Value",
-								PeriodDays: 7,
+								PeriodDays: 5,
+								Score:      LOW_VALUE_SCORE,
+								Thresholds: Thresholds{
+									FailRate: AverageThresholds{Average: 0.9},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"short-period-project": {
+			BucketSpecs: map[string]BuilderSpecs{
+				"bucket": {
+					"existant-builder": BuilderSpec{
+						ProblemSpecs: []ProblemSpec{
+							{
+								Name:       "Unhealthy",
+								PeriodDays: 1,
+								Score:      UNHEALTHY_SCORE,
+								Thresholds: Thresholds{
+									FailRate: AverageThresholds{Average: 0.2},
+								},
+							},
+							{
+								Name:       "Low Value",
+								PeriodDays: 2,
 								Score:      LOW_VALUE_SCORE,
 								Thresholds: Thresholds{
 									FailRate: AverageThresholds{Average: 0.9},
@@ -353,6 +379,38 @@ func TestCalculateIndicators(t *testing.T) {
 		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(LOW_VALUE_SCORE))
 	},
 	)
+
+	ftt.Run("Low Value & Healthy --> Unhealthy", t, func(t *ftt.Test) {
+		ctx := context.Background()
+		rowsWithHealthScores := []Row{{
+			Project:     "short-period-project",
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: LOW_VALUE_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   5,
+			}, // makes the short-period-buider unhealthy
+		}, {
+			Project:     "short-period-project",
+			Bucket:      "bucket",
+			Builder:     existantBuilder,
+			HealthScore: HEALTHY_SCORE,
+			Date: civil.Date{
+				Year:  2024,
+				Month: time.January,
+				Day:   4,
+			}, // makes it not become low value
+		}}
+
+		rowsWithIndicators, err := calculateIndicators(ctx, &input, rowsWithHealthScores, srcConfig)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(rowsWithIndicators), should.Equal(1))
+
+		assert.Loosely(t, rowsWithIndicators[0].HealthScore, should.Equal(UNHEALTHY_SCORE))
+	},
+	)
 }
 
 func TestGenerate(t *testing.T) {
@@ -415,5 +473,66 @@ func TestGenerate(t *testing.T) {
 		assert.Loosely(t, client.setHealthCalls, should.Equal(1))
 		assert.Loosely(t, ctx.Err(), should.BeNil)
 		assert.Loosely(t, err, should.BeNil)
+	})
+}
+
+func TestCalcBusinessDays(t *testing.T) {
+	t.Parallel()
+
+	// Partial days get rounded up
+	ftt.Run("Same day", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 1, 0, 0, 0, 0, time.UTC)  // Thursday
+		to := time.Date(2023, 6, 1, 23, 59, 59, 0, time.UTC) // Thursday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(1))
+	})
+
+	ftt.Run("One weekday", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 1, 0, 0, 0, 0, time.UTC) // Thursday
+		to := time.Date(2023, 6, 2, 0, 0, 0, 0, time.UTC)   // Friday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(1))
+	})
+
+	ftt.Run("Weekend", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 2, 0, 0, 0, 0, time.UTC) // Friday
+		to := time.Date(2023, 6, 5, 0, 0, 0, 0, time.UTC)   // Monday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(1))
+	})
+
+	ftt.Run("Full week", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 5, 0, 0, 0, 0, time.UTC)   // Monday
+		to := time.Date(2023, 6, 11, 23, 59, 59, 0, time.UTC) // Sunday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(5))
+	})
+
+	ftt.Run("Multiple weeks", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 1, 0, 0, 0, 0, time.UTC) // Thursday
+		to := time.Date(2023, 6, 21, 0, 0, 0, 0, time.UTC)  // Wednesday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(14))
+	})
+
+	ftt.Run("Reversed dates", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 21, 0, 0, 0, 0, time.UTC)
+		to := time.Date(2023, 6, 1, 0, 0, 0, 0, time.UTC)
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(0))
+	})
+
+	ftt.Run("Year boundary", t, func(t *ftt.Test) {
+		from := time.Date(2023, 12, 29, 0, 0, 0, 0, time.UTC) // Friday
+		to := time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC)     // Wednesday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(3))
+	})
+
+	ftt.Run("With time components", t, func(t *ftt.Test) {
+		from := time.Date(2023, 6, 1, 14, 30, 0, 0, time.UTC) // Thursday
+		to := time.Date(2023, 6, 5, 9, 0, 0, 0, time.UTC)     // Monday
+		result := calcBusinessDays(from, to)
+		assert.Loosely(t, result, should.Equal(2))
 	})
 }
