@@ -26596,6 +26596,7 @@ plans:
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+            - name: Collect fingerprint (Allow to fail) ('cros_collect_fingerprint')
             - name: Update Servo NIC mac address (Allow to fail) ('servo_audit_nic_mac_address')
               conditions:
                 - name: Setup has servo info ('dut_servo_host_present')

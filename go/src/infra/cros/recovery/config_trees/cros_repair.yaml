@@ -88358,6 +88358,10 @@ plans:
                           docs:
                             - Wait DUT to be pingable after some action on it.
                             - Waiting time 150 seconds.
+            - name: Collect fingerprint (Allow to fail)
+              exec_name: cros_collect_fingerprint
+              docs:
+                - Collect fingerprintBoard, fingerprintMcu, and fingerprintSensor, verify they match cros_config fingerprint board, and add to UFS and recoveries's fingerprint labels.
             - name: Update Servo NIC mac address (Allow to fail)
               exec_name: servo_audit_nic_mac_address
               docs:
