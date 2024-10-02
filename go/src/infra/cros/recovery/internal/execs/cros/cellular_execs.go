@@ -556,7 +556,29 @@ func collectSupportedCarriersExec(ctx context.Context, info *execs.ExecInfo) err
 	} else {
 		log.Infof(ctx, "collect supported carriers: carrier is empty")
 	}
-
 	c.SupportedCarriers = carriers
+
+	// Check if the device's "carrier" label is in a special group that means that it's not readily
+	// connectable. If this is the case, we should ignore what the actual carrier reported by the SIM is.
+	argsMap := info.GetActionArgs(ctx)
+	isLiveCarrier := true
+	for _, carrier := range argsMap.AsStringSlice(ctx, "offline_carriers", []string{}) {
+		if strings.EqualFold(carrier, c.GetCarrier()) {
+			isLiveCarrier = false
+			break
+		}
+	}
+
+	// Get the features for the individual carriers.
+	for _, s := range c.GetSimInfos() {
+		for _, p := range s.GetProfileInfos() {
+			if isLiveCarrier {
+				p.Features = cellular.SupportedFeaturesForCarrier(p.GetCarrierName())
+			} else {
+				p.Features = []tlw.Cellular_SIMProfileInfo_Feature{}
+			}
+		}
+	}
+
 	return nil
 }
