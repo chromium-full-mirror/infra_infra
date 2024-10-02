@@ -15,19 +15,18 @@ package recipe_modules.infra.support_3pp;
 //   * Verify the packaged product
 //   * Upload the packaged product to CIPD
 message Spec {
-
   // Describes how to fetch+build+test the pkg.
   //
   // All scripts are invoked with the following environment variables (unless
   // noted otherwise):
   //
-  //   * $_3PP_CIPD_PACKAGE_NAME - the CIPD package name, excluding the
-  //     package_prefix and platform suffix.
-  //     (if any patch version was set).
+  //   * $_3PP_CIPD_PACKAGE_NAME - DEPRECATED and not implemented in pkgbuild.
+  //     the CIPD package name, excluding the package_prefix and platform
+  //     suffix. (if any patch version was set).
   //   * $_3PP_PATCH_VERSION - the `patch_version` set for this create block
   //   * $_3PP_PLATFORM - the platform we're targeting
-  //   * $_3PP_TOOL_PLATFORM - the platform that we're building on (will be different
-  //     than _3PP_PLATFORM if we're cross-compiling)
+  //   * $_3PP_TOOL_PLATFORM - the platform that we're building on (will be
+  //     different than _3PP_PLATFORM if we're cross-compiling)
   //   * $_3PP_VERSION - the version we're building, e.g. 1.2.3
   //   * $GOOS - The golang OS name we're targeting
   //   * $GOARCH - The golang architecture we're targeting
@@ -52,6 +51,9 @@ message Spec {
         UrlSource url = 4;
       }
 
+      // (DEPRECATED): Not implemented in pkgbuild. Doesn’t seem to be useful
+      // after everyone moved to go mod.
+      //
       // (optional) Run checkout in this subdirectory of the install script's
       // $CWD.
       //
@@ -62,7 +64,7 @@ message Spec {
       // source method then the files in the git repo will be checked out to
       // `/path/to/checkout/go/src/repo.com`, but the install script will still
       // run in `/path/to/checkout`.
-      string subdir = 5;
+      string subdir = 5 [deprecated = true];
 
       // (optional) If set to true, the recipe will find and unpack it all
       // archives fetched.
@@ -70,12 +72,11 @@ message Spec {
       //   either none, gzip, bzip2, lzma/xz, or zstandard compression).
       //   * The recipe will delete any other files in this directory prior to
       //   unpacking the archives.
-      //   * If there's only a single archive, and it has all files in a single
-      //   directory, this directory will be pruned (and this applies
-      //   recursively). Many source tallballs are released like
-      //   `foo-1.2.tar.gz`, containing a folder `foo-1.2` with all source files
-      //   inside that. Pruning these archives makes the installation scripts
-      //   easier. If you run into a case where this behavior is undesired, set
+      //   * If there's only a single archive, the builder will also cd down
+      //   into singular directories until there are multiple files before
+      //   invoking the install script. (In previous versions of the 3pp
+      //   builder, the parent directories were actually removed ('pruned').
+      //   If you run into a case where this behavior is undesired, set
       //   `no_archive_prune` to true. If more than one archive is produced,
       //   this setting has no effect.
       bool unpack_archive = 6;
@@ -101,7 +102,7 @@ message Spec {
       string patch_version = 9;
 
       // (required) Base address for constructing a Common Platform Enumeration
-      // ( https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe )
+      // (https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe)
       // specification for this package.
       string cpe_base_address = 10;
     }
@@ -199,8 +200,11 @@ message Spec {
       // target platform.
       repeated string external_dep = 7;
 
-      // TODO: options for controlling toolchain
-
+      // (DEPRECATED): Not implemented in pkgbuild.
+      // TODO: Docker env should be an optional dependency, not part of the
+      // 3pp implementation. This could be easily replaced by making docker env
+      // an explicit build dependency.
+      //
       // The docker environments for linux-amd64 is very old (in order to
       // conform to PEP 513). As such, sometimes it's a hindrance for building
       // universal packages (such as those using nodejs), as they're so old that
@@ -214,18 +218,21 @@ message Spec {
       //   * OR, switch away from dockerbuild images and use dockcross directly,
       //   using the normal linux-x64 by default, and optionally being able to
       //   explicitly choose the manylinux-x64 for packages that need it.
-      bool no_docker_env = 4;
+      bool no_docker_env = 4 [deprecated = true];
 
+      // (DEPRECATED): Not implemented in pkgbuild. We are not sure whether this
+      // is useful. Compiler toolchain should be only setup once anyway.
+      //
       // If set, 3pp will not try to set up a compiler toolchain for this
       // package. You can use this if your package is repackaging a prebuilt
       // upstream package.
-      bool no_toolchain = 5;
+      bool no_toolchain = 5 [deprecated = true];
     }
 
     // See CIPD documentation for specifics about these options.
     message Package {
       enum InstallMode {
-        copy    = 0;
+        copy = 0;
         symlink = 1;
       }
       // (optional) How the CIPD package should be installed on client machines.
@@ -238,6 +245,9 @@ message Spec {
       // If omitted, no version file will be added to the package.
       string version_file = 2;
 
+      // TODO(crbug.com/349198727): Migrating to golang's re format instead.
+      // Python’s re uses “\” to refer to captured groups while golang uses “$".
+      //
       // (optional) The alter_version fields are used to change the version
       // number we tag in CIPD as `version`. This is useful for when the
       // upstream source versions vary across platforms (for example).
@@ -289,6 +299,9 @@ message Spec {
     // current platform.
     string platform_re = 1;
 
+    // TODO: Not implemented in pkgbuild. Although global experimental mode is
+    // removed, we will add per-package level experimental mode later.
+    //
     // (optional) If true, then the recipe will treat this package/platform as
     // experimental. That is, it will prepend 'experimental/' to it's CIPD
     // package name. This is the same effect as running the entire recipe in
@@ -441,7 +454,11 @@ message GitSource {
   string fixed_commit = 6;
 }
 
-// Pulls sources from a CIPD package.
+// TODO: Not implemented in pkgbuild. No actual usage and not sure how useful
+// considering BCID requirements. Someone has to upload the source into CIPD
+// in this case.
+//
+// CipdSource Pulls sources from a CIPD package.
 message CipdSource {
   // (required) The full CIPD package name of the source.
   string pkg = 1;
@@ -502,6 +519,10 @@ message ScriptSource {
   //     /path/to/repo/subdir/package_name/fetch.py foo checkout \
   //     /path/to/checkout
   bool use_fetch_checkout_workflow = 1002;
+  // TODO: Not implemented in pkgbuild. No package infra 3pp package requires
+  // extending verification timeout. Will be implement in the future for
+  // chromium 3pp.
+  //
   // (optional) Duration string for setting a custom timeout for
   // the source package verification on the backend.
   //
