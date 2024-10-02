@@ -78701,6 +78701,8 @@ plans:
                       exec_name: has_cellular_info
                 - name: Collect additional cellular labels (Allow to fail)
                   exec_name: cros_collect_supported_carriers
+                  exec_args:
+                    - offline_carriers:TESTESIM,ESIM,MULTISIM,ROAMSIM,PINLOCK,CMW500,CMX500
                   docs:
                     - Automatically populates/constructs additional cellular labels
                     - based on manually defined labels.

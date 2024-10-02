@@ -1860,7 +1860,10 @@ func crosRepairActions() map[string]*Action {
 				"Is in cellular pool",
 				"has_cellular_info",
 			},
-			ExecName:               "cros_collect_supported_carriers",
+			ExecName: "cros_collect_supported_carriers",
+			ExecExtraArgs: []string{
+				"offline_carriers:TESTESIM,ESIM,MULTISIM,ROAMSIM,PINLOCK,CMW500,CMX500",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Audit cellular configuration": {
