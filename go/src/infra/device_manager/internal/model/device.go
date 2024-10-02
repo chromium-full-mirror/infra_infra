@@ -95,6 +95,7 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 	query := `
 		SELECT
 			id,
+			dut_id,
 			device_address,
 			device_type,
 			device_state,
@@ -119,6 +120,7 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 
 	err := db.QueryRowContext(ctx, query, deviceID).Scan(
 		&device.ID,
+		&device.DutID,
 		&device.DeviceAddress,
 		&device.DeviceType,
 		&device.DeviceState,

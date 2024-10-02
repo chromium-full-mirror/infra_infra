@@ -41,6 +41,7 @@ func TestGetDevice(t *testing.T) {
 	baseQuery := `
 		SELECT
 			id,
+			dut_id,
 			device_address,
 			device_type,
 			device_state,
@@ -61,7 +62,8 @@ func TestGetDevice(t *testing.T) {
 			name:   "GetDeviceByID: valid return; search by hostname",
 			idType: model.IDTypeHostname,
 			expectedDevice: &api.Device{
-				Id: "test-device-1",
+				Id:    "test-device-1",
+				DutId: "test-dut-id-1",
 				Address: &api.DeviceAddress{
 					Host: "1.1.1.1",
 					Port: 1,
@@ -70,6 +72,9 @@ func TestGetDevice(t *testing.T) {
 				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
 				HardwareReqs: &api.HardwareRequirements{
 					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"dut_id": {
+							Values: []string{"test-dut-id-1"},
+						},
 						"label-test": {
 							Values: []string{"test-value-1"},
 						},
@@ -82,7 +87,8 @@ func TestGetDevice(t *testing.T) {
 			name:   "GetDeviceByID: valid return; search by DUT ID",
 			idType: model.IDTypeDutID,
 			expectedDevice: &api.Device{
-				Id: "test-device-1",
+				Id:    "test-device-1",
+				DutId: "test-dut-id-1",
 				Address: &api.DeviceAddress{
 					Host: "1.1.1.1",
 					Port: 1,
@@ -91,6 +97,9 @@ func TestGetDevice(t *testing.T) {
 				State: api.DeviceState_DEVICE_STATE_AVAILABLE,
 				HardwareReqs: &api.HardwareRequirements{
 					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"dut_id": {
+							Values: []string{"test-dut-id-1"},
+						},
 						"label-test": {
 							Values: []string{"test-value-1"},
 						},
@@ -120,6 +129,7 @@ func TestGetDevice(t *testing.T) {
 
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -129,40 +139,35 @@ func TestGetDevice(t *testing.T) {
 				"is_active"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-1"]},"label-test":{"Values":["test-value-1"]}}`,
 					timeNow,
 					timeNow,
-					true).
-				AddRow(
-					"test-device-2",
-					"2.2.2.2:2",
-					"DEVICE_TYPE_VIRTUAL",
-					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-2"]}}`,
-					timeNow,
-					timeNow,
-					false)
+					true)
 
 			query := baseQuery
+			var idVal string
 			switch tt.idType {
 			case model.IDTypeDutID:
 				query += `
 					WHERE dut_id=$1;`
+				idVal = "test-dut-id-1"
 			case model.IDTypeHostname:
 				query += `
 					WHERE id=$1;`
+				idVal = "test-device-1"
 			default:
 				t.Errorf("unexpected error: id type %s is not supported", tt.idType)
 			}
 
 			mock.ExpectQuery(regexp.QuoteMeta(query)).
-				WithArgs("test-device-1").
+				WithArgs(idVal).
 				WillReturnRows(rows)
 
-			device, err := GetDevice(ctx, db, tt.idType, "test-device-1")
+			device, err := GetDevice(ctx, db, tt.idType, idVal)
 			if !errors.Is(err, tt.err) {
 				t.Errorf("unexpected error: %s", err)
 			}

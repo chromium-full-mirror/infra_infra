@@ -373,6 +373,7 @@ func deviceModelToAPIDevice(ctx context.Context, device model.Device) *api.Devic
 
 	return &api.Device{
 		Id:           device.ID,
+		DutId:        device.DutID,
 		Address:      addr,
 		Type:         stringToDeviceType(ctx, device.DeviceType),
 		State:        stringToDeviceState(ctx, device.DeviceState),
