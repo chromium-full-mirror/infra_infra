@@ -225,6 +225,7 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 											OwnNumber:   "123456789",
 											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+											Features:    nil,
 										},
 										{
 											Iccid:       "iccid2",
@@ -233,6 +234,9 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_TEST,
 											OwnNumber:   "234567890",
 											State:       chromeosLab.SIMProfileInfo_BROKEN,
+											Features: []chromeosLab.SIMProfileInfo_Feature{
+												chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED,
+											},
 										},
 										{
 											Iccid:       "iccid3",
@@ -241,6 +245,9 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_SPRINT,
 											OwnNumber:   "345678912",
 											State:       chromeosLab.SIMProfileInfo_WRONG_CONFIG,
+											Features: []chromeosLab.SIMProfileInfo_Feature{
+												chromeosLab.SIMProfileInfo_FEATURE_SMS,
+											},
 										},
 										{
 											Iccid:       "iccid4",
@@ -249,6 +256,9 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_FI,
 											OwnNumber:   "456789123",
 											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+											Features: []chromeosLab.SIMProfileInfo_Feature{
+												chromeosLab.SIMProfileInfo_FEATURE_SMS,
+											},
 										},
 										{
 											Iccid:       "iccid5",
@@ -257,6 +267,9 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_CBRS,
 											OwnNumber:   "567891234",
 											State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+											Features: []chromeosLab.SIMProfileInfo_Feature{
+												chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+											},
 										},
 										{
 											Iccid:       "iccid6",
@@ -265,6 +278,10 @@ var lse = ufspb.MachineLSE{
 											CarrierName: chromeosLab.NetworkProvider_NETWORK_POVO,
 											OwnNumber:   "678912345",
 											State:       chromeosLab.SIMProfileInfo_BROKEN,
+											Features: []chromeosLab.SIMProfileInfo_Feature{
+												chromeosLab.SIMProfileInfo_FEATURE_SMS,
+												chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+											},
 										},
 										{
 											Iccid:       "iccid7",
@@ -699,6 +716,9 @@ common {
 			rpm_state: WORKING
 			peripheral_btpeer_state: WORKING
 			peripheral_wifi_state: WORKING
+			sim_features: SIM_FEATURE_UNSPECIFIED
+			sim_features: SIM_FEATURE_SMS
+			sim_features: SIM_FEATURE_LIVE_NETWORK
 			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_N
 			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_AC
 			wifi_router_models: "gale"

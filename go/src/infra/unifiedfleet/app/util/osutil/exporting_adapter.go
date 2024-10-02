@@ -501,10 +501,12 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 		l.Siminfo[i] = s
 	}
 
-	// Process additional state information
+	// Process additional state and feature information.
 	p := l.GetPeripherals()
+	p.SimFeatures = nil
 	var count int32
 	simState := inventory.PeripheralState_UNKNOWN
+	seenFeatures := make(map[chromeosLab.SIMProfileInfo_Feature]bool)
 	for _, si := range sim {
 		for _, pi := range si.GetProfileInfo() {
 			state := pi.GetState()
@@ -519,6 +521,13 @@ func setSimInfo(l *inventory.SchedulableLabels, sim []*chromeosLab.SIMInfo) {
 				// Don't override WRONG_CONFIG with BROKEN.
 				if simState == inventory.PeripheralState_UNKNOWN {
 					simState = inventory.PeripheralState_BROKEN
+				}
+			}
+
+			for _, f := range pi.GetFeatures() {
+				if !seenFeatures[f] {
+					seenFeatures[f] = true
+					p.SimFeatures = append(p.SimFeatures, inventory.Peripherals_SIMFeature(f))
 				}
 			}
 		}
