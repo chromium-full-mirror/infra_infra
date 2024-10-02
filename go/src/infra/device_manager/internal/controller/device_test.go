@@ -150,11 +150,7 @@ func TestGetDevice(t *testing.T) {
 			switch tt.idType {
 			case model.IDTypeDutID:
 				query += `
-					WHERE
-						jsonb_path_query_array(
-							schedulable_labels,
-							'$.dut_id.Values[0]'
-						) @> to_jsonb($1::text);`
+					WHERE dut_id=$1;`
 			case model.IDTypeHostname:
 				query += `
 					WHERE id=$1;`
@@ -217,11 +213,7 @@ func TestGetDevice(t *testing.T) {
 			switch tt.idType {
 			case model.IDTypeDutID:
 				query += `
-					WHERE
-						jsonb_path_query_array(
-							schedulable_labels,
-							'$.dut_id.Values[0]'
-						) @> to_jsonb($1::text);`
+					WHERE dut_id=$1;`
 			case model.IDTypeHostname:
 				query += `
 					WHERE id=$1;`

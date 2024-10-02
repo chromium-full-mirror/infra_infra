@@ -106,13 +106,9 @@ func GetDeviceByID(ctx context.Context, db *sql.DB, idType DeviceIDType, deviceI
 
 	switch idType {
 	case IDTypeDutID:
-		// Use DUT ID type also known as Asset Tag.
+		// Use DUT ID type (Asset Tag).
 		query += `
-			WHERE
-				jsonb_path_query_array(
-					schedulable_labels,
-					'$.dut_id.Values[0]'
-				) @> to_jsonb($1::text);`
+			WHERE dut_id=$1;`
 	case IDTypeHostname:
 		// Use hostname which is how they are stored in DB.
 		query += `
@@ -427,10 +423,7 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 		// Use DUT ID type also known as Asset Tag.
 		query += `
 			WHERE
-				jsonb_path_query_array(
-					schedulable_labels,
-					'$.dut_id.Values[0]'
-				) @> to_jsonb($1::text)`
+				dut_id=$1`
 	case IDTypeHostname:
 		// Use hostname which is how they are stored in DB.
 		query += `

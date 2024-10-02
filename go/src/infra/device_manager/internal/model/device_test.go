@@ -138,11 +138,7 @@ func TestGetDeviceByID(t *testing.T) {
 			switch tt.idType {
 			case IDTypeDutID:
 				query += `
-					WHERE
-						jsonb_path_query_array(
-							schedulable_labels,
-							'$.dut_id.Values[0]'
-						) @> to_jsonb($1::text);`
+					WHERE dut_id=$1;`
 			case IDTypeHostname:
 				query += `
 					WHERE id=$1;`
@@ -205,11 +201,7 @@ func TestGetDeviceByID(t *testing.T) {
 			switch tt.idType {
 			case IDTypeDutID:
 				query += `
-					WHERE
-						jsonb_path_query_array(
-							schedulable_labels,
-							'$.dut_id.Values[0]'
-						) @> to_jsonb($1::text);`
+					WHERE dut_id=$1;`
 			case IDTypeHostname:
 				query += `
 					WHERE id=$1;`
@@ -798,10 +790,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 					device_state='DEVICE_STATE_LEASED',
 					last_updated_time=NOW()
 				WHERE
-					jsonb_path_query_array(
-						schedulable_labels,
-						'$.dut_id.Values[0]'
-					) @> to_jsonb($1::text)
+					dut_id=$1
 					AND device_state='DEVICE_STATE_AVAILABLE'
 				RETURNING
 					id,
