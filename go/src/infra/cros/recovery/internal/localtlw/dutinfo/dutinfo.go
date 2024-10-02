@@ -486,6 +486,10 @@ func createDUTCellular(ds *ufslab.DutState, p *ufslab.Peripherals, m *ufslab.Mod
 				SimPuk:      pi.GetSimPuk(),
 				CarrierName: convertSIMProviders(pi.GetCarrierName()),
 				State:       convertSIMState(pi.GetState()),
+				Features:    make([]tlw.Cellular_SIMProfileInfo_Feature, len(pi.GetFeatures())),
+			}
+			for k, f := range pi.GetFeatures() {
+				simInfo.ProfileInfos[j].Features[k] = convertSIMFeature(f)
 			}
 		}
 		cellular.SimInfos[i] = simInfo
@@ -626,15 +630,19 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 					Eid:    si.GetEid(),
 				}
 				for _, pi := range si.GetProfileInfos() {
-					simInfo.ProfileInfo = append(simInfo.ProfileInfo,
-						&ufslab.SIMProfileInfo{
-							Iccid:       pi.GetIccid(),
-							OwnNumber:   pi.GetOwnNumber(),
-							SimPin:      pi.GetSimPin(),
-							SimPuk:      pi.GetSimPuk(),
-							CarrierName: convertSIMProviderToUFS(pi.GetCarrierName()),
-							State:       convertSIMStateToUFS(pi.GetState()),
-						})
+					newPi := &ufslab.SIMProfileInfo{
+						Iccid:       pi.GetIccid(),
+						OwnNumber:   pi.GetOwnNumber(),
+						SimPin:      pi.GetSimPin(),
+						SimPuk:      pi.GetSimPuk(),
+						CarrierName: convertSIMProviderToUFS(pi.GetCarrierName()),
+						State:       convertSIMStateToUFS(pi.GetState()),
+						Features:    make([]ufslab.SIMProfileInfo_Feature, len(pi.GetFeatures())),
+					}
+					for k, f := range pi.GetFeatures() {
+						newPi.Features[k] = convertSIMFeatureToUFS(f)
+					}
+					simInfo.ProfileInfo = append(simInfo.ProfileInfo, newPi)
 				}
 				labData.SimInfos = append(labData.SimInfos, simInfo)
 			}

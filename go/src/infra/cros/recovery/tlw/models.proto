@@ -665,6 +665,19 @@ message Cellular {
       // The configuration in UFS doesn't match what is on the SIM or is incomplete.
       WRONG_CONFIG = 5;
     }
+
+    // Features supported by the profile.
+    repeated Feature features = 9;
+
+    // Possible features that the SIM supports.
+    enum Feature {
+      // Unset feature.
+      FEATURE_UNSPECIFIED = 0;
+      // The SIM supports a generic live network.
+      FEATURE_LIVE_NETWORK = 1;
+      // The SIM supports SMS messaging.
+      FEATURE_SMS = 2;
+    }
   }
 
   // Information on a single SIM card in a slot.

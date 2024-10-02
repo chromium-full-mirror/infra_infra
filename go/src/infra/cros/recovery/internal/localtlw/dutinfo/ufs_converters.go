@@ -510,7 +510,7 @@ func convertStarfishStateToUFS(s tlw.Cellular_StarfishState) ufslab.PeripheralSt
 	return ufslab.PeripheralState_UNKNOWN
 }
 
-// simonnectionStates maps the ufs connection states to tlw connection states.
+// simStates maps the ufs connection states to tlw connection states.
 var simStates = map[ufslab.SIMProfileInfo_State]tlw.Cellular_SIMProfileInfo_State{
 	ufslab.SIMProfileInfo_BROKEN:       tlw.Cellular_SIMProfileInfo_BROKEN,
 	ufslab.SIMProfileInfo_LOCKED:       tlw.Cellular_SIMProfileInfo_LOCKED,
@@ -536,6 +536,31 @@ func convertSIMStateToUFS(s tlw.Cellular_SIMProfileInfo_State) ufslab.SIMProfile
 		}
 	}
 	return ufslab.SIMProfileInfo_UNSPECIFIED
+}
+
+// simFeatures maps the ufs sim profile features to tlw sim profile features.
+var simFeatures = map[ufslab.SIMProfileInfo_Feature]tlw.Cellular_SIMProfileInfo_Feature{
+	ufslab.SIMProfileInfo_FEATURE_LIVE_NETWORK: tlw.Cellular_SIMProfileInfo_FEATURE_LIVE_NETWORK,
+	ufslab.SIMProfileInfo_FEATURE_SMS:          tlw.Cellular_SIMProfileInfo_FEATURE_SMS,
+}
+
+// convertSIMFeature converts UFS sim profile features to TLW sim profile features.
+func convertSIMFeature(s ufslab.SIMProfileInfo_Feature) tlw.Cellular_SIMProfileInfo_Feature {
+	if ns, ok := simFeatures[s]; ok {
+		return ns
+	}
+	return tlw.Cellular_SIMProfileInfo_FEATURE_UNSPECIFIED
+
+}
+
+// convertSIMFeatureToUFS TLW sim profile features types to UFS sim profile features.
+func convertSIMFeatureToUFS(s tlw.Cellular_SIMProfileInfo_Feature) ufslab.SIMProfileInfo_Feature {
+	for us, ls := range simFeatures {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.SIMProfileInfo_FEATURE_UNSPECIFIED
 }
 
 var dolosStates = map[ufslab.PeripheralState]tlw.Dolos_State{
