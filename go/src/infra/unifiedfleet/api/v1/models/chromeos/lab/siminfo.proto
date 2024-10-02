@@ -44,6 +44,22 @@ message SIMProfileInfo {
     // The device has an invalid configuration in UFS.
     WRONG_CONFIG = 5;
   }
+
+  // Features supported by the profile.
+  // These features are used to determine what tests can be run against which SIMs
+  // in the lab, see go/cros-cellular-features for more information.
+  // File bugs against buganizer component: 979102.
+  repeated Feature features = 7;
+
+  // Possible features that the SIM supports.
+  enum Feature {
+    // Unset feature.
+    FEATURE_UNSPECIFIED = 0;
+    // The SIM supports a generic live network.
+    FEATURE_LIVE_NETWORK = 1;
+    // The SIM supports SMS messaging.
+    FEATURE_SMS = 2;
+  }
 }
 
 // Next Tag: 22
