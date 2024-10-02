@@ -200,6 +200,9 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			dims["label-peripheral_wifi_state"] = []string{pwsState}
 		}
 	}
+	for _, v := range p.GetSimFeatures() {
+		appendDim(dims, "label-sim_features", v.String())
+	}
 	for _, v := range p.GetWifiRouterFeatures() {
 		appendDim(dims, "label-wifi_router_features", v.String())
 	}
@@ -428,6 +431,21 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		p.WifiRouterFeatures[i] = inventory.Peripherals_WifiRouterFeature(int32Value)
 	}
 	delete(d, "label-wifi_router_features")
+
+	p.SimFeatures = make([]inventory.Peripherals_SIMFeature, len(d["label-sim_features"]))
+	for i, v := range d["label-sim_features"] {
+		int32Value, ok := inventory.Peripherals_SIMFeature_value[v]
+		if !ok {
+			// Could an int if the infra enum copy is out of sync, so try to parse it.
+			intValue, err := strconv.Atoi(v)
+			if err != nil {
+				intValue = int(inventory.Peripherals_SIM_FEATURE_UNSPECIFIED.Number())
+			}
+			int32Value = int32(intValue)
+		}
+		p.SimFeatures[i] = inventory.Peripherals_SIMFeature(int32Value)
+	}
+	delete(d, "label-sim_features")
 
 	p.WifiRouterModels = make([]string, len(d["label-wifi_router_models"]))
 	for i, v := range d["label-wifi_router_models"] {

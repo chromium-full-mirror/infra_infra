@@ -79,6 +79,7 @@ peripherals: {
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5,999]
+  sim_features: [0,1,2]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
   pasit_components: "CAMERA-1"
@@ -261,6 +262,7 @@ peripherals: {
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5,999]
+  sim_features: [0,1,2]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
   pasit_components: "CAMERA-1"
@@ -443,6 +445,7 @@ var fullDimensions = Dimensions{
 	"label-peripheral_btpeer_state": {"WORKING"},
 	"label-peripheral_wifi_state":   {"WORKING"},
 	"label-wifi_router_features":    {"WIFI_ROUTER_FEATURE_IEEE_802_11_A", "WIFI_ROUTER_FEATURE_IEEE_802_11_B", "WIFI_ROUTER_FEATURE_IEEE_802_11_G", "WIFI_ROUTER_FEATURE_IEEE_802_11_N", "999"},
+	"label-sim_features":            {"SIM_FEATURE_UNSPECIFIED", "SIM_FEATURE_LIVE_NETWORK", "SIM_FEATURE_SMS"},
 	"label-wifi_router_models":      {"gale", "OPENWRT[Ubiquiti_Unifi_6_Lite]"},
 	"label-phase":                   {"PHASE_MP"},
 	"label-platform":                {"platformval"},

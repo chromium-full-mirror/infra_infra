@@ -675,6 +675,22 @@ message Peripherals {
 
   // The state of camera on the DUT.
   optional HardwareState camera_state = 52;
+
+  // Features supported by the available SIMs on the DUT.
+  // These are extracted from the underlying SIMProfileInfo and merged together.
+  // See go/cros-cellular-features for more information.
+  // File bugs against buganizer component: 979102.
+  repeated SIMFeature sim_features = 53;
+
+  // Possible features that the SIM supports.
+  enum SIMFeature {
+    // Unset feature.
+    SIM_FEATURE_UNSPECIFIED = 0;
+    // The SIM supports a generic live network.
+    SIM_FEATURE_LIVE_NETWORK = 1;
+    // The SIM supports SMS messaging.
+    SIM_FEATURE_SMS = 2;
+  }
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.
