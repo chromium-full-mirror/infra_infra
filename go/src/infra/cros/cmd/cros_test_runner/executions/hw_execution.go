@@ -65,13 +65,14 @@ func HwExecution() {
 			resp := &steps.RunTestsResponse{}
 			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
 			var skylabResult *skylab_test_runner.Result
+			var crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
 			var err error
 			if input.CrosTestRunnerDynamicRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
 				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
-				crosTestRunnerRequest, err := common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
+				crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
 				if err == nil {
 					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 				}

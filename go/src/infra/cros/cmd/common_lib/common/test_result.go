@@ -134,9 +134,14 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 // GetTesthausURL gets testhaus log viewer url based on the invocation name.
 // If invocation name is empty, it constructs the URL based on gcs URL instead.
 func GetTesthausURL(invocationName string, gcsURL string) string {
-	postfix := invocationName
-	if invocationName == "" {
-		postfix = gcsURL[len("gs://"):]
+	if invocationName != "" {
+		return fmt.Sprintf("%s%s", TesthausURLPrefix, invocationName)
+	}
+
+	gcsPrefix := "gs://"
+	postfix := ""
+	if strings.HasPrefix(gcsURL, gcsPrefix) {
+		postfix = gcsURL[len(gcsPrefix):]
 	}
 	return fmt.Sprintf("%s%s", TesthausURLPrefix, postfix)
 }

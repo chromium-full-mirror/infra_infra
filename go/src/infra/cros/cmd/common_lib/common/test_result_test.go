@@ -40,6 +40,11 @@ func TestGetTesthausURL(t *testing.T) {
 				gcsURL:              "gs://",
 				wantTesthausPostfix: "",
 			},
+			{
+				invocationName:      "",
+				gcsURL:              "",
+				wantTesthausPostfix: "",
+			},
 		}
 		for _, tc := range tests {
 
