@@ -65,12 +65,6 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 	}, nil
 }
 
-// UpdateDevice updates a Device in a transaction.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, device model.Device) error {
-	_, err := model.UpdateDevice(ctx, tx, device)
-	return err
-}
-
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
 func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *model.Device) error {
 	// Send message to PubSub Device events stream

@@ -6,20 +6,13 @@ package controller
 
 import (
 	"context"
-	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
 	"testing"
 	"time"
 
-	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsub/pstest"
 	"github.com/DATA-DOG/go-sqlmock"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	schedulingAPI "go.chromium.org/chromiumos/config/go/test/scheduling"
@@ -29,7 +22,6 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
 	"infra/libs/skylab/inventory/swarming"
 )
@@ -560,152 +552,6 @@ func TestListDevices(t *testing.T) {
 					},
 				},
 			}))
-		})
-	})
-}
-
-func TestUpdateDevice(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
-	// Set up fake PubSub server
-	srv := pstest.NewServer()
-	defer func() {
-		err := srv.Close()
-		if err != nil {
-			t.Logf("failed to close fake pubsub server: %s", err)
-		}
-	}()
-
-	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		t.Fatalf("could not start fake pubsub server")
-	}
-	defer func() {
-		err = conn.Close()
-		if err != nil {
-			t.Logf("failed to close fake pubsub connection: %s", err)
-		}
-	}()
-
-	psClient, err := pubsub.NewClient(ctx, "project", option.WithGRPCConn(conn))
-	if err != nil {
-		t.Fatalf("could not connect to fake pubsub server")
-	}
-	defer func() {
-		err = psClient.Close()
-		if err != nil {
-			t.Logf("failed to close fake pubsub client: %s", err)
-		}
-	}()
-
-	_, err = psClient.CreateTopic(ctx, external.DeviceEventsPubSubTopic)
-	if err != nil {
-		t.Fatalf("failed to create fake pubsub topic")
-	}
-
-	ftt.Run("UpdateDevice", t, func(t *ftt.Test) {
-		t.Run("UpdateDevice: valid update", func(t *ftt.Test) {
-			db, mock, err := sqlmock.New()
-			if err != nil {
-				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-			}
-			defer func() {
-				mock.ExpectClose()
-				err = db.Close()
-				if err != nil {
-					t.Fatalf("failed to close db: %s", err)
-				}
-			}()
-
-			mock.ExpectBegin()
-
-			var txOpts *sql.TxOptions
-			tx, err := db.BeginTx(ctx, txOpts)
-			if err != nil {
-				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
-			}
-
-			timeNow := time.Now()
-			rows := sqlmock.NewRows([]string{
-				"id",
-				"dut_id",
-				"device_address",
-				"device_type",
-				"device_state",
-				"schedulable_labels",
-				"is_active",
-				"created_time",
-				"last_updated_time",
-				"last_notification_time"}).
-				AddRow(
-					"test-device-1",
-					"test-dut-id",
-					"2.2.2.2:2",
-					"DEVICE_TYPE_VIRTUAL",
-					"DEVICE_STATE_LEASED",
-					`{"dut_id":{"Values":["test-dut-id"]}}`,
-					false,
-					timeNow,
-					timeNow,
-					timeNow)
-
-			labelBytes, err := json.Marshal(model.SchedulableLabels{
-				"dut_id": model.LabelValues{
-					Values: []string{"test-dut-id"},
-				},
-			})
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, string(labelBytes), should.Match(`{"dut_id":{"Values":["test-dut-id"]}}`))
-
-			mock.ExpectQuery(regexp.QuoteMeta(`
-				UPDATE
-					"Devices"
-				SET
-					dut_id=COALESCE(NULLIF($2, ''), device_address),
-					device_address=COALESCE(NULLIF($3, ''), device_address),
-					device_type=COALESCE(NULLIF($4, ''), device_type),
-					device_state=COALESCE(NULLIF($5, ''), device_state),
-					schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
-					last_updated_time=NOW(),
-					is_active=COALESCE($7, is_active)
-				WHERE
-					id=$1
-				RETURNING
-					id,
-					dut_id,
-					device_address,
-					device_type,
-					device_state,
-					schedulable_labels,
-					is_active,
-					created_time,
-					last_updated_time,
-					last_notification_time;`)).
-				WithArgs(
-					"test-device-1",
-					"test-dut-id",
-					"2.2.2.2:2",
-					"DEVICE_TYPE_VIRTUAL",
-					"DEVICE_STATE_LEASED",
-					labelBytes,
-					false).
-				WillReturnRows(rows)
-
-			err = UpdateDevice(ctx, tx, model.Device{
-				ID:            "test-device-1",
-				DutID:         "test-dut-id",
-				DeviceAddress: "2.2.2.2:2",
-				DeviceType:    "DEVICE_TYPE_VIRTUAL",
-				DeviceState:   "DEVICE_STATE_LEASED",
-				SchedulableLabels: model.SchedulableLabels{
-					"dut_id": model.LabelValues{
-						Values: []string{"test-dut-id"},
-					},
-				},
-				IsActive: false,
-			})
-			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

@@ -621,12 +621,12 @@ func Test_buildListDevicesQuery(t *testing.T) {
 	}
 }
 
-func TestUpdateDevice(t *testing.T) {
+func TestUpdateDeviceToAvailable(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	ftt.Run("UpdateDevice", t, func(t *ftt.Test) {
-		t.Run("UpdateDevice: valid update", func(t *ftt.Test) {
+	ftt.Run("UpdateDeviceToAvailable", t, func(t *ftt.Test) {
+		t.Run("UpdateDeviceToAvailable: valid update", func(t *ftt.Test) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -686,15 +686,13 @@ func TestUpdateDevice(t *testing.T) {
 				UPDATE
 					"Devices"
 				SET
-					dut_id=COALESCE(NULLIF($2, ''), device_address),
-					device_address=COALESCE(NULLIF($3, ''), device_address),
-					device_type=COALESCE(NULLIF($4, ''), device_type),
-					device_state=COALESCE(NULLIF($5, ''), device_state),
-					schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
-					last_updated_time=NOW(),
-					is_active=COALESCE($7, is_active)
+					device_state='DEVICE_STATE_AVAILABLE',
+					schedulable_labels=COALESCE($3::jsonb, schedulable_labels),
+					is_active=COALESCE($4, is_active),
+					last_updated_time=NOW()
 				WHERE
 					id=$1
+					AND dut_id=$2
 				RETURNING
 					id,
 					dut_id,
@@ -709,14 +707,11 @@ func TestUpdateDevice(t *testing.T) {
 				WithArgs(
 					"test-device-1",
 					"test-dut-id",
-					"2.2.2.2:2",
-					"DEVICE_TYPE_VIRTUAL",
-					"DEVICE_STATE_LEASED",
 					labelBytes,
 					false).
 				WillReturnRows(rows)
 
-			updatedDevice, err := UpdateDevice(ctx, tx, Device{
+			updatedDevice, err := UpdateDeviceToAvailable(ctx, tx, Device{
 				ID:            "test-device-1",
 				DutID:         "test-dut-id-no-change", // this should not change DUT ID
 				DeviceAddress: "2.2.2.2:2",

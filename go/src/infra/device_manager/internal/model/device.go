@@ -299,16 +299,13 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 	return query, filterArgs, nil
 }
 
-// UpdateDevice updates a Device in a transaction.
+// UpdateDeviceToAvailable updates a Device to available in a transaction.
 //
-// UpdateDevice uses COALESCE to only update fields with provided values. If
-// there is no value provided, then it will use the current value of the device
-// field in the db.
-//
-// DUT ID (asset tag) will be extracted from the schedulable labels. This is the
-// only way to update the field. Trying to set Device.DutID will result in no
-// change.
-func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
+// UpdateDeviceToAvailable requires both id and dut_id. This is to ensure the
+// Device's unique hostname to asset tag pairing. The function uses COALESCE to
+// only update fields with provided values. If there is no value provided, then
+// it will use the current value of the device field in the db.
+func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
 	var (
 		err                  error
 		updatedDevice        Device
@@ -320,15 +317,13 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 			UPDATE
 				"Devices"
 			SET
-				dut_id=COALESCE(NULLIF($2, ''), device_address),
-				device_address=COALESCE(NULLIF($3, ''), device_address),
-				device_type=COALESCE(NULLIF($4, ''), device_type),
-				device_state=COALESCE(NULLIF($5, ''), device_state),
-				schedulable_labels=COALESCE($6::jsonb, schedulable_labels),
-				last_updated_time=NOW(),
-				is_active=COALESCE($7, is_active)
+				device_state='DEVICE_STATE_AVAILABLE',
+				schedulable_labels=COALESCE($3::jsonb, schedulable_labels),
+				is_active=COALESCE($4, is_active),
+				last_updated_time=NOW()
 			WHERE
 				id=$1
+				AND dut_id=$2
 			RETURNING
 				id,
 				dut_id,
@@ -351,18 +346,15 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 
 		err = device.SetDutIDFromLabels(ctx)
 		if err != nil {
-			logging.Errorf(ctx, "UpdateDevice: failed to set DUT ID for Device %s: %s", device.ID, err)
+			logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to set DUT ID for Device %s: %s", device.ID, err)
 			return Device{}, err
 		}
 	}
 
-	logging.Debugf(ctx, "UpdateDevice: %s", query)
+	logging.Debugf(ctx, "UpdateDeviceToAvailable: %s", query)
 	err = tx.QueryRowContext(ctx, query,
 		device.ID,
 		device.DutID,
-		device.DeviceAddress,
-		device.DeviceType,
-		device.DeviceState,
 		labelBytes,
 		device.IsActive,
 	).Scan(
@@ -390,14 +382,14 @@ func UpdateDevice(ctx context.Context, tx *sql.Tx, device Device) (Device, error
 	}
 
 	if err != nil {
-		logging.Errorf(ctx, "UpdateDevice: failed to update Device %s to DB: %s", updatedDevice.ID, err)
+		logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to update Device %s to DB: %s", updatedDevice.ID, err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "UpdateDevice: unable to rollback: %v", rollbackErr)
+			logging.Errorf(ctx, "UpdateDeviceToAvailable: unable to rollback: %v", rollbackErr)
 		}
 		return Device{}, err
 	}
 
-	logging.Debugf(ctx, "UpdateDevice: Device %s updated successfully", updatedDevice.ID)
+	logging.Debugf(ctx, "UpdateDeviceToAvailable: Device %s updated successfully", updatedDevice.ID)
 	return updatedDevice, nil
 }
 

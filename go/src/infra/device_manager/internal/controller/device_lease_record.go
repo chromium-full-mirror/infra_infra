@@ -328,10 +328,10 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	}
 
 	// Update device and device lease state to available after release
-	updatedDevice := model.Device{
-		ID:          record.DeviceID,
-		DeviceState: "DEVICE_STATE_AVAILABLE",
-		IsActive:    true,
+	toReleaseDevice := model.Device{
+		ID:       record.DeviceID,
+		DutID:    record.DutID,
+		IsActive: true,
 	}
 
 	// Try to pull dimensions from Device. Mark as inactive if not found.
@@ -340,19 +340,19 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	if err != nil {
 		switch status.Code(err) {
 		case codes.NotFound:
-			updatedDevice.IsActive = false
+			toReleaseDevice.IsActive = false
 		default:
 			return nil, err
 		}
 	}
 
 	if dims != nil {
-		updatedDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
+		toReleaseDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
 	}
 
-	err = UpdateDevice(ctx, tx, updatedDevice)
+	d, err := model.UpdateDeviceToAvailable(ctx, tx, toReleaseDevice)
 	if err != nil {
-		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s: %s", record.DeviceID, err)
+		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s dut_id %s: %s", record.DeviceID, record.DutID, err)
 		return nil, err
 	}
 
@@ -361,7 +361,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *
 	}
 
 	// log success after commit success
-	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s", r.GetLeaseId(), record.DeviceID)
+	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s dut_id %s", r.GetLeaseId(), d.ID, d.DutID)
 
 	return &api.ReleaseDeviceResponse{
 		LeaseId: r.GetLeaseId(),
