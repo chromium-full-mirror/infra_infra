@@ -12,8 +12,8 @@ go 1.22.0
 require (
 	cloud.google.com/go v0.115.1
 	cloud.google.com/go/appengine v1.9.1
-	cloud.google.com/go/bigquery v1.63.0
-	cloud.google.com/go/cloudsqlconn v1.12.0
+	cloud.google.com/go/bigquery v1.63.1
+	cloud.google.com/go/cloudsqlconn v1.12.1
 	cloud.google.com/go/cloudtasks v1.13.1
 	cloud.google.com/go/compute v1.28.1
 	cloud.google.com/go/compute/metadata v0.5.2
@@ -36,8 +36,8 @@ require (
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/reclient/api v0.0.0-20240617160057-89d6134e48e5
-	github.com/bazelbuild/remote-apis v0.0.0-20240703191324-0d21f29acdb9
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240815155135-13abc9047f5f
+	github.com/bazelbuild/remote-apis v0.0.0-20240926071355-6777112ef7de
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240910213405-f4821a2a072c
 	github.com/beevik/etree v1.4.1
 	github.com/biogo/hts v1.4.5
 	github.com/bmatcuk/doublestar v1.3.4
@@ -68,7 +68,7 @@ require (
 	github.com/hashicorp/go-version v1.7.0
 	github.com/jackc/pgconn v1.14.3
 	github.com/jackc/pgtype v1.14.3
-	github.com/jackc/pgx/v5 v5.6.0
+	github.com/jackc/pgx/v5 v5.7.1
 	github.com/jdxcode/netrc v1.0.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.17.9
@@ -109,29 +109,29 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0
 	go.opentelemetry.io/otel/trace v1.30.0
 	go.skia.org/infra v0.0.0-20240823043022-8db4baf70cfc
-	go.starlark.net v0.0.0-20240725214946-42030a7cedce
-	golang.org/x/build v0.0.0-20240822214659-cc9395c521ba
+	go.starlark.net v0.0.0-20240925182052-1207426daebd
+	golang.org/x/build v0.0.0-20241002221812-a0b635343b82
 	golang.org/x/crypto v0.27.0
-	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
+	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
-	golang.org/x/mod v0.20.0
+	golang.org/x/mod v0.21.0
 	golang.org/x/net v0.29.0
 	golang.org/x/oauth2 v0.23.0
-	golang.org/x/perf v0.0.0-20240806191124-3f62151e343c
+	golang.org/x/perf v0.0.0-20240910214617-f1a715d501dd
 	golang.org/x/sync v0.8.0
 	golang.org/x/sys v0.25.0
 	golang.org/x/term v0.24.0
 	golang.org/x/time v0.6.0
-	golang.org/x/tools v0.24.0
+	golang.org/x/tools v0.25.0
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
 	gonum.org/v1/gonum v0.15.1
-	google.golang.org/api v0.198.0
+	google.golang.org/api v0.199.0
 	google.golang.org/appengine v1.6.8
 	google.golang.org/appengine/v2 v2.0.6
-	google.golang.org/genproto v0.0.0-20240924160255-9d4c2d233b61
-	google.golang.org/genproto/googleapis/api v0.0.0-20240924160255-9d4c2d233b61
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240903143218-8af14fe29dc1
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240924160255-9d4c2d233b61
+	google.golang.org/genproto v0.0.0-20240930140551-af27646dc61f
+	google.golang.org/genproto/googleapis/api v0.0.0-20240930140551-af27646dc61f
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20240930140551-af27646dc61f
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240930140551-af27646dc61f
 	google.golang.org/grpc v1.67.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.34.2
@@ -147,7 +147,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.9.4 // indirect
+	cloud.google.com/go/auth v0.9.5 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.4 // indirect
 	cloud.google.com/go/errorreporting v0.3.1 // indirect
 	cloud.google.com/go/iam v1.2.1 // indirect
@@ -213,8 +213,8 @@ require (
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jcgregorio/logger v0.1.3 // indirect
 	github.com/jcgregorio/slog v0.0.0-20190423190439-e6f2d537f900 // indirect
