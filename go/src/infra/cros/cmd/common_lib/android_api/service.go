@@ -56,7 +56,11 @@ func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
 
 	opts := []option.ClientOption{
 		option.WithTokenSource(creds.TokenSource),
-		option.WithQuotaProject(quotaProject),
+	}
+
+	// This breaks the other run types.
+	if rt == LOCAL {
+		opts = append(opts, option.WithQuotaProject(quotaProject))
 	}
 
 	client, err := androidbuildinternal.NewService(ctx, opts...)

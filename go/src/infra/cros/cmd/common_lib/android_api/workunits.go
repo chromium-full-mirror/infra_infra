@@ -24,7 +24,7 @@ type WorkUnitServiceImpl struct {
 	client *androidbuildinternal.WorkunitService
 }
 
-// Get implmentation for workunits.
+// Get implementation for workunits.
 func (w *WorkUnitServiceImpl) Get(resourceID string) (*androidbuildinternal.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
@@ -35,7 +35,7 @@ func (w *WorkUnitServiceImpl) Get(resourceID string) (*androidbuildinternal.Work
 	return call.Do()
 }
 
-// Insert implmentation for workunits.
+// Insert implementation for workunits.
 func (w *WorkUnitServiceImpl) Insert(workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
@@ -46,7 +46,7 @@ func (w *WorkUnitServiceImpl) Insert(workunit *androidbuildinternal.WorkUnit) (*
 	return call.Do()
 }
 
-// Update implmentation for workunits.
+// Update implementation for workunits.
 func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
@@ -57,7 +57,7 @@ func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *androidbuildin
 	return call.Do()
 }
 
-// Patch implmentation for workunits.
+// Patch implementation for workunits.
 func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
@@ -68,7 +68,7 @@ func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *androidbuildint
 	return call.Do()
 }
 
-// List implmentation for workunits.
+// List implementation for workunits.
 func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.WorkUnitListResponse, error) {
 	if w.client == nil {
 		return nil, errInit

@@ -5,6 +5,7 @@
 package data
 
 import (
+	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
 
 	"cloud.google.com/go/pubsub"
@@ -20,4 +21,11 @@ type AlStateInfo struct {
 	CurrentTestJob           *common.TestJobMessage
 	CurrentTestJobEvent      *common.TestJobEventMessage
 	TestJobEventPubSubClient *pubsub.Client
+
+	// WorkUnitTrees is a map that points to the head of each ATP request's
+	// beginning node.
+	//
+	// NOTE: For the time being this map will only contain one tree until we
+	// begin to support multiple ATP requests per CTP build.
+	WorkUnitTrees map[string]*androidapi.WorkUnitNode
 }
