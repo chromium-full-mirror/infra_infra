@@ -109,3 +109,52 @@ func TestSetAMTStateExec(t *testing.T) {
 		})
 	}
 }
+
+func TestAMTManagerNotPresentExec(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		testName    string
+		amtManager  *tlw.AMTManager
+		expectedErr error
+	}{
+		{
+			"success: amt_manager is absent",
+			&tlw.AMTManager{},
+			nil,
+		},
+		{
+			"fail: amt_manager is present",
+			&tlw.AMTManager{
+				Hostname: "dut",
+			},
+			errors.Reason("amt_manager not present: hostname exists").Err(),
+		},
+	}
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.testName, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			args := &execs.RunArgs{
+				DUT: &tlw.Dut{
+					Chromeos: &tlw.ChromeOS{
+						AmtManager: tt.amtManager,
+					},
+				},
+			}
+			info := execs.NewExecInfo(args, "name", nil, 0, nil)
+			actualErr := amtManagerNotPresentExec(ctx, info)
+			if actualErr != nil && tt.expectedErr != nil {
+				if !strings.Contains(actualErr.Error(), tt.expectedErr.Error()) {
+					t.Errorf("%s: expected error %q, but got %q", tt.testName, tt.expectedErr, actualErr)
+				}
+			}
+			if actualErr == nil && tt.expectedErr != nil {
+				t.Errorf("%s: expected error %q, but passed", tt.testName, tt.expectedErr)
+			}
+			if actualErr != nil && tt.expectedErr == nil {
+				t.Errorf("%s: not expecting error but got %q", tt.testName, actualErr)
+			}
+		})
+	}
+}
