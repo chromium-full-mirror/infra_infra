@@ -257,6 +257,7 @@ func TestListDevices(t *testing.T) {
 
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -266,19 +267,21 @@ func TestListDevices(t *testing.T) {
 				"is_active"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-1"]},"label-test":{"Values":["test-value-1"]}}`,
 					createdTime,
 					timeNow,
 					true).
 				AddRow(
 					"test-device-2",
+					"test-dut-id-2",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-2"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-2"]},"label-test":{"Values":["test-value-2"]}}`,
 					createdTime,
 					timeNow,
 					false)
@@ -286,6 +289,7 @@ func TestListDevices(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				SELECT
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -305,10 +309,14 @@ func TestListDevices(t *testing.T) {
 			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-1",
+					DutID:         "test-dut-id-1",
 					DeviceAddress: "1.1.1.1:1",
 					DeviceType:    "DEVICE_TYPE_PHYSICAL",
 					DeviceState:   "DEVICE_STATE_AVAILABLE",
 					SchedulableLabels: SchedulableLabels{
+						"dut_id": LabelValues{
+							Values: []string{"test-dut-id-1"},
+						},
 						"label-test": LabelValues{
 							Values: []string{"test-value-1"},
 						},
@@ -346,6 +354,7 @@ func TestListDevices(t *testing.T) {
 
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -355,19 +364,21 @@ func TestListDevices(t *testing.T) {
 				"is_active"}).
 				AddRow(
 					"test-device-1",
+					"test-dut-id-1",
 					"1.1.1.1:1",
 					"DEVICE_TYPE_PHYSICAL",
 					"DEVICE_STATE_AVAILABLE",
-					`{"label-test":{"Values":["test-value-1"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-1"]},"label-test":{"Values":["test-value-1"]}}`,
 					createdTime,
 					timeNow,
 					true).
 				AddRow(
 					"test-device-2",
+					"test-dut-id-2",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-2"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-2"]},"label-test":{"Values":["test-value-2"]}}`,
 					createdTime,
 					timeNow,
 					false)
@@ -375,6 +386,7 @@ func TestListDevices(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				SELECT
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -394,10 +406,14 @@ func TestListDevices(t *testing.T) {
 			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-1",
+					DutID:         "test-dut-id-1",
 					DeviceAddress: "1.1.1.1:1",
 					DeviceType:    "DEVICE_TYPE_PHYSICAL",
 					DeviceState:   "DEVICE_STATE_AVAILABLE",
 					SchedulableLabels: SchedulableLabels{
+						"dut_id": LabelValues{
+							Values: []string{"test-dut-id-1"},
+						},
 						"label-test": LabelValues{
 							Values: []string{"test-value-1"},
 						},
@@ -408,10 +424,14 @@ func TestListDevices(t *testing.T) {
 				},
 				{
 					ID:            "test-device-2",
+					DutID:         "test-dut-id-2",
 					DeviceAddress: "2.2.2.2:2",
 					DeviceType:    "DEVICE_TYPE_VIRTUAL",
 					DeviceState:   "DEVICE_STATE_LEASED",
 					SchedulableLabels: SchedulableLabels{
+						"dut_id": LabelValues{
+							Values: []string{"test-dut-id-2"},
+						},
 						"label-test": LabelValues{
 							Values: []string{"test-value-2"},
 						},
@@ -447,6 +467,7 @@ func TestListDevices(t *testing.T) {
 			// only add rows after test-device-1
 			rows := sqlmock.NewRows([]string{
 				"id",
+				"dut_id",
 				"device_address",
 				"device_type",
 				"device_state",
@@ -456,10 +477,11 @@ func TestListDevices(t *testing.T) {
 				"is_active"}).
 				AddRow(
 					"test-device-2",
+					"test-dut-id-2",
 					"2.2.2.2:2",
 					"DEVICE_TYPE_VIRTUAL",
 					"DEVICE_STATE_LEASED",
-					`{"label-test":{"Values":["test-value-2"]}}`,
+					`{"dut_id":{"Values":["test-dut-id-2"]},"label-test":{"Values":["test-value-2"]}}`,
 					createdTime,
 					timeNow,
 					false)
@@ -467,6 +489,7 @@ func TestListDevices(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta(`
 				SELECT
 					id,
+					dut_id,
 					device_address,
 					device_type,
 					device_state,
@@ -487,10 +510,14 @@ func TestListDevices(t *testing.T) {
 			assert.Loosely(t, devices, should.Match([]Device{
 				{
 					ID:            "test-device-2",
+					DutID:         "test-dut-id-2",
 					DeviceAddress: "2.2.2.2:2",
 					DeviceType:    "DEVICE_TYPE_VIRTUAL",
 					DeviceState:   "DEVICE_STATE_LEASED",
 					SchedulableLabels: SchedulableLabels{
+						"dut_id": LabelValues{
+							Values: []string{"test-dut-id-2"},
+						},
 						"label-test": LabelValues{
 							Values: []string{"test-value-2"},
 						},
@@ -525,6 +552,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 			wantQuery: `
 		SELECT
 			id,
+			dut_id,
 			device_address,
 			device_type,
 			device_state,
@@ -555,6 +583,7 @@ func Test_buildListDevicesQuery(t *testing.T) {
 			wantQuery: `
 		SELECT
 			id,
+			dut_id,
 			device_address,
 			device_type,
 			device_state,

@@ -182,6 +182,7 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken database.PageToken, 
 		)
 		err := rows.Scan(
 			&device.ID,
+			&device.DutID,
 			&device.DeviceAddress,
 			&device.DeviceType,
 			&device.DeviceState,
@@ -266,6 +267,7 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 	query := `
 		SELECT
 			id,
+			dut_id,
 			device_address,
 			device_type,
 			device_state,
