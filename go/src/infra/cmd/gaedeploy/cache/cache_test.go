@@ -19,19 +19,19 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCache(t *testing.T) {
 	t.Parallel()
 
-	Convey("With temp dir", t, func() {
+	ftt.Run("With temp dir", t, func(t *ftt.Test) {
 		tmp, err := os.MkdirTemp("", "gaedeploy_test")
-		So(err, ShouldBeNil)
-		Reset(func() { os.RemoveAll(tmp) })
+		assert.Loosely(t, err, should.BeNil)
+		t.Cleanup(func() { os.RemoveAll(tmp) })
 
 		testTime := testclock.TestRecentTimeLocal.Round(time.Second)
 		ctx, tc := testclock.UseTime(context.Background(), testTime)
@@ -40,7 +40,7 @@ func TestCache(t *testing.T) {
 
 		scan := func() []string {
 			files, err := os.ReadDir(cache.Root)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			names := make([]string, len(files))
 			for i, f := range files {
 				names[i] = f.Name()
@@ -48,7 +48,7 @@ func TestCache(t *testing.T) {
 			return names
 		}
 
-		Convey("WithTarball happy path", func() {
+		t.Run("WithTarball happy path", func(t *ftt.Test) {
 			src := testSrc{
 				data: map[string]string{
 					"dir/":     "",
@@ -58,36 +58,36 @@ func TestCache(t *testing.T) {
 
 			callback := func(path string) error {
 				blob, err := os.ReadFile(filepath.Join(path, "dir", "file"))
-				So(err, ShouldBeNil)
-				So(string(blob), ShouldResemble, "hi")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, string(blob), should.Match("hi"))
 				return nil
 			}
 
 			err := cache.WithTarball(ctx, &src, callback)
-			So(err, ShouldBeNil)
-			So(src.calls, ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, src.calls, should.Equal(1))
 
 			// Updated the metadata
 			entryDir := filepath.Join(cache.Root, hex.EncodeToString(src.SHA256()))
 			m, err := readMetadata(ctx, entryDir)
-			So(err, ShouldBeNil)
-			So(m.Created.Equal(testTime), ShouldBeTrue)
-			So(m.Touched.Equal(testTime), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Created.Equal(testTime), should.BeTrue)
+			assert.Loosely(t, m.Touched.Equal(testTime), should.BeTrue)
 
 			tc.Add(time.Minute)
 
 			err = cache.WithTarball(ctx, &src, callback)
-			So(err, ShouldBeNil)
-			So(src.calls, ShouldEqual, 1) // didn't touch the source
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, src.calls, should.Equal(1)) // didn't touch the source
 
 			// Updated the metadata
 			m, err = readMetadata(ctx, entryDir)
-			So(err, ShouldBeNil)
-			So(m.Created.Equal(testTime), ShouldBeTrue)
-			So(m.Touched.Equal(testTime.Add(time.Minute)), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Created.Equal(testTime), should.BeTrue)
+			assert.Loosely(t, m.Touched.Equal(testTime.Add(time.Minute)), should.BeTrue)
 		})
 
-		Convey("WithTarball wrong hash", func() {
+		t.Run("WithTarball wrong hash", func(t *ftt.Test) {
 			src := testSrc{
 				data: map[string]string{
 					"dir/":     "",
@@ -98,10 +98,10 @@ func TestCache(t *testing.T) {
 			err := cache.WithTarball(ctx, &src, func(path string) error {
 				panic("must not be called")
 			})
-			So(err, ShouldErrLike, "tarball hash mismatch")
+			assert.Loosely(t, err, should.ErrLike("tarball hash mismatch"))
 		})
 
-		Convey("Trim works", func() {
+		t.Run("Trim works", func(t *ftt.Test) {
 			var created []string // oldest to newest
 			for i := 0; i < 3; i++ {
 				src := testSrc{
@@ -109,17 +109,17 @@ func TestCache(t *testing.T) {
 				}
 				created = append(created, hex.EncodeToString(src.SHA256()))
 				err := cache.WithTarball(ctx, &src, func(path string) error { return nil })
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				tc.Add(time.Minute)
 			}
 
-			So(scan(), ShouldHaveLength, len(created))
+			assert.Loosely(t, scan(), should.HaveLength(len(created)))
 
 			// Kick two oldest ones (keep only one newest).
-			So(cache.Trim(ctx, 1), ShouldBeNil)
+			assert.Loosely(t, cache.Trim(ctx, 1), should.BeNil)
 
 			// Worked!
-			So(scan(), ShouldResemble, []string{created[2]})
+			assert.Loosely(t, scan(), should.Resemble([]string{created[2]}))
 		})
 	})
 }

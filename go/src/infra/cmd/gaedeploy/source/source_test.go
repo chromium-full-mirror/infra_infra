@@ -8,73 +8,72 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"io"
 	"os"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestSource(t *testing.T) {
 	t.Parallel()
 
-	Convey("gs://...", t, func() {
-		Convey("Works", func() {
+	ftt.Run("gs://...", t, func(t *ftt.Test) {
+		t.Run("Works", func(t *ftt.Test) {
 			src, err := New("gs://stuff", strings.Repeat("a", 64))
-			So(err, ShouldBeNil)
-			So(src, ShouldResemble, &gsSource{path: "gs://stuff", sha256: bytes.Repeat([]byte{170}, 32)})
-			So(src.SHA256(), ShouldResemble, bytes.Repeat([]byte{170}, 32))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, src, should.Resemble(&gsSource{path: "gs://stuff", sha256: bytes.Repeat([]byte{170}, 32)}))
+			assert.Loosely(t, src.SHA256(), should.Resemble(bytes.Repeat([]byte{170}, 32)))
 		})
 
-		Convey("Wants hash", func() {
+		t.Run("Wants hash", func(t *ftt.Test) {
 			_, err := New("gs://stuff", "")
-			So(err, ShouldErrLike, "-tarball-sha256 is required")
+			assert.Loosely(t, err, should.ErrLike("-tarball-sha256 is required"))
 		})
 
-		Convey("Bad digest format", func() {
+		t.Run("Bad digest format", func(t *ftt.Test) {
 			_, err := New("gs://stuff", "ZZZ")
-			So(err, ShouldErrLike, "not hex")
+			assert.Loosely(t, err, should.ErrLike("not hex"))
 
 			_, err = New("gs://stuff", "aaaa")
-			So(err, ShouldErrLike, "wrong length")
+			assert.Loosely(t, err, should.ErrLike("wrong length"))
 		})
 	})
 
-	Convey("Local file", t, func() {
-		Convey("Missing", func() {
+	ftt.Run("Local file", t, func(t *ftt.Test) {
+		t.Run("Missing", func(t *ftt.Test) {
 			_, err := New("missing_file", "")
-			So(err, ShouldErrLike, "can't open the file")
+			assert.Loosely(t, err, should.ErrLike("can't open the file"))
 		})
 
-		Convey("Present", func() {
+		t.Run("Present", func(t *ftt.Test) {
 			f, err := os.CreateTemp("", "gaedeploy_test")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.Remove(f.Name())
 
 			_, err = f.Write([]byte("boo"))
-			So(err, ShouldBeNil)
-			So(f.Close(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, f.Close(), should.BeNil)
 
 			expected := sha256.New()
 			expected.Write([]byte("boo"))
 
 			fs, err := New(f.Name(), "")
-			So(err, ShouldBeNil)
-			So(fs, ShouldResemble, &fileSource{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, fs, should.Resemble(&fileSource{
 				path:   f.Name(),
 				sha256: expected.Sum(nil),
-			})
-			So(fs.SHA256(), ShouldResemble, expected.Sum(nil))
+			}))
+			assert.Loosely(t, fs.SHA256(), should.Resemble(expected.Sum(nil)))
 
 			rc, err := fs.Open(context.Background(), "unused")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			blob, err := io.ReadAll(rc)
-			So(err, ShouldBeNil)
-			So(blob, ShouldResemble, []byte("boo"))
-			So(rc.Close(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, blob, should.Resemble([]byte("boo")))
+			assert.Loosely(t, rc.Close(), should.BeNil)
 		})
 	})
 }

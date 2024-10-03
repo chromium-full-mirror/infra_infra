@@ -6,11 +6,12 @@ package cache
 
 import (
 	"context"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"os"
 	"testing"
 	"time"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMetadata(t *testing.T) {
@@ -19,32 +20,32 @@ func TestMetadata(t *testing.T) {
 	ctx := context.Background()
 	ts := time.Now().Round(time.Millisecond) // convert to wall clock
 
-	Convey("modifyMetadata Works", t, func() {
+	ftt.Run("modifyMetadata Works", t, func(t *ftt.Test) {
 		tmp, err := os.MkdirTemp("", "gaedeploy_test")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(tmp)
 
 		// Creates new file.
 		err = modifyMetadata(ctx, tmp, func(m *cacheMetadata) {
-			So(m.Created.IsZero(), ShouldBeTrue)
-			So(m.Touched.IsZero(), ShouldBeTrue)
+			assert.Loosely(t, m.Created.IsZero(), should.BeTrue)
+			assert.Loosely(t, m.Touched.IsZero(), should.BeTrue)
 			m.Created = ts
 			m.Touched = ts
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Reads the existing file, writes back modifications.
 		err = modifyMetadata(ctx, tmp, func(m *cacheMetadata) {
-			So(m.Created.Equal(ts), ShouldBeTrue)
-			So(m.Touched.Equal(ts), ShouldBeTrue)
+			assert.Loosely(t, m.Created.Equal(ts), should.BeTrue)
+			assert.Loosely(t, m.Touched.Equal(ts), should.BeTrue)
 			m.Touched = ts.Add(10 * time.Second)
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Verify it is updated.
 		m, err := readMetadata(ctx, tmp)
-		So(err, ShouldBeNil)
-		So(m.Created.Equal(ts), ShouldBeTrue)
-		So(m.Touched.Equal(ts.Add(10*time.Second)), ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Created.Equal(ts), should.BeTrue)
+		assert.Loosely(t, m.Touched.Equal(ts.Add(10*time.Second)), should.BeTrue)
 	})
 }
