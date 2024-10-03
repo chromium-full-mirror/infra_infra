@@ -211,10 +211,10 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 			TestTaskState:     "COMPLETED",
 			Shards:            totalShards,
 			ShardIndex:        int64(results.ShardIndex),
-			CreationTimestamp: results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
-			StartTimestamp:    results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
-			EndTimestamp:      results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
-			UpdateTimestamp:   results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+			CreationTimestamp: results.CreationTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+			StartTimestamp:    results.StartTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+			EndTimestamp:      results.EndTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+			UpdateTimestamp:   results.EndTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
 			Attempts: []*common.TestTaskAttemptMessage{
 				{
 					Id:                   fmt.Sprintf("%s_%d", results.Key, results.BuildID),
@@ -222,10 +222,10 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 					TotalTestCount:       int64(totalTestCount),
 					FailedTestCount:      int64(totalFailedTestCount),
 					FailedTestRunCount:   int64(totalFailedTestRunCount),
-					CreationTimestamp:    results.CreationTimestamp.Format(common.ATPSupportedTimeFormat),
-					StartTimestamp:       results.StartTimestamp.Format(common.ATPSupportedTimeFormat),
-					EndTimestamp:         results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
-					UpdateTimestamp:      results.EndTimestamp.Format(common.ATPSupportedTimeFormat),
+					CreationTimestamp:    results.CreationTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+					StartTimestamp:       results.StartTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+					EndTimestamp:         results.EndTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
+					UpdateTimestamp:      results.EndTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
 					AttemptInfo:          []*common.KeyValuesMessage{{Key: "summary", Values: []string{summary}}},
 				},
 			},
@@ -241,7 +241,7 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	currTestJobEvent.FailedTestCount = int64(totalFailedTestCount)
 	currTestJobEvent.FailedTestRunCount = int64(totalFailedTestRunCount)
 	currTestJobEvent.Summary = "test_job_completed"
-	currTestJobEvent.TestJob.EndTimestamp = time.Now().Format(common.ATPSupportedTimeFormat)
+	currTestJobEvent.TestJob.EndTimestamp = time.Now().UTC().Format(common.ATPSupportedTimeFormat)
 	currTestJobEvent.TestJob.TestJobState = "COMPLETED"
 	currTestJobEvent.TestJob.Tasks = tasks
 }

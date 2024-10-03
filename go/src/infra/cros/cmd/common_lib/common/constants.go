@@ -79,7 +79,7 @@ const (
 
 // AL related constants
 const (
-	ATPSupportedTimeFormat         = time.RFC3339
+	ATPSupportedTimeFormat         = "2006-01-02T15:04:05.000000"
 	ATPSwitcherProjectIDAlpha      = "google.com:atp-switcher-alpha"
 	ATPSwitcherTestJobEventTopicID = "test_job_event"
 )

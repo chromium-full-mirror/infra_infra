@@ -175,8 +175,8 @@ func (s *TestConfigMessage) MarshalJSON() ([]byte, error) {
 type TestJobEventMessage struct {
 	DeviceLostDetected int64    `json:"deviceLostDetected,omitempty"`
 	EventTimestamp     string   `json:"eventTimestamp,omitempty"`
-	FailedTestCount    int64    `json:"failedTestCount,omitempty"`
-	FailedTestRunCount int64    `json:"failedTestRunCount,omitempty"`
+	FailedTestCount    int64    `json:"failedTestCount"`
+	FailedTestRunCount int64    `json:"failedTestRunCount"`
 	ResultLinks        []string `json:"resultLinks,omitempty"`
 	// Possible values:
 	//   "CANCELED"
@@ -208,7 +208,7 @@ type TestJobEventMessage struct {
 	TestJob         *TestJobMessage `json:"testJob,omitempty"`
 	TestJobId       string          `json:"testJobId,omitempty"`
 	TotalRunTimeSec int64           `json:"totalRunTimeSec,omitempty"`
-	TotalTestCount  int64           `json:"totalTestCount,omitempty"`
+	TotalTestCount  int64           `json:"totalTestCount"`
 	// Possible values:
 	//   "STATE_CHANGED"
 	Type string `json:"type,omitempty"`
@@ -357,8 +357,8 @@ type TestTaskAttemptMessage struct {
 	AttemptInfo        []*KeyValuesMessage `json:"attemptInfo,omitempty"`
 	CreationTimestamp  string              `json:"creationTimestamp,omitempty"`
 	EndTimestamp       string              `json:"endTimestamp,omitempty"`
-	FailedTestCount    int64               `json:"failedTestCount,omitempty"`
-	FailedTestRunCount int64               `json:"failedTestRunCount,omitempty"`
+	FailedTestCount    int64               `json:"failedTestCount"`
+	FailedTestRunCount int64               `json:"failedTestRunCount"`
 	Id                 string              `json:"id,omitempty"`
 	StartTimestamp     string              `json:"startTimestamp,omitempty"`
 	// Possible values:
@@ -370,7 +370,7 @@ type TestTaskAttemptMessage struct {
 	//   "RUNNING"
 	//   "UNKNOWN"
 	TestTaskAttemptState string `json:"testTaskAttemptState,omitempty"`
-	TotalTestCount       int64  `json:"totalTestCount,omitempty"`
+	TotalTestCount       int64  `json:"totalTestCount"`
 	UpdateTimestamp      string `json:"updateTimestamp,omitempty"`
 	// ForceSendFields is a list of field names (e.g. "AttemptInfo") to
 	// unconditionally include in API requests. By default, fields with empty or

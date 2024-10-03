@@ -6,6 +6,8 @@ package commands
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -18,6 +20,7 @@ import (
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
@@ -37,6 +40,7 @@ type TranslateRequestCmd struct {
 
 	// Updates
 	InternalTestPlan *testapi.InternalTestplan
+	AlStateInfo      *data.AlStateInfo // will be used as dep as well
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -86,7 +90,12 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeepr(
 		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
+	if sk.AlStateInfo == nil {
+		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
+	}
+
 	cmd.CtpReq = sk.CtpReq
+	cmd.AlStateInfo = sk.AlStateInfo
 	return nil
 }
 
@@ -104,13 +113,22 @@ func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(
 // Execute executes the command.
 func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	var err error
-	step, ctx := build.StartStep(ctx, "Translate request")
+	step, ctx := build.StartStep(ctx, "Translate equest")
 	defer func() { step.End(err) }()
 
 	req := step.Log("request received")
 	marsh := jsonpb.Marshaler{Indent: "  "}
 	if err = marsh.Marshal(req, cmd.CtpReq); err != nil {
 		err = errors.Annotate(err, "failed to marshal proto").Err()
+	}
+
+	if cmd.CtpReq.GetEncodedAtpTestJobMsg() != "" {
+		// if atp encoded test job msg is present, then decode it & construct CTP req from it
+		err = cmd.constructCtpReqFromEncodedTestJobMsg(ctx)
+		if err != nil {
+			logging.Infof(ctx, "err while constructing ctp req from encoded atp test job msg: %s", err.Error())
+			return err
+		}
 	}
 
 	internalStruct := &testapi.InternalTestplan{}
@@ -142,6 +160,33 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	cmd.InternalTestPlan = internalStruct
 
 	return err
+}
+
+func (cmd *TranslateRequestCmd) constructCtpReqFromEncodedTestJobMsg(ctx context.Context) error {
+	var err error
+	step, ctx := build.StartStep(ctx, "Ctp Req From TestJobMsg")
+	defer func() { step.End(err) }()
+	common.WriteStringToStepLog(ctx, step, cmd.CtpReq.GetEncodedAtpTestJobMsg(), "received encoded atp test job msg")
+
+	// Decode the Base64 string
+	decoded, err := base64.StdEncoding.DecodeString(cmd.CtpReq.GetEncodedAtpTestJobMsg())
+	if err != nil {
+		logging.Infof(ctx, "err while decoding: %s", err.Error())
+		return nil
+	}
+
+	// Unmarshal the JSON data into a TestJobMessage
+	var testJobMsg common.TestJobMessage
+	if err := json.Unmarshal(decoded, &testJobMsg); err != nil {
+		logging.Infof(ctx, "err while unmarshalling: %s", err.Error())
+		return nil
+	}
+	logging.Infof(ctx, "successfully decoded test job msg!")
+	common.WriteAnyObjectToStepLog(ctx, step, testJobMsg, "decoded atp test job msg")
+
+	// TODO (azrahman): construct proper CTPReq from it
+
+	return nil
 }
 
 func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {

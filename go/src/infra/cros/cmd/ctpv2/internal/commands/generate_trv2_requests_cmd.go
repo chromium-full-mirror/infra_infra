@@ -156,6 +156,7 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 	if cmd.AlStateInfo != nil && cmd.AlStateInfo.CurrentTestJobEvent != nil {
 		// update it's state only
 		cmd.AlStateInfo.CurrentTestJobEvent.State = "RUNNING"
+		cmd.AlStateInfo.CurrentTestJobEvent.TestJob.TestJobState = "RUNNING"
 	}
 	return nil
 }
