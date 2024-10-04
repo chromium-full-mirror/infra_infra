@@ -257,10 +257,10 @@ func populateBuildInfo(
 	// Populate the board type.
 	buildInfo.BoardType = "HW"
 
-	// All bots running in the VM lab via test_runner_gce set the bot role to
-	// "vmlab".
-	role := getSingleTagValue(botDims, "role")
-	if role == "vmlab" {
+	// The builder name contains "test_runner_gce" as a substring for all tests
+	// running in the VM lab via test_runner_gce.
+	builderName := build.GetBuilder().GetBuilder()
+	if strings.Contains(builderName, "test_runner_gce") {
 		buildInfo.BoardType = "VM"
 	}
 

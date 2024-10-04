@@ -215,7 +215,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					BuildInfo: &artifactpb.BuildInfo{
 						Name:        "hatch-cq/R106-15048.0.0",
 						Board:       "hatch",
-						BoardType:   "VM",
+						BoardType:   "HW",
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
@@ -393,7 +393,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "label-chameleon_connection_types", Value: "CHAMELEON_CONNECTION_TYPE_HDMI"},
 					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V3"},
 					{Key: "id", Value: "cloudbots-prod-1715342009263-7kz6"},
-					{Key: "role", Value: "vmlab"},
 				},
 			}},
 		}
@@ -491,6 +490,216 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						Verdict:   &testapi.TestCaseResult_Pass_{},
 						StartTime: startedTime,
 						Duration:  duration,
+					},
+				},
+			},
+		}
+
+		// Extract deps first
+		err = cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldBeNil)
+		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+	})
+
+	Convey("Populate TestResultForRdb with board type based on builder name", t, func() {
+		ctx := context.Background()
+		createTime := timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z"))
+		startedTime := timestamppb.New(parseTime("2022-09-07T20:53:33.983328614Z"))
+		primaryDUT := &labapi.Dut{
+			Id: &labapi.Dut_Id{Value: "0wgtfqin2033834d-ecghcra"},
+			DutType: &labapi.Dut_Chromeos{
+				Chromeos: &labapi.Dut_ChromeOS{
+					Name:      "0wgtfqin2033834d-ecghcra",
+					DutModel:  &labapi.DutModel{},
+					ModemInfo: &labapi.ModemInfo{},
+				},
+			},
+		}
+		wantTestResult := &artifactpb.TestResult{
+			TestInvocation: &artifactpb.TestInvocation{
+				PrimaryExecutionInfo: &artifactpb.ExecutionInfo{
+					BuildInfo: &artifactpb.BuildInfo{
+						Name:        "hatch-cq/R106-15048.0.0",
+						Board:       "hatch",
+						BoardType:   "VM",
+						BuildTarget: "hatch",
+						BuildMetadata: &artifactpb.BuildMetadata{
+							Sku:           &artifactpb.BuildMetadata_Sku{},
+							Chipset:       &artifactpb.BuildMetadata_Chipset{},
+							Cellular:      &artifactpb.BuildMetadata_Cellular{},
+							Firmware:      &artifactpb.BuildMetadata_Firmware{},
+							Kernel:        &artifactpb.BuildMetadata_Kernel{},
+							Lacros:        &artifactpb.BuildMetadata_Lacros{},
+							ModemInfo:     &labapi.ModemInfo{},
+							ChameleonInfo: &artifactpb.BuildMetadata_ChameleonInfo{},
+						},
+					},
+					DutInfo: &artifactpb.DutInfo{
+						Dut: primaryDUT,
+						ProvisionState: &testapi.ProvisionState{
+							SystemImage: &testapi.ProvisionState_SystemImage{
+								SystemImagePath: &_go.StoragePath{
+									HostType: _go.StoragePath_GS,
+									Path:     "gs://some-bucket/builder/build-12345",
+								},
+							},
+						},
+					},
+					EnvInfo: &artifactpb.ExecutionInfo_SkylabInfo{
+						SkylabInfo: &artifactpb.SkylabInfo{
+							DroneInfo: &artifactpb.DroneInfo{},
+							BuildbucketInfo: &artifactpb.BuildbucketInfo{
+								Id: 100,
+								Builder: &artifactpb.BuilderID{
+									Project: "chromeos",
+									Bucket:  "test_runner",
+									Builder: "test_runner_gce",
+								},
+							},
+							SwarmingInfo: &artifactpb.SwarmingInfo{
+								TaskName: "bb-100-chromeos/test_runner/test_runner_gce",
+							},
+						},
+					},
+					InventoryInfo: &artifactpb.InventoryInfo{},
+				},
+				DutTopology: &labapi.DutTopology{
+					Id:   &labapi.DutTopology_Id{Value: "0wgtfqin2033834d-ecghcra"},
+					Duts: []*labapi.Dut{primaryDUT},
+				},
+				SchedulingMetadata: &artifactpb.SchedulingMetadata{
+					SchedulingArgs: map[string]string{
+						"display_name": "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
+					},
+				},
+				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
+				PartnerInfo:            &artifactpb.PartnerInfo{},
+				IsCftRun:               true,
+				IsTrv2Run:              true,
+			},
+			TestRuns: []*artifactpb.TestRun{
+				{
+					TestCaseInfo: &artifactpb.TestCaseInfo{
+						TestCaseResult: &testapi.TestCaseResult{
+							TestHarness: &testapi.TestHarness{
+								TestHarnessType: &testapi.TestHarness_Tast_{
+									Tast: &testapi.TestHarness_Tast{},
+								},
+							},
+							TestCaseId: &testapi.TestCase_Id{
+								Value: "tast.rlz_CheckPing",
+							},
+							Verdict:   &testapi.TestCaseResult_Pass_{},
+							StartTime: startedTime,
+						},
+						DisplayName:     "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
+						Suite:           "arc-cts-vm",
+						Branch:          "main",
+						MainBuilderName: "main-release",
+					},
+					LogsInfo: []*configpb.StoragePath{
+						{
+							HostType: configpb.StoragePath_GS,
+							Path:     "gs://some-bucket/builder/build-12345",
+						},
+					},
+					TimeInfo: &artifactpb.TimingInfo{
+						QueuedTime:  createTime,
+						StartedTime: startedTime,
+					},
+					ExecutionMetadata: &artifactpb.ExecutionMetadata{},
+				},
+			},
+		}
+
+		// Sets up the build info.
+		buildPb := &bbpb.Build{
+			Id:     100,
+			Status: bbpb.Status_SUCCESS,
+			Builder: &bbpb.BuilderID{
+				Project: "chromeos",
+				Bucket:  "test_runner",
+				Builder: "test_runner_gce",
+			},
+			Tags: []*buildbucketpb.StringPair{
+				{Key: "display_name", Value: "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"},
+			},
+			CreateTime: createTime,
+		}
+		buildState, ctx, err := build.Start(ctx, buildPb)
+		defer func() { buildState.End(err) }()
+
+		sk := &data.HwTestStateKeeper{
+			Injectables:         common.NewInjectableStorage(),
+			CurrentInvocationId: "Inv-1234",
+			TesthausURL:         "www.testhaus.com",
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				RunViaTrv2: true,
+				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+					DutModel: &labapi.DutModel{
+						BuildTarget: primaryDUT.GetChromeos().GetDutModel().GetBuildTarget(),
+					},
+					ProvisionState: &api.ProvisionState{
+						SystemImage: &api.ProvisionState_SystemImage{
+							SystemImagePath: &_go.StoragePath{
+								HostType: _go.StoragePath_GS,
+								Path:     "gs://some-bucket/builder/build-12345",
+							},
+						},
+					},
+				},
+				AutotestKeyvals: map[string]string{
+					"build_target":        "hatch",
+					"build":               "hatch-cq/R106-15048.0.0",
+					"suite":               "arc-cts-vm",
+					"branch":              "main",
+					"master_build_config": "main-release",
+				},
+				TestSuites: []*testapi.TestSuite{
+					{
+						Spec: &testapi.TestSuite_TestCaseIds{
+							TestCaseIds: &testapi.TestCaseIdList{
+
+								TestCaseIds: []*testapi.TestCase_Id{
+									{
+										Value: "tast.rlz_CheckPing",
+									},
+								},
+							},
+						},
+						ExecutionMetadata: &testapi.ExecutionMetadata{
+							Args: []*testapi.Arg{},
+						},
+					},
+				},
+			},
+			Devices: map[string]*testapi.CrosTestRequest_Device{
+				common.Primary: {
+					Dut: primaryDUT,
+				},
+			},
+			PrimaryDevice: &testapi.CrosTestRequest_Device{
+				Dut: primaryDUT,
+			},
+			GcsURL:     "gs://some-bucket/builder/build-12345",
+			BuildState: buildState,
+			DutTopology: &labapi.DutTopology{
+				Id:   &labapi.DutTopology_Id{Value: "0wgtfqin2033834d-ecghcra"},
+				Duts: []*labapi.Dut{primaryDUT},
+			},
+			TestResponses: &testapi.CrosTestResponse{
+				TestCaseResults: []*testapi.TestCaseResult{
+					{
+						TestHarness: &testapi.TestHarness{
+							TestHarnessType: &testapi.TestHarness_Tast_{
+								Tast: &testapi.TestHarness_Tast{},
+							},
+						},
+						TestCaseId: &testapi.TestCase_Id{
+							Value: "tast.rlz_CheckPing",
+						},
+						Verdict:   &testapi.TestCaseResult_Pass_{},
+						StartTime: startedTime,
 					},
 				},
 			},
