@@ -362,9 +362,9 @@ func (ctr *CrosToolRunner) GetContainer(
 	getContainerReq := &testapi.GetContainerRequest{Name: containerName}
 	common.WriteProtoToStepLog(ctx, step, getContainerReq, "GetContainerRequest")
 
-	// TODO (azrahman): use exponential backoff retry
 	portFound := false
-	retryCount := 50 // This number is currently a bit high due to drone's lower than expected performance
+	// Retry finding the container, as it may still be starting up.
+	retryCount := 3
 	timeout := 5 * time.Second
 
 	resp := &testapi.GetContainerResponse{}
