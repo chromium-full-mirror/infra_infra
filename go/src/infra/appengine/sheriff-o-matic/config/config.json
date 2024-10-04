@@ -2,13 +2,5 @@
   "ignored_steps": [
     "Run Clank Test Annotator",
     "*(experimental)*"
-  ],
-  "builder_groups": {
-    "chromium.android": {
-      "excluded_builders": [
-        "orderfile-clankium"
-      ]
-    }
-  }
+  ]
 }
-
