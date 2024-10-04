@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/container_uprev/internal/preppers"
 )
 
 var (
@@ -132,6 +133,7 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/base-adb/${platform}"),
 			},
+			Prepper: preppers.AdbBase,
 		},
 	}
 

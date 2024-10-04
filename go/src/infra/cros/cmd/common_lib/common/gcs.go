@@ -194,36 +194,43 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 
 // DownloadGcsFileToLocal downloads gcs file to local if it doesn't exist.
 func DownloadGcsFileToLocal(ctx context.Context, gcsPath string, tempRootDir string) (string, error) {
-	client, err := NewStorageClientWithDefaultAccount(ctx)
-	if err != nil {
-		logging.Infof(ctx, "error while creating new storage client: %s", err)
-		return "", err
-	}
-
 	urlPath, err := GetURLPath(gcsPath)
 	if err != nil {
 		logging.Infof(ctx, "error while gettting url path: %s", err)
 		return "", err
 	}
 	localFilePath := path.Join(tempRootDir, urlPath)
-	err = os.MkdirAll(filepath.Dir(localFilePath), os.ModePerm)
-	if err != nil {
-		logging.Infof(ctx, "error while making local dir: %s", err)
+	if err := DownloadGcsFileAsLocalFile(ctx, gcsPath, localFilePath); err != nil {
 		return "", err
 	}
+	return localFilePath, nil
+}
 
-	logging.Infof(ctx, "local gcs file path: %s", localFilePath)
+// DownloadGcsFileAsLocalFile downloads gcs file as specific local file if it doesn't exist.
+func DownloadGcsFileAsLocalFile(ctx context.Context, gcsPath string, localFilePath string) error {
+	client, err := NewStorageClientWithDefaultAccount(ctx)
+	if err != nil {
+		logging.Infof(ctx, "error while creating new storage client: %s", err)
+		return err
+	}
+	if localFilePath == "" {
+		return errors.Reason("localFilePath is not defined").Err()
+	}
+	if err := os.MkdirAll(filepath.Dir(localFilePath), os.ModePerm); err != nil {
+		logging.Infof(ctx, "error while making local dir: %s", err)
+		return err
+	}
+	logging.Infof(ctx, "Download gcs file %q as %q", gcsPath, localFilePath)
 	if CheckIfFileExists(localFilePath) != nil {
 		err = DownloadFile(ctx, client, gcsPath, localFilePath)
 		if err != nil {
 			logging.Infof(ctx, "error while downloading file: %s", err)
-			return "", err
+			return err
 		}
 	} else {
 		logging.Infof(ctx, "local gcs file already exists")
 	}
-
-	return localFilePath, nil
+	return nil
 }
 
 // GetMajorBuildFromGCSPath parses the major build from gcs path
