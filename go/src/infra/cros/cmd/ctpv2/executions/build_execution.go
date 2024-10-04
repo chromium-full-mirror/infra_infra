@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
@@ -271,6 +272,7 @@ func executeFiltersInLuciBuild(
 		AlStateInfo:        alStateInfo,
 	}
 
+	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion)
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments), common.DefaultKoffeeFilterNames)
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
@@ -327,4 +329,39 @@ func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilt
 
 func isReqFromATP(req *api.CTPRequest) bool {
 	return req.IsAlRun && req.EncodedAtpTestJobMsg != ""
+}
+
+func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, ctpVersion string) {
+	updatedFilters := []*api.CTPFilter{}
+	for _, filter := range req.GetKarbonFilters() {
+		container := filter.GetContainerInfo().GetContainer()
+		filterName := container.GetName()
+		// Overwrite container image info if present within filter input.
+		// Else, check if map already contains image info for the filter.
+		if hasValidDigest(container.Digest) || len(container.Tags) > 0 {
+			updatedFilters = append(updatedFilters, filter)
+			continue
+		}
+		// Fetch the filter from the firestore.
+		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
+			logging.Infof(ctx, "Found filter inside the firestore for %s", filterName)
+			if containerInfo.GetContainer().GetName() == "" {
+				containerInfo.Container.Name = filterName
+			}
+			containerInfo.BinaryName = filter.GetContainerInfo().GetBinaryName()
+			containerInfo.BinaryArgs = filter.GetContainerInfo().GetBinaryArgs()
+			updatedFilters = append(updatedFilters, &api.CTPFilter{
+				ContainerInfo: containerInfo,
+			})
+			continue
+		}
+	}
+
+	req.KarbonFilters = updatedFilters
+}
+
+// hasValidDigest ensures the digest starts with `sha256:` and
+// the SHA value itself is 64 characters in length.
+func hasValidDigest(digest string) bool {
+	return strings.HasPrefix(digest, "sha256:") && len(digest) == len("sha256:")+64
 }

@@ -142,7 +142,9 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "failed to fetch container image data: ").Err()
 	}
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
-	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion)
+
+	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)
+	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion, defK, build)
 	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
 
 	cmd.ContainerMetadataMap = finalMetadataMap
@@ -159,26 +161,13 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 	// -- Create ctp filters from default and input filters --
 
-	ctpFilters := make([]*api.CTPFilter, 0)
-	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)
-
-	karbonFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, cmd.CtpReq.GetKarbonFilters(), build)
+	ctpFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, append(cmd.CtpReq.GetKarbonFilters(), cmd.CtpReq.GetKoffeeFilters()...), build)
 	if err != nil {
-		logging.Infof(ctx, "Err in karbonFilters.")
+		logging.Infof(ctx, "Err in ctpFilters.")
 
-		return errors.Annotate(err, "failed to create karbon filters: ").Err()
+		return errors.Annotate(err, "failed to create filters: ").Err()
 	}
-	logging.Infof(ctx, "Past karbonFilters. %s", karbonFilters)
-
-	ctpFilters = append(ctpFilters, karbonFilters...)
-
-	koffeeFilters, err := common.ConstructCtpFilters(ctx, common.DefaultKoffeeFilterNames, finalMetadataMap, cmd.CtpReq.GetKoffeeFilters(), build)
-	if err != nil {
-		return errors.Annotate(err, "failed to create koffee filters: ").Err()
-	}
-	logging.Infof(ctx, "Past koffeeFilters. %s", ctpFilters)
-
-	ctpFilters = append(ctpFilters, koffeeFilters...)
+	logging.Infof(ctx, "Past ctpFilters. %s", ctpFilters)
 
 	filterData, err := json.MarshalIndent(ctpFilters, "", "\t")
 	if err != nil {
@@ -262,45 +251,34 @@ func getFirstGcsPathFromLegacy(schedTargs []*testapi.ScheduleTargets) string {
 	}
 }
 
-func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPRequest, buildContMetadata map[string]*buildapi.ContainerImageInfo, creds, ctpVersion string) map[string]*buildapi.ContainerImageInfo {
+func createContainerImagesInfoMap(
+	ctx context.Context,
+	req *testapi.CTPRequest,
+	buildContMetadata map[string]*buildapi.ContainerImageInfo,
+	creds, ctpVersion string,
+	defaultFilterNames []string,
+	build int) (bcm map[string]*buildapi.ContainerImageInfo) {
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
-	bcm := make(map[string]*buildapi.ContainerImageInfo)
+	bcm = make(map[string]*buildapi.ContainerImageInfo)
 	for k, v := range buildContMetadata {
 		bcm[k] = v
 	}
 
-	// Add staging/prod containers from the firestore.
-	firestoreFilters, err := common.FetchFiltersFromFirestore(ctx, creds, ctpVersion)
-	if err != nil {
-		logging.Infof(ctx, "%w", err)
-	}
-	for _, filter := range firestoreFilters {
-		bcm[filter.GetContainerInfo().GetContainer().GetName()] = filter.GetContainerInfo().GetContainer()
+	// Write in the default filter's container image info.
+	// Overwrite any of the build's metadata.
+	defaultFilters := common.GetDefaultFilterContainerImageInfosMap(ctx, creds, ctpVersion, defaultFilterNames, buildContMetadata, build)
+	for defaultFilterName, defaultFilter := range defaultFilters {
+		bcm[defaultFilterName] = defaultFilter
 	}
 
-	// Combine karbon and koffee filters.
-	// They use identical logic.
-	for _, filter := range append(req.GetKarbonFilters(), req.GetKoffeeFilters()...) {
+	for _, filter := range req.GetKarbonFilters() {
 		container := filter.GetContainerInfo().GetContainer()
-		// Overwrite container image info if present within filter input.
-		// Else, check if map already contains image info for the filter.
-		if hasValidDigest(container.Digest) || len(container.Tags) > 0 {
-			bcm[container.GetName()] = container
-		} else {
-			if _, ok := bcm[container.GetName()]; !ok {
-				logging.Infof(ctx, "container %s missing container info", container.GetName())
-			}
-		}
+		filterName := container.GetName()
+		bcm[filterName] = container
 	}
 
-	return bcm
-}
-
-// hasValidDigest ensures the digest starts with `sha256:` and
-// the SHA value itself is 64 characters in length.
-func hasValidDigest(digest string) bool {
-	return strings.HasPrefix(digest, "sha256:") && len(digest) == len("sha256:")+64
+	return
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.

@@ -32,6 +32,7 @@ var (
 	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName, PreProcessFilterContainerName}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
+	// Deprecated: Falls under KarbonFilters.
 	DefaultKoffeeFilterNames = []string{}
 
 	// Default shas for backwards compatibility
@@ -51,6 +52,38 @@ var (
 		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
 	}
 )
+
+func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersion string, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) map[string]*buildapi.ContainerImageInfo {
+	defaultFilters := map[string]*buildapi.ContainerImageInfo{}
+
+	for _, defaultFilterName := range defaultFilterNames {
+		logging.Infof(ctx, "Getting default filter for %s", defaultFilterName)
+
+		// Check for prodSha first. If defined, this value
+		// takes highest priority.
+		if digest, ok := prodShas[defaultFilterName]; ok {
+			logging.Infof(ctx, "Found default digest value for %s", defaultFilterName)
+			defaultFilters[defaultFilterName] = CreateTestServicesContainer(defaultFilterName, digest)
+			continue
+		}
+
+		// Try and grab the filter from the firestore DB
+		// of infra/infra containers.
+		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
+			logging.Infof(ctx, "Found filter inside the firestore for %s", defaultFilterName)
+			if containerInfo.GetContainer().GetName() == "" {
+				containerInfo.Container.Name = defaultFilterName
+			}
+			defaultFilters[defaultFilterName] = containerInfo.GetContainer()
+			continue
+		}
+
+		// If not found, expect to be in the build's container metadata
+		// which will be checked at the time of CTPFilter construction.
+	}
+
+	return defaultFilters
+}
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
 func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string) []string {
@@ -84,21 +117,11 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 	for _, filterName := range defaultFilterNames {
 		var ctpFilter *api.CTPFilter
 		var err error
-		// Check for default SHAs
-		digest, ok := prodShas[filterName]
-		if ok {
-			logging.Infof(ctx, "Making default container for: %s", filterName)
-			ctpFilter, err = CreateCTPDefaultWithContainerName(filterName, digest, build)
-			if err != nil {
-				return nil, errors.Annotate(err, "failed to create default default filter: ").Err()
-			}
-			defaultFilters = append(defaultFilters, ctpFilter)
-			continue
-		}
 
 		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
 		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
+		_, ok := prodShas[filterName]
+		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, !ok)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -176,10 +199,10 @@ func ConstructCtpFilters(ctx context.Context, defaultFilterNames []string, contM
 	nonDefFilters := []*api.CTPFilter{}
 	for _, filter := range filtersToAdd {
 		filterName := filter.GetContainerInfo().GetContainer().GetName()
-		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
+		ctpFilter, err := CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, false)
 		if err != nil {
 			logging.Infof(ctx, "failed to create ctp filter for %s", filterName)
-			continue
+			return filters, errors.Annotate(err, "failed to create ctp filter for %s, %s", filterName, err).Err()
 		}
 		// BinaryName is assumed to be same as FilterName.
 		// If this is not the case, it can be resolved by the input.
