@@ -7,6 +7,7 @@ package ctr
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -35,11 +36,11 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	// TODO(otabek): use prod as default value.
-	containerTag := argsMap.AsString(ctx, "container_tag", "otabekCLv2")
-	containerImage := "us-docker.pkg.dev/cros-registry/test-services/adb-base:" + containerTag
+	containerRepo := argsMap.AsString(ctx, "container_repo", "us-docker.pkg.dev/cros-registry/test-services/adb-base")
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
-	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/adb")
+	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/base-adb")
+	containerImage := containerRepo + ":" + containerTag
 	containerName := cft.ADBName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,
@@ -118,14 +119,12 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 
 	argsMap := info.GetActionArgs(ctx)
+	adbPort := argsMap.AsInt(ctx, "adb_port", 5555)
 	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
 	timeout := argsMap.AsDuration(ctx, "timeout", 2, time.Second)
 	connect := func() error {
-		if _, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
 		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
 			log.Debugf(ctx, "adb devices error: %s", err)
 		}
@@ -133,7 +132,8 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 			log.Debugf(ctx, "adb devices error: %s", err)
 		}
 		log.Debugf(ctx, "Try to connect to %q by adb", dut.Name)
-		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", dut.Name); err != nil {
+		deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
+		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", deviceName); err != nil {
 			return errors.Annotate(err, "fail to connect").Err()
 		}
 		if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
@@ -142,9 +142,8 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
 			return errors.Annotate(err, "fail to read adb devices, after connection").Err()
 		} else if out := string(res.GetStdout()); out != "" {
-			expectedStr := dut.Name + ":"
-			if !strings.Contains(out, expectedStr) {
-				return errors.Reason("fail to find connected device %q in list of devices", dut.Name).Err()
+			if !strings.Contains(out, deviceName) {
+				return errors.Reason("fail to find connected device %q in list of devices", deviceName).Err()
 			}
 		} else {
 			return errors.Reason("fail to read adb devices, after connection").Err()

@@ -188,10 +188,11 @@ func (c *serviceInfoImpl) CreateContainer(ctx context.Context, req *api.StartTem
 	} else if c.ctr.CtrClient == nil {
 		return nil, errors.Reason("create container %q: ctr-client not found, probably server is not started", req.GetName()).Err()
 	}
-	if container, err := c.GetContainer(ctx, req.GetName()); err != nil {
-		log.Infof(ctx, "Container %q isn't exist yet! Error: %s", req.GetName(), err)
-	} else {
+	if container, ok := c.containerCache[req.GetName()]; ok {
+		log.Infof(ctx, "Got container %q from cache!", req.GetName())
 		return container, nil
+	} else {
+		log.Infof(ctx, "Container %q isn't exist yet!", req.GetName())
 	}
 	container := &baseContainerImpl{
 		name: req.GetName(),

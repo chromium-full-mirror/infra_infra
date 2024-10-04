@@ -26,8 +26,23 @@ type ADBResponse interface {
 	GetExitCode() int32
 }
 
-// ExecCommand execs a raw command by ADB.
+// ExecCommand execs command by base-adb service and provide error if adb command failed.
 func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, command string, args ...string) (ADBResponse, error) {
+	res, err := RunCommand(ctx, adbClient, timeout, command, args...)
+	if err != nil {
+		return res, errors.Annotate(err, "exec adb command").Err()
+	}
+	if res.GetExitCode() != 0 {
+		return res, errors.Reason("exec adb command: failed with exitcode: %d", res.GetExitCode()).Err()
+	}
+	return res, nil
+}
+
+// RunCommand runs raw command by base-adb service and return result.
+//
+// Error is provided only if service fail to execute command or timeout.
+// Command execution always represented as exec-code in response.
+func RunCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, command string, args ...string) (ADBResponse, error) {
 	if command == "" {
 		return nil, errors.Reason("exec adb command: command is empty").Err()
 	}
@@ -47,19 +62,10 @@ func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout ti
 		log.Debugf(ctx, "STDERR: %s", res.GetStderr())
 		log.Debugf(ctx, "EXITCODE: %d", res.GetExitCode())
 	}
-	if err != nil && res.GetExitCode() != 0 {
-		err = errors.Reason("failed execute command %q, finished with exit code: %d", fullCmd, res.GetExitCode()).Err()
+	if err != nil {
+		err = errors.Reason("failed execute command %q, finished with error: %d", fullCmd, err).Err()
 	}
 	return res, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
-}
-
-// ShellCommand execs a shell command by ADB.
-func ShellCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, args ...string) (ADBResponse, error) {
-	if len(args) == 0 {
-		return nil, errors.Reason("shell adb command: no commands for execution").Err()
-	}
-	res, err := ExecCommand(ctx, adbClient, timeout, "shell", args...)
-	return res, errors.Annotate(err, "shell adb command").Err()
 }
 
 // ServiceClient creates service client to the service running on CFT container.

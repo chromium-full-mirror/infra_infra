@@ -151,7 +151,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 			params = append(params, args...)
 		}
 		// Response doe snot contains exit code.
-		res, err := adb.ShellCommand(ctx, client, timeout, params...)
+		res, err := adb.RunCommand(ctx, client, timeout, "shell", params...)
 		if err != nil {
 			return &adbResponse{
 				err:  err.Error(),

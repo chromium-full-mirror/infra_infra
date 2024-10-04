@@ -66,8 +66,7 @@ func crosBaseActions() map[string]*Action {
 			},
 			ExecName: "ctr_start_adb_container",
 			ExecExtraArgs: []string{
-				"container_tag:otabekCLv3",
-				"artifact_dir:/tmp/adb-path",
+				"container_tag:paris-prod",
 			},
 			AllowFailAfterRecovery: true,
 		},

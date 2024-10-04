@@ -155,6 +155,7 @@ func crosRepairActions() map[string]*Action {
 				"retry_count:3",
 				"retry_interval:3",
 				"timeout:5",
+				"adb_port:5555",
 			},
 		},
 		"Android is accessable": {

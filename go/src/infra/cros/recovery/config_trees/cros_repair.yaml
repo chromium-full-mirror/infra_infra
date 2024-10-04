@@ -14,8 +14,7 @@ plans:
         - name: Start ADB container (Allow to fail)
           exec_name: ctr_start_adb_container
           exec_args:
-            - container_tag:otabekCLv3
-            - artifact_dir:/tmp/adb-path
+            - container_tag:paris-prod
           docs:
             - Pull and run adb-base container
           conditions:
@@ -9965,6 +9964,7 @@ plans:
                 - retry_count:3
                 - retry_interval:3
                 - timeout:5
+                - adb_port:5555
               docs:
                 - Exec ADB connect to the DUT by ethernet on port 5555.
         - name: Chrome OS checks
