@@ -1,0 +1,20 @@
+# Automatically build the container for the Fleet console that will
+# eventually be used in cloud run.
+#
+# To test this config run:
+#    cloudbuildhelper build fleetconsole.yaml
+#
+# For more information see:
+#    https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/#testing-changes-locally
+
+name: fleetconsole
+extends: ../base.yaml
+
+dockerfile: ../../../go/src/infra/fleetconsole/cmd/fleetconsoleserver/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../go/src/infra/fleetconsole
+
+build:
+  - go_binary: infra/fleetconsole/cmd/fleetconsoleserver
