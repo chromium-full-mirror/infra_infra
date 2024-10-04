@@ -32,6 +32,12 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 		"/tmp/ants-publish", //  ContainerArtifactDir
 		"ants-publish server -port 0",
 	)
+	//  Add test artifacts directory for container.
+	antsContainerBuilder.DynamicDeps = append(antsContainerBuilder.DynamicDeps,
+		&testapi.DynamicDep{
+			Key:   "generic.additionalVolumes",
+			Value: "FMT=${env-TEMPDIR}:/tmp/artifacts",
+		})
 
 	publishMetadata, _ := anypb.New(&metadata.PublishAntsMetadata{})
 	dynamicDeps := []*testapi.DynamicDep{
@@ -50,6 +56,10 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 		{
 			Key:   "publishRequest.metadata.accountId",
 			Value: "account-id",
+		},
+		{
+			Key:   "publishRequest.testResponse",
+			Value: "cros-test_runTests",
 		},
 	}
 	dynamicIdentifier := "ants-publish"
