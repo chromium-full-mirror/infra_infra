@@ -102,7 +102,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 		if uprevErr != nil {
 			err = errors.Append(err, uprevErr)
 		} else {
-			containerInfo := common.NewContainerInfoItem(config.RepositoryHostname, config.RepositoryProject, sha)
+			containerInfo := common.NewContainerInfoItem(config.RepositoryHostname, config.RepositoryProject, sha, config.ContainerName)
 			containerInfos[config.Name] = containerInfo
 		}
 	}

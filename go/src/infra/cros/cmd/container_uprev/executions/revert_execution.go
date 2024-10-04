@@ -15,7 +15,7 @@ import (
 )
 
 // RevertExecution goes through each container and reverts its sha.
-func RevertExecution(containerNames []string, isProd bool) {
+func RevertExecution(configNames []string, isProd bool) {
 	ctx := context.Background()
 
 	logCfg := common.LoggerConfig{Out: log.Default().Writer()}
@@ -26,15 +26,15 @@ func RevertExecution(containerNames []string, isProd bool) {
 		tag = common.LabelProd
 	}
 
-	if len(containerNames) == 1 && containerNames[0] == "all" {
-		containerNames = []string{}
+	if len(configNames) == 1 && configNames[0] == "all" {
+		configNames = []string{}
 		configs := internal.GetConfigs()
 		for _, config := range configs {
-			containerNames = append(containerNames, config.Name)
+			configNames = append(configNames, config.Name)
 		}
 	}
 
-	err := internal.RevertShas(ctx, containerNames, "", tag)
+	err := internal.RevertShas(ctx, configNames, "", tag)
 	if err != nil {
 		logging.Infof(ctx, "failed to revert some or all SHAs, %s", err)
 		return

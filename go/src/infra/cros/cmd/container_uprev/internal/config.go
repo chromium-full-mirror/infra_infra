@@ -74,6 +74,9 @@ type UprevConfig struct {
 	// 	project: cros-registry/test-services
 	RepositoryHostname string
 	RepositoryProject  string
+	// Defaults to Name, but can be separately set if
+	// container name is different than the uprev name.
+	ContainerName string
 	// Binaries used during docker image setup.
 	CIPDPackages []*CIPDPackage
 	// Prepper is a function signature representing
@@ -84,7 +87,7 @@ type UprevConfig struct {
 
 // GetConfigs returns the uprev configs.
 func GetConfigs() []*UprevConfig {
-	return []*UprevConfig{
+	configs := []*UprevConfig{
 		{
 			Name: "provision-filter",
 			CIPDPackages: []*CIPDPackage{
@@ -131,4 +134,16 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 	}
+
+	return CleanConfigs(configs)
+}
+
+func CleanConfigs(configs []*UprevConfig) []*UprevConfig {
+	for _, config := range configs {
+		if config.ContainerName == "" {
+			config.ContainerName = config.Name
+		}
+	}
+
+	return configs
 }

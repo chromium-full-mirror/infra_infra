@@ -70,7 +70,13 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 	if project == "" {
 		project = common.DefaultDockerProject
 	}
-	if sha, err = buildAndPush(ctx, dir, host, project, config.Name, imageTag); err != nil {
+	// Multiple filters may upload to the same container name.
+	// Differentiate between prod and staging in this situation
+	// by adding the unique config name as a suffix.
+	if imageTag == common.LabelPool || imageTag == common.LabelStaging {
+		imageTag = fmt.Sprintf("%s_%s", imageTag, config.Name)
+	}
+	if sha, err = buildAndPush(ctx, dir, host, project, config.ContainerName, imageTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
 	}
