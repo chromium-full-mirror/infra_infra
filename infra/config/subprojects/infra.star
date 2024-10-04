@@ -214,7 +214,7 @@ recipes.roll_trybots(
 )
 
 luci.cq_tryjob_verifier(
-    builder = "infra-internal:try/build_limited Roll Tester (infra)",
+    builder = "infra-internal:try/build_internal Roll Tester (infra)",
     cq_group = "infra",
 )
 

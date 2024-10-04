@@ -70,7 +70,7 @@ luci.cq_tryjob_verifier(
 
 # External testers (defined in another projects) for recipe rolls.
 luci.cq_tryjob_verifier(
-    builder = "infra-internal:try/build_limited Roll Tester (build)",
+    builder = "infra-internal:try/build_internal Roll Tester (build)",
     cq_group = "build",
 )
 luci.cq_tryjob_verifier(
