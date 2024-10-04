@@ -18,9 +18,10 @@ import (
 )
 
 const (
-	androidBuildInternalScope = "https://www.googleapis.com/auth/androidbuild.internal"
-	cloudPlatformScope        = "https://www.googleapis.com/auth/cloud-platform"
-	gceServiceAccountJSONPath = "/creds/service_accounts/service-account-chromeos.json"
+	androidBuildInternalScope    = "https://www.googleapis.com/auth/androidbuild.internal"
+	cloudPlatformScope           = "https://www.googleapis.com/auth/cloud-platform"
+	gceServiceAccountJSONPath    = "/creds/service_accounts/service-account-chromeos.json"
+	satlabServiceAccountJSONPath = "/creds/service_accounts/skylab-drone.json"
 )
 
 // RunType is enum defining where would client be executed
@@ -29,7 +30,8 @@ type RunType int
 // Define constants for RunType
 const (
 	LOCAL RunType = iota
-	CONTAINER
+	CONTAINER_GCE
+	CONTAINER_SATLAB
 	SERVICEACCOUNT
 )
 
@@ -38,8 +40,10 @@ func (rt RunType) String() string {
 	switch rt {
 	case LOCAL:
 		return "local"
-	case CONTAINER:
-		return "container"
+	case CONTAINER_GCE:
+		return "containerGCE"
+	case CONTAINER_SATLAB:
+		return "containerSatlab"
 	case SERVICEACCOUNT:
 		return "serviceAccount"
 	default:
@@ -78,9 +82,12 @@ func getAuthorizedHTTP(credentials *oauth2.TokenSource, timeout time.Duration) (
 func FetchCredentials(rt RunType) (*google.Credentials, error) {
 	switch rt {
 	case LOCAL:
-		return fetchCredentialsFromJSON(true)
-	case CONTAINER:
-		return fetchCredentialsFromJSON(false)
+		localPath := guessUnixHomeDir() + "/.config/gcloud/application_default_credentials.json"
+		return fetchCredentialsFromJSON(localPath)
+	case CONTAINER_GCE:
+		return fetchCredentialsFromJSON(gceServiceAccountJSONPath)
+	case CONTAINER_SATLAB:
+		return fetchCredentialsFromJSON(satlabServiceAccountJSONPath)
 	case SERVICEACCOUNT:
 		return fetchDefaultCredentialsFromSA()
 	default:
@@ -104,14 +111,8 @@ func fetchDefaultCredentialsFromSA() (*google.Credentials, error) {
 // This function is designed to work within containers, where credentials are typically mounted by Drone inside the container.
 // When running locally, the function will use the local gcloud Service Account keyfile.
 // NOTE: If the local run fails, ensure that you have logged in with gcloud and have the necessary scopes.
-func fetchCredentialsFromJSON(localRun bool) (*google.Credentials, error) {
+func fetchCredentialsFromJSON(serviceAccountJSONPath string) (*google.Credentials, error) {
 	// Read the service account JSON key file
-	var serviceAccountJSONPath string
-	if localRun {
-		serviceAccountJSONPath = guessUnixHomeDir() + "/.config/gcloud/application_default_credentials.json"
-	} else {
-		serviceAccountJSONPath = gceServiceAccountJSONPath
-	}
 	jsonData, err := os.ReadFile(serviceAccountJSONPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read key file: %w", err)
