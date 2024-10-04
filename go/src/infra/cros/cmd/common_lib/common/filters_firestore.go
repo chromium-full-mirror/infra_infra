@@ -166,9 +166,13 @@ func buildContainerInfoFromDocumentRef(ctx context.Context, documentRef *firesto
 	// Grab most recent.
 	// Convert to CTPFilter.
 	containerInfoItem := containerInfos[0]
+	containerName := containerInfoItem.ContainerName
+	if containerName == "" {
+		containerName = documentRef.ID
+	}
 	containerInfo = &api.ContainerInfo{
 		Container: &buildapi.ContainerImageInfo{
-			Name:   containerInfoItem.ContainerName,
+			Name:   containerName,
 			Digest: containerInfoItem.Digest,
 			Repository: &buildapi.GcrRepository{
 				Hostname: containerInfoItem.RepositoryHostname,
