@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2-filters/ants-publish-filter/${platform}
+description: CTPv2 filter responsible for updating the
+  dynamic trv2 request for ants publishing.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/ants-publish-filter
+root: ../../go/bin
+data:
+  - file: ants-publish-filter${exe_suffix}
+  - version_file: .versions/ants-publish-filter${exe_suffix}.cipd_version
