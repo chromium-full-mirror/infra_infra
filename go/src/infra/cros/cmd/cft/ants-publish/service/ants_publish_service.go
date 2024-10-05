@@ -147,28 +147,13 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	return aps.service.WorkUnitService.Insert(wu)
 }
 
-// TestCaseID is of the form:
-// `tradefed.<xts_type>.<module_name>#<class_name>#<test_name>`
-func tradefedNames(testcaseID string) (string, string, string, error) {
-	if !strings.HasPrefix(testcaseID, "tradefed.") {
-		return "", "", "", fmt.Errorf("cannot get testnames. got: %s", testcaseID)
-	}
-
-	names := strings.Split(testcaseID, "#")
-	modules := strings.Split(names[0], ".")
-	if len(names) != 3 || len(modules) != 3 {
-		return "", "", "", fmt.Errorf("unexpected format for testcaseID: %s", testcaseID)
-	}
-
-	return modules[2], names[1], names[2], nil
-}
-
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
 	modules := make(map[string]*ants.WorkUnit)
 	testCases := make(map[string]*ants.WorkUnit)
+	var testResults []*ants.TestResult
 
 	for _, result := range aps.results {
 		log.Printf("looking at result: %s", result.GetTestCaseId().Value)
@@ -205,17 +190,35 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 			},
 			TestStatus: antsTestStatus(result),
 		}
-
-		result, err := aps.service.TestResultService.Insert(tr)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		log.Println("Insert result: ", result)
+		testResults = append(testResults, tr)
 	}
 
+	bulkResultRequest := &ants.TestResultBulkInsertRequest{
+		TestResults: testResults,
+	}
+	result, err := aps.service.TestResultService.BulkInsert(bulkResultRequest)
+	if err != nil {
+		return err
+	}
+	log.Printf("BulkInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
 	// Return nil error response to indicate success.
 	return nil
+}
+
+// TestCaseID is of the form:
+// `tradefed.<xts_type>.<module_name>#<class_name>#<test_name>`
+func tradefedNames(testcaseID string) (string, string, string, error) {
+	if !strings.HasPrefix(testcaseID, "tradefed.") {
+		return "", "", "", fmt.Errorf("cannot get testnames. got: %s", testcaseID)
+	}
+
+	names := strings.Split(testcaseID, "#")
+	modules := strings.Split(names[0], ".")
+	if len(names) != 3 || len(modules) != 3 {
+		return "", "", "", fmt.Errorf("unexpected format for testcaseID: %s", testcaseID)
+	}
+
+	return modules[2], names[1], names[2], nil
 }
 
 func antsTestStatus(result *api.TestCaseResult) string {
@@ -231,7 +234,7 @@ func antsTestStatus(result *api.TestCaseResult) string {
 	case *api.TestCaseResult_Skip_:
 		return "testSkipped"
 	default:
-		return "testStatusUnspecified"
+		return "unspecified"
 	}
 }
 

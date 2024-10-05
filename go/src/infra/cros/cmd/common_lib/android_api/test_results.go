@@ -14,6 +14,7 @@ import (
 type TestResultService interface {
 	Get(resourceID int64) (*androidbuildinternal.TestResult, error)
 	Insert(testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error)
+	BulkInsert(testResult *androidbuildinternal.TestResultBulkInsertRequest) (*androidbuildinternal.TestResultBulkInsertResponse, error)
 	Update(resourceID int64, testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error)
 	List(ctx context.Context, testResultID string, options AndroidBuildAPIOptions) (*androidbuildinternal.TestResultListResponse, error)
 }
@@ -34,7 +35,7 @@ func (w *TestResultServiceImpl) Get(resourceID int64) (*androidbuildinternal.Tes
 	return call.Do()
 }
 
-// Insert implmentation for testResults.
+// Insert implementation for testResults.
 func (w *TestResultServiceImpl) Insert(testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error) {
 	if w.client == nil {
 		return nil, errInit
@@ -45,7 +46,18 @@ func (w *TestResultServiceImpl) Insert(testResult *androidbuildinternal.TestResu
 	return call.Do()
 }
 
-// Update implmentation for testResults.
+// BulkInsert implementation for testResults.
+func (w *TestResultServiceImpl) BulkInsert(testResult *androidbuildinternal.TestResultBulkInsertRequest) (*androidbuildinternal.TestResultBulkInsertResponse, error) {
+	if w.client == nil {
+		return nil, errInit
+	}
+
+	call := w.client.Bulkinsert(testResult)
+
+	return call.Do()
+}
+
+// Update implementation for testResults.
 func (w *TestResultServiceImpl) Update(resourceID int64, testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error) {
 	if w.client == nil {
 		return nil, errInit
