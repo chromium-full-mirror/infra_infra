@@ -33,6 +33,7 @@ type ProcessResultsCmd struct {
 	ProvisionResps  map[string][]*api.InstallResponse
 	TestResponses   *api.CrosTestResponse
 	CurrentDutState dutstate.State // optional
+	buildState      *build.State
 
 	// Updates
 	SkylabResult *skylab_test_runner.Result
@@ -92,7 +93,6 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	// Default values
 	prejobVerdict := skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED
 	prejobReason := ""
-	isIncomplete := true
 	logData := getLogData(cmd.TesthausURL, cmd.GcsURL)
 
 	// Parse provision info
@@ -127,74 +127,11 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 		}
 	}
 
-	// Parse test results
-	autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
-	var testErr error
-	testCaseCount := len(cmd.TestResponses.GetTestCaseResults())
-	if cmd.TestResponses != nil && testCaseCount > 0 {
-		isIncomplete = false
-		isPastCaseLimit := testCaseCount > 2000
-		passCount := 0
-		failCount := 0
-		for _, testResult := range cmd.TestResponses.GetTestCaseResults() {
-			testVerdict, isTestFailure := getTestVerdict(ctx, testResult)
-			testResultReason := testResult.GetReason()
-			autotestTestCase := &skylab_test_runner.Result_Autotest_TestCase{
-				Name:                 testResult.GetTestCaseId().GetValue(),
-				Verdict:              testVerdict,
-				HumanReadableSummary: testResultReason,
-			}
-			autotestTestCases = append(autotestTestCases, autotestTestCase)
-			if isTestFailure {
-				failCount += 1
-			} else {
-				passCount += 1
-			}
-
-			if !isPastCaseLimit {
-				// Set test steps
-				testErr = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
-				// Propagate error status to parent step
-				if err == nil && isTestFailure {
-					err = testErr
-				}
-			}
-		}
-		if isPastCaseLimit {
-			if passCount > 0 {
-				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests passed", passCount), "", false, false)
-			}
-			if failCount > 0 {
-				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
-			}
-		}
+	if common.IsALRun(cmd.buildState) {
+		err = cmd.generateSkylabResultForAluminium(ctx, step, prejob, logData, err)
+	} else {
+		err = cmd.generateSkylabResultForClassic(ctx, step, prejob, logData, err)
 	}
-
-	// If no test results, add default results from input.
-	if len(autotestTestCases) == 0 {
-		autotestTestCases = getDefaultAutotestTestCasesResult(ctx, cmd.CftTestRequest)
-	}
-
-	autotestResult := &skylab_test_runner.Result_Autotest{
-		TestCases:  autotestTestCases,
-		Incomplete: isIncomplete,
-	}
-	skylabResult := &skylab_test_runner.Result{
-		Harness: &skylab_test_runner.Result_AutotestResult{
-			AutotestResult: autotestResult,
-		},
-		Prejob: prejob,
-		AutotestResults: map[string]*skylab_test_runner.Result_Autotest{
-			"original_test": autotestResult,
-		},
-		StateUpdate: &skylab_test_runner.Result_StateUpdate{
-			DutState: cmd.CurrentDutState.String(),
-		},
-		LogData: logData,
-	}
-
-	cmd.SkylabResult = skylabResult
-	common.WriteProtoToStepLog(ctx, step, skylabResult, "skylab_result")
 
 	return nil
 }
@@ -235,7 +172,7 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	cmd.GcsURL = sk.GcsURL
 	cmd.TesthausURL = sk.TesthausURL
 	cmd.CurrentDutState = sk.CurrentDutState
-
+	cmd.buildState = sk.BuildState
 	return nil
 }
 
@@ -297,6 +234,24 @@ func getDefaultAutotestTestCasesResult(ctx context.Context, req *skylab_test_run
 	return autotestTestCases
 }
 
+// getDefaultAndroidGenericTestCasesResult constructs default result from input.
+func getDefaultAndroidGenericTestCasesResult(ctx context.Context, req *skylab_test_runner.CFTTestRequest) []*skylab_test_runner.Result_AndroidGeneric_GivenTestCase {
+	givenTestCases := []*skylab_test_runner.Result_AndroidGeneric_GivenTestCase{}
+	for _, testSuite := range req.GetTestSuites() {
+		for _, testCaseID := range testSuite.GetTestCaseIds().GetTestCaseIds() {
+			givenTestCase := &skylab_test_runner.Result_AndroidGeneric_GivenTestCase{
+				ParentTest: testCaseID.GetValue(),
+				Incomplete: true,
+			}
+			givenTestCases = append(givenTestCases, givenTestCase)
+
+			_ = common.CreateStepWithStatus(ctx, testCaseID.GetValue(), common.TestDidNotRunErr, true, false)
+		}
+	}
+
+	return givenTestCases
+}
+
 // getLogData constructs tasklogdata from provided links.
 func getLogData(testhausURL string, gcsURL string) *commonpb.TaskLogData {
 	logData := &commonpb.TaskLogData{}
@@ -314,4 +269,158 @@ func NewProcessResultsCmd() *ProcessResultsCmd {
 	abstractCmd := interfaces.NewAbstractCmd(ProcessResultsCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &ProcessResultsCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor, ProvisionResps: map[string][]*api.InstallResponse{}}
+}
+
+func (cmd *ProcessResultsCmd) generateSkylabResultForClassic(ctx context.Context, step *build.Step, prejob *skylab_test_runner.Result_Prejob, logData *commonpb.TaskLogData, err error) error {
+	// Parse test results
+	autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+	var testErr error
+	isIncomplete := true
+	testCaseCount := len(cmd.TestResponses.GetTestCaseResults())
+	if cmd.TestResponses != nil && testCaseCount > 0 {
+		isIncomplete = false
+		isPastCaseLimit := testCaseCount > 2000
+		passCount := 0
+		failCount := 0
+		for _, testResult := range cmd.TestResponses.GetTestCaseResults() {
+			testVerdict, isTestFailure := getTestVerdict(ctx, testResult)
+			testResultReason := testResult.GetReason()
+			autotestTestCase := &skylab_test_runner.Result_Autotest_TestCase{
+				Name:                 testResult.GetTestCaseId().GetValue(),
+				Verdict:              testVerdict,
+				HumanReadableSummary: testResultReason,
+			}
+			autotestTestCases = append(autotestTestCases, autotestTestCase)
+			if isTestFailure {
+				failCount++
+			} else {
+				passCount++
+			}
+
+			if !isPastCaseLimit {
+				// Set test steps
+				testErr = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
+				// Propagate error status to parent step
+				if err == nil && isTestFailure {
+					err = testErr
+				}
+			}
+		}
+		if isPastCaseLimit {
+			if passCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests passed", passCount), "", false, false)
+			}
+			if failCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
+			}
+		}
+	}
+
+	// If no test results, add default results from input.
+	if len(autotestTestCases) == 0 {
+		autotestTestCases = getDefaultAutotestTestCasesResult(ctx, cmd.CftTestRequest)
+	}
+
+	autotestResult := &skylab_test_runner.Result_Autotest{
+		TestCases:  autotestTestCases,
+		Incomplete: isIncomplete,
+	}
+	skylabResult := &skylab_test_runner.Result{
+		Harness: &skylab_test_runner.Result_AutotestResult{
+			AutotestResult: autotestResult,
+		},
+		Prejob: prejob,
+		AutotestResults: map[string]*skylab_test_runner.Result_Autotest{
+			"original_test": autotestResult,
+		},
+		StateUpdate: &skylab_test_runner.Result_StateUpdate{
+			DutState: cmd.CurrentDutState.String(),
+		},
+		LogData: logData,
+	}
+
+	cmd.SkylabResult = skylabResult
+	common.WriteProtoToStepLog(ctx, step, skylabResult, "skylab_result")
+
+	return err
+
+}
+
+func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Context, step *build.Step, prejob *skylab_test_runner.Result_Prejob, logData *commonpb.TaskLogData, err error) error {
+	// Parse test results
+	givenTestCases := []*skylab_test_runner.Result_AndroidGeneric_GivenTestCase{}
+	var testErr error
+	isIncomplete := true
+	testCaseCount := len(cmd.TestResponses.GetTestCaseResults())
+	if cmd.TestResponses != nil && testCaseCount > 0 {
+		isIncomplete = false
+		isPastCaseLimit := testCaseCount > 2000
+		passCount := 0
+		failCount := 0
+		givenTestResultsMap := common.GenerateGivenTestResultsMap(cmd.TestResponses)
+		for parentTest, childTestResults := range givenTestResultsMap {
+			autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+			for _, childTestResult := range childTestResults {
+				testVerdict, isTestFailure := getTestVerdict(ctx, childTestResult)
+				testResultReason := childTestResult.GetReason()
+				autotestTestCase := &skylab_test_runner.Result_Autotest_TestCase{
+					Name:                 childTestResult.GetTestCaseId().GetValue(),
+					Verdict:              testVerdict,
+					HumanReadableSummary: testResultReason,
+				}
+				if isTestFailure {
+					failCount++
+				} else {
+					passCount++
+				}
+				autotestTestCases = append(autotestTestCases, autotestTestCase)
+				if !isPastCaseLimit {
+					// Set test steps
+					testErr = common.CreateStepWithStatus(ctx, childTestResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
+					// Propagate error status to parent step
+					if err == nil && isTestFailure {
+						err = testErr
+					}
+				}
+			}
+			givenTestCases = append(givenTestCases, &skylab_test_runner.Result_AndroidGeneric_GivenTestCase{
+				ParentTest:     parentTest,
+				ChildTestCases: autotestTestCases,
+				Incomplete:     isIncomplete,
+			})
+
+		}
+		if isPastCaseLimit {
+			if passCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests passed", passCount), "", false, false)
+			}
+			if failCount > 0 {
+				common.CreateStepWithStatus(ctx, fmt.Sprintf("%d tests failed", failCount), "", true, false)
+			}
+		}
+	}
+
+	// If no test results, add default results from input.
+	if len(givenTestCases) == 0 {
+		givenTestCases = getDefaultAndroidGenericTestCasesResult(ctx, cmd.CftTestRequest)
+	}
+
+	skylabResult := &skylab_test_runner.Result{
+		Harness: &skylab_test_runner.Result_AndroidGenericResult{
+			AndroidGenericResult: &skylab_test_runner.Result_AndroidGeneric{
+				GivenTestCases: givenTestCases,
+			},
+		},
+		Prejob: prejob,
+		StateUpdate: &skylab_test_runner.Result_StateUpdate{
+			DutState: cmd.CurrentDutState.String(),
+		},
+		LogData: logData,
+	}
+
+	cmd.SkylabResult = skylabResult
+	common.WriteProtoToStepLog(ctx, step, skylabResult, "skylab_result")
+
+	return err
+
 }

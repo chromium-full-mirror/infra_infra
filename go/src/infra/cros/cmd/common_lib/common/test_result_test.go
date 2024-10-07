@@ -9,6 +9,8 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestGetTesthausURL(t *testing.T) {
@@ -55,4 +57,75 @@ func TestGetTesthausURL(t *testing.T) {
 			})
 		}
 	})
+}
+
+func Test_UpdateGivenTestResults_TradeFed(t *testing.T) {
+	crosTestResponse := &api.CrosTestResponse{
+		TestCaseResults: []*api.TestCaseResult{
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "tradefed.cts.CtsAppSecurityHostTestCases#android.appsecurity.cts.PkgInstallSignatureVerificationTest#testInstallV2TwoSignersRejectsWhenOneBroken",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "tradefed.cts.CtsAppSecurityHostTestCases#android.appsecurity.cts.PkgInstallSignatureVerificationTest#testInstallV1OneSignerSHA384withRSA",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "tradefed.cts.CtsBluetoothTestCases#android.bluetooth.cts.AdvertiseCallbackTest#advertiseFailure",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "tradefed.cts.CtsBluetoothTestCases#android.bluetooth.cts.AdvertiseCallbackTest#advertiseSuccess",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+		},
+	}
+
+	testMap := GenerateGivenTestResultsMap(crosTestResponse)
+	if len(testMap) != 2 {
+		t.Errorf("Expected len : 2, found %d", len(crosTestResponse.GetGivenTestResults()))
+	}
+
+	for parentTest, childTestResults := range testMap {
+		if len(childTestResults) != 2 {
+			t.Errorf("Expected len : 2, found %d", len(crosTestResponse.GetGivenTestResults()))
+		}
+		if parentTest != "tradefed.cts.CtsBluetoothTestCases" && parentTest != "tradefed.cts.CtsAppSecurityHostTestCases" {
+			t.Errorf("Expected name found different %s", parentTest)
+		}
+	}
+
+}
+
+func Test_UpdateGivenTestResults_NonTradeFed(t *testing.T) {
+	crosTestResponse := &api.CrosTestResponse{
+		TestCaseResults: []*api.TestCaseResult{
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "crosier.QuickSettingsIntegrationTest.OpenOsSettings",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+			{
+				TestCaseId: &api.TestCase_Id{
+					Value: "crosier.QuickSettingsIntegrationTest.ManagedDeviceInfo",
+				},
+				Verdict: &api.TestCaseResult_Pass_{},
+			},
+		},
+	}
+
+	testMap := GenerateGivenTestResultsMap(crosTestResponse)
+
+	if len(testMap) != 0 {
+		t.Errorf("Expected len : 0, found %d", len(crosTestResponse.GetGivenTestResults()))
+	}
 }
