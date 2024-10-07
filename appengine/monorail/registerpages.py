@@ -107,20 +107,20 @@ class ServletRegistry(object):
 
   def Register(self, services, flask_instance):
     """Register all the monorail request handlers."""
-    self._RegisterGroupUrls(services)
-    self._RegisterHostingUrl(services)
-    self._RegisterOldHostUrl(services)
-    self._RegisterRedirectProjectUrl()
+    # self._RegisterGroupUrls(services)
+    # self._RegisterHostingUrl(services)
+    # self._RegisterOldHostUrl(services)
+    # self._RegisterRedirectProjectUrl()
     self._RegisterCSPUrl()
-    self._RegisterProjectUrls(services, flask_instance)
-    self._RegisterUserUrls(services)
+    # self._RegisterProjectUrls(services, flask_instance)
+    # self._RegisterUserUrls(services)
     self._RegisterTaskUrl(services)
     self._RegisterCronUrl(services)
     self._RegisterBackendUrl(services)
     self._RegisterMONSetUrl(services)
     self._RegisterAHUrl(services)
     self._RegisterPrpcUrl(services)
-    self._RegisterWebComponentsUrl(services)
+    # self._RegisterWebComponentsUrl(services)
     self._RegisterFlaskUrlRules(flask_instance, self.routes)
 
   def _RegisterFlaskUrlRules(
@@ -138,6 +138,9 @@ class ServletRegistry(object):
       url = rule[0][len(removed_prefix):] if rule[0].startswith(
           removed_prefix) else rule[0]
       flask_instance.add_url_rule(url, view_func=rule[1], methods=rule[2])
+
+    flask_instance.register_error_handler(404, _Handle404)
+
     return flask_instance
 
   # pylint: disable=unused-argument
@@ -837,3 +840,7 @@ def RegisterEndpointsUrls(app):
 
 def RegisterTeardown(app):
   app.teardown_request(teardown.Teardown)
+
+
+def _Handle404(e):
+  return flask.render_template('404.html'), 404
