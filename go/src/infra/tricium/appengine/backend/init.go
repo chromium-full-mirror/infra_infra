@@ -5,9 +5,7 @@
 package main
 
 import (
-	"context"
 	"net/http"
-	"strings"
 
 	"google.golang.org/appengine"
 
@@ -16,7 +14,6 @@ import (
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
-	luciConfig "go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/appengine/gaeconfig"
 	"go.chromium.org/luci/config/impl/filesystem"
 	"go.chromium.org/luci/config/impl/remote"
@@ -90,37 +87,24 @@ func withRemoteConfigService(c *router.Context, next router.Handler) {
 		logging.WithError(err).Errorf(ctx, "Failed to retrieve cached settings")
 		return
 	}
-	var iface luciConfig.Interface
-	if strings.HasSuffix(s.ConfigServiceHost, ".appspot.com") {
-		// create a luci-config v1 client
-		iface = remote.NewV1(s.ConfigServiceHost, false, func(c context.Context) (*http.Client, error) {
-			t, err := auth.GetRPCTransport(c, auth.AsSelf)
-			if err != nil {
-				return nil, err
-			}
-			return &http.Client{Transport: t}, nil
-		})
-	} else {
-		// create a luci-config v2 client
-		creds, err := auth.GetPerRPCCredentials(ctx,
-			auth.AsSelf,
-			auth.WithIDTokenAudience("https://"+s.ConfigServiceHost),
-		)
-		if err != nil {
-			c.Writer.WriteHeader(http.StatusInternalServerError)
-			logging.WithError(err).Errorf(ctx, "Cannot create credentials to access %s", s.ConfigServiceHost)
-			return
-		}
-		iface, err = remote.NewV2(ctx, remote.V2Options{
-			Host:      s.ConfigServiceHost,
-			Creds:     creds,
-			UserAgent: common.AppID(ctx),
-		})
-		if err != nil {
-			c.Writer.WriteHeader(http.StatusInternalServerError)
-			logging.WithError(err).Errorf(ctx, "Cannot create luci-config v2 client")
-			return
-		}
+	creds, err := auth.GetPerRPCCredentials(ctx,
+		auth.AsSelf,
+		auth.WithIDTokenAudience("https://"+s.ConfigServiceHost),
+	)
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		logging.WithError(err).Errorf(ctx, "Cannot create credentials to access %s", s.ConfigServiceHost)
+		return
+	}
+	iface, err := remote.New(ctx, remote.Options{
+		Host:      s.ConfigServiceHost,
+		Creds:     creds,
+		UserAgent: common.AppID(ctx),
+	})
+	if err != nil {
+		c.Writer.WriteHeader(http.StatusInternalServerError)
+		logging.WithError(err).Errorf(ctx, "Cannot create luci-config v2 client")
+		return
 	}
 	c.Request = c.Request.WithContext(config.WithConfigService(ctx, iface))
 	next(c)

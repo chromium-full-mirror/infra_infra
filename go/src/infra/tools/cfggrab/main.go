@@ -155,7 +155,7 @@ func withConfigClient(ctx context.Context) (context.Context, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to get credentials to access %s", host).Err()
 	}
-	iface, err := remote.NewV2(ctx, remote.V2Options{
+	iface, err := remote.New(ctx, remote.Options{
 		Host:      host,
 		Creds:     creds,
 		UserAgent: "cfggrab",

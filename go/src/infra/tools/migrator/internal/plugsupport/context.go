@@ -7,8 +7,6 @@ package plugsupport
 import (
 	"context"
 
-	"google.golang.org/grpc/credentials"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -50,19 +48,18 @@ type ContextConfig struct {
 func (r *ContextConfig) Apply(ctx context.Context) (context.Context, error) {
 	ctx = r.Logging.Set(ctx)
 
+	authOpts := r.Auth
+	authOpts.UseIDTokens = true
+	authOpts.Audience = "https://" + r.ConfigServiceHost
+	creds, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).PerRPCCredentials()
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to create authenticator").Err()
+	}
+
 	client, err := cfgclient.New(ctx, cfgclient.Options{
-		ServiceHost: r.ConfigServiceHost,
-		GetPerRPCCredsFn: func(ctx context.Context) (credentials.PerRPCCredentials, error) {
-			authOpts := r.Auth
-			authOpts.UseIDTokens = true
-			authOpts.Audience = "https://" + r.ConfigServiceHost
-			creds, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).PerRPCCredentials()
-			if err != nil {
-				return nil, errors.Annotate(err, "failed to create authenticator").Err()
-			}
-			return creds, nil
-		},
-		UserAgent: "migrator",
+		ServiceHost:       r.ConfigServiceHost,
+		PerRPCCredentials: creds,
+		UserAgent:         "migrator",
 	})
 	if err != nil {
 		return ctx, errors.Annotate(err, "cannot configure LUCI Config client").Err()
