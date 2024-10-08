@@ -58,8 +58,6 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       gclient_config_name=patch_root,
       patch_root=patch_root,
       internal=internal,
-      # infra_internal is fully migrated to py3.
-      generate_py2_env=not internal and should_run_python_tests(api),
       go_version_variant=go_version_variant)
   co.commit_change()
   co.gclient_runhooks()

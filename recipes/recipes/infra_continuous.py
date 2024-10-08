@@ -213,9 +213,6 @@ def RunSteps(api):
   co = api.infra_checkout.checkout(
       gclient_config_name=gclient_config,
       internal=internal,
-      # infra_internal is fully migrated to py3.
-      generate_py2_env=(not internal and
-                        should_run_python_tests(api, buildername)),
       go_version_variant=go_version_variant)
   co.gclient_runhooks()
 

@@ -27,7 +27,8 @@ def _fix_sys_path_for_appengine(pretest_filename):
 
   # Remove the base infra directory from the path, since this isn't available
   # on appengine.
-  sys.path.remove(infra_base_dir)
+  if infra_base_dir in sys.path:
+    sys.path.remove(infra_base_dir)
 
   # Add the google_appengine directory.
   sys.path.insert(

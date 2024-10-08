@@ -1,6 +1,3 @@
-[submodule "bootstrap/virtualenv-ext"]
-	path = bootstrap/virtualenv-ext
-	url = https://chromium.googlesource.com/external/github.com/pypa/virtualenv
 [submodule "luci"]
 	path = luci
 	url = https://chromium.googlesource.com/infra/luci/luci-py

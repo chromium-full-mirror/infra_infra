@@ -26,7 +26,7 @@ ASSETS_DIFF_FAILURE_MESSAGE = '''
 
 def RunSteps(api):
   co = api.infra_checkout.checkout(
-      'luci_py', patch_root='infra/luci', generate_py2_env=True)
+      'luci_py', patch_root='infra/luci')
   co.gclient_runhooks()
 
   luci_dir = api.path.checkout_dir / 'luci'

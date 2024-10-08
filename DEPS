@@ -19,13 +19,6 @@ vars = {
 }
 
 deps = {
-  # Used to initiate bootstrapping.
-  #
-  # This commit resolves to tag "16.7.12".
-  "bootstrap/virtualenv-ext":
-     "{external_github}/pypa/virtualenv@" +
-     "fdfec65ff031997503fb409f365ee3aeb4c2c89f",
-
   "luci":
      "{chromium_git}/infra/luci/luci-py@" +
      "aca832bb54715cb586878a6c03a8944b544fadb4",
@@ -97,7 +90,7 @@ deps = {
   "cipd/gcloud": {
     'packages': [
       {
-        'package': 'infra/3pp/tools/gcloud/${{os=mac,linux}}-${{arch=amd64}}',
+        'package': 'infra/3pp/tools/gcloud/${{os=mac,linux}}-${{arch=amd64,arm64}}',
         'version': 'version:2@463.0.0.chromium.4',
       }
     ],
@@ -160,6 +153,11 @@ deps = {
         'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
         'version': 'version:2@3.17.3',
       },
+      # Needed for python2 test.py tests
+      {
+        'package': 'infra/tools/luci/vpython/${{platform}}',
+        'version': 'git_revision:9c01a50642c8e86b36b3d1fe9b829bca9ffb8e47',
+      },
     ],
     'dep_type': 'cipd',
   },
@@ -176,14 +174,6 @@ deps = {
 }
 
 hooks = [
-  {
-    "pattern": ".",
-    "condition": "'{infra_env_python}' != 'disabled'",
-    "action": [
-      Var("infra_env_python"), "-u", "./bootstrap/bootstrap.py",
-      "--deps_file", "bootstrap/deps.pyl", "ENV"
-    ],
-  },
 ]
 
 recursedeps = ['luci']

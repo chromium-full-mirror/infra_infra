@@ -1,6 +1,5 @@
 # Python local environment:
 /.wheelcache
-/ENV
 
 # TODO(crbug/1002047): Have these auto-generated.
 /bootstrap/virtualenv-ext

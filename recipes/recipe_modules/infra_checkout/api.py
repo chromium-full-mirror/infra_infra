@@ -18,7 +18,6 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
                patch_root=None,
                path=None,
                internal=False,
-               generate_py2_env=False,
                go_version_variant=None,
                **kwargs):
     """Fetches infra gclient checkout into a given path OR named_cache.
@@ -34,9 +33,6 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
           layout is assumed, else infra_internal.
           This has an effect on named_cache default and inside which repo's
           go corner the ./go/env.py command is run.
-      * generate_py2_env uses the "infra/3pp/tools/cpython" package to create
-          the infra/ENV python 2.7 virtual environment. This is only needed in
-          specific situations such as running tests for python 2.7 GAE apps.
       * go_version_variant can be set go "legacy" or "bleeding_edge" to force
         the builder to use a non-default Go version. What exact Go versions
         correspond to "legacy" and "bleeding_edge" and default is defined in
@@ -59,16 +55,6 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
 
     with self.m.context(cwd=path):
       self.m.gclient.set_config(gclient_config_name)
-      if generate_py2_env:
-        py2_pkg = self.m.path.cache_dir / 'cpython'
-        self.m.cipd.ensure(
-            py2_pkg,
-            self.m.cipd.EnsureFile().add_package(
-                'infra/3pp/tools/cpython/${platform}',
-                'version:2@2.7.18.chromium.47'))
-        self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = str(
-            py2_pkg / 'bin' /
-            ('python.exe' if self.m.platform.is_win else 'python'))
 
       bot_update_step = self.m.bot_update.ensure_checkout(
           patch_root=patch_root, **kwargs)

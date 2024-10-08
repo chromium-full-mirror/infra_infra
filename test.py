@@ -115,13 +115,16 @@ if py3:
   expect_tests_path = os.path.join(
       os.path.dirname(sys.executable), 'expect_tests')
 else:
-  if sys.platform == 'win32':
-    python_bin = os.path.join('ENV', 'Scripts', 'python')
-    expect_tests_path = os.path.join('ENV', 'Scripts', 'expect_tests')
-  else:
-    python_bin = os.path.join('ENV', 'bin', 'python')
-    expect_tests_path = os.path.join('ENV', 'bin', 'expect_tests')
-
+  vpyout = subprocess.run([
+    os.path.join(INFRA_ROOT, 'cipd', 'legacy', 'vpython'),
+    '-c', 'import sys;sys.stdout.write(sys.executable)',
+  ], capture_output=True, encoding='utf-8')
+  if vpyout.returncode != 0:
+    sys.stderr.write(vpyout.stderr)
+    sys.stdout.write(vpyout.stdout)
+    vpyout.check_returncode()
+  python_bin = vpyout.stdout
+  expect_tests_path = os.path.join(os.path.dirname(python_bin), 'expect_tests')
 
 # Set up default list of packages/directories if none have been provided.
 if not modules:
@@ -154,7 +157,8 @@ os.chdir(INFRA_ROOT)
 if '--help' not in flags and '-h' not in flags:
   subprocess.check_call(
       ['python3', '-u',
-       os.path.join('bootstrap', 'remove_orphaned_pycs.py')])
+       os.path.join('bootstrap', 'remove_orphaned_pycs.py'),
+       'infra', 'appengine', 'packages', 'luci'])
 else:
   usage()
   sys.exit(subprocess.call([python_bin, expect_tests_path, command, '--help']))
