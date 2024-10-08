@@ -47,7 +47,7 @@ pins:
   digest: sha256:69830f29ed7545c762777507426a412f97dad3d8d32bae3e74ad3fb6160917ea
 - image: mcr.microsoft.com/windows/nanoserver
   tag: "1809"
-  digest: sha256:b1c10aada142b0729d6cdbddd4d4119499c2cdbc32e75573c36cfe1a6149b3ee
+  digest: sha256:cdd5a33c8dd429071a00de8c7532bf40855174763d88ba575ec55c8060e964fc
 - image: mcr.microsoft.com/windows/servercore
   tag: ltsc2019
-  digest: sha256:9fd56cf2f100d69f66f0de4af2c4fdd154e9e7be65eec3bf789a8088a881475a
+  digest: sha256:b36581f8c38aa45a8eb1849372603fcbfe97befb3c0ad510e9cfc2ccef8fd3ca
