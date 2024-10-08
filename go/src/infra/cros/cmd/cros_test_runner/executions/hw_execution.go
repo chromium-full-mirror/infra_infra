@@ -293,6 +293,11 @@ func executeHwTestsV2(
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("gcs-url", gcsurl))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("testhaus-url", common.GetTesthausURL(invocationName, gcsurl)))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("host-ip", sk.HostIp))
+	if partnerInfo := commonConfig.GetPartnerConfig(); partnerInfo != nil {
+		if accountId := partnerInfo.GetAccountId(); accountId > 0 {
+			common.LogWarningIfErr(ctx, sk.Injectables.Set("account-id", fmt.Sprint(accountId)))
+		}
+	}
 
 	populateRequestQueues(sk, req)
 
@@ -408,11 +413,9 @@ func watchParentBuild(outerCtx context.Context, ownBuild *buildbucketpb.Build) e
 	if err != nil {
 		return errors.Annotate(err, "getting parent build").Err()
 	}
-	parentIsLED := parentBuild.GetInfra().GetLed() != nil
 	thisIsLED := ownBuild.GetInfra().GetLed() != nil
-	// Don't watch the parent build if this build is a LED job with a non-LED
-	// parent build, as the parent build is likely an already-ended prod build.
-	if thisIsLED && !parentIsLED {
+	// Don't watch the parent build if this build is a LED job.
+	if thisIsLED {
 		return nil
 	}
 
