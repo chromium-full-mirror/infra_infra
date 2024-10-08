@@ -606,14 +606,18 @@ func getSimInfo(src []*lab.SIMInfo) []*labapi.SIMInfo {
 			TestEsim: s.GetTestEsim(),
 		}
 		for _, p := range s.GetProfileInfo() {
-			info.ProfileInfo = append(info.ProfileInfo,
-				&labapi.SIMProfileInfo{
-					Iccid:       p.GetIccid(),
-					SimPin:      p.GetSimPin(),
-					SimPuk:      p.GetSimPuk(),
-					CarrierName: labapi.NetworkProvider(p.GetCarrierName()),
-					OwnNumber:   p.GetOwnNumber(),
-				})
+			newPI := &labapi.SIMProfileInfo{
+				Iccid:       p.GetIccid(),
+				SimPin:      p.GetSimPin(),
+				SimPuk:      p.GetSimPuk(),
+				CarrierName: labapi.NetworkProvider(p.GetCarrierName()),
+				OwnNumber:   p.GetOwnNumber(),
+				Features:    make([]labapi.SIMProfileInfo_Feature, len(p.GetFeatures())),
+			}
+			for i, f := range p.GetFeatures() {
+				newPI.Features[i] = labapi.SIMProfileInfo_Feature(f)
+			}
+			info.ProfileInfo = append(info.ProfileInfo, newPI)
 		}
 		r = append(r, &info)
 	}
