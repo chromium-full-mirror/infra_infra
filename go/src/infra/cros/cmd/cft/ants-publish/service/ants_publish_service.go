@@ -90,6 +90,7 @@ func createTestService(ctx context.Context) (*AntsPublishService, error) {
 			},
 		},
 	}
+
 	inv, err := aps.createInvocation()
 	if err != nil {
 		return nil, err
@@ -153,9 +154,9 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 
 	modules := make(map[string]*ants.WorkUnit)
 	testCases := make(map[string]*ants.WorkUnit)
-	var testResults []*ants.TestResult
+	var entries []*ants.BatchInsertEntry
 
-	for _, result := range aps.results {
+	for i, result := range aps.results {
 		log.Printf("looking at result: %s", result.GetTestCaseId().Value)
 
 		// TODO(srinivashegde): Add support for mobly
@@ -180,23 +181,28 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 			testCases[tcName] = tcwu
 		}
 
-		tr := &ants.TestResult{
-			InvocationId: aps.metadata.GetAntsInvocationId(),
-			WorkUnitId:   testCases[tcName].Id,
-			TestIdentifier: &ants.TestIdentifier{
-				Module:    moduleName,
-				TestClass: tcName,
-				Method:    testName,
+		tr := &ants.BatchInsertEntry{
+			Token: int64(i),
+			TestResult: &ants.TestResult{
+				InvocationId: aps.metadata.GetAntsInvocationId(),
+				WorkUnitId:   testCases[tcName].Id,
+				TestIdentifier: &ants.TestIdentifier{
+					Module:    moduleName,
+					TestClass: tcName,
+					Method:    testName,
+				},
+				TestStatus: antsTestStatus(result),
 			},
-			TestStatus: antsTestStatus(result),
 		}
-		testResults = append(testResults, tr)
+		entries = append(entries, tr)
 	}
 
-	bulkResultRequest := &ants.TestResultBulkInsertRequest{
-		TestResults: testResults,
+	bulkResultRequest := &ants.TestResultBatchInsertRequest{
+		TestResults:     entries,
+		InsertBatchSize: int64(len(entries)),
 	}
-	result, err := aps.service.TestResultService.BulkInsert(bulkResultRequest)
+
+	result, err := aps.service.TestResultService.BatchInsert(bulkResultRequest)
 	if err != nil {
 		return err
 	}
