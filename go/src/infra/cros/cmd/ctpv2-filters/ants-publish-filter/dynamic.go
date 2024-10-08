@@ -5,6 +5,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -39,19 +40,21 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 			Value: "FMT=${env-TEMPDIR}:/tmp/artifacts",
 		})
 
-	publishMetadata, _ := anypb.New(&metadata.PublishAntsMetadata{})
+	publishMetadata := &metadata.PublishAntsMetadata{
+		AntsInvocationId: getSuiteExecutionMetadataFlag(req, "ants_invocation_id"),
+		ParentWorkUnitId: getSuiteExecutionMetadataFlag(req, "ants_work_unit_id"),
+	}
+	log.Printf("publishMetadata %+v", publishMetadata)
+	publishRequestMetadata := &anypb.Any{}
+
+	if err := publishRequestMetadata.MarshalFrom(publishMetadata); err != nil {
+		log.Printf("Failed to marshal request, %s", err)
+	}
+
 	dynamicDeps := []*testapi.DynamicDep{
 		{
 			Key:   dynamic_common.ServiceAddress,
 			Value: antsContainerBuilder.ContainerId,
-		},
-		{
-			Key:   "publishRequest.metadata.antsInvocationId",
-			Value: "ants-invocation-id",
-		},
-		{
-			Key:   "publishRequest.metadata.parentWorkUnitId",
-			Value: "parent-workunit-id",
 		},
 		{
 			Key:   "publishRequest.metadata.accountId",
@@ -74,7 +77,7 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 				Publish: &testapi.PublishTask{
 					ServiceAddress: &labapi.IpEndpoint{},
 					PublishRequest: &testapi.PublishRequest{
-						Metadata: publishMetadata,
+						Metadata: publishRequestMetadata,
 					},
 					DynamicDeps:       dynamicDeps,
 					DynamicIdentifier: dynamicIdentifier,
@@ -88,4 +91,13 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 	if err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
 	}
+}
+
+func getSuiteExecutionMetadataFlag(req *testapi.InternalTestplan, flag string) string {
+	for _, arg := range req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs() {
+		if strings.EqualFold(arg.GetFlag(), flag) {
+			return arg.GetValue()
+		}
+	}
+	return ""
 }
