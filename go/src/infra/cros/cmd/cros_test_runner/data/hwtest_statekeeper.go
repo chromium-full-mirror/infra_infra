@@ -8,6 +8,7 @@ import (
 	"container/list"
 
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -80,8 +81,10 @@ type HwTestStateKeeper struct {
 	UpdateFirmwares map[string]bool
 
 	// Test related
-	TestArgs      *testapi.AutotestExecutionMetadata
-	TestResponses *testapi.CrosTestResponse
+	TestArgs               *testapi.AutotestExecutionMetadata
+	TestResponses          *testapi.CrosTestResponse
+	TestExecutionStartTime *timestamppb.Timestamp
+	TestExecutionEndTime   *timestamppb.Timestamp
 
 	// Publish related
 	GcsURL              string

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	commonpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -36,7 +37,9 @@ type ProcessResultsCmd struct {
 	buildState      *build.State
 
 	// Updates
-	SkylabResult *skylab_test_runner.Result
+	SkylabResult           *skylab_test_runner.Result
+	TestExecutionStartTime *timestamp.Timestamp
+	TestExecutionEndTime   *timestamp.Timestamp
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -166,7 +169,8 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if len(cmd.ProvisionResps) < 1 {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: ProvisionResps", cmd.GetCommandType())
 	}
-
+	cmd.TestExecutionStartTime = sk.TestExecutionStartTime
+	cmd.TestExecutionEndTime = sk.TestExecutionEndTime
 	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.TestResponses = sk.TestResponses
 	cmd.GcsURL = sk.GcsURL
@@ -415,7 +419,19 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 		StateUpdate: &skylab_test_runner.Result_StateUpdate{
 			DutState: cmd.CurrentDutState.String(),
 		},
-		LogData: logData,
+		LogData:   logData,
+		StartTime: cmd.TestExecutionStartTime,
+		EndTime:   cmd.TestExecutionEndTime,
+		ResourceUrls: []*skylab_test_runner.Result_Links{
+			{
+				Name: skylab_test_runner.Result_Links_TEST_HAUS,
+				Url:  cmd.TesthausURL,
+			},
+			{
+				Name: skylab_test_runner.Result_Links_GOOGLE_STORAGE,
+				Url:  cmd.GcsURL,
+			},
+		},
 	}
 
 	cmd.SkylabResult = skylabResult

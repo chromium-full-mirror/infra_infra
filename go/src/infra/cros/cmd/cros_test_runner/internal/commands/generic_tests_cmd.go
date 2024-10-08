@@ -7,10 +7,12 @@ package commands
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
@@ -111,7 +113,7 @@ func (cmd *GenericTestsCmd) extractDepsFromHwTestStateKeeper(
 	if cmd.TestRequest == nil {
 		return fmt.Errorf("cmd %q missing dependency: TestRequest", cmd.GetCommandType())
 	}
-
+	sk.TestExecutionStartTime = timestamppb.New(time.Now())
 	if err := common.InjectDependencies(cmd.TestRequest, sk.Injectables, cmd.TestRequest.DynamicDeps); err != nil {
 		logging.Infof(ctx, "Warning: cmd %q failed to inject some dependencies, %s", cmd.GetCommandType(), err)
 	}
@@ -128,6 +130,7 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	sk.TestExecutionEndTime = timestamppb.New(time.Now())
 	taskIdentifier := common.NewTaskIdentifier(cmd.TestRequest.DynamicIdentifier)
 	if cmd.TestResponses != nil {
 		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("runTests"), cmd.TestResponses); err != nil {

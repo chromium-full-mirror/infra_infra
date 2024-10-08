@@ -8,12 +8,14 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -85,6 +87,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	sk.TestExecutionStartTime = timestamppb.New(time.Now())
 	if sk.CftTestRequest == nil || sk.CftTestRequest.GetTestSuites() == nil || len(sk.CftTestRequest.GetTestSuites()) == 0 {
 		return fmt.Errorf("Cmd %q missing dependency: TestSuites", cmd.GetCommandType())
 	}
@@ -110,9 +113,9 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
+	sk.TestExecutionEndTime = timestamppb.New(time.Now())
 	if cmd.TestResponses != nil {
 		sk.TestResponses = cmd.TestResponses
-
 		// For non-dynamic. Sets the processed test result into the dynamic
 		// storage.
 		rdbTestResult, err := constructTestResultFromStateKeeper(ctx, sk)
