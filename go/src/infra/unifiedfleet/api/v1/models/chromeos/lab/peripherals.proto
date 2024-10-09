@@ -218,6 +218,7 @@ message BluetoothPeer {
 
 // HumanMotionRobot models the whole HMR system
 // including touchhost, Pi, HMR fixture, etc.
+// Next Tag: 8
 message HumanMotionRobot {
   // hostname for HMR pi
   string hostname = 1;
@@ -230,6 +231,32 @@ message HumanMotionRobot {
 
   // Remote Power Management for HMR device.
   OSRPM rpm = 4;
+
+  // Indicate the presence of a WALT device for latency testing.
+  // The walt device will be connected to the bottom usb-A port of the servo.
+  // Set to true if the HMR has a walt unit attached to it else False.
+  bool hmr_walt = 5;
+
+  // HMRToolType describe the enum of types of tool on HMR.
+  // Next Tag: 3
+  enum HMRToolType {
+    HMR_TOOL_TYPE_UNKNOWN = 0;
+    HMR_TOOL_TYPE_STYLUS = 1;
+    HMR_TOOL_TYPE_FAKE_FINGER = 2;
+  }
+  // Indicate the tool type currently attached to the HMR.
+  HMRToolType hmr_tool_type = 6;
+
+  // HMRGen describe the enum of generation of the HMR.
+  // Next Tag: 3
+  enum HMRGen {
+    HMR_GEN_UNKNOWN = 0;
+    HMR_GEN_1 = 1;
+    HMR_GEN_2 = 2;
+  }
+  // Indicate the generation of the HMR.
+  // The type of generation can be identified by the serial number behind the HMR.
+  HMRGen hmr_gen = 7;
 }
 
 // AudioLatencyToolkit models audio latency toolkits

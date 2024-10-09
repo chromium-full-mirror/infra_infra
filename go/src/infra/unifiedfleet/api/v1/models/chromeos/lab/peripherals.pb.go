@@ -341,6 +341,108 @@ func (Camerabox_Light) EnumDescriptor() ([]byte, []int) {
 	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDescGZIP(), []int{7, 1}
 }
 
+// HMRToolType describe the enum of types of tool on HMR.
+// Next Tag: 3
+type HumanMotionRobot_HMRToolType int32
+
+const (
+	HumanMotionRobot_HMR_TOOL_TYPE_UNKNOWN     HumanMotionRobot_HMRToolType = 0
+	HumanMotionRobot_HMR_TOOL_TYPE_STYLUS      HumanMotionRobot_HMRToolType = 1
+	HumanMotionRobot_HMR_TOOL_TYPE_FAKE_FINGER HumanMotionRobot_HMRToolType = 2
+)
+
+// Enum value maps for HumanMotionRobot_HMRToolType.
+var (
+	HumanMotionRobot_HMRToolType_name = map[int32]string{
+		0: "HMR_TOOL_TYPE_UNKNOWN",
+		1: "HMR_TOOL_TYPE_STYLUS",
+		2: "HMR_TOOL_TYPE_FAKE_FINGER",
+	}
+	HumanMotionRobot_HMRToolType_value = map[string]int32{
+		"HMR_TOOL_TYPE_UNKNOWN":     0,
+		"HMR_TOOL_TYPE_STYLUS":      1,
+		"HMR_TOOL_TYPE_FAKE_FINGER": 2,
+	}
+)
+
+func (x HumanMotionRobot_HMRToolType) Enum() *HumanMotionRobot_HMRToolType {
+	p := new(HumanMotionRobot_HMRToolType)
+	*p = x
+	return p
+}
+
+func (x HumanMotionRobot_HMRToolType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HumanMotionRobot_HMRToolType) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes[6].Descriptor()
+}
+
+func (HumanMotionRobot_HMRToolType) Type() protoreflect.EnumType {
+	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes[6]
+}
+
+func (x HumanMotionRobot_HMRToolType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HumanMotionRobot_HMRToolType.Descriptor instead.
+func (HumanMotionRobot_HMRToolType) EnumDescriptor() ([]byte, []int) {
+	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDescGZIP(), []int{10, 0}
+}
+
+// HMRGen describe the enum of generation of the HMR.
+// Next Tag: 3
+type HumanMotionRobot_HMRGen int32
+
+const (
+	HumanMotionRobot_HMR_GEN_UNKNOWN HumanMotionRobot_HMRGen = 0
+	HumanMotionRobot_HMR_GEN_1       HumanMotionRobot_HMRGen = 1
+	HumanMotionRobot_HMR_GEN_2       HumanMotionRobot_HMRGen = 2
+)
+
+// Enum value maps for HumanMotionRobot_HMRGen.
+var (
+	HumanMotionRobot_HMRGen_name = map[int32]string{
+		0: "HMR_GEN_UNKNOWN",
+		1: "HMR_GEN_1",
+		2: "HMR_GEN_2",
+	}
+	HumanMotionRobot_HMRGen_value = map[string]int32{
+		"HMR_GEN_UNKNOWN": 0,
+		"HMR_GEN_1":       1,
+		"HMR_GEN_2":       2,
+	}
+)
+
+func (x HumanMotionRobot_HMRGen) Enum() *HumanMotionRobot_HMRGen {
+	p := new(HumanMotionRobot_HMRGen)
+	*p = x
+	return p
+}
+
+func (x HumanMotionRobot_HMRGen) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (HumanMotionRobot_HMRGen) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes[7].Descriptor()
+}
+
+func (HumanMotionRobot_HMRGen) Type() protoreflect.EnumType {
+	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes[7]
+}
+
+func (x HumanMotionRobot_HMRGen) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use HumanMotionRobot_HMRGen.Descriptor instead.
+func (HumanMotionRobot_HMRGen) EnumDescriptor() ([]byte, []int) {
+	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDescGZIP(), []int{10, 1}
+}
+
 // Peripherals of device. Next Tag: 26
 type Peripherals struct {
 	state         protoimpl.MessageState
@@ -1187,6 +1289,7 @@ func (*BluetoothPeer_RaspberryPi) isBluetoothPeer_Device() {}
 
 // HumanMotionRobot models the whole HMR system
 // including touchhost, Pi, HMR fixture, etc.
+// Next Tag: 8
 type HumanMotionRobot struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1200,6 +1303,15 @@ type HumanMotionRobot struct {
 	GatewayHostname string `protobuf:"bytes,3,opt,name=gateway_hostname,json=gatewayHostname,proto3" json:"gateway_hostname,omitempty"`
 	// Remote Power Management for HMR device.
 	Rpm *OSRPM `protobuf:"bytes,4,opt,name=rpm,proto3" json:"rpm,omitempty"`
+	// Indicate the presence of a WALT device for latency testing.
+	// The walt device will be connected to the bottom usb-A port of the servo.
+	// Set to true if the HMR has a walt unit attached to it else False.
+	HmrWalt bool `protobuf:"varint,5,opt,name=hmr_walt,json=hmrWalt,proto3" json:"hmr_walt,omitempty"`
+	// Indicate the tool type currently attached to the HMR.
+	HmrToolType HumanMotionRobot_HMRToolType `protobuf:"varint,6,opt,name=hmr_tool_type,json=hmrToolType,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot_HMRToolType" json:"hmr_tool_type,omitempty"`
+	// Indicate the generation of the HMR.
+	// The type of generation can be identified by the serial number behind the HMR.
+	HmrGen HumanMotionRobot_HMRGen `protobuf:"varint,7,opt,name=hmr_gen,json=hmrGen,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot_HMRGen" json:"hmr_gen,omitempty"`
 }
 
 func (x *HumanMotionRobot) Reset() {
@@ -1260,6 +1372,27 @@ func (x *HumanMotionRobot) GetRpm() *OSRPM {
 		return x.Rpm
 	}
 	return nil
+}
+
+func (x *HumanMotionRobot) GetHmrWalt() bool {
+	if x != nil {
+		return x.HmrWalt
+	}
+	return false
+}
+
+func (x *HumanMotionRobot) GetHmrToolType() HumanMotionRobot_HMRToolType {
+	if x != nil {
+		return x.HmrToolType
+	}
+	return HumanMotionRobot_HMR_TOOL_TYPE_UNKNOWN
+}
+
+func (x *HumanMotionRobot) GetHmrGen() HumanMotionRobot_HMRGen {
+	if x != nil {
+		return x.HmrGen
+	}
+	return HumanMotionRobot_HMR_GEN_UNKNOWN
 }
 
 // AudioLatencyToolkit models audio latency toolkits
@@ -1623,7 +1756,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDesc
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69,
 	0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
 	0x65, 0x6f, 0x73, 0x2e, 0x6c, 0x61, 0x62, 0x2e, 0x4f, 0x53, 0x52, 0x50, 0x4d, 0x52, 0x03, 0x72,
-	0x70, 0x6d, 0x42, 0x08, 0x0a, 0x06, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x22, 0xb8, 0x01, 0x0a,
+	0x70, 0x6d, 0x42, 0x08, 0x0a, 0x06, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x22, 0xb9, 0x04, 0x0a,
 	0x10, 0x48, 0x75, 0x6d, 0x61, 0x6e, 0x4d, 0x6f, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x6f, 0x62, 0x6f,
 	0x74, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a,
@@ -1635,30 +1768,54 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDesc
 	0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6c, 0x61, 0x62, 0x2e, 0x4f, 0x53, 0x52,
-	0x50, 0x4d, 0x52, 0x03, 0x72, 0x70, 0x6d, 0x22, 0x2f, 0x0a, 0x13, 0x41, 0x75, 0x64, 0x69, 0x6f,
-	0x4c, 0x61, 0x74, 0x65, 0x6e, 0x63, 0x79, 0x54, 0x6f, 0x6f, 0x6c, 0x6b, 0x69, 0x74, 0x12, 0x18,
-	0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x41, 0x0a, 0x0a, 0x41, 0x4d, 0x54, 0x4d,
-	0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e, 0x61,
-	0x6d, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x5f, 0x74, 0x6c, 0x73, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x06, 0x75, 0x73, 0x65, 0x54, 0x6c, 0x73, 0x2a, 0x47, 0x0a, 0x0a, 0x43,
-	0x61, 0x6d, 0x65, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41, 0x4d,
-	0x45, 0x52, 0x41, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0x00, 0x12, 0x11, 0x0a,
-	0x0d, 0x43, 0x41, 0x4d, 0x45, 0x52, 0x41, 0x5f, 0x48, 0x55, 0x44, 0x44, 0x4c, 0x59, 0x10, 0x01,
-	0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41, 0x4d, 0x45, 0x52, 0x41, 0x5f, 0x50, 0x54, 0x5a, 0x50, 0x52,
-	0x4f, 0x32, 0x10, 0x02, 0x2a, 0x73, 0x0a, 0x09, 0x43, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x79, 0x70,
-	0x65, 0x12, 0x11, 0x0a, 0x0d, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c,
-	0x49, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x41, 0x55,
-	0x44, 0x49, 0x4f, 0x4a, 0x41, 0x43, 0x4b, 0x10, 0x01, 0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41, 0x42,
-	0x4c, 0x45, 0x5f, 0x55, 0x53, 0x42, 0x41, 0x55, 0x44, 0x49, 0x4f, 0x10, 0x02, 0x12, 0x15, 0x0a,
-	0x11, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x55, 0x53, 0x42, 0x50, 0x52, 0x49, 0x4e, 0x54, 0x49,
-	0x4e, 0x47, 0x10, 0x03, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x48, 0x44,
-	0x4d, 0x49, 0x41, 0x55, 0x44, 0x49, 0x4f, 0x10, 0x04, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e, 0x66,
-	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68,
-	0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x50, 0x4d, 0x52, 0x03, 0x72, 0x70, 0x6d, 0x12, 0x19, 0x0a, 0x08, 0x68, 0x6d, 0x72, 0x5f, 0x77,
+	0x61, 0x6c, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x68, 0x6d, 0x72, 0x57, 0x61,
+	0x6c, 0x74, 0x12, 0x69, 0x0a, 0x0d, 0x68, 0x6d, 0x72, 0x5f, 0x74, 0x6f, 0x6f, 0x6c, 0x5f, 0x74,
+	0x79, 0x70, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x45, 0x2e, 0x75, 0x6e, 0x69, 0x66,
+	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
+	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e,
+	0x6c, 0x61, 0x62, 0x2e, 0x48, 0x75, 0x6d, 0x61, 0x6e, 0x4d, 0x6f, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x48, 0x4d, 0x52, 0x54, 0x6f, 0x6f, 0x6c, 0x54, 0x79, 0x70, 0x65,
+	0x52, 0x0b, 0x68, 0x6d, 0x72, 0x54, 0x6f, 0x6f, 0x6c, 0x54, 0x79, 0x70, 0x65, 0x12, 0x59, 0x0a,
+	0x07, 0x68, 0x6d, 0x72, 0x5f, 0x67, 0x65, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x40,
+	0x2e, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70,
+	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6c, 0x61, 0x62, 0x2e, 0x48, 0x75, 0x6d, 0x61, 0x6e, 0x4d, 0x6f,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x6f, 0x62, 0x6f, 0x74, 0x2e, 0x48, 0x4d, 0x52, 0x47, 0x65, 0x6e,
+	0x52, 0x06, 0x68, 0x6d, 0x72, 0x47, 0x65, 0x6e, 0x22, 0x61, 0x0a, 0x0b, 0x48, 0x4d, 0x52, 0x54,
+	0x6f, 0x6f, 0x6c, 0x54, 0x79, 0x70, 0x65, 0x12, 0x19, 0x0a, 0x15, 0x48, 0x4d, 0x52, 0x5f, 0x54,
+	0x4f, 0x4f, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e,
+	0x10, 0x00, 0x12, 0x18, 0x0a, 0x14, 0x48, 0x4d, 0x52, 0x5f, 0x54, 0x4f, 0x4f, 0x4c, 0x5f, 0x54,
+	0x59, 0x50, 0x45, 0x5f, 0x53, 0x54, 0x59, 0x4c, 0x55, 0x53, 0x10, 0x01, 0x12, 0x1d, 0x0a, 0x19,
+	0x48, 0x4d, 0x52, 0x5f, 0x54, 0x4f, 0x4f, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x46, 0x41,
+	0x4b, 0x45, 0x5f, 0x46, 0x49, 0x4e, 0x47, 0x45, 0x52, 0x10, 0x02, 0x22, 0x3b, 0x0a, 0x06, 0x48,
+	0x4d, 0x52, 0x47, 0x65, 0x6e, 0x12, 0x13, 0x0a, 0x0f, 0x48, 0x4d, 0x52, 0x5f, 0x47, 0x45, 0x4e,
+	0x5f, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x48, 0x4d,
+	0x52, 0x5f, 0x47, 0x45, 0x4e, 0x5f, 0x31, 0x10, 0x01, 0x12, 0x0d, 0x0a, 0x09, 0x48, 0x4d, 0x52,
+	0x5f, 0x47, 0x45, 0x4e, 0x5f, 0x32, 0x10, 0x02, 0x22, 0x2f, 0x0a, 0x13, 0x41, 0x75, 0x64, 0x69,
+	0x6f, 0x4c, 0x61, 0x74, 0x65, 0x6e, 0x63, 0x79, 0x54, 0x6f, 0x6f, 0x6c, 0x6b, 0x69, 0x74, 0x12,
+	0x18, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x41, 0x0a, 0x0a, 0x41, 0x4d, 0x54,
+	0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f, 0x73, 0x74, 0x6e,
+	0x61, 0x6d, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x5f, 0x74, 0x6c, 0x73, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x75, 0x73, 0x65, 0x54, 0x6c, 0x73, 0x2a, 0x47, 0x0a, 0x0a,
+	0x43, 0x61, 0x6d, 0x65, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41,
+	0x4d, 0x45, 0x52, 0x41, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0x00, 0x12, 0x11,
+	0x0a, 0x0d, 0x43, 0x41, 0x4d, 0x45, 0x52, 0x41, 0x5f, 0x48, 0x55, 0x44, 0x44, 0x4c, 0x59, 0x10,
+	0x01, 0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41, 0x4d, 0x45, 0x52, 0x41, 0x5f, 0x50, 0x54, 0x5a, 0x50,
+	0x52, 0x4f, 0x32, 0x10, 0x02, 0x2a, 0x73, 0x0a, 0x09, 0x43, 0x61, 0x62, 0x6c, 0x65, 0x54, 0x79,
+	0x70, 0x65, 0x12, 0x11, 0x0a, 0x0d, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x49, 0x4e, 0x56, 0x41,
+	0x4c, 0x49, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x41,
+	0x55, 0x44, 0x49, 0x4f, 0x4a, 0x41, 0x43, 0x4b, 0x10, 0x01, 0x12, 0x12, 0x0a, 0x0e, 0x43, 0x41,
+	0x42, 0x4c, 0x45, 0x5f, 0x55, 0x53, 0x42, 0x41, 0x55, 0x44, 0x49, 0x4f, 0x10, 0x02, 0x12, 0x15,
+	0x0a, 0x11, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x55, 0x53, 0x42, 0x50, 0x52, 0x49, 0x4e, 0x54,
+	0x49, 0x4e, 0x47, 0x10, 0x03, 0x12, 0x13, 0x0a, 0x0f, 0x43, 0x41, 0x42, 0x4c, 0x45, 0x5f, 0x48,
+	0x44, 0x4d, 0x49, 0x41, 0x55, 0x44, 0x49, 0x4f, 0x10, 0x04, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e,
+	0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b, 0x75, 0x66, 0x73, 0x70,
+	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1673,74 +1830,78 @@ func file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDes
 	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
 var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_goTypes = []any{
-	(CameraType)(0),               // 0: unifiedfleet.api.v1.models.chromeos.lab.CameraType
-	(CableType)(0),                // 1: unifiedfleet.api.v1.models.chromeos.lab.CableType
-	(Wifi_AntennaConnection)(0),   // 2: unifiedfleet.api.v1.models.chromeos.lab.Wifi.AntennaConnection
-	(Wifi_Router)(0),              // 3: unifiedfleet.api.v1.models.chromeos.lab.Wifi.Router
-	(Camerabox_Facing)(0),         // 4: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Facing
-	(Camerabox_Light)(0),          // 5: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Light
-	(*Peripherals)(nil),           // 6: unifiedfleet.api.v1.models.chromeos.lab.Peripherals
-	(*Camera)(nil),                // 7: unifiedfleet.api.v1.models.chromeos.lab.Camera
-	(*Cable)(nil),                 // 8: unifiedfleet.api.v1.models.chromeos.lab.Cable
-	(*Audio)(nil),                 // 9: unifiedfleet.api.v1.models.chromeos.lab.Audio
-	(*Wifi)(nil),                  // 10: unifiedfleet.api.v1.models.chromeos.lab.Wifi
-	(*WifiRouter)(nil),            // 11: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter
-	(*Touch)(nil),                 // 12: unifiedfleet.api.v1.models.chromeos.lab.Touch
-	(*Camerabox)(nil),             // 13: unifiedfleet.api.v1.models.chromeos.lab.Camerabox
-	(*RaspberryPi)(nil),           // 14: unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi
-	(*BluetoothPeer)(nil),         // 15: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer
-	(*HumanMotionRobot)(nil),      // 16: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot
-	(*AudioLatencyToolkit)(nil),   // 17: unifiedfleet.api.v1.models.chromeos.lab.AudioLatencyToolkit
-	(*AMTManager)(nil),            // 18: unifiedfleet.api.v1.models.chromeos.lab.AMTManager
-	(*Servo)(nil),                 // 19: unifiedfleet.api.v1.models.chromeos.lab.Servo
-	(*Chameleon)(nil),             // 20: unifiedfleet.api.v1.models.chromeos.lab.Chameleon
-	(*OSRPM)(nil),                 // 21: unifiedfleet.api.v1.models.chromeos.lab.OSRPM
-	(*Dolos)(nil),                 // 22: unifiedfleet.api.v1.models.chromeos.lab.Dolos
-	(*api.PasitHost)(nil),         // 23: chromiumos.test.lab.api.PasitHost
-	(api.WifiRouterFeature)(0),    // 24: chromiumos.test.lab.api.WifiRouterFeature
-	(PeripheralState)(0),          // 25: unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
-	(api.WifiRouterDeviceType)(0), // 26: chromiumos.test.lab.api.WifiRouterDeviceType
+	(CameraType)(0),                   // 0: unifiedfleet.api.v1.models.chromeos.lab.CameraType
+	(CableType)(0),                    // 1: unifiedfleet.api.v1.models.chromeos.lab.CableType
+	(Wifi_AntennaConnection)(0),       // 2: unifiedfleet.api.v1.models.chromeos.lab.Wifi.AntennaConnection
+	(Wifi_Router)(0),                  // 3: unifiedfleet.api.v1.models.chromeos.lab.Wifi.Router
+	(Camerabox_Facing)(0),             // 4: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Facing
+	(Camerabox_Light)(0),              // 5: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Light
+	(HumanMotionRobot_HMRToolType)(0), // 6: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.HMRToolType
+	(HumanMotionRobot_HMRGen)(0),      // 7: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.HMRGen
+	(*Peripherals)(nil),               // 8: unifiedfleet.api.v1.models.chromeos.lab.Peripherals
+	(*Camera)(nil),                    // 9: unifiedfleet.api.v1.models.chromeos.lab.Camera
+	(*Cable)(nil),                     // 10: unifiedfleet.api.v1.models.chromeos.lab.Cable
+	(*Audio)(nil),                     // 11: unifiedfleet.api.v1.models.chromeos.lab.Audio
+	(*Wifi)(nil),                      // 12: unifiedfleet.api.v1.models.chromeos.lab.Wifi
+	(*WifiRouter)(nil),                // 13: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter
+	(*Touch)(nil),                     // 14: unifiedfleet.api.v1.models.chromeos.lab.Touch
+	(*Camerabox)(nil),                 // 15: unifiedfleet.api.v1.models.chromeos.lab.Camerabox
+	(*RaspberryPi)(nil),               // 16: unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi
+	(*BluetoothPeer)(nil),             // 17: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer
+	(*HumanMotionRobot)(nil),          // 18: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot
+	(*AudioLatencyToolkit)(nil),       // 19: unifiedfleet.api.v1.models.chromeos.lab.AudioLatencyToolkit
+	(*AMTManager)(nil),                // 20: unifiedfleet.api.v1.models.chromeos.lab.AMTManager
+	(*Servo)(nil),                     // 21: unifiedfleet.api.v1.models.chromeos.lab.Servo
+	(*Chameleon)(nil),                 // 22: unifiedfleet.api.v1.models.chromeos.lab.Chameleon
+	(*OSRPM)(nil),                     // 23: unifiedfleet.api.v1.models.chromeos.lab.OSRPM
+	(*Dolos)(nil),                     // 24: unifiedfleet.api.v1.models.chromeos.lab.Dolos
+	(*api.PasitHost)(nil),             // 25: chromiumos.test.lab.api.PasitHost
+	(api.WifiRouterFeature)(0),        // 26: chromiumos.test.lab.api.WifiRouterFeature
+	(PeripheralState)(0),              // 27: unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
+	(api.WifiRouterDeviceType)(0),     // 28: chromiumos.test.lab.api.WifiRouterDeviceType
 }
 var file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_depIdxs = []int32{
-	19, // 0: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.servo:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Servo
-	20, // 1: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.chameleon:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Chameleon
-	21, // 2: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
-	7,  // 3: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.connected_camera:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camera
-	9,  // 4: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.audio:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Audio
-	10, // 5: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.wifi:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Wifi
-	12, // 6: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.touch:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Touch
-	8,  // 7: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.cable:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Cable
-	13, // 8: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.camerabox_info:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camerabox
-	15, // 9: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.bluetooth_peers:type_name -> unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer
-	16, // 10: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.human_motion_robot:type_name -> unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot
-	17, // 11: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.audio_latency_toolkit:type_name -> unifiedfleet.api.v1.models.chromeos.lab.AudioLatencyToolkit
-	22, // 12: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.dolos:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Dolos
-	23, // 13: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.pasit_host2:type_name -> chromiumos.test.lab.api.PasitHost
-	18, // 14: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.amt_manager:type_name -> unifiedfleet.api.v1.models.chromeos.lab.AMTManager
+	21, // 0: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.servo:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Servo
+	22, // 1: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.chameleon:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Chameleon
+	23, // 2: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
+	9,  // 3: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.connected_camera:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camera
+	11, // 4: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.audio:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Audio
+	12, // 5: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.wifi:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Wifi
+	14, // 6: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.touch:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Touch
+	10, // 7: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.cable:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Cable
+	15, // 8: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.camerabox_info:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camerabox
+	17, // 9: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.bluetooth_peers:type_name -> unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer
+	18, // 10: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.human_motion_robot:type_name -> unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot
+	19, // 11: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.audio_latency_toolkit:type_name -> unifiedfleet.api.v1.models.chromeos.lab.AudioLatencyToolkit
+	24, // 12: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.dolos:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Dolos
+	25, // 13: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.pasit_host2:type_name -> chromiumos.test.lab.api.PasitHost
+	20, // 14: unifiedfleet.api.v1.models.chromeos.lab.Peripherals.amt_manager:type_name -> unifiedfleet.api.v1.models.chromeos.lab.AMTManager
 	0,  // 15: unifiedfleet.api.v1.models.chromeos.lab.Camera.camera_type:type_name -> unifiedfleet.api.v1.models.chromeos.lab.CameraType
 	1,  // 16: unifiedfleet.api.v1.models.chromeos.lab.Cable.type:type_name -> unifiedfleet.api.v1.models.chromeos.lab.CableType
 	2,  // 17: unifiedfleet.api.v1.models.chromeos.lab.Wifi.antenna_conn:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Wifi.AntennaConnection
 	3,  // 18: unifiedfleet.api.v1.models.chromeos.lab.Wifi.router:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Wifi.Router
-	11, // 19: unifiedfleet.api.v1.models.chromeos.lab.Wifi.wifi_routers:type_name -> unifiedfleet.api.v1.models.chromeos.lab.WifiRouter
-	24, // 20: unifiedfleet.api.v1.models.chromeos.lab.Wifi.wifi_router_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
-	25, // 21: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.state:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
-	21, // 22: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
-	24, // 23: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.supported_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
-	26, // 24: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.device_type:type_name -> chromiumos.test.lab.api.WifiRouterDeviceType
+	13, // 19: unifiedfleet.api.v1.models.chromeos.lab.Wifi.wifi_routers:type_name -> unifiedfleet.api.v1.models.chromeos.lab.WifiRouter
+	26, // 20: unifiedfleet.api.v1.models.chromeos.lab.Wifi.wifi_router_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
+	27, // 21: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.state:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
+	23, // 22: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
+	26, // 23: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.supported_features:type_name -> chromiumos.test.lab.api.WifiRouterFeature
+	28, // 24: unifiedfleet.api.v1.models.chromeos.lab.WifiRouter.device_type:type_name -> chromiumos.test.lab.api.WifiRouterDeviceType
 	4,  // 25: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.facing:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Facing
 	5,  // 26: unifiedfleet.api.v1.models.chromeos.lab.Camerabox.light:type_name -> unifiedfleet.api.v1.models.chromeos.lab.Camerabox.Light
-	25, // 27: unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi.state:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
-	14, // 28: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer.raspberry_pi:type_name -> unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi
-	21, // 29: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
-	21, // 30: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
-	31, // [31:31] is the sub-list for method output_type
-	31, // [31:31] is the sub-list for method input_type
-	31, // [31:31] is the sub-list for extension type_name
-	31, // [31:31] is the sub-list for extension extendee
-	0,  // [0:31] is the sub-list for field type_name
+	27, // 27: unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi.state:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
+	16, // 28: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer.raspberry_pi:type_name -> unifiedfleet.api.v1.models.chromeos.lab.RaspberryPi
+	23, // 29: unifiedfleet.api.v1.models.chromeos.lab.BluetoothPeer.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
+	23, // 30: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
+	6,  // 31: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.hmr_tool_type:type_name -> unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.HMRToolType
+	7,  // 32: unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.hmr_gen:type_name -> unifiedfleet.api.v1.models.chromeos.lab.HumanMotionRobot.HMRGen
+	33, // [33:33] is the sub-list for method output_type
+	33, // [33:33] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_init() }
@@ -1919,7 +2080,7 @@ func file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_init()
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_unifiedfleet_api_v1_models_chromeos_lab_peripherals_proto_rawDesc,
-			NumEnums:      6,
+			NumEnums:      8,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
