@@ -79,3 +79,43 @@ func EnsureCIPDPackage(
 		})
 	return actionMap[subdir], err
 }
+
+func CIPDPackageDef(packageTemplate, version string) ensure.PackageDef {
+	return ensure.PackageDef{
+		PackageTemplate:   packageTemplate,
+		UnresolvedVersion: version,
+	}
+}
+
+func EnsureCIPDPackages(
+	ctx context.Context,
+	client cipd.Client,
+	authOpts auth.Options,
+	host string,
+	subdir string,
+	cipdPackages ...ensure.PackageDef) (*cipd.Actions, error) {
+
+	actions := &cipd.Actions{}
+	packageSlice := cipdPackages
+	ensureFile := ensure.File{
+		ServiceURL:       host,
+		ParanoidMode:     cipd.CheckPresence,
+		PackagesBySubdir: map[string]ensure.PackageSlice{subdir: packageSlice},
+	}
+	resolver := cipd.Resolver{Client: client}
+	resolved, err := resolver.Resolve(
+		ctx,
+		&ensureFile,
+		template.DefaultExpander())
+	if err != nil {
+		return actions, err
+	}
+	actionMap, err := client.EnsurePackages(
+		ctx,
+		resolved.PackagesBySubdir,
+		&cipd.EnsureOptions{
+			Paranoia: resolved.ParanoidMode,
+			DryRun:   false,
+		})
+	return actionMap[subdir], err
+}

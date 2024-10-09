@@ -9,8 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/cipd/client/cipd"
+	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
@@ -98,41 +97,20 @@ func ensureCipdPackages(ctx context.Context, dir string, config *UprevConfig, ci
 		return
 	}
 
+	cipdPackages := []ensure.PackageDef{}
 	for _, cipdPackage := range config.CIPDPackages {
 		label := cipdLabel
 		if cipdPackage.Ref != "" {
 			label = cipdPackage.Ref
 		}
-		err = ensureCipdPackage(ctx, cipdClient, authOpts, cipdHost, cipdPackage.Name, label)
-		if err != nil {
-			err = errors.Annotate(err, "Failed to ensure %s", cipdPackage).Err()
-			return
-		}
+		cipdPackages = append(cipdPackages, common.CIPDPackageDef(cipdPackage.Name, label))
 	}
 
-	return
-}
-
-// ensureCipdPackage calls EnsureCIPDPackage.
-func ensureCipdPackage(
-	ctx context.Context,
-	cipdClient cipd.Client,
-	authOpts auth.Options,
-	cipdHost string,
-	cipdPackage string,
-	cipdLabel string) (err error) {
-
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("Ensure %s", cipdPackage))
-	defer func() { step.End(err) }()
-
-	_, err = common.EnsureCIPDPackage(
-		ctx,
-		cipdClient,
-		authOpts,
-		cipdHost,
-		cipdPackage,
-		cipdLabel,
-		"")
+	_, err = common.EnsureCIPDPackages(ctx, cipdClient, authOpts, cipdHost, "", cipdPackages...)
+	if err != nil {
+		err = errors.Annotate(err, "Failed to ensure cipd packages").Err()
+		return
+	}
 
 	return
 }

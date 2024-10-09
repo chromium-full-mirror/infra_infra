@@ -135,6 +135,56 @@ func GetConfigs() []*UprevConfig {
 			},
 			Prepper: preppers.AdbBase,
 		},
+		{
+			Name: "ants-publish",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/publish/ants-publish/${platform}"),
+			},
+		},
+		{
+			Name: "ants-publish-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/ants-publish-filter/${platform}"),
+			},
+		},
+		{
+			Name: "rdb-publish",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/publish/rdb-publish/${platform}"),
+				NewCIPDPackageWithRef("infra/tools/result_adapter/linux-amd64", "prod"),
+				NewCIPDPackageWithRef("infra/tools/rdb/linux-amd64", "latest"),
+			},
+		},
+		{
+			Name: "gcs-publish",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/publish/gcs-publish/${platform}"),
+			},
+		},
+		{
+			Name: "cros-dut",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/dut/cros-dut/${platform}"),
+			},
+		},
+		{
+			Name: "servo-nexus",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/dut/cros-servod/${platform}"),
+			},
+		},
+		{
+			Name: "cros-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/cros-provision/${platform}"),
+			},
+		},
+		{
+			Name: "cros-fw-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/cros-fw-provision/${platform}"),
+			},
+		},
 	}
 
 	return CleanConfigs(configs)
