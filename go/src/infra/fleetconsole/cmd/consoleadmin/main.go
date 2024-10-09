@@ -5,29 +5,13 @@
 package main
 
 import (
-	"context"
 	"os"
 
 	"github.com/maruel/subcommands"
 
-	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/logging/gologger"
+	"infra/fleetconsole/cmd/consoleadmin/clilib"
 )
 
-// application returns the consoleadmin command line application.
-func application() *cli.Application {
-	return &cli.Application{
-		Name:  "console admin",
-		Title: "console admin command line tool",
-		Context: func(ctx context.Context) context.Context {
-			return gologger.StdConfig.Use(ctx)
-		},
-		Commands: []*subcommands.Command{
-			subcommands.CmdHelp,
-		},
-	}
-}
-
 func main() {
-	os.Exit(subcommands.Run(application(), nil))
+	os.Exit(subcommands.Run(clilib.Application(), nil))
 }

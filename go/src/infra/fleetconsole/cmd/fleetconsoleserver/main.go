@@ -7,16 +7,11 @@ package main
 
 import (
 	"go.chromium.org/luci/server"
-	"go.chromium.org/luci/server/gaeemulation"
-	"go.chromium.org/luci/server/module"
+
+	"infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
 )
 
 func main() {
-	mods := []module.Module{
-		gaeemulation.NewModuleFromFlags(),
-	}
-
-	server.Main(nil, mods, func(*server.Server) error {
-		return nil
-	})
+	modules := serverlib.Modules()
+	server.Main(nil, modules, serverlib.ServerMain)
 }
