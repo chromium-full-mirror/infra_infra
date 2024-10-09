@@ -40,8 +40,6 @@ def RunSteps(api):
 
     _step_auth_tests(api, changes)
 
-    _step_config_tests(api, changes)
-
     _step_components_tests(api, changes)
 
     _step_client_tests(api, changes)
@@ -156,21 +154,6 @@ def _step_components_tests(api, changes):
   with api.step.nest('components'):
     _step_run_py_tests(api, components_dir)
     _step_run_py_tests(api, components_dir, python3=True)
-
-
-def _step_config_tests(api, changes):
-  if not api.platform.is_linux:
-    return
-
-  deps = ['config_service', 'components', 'vpython', 'appengine_third_party']
-  if not any([changes[d] for d in deps]):
-    # skip tests when no changes on the dependencies.
-    return
-
-  config_dir = api.path.checkout_dir.joinpath('luci', 'appengine',
-                                              'config_service')
-  with api.step.nest('config_service'):
-    _step_run_py_tests(api, config_dir)
 
 
 def _step_client_tests(api, changes):
