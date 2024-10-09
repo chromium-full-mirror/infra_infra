@@ -689,8 +689,8 @@ go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp 
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20240522065423-cfb7c8827da4/go.mod h1:mP+pnPJ8U3Ps18aQr/ic2ZdhRQaGhCaoKPJKevbCMKo=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20240923220542-88622113c473 h1:FcULAGvTaCVYw06WjvWFFYuMEhbttSewaJ5QOwZms08=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20240923220542-88622113c473/go.mod h1:tSvAX6a7PcR9fZ6i5Q9a16QN/LMhjeGH4qnKnIeDhHY=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240907003610-e12836c84d94 h1:MSdeCAhWFv5rNCIa0x0P8flNj78RngYrHArBDDIX+l4=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20240907003610-e12836c84d94/go.mod h1:0yN0hP98r75BER3NYCkTxXHud2rWqe6HaUrURNKJ19g=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20241009004306-b8ee314d2fa8 h1:3/Wo1OhUM1GrNurTjki3M+Dc92APkMvnwznBXK9lmqo=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20241009004306-b8ee314d2fa8/go.mod h1:0yN0hP98r75BER3NYCkTxXHud2rWqe6HaUrURNKJ19g=
 go.einride.tech/aip v0.68.0 h1:4seM66oLzTpz50u4K1zlJyOXQ3tCzcJN7I22tKkjipw=
 go.einride.tech/aip v0.68.0/go.mod h1:7y9FF8VtPWqpxuAxl0KQWqaULxW4zFIesD6zF5RIHHg=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=

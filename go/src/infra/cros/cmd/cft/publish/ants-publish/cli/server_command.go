@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/test/publish/cmd/common-utils/metadata"
 
-	"infra/cros/cmd/cft/ants-publish/server"
+	"infra/cros/cmd/cft/publish/ants-publish/server"
 )
 
 // ServerCommand executed the provisioning as a Server

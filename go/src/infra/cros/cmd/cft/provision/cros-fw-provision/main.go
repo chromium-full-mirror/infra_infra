@@ -8,17 +8,18 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/cft/ants-publish/cli"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/cli"
 )
 
 func main() {
 	opt, err := cli.ParseInputs()
 	if err != nil {
-		fmt.Printf("unable to parse inputs: %s", err)
+		fmt.Printf("unable to parse inputs: %s\n", err)
 		os.Exit(2)
 	}
-	if err := opt.Run(); err != nil {
-		fmt.Printf("Error running the command: %v", err)
-		os.Exit(2)
+	err = opt.Run()
+	if err != nil {
+		fmt.Printf("cros-fw-provision failed: %v\n", err)
+		os.Exit(1)
 	}
 }

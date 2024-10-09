@@ -1,0 +1,10 @@
+package: chromiumos/infra/cft/provision/cros-provision/${platform}
+description: cros-provision is the CFT container handling cros provisioning.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/cft/provision/cros-provision
+root: ../../go/bin
+data:
+  - file: cros-provision${exe_suffix}
+  - version_file: .versions/cros-provision${exe_suffix}.cipd_version
