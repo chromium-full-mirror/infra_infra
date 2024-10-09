@@ -194,7 +194,8 @@ def adhoc_builder(
         description_html = None,
         custom_metrics = None,
         execution_timeout = None,
-        max_concurrent_builds = None):
+        max_concurrent_builds = None,
+        triggering_policy = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -213,6 +214,7 @@ def adhoc_builder(
         custom_metrics = custom_metrics,
         execution_timeout = execution_timeout,
         max_concurrent_builds = max_concurrent_builds,
+        triggering_policy = triggering_policy,
     )
 
 adhoc_builder(
@@ -341,13 +343,10 @@ adhoc_builder(
         ],
     },
     schedule = "with 10m interval",
-    experiments = {
-        # TODO(b/325342884): Make it to 0 to test the old swarming pubsub
-        # notification flow when Swarming migrates it to Go. Re-enable it after
-        # the testing is done.
-        "luci.buildbucket.backend_alt": 0,
-    },
     max_concurrent_builds = 2,
+    triggering_policy = scheduler.newest_first(
+        max_concurrent_invocations = 10,
+    ),
 )
 
 adhoc_builder(
