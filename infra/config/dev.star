@@ -193,7 +193,8 @@ def adhoc_builder(
         triggered_by = None,
         description_html = None,
         custom_metrics = None,
-        execution_timeout = None):
+        execution_timeout = None,
+        max_concurrent_builds = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -211,6 +212,7 @@ def adhoc_builder(
         triggered_by = triggered_by,
         custom_metrics = custom_metrics,
         execution_timeout = execution_timeout,
+        max_concurrent_builds = max_concurrent_builds,
     )
 
 adhoc_builder(
@@ -345,6 +347,7 @@ adhoc_builder(
         # the testing is done.
         "luci.buildbucket.backend_alt": 0,
     },
+    max_concurrent_builds = 2,
 )
 
 adhoc_builder(
