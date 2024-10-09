@@ -108,7 +108,6 @@ def RunSteps(api, inputs):
         '--cq-dry-run',
         '--bypass-hooks',
         '--enable-auto-submit',
-        '--set-bot-commit',
         *reviewers_command_input,
         '--send-email',
     ]
