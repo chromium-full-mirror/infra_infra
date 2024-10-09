@@ -282,9 +282,19 @@ adhoc_builder(
                     "child_build_step_ids": ["bounded_child"],
                 },
             },
+            {
+                "name": "hello",
+                "fake_step": {
+                    "duration_secs": 1800,
+                },
+            },
         ],
     },
     schedule = "with 10m interval",
+    max_concurrent_builds = 2,
+    triggering_policy = scheduler.newest_first(
+        max_concurrent_invocations = 10,
+    ),
 )
 
 adhoc_builder(
@@ -343,10 +353,6 @@ adhoc_builder(
         ],
     },
     schedule = "with 10m interval",
-    max_concurrent_builds = 2,
-    triggering_policy = scheduler.newest_first(
-        max_concurrent_invocations = 10,
-    ),
 )
 
 adhoc_builder(
