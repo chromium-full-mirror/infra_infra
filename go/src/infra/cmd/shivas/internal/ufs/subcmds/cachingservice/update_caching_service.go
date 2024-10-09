@@ -94,7 +94,7 @@ func (c *updateCachingService) innerRun(a subcommands.Application, args []string
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	var cs ufspb.CachingService
 	if c.newSpecsFile != "" {

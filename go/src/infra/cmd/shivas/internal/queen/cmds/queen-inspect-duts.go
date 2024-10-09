@@ -65,7 +65,7 @@ func (c *inspectDutsRun) innerRun(a subcommands.Application, args []string, env 
 	ic := api.NewInspectPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.QueenService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	res, err := ic.ListDuts(ctx, &api.ListDutsRequest{})

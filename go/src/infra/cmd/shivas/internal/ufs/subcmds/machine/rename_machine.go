@@ -84,7 +84,7 @@ func (c *renameMachine) innerRun(a subcommands.Application, args []string, env s
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if _, err := utils.PrintExistingMachine(ctx, ic, c.name); err != nil {
 		return err

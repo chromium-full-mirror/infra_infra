@@ -65,7 +65,7 @@ func (c *inspectDronesRun) innerRun(a subcommands.Application, args []string, en
 	ic := api.NewInspectPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.QueenService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	res, err := ic.ListDrones(ctx, &api.ListDronesRequest{})

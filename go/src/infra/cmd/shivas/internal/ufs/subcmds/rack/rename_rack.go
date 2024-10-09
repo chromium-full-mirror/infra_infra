@@ -84,7 +84,7 @@ func (c *renameRack) innerRun(a subcommands.Application, args []string, env subc
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if err := utils.PrintExistingRack(ctx, ic, c.name); err != nil {
 		return err

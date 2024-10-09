@@ -92,7 +92,7 @@ func (c *addKVM) innerRun(a subcommands.Application, args []string, env subcomma
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	var kvm ufspb.KVM

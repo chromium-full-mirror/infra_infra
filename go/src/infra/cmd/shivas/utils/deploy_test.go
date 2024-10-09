@@ -151,7 +151,7 @@ func TestScheduleDeployTask(t *testing.T) {
 			// t.Parallel() disabled since we have global state used to verify calls
 			client := newStubClient()
 			tt.deployParams.Client = client
-			tt.deployParams.Env = site.Dev
+			tt.deployParams.Env = site.Dev(false)
 			tt.deployParams.Unit = "test-unit"
 			tt.deployParams.SessionTag = "test-session"
 			tt.deployParams.UseLatestVersion = false

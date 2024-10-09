@@ -299,7 +299,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	for _, req := range requests {
@@ -329,7 +329,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	}
 
 	var bc buildbucket.Client
-	if bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions); err != nil {
+	if bc, err = buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions(c.envFlags)); err != nil {
 		return err
 	}
 	authOpts, err := c.authFlags.Options()

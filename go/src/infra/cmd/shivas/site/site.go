@@ -32,7 +32,15 @@ type Environment struct {
 }
 
 // Prod is the environment for prod.
-var Prod = Environment{
+func Prod(isLocal bool) Environment {
+	if isLocal {
+		return localDevEnv
+	}
+	return prodEnv
+}
+
+// prodEnv is the prod environment.
+var prodEnv = Environment{
 	// TODO(gregorynisbet): remove once stable version moves to UFS.
 	AdminService:     "chromeos-skylab-bot-fleet.appspot.com",
 	InventoryService: "cros-lab-inventory.appspot.com",
@@ -46,7 +54,28 @@ var Prod = Environment{
 }
 
 // Dev is the environment for dev.
-var Dev = Environment{
+func Dev(isLocal bool) Environment {
+	if isLocal {
+		return localDevEnv
+	}
+	return devEnv
+}
+
+// localDevEnv is the local dev environment.
+var localDevEnv = Environment{
+	// TODO(gregorynisbet): remove once stable version moves to UFS.
+	AdminService:        "skylab-staging-bot-fleet.appspot.com",
+	InventoryService:    "0.0.0.0:8082",
+	UnifiedFleetService: "127.0.0.1:8800",
+	SwarmingService:     "https://chromium-swarm-dev.appspot.com/",
+	// TODO(crbug/1128496): remove when fixed
+	SwarmingServiceAccount: "skylab-admin-task@chromeos-service-accounts-dev.iam.gserviceaccount.com",
+	LogdogService:          "luci-logdog-dev.appspot.com",
+	QueenService:           "drone-queen-dev.appspot.com",
+}
+
+// devEnv is the environment for the dev cloud project.
+var devEnv = Environment{
 	// TODO(gregorynisbet): remove once stable version moves to UFS.
 	AdminService:        "skylab-staging-bot-fleet.appspot.com",
 	InventoryService:    "cros-lab-inventory-dev.appspot.com",
@@ -111,22 +140,47 @@ func (f *OutputFlags) NoEmit() bool {
 
 // EnvFlags controls selection of the environment: either prod (default) or dev.
 type EnvFlags struct {
+	local     bool
 	dev       bool
 	namespace string
 }
 
 // Register sets up the -dev argument.
 func (f *EnvFlags) Register(fl *flag.FlagSet) {
+	fl.BoolVar(&f.local, "local", false, "Run locally.")
 	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment.")
 	fl.StringVar(&f.namespace, "namespace", "", fmt.Sprintf("namespace where data resides. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
 }
 
+// Function validate checks the flags for correctness.
+//
+// For example, -local and -dev are mutually exclusive.
+func (f *EnvFlags) validate() error {
+	devlikeFlags := 0
+	if f.local {
+		devlikeFlags++
+	}
+	if f.dev {
+		devlikeFlags++
+	}
+	if devlikeFlags > 0 {
+		return errors.New("exactly one of -dev and -local may be specified")
+	}
+	return nil
+}
+
 // Env returns the environment, either dev or prod.
 func (f EnvFlags) Env() Environment {
-	if f.dev {
-		return Dev
+	if err := f.validate(); err != nil {
+		panic(err.Error())
 	}
-	return Prod
+	if f.local {
+		return Dev(true)
+	}
+	if f.dev {
+		return Dev(false)
+	}
+	return Prod(false)
 }
 
 // Namespace returns the namespace and validates the namespace is:
@@ -232,7 +286,20 @@ const Patch = 0
 // default value is used.  See prpc.Options for details.
 //
 // This is provided so it can be overridden for testing.
-var DefaultPRPCOptions = prpcOptionWithUserAgent(fmt.Sprintf("shivas/%s", VersionNumber))
+func DefaultPRPCOptions(e EnvFlags) *prpc.Options {
+	if e.local {
+		return &prpc.Options{
+			Insecure:  true,
+			UserAgent: fmt.Sprintf("shivas/%s", VersionNumber),
+		}
+	}
+	return ProdDefaultPRPCOptions()
+}
+
+// ProdDefaultPRPCOptions returns UFS PRPC client options for the prod project
+func ProdDefaultPRPCOptions() *prpc.Options {
+	return prpcOptionWithUserAgent(fmt.Sprintf("%s/%s", "shivas", VersionNumber))
+}
 
 // CipdInstalledPath is the installed path for shivas package.
 var CipdInstalledPath = "infra/shivas/"

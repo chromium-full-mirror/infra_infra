@@ -172,10 +172,10 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
-	bbClient, cErr := createBBClient(ctx, c.authFlags)
+	bbClient, cErr := createBBClient(ctx, c.authFlags, c.envFlags)
 	if cErr != nil {
 		return cErr
 	}
@@ -361,12 +361,12 @@ func (c *addLabstation) addLabstationToUFS(ctx context.Context, ic ufsAPI.FleetC
 }
 
 // CreateBBClient creates a buildbucket client if permitted.
-func createBBClient(ctx context.Context, authFlags authcli.Flags) (buildbucket.Client, error) {
+func createBBClient(ctx context.Context, authFlags authcli.Flags, envFlags site.EnvFlags) (buildbucket.Client, error) {
 	hc, err := buildbucket.NewHTTPClient(ctx, &authFlags)
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions(envFlags))
 	if err != nil {
 		return nil, errors.Annotate(err, "ensure bb client").Err()
 	}

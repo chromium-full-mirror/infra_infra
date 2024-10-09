@@ -105,7 +105,7 @@ func (c *manageWifiCmd) run(a subcommands.Application, args []string, env subcom
 	client := rpc.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	if c.isCSVUpdate {

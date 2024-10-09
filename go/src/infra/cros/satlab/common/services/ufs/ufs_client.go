@@ -64,7 +64,7 @@ func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Fla
 	return ufsApi.NewFleetPRPCClient(&prpc.Client{
 		C:       httpClient,
 		Host:    ufsService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.ProdDefaultPRPCOptions(),
 	}), nil
 
 }
@@ -84,7 +84,7 @@ func NewUFSClientWithDefaultOptions(ctx context.Context, ufsService string) (ufs
 	return ufsApi.NewFleetPRPCClient(&prpc.Client{
 		C:       c,
 		Host:    ufsService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.ProdDefaultPRPCOptions(),
 	}), nil
 
 }

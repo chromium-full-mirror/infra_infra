@@ -79,7 +79,7 @@ func (c *dumpNlyte) innerRun(a subcommands.Application, args []string, env subco
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	if c.updatedEntryFile == "" {

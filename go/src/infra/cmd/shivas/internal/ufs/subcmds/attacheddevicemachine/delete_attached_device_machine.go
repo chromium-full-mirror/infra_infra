@@ -82,7 +82,7 @@ func (c *deleteAttachedDeviceMachine) innerRun(a subcommands.Application, args [
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	if _, err = utils.PrintExistingAttachedDeviceMachine(ctx, ic, args[0]); err != nil {

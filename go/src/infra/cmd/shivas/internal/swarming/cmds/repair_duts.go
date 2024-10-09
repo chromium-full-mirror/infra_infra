@@ -83,14 +83,14 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions(c.envFlags))
 	if err != nil {
 		return err
 	}
 	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	authOpts, err := c.authFlags.Options()
 	if err != nil {

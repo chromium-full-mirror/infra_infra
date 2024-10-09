@@ -74,7 +74,7 @@ func (c *pushDutsRun) innerRun(a subcommands.Application, args []string, env sub
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	// Get all the MachineLSEs
 	// Set keysOnly to true to get only keys
@@ -97,7 +97,7 @@ func (c *pushDutsRun) innerRun(a subcommands.Application, args []string, env sub
 	qc := api.NewInventoryProviderPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.QueenService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	fmt.Printf("DUTs to declare(%d): %+v", len(availableDuts), availableDuts)
 	_, err = qc.DeclareDuts(ctx, &api.DeclareDutsRequest{AvailableDuts: availableDuts})

@@ -70,7 +70,7 @@ func (c *deleteDevboardMachine) innerRun(a subcommands.Application, args []strin
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	if _, err = utils.PrintExistingDevboardMachine(ctx, ic, args[0]); err != nil {

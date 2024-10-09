@@ -98,7 +98,7 @@ func (c *addDevboardMachine) innerRun(a subcommands.Application, args []string, 
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	var req ufsAPI.MachineRegistrationRequest

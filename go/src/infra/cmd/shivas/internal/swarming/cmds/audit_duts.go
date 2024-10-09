@@ -87,14 +87,14 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions(c.envFlags))
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
 	}
 	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	authOpts, err := c.authFlags.Options()
 	if err != nil {

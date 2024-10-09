@@ -119,7 +119,7 @@ func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	var createAssetRequest ufsAPI.CreateAssetRequest

@@ -97,7 +97,7 @@ func (c *getRack) innerRun(a subcommands.Application, args []string, env subcomm
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if c.commonFlags.Verbose() {
 		fmt.Printf("Using UnifiedFleet service %s\n", e.UnifiedFleetService)

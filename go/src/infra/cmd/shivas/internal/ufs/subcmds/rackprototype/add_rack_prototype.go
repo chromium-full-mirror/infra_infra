@@ -72,7 +72,7 @@ func (c *addRackLSEPrototype) innerRun(a subcommands.Application, args []string,
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	var racklsePrototype ufspb.RackLSEPrototype
 	if c.interactive {

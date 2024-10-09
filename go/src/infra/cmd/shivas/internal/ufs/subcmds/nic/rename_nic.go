@@ -84,7 +84,7 @@ func (c *renameNic) innerRun(a subcommands.Application, args []string, env subco
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if err := utils.PrintExistingNic(ctx, ic, c.name); err != nil {
 		return err

@@ -83,7 +83,7 @@ func (c *deleteAsset) innerRun(a subcommands.Application, args []string, env sub
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if c.scan {
 		c.scanAndDelete(ctx, ic, a.GetOut(), os.Stdin)

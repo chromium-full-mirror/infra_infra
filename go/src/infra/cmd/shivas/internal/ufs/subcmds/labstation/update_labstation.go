@@ -162,7 +162,7 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	for _, req := range requests {
@@ -189,7 +189,7 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 
 	// Check and start deploy tasks for required Labstations.
 	if len(deployTasks) > 0 {
-		bbClient, err := createBBClient(ctx, c.authFlags)
+		bbClient, err := createBBClient(ctx, c.authFlags, c.envFlags)
 		if err != nil {
 			return err
 		}

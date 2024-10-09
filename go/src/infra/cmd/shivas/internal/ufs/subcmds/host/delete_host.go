@@ -70,7 +70,7 @@ func (c *deleteHost) innerRun(a subcommands.Application, args []string, env subc
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if err := utils.PrintExistingHost(ctx, ic, args[0]); err != nil {
 		return err

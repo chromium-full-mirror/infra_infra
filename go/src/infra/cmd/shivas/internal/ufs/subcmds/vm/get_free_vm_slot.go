@@ -107,7 +107,7 @@ func (c *listVMSlot) innerRun(a subcommands.Application, args []string, env subc
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	filters := c.formatFilters()

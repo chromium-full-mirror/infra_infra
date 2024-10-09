@@ -71,7 +71,7 @@ func (c *deleteRackLSEPrototype) innerRun(a subcommands.Application, args []stri
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if err := utils.PrintExistingRackPrototype(ctx, ic, args[0]); err != nil {
 		return err

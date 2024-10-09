@@ -124,7 +124,7 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	for i, arg := range args {
@@ -136,7 +136,7 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 			&prpc.Client{
 				C:       hc,
 				Host:    e.AdminService,
-				Options: site.DefaultPRPCOptions,
+				Options: site.DefaultPRPCOptions(c.envFlags),
 			},
 		)
 		return c.getHostInfoStore(ctx, a, invWithSVClient, ic, args)

@@ -89,7 +89,7 @@ func (c *getStableVersion) innerRun(a subcommands.Application, args []string, en
 		&prpc.Client{
 			C:       hc,
 			Host:    e.AdminService,
-			Options: site.DefaultPRPCOptions,
+			Options: site.DefaultPRPCOptions(c.envFlags),
 		},
 	)
 	g := hostinfo.NewGetter(nil, invWithSVClient)

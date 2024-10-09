@@ -106,7 +106,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	var machinelse ufspb.MachineLSE

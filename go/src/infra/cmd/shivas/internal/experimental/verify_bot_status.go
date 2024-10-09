@@ -93,7 +93,7 @@ func (c *verifyBotStatusRun) innerRun(a subcommands.Application, args []string, 
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	hostToStateMap := make(map[string]ufspb.State)
 	res, err := utils.BatchList(ctx, ic, host.ListHosts, make([]string, 0), 0, false, false, nil)

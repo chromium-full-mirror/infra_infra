@@ -106,7 +106,7 @@ func (c *updateMachine) innerRun(a subcommands.Application, args []string, env s
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	var machine ufspb.Machine
 	if c.interactive {

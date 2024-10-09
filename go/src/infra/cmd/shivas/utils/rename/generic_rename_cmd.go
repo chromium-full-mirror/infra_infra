@@ -111,7 +111,7 @@ func (c *renameGeneric) innerRun(a subcommands.Application, args []string, env s
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	// Change  this  API if you want to reuse the command somewhere else.
 	renamedResource, err := c.rename(ctx, ic, c.name, c.newName)

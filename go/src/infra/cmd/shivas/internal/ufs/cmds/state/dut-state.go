@@ -73,7 +73,7 @@ func (c *dutStateCmdRun) innerRun(a subcommands.Application, args []string, env 
 	ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	host := args[0]
 	if c.dolos {

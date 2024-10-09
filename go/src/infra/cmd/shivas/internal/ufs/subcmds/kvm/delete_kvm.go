@@ -70,7 +70,7 @@ func (c *deleteKVM) innerRun(a subcommands.Application, args []string, env subco
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 	if err := utils.PrintExistingKVM(ctx, ic, args[0]); err != nil {
 		return err

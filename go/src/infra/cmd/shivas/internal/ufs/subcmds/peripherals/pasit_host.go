@@ -112,7 +112,7 @@ func (c *managePasitHostCmd) run(a subcommands.Application, args []string, env s
 	client := rpc.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
-		Options: site.DefaultPRPCOptions,
+		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
 	lse, err := client.GetMachineLSE(ctx, &rpc.GetMachineLSERequest{
