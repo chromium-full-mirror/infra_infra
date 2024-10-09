@@ -92,7 +92,10 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   working_sims: 2
+  hmr_gen: 0
   hmr_state: 1
+  hmr_tool_type: 0
+  hmr_walt: false
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]
@@ -735,7 +738,10 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   working_sims: 2
+  hmr_gen: 0
   hmr_state: 1
+  hmr_tool_type: 0
+  hmr_walt: false
   peripheral_btpeer_state: 1
   peripheral_wifi_state: 1
   wifi_router_features: [2,3,4,5]

@@ -44,6 +44,9 @@ func boolPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels) 
 	if p.GetConductive() {
 		dims["label-conductive"] = []string{"True"}
 	}
+	if p.GetHmrWalt() {
+		dims["label-hmr_walt"] = []string{"True"}
+	}
 	if p.GetHuddly() {
 		dims["label-huddly"] = []string{"True"}
 	}
@@ -73,6 +76,7 @@ func boolPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dime
 	d = assignLastBoolValueAndDropKey(d, p.Camerabox, "label-camerabox")
 	d = assignLastBoolValueAndDropKey(d, p.Chameleon, "label-chameleon")
 	d = assignLastBoolValueAndDropKey(d, p.Conductive, "label-conductive")
+	d = assignLastBoolValueAndDropKey(d, p.HmrWalt, "label-hmr_walt")
 	d = assignLastBoolValueAndDropKey(d, p.Huddly, "label-huddly")
 	d = assignLastBoolValueAndDropKey(d, p.Mimo, "label-mimo")
 	d = assignLastBoolValueAndDropKey(d, p.Servo, "label-servo")
@@ -125,6 +129,18 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		if labSState, ok := lab.PeripheralState_name[int32(hmrState)]; ok {
 			dims["label-hmr_state"] = []string{labSState}
 		}
+	}
+
+	if hmrToolType := p.GetHmrToolType(); hmrToolType != inventory.Peripherals_HMR_TOOL_TYPE_UNKNOWN {
+		labHmrToolType := hmrToolType.String() // HMR_TOOL_TYPE_{ STYLUS, FAKE_FINGER, ... }
+		const plen = len("HMR_TOOL_TYPE_")
+		dims["label-hmr_tool_type"] = []string{labHmrToolType[plen:]}
+	}
+
+	if hmrGen := p.GetHmrGen(); hmrGen != inventory.Peripherals_HMR_GEN_UNKNOWN {
+		labHmrGen := hmrGen.String() // HMR_GEN_{ 1, 2, ... }
+		const plen = len("HMR_")     // ignore "HMR_" prefix to keep only GEN_[N]
+		dims["label-hmr_gen"] = []string{labHmrGen[plen:]}
 	}
 
 	n := p.GetWorkingBluetoothBtpeer()
@@ -232,6 +248,13 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 	}
 }
 
+func labToInvEnum[T ~int32](labValueStr string, invEnum map[string]int32) T {
+	if invVal, ok := invEnum[labValueStr]; ok {
+		return T(invVal)
+	}
+	return T(0) // default of enums is 0
+}
+
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	p := ls.Peripherals
 
@@ -245,9 +268,7 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 
 	p.ChameleonConnectionTypes = make([]inventory.Peripherals_ChameleonConnectionType, len(d["label-chameleon_connection_types"]))
 	for i, v := range d["label-chameleon_connection_types"] {
-		if ct, ok := inventory.Peripherals_ChameleonConnectionType_value[v]; ok {
-			p.ChameleonConnectionTypes[i] = inventory.Peripherals_ChameleonConnectionType(ct)
-		}
+		p.ChameleonConnectionTypes[i] = labToInvEnum[inventory.Peripherals_ChameleonConnectionType](v, inventory.Peripherals_ChameleonConnectionType_value)
 	}
 	delete(d, "label-chameleon_connection_types")
 
@@ -261,20 +282,16 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 	}
 
 	if labJackPluggerName, ok := getLastStringValue(d, "label-audiobox_jackplugger_state"); ok {
-		labJackPluggerState := "AUDIOBOX_JACKPLUGGER_" + labJackPluggerName
-		if invJackPluggerVal, ok := inventory.Peripherals_AudioBoxJackPlugger_value[labJackPluggerState]; ok {
-			invJackPluggerState := inventory.Peripherals_AudioBoxJackPlugger(invJackPluggerVal)
-			p.AudioboxJackpluggerState = &invJackPluggerState
-		}
+		labValueStr := "AUDIOBOX_JACKPLUGGER_" + labJackPluggerName
+		invVal := labToInvEnum[inventory.Peripherals_AudioBoxJackPlugger](labValueStr, inventory.Peripherals_AudioBoxJackPlugger_value)
+		p.AudioboxJackpluggerState = &invVal
 		delete(d, "label-audiobox_jackplugger_state")
 	}
 
 	if labTRRSTypeName, ok := getLastStringValue(d, "label-trrs_type"); ok {
-		labTRRSType := "TRRS_TYPE_" + labTRRSTypeName
-		if invTRRSVal, ok := inventory.Peripherals_TRRSType_value[labTRRSType]; ok {
-			invTRRSType := inventory.Peripherals_TRRSType(invTRRSVal)
-			p.TrrsType = &invTRRSType
-		}
+		labValueStr := "TRRS_TYPE_" + labTRRSTypeName
+		invVal := labToInvEnum[inventory.Peripherals_TRRSType](labValueStr, inventory.Peripherals_TRRSType_value)
+		p.TrrsType = &invVal
 		delete(d, "label-trrs_type")
 	}
 
@@ -294,6 +311,21 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 		p.HmrState = &hmrState
 		delete(d, "label-hmr_state")
+	}
+
+	if labHmrToolTypeName, ok := getLastStringValue(d, "label-hmr_tool_type"); ok {
+		labValStr := "HMR_TOOL_TYPE_" + labHmrToolTypeName
+		fmt.Printf("labValStr %s", labValStr)
+		invVal := labToInvEnum[inventory.Peripherals_HMRToolType](labValStr, inventory.Peripherals_HMRToolType_value)
+		p.HmrToolType = &invVal
+		delete(d, "label-hmr_tool_type")
+	}
+
+	if labHmrGenName, ok := getLastStringValue(d, "label-hmr_gen"); ok {
+		labValStr := "HMR_" + labHmrGenName
+		invVal := labToInvEnum[inventory.Peripherals_HMRGen](labValStr, inventory.Peripherals_HMRGen_value)
+		p.HmrGen = &invVal
+		delete(d, "label-hmr_gen")
 	}
 
 	if labSStateName, ok := getLastStringValue(d, "label-servo_state"); ok {

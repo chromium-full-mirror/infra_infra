@@ -82,6 +82,9 @@ peripherals: {
   sim_features: [0,1,2]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
+  hmr_walt: true
+  hmr_tool_type: 1
+  hmr_gen: 2
   pasit_components: "CAMERA-1"
   pasit_components: "MONITOR-1"
   pasit_components: "MONITOR-2"
@@ -265,6 +268,9 @@ peripherals: {
   sim_features: [0,1,2]
   wifi_router_models: ["gale","OPENWRT[Ubiquiti_Unifi_6_Lite]"]
   hmr_state: 1
+  hmr_walt: true
+  hmr_tool_type: 1
+  hmr_gen: 2
   pasit_components: "CAMERA-1"
   pasit_components: "MONITOR-1"
   pasit_components: "MONITOR-2"
@@ -428,6 +434,9 @@ var fullDimensions = Dimensions{
 	"label-hwid_sku":                {"eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"},
 	"label-dlm_sku_id":              {"12345"},
 	"label-hmr_state":               {"WORKING"},
+	"label-hmr_gen":                 {"GEN_2"},
+	"label-hmr_tool_type":           {"STYLUS"},
+	"label-hmr_walt":                {"True"},
 	"label-hotwording":              {"True"},
 	"label-huddly":                  {"True"},
 	"label-internal_display":        {"True"},
