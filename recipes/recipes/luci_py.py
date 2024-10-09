@@ -63,8 +63,6 @@ def _check_changes(api):
           _has_changed_files(api, 'client'),
       'auth_service':
           _has_changed_files(api, 'appengine/auth_service'),
-      'config_service':
-          _has_changed_files(api, 'appengine/config_service'),
       'components':
           _has_changed_files(api, 'appengine/components'),
       'swarming':
@@ -248,8 +246,6 @@ def GenTests(api):
          _step_data_changed_files('client', ['client/foo.py']) +
          _step_data_changed_files('appengine/auth_service',
                                   ['appengine/auth_service/foo.py']) +
-         _step_data_changed_files('appengine/config_service',
-                                  ['appengine/config_service/foo.py']) +
          _step_data_changed_files('appengine/components',
                                   ['appengine/components/foo.py']) +
          _step_data_changed_files('appengine/swarming',
@@ -261,8 +257,6 @@ def GenTests(api):
          _step_data_changed_files('client', ['client/foo.py']) +
          _step_data_changed_files('appengine/auth_service',
                                   ['appengine/auth_service/foo.py']) +
-         _step_data_changed_files('appengine/config_service',
-                                  ['appengine/config_service/foo.py']) +
          _step_data_changed_files('appengine/components',
                                   ['appengine/components/foo.py']) +
          _step_data_changed_files(
