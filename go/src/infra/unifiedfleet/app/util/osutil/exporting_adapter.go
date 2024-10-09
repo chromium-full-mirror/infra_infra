@@ -238,6 +238,8 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 			p.PasitComponents = append(p.PasitComponents, fmt.Sprintf("%v-%d", dType, count[dType]))
 		}
 	}
+
+	setHmr(p, d)
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {
@@ -701,6 +703,24 @@ func setPower(labels *inventory.SchedulableLabels, p *chromeosLab.Peripherals, d
 	c.Power = &power
 }
 
+func setHmr(p *inventory.Peripherals, d *chromeosLab.Peripherals) {
+	if labHmr := d.GetHumanMotionRobot(); labHmr != nil {
+		p.HmrWalt = &(labHmr.HmrWalt)
+
+		hmrToolType := inventory.Peripherals_HMR_TOOL_TYPE_UNKNOWN
+		if s := labHmr.GetHmrToolType(); s != chromeosLab.HumanMotionRobot_HMR_TOOL_TYPE_UNKNOWN {
+			hmrToolType = inventory.Peripherals_HMRToolType(s)
+		}
+		p.HmrToolType = &hmrToolType
+
+		hmrGen := inventory.Peripherals_HMR_GEN_UNKNOWN
+		if s := labHmr.GetHmrGen(); s != chromeosLab.HumanMotionRobot_HMR_GEN_UNKNOWN {
+			hmrGen = inventory.Peripherals_HMRGen(s)
+		}
+		p.HmrGen = &hmrGen
+	}
+}
+
 func createDutLabels(machine *ufspb.Machine, devConfig *deviceconfig.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
 	// Use GetXXX in case any object is nil.
 	platform := machine.GetChromeosMachine().GetBuildTarget()
@@ -890,6 +910,7 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *dev
 		Chameleon:           &falseValue,
 		ChameleonType:       []inventory.Peripherals_ChameleonType{inventory.Peripherals_CHAMELEON_TYPE_INVALID},
 		Conductive:          &falseValue,
+		HmrWalt:             &falseValue,
 		Huddly:              &falseValue,
 		Mimo:                &falseValue,
 		Servo:               &falseValue,

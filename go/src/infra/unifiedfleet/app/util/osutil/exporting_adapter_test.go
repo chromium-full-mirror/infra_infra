@@ -193,6 +193,19 @@ var lse = ufspb.MachineLSE{
 										},
 									},
 								},
+								HumanMotionRobot: &chromeosLab.HumanMotionRobot{
+									Hostname:        "test-hmr",
+									HmrModel:        "model1",
+									GatewayHostname: "test-hmr-pi",
+									Rpm: &chromeosLab.OSRPM{
+										PowerunitName:   "test-hmr-rpm",
+										PowerunitOutlet: "test-hmr-rpm-outlet",
+										PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
+									},
+									HmrWalt:     true,
+									HmrToolType: chromeosLab.HumanMotionRobot_HMR_TOOL_TYPE_FAKE_FINGER,
+									HmrGen:      chromeosLab.HumanMotionRobot_HMR_GEN_1,
+								},
 							},
 							Licenses: []*chromeosLab.License{
 								{
@@ -738,6 +751,9 @@ common {
 			router_802_11ax: true
 			working_bluetooth_btpeer: 3
 			hmr_state: UNKNOWN
+			hmr_walt: true
+			hmr_tool_type: HMR_TOOL_TYPE_FAKE_FINGER
+			hmr_gen: HMR_GEN_1
 			audio_latency_toolkit_state: WORKING
 			stylus: true
 			pasit_components: "CAMERA-1"
@@ -862,6 +878,7 @@ common {
 			peripheral_wifi_state: WORKING
 			chameleon_state: WORKING
 			hmr_state: UNKNOWN
+			hmr_walt: false
 			audio_latency_toolkit_state: WORKING
 			amt_manager_state: UNKNOWN
 			audio_beamforming: "intelligo"

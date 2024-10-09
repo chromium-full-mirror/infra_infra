@@ -459,7 +459,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 53
+// NEXT TAG: 57
 message Peripherals {
   reserved 32;
 
@@ -657,6 +657,32 @@ message Peripherals {
   // The state of Human Motion Robot system.
   // See UFS peripherals.proto or go/fleet-infra-hmr-support for more context.
   optional PeripheralState hmr_state = 36;
+
+  // Indicate the presence of a WALT device for latency testing.
+  // The walt device will be connected to the bottom usb-A port of the servo.
+  // Set to true if the HMR has a walt unit attached to it else False.
+  optional bool hmr_walt = 54;
+
+  // HMRToolType describe the enum of types of tool on HMR.
+  // Next Tag: 3
+  enum HMRToolType {
+    HMR_TOOL_TYPE_UNKNOWN = 0;
+    HMR_TOOL_TYPE_STYLUS = 1;
+    HMR_TOOL_TYPE_FAKE_FINGER = 2;
+  }
+  // Indicate the tool type currently attached to the HMR.
+  optional HMRToolType hmr_tool_type = 55;
+
+  // HMRGen describe the enum of generation of the HMR.
+  // Next Tag: 3
+  enum HMRGen {
+    HMR_GEN_UNKNOWN = 0;
+    HMR_GEN_1 = 1;
+    HMR_GEN_2 = 2;
+  }
+  // Indicate the generation of the HMR.
+  // The type of generation can be identified by the serial number behind the HMR.
+  optional HMRGen hmr_gen = 56;
 
   // The state of Audio Latency Toolkit
   // See UFS peripherals.proto or go/teensy-in-audiobox-proposal for more context.
