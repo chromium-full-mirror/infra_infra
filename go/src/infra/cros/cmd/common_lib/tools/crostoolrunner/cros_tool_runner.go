@@ -364,7 +364,7 @@ func (ctr *CrosToolRunner) GetContainer(
 
 	portFound := false
 	// Retry finding the container, as it may still be starting up.
-	retryCount := 3
+	retryCount := 30
 	timeout := 5 * time.Second
 
 	resp := &testapi.GetContainerResponse{}
