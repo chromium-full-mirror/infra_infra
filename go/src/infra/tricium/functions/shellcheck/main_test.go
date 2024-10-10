@@ -16,8 +16,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/tricium/functions/shellcheck/runner"
 )
 
@@ -61,17 +62,17 @@ func TestRun(t *testing.T) {
 	}
 
 	comments, ok := results["comments"]
-	Convey("Results should be properly formatted", t, func() {
-		Convey("Results should have comments", func() {
-			So(ok, ShouldBeTrue)
+	ftt.Run("Results should be properly formatted", t, func(t *ftt.Test) {
+		t.Run("Results should have comments", func(t *ftt.Test) {
+			assert.Loosely(t, ok, should.BeTrue)
 		})
 
-		Convey("There should be multiple comments", func() {
-			So(len(comments), ShouldEqual, 5)
+		t.Run("There should be multiple comments", func(t *ftt.Test) {
+			assert.Loosely(t, len(comments), should.Equal(5))
 		})
 
-		Convey("Comments should have specific contents", func() {
-			So(comments, ShouldResemble, []map[string]interface{}{
+		t.Run("Comments should have specific contents", func(t *ftt.Test) {
+			assert.Loosely(t, comments, should.Resemble([]map[string]interface{}{
 				{
 					"category":  "ShellCheck/SC2034",
 					"message":   "warning: FLAGS_flag appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",
@@ -117,7 +118,7 @@ func TestRun(t *testing.T) {
 					"startChar": float64(5),
 					"endChar":   float64(9),
 				},
-			})
+			}))
 		})
 	})
 }
