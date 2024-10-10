@@ -65,6 +65,7 @@ type Run struct {
 	CFT           bool
 	// TRV2 determines whether we will use Test Runner V2
 	TRV2        bool
+	DynamicTRV2 bool
 	Local       bool
 	TimeoutMins int
 	// Runs with Ctpv2 and Quota Scheduler if true and CFT is true
@@ -180,7 +181,8 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 				TestRunnerBuildTags: tags,
 				TimeoutMins:         c.setTimeout(),
 				CTPBuildTags:        tags,
-				TRV2:                c.TRV2,
+				TRV2:                c.TRV2 || c.DynamicTRV2,
+				DynamicTRV2:         c.DynamicTRV2,
 				CpconPublish:        c.UploadToCpcon,
 				UserDefinedFilters:  c.userDefinedFilters(),
 			})
@@ -202,7 +204,6 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 			TestRunnerBuildTags: tags,
 			TimeoutMins:         c.setTimeout(),
 			CTPBuildTags:        tags,
-			TRV2:                c.TRV2,
 		})
 	}
 	return res, nil

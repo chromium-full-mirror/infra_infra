@@ -29,6 +29,7 @@ type runFlags struct {
 	satlabId      string
 	cft           bool
 	trv2          bool
+	dynamicTrv2   bool
 	local         bool
 	maxTimeout    bool
 	timeoutMins   int
@@ -54,6 +55,7 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.satlabId, "satlabId", "", "id of satlab box to execute tests on (e.g. 'satlab-XXXXXXXXX')")
 	c.Flags.BoolVar(&c.cft, "cft", true, "whether to use CFT execution framework")
 	c.Flags.BoolVar(&c.trv2, "trv2", false, "whether to use Test Runner v2")
+	c.Flags.BoolVar(&c.dynamicTrv2, "dynamic-trv2", false, "whether to use Dynamic Test Runner v2")
 	c.Flags.BoolVar(&c.local, "local", false, "whether to execute tests on local satlab")
 	c.Flags.IntVar(&c.timeoutMins, "timeout-mins", 0, "how many minutes to time build out after")
 	c.Flags.BoolVar(&c.maxTimeout, "max-timeout", false, "DEPRECATED: Use `-timeout-mins` instead")

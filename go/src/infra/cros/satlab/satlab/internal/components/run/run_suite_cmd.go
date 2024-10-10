@@ -71,6 +71,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		SatlabId:      c.satlabId,
 		CFT:           c.cft,
 		TRV2:          c.trv2,
+		DynamicTRV2:   c.dynamicTrv2,
 		Local:         c.local,
 		TimeoutMins:   c.timeoutMins,
 		AddedDims:     c.addedDims,
@@ -103,6 +104,12 @@ func (c *run) validateArgs() error {
 	// TODO(filipek): remove this check when full support for the testplan will be confirmed.
 	if c.cft && (c.testplan != "" || c.testplanLocal != "") {
 		fmt.Print("\n-- Warning --\nFor now the CFT is enabled by default, but it may not work properly with the testplan (then use -cft=0).\n\n")
+	}
+	if !c.cft && c.trv2 {
+		return errors.Reason("-cft is required for test runs v2").Err()
+	}
+	if !c.cft && c.dynamicTrv2 {
+		return errors.Reason("-cft is required for dynamic test runs v2").Err()
 	}
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()

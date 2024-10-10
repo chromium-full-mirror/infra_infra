@@ -65,6 +65,36 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // 'non-cft' test with TRv2
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool",
+					harness:   "tast",
+					trv2:      true,
+					cft:       false},
+			},
+		},
+		{
+			&run{ // 'non-cft' test with DynamicTRv2
+				runFlags: runFlags{
+					test:        "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					dynamicTrv2: true,
+					cft:         false},
+			},
+		},
+		{
 			&run{ // no board
 				runFlags: runFlags{
 					suite:     "rlz",
