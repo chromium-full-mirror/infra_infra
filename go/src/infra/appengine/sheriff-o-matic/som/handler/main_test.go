@@ -17,12 +17,14 @@ import (
 	"time"
 
 	"github.com/julienschmidt/httprouter"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/auth/xsrf"
@@ -35,7 +37,7 @@ import (
 var _ = fmt.Printf
 
 func TestMain(t *testing.T) {
-	Convey("main", t, func() {
+	ftt.Run("main", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = authtest.MockAuthConfig(c)
 		c = gologger.StdConfig.Use(c)
@@ -49,8 +51,8 @@ func TestMain(t *testing.T) {
 		monorailServer := httptest.NewServer(monorailMux)
 		defer monorailServer.Close()
 		tok, err := xsrf.Token(c)
-		So(err, ShouldBeNil)
-		Convey("/api/v1", func() {
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("/api/v1", func(t *ftt.Test) {
 			alertIdx := datastore.IndexDefinition{
 				Kind:     "AlertJSONNonGrouping",
 				Ancestor: true,
@@ -77,30 +79,30 @@ func TestMain(t *testing.T) {
 			indexes := []*datastore.IndexDefinition{&alertIdx, &revisionSummaryIdx}
 			datastore.GetTestable(c).AddIndexes(indexes...)
 
-			Convey("GetTrees", func() {
-				Convey("no trees yet", func() {
+			t.Run("GetTrees", func(t *ftt.Test) {
+				t.Run("no trees yet", func(t *ftt.Test) {
 					trees, err := GetTrees(c)
 
-					So(err, ShouldBeNil)
-					So(string(trees), ShouldEqual, "[]")
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, string(trees), should.Equal("[]"))
 				})
 
 				tree := &model.Tree{
 					Name:        "oak",
 					DisplayName: "Oak",
 				}
-				So(datastore.Put(c, tree), ShouldBeNil)
+				assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				Convey("basic tree", func() {
+				t.Run("basic tree", func(t *ftt.Test) {
 					trees, err := GetTrees(c)
 
-					So(err, ShouldBeNil)
-					So(string(trees), ShouldEqual, `[{"name":"oak","display_name":"Oak","bb_project_filter":""}]`)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, string(trees), should.Equal(`[{"name":"oak","display_name":"Oak","bb_project_filter":""}]`))
 				})
 			})
 
-			Convey("/alerts", func() {
+			t.Run("/alerts", func(t *ftt.Test) {
 				contents, _ := json.Marshal(&messages.Alert{
 					Key: "test",
 				})
@@ -132,8 +134,8 @@ func TestMain(t *testing.T) {
 					Contents: []byte(contents3),
 				}
 
-				Convey("GET", func() {
-					Convey("no alerts yet", func() {
+				t.Run("GET", func(t *ftt.Test) {
+					t.Run("no alerts yet", func(t *ftt.Test) {
 						GetAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -141,14 +143,14 @@ func TestMain(t *testing.T) {
 						})
 
 						_, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 					})
 
-					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, alertJSON), should.BeNil)
 					datastore.GetTestable(c).CatchupIndexes()
 
-					Convey("basic alerts", func() {
+					t.Run("basic alerts", func(t *ftt.Test) {
 						GetAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -156,22 +158,22 @@ func TestMain(t *testing.T) {
 						})
 
 						r, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
 						err = json.Unmarshal(r, &summary)
-						So(err, ShouldBeNil)
-						So(summary.Alerts, ShouldHaveLength, 1)
-						So(summary.Alerts[0].Key, ShouldEqual, "test")
-						So(summary.Resolved, ShouldHaveLength, 0)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, summary.Alerts, should.HaveLength(1))
+						assert.Loosely(t, summary.Alerts[0].Key, should.Equal("test"))
+						assert.Loosely(t, summary.Resolved, should.HaveLength(0))
 						// TODO(seanmccullough): Remove all of the POST /alerts handling
 						// code and tests except for whatever chromeos needs.
 					})
 
-					So(datastorePutAlertJSON(c, oldResolvedJSON), ShouldBeNil)
-					So(datastorePutAlertJSON(c, newResolvedJSON), ShouldBeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, oldResolvedJSON), should.BeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, newResolvedJSON), should.BeNil)
 
-					Convey("resolved alerts", func() {
+					t.Run("resolved alerts", func(t *ftt.Test) {
 						GetAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -179,22 +181,22 @@ func TestMain(t *testing.T) {
 						})
 
 						r, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
 						err = json.Unmarshal(r, &summary)
-						So(err, ShouldBeNil)
-						So(summary.Alerts, ShouldHaveLength, 1)
-						So(summary.Alerts[0].Key, ShouldEqual, "test")
-						So(summary.Resolved, ShouldHaveLength, 1)
-						So(summary.Resolved[0].Key, ShouldEqual, "test3")
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, summary.Alerts, should.HaveLength(1))
+						assert.Loosely(t, summary.Alerts[0].Key, should.Equal("test"))
+						assert.Loosely(t, summary.Resolved, should.HaveLength(1))
+						assert.Loosely(t, summary.Resolved[0].Key, should.Equal("test3"))
 						// TODO(seanmccullough): Remove all of the POST /alerts handling
 						// code and tests except for whatever chromeos needs.
 					})
 				})
 			})
 
-			Convey("/unresolved", func() {
+			t.Run("/unresolved", func(t *ftt.Test) {
 				contents, _ := json.Marshal(&messages.Alert{
 					Key: "test",
 				})
@@ -226,8 +228,8 @@ func TestMain(t *testing.T) {
 					Contents: []byte(contents3),
 				}
 
-				Convey("GET", func() {
-					Convey("no alerts yet", func() {
+				t.Run("GET", func(t *ftt.Test) {
+					t.Run("no alerts yet", func(t *ftt.Test) {
 						GetUnresolvedAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -235,16 +237,16 @@ func TestMain(t *testing.T) {
 						})
 
 						_, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 					})
 
-					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
-					So(datastorePutAlertJSON(c, oldResolvedJSON), ShouldBeNil)
-					So(datastorePutAlertJSON(c, newResolvedJSON), ShouldBeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, alertJSON), should.BeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, oldResolvedJSON), should.BeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, newResolvedJSON), should.BeNil)
 					datastore.GetTestable(c).CatchupIndexes()
 
-					Convey("basic alerts", func() {
+					t.Run("basic alerts", func(t *ftt.Test) {
 						GetUnresolvedAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -252,19 +254,19 @@ func TestMain(t *testing.T) {
 						})
 
 						r, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
 						err = json.Unmarshal(r, &summary)
-						So(err, ShouldBeNil)
-						So(summary.Alerts, ShouldHaveLength, 1)
-						So(summary.Alerts[0].Key, ShouldEqual, "test")
-						So(summary.Resolved, ShouldBeNil)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, summary.Alerts, should.HaveLength(1))
+						assert.Loosely(t, summary.Alerts[0].Key, should.Equal("test"))
+						assert.Loosely(t, summary.Resolved, should.BeNil)
 					})
 				})
 			})
 
-			Convey("/resolved", func() {
+			t.Run("/resolved", func(t *ftt.Test) {
 				contents, _ := json.Marshal(&messages.Alert{
 					Key: "test",
 				})
@@ -296,8 +298,8 @@ func TestMain(t *testing.T) {
 					Contents: []byte(contents3),
 				}
 
-				Convey("GET", func() {
-					Convey("no alerts yet", func() {
+				t.Run("GET", func(t *ftt.Test) {
+					t.Run("no alerts yet", func(t *ftt.Test) {
 						GetResolvedAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -305,16 +307,16 @@ func TestMain(t *testing.T) {
 						})
 
 						_, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 					})
 
-					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
-					So(datastorePutAlertJSON(c, oldResolvedJSON), ShouldBeNil)
-					So(datastorePutAlertJSON(c, newResolvedJSON), ShouldBeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, alertJSON), should.BeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, oldResolvedJSON), should.BeNil)
+					assert.Loosely(t, datastorePutAlertJSON(c, newResolvedJSON), should.BeNil)
 					datastore.GetTestable(c).CatchupIndexes()
 
-					Convey("resolved alerts", func() {
+					t.Run("resolved alerts", func(t *ftt.Test) {
 						GetResolvedAlertsHandler(&router.Context{
 							Writer:  w,
 							Request: makeGetRequest(c),
@@ -322,14 +324,14 @@ func TestMain(t *testing.T) {
 						})
 
 						r, err := ioutil.ReadAll(w.Body)
-						So(err, ShouldBeNil)
-						So(w.Code, ShouldEqual, 200)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, w.Code, should.Equal(200))
 						summary := &messages.AlertsSummary{}
 						err = json.Unmarshal(r, &summary)
-						So(err, ShouldBeNil)
-						So(summary.Alerts, ShouldBeNil)
-						So(summary.Resolved, ShouldHaveLength, 1)
-						So(summary.Resolved[0].Key, ShouldEqual, "test3")
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, summary.Alerts, should.BeNil)
+						assert.Loosely(t, summary.Resolved, should.HaveLength(1))
+						assert.Loosely(t, summary.Resolved[0].Key, should.Equal("test3"))
 						// TODO(seanmccullough): Remove all of the POST /alerts handling
 						// code and tests except for whatever chromeos needs.
 					})
@@ -337,12 +339,12 @@ func TestMain(t *testing.T) {
 			})
 		})
 
-		Convey("cron", func() {
-			Convey("flushOldAnnotations", func() {
+		t.Run("cron", func(t *ftt.Test) {
+			t.Run("flushOldAnnotations", func(t *ftt.Test) {
 				getAllAnns := func() []*model.Annotation {
 					anns := []*model.Annotation{}
 					q := datastoreCreateAnnotationQuery()
-					So(datastoreGetAnnotationsByQuery(c, &anns, q), ShouldBeNil)
+					assert.Loosely(t, datastoreGetAnnotationsByQuery(c, &anns, q), should.BeNil)
 					return anns
 				}
 
@@ -351,25 +353,25 @@ func TestMain(t *testing.T) {
 					Key:              "foobar",
 					ModificationTime: datastore.RoundTime(cl.Now()),
 				}
-				So(datastorePutAnnotation(c, ann), ShouldBeNil)
+				assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				Convey("current not deleted", func() {
+				t.Run("current not deleted", func(t *ftt.Test) {
 					num, err := flushOldAnnotations(c)
-					So(err, ShouldBeNil)
-					So(num, ShouldEqual, 0)
-					So(getAllAnns(), ShouldResemble, []*model.Annotation{ann})
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, num, should.BeZero)
+					assert.Loosely(t, getAllAnns(), should.Resemble([]*model.Annotation{ann}))
 				})
 
 				ann.ModificationTime = cl.Now().Add(-(annotationExpiration + time.Hour))
-				So(datastorePutAnnotation(c, ann), ShouldBeNil)
+				assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				Convey("old deleted", func() {
+				t.Run("old deleted", func(t *ftt.Test) {
 					num, err := flushOldAnnotations(c)
-					So(err, ShouldBeNil)
-					So(num, ShouldEqual, 1)
-					So(getAllAnns(), ShouldResemble, []*model.Annotation{})
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, num, should.Equal(1))
+					assert.Loosely(t, getAllAnns(), should.Resemble([]*model.Annotation{}))
 				})
 
 				datastore.GetTestable(c).CatchupIndexes()
@@ -390,25 +392,25 @@ func TestMain(t *testing.T) {
 						ModificationTime: datastore.RoundTime(cl.Now().Add(-(annotationExpiration + time.Hour))),
 					},
 				}
-				So(datastorePutAnnotations(c, anns), ShouldBeNil)
+				assert.Loosely(t, datastorePutAnnotations(c, anns), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				Convey("only delete old", func() {
+				t.Run("only delete old", func(t *ftt.Test) {
 					num, err := flushOldAnnotations(c)
-					So(err, ShouldBeNil)
-					So(num, ShouldEqual, 1)
-					So(getAllAnns(), ShouldResemble, anns[:1])
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, num, should.Equal(1))
+					assert.Loosely(t, getAllAnns(), should.Resemble(anns[:1]))
 				})
 
-				Convey("handler", func() {
+				t.Run("handler", func(t *ftt.Test) {
 					FlushOldAnnotationsHandler(c)
 				})
 			})
 
-			Convey("clientmon", func() {
+			t.Run("clientmon", func(t *ftt.Test) {
 				body := &eCatcherReq{XSRFToken: tok}
 				bodyBytes, err := json.Marshal(body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				ctx := &router.Context{
 					Writer:  w,
 					Request: makePostRequest(c, string(bodyBytes)),
@@ -416,10 +418,10 @@ func TestMain(t *testing.T) {
 				}
 
 				PostClientMonHandler(ctx)
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 			})
 
-			Convey("treelogo", func() {
+			t.Run("treelogo", func(t *ftt.Test) {
 				ctx := &router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
@@ -427,10 +429,10 @@ func TestMain(t *testing.T) {
 				}
 
 				getTreeLogo(ctx, "", &noopSigner{})
-				So(w.Code, ShouldEqual, 302)
+				assert.Loosely(t, w.Code, should.Equal(302))
 			})
 
-			Convey("treelogo fail", func() {
+			t.Run("treelogo fail", func(t *ftt.Test) {
 				ctx := &router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
@@ -438,7 +440,7 @@ func TestMain(t *testing.T) {
 				}
 
 				getTreeLogo(ctx, "", &noopSigner{fmt.Errorf("fail")})
-				So(w.Code, ShouldEqual, 500)
+				assert.Loosely(t, w.Code, should.Equal(500))
 			})
 		})
 	})
