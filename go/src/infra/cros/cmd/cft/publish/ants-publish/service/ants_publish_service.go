@@ -282,6 +282,9 @@ func tradefedNames(testcaseID string) (string, string, string, error) {
 func antsTestStatus(result *api.TestCaseResult) string {
 	switch result.Verdict.(type) {
 	case *api.TestCaseResult_Pass_:
+		if len(result.Errors) > 0 {
+			return "assumptionFailure"
+		}
 		return "pass"
 	case *api.TestCaseResult_Fail_:
 		return "fail"

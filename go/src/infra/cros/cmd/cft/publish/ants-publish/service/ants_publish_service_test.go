@@ -27,6 +27,16 @@ func TestAntsStatus(t *testing.T) {
 			result: &api.TestCaseResult{Verdict: &api.TestCaseResult_Fail_{}},
 			want:   "fail",
 		},
+		{
+			name: "assumptionFailure",
+			result: &api.TestCaseResult{
+				Verdict: &api.TestCaseResult_Pass_{},
+				Errors: []*api.TestCaseResult_Error{
+					{Message: "err"},
+				},
+			},
+			want: "assumptionFailure",
+		},
 	}
 
 	for _, tc := range testCases {
