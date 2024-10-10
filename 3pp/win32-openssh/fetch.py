@@ -6,6 +6,7 @@
 import argparse
 import json
 import os
+import re
 import urllib.request
 
 
@@ -34,7 +35,7 @@ def get_download_url(version, platform):
 
   extension = _EXTENSION[platform.split('-')[0]]
 
-  version_short = version.replace('p1-Beta', '')
+  version_short = re.sub('p1-(?:Preview|Beta)$', '', version)
 
   url = (
       'https://github.com/PowerShell/Win32-OpenSSH/releases/download/{version}/'
