@@ -12,12 +12,14 @@ import (
 	"testing"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/analytics"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	runner "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/result_flow/internal/transform"
 )
@@ -168,8 +170,8 @@ func TestRunnerOutputToTestRun(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, c := range cases {
-		Convey(c.description, t, func() {
-			Convey("then test runner build is correctly converted to TestRun and TestCaseResult.", func() {
+		ftt.Run(c.description, t, func(t *ftt.Test) {
+			t.Run("then test runner build is correctly converted to TestRun and TestCaseResult.", func(t *ftt.Test) {
 				build, _ := transform.LoadTestRunnerBuild(
 					ctx,
 					"TestPlanRuns/fake-build-id/fake-test-run",
@@ -177,13 +179,13 @@ func TestRunnerOutputToTestRun(t *testing.T) {
 					fakeBuildbucketConfig,
 				)
 				got := build.ToTestRun(ctx)
-				So(got, ShouldNotBeNil)
-				checkTestRunEquality(got, genFakeTestRun(c.out))
+				assert.Loosely(t, got, should.NotBeNil)
+				checkTestRunEquality(t, got, genFakeTestRun(c.out))
 				if l := len(c.out.testCases); l > 0 {
 					cs := build.ToTestCaseResults()
 					sort.Slice(cs, func(i, j int) bool { return cs[i].Uid < cs[j].Uid })
 					for i := 0; i < l; i++ {
-						checkTestCaseEquality(cs[i], c.out.testCases[i])
+						checkTestCaseEquality(t, cs[i], c.out.testCases[i])
 					}
 				}
 			})
@@ -321,25 +323,25 @@ func genFakeAutotestTestCase(label string, verdict runner.Result_Autotest_TestCa
 	}
 }
 
-func checkTestRunEquality(want, got *analytics.TestRun) {
-	So(got.BuildId, ShouldEqual, want.BuildId)
-	So(got.DisplayName, ShouldEqual, want.DisplayName)
-	So(got.ExecutionUrl, ShouldEqual, want.ExecutionUrl)
-	So(got.ParentUid, ShouldEqual, want.ParentUid)
-	So(got.Model, ShouldEqual, want.Model)
-	So(got.CreateTime, ShouldEqual, want.CreateTime)
-	So(got.StartTime, ShouldEqual, want.StartTime)
-	So(got.EndTime, ShouldEqual, want.EndTime)
-	So(got.GetVerdict().GetValue(), ShouldEqual, want.GetVerdict().GetValue())
-	So(got.GetStatus().GetValue(), ShouldEqual, want.GetStatus().GetValue())
-	So(got.GetPrejob().GetVerdict().GetValue(), ShouldEqual, want.GetPrejob().GetVerdict().GetValue())
+func checkTestRunEquality(t testing.TB, want, got *analytics.TestRun) {
+	assert.Loosely(t, got.BuildId, should.Equal(want.BuildId))
+	assert.Loosely(t, got.DisplayName, should.Equal(want.DisplayName))
+	assert.Loosely(t, got.ExecutionUrl, should.Equal(want.ExecutionUrl))
+	assert.Loosely(t, got.ParentUid, should.Equal(want.ParentUid))
+	assert.Loosely(t, got.Model, should.Equal(want.Model))
+	assert.Loosely(t, got.CreateTime, should.Equal(want.CreateTime))
+	assert.Loosely(t, got.StartTime, should.Equal(want.StartTime))
+	assert.Loosely(t, got.EndTime, should.Equal(want.EndTime))
+	assert.Loosely(t, got.GetVerdict().GetValue(), should.Equal(want.GetVerdict().GetValue()))
+	assert.Loosely(t, got.GetStatus().GetValue(), should.Equal(want.GetStatus().GetValue()))
+	assert.Loosely(t, got.GetPrejob().GetVerdict().GetValue(), should.Equal(want.GetPrejob().GetVerdict().GetValue()))
 }
 
-func checkTestCaseEquality(want, got *analytics.TestCaseResult) {
-	So(got.Uid, ShouldEqual, want.Uid)
-	So(got.DisplayName, ShouldEqual, want.DisplayName)
-	So(got.ParentBuildId, ShouldEqual, want.ParentBuildId)
-	So(got.GetVerdict().GetValue(), ShouldEqual, want.GetVerdict().GetValue())
-	So(got.HumanReadableSummary, ShouldEqual, want.HumanReadableSummary)
-	So(got.CreateTime, ShouldEqual, want.CreateTime)
+func checkTestCaseEquality(t testing.TB, want, got *analytics.TestCaseResult) {
+	assert.Loosely(t, got.Uid, should.Equal(want.Uid))
+	assert.Loosely(t, got.DisplayName, should.Equal(want.DisplayName))
+	assert.Loosely(t, got.ParentBuildId, should.Equal(want.ParentBuildId))
+	assert.Loosely(t, got.GetVerdict().GetValue(), should.Equal(want.GetVerdict().GetValue()))
+	assert.Loosely(t, got.HumanReadableSummary, should.Equal(want.HumanReadableSummary))
+	assert.Loosely(t, got.CreateTime, should.Equal(want.CreateTime))
 }
