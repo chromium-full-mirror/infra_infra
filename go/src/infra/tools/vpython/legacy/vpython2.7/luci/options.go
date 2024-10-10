@@ -48,7 +48,7 @@ type Options struct {
 
 	// DefaultSpec is the default specification to use, if no specification was
 	// supplied or probed.
-	DefaultSpec vpython.Spec
+	DefaultSpec *vpython.Spec
 
 	// BaseWheels is the set of wheels to include in the spec. These will always
 	// be merged into the runtime spec and normalized, such that any duplicate
@@ -128,7 +128,7 @@ func (o *Options) ResolveSpec(c context.Context) (err error) {
 		return nil
 	}
 
-	o.EnvConfig.Spec = &o.DefaultSpec
+	o.EnvConfig.Spec = o.DefaultSpec
 
 	target := o.CommandLine.Target
 

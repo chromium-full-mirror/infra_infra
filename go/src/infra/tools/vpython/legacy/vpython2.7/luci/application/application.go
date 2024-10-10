@@ -276,7 +276,7 @@ func (a *application) mainImpl(c context.Context, argv0 string, args []string) e
 		}
 		a.opts.EnvConfig.Spec = &sp
 	} else if specPath := a.opts.Environ.Get(DefaultSpecENV); specPath != "" {
-		if err := spec.Load(specPath, &a.opts.DefaultSpec); err != nil {
+		if err := spec.Load(specPath, a.opts.DefaultSpec); err != nil {
 			return errors.Annotate(err, "failed to load default specification file (%s) from %s",
 				DefaultSpecENV, specPath).Err()
 		}
@@ -401,7 +401,7 @@ func (cfg *Config) Main(c context.Context, argv []string, env environ.Env) int {
 			WaitForEnv:   true,
 			SpecLoader:   cfg.SpecLoader,
 			Environ:      env,
-			DefaultSpec:  cfg.DefaultSpec,
+			DefaultSpec:  &cfg.DefaultSpec,
 			VpythonOptIn: cfg.VpythonOptIn,
 		},
 		logConfig: logging.Config{
