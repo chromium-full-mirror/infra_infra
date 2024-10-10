@@ -285,13 +285,13 @@ adhoc_builder(
             {
                 "name": "hello",
                 "fake_step": {
-                    "duration_secs": 1800,
+                    "duration_secs": 300,
                 },
             },
         ],
     },
     schedule = "with 10m interval",
-    max_concurrent_builds = 5,
+    max_concurrent_builds = 2,
     triggering_policy = scheduler.newest_first(
         max_concurrent_invocations = 10,
     ),
