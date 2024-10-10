@@ -10,16 +10,17 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/iterator"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestTestFileSet(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestFileSet", t, func() {
+	ftt.Run("TestFileSet", t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		buf := bytes.NewBuffer(nil)
@@ -40,7 +41,7 @@ func TestTestFileSet(t *testing.T) {
 			remaining = remaining[1:]
 			return nil
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Read protos.
 		var actual []*TestFile
@@ -49,6 +50,6 @@ func TestTestFileSet(t *testing.T) {
 			return nil
 		})
 
-		So(actual, ShouldResembleProto, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 }
