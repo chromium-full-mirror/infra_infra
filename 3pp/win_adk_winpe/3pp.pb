@@ -2,8 +2,8 @@ create {
   platform_re: "windows-(amd64|arm64|386)"
   source {
     url {
-      download_url: "https://go.microsoft.com/fwlink/?linkid=2196224"
-      version: "10.1.22621.1"
+      download_url: "https://go.microsoft.com/fwlink/?linkid=2271338"
+      version: "10.1.26100.1"
       extension: ".exe"
     }
   }
