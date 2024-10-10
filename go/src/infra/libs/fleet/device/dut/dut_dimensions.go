@@ -20,6 +20,7 @@ func GetDUTBotDims(ctx context.Context, r swarming.ReportFunc, ds dutstate.Info,
 	dims := swarming.Convert(c.GetLabels())
 	dims["dut_id"] = []string{c.GetId()}
 	dims["dut_name"] = []string{c.GetHostname()}
+	dims["label-multiduts"] = []string{"False"}
 	if v := c.GetHwid(); v != "" {
 		dims["hwid"] = []string{v}
 	}
