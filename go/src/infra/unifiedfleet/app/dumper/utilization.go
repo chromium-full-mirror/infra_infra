@@ -7,6 +7,7 @@ package dumper
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -43,6 +44,7 @@ var suMetric = metric.NewInt(
 	field.String("zone"),
 	field.String("swarming_instance"),
 	field.String("status"),
+	field.String("os"),
 )
 
 // Only MachineLSEs for chromeOS and browser
@@ -99,7 +101,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		}
 		// Report the metrics
 		for b, count := range c {
-			suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
+			suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os)
 		}
 	}
 	// Flush the metrics
@@ -205,6 +207,7 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 		zone:             lse.GetZone(),
 		swarmingInstance: "[None]",
 		status:           dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
+		os:               "[None]",
 	}
 	switch ns {
 	case util.OSNamespace:
@@ -215,9 +218,13 @@ func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env strin
 			b.pool = getReportPool(labstation.GetPools())
 		}
 		b.swarmingInstance = "chromeos-swarming"
+		b.os = "chromeos"
 	case util.BrowserNamespace:
 		b.pool = getReportPool(lse.GetOwnership().GetPools())
 		b.swarmingInstance = lse.GetOwnership().GetSwarmingInstance()
+		if lse.GetChromeBrowserMachineLse() != nil {
+			b.os = strings.ToLower(lse.GetChromeBrowserMachineLse().GetOsVersion().GetValue())
+		}
 	}
 	return b
 }
@@ -244,6 +251,7 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		zone:             "[None]",
 		swarmingInstance: "chromeos-swarming",
 		status:           schedulingUnitStatusFromLses(lses),
+		os:               "chromeos",
 	}
 	// fields from all DUTs
 	switch su.GetExposeType() {
@@ -347,10 +355,11 @@ type bucket struct {
 	zone             string
 	swarmingInstance string
 	status           string
+	os               string
 }
 
 func (b *bucket) String() string {
-	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, swarmingInstance: %s, status: %s", b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status)
+	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, swarmingInstance: %s, status: %s, os: %s", b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os)
 }
 
 func summarizeValues(vs []string) string {
