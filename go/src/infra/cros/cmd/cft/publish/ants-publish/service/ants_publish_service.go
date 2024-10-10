@@ -8,7 +8,11 @@ package service
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"log"
+	"mime"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -19,6 +23,10 @@ import (
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
 	ants "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+)
+
+const (
+	artifactsDir = "/tmp/artifacts"
 )
 
 type AntsPublishService struct {
@@ -198,18 +206,61 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		entries = append(entries, tr)
 	}
 
-	bulkResultRequest := &ants.TestResultBatchInsertRequest{
+	request := &ants.TestResultBatchInsertRequest{
 		TestResults:     entries,
 		InsertBatchSize: int64(len(entries)),
 	}
 
-	result, err := aps.service.TestResultService.BatchInsert(bulkResultRequest)
+	result, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
 	if err != nil {
 		return err
 	}
-	log.Printf("BulkInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
+	log.Printf("BatchInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
 	// Return nil error response to indicate success.
 	return nil
+}
+
+func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
+	log.Printf("Uploading artifacts from: %s", artifactsDir)
+
+	return filepath.Walk(artifactsDir, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			log.Printf("Error walking artifactsDir: %q", err)
+			return err
+		}
+
+		// We only need to look at files inside cros-test dir
+		if info.IsDir() || !strings.HasPrefix(path, "cros-test") {
+			return nil
+		}
+
+		artifactMetadata, err := aps.uploadArtifact(path)
+		if err != nil {
+			log.Printf("Cannot open file: %s due to error: %q. Skipping upload", path, err)
+		}
+
+		log.Printf("Uploaded artifact for: %s", artifactMetadata.Name)
+		return nil
+	})
+}
+
+func (aps *AntsPublishService) uploadArtifact(path string) (*ants.BuildArtifactMetadata, error) {
+	filename := filepath.Base(path)
+
+	artifactMetadata := &ants.BuildArtifactMetadata{
+		Name:         filename,
+		InvocationId: aps.metadata.AntsInvocationId,
+		WorkUnitId:   aps.metadata.ParentWorkUnitId,
+		ContentType:  mime.TypeByExtension(filename),
+	}
+
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	return aps.service.TestArtifactsService.Update(filename, f, artifactMetadata)
 }
 
 // TestCaseID is of the form:

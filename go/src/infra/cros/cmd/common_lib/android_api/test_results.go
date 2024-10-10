@@ -14,7 +14,7 @@ import (
 type TestResultService interface {
 	Get(resourceID int64) (*androidbuildinternal.TestResult, error)
 	Insert(testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error)
-	BatchInsert(request *androidbuildinternal.TestResultBatchInsertRequest) (*androidbuildinternal.TestResultBatchInsertResponse, error)
+	BatchInsert(ctx context.Context, invocationID string, request *androidbuildinternal.TestResultBatchInsertRequest) (*androidbuildinternal.TestResultBatchInsertResponse, error)
 	Update(resourceID int64, testResult *androidbuildinternal.TestResult) (*androidbuildinternal.TestResult, error)
 	List(ctx context.Context, testResultID string, options AndroidBuildAPIOptions) (*androidbuildinternal.TestResultListResponse, error)
 }
@@ -47,14 +47,14 @@ func (w *TestResultServiceImpl) Insert(testResult *androidbuildinternal.TestResu
 }
 
 // BatchInsert implementation for testResults.
-func (w *TestResultServiceImpl) BatchInsert(request *androidbuildinternal.TestResultBatchInsertRequest) (*androidbuildinternal.TestResultBatchInsertResponse, error) {
+func (w *TestResultServiceImpl) BatchInsert(ctx context.Context, invocationID string, request *androidbuildinternal.TestResultBatchInsertRequest) (*androidbuildinternal.TestResultBatchInsertResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
 
 	call := w.client.Batchinsert(request)
 
-	return call.Do()
+	return call.Context(ctx).InvocationId(invocationID).Do()
 }
 
 // Update implementation for testResults.

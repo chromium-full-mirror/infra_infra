@@ -29,9 +29,10 @@ var (
 // All sub services share the same client, so the caller needs to initialize it
 // when the service is first used.
 type Service struct {
-	WorkUnitService   WorkUnitService
-	InvocationService InvocationService
-	TestResultService TestResultService
+	WorkUnitService      WorkUnitService
+	InvocationService    InvocationService
+	TestResultService    TestResultService
+	TestArtifactsService TestArtifactsService
 }
 
 // AndroidBuildAPIOptions represents the common request options
@@ -72,5 +73,6 @@ func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
 	service.WorkUnitService = &WorkUnitServiceImpl{client.Workunit}
 	service.InvocationService = &InvocationServiceImpl{client.Invocation}
 	service.TestResultService = &TestResultServiceImpl{client.Testresult}
+	service.TestArtifactsService = &TestArtifactsServiceImpl{client.Testartifact}
 	return service, nil
 }
