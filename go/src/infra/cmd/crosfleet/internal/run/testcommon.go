@@ -452,17 +452,10 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 						},
 					},
 				}
-				// TODO(cdelagarza): Update CTPv2 filter container logic to know
-				// when to pull from firestore for cros-test-finder.
 				alTestFinder := &api.CTPFilter{
 					ContainerInfo: &api.ContainerInfo{
 						Container: &buildapi.ContainerImageInfo{
-							Repository: &buildapi.GcrRepository{
-								Hostname: "us-docker.pkg.dev",
-								Project:  "cros-registry/test-services",
-							},
-							Name:   "cros-test-finder",
-							Digest: "sha256:08f67cac732b45cea7cd774fabee7c0ba49f71a66bdadca6f3ed87333aa7c118",
+							Name: "test-finder",
 						},
 					},
 				}
