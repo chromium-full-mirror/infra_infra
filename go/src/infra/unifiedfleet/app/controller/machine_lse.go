@@ -64,11 +64,11 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 						// accidentally mutating the original struct.
 						pubsubMachineLSE := proto.Clone(machineLSE).(*ufspb.MachineLSE)
 						// Generate the message for Pub/Sub
-						row := apibq.MachineLSERow{
+						row := &apibq.MachineLSERow{
 							MachineLse: pubsubMachineLSE,
 							Delete:     false,
 						}
-						data, err_ps := json.Marshal(row)
+						data, err_ps := json.Marshal(&row)
 						if err_ps != nil {
 							logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 							return machineLSE, nil
@@ -375,11 +375,11 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// Create a new object so we are not accidentally mutating the original struct.
 		pubsubMachineLSE := proto.Clone(updatedMachinelse).(*ufspb.MachineLSE)
 		// Generate the message for Pub/Sub
-		row := apibq.MachineLSERow{
+		row := &apibq.MachineLSERow{
 			MachineLse: pubsubMachineLSE,
 			Delete:     false,
 		}
-		data, err_ps := json.Marshal(row)
+		data, err_ps := json.Marshal(&row)
 		if err_ps != nil {
 			logging.Warningf(ctx, "pubsub_stream error: %s", err_ps.Error())
 			return machinelse, nil
@@ -682,7 +682,7 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 				// Create a new object so we are not accidentally mutating the original struct.
 				pubsubMachineLSE := proto.Clone(machinelse).(*ufspb.MachineLSE)
 
-				row := apibq.MachineLSERow{
+				row := &apibq.MachineLSERow{
 					MachineLse: pubsubMachineLSE,
 					Delete:     false,
 				}
@@ -840,7 +840,7 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		pubsubMachineLSE := proto.Clone(existingMachinelse).(*ufspb.MachineLSE)
 
 		// Generate the message for Pub/Sub
-		row := apibq.MachineLSERow{
+		row := &apibq.MachineLSERow{
 			MachineLse: pubsubMachineLSE,
 			Delete:     true,
 		}
