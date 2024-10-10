@@ -18,10 +18,11 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/wrappers"
-	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"infra/qscheduler/qslib/protos"
 	qscheduler "infra/qscheduler/service/api/qscheduler/v1"

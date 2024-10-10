@@ -15,10 +15,11 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 )
 
 // FirmwareSpecs contains the flags necessary for the

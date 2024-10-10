@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 

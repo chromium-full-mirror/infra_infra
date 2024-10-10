@@ -19,9 +19,8 @@ import (
 	"testing"
 	"time"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 )
 
 // TestMarkIdle tests that a new worker is marked idle by MarkIdle, and that

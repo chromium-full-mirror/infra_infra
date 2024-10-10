@@ -8,7 +8,6 @@ package datastore
 import (
 	"context"
 	"fmt"
-	"infra/cros/lab_inventory/utils"
 	"strings"
 	"time"
 
@@ -19,6 +18,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/cros/lab_inventory/utils"
 )
 
 const (

@@ -6,8 +6,9 @@ package androidapi
 
 import (
 	"fmt"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"sort"
+
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // WULayer is and enum signifying what WU layer type the node represents

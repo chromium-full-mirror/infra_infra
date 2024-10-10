@@ -20,9 +20,8 @@ import (
 	"testing"
 	"time"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"infra/qscheduler/qslib/scheduler"
 )

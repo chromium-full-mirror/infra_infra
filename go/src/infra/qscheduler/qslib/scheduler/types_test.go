@@ -21,9 +21,8 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 )
 
 func TestClone(t *testing.T) {

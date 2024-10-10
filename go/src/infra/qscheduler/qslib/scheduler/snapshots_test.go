@@ -22,9 +22,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"infra/qscheduler/qslib/protos/metrics"
 	"infra/qscheduler/qslib/tutils"

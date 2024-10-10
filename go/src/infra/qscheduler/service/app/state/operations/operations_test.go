@@ -18,7 +18,6 @@ import (
 	"testing"
 
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 )
 

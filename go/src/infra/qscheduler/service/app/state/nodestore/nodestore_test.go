@@ -24,9 +24,8 @@ import (
 
 	"github.com/google/uuid"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/qscheduler/qslib/scheduler"

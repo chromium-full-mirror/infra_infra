@@ -7,16 +7,16 @@ package main
 import (
 	"fmt"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/interfaces"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
 	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
+	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/interfaces"
 )
 
 const (

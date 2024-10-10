@@ -11,10 +11,11 @@ import (
 	"log"
 	"strings"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	common_utils "go.chromium.org/chromiumos/test/publish/cmd/common-utils"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
 	ants "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"

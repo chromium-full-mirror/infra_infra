@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"github.com/kylelemons/godebug/pretty"
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
 	"infra/qscheduler/qslib/scheduler"
 )

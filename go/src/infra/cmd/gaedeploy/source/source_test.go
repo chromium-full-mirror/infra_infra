@@ -8,13 +8,14 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
-	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/should"
 	"io"
 	"os"
 	"strings"
 	"testing"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestSource(t *testing.T) {

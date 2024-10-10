@@ -16,9 +16,8 @@ package metrics
 import (
 	"testing"
 
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
-
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 )
 
 func TestCompute(t *testing.T) {

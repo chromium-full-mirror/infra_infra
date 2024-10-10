@@ -22,8 +22,6 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-
-	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	bqapi "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 
@@ -32,6 +30,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/retry/transient"
+	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 )
 
 func TestRamBufferedBQInserter(t *testing.T) {
