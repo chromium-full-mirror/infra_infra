@@ -7,21 +7,23 @@ package monorail
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestExt(t *testing.T) {
 	t.Parallel()
 
-	Convey("FindCC", t, func() {
+	ftt.Run("FindCC", t, func(t *ftt.Test) {
 		issue := &Issue{
 			Cc: []*AtomPerson{{Name: "a"}, {Name: "b"}},
 		}
 		b := issue.FindCC("b")
-		So(b, ShouldNotBeNil)
-		So(b.Name, ShouldEqual, "b")
+		assert.Loosely(t, b, should.NotBeNil)
+		assert.Loosely(t, b.Name, should.Equal("b"))
 
 		c := issue.FindCC("c")
-		So(c, ShouldBeNil)
+		assert.Loosely(t, c, should.BeNil)
 	})
 }
