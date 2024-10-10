@@ -13,22 +13,25 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	kpb "infra/cmd/package_index/kythe/proto"
 )
 
 func TestRemoveFilepathsFiles(t *testing.T) {
 	t.Parallel()
-	Convey("Remove filepaths files", t, func() {
+	ftt.Run("Remove filepaths files", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		tmpdir := t.TempDir()
 
-		Convey("Remove filepaths with files", func() {
+		t.Run("Remove filepaths with files", func(t *ftt.Test) {
 			// File setup
 			f, err := os.Create(filepath.Join(tmpdir, "foo.filepaths"))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			f.Close()
 			fpath, err := filepath.Abs(f.Name())
 			if err != nil {
@@ -36,26 +39,26 @@ func TestRemoveFilepathsFiles(t *testing.T) {
 			}
 
 			nested, err := os.MkdirTemp(tmpdir, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			b, err := os.Create(filepath.Join(nested, "bar.filepaths"))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			b.Close()
 			bpath, err := filepath.Abs(b.Name())
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			removeFilepathsFiles(ctx, tmpdir)
 
-			Convey("tmpdir should be empty while the nested dir should remain unchanged", func() {
+			t.Run("tmpdir should be empty while the nested dir should remain unchanged", func(t *ftt.Test) {
 				_, err = os.Stat(fpath)
-				So(os.IsNotExist(err), ShouldEqual, true)
+				assert.Loosely(t, os.IsNotExist(err), should.Equal(true))
 
 				_, err = os.Stat(bpath)
-				So(err, ShouldEqual, nil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 
-		Convey("Remove filepaths without filepaths files", func() {
+		t.Run("Remove filepaths without filepaths files", func(t *ftt.Test) {
 			h, err := os.Create(filepath.Join(tmpdir, "hello.txt"))
 			if err != nil {
 				t.Fatal(err)
@@ -68,9 +71,9 @@ func TestRemoveFilepathsFiles(t *testing.T) {
 
 			removeFilepathsFiles(ctx, tmpdir)
 
-			Convey("Nothing should have changed", func() {
+			t.Run("Nothing should have changed", func(t *ftt.Test) {
 				_, err = os.Stat(hpath)
-				So(err, ShouldEqual, nil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 
@@ -79,23 +82,23 @@ func TestRemoveFilepathsFiles(t *testing.T) {
 
 func TestConvertGnPath(t *testing.T) {
 	t.Parallel()
-	Convey("Convert GN Path", t, func() {
+	ftt.Run("Convert GN Path", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		gnPath := "//path/tests/thing.txt"
 
-		Convey("Bad outDir", func() {
-			So(func() {
+		t.Run("Bad outDir", func(t *ftt.Test) {
+			assert.Loosely(t, func() {
 				convertGnPath(ctx, gnPath, "/bad/dir/")
-			}, ShouldPanic)
+			}, should.Panic)
 		})
 
-		Convey("GN path", func() {
-			Convey("GN path should be relative to outDir", func() {
+		t.Run("GN path", func(t *ftt.Test) {
+			t.Run("GN path should be relative to outDir", func(t *ftt.Test) {
 				r, err := convertGnPath(ctx, gnPath, "src/path/to/out")
 				if err != nil {
 					t.Fatal(err)
 				}
-				So(r, ShouldEqual, filepath.Join("..", "..", "tests", "thing.txt"))
+				assert.Loosely(t, r, should.Equal(filepath.Join("..", "..", "tests", "thing.txt")))
 			})
 		})
 	})
@@ -103,13 +106,13 @@ func TestConvertGnPath(t *testing.T) {
 
 func TestNormalizePath(t *testing.T) {
 	t.Parallel()
-	Convey("Normalize path", t, func() {
+	ftt.Run("Normalize path", t, func(t *ftt.Test) {
 		dir := "test/dir/"
 		p := "/path/to/file.txt"
 
-		Convey("Joining path", func() {
-			Convey("The path should be cleaned and joined", func() {
-				So(normalizePath(dir, p), ShouldEqual, filepath.Join("test", "dir", "path", "to", "file.txt"))
+		t.Run("Joining path", func(t *ftt.Test) {
+			t.Run("The path should be cleaned and joined", func(t *ftt.Test) {
+				assert.Loosely(t, normalizePath(dir, p), should.Equal(filepath.Join("test", "dir", "path", "to", "file.txt")))
 			})
 		})
 	})
@@ -117,27 +120,27 @@ func TestNormalizePath(t *testing.T) {
 
 func TestInjectDetails(t *testing.T) {
 	t.Parallel()
-	Convey("Inject unit details", t, func() {
+	ftt.Run("Inject unit details", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		buildConfig := "testconfig"
 
-		Convey("BuildDetails not found in unitProto", func() {
+		t.Run("BuildDetails not found in unitProto", func(t *ftt.Test) {
 			unitProto := &kpb.CompilationUnit{}
 			injectUnitBuildDetails(ctx, unitProto, buildConfig)
 
-			Convey("New details should be added to unitProto", func() {
-				So(len(unitProto.GetDetails()), ShouldEqual, 1)
+			t.Run("New details should be added to unitProto", func(t *ftt.Test) {
+				assert.Loosely(t, len(unitProto.GetDetails()), should.Equal(1))
 
 				any := unitProto.GetDetails()[0]
-				So(any.GetTypeUrl(), ShouldEqual, "kythe.io/proto/kythe.proto.BuildDetails")
+				assert.Loosely(t, any.GetTypeUrl(), should.Equal("kythe.io/proto/kythe.proto.BuildDetails"))
 
 				buildDetails := &kpb.BuildDetails{}
 				proto.Unmarshal(any.GetValue(), buildDetails)
-				So(buildDetails.GetBuildConfig(), ShouldEqual, buildConfig)
+				assert.Loosely(t, buildDetails.GetBuildConfig(), should.Equal(buildConfig))
 			})
 		})
 
-		Convey("BuildDetails found in unitProto", func() {
+		t.Run("BuildDetails found in unitProto", func(t *ftt.Test) {
 			// unitProto details setup
 			unitProto := &kpb.CompilationUnit{}
 			details := &kpb.BuildDetails{}
@@ -151,15 +154,15 @@ func TestInjectDetails(t *testing.T) {
 			unitProto.Details = append(unitProto.Details, anyDetails)
 			injectUnitBuildDetails(ctx, unitProto, buildConfig)
 
-			Convey("Any details should modified in unitProto", func() {
-				So(len(unitProto.GetDetails()), ShouldEqual, 1)
+			t.Run("Any details should modified in unitProto", func(t *ftt.Test) {
+				assert.Loosely(t, len(unitProto.GetDetails()), should.Equal(1))
 
 				any := unitProto.GetDetails()[0]
-				So(any.GetTypeUrl(), ShouldEqual, "kythe.io/proto/kythe.proto.BuildDetails")
+				assert.Loosely(t, any.GetTypeUrl(), should.Equal("kythe.io/proto/kythe.proto.BuildDetails"))
 
 				buildDetails := &kpb.BuildDetails{}
 				proto.Unmarshal(any.GetValue(), buildDetails)
-				So(buildDetails.GetBuildConfig(), ShouldEqual, buildConfig)
+				assert.Loosely(t, buildDetails.GetBuildConfig(), should.Equal(buildConfig))
 			})
 		})
 	})
@@ -167,7 +170,7 @@ func TestInjectDetails(t *testing.T) {
 
 func TestFindImports(t *testing.T) {
 	t.Parallel()
-	Convey("Find imports", t, func() {
+	ftt.Run("Find imports", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		re := regexp.MustCompile(`(?m)^\s*import\s*(?:weak|public)?\s*"([^"]*)\s*";`)
 
@@ -176,27 +179,27 @@ func TestFindImports(t *testing.T) {
 		importPaths := []string{tmpdir}
 
 		f, err := os.Create(tmpdir + "/test.proto")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer f.Close()
 
 		f.WriteString("import \"foo.proto\";\nimport weak \"bar.proto\";\n")
 		fpath, err := filepath.Abs(f.Name())
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("File doesn't exist", func() {
+		t.Run("File doesn't exist", func(t *ftt.Test) {
 			p := "/path/to/no/file"
-			Convey("Imports should be empty", func() {
-				So(len(findImports(ctx, re, p, importPaths)), ShouldEqual, 0)
+			t.Run("Imports should be empty", func(t *ftt.Test) {
+				assert.Loosely(t, len(findImports(ctx, re, p, importPaths)), should.BeZero)
 			})
 		})
 
-		Convey("Import file doesn't exist", func() {
-			Convey("Imports should be empty", func() {
-				So(len(findImports(ctx, re, fpath, importPaths)), ShouldEqual, 0)
+		t.Run("Import file doesn't exist", func(t *ftt.Test) {
+			t.Run("Imports should be empty", func(t *ftt.Test) {
+				assert.Loosely(t, len(findImports(ctx, re, fpath, importPaths)), should.BeZero)
 			})
 		})
 
-		Convey("Import file exists", func() {
+		t.Run("Import file exists", func(t *ftt.Test) {
 			// Create import files
 			fooPath := filepath.Join(tmpdir, "foo.proto")
 			foo, err := os.Create(fooPath)
@@ -212,11 +215,11 @@ func TestFindImports(t *testing.T) {
 			}
 			defer bar.Close()
 
-			Convey("Should return two imports", func() {
+			t.Run("Should return two imports", func(t *ftt.Test) {
 				r := findImports(ctx, re, fpath, importPaths)
-				So(len(r), ShouldEqual, 2)
-				So(r, ShouldContain, fooPath)
-				So(r, ShouldContain, barPath)
+				assert.Loosely(t, len(r), should.Equal(2))
+				assert.Loosely(t, r, should.Contain(fooPath))
+				assert.Loosely(t, r, should.Contain(barPath))
 			})
 		})
 	})
@@ -224,159 +227,159 @@ func TestFindImports(t *testing.T) {
 
 func TestSetVname(t *testing.T) {
 	t.Parallel()
-	Convey("Inject unit details", t, func() {
+	ftt.Run("Inject unit details", t, func(t *ftt.Test) {
 		var vnameProto kpb.VName
 		vnameProtoRoot := "root"
 		vnameProto.Root = vnameProtoRoot
 
 		defaultCorpus := "corpus"
 
-		Convey("Bad filepath", func() {
+		t.Run("Bad filepath", func(t *ftt.Test) {
 			p := "\\bad\\path"
 
-			So(func() {
+			assert.Loosely(t, func() {
 				setVnameForFile(&vnameProto, p, defaultCorpus)
-			}, ShouldPanic)
+			}, should.Panic)
 		})
 
-		Reset(func() {
+		t.Cleanup(func() {
 			*projectFlag = "chromium"
 		})
 
-		Convey("With Chromium", func() {
+		t.Run("With Chromium", func(t *ftt.Test) {
 			*projectFlag = "chromium"
 
-			Convey("Filepath has special corpus", func() {
+			t.Run("Filepath has special corpus", func(t *ftt.Test) {
 				p := "third_party/depot_tools/win_toolchain/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should modify vnameProto with special/external settings", func() {
-					So(vnameProto.Path, ShouldEqual, "rest/of/path")
-					So(vnameProto.Root, ShouldEqual, "third_party/depot_tools/win_toolchain")
+				t.Run("Should modify vnameProto with special/external settings", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal("third_party/depot_tools/win_toolchain"))
 				})
 			})
 
-			Convey("Filepath has no special corpus with src prefix", func() {
+			t.Run("Filepath has no special corpus with src prefix", func(t *ftt.Test) {
 				p := "src/build/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should strip src prefix", func() {
-					So(vnameProto.Path, ShouldEqual, "build/rest/of/path")
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("Should strip src prefix", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("build/rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
 
-			Convey("Filepath has no special corpus without src prefix", func() {
+			t.Run("Filepath has no special corpus without src prefix", func(t *ftt.Test) {
 				p := "foo/build/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should not modify path", func() {
-					So(vnameProto.Path, ShouldEqual, p)
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("Should not modify path", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal(p))
+					assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
-			Convey("Root is set for out/ generated files", func() {
+			t.Run("Root is set for out/ generated files", func(t *ftt.Test) {
 				p := "out/Debug/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("root should be out", func() {
-					So(vnameProto.Path, ShouldEqual, "Debug/rest/of/path")
-					So(vnameProto.Root, ShouldEqual, "out")
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("root should be out", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("Debug/rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal("out"))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
 
 		})
 
-		Convey("With Chrome", func() {
+		t.Run("With Chrome", func(t *ftt.Test) {
 			*projectFlag = "chrome"
 
-			Convey("Filepath has special corpus", func() {
+			t.Run("Filepath has special corpus", func(t *ftt.Test) {
 				p := "third_party/depot_tools/win_toolchain/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should modify vnameProto with special/external settings", func() {
-					So(vnameProto.Path, ShouldEqual, "rest/of/path")
-					So(vnameProto.Root, ShouldEqual, "third_party/depot_tools/win_toolchain")
+				t.Run("Should modify vnameProto with special/external settings", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal("third_party/depot_tools/win_toolchain"))
 				})
 			})
 
-			Convey("Filepath has no special corpus with src prefix", func() {
+			t.Run("Filepath has no special corpus with src prefix", func(t *ftt.Test) {
 				p := "src/build/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should strip src prefix", func() {
-					So(vnameProto.Path, ShouldEqual, "build/rest/of/path")
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("Should strip src prefix", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("build/rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
 
-			Convey("Filepath has no special corpus without src prefix", func() {
+			t.Run("Filepath has no special corpus without src prefix", func(t *ftt.Test) {
 				p := "foo/build/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("Should not modify path", func() {
-					So(vnameProto.Path, ShouldEqual, p)
-					So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("Should not modify path", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal(p))
+					assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
 
-			Convey("Root is set for out/ generated files", func() {
+			t.Run("Root is set for out/ generated files", func(t *ftt.Test) {
 				p := "out/Debug/rest/of/path"
 				setVnameForFile(&vnameProto, p, defaultCorpus)
 
-				Convey("root should be out", func() {
-					So(vnameProto.Path, ShouldEqual, "Debug/rest/of/path")
-					So(vnameProto.Root, ShouldEqual, "out")
-					So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+				t.Run("root should be out", func(t *ftt.Test) {
+					assert.Loosely(t, vnameProto.Path, should.Equal("Debug/rest/of/path"))
+					assert.Loosely(t, vnameProto.Root, should.Equal("out"))
+					assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 				})
 			})
 		})
 
 		for _, proj := range []string{"chromiumos", "chromeos"} {
 			*projectFlag = proj
-			Convey(fmt.Sprintf("With %s", proj), func() {
-				Convey("Filepath has chroot prefix", func() {
+			t.Run(fmt.Sprintf("With %s", proj), func(t *ftt.Test) {
+				t.Run("Filepath has chroot prefix", func(t *ftt.Test) {
 					p := "../../../../cache/cros_chroot/chroot/build/amd64-generic/rest/of/path"
 					setVnameForFile(&vnameProto, p, defaultCorpus)
 
-					Convey("Should prefix vnameProto with path to gen files", func() {
-						So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/chroot/build/amd64-generic/rest/of/path")
+					t.Run("Should prefix vnameProto with path to gen files", func(t *ftt.Test) {
+						assert.Loosely(t, vnameProto.Path, should.Equal("gen/amd64-generic/chroot/build/amd64-generic/rest/of/path"))
 					})
 				})
 
-				Convey("Filepath has out dir prefix", func() {
+				t.Run("Filepath has out dir prefix", func(t *ftt.Test) {
 					p := "src/out/amd64-generic/rest/of/path"
 					setVnameForFile(&vnameProto, p, defaultCorpus)
 
-					Convey("Should prefix vnameProto with path to gen files", func() {
-						So(vnameProto.Path, ShouldEqual, "gen/amd64-generic/src/out/amd64-generic/rest/of/path")
+					t.Run("Should prefix vnameProto with path to gen files", func(t *ftt.Test) {
+						assert.Loosely(t, vnameProto.Path, should.Equal("gen/amd64-generic/src/out/amd64-generic/rest/of/path"))
 					})
 				})
 
-				Convey("Filepath has no special corpus with src prefix", func() {
+				t.Run("Filepath has no special corpus with src prefix", func(t *ftt.Test) {
 					p := "src/build/rest/of/path"
 					setVnameForFile(&vnameProto, p, defaultCorpus)
 
-					Convey("Should not modify path", func() {
-						So(vnameProto.Path, ShouldEqual, p)
-						So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-						So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+					t.Run("Should not modify path", func(t *ftt.Test) {
+						assert.Loosely(t, vnameProto.Path, should.Equal(p))
+						assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+						assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 					})
 				})
 
-				Convey("Filepath has no special corpus without src prefix", func() {
+				t.Run("Filepath has no special corpus without src prefix", func(t *ftt.Test) {
 					p := "foo/build/rest/of/path"
 					setVnameForFile(&vnameProto, p, defaultCorpus)
 
-					Convey("Should not modify path", func() {
-						So(vnameProto.Path, ShouldEqual, p)
-						So(vnameProto.Root, ShouldEqual, vnameProtoRoot)
-						So(vnameProto.Corpus, ShouldEqual, defaultCorpus)
+					t.Run("Should not modify path", func(t *ftt.Test) {
+						assert.Loosely(t, vnameProto.Path, should.Equal(p))
+						assert.Loosely(t, vnameProto.Root, should.Equal(vnameProtoRoot))
+						assert.Loosely(t, vnameProto.Corpus, should.Equal(defaultCorpus))
 					})
 				})
 			})
@@ -387,21 +390,21 @@ func TestSetVname(t *testing.T) {
 
 func TestUnwantedWinArg(t *testing.T) {
 	t.Parallel()
-	Convey("Win args", t, func() {
+	ftt.Run("Win args", t, func(t *ftt.Test) {
 
-		Convey("Wanted arg", func() {
+		t.Run("Wanted arg", func(t *ftt.Test) {
 			arg := "-O"
 
-			Convey("Arg should be included", func() {
-				So(isUnwantedWinArg(arg), ShouldEqual, false)
+			t.Run("Arg should be included", func(t *ftt.Test) {
+				assert.Loosely(t, isUnwantedWinArg(arg), should.Equal(false))
 			})
 		})
 
-		Convey("Unwanted arg", func() {
+		t.Run("Unwanted arg", func(t *ftt.Test) {
 			arg := "-DSK_USER_CONFIG_HEADER"
 
-			Convey("Arg shouldn't be included", func() {
-				So(isUnwantedWinArg(arg), ShouldEqual, true)
+			t.Run("Arg shouldn't be included", func(t *ftt.Test) {
+				assert.Loosely(t, isUnwantedWinArg(arg), should.Equal(true))
 			})
 		})
 	})
