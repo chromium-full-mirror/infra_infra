@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/gofrs/flock"
@@ -25,6 +26,9 @@ func (c *DockerRun) compose() ([]string, error) {
 		return nil, errors.New("ContainerImage is mandatory")
 	}
 	args := []string{"run", "-d", "--rm", "--cap-add=NET_RAW"}
+	if strings.Contains(c.ContainerImage, "foil-test") {
+		args = append(args, "--security-opt", "seccomp=unconfined")
+	}
 	if c.Name != "" {
 		args = append(args, "--name", c.Name)
 	}

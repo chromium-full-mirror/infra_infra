@@ -6,6 +6,7 @@ package commands
 
 import (
 	"context"
+	"log"
 	"strings"
 )
 
@@ -16,6 +17,17 @@ type NetworkCreate struct {
 
 func (c *NetworkCreate) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"network", "create", c.Name}
+
+	dockerVersionCmd := DockerVersion{}
+	versionStr, _, _ := dockerVersionCmd.Execute(ctx)
+	log.Println("`docker -v` -> ", versionStr)
+
+	if strings.Contains(strings.ToLower(versionStr), "podman") {
+		args = append(args, "-o", "mtu=1450")
+	} else {
+		args = append(args, "-o", "com.docker.network.driver.mtu=1450")
+	}
+
 	return execute(ctx, dockerCmd, args)
 }
 
