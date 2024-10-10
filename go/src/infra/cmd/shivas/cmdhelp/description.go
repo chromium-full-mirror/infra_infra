@@ -2190,7 +2190,8 @@ Add adds the specified HMR to the DUT.
 Delete deletes the HMR attached to the DUT.
 
 Examples:
-shivas add peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model}
+shivas add peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model} \
+    -hmr-walt -hmr-tool-type {stylus|fake_finger|...} -hmr-gen {gen_1|gen_2|...}
 shivas delete peripheral-hmr -dut {DUT name}
 `
 

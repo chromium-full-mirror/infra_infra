@@ -7,6 +7,8 @@ package peripherals
 import (
 	"testing"
 
+	"go.chromium.org/luci/common/testing/typed"
+
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
@@ -37,6 +39,14 @@ func TestHmrCleanAndValidateFlags(t *testing.T) {
 			want: []string{errEmptyHmrModel},
 		},
 		{
+			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi", hmrPi: "hmr-pi", hmrModel: "hmr-model", hmrToolTypeStr: "invalid"},
+			want: []string{errInvalidHmrToolType},
+		},
+		{
+			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi", hmrPi: "hmr-pi", hmrModel: "hmr-model", hmrGenStr: "invalid"},
+			want: []string{errInvalidHmrGen},
+		},
+		{
 			cmd:  &manageHmrCmd{mode: actionDelete},
 			want: []string{errDUTMissing},
 		},
@@ -59,15 +69,35 @@ func TestAddHmr(t *testing.T) {
 		touchHostPi: "touch-host-pi",
 		hmrPi:       "hmr-pi",
 		hmrModel:    "hmr-model",
-		mode:        actionAdd,
+
+		hmrWalt:        true,
+		hmrToolTypeStr: "stylus",
+		hmrGenStr:      "gen_1",
+
+		mode: actionAdd,
 	}
 	if err := c.cleanAndValidateFlags(); err != nil {
 		t.Errorf("cleanAndValidateFlags = %v; want nil", err)
 	}
 
 	// Valid case: create HMR
-	if _, err := c.createHmr(); err != nil {
+	got, err := c.createHmr()
+	if err != nil {
 		t.Errorf("unable to create HMR: %v; want nil", err)
+	}
+
+	want := &lab.HumanMotionRobot{
+		GatewayHostname: "touch-host-pi",
+		Hostname:        "hmr-pi",
+		HmrModel:        "hmr-model",
+
+		HmrWalt:     true,
+		HmrToolType: lab.HumanMotionRobot_HMR_TOOL_TYPE_STYLUS,
+		HmrGen:      lab.HumanMotionRobot_HMR_GEN_1,
+	}
+
+	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
+		t.Errorf("created hmr is invalid -want +got, %s", diff)
 	}
 }
 

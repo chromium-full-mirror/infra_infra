@@ -46,6 +46,12 @@ func hmrCmd(mode action) *subcommands.Command {
 			c.Flags.StringVar(&c.hmrPi, "hmr-pi", "", "hostname of hmr-pi.")
 			c.Flags.StringVar(&c.hmrModel, "hmr-model", "", "model of hmr.")
 
+			c.Flags.BoolVar(&c.hmrWalt, "hmr-walt", false, "the presence of a WALT device for latency testing")
+			c.Flags.StringVar(&c.hmrToolTypeStr, "hmr-tool-type", "",
+				fmt.Sprintf("tool type currently attached to the HMR. Valid choices: [%s]", strings.Join(getSupportedHmrToolType(), ", ")))
+			c.Flags.StringVar(&c.hmrGenStr, "hmr-gen", "",
+				fmt.Sprintf("type of HMR generation can be identified by the serial number behind the HMR. Valid choices: [%s]", strings.Join(getSupportedHmrGen(), ", ")))
+
 			c.Flags.StringVar(&c.rpmHostname, "rpm", "", "hostname for rpm connected to hmr")
 			c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "outlet number of rpm connected to hmr")
 
@@ -65,6 +71,12 @@ type manageHmrCmd struct {
 	touchHostPi string
 	hmrModel    string
 	hmrPi       string
+
+	hmrWalt        bool
+	hmrToolTypeStr string
+	hmrToolType    lab.HumanMotionRobot_HMRToolType
+	hmrGenStr      string
+	hmrGen         lab.HumanMotionRobot_HMRGen
 
 	rpmHostname string
 	rpmOutlet   string
@@ -150,6 +162,10 @@ func (c *manageHmrCmd) createHmr() (*lab.HumanMotionRobot, error) {
 		Hostname:        c.hmrPi,
 		HmrModel:        c.hmrModel,
 		GatewayHostname: c.touchHostPi,
+
+		HmrWalt:     c.hmrWalt,
+		HmrToolType: c.hmrToolType,
+		HmrGen:      c.hmrGen,
 	}
 	if c.rpmHostname != "" {
 		hmr.Rpm = &lab.OSRPM{
@@ -164,6 +180,8 @@ const (
 	errEmptyHmrModel            = "empty hmr model"
 	errEmptyHmrPiHostname       = "empty hmr-pi hostname"
 	errEmptyTouchHostPiHostname = "empty touch-host-pi hostname"
+	errInvalidHmrToolType       = "invalid hmr-tool-type specified"
+	errInvalidHmrGen            = "invalid hmr-gen specified"
 )
 
 // cleanAndValidateFlags returns an error with the result of all validations. It strips whitespaces
@@ -181,6 +199,10 @@ func (c *manageHmrCmd) cleanAndValidateFlags() error {
 	checkHmrPiHostname(c, &errStrs)
 	checkTouchHostPiHostname(c, &errStrs)
 	checkHmrModel(c, &errStrs)
+
+	checkHmrToolType(c, &errStrs)
+	checkHmrGen(c, &errStrs)
+
 	checkRPM(c, &errStrs)
 
 	return checkErrStr(c, errStrs)
@@ -213,9 +235,79 @@ func checkRPM(c *manageHmrCmd, errStrs *[]string) {
 	}
 }
 
+func checkHmrToolType(c *manageHmrCmd, errStrs *[]string) {
+	c.hmrToolType = lab.HumanMotionRobot_HMR_TOOL_TYPE_UNKNOWN
+
+	c.hmrToolTypeStr = strings.TrimSpace(c.hmrToolTypeStr)
+	if c.hmrToolTypeStr != "" {
+		c.hmrToolTypeStr = strings.ToUpper(c.hmrToolTypeStr)
+		if val, ok := lab.HumanMotionRobot_HMRToolType_value["HMR_TOOL_TYPE_"+c.hmrToolTypeStr]; ok {
+			c.hmrToolType = lab.HumanMotionRobot_HMRToolType(val)
+		} else {
+			*errStrs = append(
+				*errStrs,
+				fmt.Sprintf(
+					"%s (%s), only supports (%s)",
+					errInvalidHmrToolType,
+					c.hmrToolTypeStr,
+					strings.Join(getSupportedHmrToolType(), ","),
+				),
+			)
+		}
+	}
+}
+
+func checkHmrGen(c *manageHmrCmd, errStrs *[]string) {
+	c.hmrGen = lab.HumanMotionRobot_HMR_GEN_UNKNOWN
+
+	c.hmrGenStr = strings.TrimSpace(c.hmrGenStr)
+	if c.hmrGenStr != "" {
+		c.hmrGenStr = strings.ToUpper(c.hmrGenStr)
+		if val, ok := lab.HumanMotionRobot_HMRGen_value["HMR_"+c.hmrGenStr]; ok {
+			c.hmrGen = lab.HumanMotionRobot_HMRGen(val)
+		} else {
+			*errStrs = append(
+				*errStrs,
+				fmt.Sprintf(
+					"%s (%s), only supports (%s)",
+					errInvalidHmrGen,
+					c.hmrGenStr,
+					strings.Join(getSupportedHmrGen(), ","),
+				),
+			)
+		}
+	}
+}
+
 func checkErrStr(c *manageHmrCmd, errStrs []string) error {
 	if len(errStrs) == 0 {
 		return nil
 	}
 	return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
+}
+
+func getSupportedHmrToolType() []string {
+	supportedHmrToolTypes := []string{}
+	const plen = len("HMR_TOOL_TYPE_")
+	for key := range lab.HumanMotionRobot_HMRToolType_value {
+		key = key[plen:]
+		if key == "UNKNOWN" {
+			continue
+		}
+		supportedHmrToolTypes = append(supportedHmrToolTypes, key)
+	}
+	return supportedHmrToolTypes
+}
+
+func getSupportedHmrGen() []string {
+	supportedHmrGens := []string{}
+	const plen = len("HMR_")
+	for key := range lab.HumanMotionRobot_HMRGen_value {
+		key = key[plen:]
+		if key == "UNKNOWN" {
+			continue
+		}
+		supportedHmrGens = append(supportedHmrGens, key)
+	}
+	return supportedHmrGens
 }
