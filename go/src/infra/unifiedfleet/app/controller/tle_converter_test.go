@@ -21,20 +21,20 @@ import (
 	"infra/unifiedfleet/app/external"
 )
 
-func parseDutAttribute(t *testing.T, protoText string) api.DutAttribute {
+func parseDutAttribute(t *testing.T, protoText string) *api.DutAttribute {
 	var da api.DutAttribute
 	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
-	return da
+	return &da
 }
 
-func parseFlatConfig(t *testing.T, protoText string) api.DutAttribute {
+func parseFlatConfig(t *testing.T, protoText string) *api.DutAttribute {
 	var da api.DutAttribute
 	if err := jsonpb.UnmarshalString(protoText, &da); err != nil {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
-	return da
+	return &da
 }
 
 func mockMachineLSEWithLabConfigs(name string) *ufspb.MachineLSE {
@@ -96,7 +96,7 @@ func TestConvert(t *testing.T) {
 			"label-audio_box":      {"true"},
 			"peripheral-audio-box": {"true"},
 		}
-		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		got, err := Convert(ctx, da, nil, dutMachinelse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -122,7 +122,7 @@ func TestConvert(t *testing.T) {
 			"label-license": {"LICENSE_TYPE_WINDOWS_10_PRO", "LICENSE_TYPE_MS_OFFICE_STANDARD"},
 			"misc-license":  {"LICENSE_TYPE_WINDOWS_10_PRO", "LICENSE_TYPE_MS_OFFICE_STANDARD"},
 		}
-		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		got, err := Convert(ctx, da, nil, dutMachinelse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -148,7 +148,7 @@ func TestConvert(t *testing.T) {
 			"label-working_bluetooth_btpeer": {"10"},
 			"peripheral-num-btpeer":          {"10"},
 		}
-		got, err := Convert(ctx, &da, nil, nil, dutState)
+		got, err := Convert(ctx, da, nil, nil, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -176,7 +176,7 @@ func TestConvert(t *testing.T) {
 			}
 		}`
 		da := parseDutAttribute(t, daText)
-		_, err := Convert(ctx, &da, &fc, nil, nil)
+		_, err := Convert(ctx, da, &fc, nil, nil)
 		if err == nil {
 			t.Fatalf("Convert passed unexpectedly")
 		}
@@ -217,7 +217,7 @@ func TestStandardConverter(t *testing.T) {
 			"label-servo_usb_state":      {"NORMAL"},
 			"peripheral-servo-usb-state": {"NORMAL"},
 		}
-		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		got, err := Convert(ctx, da, nil, dutMachinelse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -244,7 +244,7 @@ func TestStandardConverter(t *testing.T) {
 			"label-carrier":      {"CARRIER_test-carrier"},
 			"peripheral-carrier": {"CARRIER_test-carrier"},
 		}
-		got, err := Convert(ctx, &da, nil, dutMachinelse, dutState)
+		got, err := Convert(ctx, da, nil, dutMachinelse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -278,7 +278,7 @@ func TestExistenceConverter(t *testing.T) {
 			"label-servo":      {"false"},
 			"peripheral-servo": {"false"},
 		}
-		got, err := Convert(ctx, &da, nil, dutLse, dutState)
+		got, err := Convert(ctx, da, nil, dutLse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
@@ -305,7 +305,7 @@ func TestExistenceConverter(t *testing.T) {
 			"label-servo":      {"true"},
 			"peripheral-servo": {"true"},
 		}
-		got, err := Convert(ctx, &da, nil, dutLse, dutState)
+		got, err := Convert(ctx, da, nil, dutLse, dutState)
 		if err != nil {
 			t.Fatalf("Convert failed: %s", err)
 		}
