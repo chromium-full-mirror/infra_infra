@@ -7,9 +7,9 @@ package dirmd
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -20,7 +20,7 @@ import (
 func TestLocationTag(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ToLocationTags`, t, func() {
+	ftt.Run(`ToLocationTags`, t, func(t *ftt.Test) {
 		mapping := &dirmdpb.Mapping{
 			Dirs: map[string]*dirmdpb.Metadata{
 				".": {
@@ -118,7 +118,7 @@ func TestLocationTag(t *testing.T) {
 			},
 		}
 
-		So(err, ShouldBeNil)
-		So(tags, ShouldResembleProto, expected)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, tags, should.Resemble(expected))
 	})
 }
