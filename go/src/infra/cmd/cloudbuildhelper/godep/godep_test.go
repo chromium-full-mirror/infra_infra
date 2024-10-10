@@ -7,10 +7,10 @@ package godep
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"golang.org/x/mod/modfile"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 const testGoMod = `
@@ -48,20 +48,20 @@ func TestDeps(t *testing.T) {
 	prepTestDeps := func() *Deps {
 		deps := NewDeps(loadTestGoMod())
 
-		So(deps.Add("direct/dep1/pkg1", "direct/dep1", "1.20"), ShouldBeNil)
-		So(deps.Add("direct/dep1/pkg1", "direct/dep1", "1.20"), ShouldBeNil) // dup is fine
-		So(deps.Add("direct/dep1/pkg2", "direct/dep1", "1.20"), ShouldBeNil)
+		assert.Loosely(t, deps.Add("direct/dep1/pkg1", "direct/dep1", "1.20"), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/dep1/pkg1", "direct/dep1", "1.20"), should.BeNil) // dup is fine
+		assert.Loosely(t, deps.Add("direct/dep1/pkg2", "direct/dep1", "1.20"), should.BeNil)
 
-		So(deps.Add("direct/dep2", "direct/dep2", ""), ShouldBeNil)
-		So(deps.Add("direct/dep2/pkg", "direct/dep2", ""), ShouldBeNil)
+		assert.Loosely(t, deps.Add("direct/dep2", "direct/dep2", ""), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/dep2/pkg", "direct/dep2", ""), should.BeNil)
 
-		So(deps.Add("indirect/dep1/pkg1", "indirect/dep1", ""), ShouldBeNil)
+		assert.Loosely(t, deps.Add("indirect/dep1/pkg1", "indirect/dep1", ""), should.BeNil)
 
-		So(deps.Add("direct/replaced1/pkg1", "direct/replaced1", "1.19"), ShouldBeNil)
-		So(deps.Add("direct/replaced1/pkg2", "direct/replaced1", "1.19"), ShouldBeNil)
+		assert.Loosely(t, deps.Add("direct/replaced1/pkg1", "direct/replaced1", "1.19"), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/replaced1/pkg2", "direct/replaced1", "1.19"), should.BeNil)
 
-		So(deps.Add("direct/replaced2/pkg1", "direct/replaced2", "1.19"), ShouldBeNil)
-		So(deps.Add("direct/replaced2/pkg2", "direct/replaced2", "1.19"), ShouldBeNil)
+		assert.Loosely(t, deps.Add("direct/replaced2/pkg1", "direct/replaced2", "1.19"), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/replaced2/pkg2", "direct/replaced2", "1.19"), should.BeNil)
 
 		return deps
 	}
@@ -109,45 +109,45 @@ indirect/dep1/pkg1
 `),
 	}
 
-	Convey("Adding and saving", t, func() {
+	ftt.Run("Adding and saving", t, func(t *ftt.Test) {
 		deps := prepTestDeps()
 
 		saved, err := deps.Save()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(string(saved.GoMod), ShouldEqual, string(expectedSavedDeps.GoMod))
-		So(string(saved.ModulesTxt), ShouldEqual, string(expectedSavedDeps.ModulesTxt))
+		assert.Loosely(t, string(saved.GoMod), should.Equal(string(expectedSavedDeps.GoMod)))
+		assert.Loosely(t, string(saved.ModulesTxt), should.Equal(string(expectedSavedDeps.ModulesTxt)))
 	})
 
-	Convey("Loading", t, func() {
+	ftt.Run("Loading", t, func(t *ftt.Test) {
 		deps := NewDeps(loadTestGoMod())
-		So(deps.Load(expectedSavedDeps), ShouldBeNil)
+		assert.Loosely(t, deps.Load(expectedSavedDeps), should.BeNil)
 
 		saved, err := deps.Save()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(string(saved.GoMod), ShouldEqual, string(expectedSavedDeps.GoMod))
-		So(string(saved.ModulesTxt), ShouldEqual, string(expectedSavedDeps.ModulesTxt))
+		assert.Loosely(t, string(saved.GoMod), should.Equal(string(expectedSavedDeps.GoMod)))
+		assert.Loosely(t, string(saved.ModulesTxt), should.Equal(string(expectedSavedDeps.ModulesTxt)))
 	})
 
-	Convey("AddDep errors", t, func() {
+	ftt.Run("AddDep errors", t, func(t *ftt.Test) {
 		deps := NewDeps(loadTestGoMod())
 
 		// Wrong module name prefix.
-		So(deps.Add("direct/dep2/pkg", "direct/dep2", ""), ShouldBeNil)
-		So(deps.Add("direct/dep2/pkg", "direct/dep1", ""), ShouldErrLike, "not in module")
-		So(deps.Add("direct/dep11/pkg", "direct/dep1", ""), ShouldErrLike, "not in module")
+		assert.Loosely(t, deps.Add("direct/dep2/pkg", "direct/dep2", ""), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/dep2/pkg", "direct/dep1", ""), should.ErrLike("not in module"))
+		assert.Loosely(t, deps.Add("direct/dep11/pkg", "direct/dep1", ""), should.ErrLike("not in module"))
 
 		// Package "switching" modules.
-		So(deps.Add("direct/dep1/deeper", "direct/dep1/deeper", ""), ShouldBeNil)
-		So(deps.Add("direct/dep1/deeper", "direct/dep1", ""), ShouldErrLike, "conflicting modules")
+		assert.Loosely(t, deps.Add("direct/dep1/deeper", "direct/dep1/deeper", ""), should.BeNil)
+		assert.Loosely(t, deps.Add("direct/dep1/deeper", "direct/dep1", ""), should.ErrLike("conflicting modules"))
 
 		// Package "switching" go version.
-		So(deps.Add("indirect/dep1/pkg", "indirect/dep1", "1.20"), ShouldBeNil)
-		So(deps.Add("indirect/dep1/pkg", "indirect/dep1", ""), ShouldErrLike, "conflicting go version")
+		assert.Loosely(t, deps.Add("indirect/dep1/pkg", "indirect/dep1", "1.20"), should.BeNil)
+		assert.Loosely(t, deps.Add("indirect/dep1/pkg", "indirect/dep1", ""), should.ErrLike("conflicting go version"))
 
 		// Missing go.mod reference.
-		So(deps.Add("unknown/pkg", "unknown", ""), ShouldErrLike, "not present in go.mod")
+		assert.Loosely(t, deps.Add("unknown/pkg", "unknown", ""), should.ErrLike("not present in go.mod"))
 	})
 }
 
