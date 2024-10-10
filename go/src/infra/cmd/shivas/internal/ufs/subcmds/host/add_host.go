@@ -109,7 +109,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 		Options: site.DefaultPRPCOptions(c.envFlags),
 	})
 
-	var machinelse ufspb.MachineLSE
+	var machinelse *ufspb.MachineLSE
 	if c.interactive {
 		return errors.New("Interactive mode for this " +
 			"command is not yet implemented yet. Use JSON input mode.")
@@ -130,7 +130,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 			return errors.New("specs file contains zero machines")
 		case 1:
 			// `go vet` does not like this change. However, explicit use of cloning makes it safe.
-			machinelse = *(proto.Clone(machineLSEs[0]).(*ufspb.MachineLSE))
+			machinelse = proto.Clone(machineLSEs[0]).(*ufspb.MachineLSE)
 		default:
 			return fmt.Errorf("batch add not supported %d items provided", len(machineLSEs))
 		}
@@ -146,7 +146,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 		if err != nil {
 			return errors.New(fmt.Sprintf("Fail to find machine %s", c.machineName))
 		}
-		c.parseArgs(&machinelse, machine.GetLocation().GetZone())
+		c.parseArgs(machinelse, machine.GetLocation().GetZone())
 	}
 
 	if !ufsUtil.ValidateTags(machinelse.Tags) {
@@ -154,7 +154,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 	}
 
 	req := &ufsAPI.CreateMachineLSERequest{
-		MachineLSE:    &machinelse,
+		MachineLSE:    machinelse,
 		MachineLSEId:  machinelse.GetName(),
 		NetworkOption: c.parseNetworkOpt(),
 	}
