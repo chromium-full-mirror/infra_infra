@@ -7,7 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/api/v1"
 )
@@ -26,21 +28,21 @@ const (
 
 func TestCommitcheck(t *testing.T) {
 
-	Convey("No comments to add when TEST= and BUG= found and formatted correctly", t, func() {
+	ftt.Run("No comments to add when TEST= and BUG= found and formatted correctly", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		emptyResults := &tricium.Data_Results{}
 
 		checkForTest(good1, results)
-		So(results, ShouldResemble, emptyResults)
+		assert.Loosely(t, results, should.Resemble(emptyResults))
 		checkForTest(good2, results)
-		So(results, ShouldResemble, emptyResults)
+		assert.Loosely(t, results, should.Resemble(emptyResults))
 		checkForBug(good1, results)
-		So(results, ShouldResemble, emptyResults)
+		assert.Loosely(t, results, should.Resemble(emptyResults))
 		checkForBug(good2, results)
-		So(results, ShouldResemble, emptyResults)
+		assert.Loosely(t, results, should.Resemble(emptyResults))
 	})
 
-	Convey("Leave comment when no TEST= or empty TEST= found", t, func() {
+	ftt.Run("Leave comment when no TEST= or empty TEST= found", t, func(t *ftt.Test) {
 		var comment = tricium.Data_Comment{
 			Message:   "No TEST= or empty TEST= found in commit message.",
 			Category:  "CommitCheck/NoTestFound",
@@ -53,11 +55,11 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range noTestStrings {
 			results := &tricium.Data_Results{}
 			checkForTest(s, results)
-			So(results, ShouldResemble, expectedResults)
+			assert.Loosely(t, results, should.Resemble(expectedResults))
 		}
 	})
 
-	Convey("Leave comment when no BUG= found", t, func() {
+	ftt.Run("Leave comment when no BUG= found", t, func(t *ftt.Test) {
 		var comment = tricium.Data_Comment{
 			Message:   "No BUG= found in commit message.",
 			Category:  "CommitCheck/NoBugFound",
@@ -70,11 +72,11 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range noBugStrings {
 			results := &tricium.Data_Results{}
 			checkForBug(s, results)
-			So(results, ShouldResemble, expectedResults)
+			assert.Loosely(t, results, should.Resemble(expectedResults))
 		}
 	})
 
-	Convey("Leave comment when BUG= has incorrect format", t, func() {
+	ftt.Run("Leave comment when BUG= has incorrect format", t, func(t *ftt.Test) {
 		var comment = tricium.Data_Comment{
 			Message:   "No valid bug found. Use format b:123 or chromium:123.",
 			Category:  "CommitCheck/InvalidBugDescription",
@@ -87,7 +89,7 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range badBugStrings {
 			results := &tricium.Data_Results{}
 			checkForBug(s, results)
-			So(results, ShouldResemble, expectedResults)
+			assert.Loosely(t, results, should.Resemble(expectedResults))
 		}
 	})
 }
