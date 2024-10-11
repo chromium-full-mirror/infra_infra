@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
@@ -98,8 +99,8 @@ func DownloadFile(ctx context.Context, client *storage.Client, gsURL, destLocalP
 	return nil
 }
 
-func NewStorageClientWithDefaultAccount(ctx context.Context) (*storage.Client, error) {
-	client, err := storage.NewClient(ctx)
+func NewStorageClientWithDefaultAccount(ctx context.Context, clientOpts ...option.ClientOption) (*storage.Client, error) {
+	client, err := storage.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -207,8 +208,8 @@ func DownloadGcsFileToLocal(ctx context.Context, gcsPath string, tempRootDir str
 }
 
 // DownloadGcsFileAsLocalFile downloads gcs file as specific local file if it doesn't exist.
-func DownloadGcsFileAsLocalFile(ctx context.Context, gcsPath string, localFilePath string) error {
-	client, err := NewStorageClientWithDefaultAccount(ctx)
+func DownloadGcsFileAsLocalFile(ctx context.Context, gcsPath string, localFilePath string, clientOpts ...option.ClientOption) error {
+	client, err := NewStorageClientWithDefaultAccount(ctx, clientOpts...)
 	if err != nil {
 		logging.Infof(ctx, "error while creating new storage client: %s", err)
 		return err

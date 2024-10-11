@@ -7,16 +7,24 @@ package preppers
 
 import (
 	"context"
+	"os"
 	"path"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/api/option"
 
 	"infra/cros/cmd/common_lib/common"
 )
 
 // AdbBase implements the prepper for adb-base container.
 func AdbBase(ctx context.Context, dir string) error {
+	downloadOptions := []option.ClientOption{}
+	credentialFile := common.VmLabDockerKeyFileLocation
+	if _, err := os.Stat(credentialFile); err == nil {
+		downloadOptions = append(downloadOptions, option.WithCredentialsFile(credentialFile))
+	}
+
 	fileNames := map[string]string{
 		"aapt":  "gs://chromeos-arc-images/builds/git_udc_release-static_sdk_tools/9594652/aapt",
 		"aapt2": "gs://chromeos-arc-images/builds/git_udc_release-static_sdk_tools/9594652/aapt2",
@@ -25,7 +33,7 @@ func AdbBase(ctx context.Context, dir string) error {
 	for lp, gp := range fileNames {
 		localFilePath := path.Join(dir, lp)
 		logging.Infof(ctx, "prepper: downloading %q", gp)
-		if err := common.DownloadGcsFileAsLocalFile(ctx, gp, localFilePath); err != nil {
+		if err := common.DownloadGcsFileAsLocalFile(ctx, gp, localFilePath, downloadOptions...); err != nil {
 			return errors.Annotate(err, "prepper: download %q", gp).Err()
 		}
 		logging.Infof(ctx, "prepper: downloaded as %q", localFilePath)
