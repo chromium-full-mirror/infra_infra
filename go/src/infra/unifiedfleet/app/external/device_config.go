@@ -72,7 +72,7 @@ func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *dev
 }
 
 // DeviceConfigsExists detects whether any number of configs exist.
-
+//
 // The return is an array of booleans, where the ith boolean represents the
 // existence of the ith config.
 // It queries UFS first, if no response, fallback to call inventoryv2.

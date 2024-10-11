@@ -64,7 +64,7 @@ func NonAtomicBatchCreateDefaultWifis(ctx context.Context, wifis []*ufspb.Defaul
 	return nonAtomicBatchCreateOrUpdateDefaultWifis(ctx, wifis, false /*create instead of update*/)
 }
 
-// NonAtomicBatchUpdateDefaultWifis	updates DefaultWifis in datastore.
+// NonAtomicBatchUpdateDefaultWifis updates DefaultWifis in datastore.
 func NonAtomicBatchUpdateDefaultWifis(ctx context.Context, wifis []*ufspb.DefaultWifi) ([]*ufspb.DefaultWifi, error) {
 	return nonAtomicBatchCreateOrUpdateDefaultWifis(ctx, wifis, true /*update instead of create*/)
 }
