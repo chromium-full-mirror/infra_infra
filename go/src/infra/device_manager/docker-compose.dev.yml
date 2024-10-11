@@ -79,7 +79,7 @@ services:
     tty: true
   device_manager_db:
     container_name: device_manager_db
-    image: postgres:12
+    image: postgres:15
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
@@ -87,7 +87,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql@15/data:rw
   pubsub:
     container_name: pubsub
     stdin_open: true
