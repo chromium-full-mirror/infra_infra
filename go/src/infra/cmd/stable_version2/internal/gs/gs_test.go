@@ -10,80 +10,81 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cmd/stable_version2/internal/utils"
 )
 
 func TestParseOmahaStatus(t *testing.T) {
-	Convey("Parse omaha status file", t, func() {
+	ftt.Run("Parse omaha status file", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		bt, err := ioutil.ReadFile(testDataPath("omaha_status.json"))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		res, err := ParseOmahaStatus(ctx, bt)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Parse normal board", func() {
+		t.Run("Parse normal board", func(t *ftt.Test) {
 			v := utils.GetCrOSSVByBuildtarget(res, "normal")
-			So(v, ShouldEqual, "R59-9414.0.0")
+			assert.Loosely(t, v, should.Equal("R59-9414.0.0"))
 		})
 
-		Convey("Parse board name with dash, dash should be replaced by underscore", func() {
+		t.Run("Parse board name with dash, dash should be replaced by underscore", func(t *ftt.Test) {
 			v := utils.GetCrOSSVByBuildtarget(res, "board-with-dash")
-			So(v, ShouldEqual, "")
+			assert.Loosely(t, v, should.BeEmpty)
 
 			v = utils.GetCrOSSVByBuildtarget(res, "board_with_dash")
-			So(v, ShouldEqual, "R59-9414.0.0")
+			assert.Loosely(t, v, should.Equal("R59-9414.0.0"))
 		})
 
-		Convey("Parse board with 2 chromeos versions, shoud return the new one", func() {
+		t.Run("Parse board with 2 chromeos versions, shoud return the new one", func(t *ftt.Test) {
 			v := utils.GetCrOSSVByBuildtarget(res, "board_with_new_version")
-			So(v, ShouldEqual, "R59-9514.0.0")
+			assert.Loosely(t, v, should.Equal("R59-9514.0.0"))
 		})
 
-		Convey("Parse board with 2 milestones, shoud return the new one", func() {
+		t.Run("Parse board with 2 milestones, shoud return the new one", func(t *ftt.Test) {
 			v := utils.GetCrOSSVByBuildtarget(res, "board_with_new_milestone")
-			So(v, ShouldEqual, "R60-9414.0.0")
+			assert.Loosely(t, v, should.Equal("R60-9414.0.0"))
 		})
 
-		Convey("Parse non-beta channel board, no return", func() {
+		t.Run("Parse non-beta channel board, no return", func(t *ftt.Test) {
 			v := utils.GetCrOSSVByBuildtarget(res, "canaryboard")
-			So(v, ShouldEqual, "")
+			assert.Loosely(t, v, should.BeEmpty)
 		})
 	})
 }
 
 func TestParseMetaData(t *testing.T) {
-	Convey("Parse meta data file", t, func() {
+	ftt.Run("Parse meta data file", t, func(t *ftt.Test) {
 
-		Convey("Parse non-unibuild", func() {
+		t.Run("Parse non-unibuild", func(t *ftt.Test) {
 			bt, err := ioutil.ReadFile((testDataPath("meta_data.json")))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := ParseMetadata(bt)
-			So(err, ShouldBeNil)
-			So(res.FirmwareVersions, ShouldHaveLength, 1)
-			So(res.FirmwareVersions[0].GetKey().GetBuildTarget().GetName(), ShouldEqual, "arkham")
-			So(res.FirmwareVersions[0].GetKey().GetModelId().GetValue(), ShouldEqual, "arkham")
-			So(res.FirmwareVersions[0].GetVersion(), ShouldEqual, "v1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.FirmwareVersions, should.HaveLength(1))
+			assert.Loosely(t, res.FirmwareVersions[0].GetKey().GetBuildTarget().GetName(), should.Equal("arkham"))
+			assert.Loosely(t, res.FirmwareVersions[0].GetKey().GetModelId().GetValue(), should.Equal("arkham"))
+			assert.Loosely(t, res.FirmwareVersions[0].GetVersion(), should.Equal("v1"))
 		})
 
-		Convey("Parse unibuild", func() {
+		t.Run("Parse unibuild", func(t *ftt.Test) {
 			bt, err := ioutil.ReadFile((testDataPath("meta_data_unibuild.json")))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			res, err := ParseMetadata(bt)
-			So(err, ShouldBeNil)
-			So(res.FirmwareVersions, ShouldHaveLength, 2)
-			So(res.FirmwareVersions[0].GetKey().GetBuildTarget().GetName(), ShouldEqual, "reef")
-			So(res.FirmwareVersions[1].GetKey().GetBuildTarget().GetName(), ShouldEqual, "reef")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res.FirmwareVersions, should.HaveLength(2))
+			assert.Loosely(t, res.FirmwareVersions[0].GetKey().GetBuildTarget().GetName(), should.Equal("reef"))
+			assert.Loosely(t, res.FirmwareVersions[1].GetKey().GetBuildTarget().GetName(), should.Equal("reef"))
 			models := map[string]string{
 				res.FirmwareVersions[0].GetKey().GetModelId().GetValue(): res.FirmwareVersions[0].GetVersion(),
 				res.FirmwareVersions[1].GetKey().GetModelId().GetValue(): res.FirmwareVersions[1].GetVersion(),
 			}
-			So(models["model1"], ShouldEqual, "v1")
-			So(models["model2"], ShouldEqual, "v2")
+			assert.Loosely(t, models["model1"], should.Equal("v1"))
+			assert.Loosely(t, models["model2"], should.Equal("v2"))
 		})
 	})
 }
