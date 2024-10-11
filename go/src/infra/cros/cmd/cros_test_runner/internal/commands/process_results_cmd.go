@@ -130,7 +130,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 		}
 	}
 
-	if common.IsALRun(cmd.buildState) {
+	if cmd.TestResponses != nil && cmd.TestResponses.GetGivenTestResults() != nil {
 		err = cmd.generateSkylabResultForAluminium(ctx, step, prejob, logData, err)
 	} else {
 		err = cmd.generateSkylabResultForClassic(ctx, step, prejob, logData, err)
@@ -361,13 +361,12 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 		isPastCaseLimit := testCaseCount > 2000
 		passCount := 0
 		failCount := 0
-		givenTestResultsMap := common.GenerateGivenTestResultsMap(cmd.TestResponses)
-		for parentTest, childTestResults := range givenTestResultsMap {
-			autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
-			for _, childTestResult := range childTestResults {
+		for _, givenTestResult := range cmd.TestResponses.GetGivenTestResults() {
+			childTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+			for _, childTestResult := range givenTestResult.GetChildTestCaseResults() {
 				testVerdict, isTestFailure := getTestVerdict(ctx, childTestResult)
 				testResultReason := childTestResult.GetReason()
-				autotestTestCase := &skylab_test_runner.Result_Autotest_TestCase{
+				childTestCase := &skylab_test_runner.Result_Autotest_TestCase{
 					Name:                 childTestResult.GetTestCaseId().GetValue(),
 					Verdict:              testVerdict,
 					HumanReadableSummary: testResultReason,
@@ -377,7 +376,7 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 				} else {
 					passCount++
 				}
-				autotestTestCases = append(autotestTestCases, autotestTestCase)
+				childTestCases = append(childTestCases, childTestCase)
 				if !isPastCaseLimit {
 					// Set test steps
 					testErr = common.CreateStepWithStatus(ctx, childTestResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
@@ -388,8 +387,8 @@ func (cmd *ProcessResultsCmd) generateSkylabResultForAluminium(ctx context.Conte
 				}
 			}
 			givenTestCases = append(givenTestCases, &skylab_test_runner.Result_AndroidGeneric_GivenTestCase{
-				ParentTest:     parentTest,
-				ChildTestCases: autotestTestCases,
+				ParentTest:     givenTestResult.GetParentTest(),
+				ChildTestCases: childTestCases,
 				Incomplete:     isIncomplete,
 			})
 

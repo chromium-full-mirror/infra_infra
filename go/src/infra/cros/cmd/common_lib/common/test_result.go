@@ -22,7 +22,6 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-	"go.chromium.org/luci/luciexe/build"
 )
 
 // GetMockedTestResultProto returns a mock result proto
@@ -283,89 +282,4 @@ func GetDims(dims []string) (map[string]string, []*steps.ExecuteResponse_TaskRes
 		r2 = append(r2, &steps.ExecuteResponse_TaskResult_RejectedTaskDimension{Key: dimsList[0], Value: dimsList[1]})
 	}
 	return r1, r2
-}
-
-// Splits the testCaseID on the first occurrence of '#' into parent and child parts if it contains "tradefed".
-func splitTestCaseID(testCaseID *api.TestCase_Id) (string, string, bool) {
-	if testCaseID == nil || testCaseID.GetValue() == "" {
-		return "", "", false
-	}
-
-	// Check if the string contains "tradefed"
-	if !strings.Contains(testCaseID.GetValue(), "tradefed") {
-		return "", "", false
-	}
-
-	// Find the index of the first occurrence of '#'
-	index := strings.Index(testCaseID.GetValue(), "#")
-	if index == -1 {
-		return "", "", false
-	}
-
-	// Split the string at the first occurrence of '#'
-	parentTestID := testCaseID.GetValue()[:index]
-	childTestID := testCaseID.GetValue()[index+1:] // The part after the first '#'
-
-	return parentTestID, childTestID, true
-}
-
-func createTestCaseResult(testCaseResult *api.TestCaseResult, childTestID string) *api.TestCaseResult {
-	return &api.TestCaseResult{
-		TestCaseId: &api.TestCase_Id{
-			Value: childTestID,
-		},
-		Verdict:   testCaseResult.GetVerdict(),
-		Reason:    testCaseResult.GetReason(),
-		StartTime: testCaseResult.GetStartTime(),
-		Duration:  testCaseResult.GetDuration(),
-	}
-}
-
-func processTestCaseResults(testCaseResults []*api.TestCaseResult) map[string][]*api.TestCaseResult {
-	// Map to hold the key (module/parent test) and child test case results
-	testMap := make(map[string][]*api.TestCaseResult)
-
-	for _, testCaseResult := range testCaseResults {
-		// Split the test case ID into parent and child parts
-		parentTestID, childTestID, valid := splitTestCaseID(testCaseResult.GetTestCaseId())
-		if !valid {
-			continue
-		}
-
-		// Create a new TestCaseResult with the child test ID
-		tempTestCaseResult := createTestCaseResult(testCaseResult, childTestID)
-
-		// Add the result to the map
-		testMap[parentTestID] = append(testMap[parentTestID], tempTestCaseResult)
-	}
-
-	return testMap
-}
-
-// GenerateGivenTestResultsMap updates the given test results in the TestResponse object
-func GenerateGivenTestResultsMap(TestResponse *api.CrosTestResponse) map[string][]*apipb.TestCaseResult {
-	if TestResponse == nil {
-		return nil
-	}
-
-	// Process the test case results and create the map with module as key
-	testMap := processTestCaseResults(TestResponse.GetTestCaseResults())
-
-	return testMap
-}
-
-// IsALRun checks if the test runner run is an AL run.
-// TODO this is intermediate way of determing. should be replaced with something more concrete.
-func IsALRun(buildState *build.State) bool {
-	if buildState == nil || buildState.Build() == nil {
-		return false
-	}
-	for _, tag := range buildState.Build().GetTags() {
-		if tag.GetKey() == "analytics_name" || tag.GetKey() == "label-suite" || tag.GetKey() == "suite" {
-			if strings.HasPrefix(tag.GetValue(), "AL.") {
-				return true
-			}
-		}
-	}
-	return false
 }
