@@ -228,6 +228,7 @@ func updateWorker(
 		pendingUpdates = make([]string, 0, *opts.UpdateBatchSize)
 		timer          = time.NewTicker(opts.MaxUpdateWaitTime)
 	)
+	defer timer.Stop()
 
 	updateDevices := func() {
 		if len(pendingUpdates) == 0 {
