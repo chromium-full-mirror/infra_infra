@@ -501,7 +501,7 @@ func PrintProtoJSON(pm proto.Message, emit bool) {
 // PrintTitle prints the title fields in table form.
 func PrintTitle(title []string) {
 	for _, s := range title {
-		fmt.Fprint(tw, fmt.Sprintf("%s\t", s))
+		fmt.Fprintf(tw, "%s\t", s)
 	}
 	fmt.Fprintln(tw)
 }
