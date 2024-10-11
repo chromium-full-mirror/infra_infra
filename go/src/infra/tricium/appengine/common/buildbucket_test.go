@@ -10,11 +10,13 @@ import (
 
 	"github.com/golang/mock/gomock"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
 	admin "infra/tricium/api/admin/v1"
@@ -22,7 +24,7 @@ import (
 )
 
 func TestTrigger(t *testing.T) {
-	Convey("Triggers a build", t, func() {
+	ftt.Run("Triggers a build", t, func(t *ftt.Test) {
 		w := &admin.Worker{
 			Name: "AnalyzerName",
 			Impl: &admin.Worker_Recipe{
@@ -59,11 +61,11 @@ func TestTrigger(t *testing.T) {
 			DoAndReturn(scheduleBuild)
 
 		result, err := trigger(ctx, params, client)
-		So(err, ShouldBeNil)
-		So(result.BuildID, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, result.BuildID, should.Equal(1))
 	})
 
-	Convey("Different analyzers have different request IDs", t, func() {
+	ftt.Run("Different analyzers have different request IDs", t, func(t *ftt.Test) {
 		patch := &PatchDetails{
 			GerritHost:    "cr.example.com",
 			GerritProject: "foo",
@@ -72,11 +74,11 @@ func TestTrigger(t *testing.T) {
 		}
 		recipeX := &tricium.Recipe{Project: "cr", Bucket: "try", Builder: "x-lint"}
 		recipeY := &tricium.Recipe{Project: "cr", Bucket: "try", Builder: "y-lint"}
-		So(makeRequestID(patch, recipeX), ShouldEqual, "foo~123~7~cr.try.x-lint")
-		So(makeRequestID(patch, recipeY), ShouldEqual, "foo~123~7~cr.try.y-lint")
+		assert.Loosely(t, makeRequestID(patch, recipeX), should.Equal("foo~123~7~cr.try.x-lint"))
+		assert.Loosely(t, makeRequestID(patch, recipeY), should.Equal("foo~123~7~cr.try.y-lint"))
 	})
 
-	Convey("Request IDs do not contain slash", t, func() {
+	ftt.Run("Request IDs do not contain slash", t, func(t *ftt.Test) {
 		patch := &PatchDetails{
 			GerritHost:    "cr-review.goo.com",
 			GerritProject: "foo/bar",
@@ -84,12 +86,12 @@ func TestTrigger(t *testing.T) {
 			GerritPatch:   "7",
 		}
 		recipe := &tricium.Recipe{Project: "cr", Bucket: "try", Builder: "x"}
-		So(makeRequestID(patch, recipe), ShouldEqual, "foo_bar~123~7~cr.try.x")
+		assert.Loosely(t, makeRequestID(patch, recipe), should.Equal("foo_bar~123~7~cr.try.x"))
 	})
 }
 
 func TestCollect(t *testing.T) {
-	Convey("Collects a build", t, func() {
+	ftt.Run("Collects a build", t, func(t *ftt.Test) {
 		params := &CollectParameters{
 			BuildID: 1,
 		}
@@ -119,8 +121,8 @@ func TestCollect(t *testing.T) {
 			DoAndReturn(getBuild)
 
 		result, err := collect(ctx, params, client)
-		So(err, ShouldBeNil)
-		So(result.State, ShouldEqual, Success)
-		So(result.BuildbucketOutput, ShouldEqual, "{\"tricium\": []}")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, result.State, should.Equal(Success))
+		assert.Loosely(t, result.BuildbucketOutput, should.Equal("{\"tricium\": []}"))
 	})
 }

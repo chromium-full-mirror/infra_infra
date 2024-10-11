@@ -7,9 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -28,19 +28,19 @@ const (
 
 func TestCopyrightChecker(t *testing.T) {
 
-	Convey("Produces no comment for file with correct BSD copyright", t, func() {
-		So(checkCopyright(baseDir, goodBsd), ShouldBeNil)
-		So(checkCopyright(baseDir, goodBsdWithoutAllRightsReserved), ShouldBeNil)
+	ftt.Run("Produces no comment for file with correct BSD copyright", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkCopyright(baseDir, goodBsd), should.BeNil)
+		assert.Loosely(t, checkCopyright(baseDir, goodBsdWithoutAllRightsReserved), should.BeNil)
 	})
 
-	Convey("Produces no comment for file with correct MIT copyright", t, func() {
-		So(checkCopyright(baseDir, goodMit), ShouldBeNil)
+	ftt.Run("Produces no comment for file with correct MIT copyright", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkCopyright(baseDir, goodMit), should.BeNil)
 	})
 
-	Convey("Finds an issue when copyright doesn't match expected pattern", t, func() {
+	ftt.Run("Finds an issue when copyright doesn't match expected pattern", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, badBsd)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
 			Category: "Copyright/Incorrect",
 			Message: ("Incorrect copyright statement.\n" +
 				"Use the following for BSD:\n" +
@@ -57,13 +57,13 @@ func TestCopyrightChecker(t *testing.T) {
 			EndLine:   1,
 			StartChar: 0,
 			EndChar:   1,
-		})
+		}))
 	})
 
-	Convey("Makes a comment when there appears to be no copyright header", t, func() {
+	ftt.Run("Makes a comment when there appears to be no copyright header", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, missing)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
 			Category: "Copyright/Missing",
 			Message: ("Missing copyright statement.\n" +
 				"Use the following for BSD:\n" +
@@ -80,13 +80,13 @@ func TestCopyrightChecker(t *testing.T) {
 			EndLine:   1,
 			StartChar: 0,
 			EndChar:   1,
-		})
+		}))
 	})
 
-	Convey("Makes a comment when there is a copyright statement but the old style is used", t, func() {
+	ftt.Run("Makes a comment when there is a copyright statement but the old style is used", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, old)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
 			Category: "Copyright/OutOfDate",
 			Message: "Out of date copyright statement (omit the (c) to update).\n\n" +
 				"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers",
@@ -95,6 +95,6 @@ func TestCopyrightChecker(t *testing.T) {
 			EndLine:   1,
 			StartChar: 0,
 			EndChar:   1,
-		})
+		}))
 	})
 }

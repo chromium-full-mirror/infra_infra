@@ -7,51 +7,52 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestHelperFunctions(t *testing.T) {
-	Convey("possibleGitattributesPaths lists all relevant paths", t, func() {
-		So(
+	ftt.Run("possibleGitattributesPaths lists all relevant paths", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			possibleGitattributesPaths([]string{"one/two/foo.c"}),
-			ShouldResemble,
-			[]string{
-				".gitattributes",
-				"one/.gitattributes",
-				"one/two/.gitattributes",
-			})
+			should.Resemble(
+				[]string{
+					".gitattributes",
+					"one/.gitattributes",
+					"one/two/.gitattributes",
+				}))
 	})
 
-	Convey("possibleGitattributesPaths works for multiple paths", t, func() {
-		So(
+	ftt.Run("possibleGitattributesPaths works for multiple paths", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			possibleGitattributesPaths([]string{
 				"one/bar.c",
 				"one/two/foo.c",
 				"one/two/foo.h",
 				"one/other/x.txt",
 			}),
-			ShouldResemble,
-			[]string{
-				".gitattributes",
-				"one/.gitattributes",
-				"one/other/.gitattributes",
-				"one/two/.gitattributes",
-			})
+			should.Resemble(
+				[]string{
+					".gitattributes",
+					"one/.gitattributes",
+					"one/other/.gitattributes",
+					"one/two/.gitattributes",
+				}))
 	})
 
-	Convey("ancestorDirectories gives the union of all ancestor dir paths", t, func() {
-		So(ancestorDirectories([]string{"a/b/c/foo.proto"}),
-			ShouldResemble,
-			stringset.NewFromSlice("", "a", "a/b", "a/b/c"))
-		So(ancestorDirectories([]string{"a/b/c/foo.proto", "x/y/foo.c"}),
-			ShouldResemble,
-			stringset.NewFromSlice("", "a", "a/b", "a/b/c", "x", "x/y"))
+	ftt.Run("ancestorDirectories gives the union of all ancestor dir paths", t, func(t *ftt.Test) {
+		assert.Loosely(t, ancestorDirectories([]string{"a/b/c/foo.proto"}),
+			should.Resemble(
+				stringset.NewFromSlice("", "a", "a/b", "a/b/c")))
+		assert.Loosely(t, ancestorDirectories([]string{"a/b/c/foo.proto", "x/y/foo.c"}),
+			should.Resemble(
+				stringset.NewFromSlice("", "a", "a/b", "a/b/c", "x", "x/y")))
 	})
 
-	Convey("splitNull splits null-separated and terminated strings", t, func() {
-		So(splitNull("f 1\x00"), ShouldResemble, []string{"f 1"})
-		So(splitNull("f 1\x00f 2\x00"), ShouldResemble, []string{"f 1", "f 2"})
+	ftt.Run("splitNull splits null-separated and terminated strings", t, func(t *ftt.Test) {
+		assert.Loosely(t, splitNull("f 1\x00"), should.Resemble([]string{"f 1"}))
+		assert.Loosely(t, splitNull("f 1\x00f 2\x00"), should.Resemble([]string{"f 1", "f 2"}))
 	})
 }

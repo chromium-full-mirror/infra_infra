@@ -9,14 +9,16 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/api/v1"
 )
 
 func TestCheckSpaceMix(t *testing.T) {
-	Convey("Finds tab + single space mix", t, func() {
-		So(checkSpaceMix("test.file", "\t code", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds tab + single space mix", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("test.file", "\t code", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -52,11 +54,11 @@ func TestCheckSpaceMix(t *testing.T) {
 					Description: "Replace all whitespace at the beginning of the line with tabs",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Finds tab + multiple space mix", t, func() {
-		So(checkSpaceMix("test.file", "\t  code", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds tab + multiple space mix", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("test.file", "\t  code", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -92,11 +94,11 @@ func TestCheckSpaceMix(t *testing.T) {
 					Description: "Replace all whitespace at the beginning of the line with tabs",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Finds space + tab mix", t, func() {
-		So(checkSpaceMix("test.file", " \tcode", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds space + tab mix", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("test.file", " \tcode", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -132,11 +134,11 @@ func TestCheckSpaceMix(t *testing.T) {
 					Description: "Replace all whitespace at the beginning of the line with tabs",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Finds other whitespace mix", t, func() {
-		So(checkSpaceMix("test.file", "\t\v\f...", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds other whitespace mix", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("test.file", "\t\v\f...", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -172,29 +174,29 @@ func TestCheckSpaceMix(t *testing.T) {
 					Description: "Replace all whitespace at the beginning of the line with tabs",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Produces no comment for mid-line space mix", t, func() {
-		So(checkSpaceMix("test.file", "+ \tcode", 1), ShouldBeNil)
+	ftt.Run("Produces no comment for mid-line space mix", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("test.file", "+ \tcode", 1), should.BeNil)
 	})
 
-	Convey("Produces no comment in Makefile", t, func() {
-		So(checkSpaceMix("Makefile", "\t  some code", 1), ShouldBeNil)
+	ftt.Run("Produces no comment in Makefile", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("Makefile", "\t  some code", 1), should.BeNil)
 	})
 
-	Convey("Produces no comment in makefile with extension", t, func() {
-		So(checkSpaceMix("my.mk", "\t  some code", 1), ShouldBeNil)
+	ftt.Run("Produces no comment in makefile with extension", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("my.mk", "\t  some code", 1), should.BeNil)
 	})
 
-	Convey("Produces no comment in patch file", t, func() {
-		So(checkSpaceMix("my.patch", " \t\tsome code", 1), ShouldBeNil)
+	ftt.Run("Produces no comment in patch file", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSpaceMix("my.patch", " \t\tsome code", 1), should.BeNil)
 	})
 }
 
 func TestCheckTrailingSpace(t *testing.T) {
-	Convey("Finds single trailing space", t, func() {
-		So(checkTrailingSpace("test.file", "code ", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds single trailing space", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkTrailingSpace("test.file", "code ", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/TrailingSpace",
 			Message:   "Found trailing space",
@@ -217,11 +219,11 @@ func TestCheckTrailingSpace(t *testing.T) {
 					Description: "Get rid of trailing space",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Finds multiple trailing spaces", t, func() {
-		So(checkTrailingSpace("test.file", "code  ", 1), ShouldResemble, &tricium.Data_Comment{
+	ftt.Run("Finds multiple trailing spaces", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkTrailingSpace("test.file", "code  ", 1), should.Resemble(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/TrailingSpace",
 			Message:   "Found trailing space",
@@ -244,19 +246,19 @@ func TestCheckTrailingSpace(t *testing.T) {
 					Description: "Get rid of trailing space",
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Produces no comment in ignored file types", t, func() {
-		So(checkTrailingSpace("my.patch", " ", 1), ShouldBeNil)
-		So(checkTrailingSpace("my.pdf", " ", 1), ShouldBeNil)
+	ftt.Run("Produces no comment in ignored file types", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkTrailingSpace("my.patch", " ", 1), should.BeNil)
+		assert.Loosely(t, checkTrailingSpace("my.pdf", " ", 1), should.BeNil)
 	})
 }
 
 func TestCheckTrailingLines(t *testing.T) {
-	Convey("Finds trailing lines at the end of a file", t, func() {
-		So(analyzeFile(bufio.NewScanner(strings.NewReader("some code\nsome more code\n\n\n")),
-			"file.path"), ShouldResemble, []*tricium.Data_Comment{
+	ftt.Run("Finds trailing lines at the end of a file", t, func(t *ftt.Test) {
+		assert.Loosely(t, analyzeFile(bufio.NewScanner(strings.NewReader("some code\nsome more code\n\n\n")),
+			"file.path"), should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  "Spacey/TrailingLines",
 				Message:   "Found empty line(s) at the end of the file",
@@ -264,12 +266,12 @@ func TestCheckTrailingLines(t *testing.T) {
 				StartLine: 3,
 				EndLine:   5,
 			},
-		})
+		}))
 	})
 }
 
 func TestMergingSimilarComments(t *testing.T) {
-	Convey("Merges multiple similar comments (TrailingSpace) together into one", t, func() {
+	ftt.Run("Merges multiple similar comments (TrailingSpace) together into one", t, func(t *ftt.Test) {
 		inputComments := []*tricium.Data_Comment{
 			{
 				Path:      "test.file",
@@ -315,10 +317,10 @@ func TestMergingSimilarComments(t *testing.T) {
 		}}
 
 		organizedComments := organizeCommentsByCategory(inputComments)
-		So(mergeComments(organizedComments, "test.file"), ShouldResemble, expectedComments)
+		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Resemble(expectedComments))
 	})
 
-	Convey("Keeps similar comments separate if their number of occurrences is below set limit", t, func() {
+	ftt.Run("Keeps similar comments separate if their number of occurrences is below set limit", t, func(t *ftt.Test) {
 		inputComments := []*tricium.Data_Comment{
 			{
 				Path:      "test.file",
@@ -341,6 +343,6 @@ func TestMergingSimilarComments(t *testing.T) {
 		}
 
 		organizedComments := organizeCommentsByCategory(inputComments)
-		So(mergeComments(organizedComments, "test.file"), ShouldResemble, inputComments)
+		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Resemble(inputComments))
 	})
 }

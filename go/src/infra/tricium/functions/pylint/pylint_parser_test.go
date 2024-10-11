@@ -9,24 +9,26 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
 
 func TestPylintParsing(t *testing.T) {
 
-	Convey("parsePylintOutput", t, func() {
+	ftt.Run("parsePylintOutput", t, func(t *ftt.Test) {
 
-		Convey("Parsing empty buffer gives no warnings", func() {
+		t.Run("Parsing empty buffer gives no warnings", func(t *ftt.Test) {
 			comments, err := parsePylintOutput([]byte("[]"))
 			if err != nil {
 				t.Fatal(err)
 			}
-			So(comments, ShouldBeEmpty)
+			assert.Loosely(t, comments, should.BeEmpty)
 		})
 
-		Convey("Parsing normal pylint output generates the appropriate comments", func() {
+		t.Run("Parsing normal pylint output generates the appropriate comments", func(t *ftt.Test) {
 			output := `
 				[
 					{
@@ -154,29 +156,29 @@ func TestPylintParsing(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			So(comments, ShouldResemble, expected)
+			assert.Loosely(t, comments, should.Resemble(expected))
 		})
 	})
 
-	Convey("isFatalPylintError", t, func() {
-		Convey("Returns false for nil error", func() {
-			So(isFatalPylintError(nil), ShouldBeFalse)
+	ftt.Run("isFatalPylintError", t, func(t *ftt.Test) {
+		t.Run("Returns false for nil error", func(t *ftt.Test) {
+			assert.Loosely(t, isFatalPylintError(nil), should.BeFalse)
 		})
 
-		Convey("Returns true for non-exit error", func() {
-			So(isFatalPylintError(os.ErrNotExist), ShouldBeTrue)
+		t.Run("Returns true for non-exit error", func(t *ftt.Test) {
+			assert.Loosely(t, isFatalPylintError(os.ErrNotExist), should.BeTrue)
 		})
 
-		Convey("Returns false for non-fatal exit errors", func() {
-			So(isFatalPylintError(fakeExitError{2}), ShouldBeFalse)
-			So(isFatalPylintError(fakeExitError{4}), ShouldBeFalse)
-			So(isFatalPylintError(fakeExitError{8}), ShouldBeFalse)
-			So(isFatalPylintError(fakeExitError{16}), ShouldBeFalse)
+		t.Run("Returns false for non-fatal exit errors", func(t *ftt.Test) {
+			assert.Loosely(t, isFatalPylintError(fakeExitError{2}), should.BeFalse)
+			assert.Loosely(t, isFatalPylintError(fakeExitError{4}), should.BeFalse)
+			assert.Loosely(t, isFatalPylintError(fakeExitError{8}), should.BeFalse)
+			assert.Loosely(t, isFatalPylintError(fakeExitError{16}), should.BeFalse)
 		})
 
-		Convey("Returns true for fatal exit errors", func() {
-			So(isFatalPylintError(fakeExitError{1}), ShouldBeTrue)
-			So(isFatalPylintError(fakeExitError{32}), ShouldBeTrue)
+		t.Run("Returns true for fatal exit errors", func(t *ftt.Test) {
+			assert.Loosely(t, isFatalPylintError(fakeExitError{1}), should.BeTrue)
+			assert.Loosely(t, isFatalPylintError(fakeExitError{32}), should.BeTrue)
 		})
 	})
 }

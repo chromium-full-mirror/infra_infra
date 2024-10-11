@@ -9,41 +9,44 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
 
 func TestComment_UnpackComment(t *testing.T) {
-	Convey("Test", t, func() {
+	ftt.Run("Test", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		out := tricium.Data_Comment{}
-		Convey("success", func() {
+		t.Run("success", func(t *ftt.Test) {
 			c := Comment{}
 			data := tricium.Data_Comment{}
 			s, err := (&jsonpb.Marshaler{}).MarshalToString(&data)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			c.Comment = []byte(s)
-			So(c.UnpackComment(ctx, &out), ShouldBeNil)
+			assert.Loosely(t, c.UnpackComment(ctx, &out), should.BeNil)
 		})
-		Convey("failures", func() {
+		t.Run("failures", func(t *ftt.Test) {
 			c := Comment{}
-			So(c.UnpackComment(ctx, &out), ShouldNotBeNil)
+			assert.Loosely(t, c.UnpackComment(ctx, &out), should.NotBeNil)
 			c.Comment = []byte{0}
-			So(c.UnpackComment(ctx, &out), ShouldNotBeNil)
+			assert.Loosely(t, c.UnpackComment(ctx, &out), should.NotBeNil)
 		})
 	})
 }
 
 func TestExtractFunctionPlatform(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		functionName := "Lint"
 		platform := "UBUNTU"
 		f, p, err := ExtractFunctionPlatform(functionName + workerSeparator + platform)
-		So(err, ShouldBeNil)
-		So(f, ShouldEqual, functionName)
-		So(p, ShouldEqual, platform)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, f, should.Equal(functionName))
+		assert.Loosely(t, p, should.Equal(platform))
 		_, _, err = ExtractFunctionPlatform(functionName)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

@@ -7,65 +7,67 @@ package gerrit
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/appengine/common/track"
 )
 
 func TestCLAndPatchSetNumberFunctions(t *testing.T) {
-	Convey("Extracts patch set number from valid ref", t, func() {
-		So(PatchSetNumber("refs/changes/43/6543/7"), ShouldEqual, "7")
-		So(PatchSetNumber("refs/changes/45/12345/12"), ShouldEqual, "12")
+	ftt.Run("Extracts patch set number from valid ref", t, func(t *ftt.Test) {
+		assert.Loosely(t, PatchSetNumber("refs/changes/43/6543/7"), should.Equal("7"))
+		assert.Loosely(t, PatchSetNumber("refs/changes/45/12345/12"), should.Equal("12"))
 	})
 
-	Convey("Extracts CL number from valid ref", t, func() {
-		So(CLNumber("refs/changes/43/6543/7"), ShouldEqual, "6543")
-		So(CLNumber("refs/changes/45/12345/12"), ShouldEqual, "12345")
+	ftt.Run("Extracts CL number from valid ref", t, func(t *ftt.Test) {
+		assert.Loosely(t, CLNumber("refs/changes/43/6543/7"), should.Equal("6543"))
+		assert.Loosely(t, CLNumber("refs/changes/45/12345/12"), should.Equal("12345"))
 	})
 
-	Convey("Both numbers can be extracted in one invocation", t, func() {
+	ftt.Run("Both numbers can be extracted in one invocation", t, func(t *ftt.Test) {
 		cl, patch := ExtractCLPatchSetNumbers("refs/changes/45/12345/12")
-		So(cl, ShouldEqual, "12345")
-		So(patch, ShouldEqual, "12")
+		assert.Loosely(t, cl, should.Equal("12345"))
+		assert.Loosely(t, patch, should.Equal("12"))
 	})
 
-	Convey("When input format is invalid, empty strings are returned", t, func() {
+	ftt.Run("When input format is invalid, empty strings are returned", t, func(t *ftt.Test) {
 		cl, patch := ExtractCLPatchSetNumbers("refs/changes/1111/1")
-		So(cl, ShouldEqual, "")
-		So(patch, ShouldEqual, "")
+		assert.Loosely(t, cl, should.BeEmpty)
+		assert.Loosely(t, patch, should.BeEmpty)
 	})
 
-	Convey("Given invalid input, returns empty string", t, func() {
-		So(PatchSetNumber("foorefs/changes/45/12345/7bar"), ShouldEqual, "")
-		So(PatchSetNumber("refs/changes/45/12345"), ShouldEqual, "")
-		So(PatchSetNumber("refs/changes/45/12345/"), ShouldEqual, "")
-		So(PatchSetNumber(""), ShouldEqual, "")
+	ftt.Run("Given invalid input, returns empty string", t, func(t *ftt.Test) {
+		assert.Loosely(t, PatchSetNumber("foorefs/changes/45/12345/7bar"), should.BeEmpty)
+		assert.Loosely(t, PatchSetNumber("refs/changes/45/12345"), should.BeEmpty)
+		assert.Loosely(t, PatchSetNumber("refs/changes/45/12345/"), should.BeEmpty)
+		assert.Loosely(t, PatchSetNumber(""), should.BeEmpty)
 	})
 
-	Convey("Given invalid input, returns empty string", t, func() {
-		So(CLNumber("foorefs/changes/45/12345/7bar"), ShouldEqual, "")
-		So(CLNumber("refs/changes/45/12345"), ShouldEqual, "")
-		So(CLNumber("refs/changes/45/12345/"), ShouldEqual, "")
-		So(CLNumber(""), ShouldEqual, "")
+	ftt.Run("Given invalid input, returns empty string", t, func(t *ftt.Test) {
+		assert.Loosely(t, CLNumber("foorefs/changes/45/12345/7bar"), should.BeEmpty)
+		assert.Loosely(t, CLNumber("refs/changes/45/12345"), should.BeEmpty)
+		assert.Loosely(t, CLNumber("refs/changes/45/12345/"), should.BeEmpty)
+		assert.Loosely(t, CLNumber(""), should.BeEmpty)
 	})
 }
 
 func TestComposeCreateURL(t *testing.T) {
-	Convey("createURL with well-formed Gerrit change ref", t, func() {
-		So(
+	ftt.Run("createURL with well-formed Gerrit change ref", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			CreateURL("https://chromium-review.googlesource.com", "refs/changes/10/12310/3"),
-			ShouldEqual, "https://chromium-review.googlesource.com/c/12310/3")
+			should.Equal("https://chromium-review.googlesource.com/c/12310/3"))
 	})
 
-	Convey("with badly-formed ref returns empty string", t, func() {
-		So(CreateURL("foo.com", "xxrefs/changes/10/12310/3xx"), ShouldEqual, "")
-		So(CreateURL("foo.com", "refs/changes/123/4"), ShouldEqual, "")
+	ftt.Run("with badly-formed ref returns empty string", t, func(t *ftt.Test) {
+		assert.Loosely(t, CreateURL("foo.com", "xxrefs/changes/10/12310/3xx"), should.BeEmpty)
+		assert.Loosely(t, CreateURL("foo.com", "refs/changes/123/4"), should.BeEmpty)
 	})
 }
 
 func TestIsGerritProjectRequest(t *testing.T) {
-	Convey("Test Gerrit project request", t, func() {
-		So(IsGerritProjectRequest(&track.AnalyzeRequest{
+	ftt.Run("Test Gerrit project request", t, func(t *ftt.Test) {
+		assert.Loosely(t, IsGerritProjectRequest(&track.AnalyzeRequest{
 			ID:            123,
 			Project:       "my-luci-config-project-id",
 			GitURL:        "http://my-gerrit.com/my-project",
@@ -73,15 +75,15 @@ func TestIsGerritProjectRequest(t *testing.T) {
 			GerritHost:    "http://my-gerrit-review.com/my-project",
 			GerritProject: "my-project",
 			GerritChange:  "my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940",
-		}), ShouldBeTrue)
+		}), should.BeTrue)
 	})
 
-	Convey("Test non Gerrit project request", t, func() {
-		So(IsGerritProjectRequest(&track.AnalyzeRequest{
+	ftt.Run("Test non Gerrit project request", t, func(t *ftt.Test) {
+		assert.Loosely(t, IsGerritProjectRequest(&track.AnalyzeRequest{
 			ID:      123,
 			Project: "my-luci-config-project-id",
 			GitURL:  "http://my-gerrit.com/my-project",
 			GitRef:  "refs/changes/97/597/2",
-		}), ShouldBeFalse)
+		}), should.BeFalse)
 	})
 }

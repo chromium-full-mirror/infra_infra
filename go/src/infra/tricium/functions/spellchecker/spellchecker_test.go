@@ -9,7 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -20,7 +22,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 	cp := loadCommentFormats()
 	dict = loadDict()
 
-	Convey("Analyzing simple file with one misspelling generates one comment", t, func() {
+	ftt.Run("Analyzing simple file with one misspelling generates one comment", t, func(t *ftt.Test) {
 		fileContent := "/* coment */"
 		expected := &tricium.Data_Results{
 			Comments: []*tricium.Data_Comment{
@@ -52,13 +54,13 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 		}
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("Analyzing simple file with one misspelling generates one comment", t, func() {
+	ftt.Run("Analyzing simple file with one misspelling generates one comment", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader("Updat the thing")), "", true, nil, results)
-		So(results, ShouldResemble, &tricium.Data_Results{
+		assert.Loosely(t, results, should.Resemble(&tricium.Data_Results{
 			Comments: []*tricium.Data_Comment{
 				{
 					Path:      "",
@@ -85,31 +87,31 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 					},
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("Words in all caps are not checked", t, func() {
+	ftt.Run("Words in all caps are not checked", t, func(t *ftt.Test) {
 		fileContent := "/* DONT COMENT */"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Words in URLs are not checked", t, func() {
+	ftt.Run("Words in URLs are not checked", t, func(t *ftt.Test) {
 		fileContent := "/* See: https://exmaple.com/DontChek/wurds%20heare?x=NdAn43" +
 			"And see also: http://exmaple.com/moar-wurds#framgent */"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Words in TODO/FIXME notes are not flagged as misspellings.", t, func() {
+	ftt.Run("Words in TODO/FIXME notes are not flagged as misspellings.", t, func(t *ftt.Test) {
 		// Note that just the part in the TODO is not checked; the comment
 		// after the TODO is still checked.
 		fileContent := "TODO(nams): do someting\nFIXME(zuser): fix me\n"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.Resemble([]*tricium.Data_Comment{
 			{
 				Path:      "test.txt",
 				Message:   `"someting" is a possible misspelling of "something".`,
@@ -134,98 +136,98 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 					},
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("TODO notes are not checcked even if there's no space beforehand.", t, func() {
+	ftt.Run("TODO notes are not checcked even if there's no space beforehand.", t, func(t *ftt.Test) {
 		fileContent := "//TODO(exmaple): ..."
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Email addresses are not checked.", t, func() {
+	ftt.Run("Email addresses are not checked.", t, func(t *ftt.Test) {
 		fileContent := "nams@chromium.org"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Email addresses are ignored regardless of prefix part.", t, func() {
+	ftt.Run("Email addresses are ignored regardless of prefix part.", t, func(t *ftt.Test) {
 		fileContent := "...someting@chromium.org... \n\nTBR=alph@chromium.org\n"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("URLs are ignored regardless of prefix part.", t, func() {
+	ftt.Run("URLs are ignored regardless of prefix part.", t, func(t *ftt.Test) {
 		fileContent := "URL: (https://exmaple.com/urrl)"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("TODOs are ignored even if there's no space beforehand", t, func() {
+	ftt.Run("TODOs are ignored even if there's no space beforehand", t, func(t *ftt.Test) {
 		fileContent := "//TODO(exmaple): ..."
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Very short words are not checked, including in camel case", t, func() {
+	ftt.Run("Very short words are not checked, including in camel case", t, func(t *ftt.Test) {
 		fileContent := ("wiAksYuo aa qstAbt ThsAdn tht Ue WihyFo AcnOtFof")
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Very long words with no whitespace are not checked", t, func() {
+	ftt.Run("Very long words with no whitespace are not checked", t, func(t *ftt.Test) {
 		fileContent := ("wTichQtCwYkKxWiyhQCAJGBBUXYWYExmapleFTich")
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Words with non-ASCII characters are not split up", t, func() {
+	ftt.Run("Words with non-ASCII characters are not split up", t, func(t *ftt.Test) {
 		fileContent := "... François ..."
 		// Example from crbug.com/996242.
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Words with apostrophes are not split up", t, func() {
+	ftt.Run("Words with apostrophes are not split up", t, func(t *ftt.Test) {
 		fileContent := "... wasn't ..."
 		// Example from crbug.com/996804.
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 
 		// The same applies for "smart quote" apostrophes; from crbug.com/1238795.
 		fileContent = "... wasn’t ..."
 		results = &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Words in the ignore list are ignored.", t, func() {
+	ftt.Run("Words in the ignore list are ignored.", t, func(t *ftt.Test) {
 		fileContent := ("Errorprone referers supercede abbout vertexes;\n" +
 			"And names like Donn Sargent, Wen Chang, Beng, Claus Wight, alle alph")
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(len(results.Comments), ShouldEqual, 1)
-		So(results.Comments[0].Message, ShouldEqual, `"abbout" is a possible misspelling of "about" or "abbot".`)
+		assert.Loosely(t, len(results.Comments), should.Equal(1))
+		assert.Loosely(t, results.Comments[0].Message, should.Equal(`"abbout" is a possible misspelling of "about" or "abbot".`))
 	})
 
-	Convey("Words previously in the ignorelist but no longer needed are still not flagged.", t, func() {
+	ftt.Run("Words previously in the ignorelist but no longer needed are still not flagged.", t, func(t *ftt.Test) {
 		fileContent := ("Short words: bae ba cas dur ect gae iam ith lod mut que te tho tim wan wen yau\n" +
 			"And copyable cloneable files' process' subprocess' thru wontfix; Anny amin bengr.\n")
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results.Comments, ShouldBeEmpty)
+		assert.Loosely(t, results.Comments, should.BeEmpty)
 	})
 
-	Convey("Analyzing a .c file with several comments.", t, func() {
+	ftt.Run("Analyzing a .c file with several comments.", t, func(t *ftt.Test) {
 		fileContent := "// The misspelling iminent is mapped to three possible fixes.\n" +
 			"This is not in a comment so aberation shouldn't be flagged.\n" +
 			"// The word wanna has a reason to be disabled, so isn't flagged\n" +
@@ -313,10 +315,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("One line with both types of comment patterns", t, func() {
+	ftt.Run("One line with both types of comment patterns", t, func(t *ftt.Test) {
 		fileContent := "/*beggining//code*//*beccause*/\n"
 
 		expected := &tricium.Data_Results{
@@ -374,10 +376,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("Block comment across multiple lines", t, func() {
+	ftt.Run("Block comment across multiple lines", t, func(t *ftt.Test) {
 		fileContent := "/*An\nabandonded\ncalcualtion.*/\n"
 
 		expected := &tricium.Data_Results{
@@ -435,10 +437,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("One line comment with // separating misspelled words", t, func() {
+	ftt.Run("One line comment with // separating misspelled words", t, func(t *ftt.Test) {
 		fileContent := "//Doccument//divertion, docrines\ndoas\n"
 
 		expected := &tricium.Data_Results{
@@ -520,10 +522,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("All words in a text file are analyzed", t, func() {
+	ftt.Run("All words in a text file are analyzed", t, func(t *ftt.Test) {
 		fileContent := "Familes\nfaund\nnormal\n"
 
 		expected := &tricium.Data_Results{
@@ -594,10 +596,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("Analyzing HTML file generates appropriate comments", t, func() {
+	ftt.Run("Analyzing HTML file generates appropriate comments", t, func(t *ftt.Test) {
 		fileContent := "<!DOCTYPE html>\n<html>\n<head>\n<!--coment-->\n</head>\n</html>\n"
 
 		expected := &tricium.Data_Results{
@@ -631,10 +633,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.html", false, cp[".html"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("Same misspelling multiple times in one line", t, func() {
+	ftt.Run("Same misspelling multiple times in one line", t, func(t *ftt.Test) {
 		fileContent := "//twpo twpo"
 
 		expected := &tricium.Data_Results{
@@ -692,10 +694,10 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 	})
 
-	Convey("Words joined in camelcase should be checked individually", t, func() {
+	ftt.Run("Words joined in camelcase should be checked individually", t, func(t *ftt.Test) {
 		fileContent := "//camelCaseExmaple comment"
 
 		expected := &tricium.Data_Results{
@@ -729,14 +731,14 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		So(results, ShouldResemble, expected)
+		assert.Loosely(t, results, should.Resemble(expected))
 
-		Convey("unless the entire word is in the ignore list", func() {
+		t.Run("unless the entire word is in the ignore list", func(t *ftt.Test) {
 			fileContent := "token WontFix is OK"
 
 			results := &tricium.Data_Results{}
 			analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-			So(results.Comments, ShouldBeEmpty)
+			assert.Loosely(t, results.Comments, should.BeEmpty)
 		})
 	})
 }
@@ -744,57 +746,57 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 func TestGettingCommentFormat(t *testing.T) {
 	cp := loadCommentFormats()
 
-	Convey("The appropriate comment formats are determined from the file extensions", t, func() {
-		So(cp[".py"], ShouldResemble, &commentFormat{
+	ftt.Run("The appropriate comment formats are determined from the file extensions", t, func(t *ftt.Test) {
+		assert.Loosely(t, cp[".py"], should.Resemble(&commentFormat{
 			LineStart:  "#",
 			BlockStart: `"""`,
 			BlockEnd:   `"""`,
-		})
+		}))
 
-		So(cp[".c"], ShouldResemble, &commentFormat{
+		assert.Loosely(t, cp[".c"], should.Resemble(&commentFormat{
 			LineStart:  "//",
 			BlockStart: `/*`,
 			BlockEnd:   `*/`,
-		})
+		}))
 
-		So(cp[".html"], ShouldResemble, &commentFormat{
+		assert.Loosely(t, cp[".html"], should.Resemble(&commentFormat{
 			BlockStart: `<!--`,
 			BlockEnd:   `-->`,
-		})
+		}))
 	})
 }
 
 func TestCommentCaseMatching(t *testing.T) {
-	Convey("matchCase converts to title-case if target appears to be title case", t, func() {
-		So(matchCase("myword", "Myword"), ShouldEqual, "Myword")
-		So(matchCase("myword", "TarGet"), ShouldEqual, "Myword")
+	ftt.Run("matchCase converts to title-case if target appears to be title case", t, func(t *ftt.Test) {
+		assert.Loosely(t, matchCase("myword", "Myword"), should.Equal("Myword"))
+		assert.Loosely(t, matchCase("myword", "TarGet"), should.Equal("Myword"))
 	})
 
-	Convey("matchCase doesn't convert case if the target has irregular case", t, func() {
-		So(matchCase("myword", "tArGeT"), ShouldEqual, "myword")
+	ftt.Run("matchCase doesn't convert case if the target has irregular case", t, func(t *ftt.Test) {
+		assert.Loosely(t, matchCase("myword", "tArGeT"), should.Equal("myword"))
 	})
 
-	Convey("words with apostrophes are capitalized as expected", t, func() {
-		So(matchCase("don't", "Target"), ShouldEqual, "Don't")
+	ftt.Run("words with apostrophes are capitalized as expected", t, func(t *ftt.Test) {
+		assert.Loosely(t, matchCase("don't", "Target"), should.Equal("Don't"))
 	})
 }
 
 func TestStripLastParagraph(t *testing.T) {
-	Convey("stripFooterParagraph removes last paragraph with footers", t, func() {
-		So(
+	ftt.Run("stripFooterParagraph removes last paragraph with footers", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			stripFooterParagraph("Summary\n\ntext\n\nReviewed-by: Personn Naime\n\n"),
-			ShouldEqual, "Summary\n\ntext")
+			should.Equal("Summary\n\ntext"))
 	})
 
-	Convey("stripFooterParagraph doesn't remove single-paragraph message", t, func() {
-		So(
+	ftt.Run("stripFooterParagraph doesn't remove single-paragraph message", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			stripFooterParagraph("Summary\ntext\n"),
-			ShouldEqual, "Summary\ntext\n")
+			should.Equal("Summary\ntext\n"))
 	})
 
-	Convey("stripFooterParagraph handles non-empty 'blank lines'", t, func() {
-		So(
+	ftt.Run("stripFooterParagraph handles non-empty 'blank lines'", t, func(t *ftt.Test) {
+		assert.Loosely(t,
 			stripFooterParagraph("Summary\n \nChange-Id: I12342\nBug: 1234\n"),
-			ShouldEqual, "Summary")
+			should.Equal("Summary"))
 	})
 }

@@ -7,8 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	admin "infra/tricium/api/admin/v1"
@@ -18,7 +19,7 @@ import (
 )
 
 func TestWorkerLaunchedRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		helloUbuntu := "Hello_Ubuntu"
 
@@ -36,56 +37,56 @@ func TestWorkerLaunchedRequest(t *testing.T) {
 
 		// Add pending workflow run entity.
 		request := &track.AnalyzeRequest{}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		workflowRun := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, workflowRun), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, workflowRun), should.BeNil)
 		workflowRunKey := ds.KeyForObj(ctx, workflowRun)
-		So(ds.Put(ctx, &track.WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkflowRunResult{
 			ID:     1,
 			Parent: workflowRunKey,
 			State:  tricium.State_PENDING,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark workflow as launched and add tracking entities for workers.
 		err := workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
 			RunId: request.ID,
 		}, workflowProvider)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Mark worker as launched.
 		err = workerLaunched(ctx, &admin.WorkerLaunchedRequest{
 			RunId:  request.ID,
 			Worker: helloUbuntu,
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Marks worker as launched", func() {
+		t.Run("Marks worker as launched", func(t *ftt.Test) {
 			functionName, _, err := track.ExtractFunctionPlatform(helloUbuntu)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			functionRunKey := ds.NewKey(ctx, "FunctionRun", functionName, 0, workflowRunKey)
 			workerKey := ds.NewKey(ctx, "WorkerRun", helloUbuntu, 0, functionRunKey)
 			wr := &track.WorkerRunResult{ID: 1, Parent: workerKey}
 			err = ds.Get(ctx, wr)
-			So(err, ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_RUNNING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_RUNNING))
 			fr := &track.FunctionRunResult{ID: 1, Parent: functionRunKey}
 			err = ds.Get(ctx, fr)
-			So(err, ShouldBeNil)
-			So(fr.State, ShouldEqual, tricium.State_RUNNING)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, fr.State, should.Equal(tricium.State_RUNNING))
 		})
 
-		Convey("Validates request", func() {
+		t.Run("Validates request", func(t *ftt.Test) {
 			// Validate run ID.
 			s := &trackerServer{}
 			_, err = s.WorkerLaunched(ctx, &admin.WorkerLaunchedRequest{})
-			So(err.Error(), ShouldEqual, "rpc error: code = InvalidArgument desc = missing run ID")
+			assert.Loosely(t, err.Error(), should.Equal("rpc error: code = InvalidArgument desc = missing run ID"))
 
 			// Validate worker.
 			_, err = s.WorkerLaunched(ctx, &admin.WorkerLaunchedRequest{
 				RunId: request.ID,
 			})
-			So(err.Error(), ShouldEqual, "rpc error: code = InvalidArgument desc = missing worker")
+			assert.Loosely(t, err.Error(), should.Equal("rpc error: code = InvalidArgument desc = missing worker"))
 
 			// Validate buildbucket.
 			_, err = s.WorkerLaunched(ctx, &admin.WorkerLaunchedRequest{
@@ -93,7 +94,7 @@ func TestWorkerLaunchedRequest(t *testing.T) {
 				Worker:             helloUbuntu,
 				BuildbucketBuildId: 12,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

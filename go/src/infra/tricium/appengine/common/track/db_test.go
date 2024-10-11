@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -54,123 +55,123 @@ func (*mockConfigProvider) GetAllProjectConfigs(c context.Context) (map[string]*
 }
 
 func TestFetchRecentRequests(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
 		ctx := triciumtest.Context()
 
 		request := &AnalyzeRequest{Project: project}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 
-		Convey("FetchRecentRequests ok user", func() {
+		t.Run("FetchRecentRequests ok user", func(t *ftt.Test) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity:       okACLUser,
 				IdentityGroups: []string{okACLGroup},
 			})
 			rs, err := FetchRecentRequests(ctx, &mockConfigProvider{})
-			So(err, ShouldBeNil)
-			So(rs, ShouldResemble, []*AnalyzeRequest{request})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rs, should.Resemble([]*AnalyzeRequest{request}))
 		})
 
-		Convey("FetchRecentRequests other user", func() {
+		t.Run("FetchRecentRequests other user", func(t *ftt.Test) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: "user:other@example.com",
 			})
 			rs, err := FetchRecentRequests(ctx, &mockConfigProvider{})
-			So(err, ShouldBeNil)
-			So(len(rs), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(rs), should.BeZero)
 		})
 	})
 }
 
 func TestTrackHelperFunctions(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
 		ctx := triciumtest.Context()
 
 		// Add completed request.
 		request := &AnalyzeRequest{}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
-		So(ds.Put(ctx, &AnalyzeRequestResult{
+		assert.Loosely(t, ds.Put(ctx, &AnalyzeRequestResult{
 			ID:     1,
 			Parent: requestKey,
 			State:  tricium.State_SUCCESS,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		functionName := "Hello"
 		run := &WorkflowRun{
 			ID:        1,
 			Parent:    requestKey,
 			Functions: []string{functionName},
 		}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &WorkflowRunResult{
 			ID:     1,
 			Parent: runKey,
 			State:  tricium.State_SUCCESS,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		platform := tricium.Platform_UBUNTU
 		functionKey := ds.NewKey(ctx, "FunctionRun", functionName, 0, runKey)
 		workerName := functionName + "_UBUNTU"
-		So(ds.Put(ctx, &FunctionRun{
+		assert.Loosely(t, ds.Put(ctx, &FunctionRun{
 			ID:      functionName,
 			Parent:  runKey,
 			Workers: []string{workerName},
-		}), ShouldBeNil)
+		}), should.BeNil)
 		functionRunResult := &FunctionRunResult{
 			ID:     1,
 			Parent: functionKey,
 			State:  tricium.State_SUCCESS,
 		}
-		So(ds.Put(ctx, functionRunResult), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, functionRunResult), should.BeNil)
 		workerKey := ds.NewKey(ctx, "WorkerRun", workerName, 0, functionKey)
-		So(ds.Put(ctx, &WorkerRun{
+		assert.Loosely(t, ds.Put(ctx, &WorkerRun{
 			ID:       workerName,
 			Parent:   functionKey,
 			Platform: platform,
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &Comment{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &Comment{
 			Parent:  workerKey,
 			Comment: []byte("Hello comment"),
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		Convey("FetchFunctionRuns with results", func() {
+		t.Run("FetchFunctionRuns with results", func(t *ftt.Test) {
 			functionRuns, err := FetchFunctionRuns(ctx, request.ID)
-			So(len(functionRuns), ShouldEqual, 1)
-			So(functionRuns[0].ID, ShouldEqual, "Hello")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(functionRuns), should.Equal(1))
+			assert.Loosely(t, functionRuns[0].ID, should.Equal("Hello"))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("FetchFunctionRuns without results", func() {
+		t.Run("FetchFunctionRuns without results", func(t *ftt.Test) {
 			functionRuns, err := FetchFunctionRuns(ctx, request.ID+1)
-			So(len(functionRuns), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(functionRuns), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("FetchComments with results", func() {
+		t.Run("FetchComments with results", func(t *ftt.Test) {
 			comments, err := FetchComments(ctx, request.ID)
-			So(len(comments), ShouldEqual, 1)
-			So(string(comments[0].Comment), ShouldEqual, "Hello comment")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(comments), should.Equal(1))
+			assert.Loosely(t, string(comments[0].Comment), should.Equal("Hello comment"))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("FetchComments without results", func() {
+		t.Run("FetchComments without results", func(t *ftt.Test) {
 			comments, err := FetchComments(ctx, request.ID+1)
-			So(len(comments), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(comments), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("FetchWorkerRuns with results", func() {
+		t.Run("FetchWorkerRuns with results", func(t *ftt.Test) {
 			workerRuns, err := FetchWorkerRuns(ctx, request.ID)
-			So(len(workerRuns), ShouldEqual, 1)
-			So(workerRuns[0].ID, ShouldEqual, "Hello_UBUNTU")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(workerRuns), should.Equal(1))
+			assert.Loosely(t, workerRuns[0].ID, should.Equal("Hello_UBUNTU"))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("FetchWorkerRuns without results", func() {
+		t.Run("FetchWorkerRuns without results", func(t *ftt.Test) {
 			workerRuns, err := FetchWorkerRuns(ctx, request.ID+1)
-			So(len(workerRuns), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(workerRuns), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }

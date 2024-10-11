@@ -7,8 +7,9 @@ package config
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/memory"
 
@@ -116,92 +117,92 @@ var invalidConfig = map[config.Set]memory.Files{
 }
 
 func TestUpdateConfigs(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
 		ctx := triciumtest.Context()
 		ctx = WithConfigService(ctx, memory.New(exampleConfig))
 
-		So(common.AppID(ctx), ShouldEqual, "app")
+		assert.Loosely(t, common.AppID(ctx), should.Equal("app"))
 
-		Convey("Configs are not present before updating", func() {
+		t.Run("Configs are not present before updating", func(t *ftt.Test) {
 			configs, err := getAllProjectConfigs(ctx)
-			So(err, ShouldBeNil)
-			So(len(configs), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(configs), should.BeZero)
 
 			revs, err := getStoredProjectConfigRevisions(ctx)
-			So(err, ShouldBeNil)
-			So(revs, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revs, should.BeEmpty)
 
 			rev, err := getStoredServiceConfigRevision(ctx)
-			So(err, ShouldBeNil)
-			So(rev, ShouldEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rev, should.BeEmpty)
 
 			sc, err := getServiceConfig(ctx)
-			So(err, ShouldNotBeNil)
-			So(sc, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, sc, should.BeNil)
 		})
 
-		Convey("Configs are updated, first time", func() {
-			So(UpdateAllConfigs(ctx), ShouldBeNil)
+		t.Run("Configs are updated, first time", func(t *ftt.Test) {
+			assert.Loosely(t, UpdateAllConfigs(ctx), should.BeNil)
 			configs, err := getAllProjectConfigs(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(len(configs), ShouldResemble, 2)
-			So(configs["infra"], ShouldNotBeNil)
-			So(configs["playground"], ShouldNotBeNil)
+			assert.Loosely(t, len(configs), should.Match(2))
+			assert.Loosely(t, configs["infra"], should.NotBeNil)
+			assert.Loosely(t, configs["playground"], should.NotBeNil)
 
 			revs, err := getStoredProjectConfigRevisions(ctx)
-			So(err, ShouldBeNil)
-			So(revs, ShouldResemble, map[string]string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revs, should.Resemble(map[string]string{
 				"infra":      "ac092d7b6d2c54346ac4ba0027580dbf31183abe",
 				"playground": "59673f3521611145fd45e35a2d9e8e2051e7de53",
-			})
+			}))
 
 			rev, err := getStoredServiceConfigRevision(ctx)
-			So(err, ShouldBeNil)
-			So(rev, ShouldEqual, "6100757dc507346393ee9bfa4c61ae1f2b6935b6")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rev, should.Equal("6100757dc507346393ee9bfa4c61ae1f2b6935b6"))
 
 			sc, err := getServiceConfig(ctx)
-			So(err, ShouldBeNil)
-			So(sc, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sc, should.NotBeNil)
 		})
 
-		Convey("Configs are updated when some configs already set", func() {
-			So(setProjectConfig(ctx, "old-project", "abcd", &tricium.ProjectConfig{
+		t.Run("Configs are updated when some configs already set", func(t *ftt.Test) {
+			assert.Loosely(t, setProjectConfig(ctx, "old-project", "abcd", &tricium.ProjectConfig{
 				ServiceAccount: "foo@appspot.gserviceaccount.com",
-			}), ShouldBeNil)
-			So(setProjectConfig(ctx, "infra", "old-version", &tricium.ProjectConfig{
+			}), should.BeNil)
+			assert.Loosely(t, setProjectConfig(ctx, "infra", "old-version", &tricium.ProjectConfig{
 				ServiceAccount: "foo@appspot.gserviceaccount.com",
-			}), ShouldBeNil)
-			So(setServiceConfig(ctx, "old-version-service-config", &tricium.ServiceConfig{}), ShouldBeNil)
+			}), should.BeNil)
+			assert.Loosely(t, setServiceConfig(ctx, "old-version-service-config", &tricium.ServiceConfig{}), should.BeNil)
 
 			revs, err := getStoredProjectConfigRevisions(ctx)
-			So(err, ShouldBeNil)
-			So(revs, ShouldResemble, map[string]string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revs, should.Resemble(map[string]string{
 				"infra":       "old-version",
 				"old-project": "abcd",
-			})
+			}))
 			rev, err := getStoredServiceConfigRevision(ctx)
-			So(err, ShouldBeNil)
-			So(rev, ShouldEqual, "old-version-service-config")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rev, should.Equal("old-version-service-config"))
 
-			So(UpdateAllConfigs(ctx), ShouldBeNil)
+			assert.Loosely(t, UpdateAllConfigs(ctx), should.BeNil)
 
 			revs, err = getStoredProjectConfigRevisions(ctx)
-			So(err, ShouldBeNil)
-			So(revs, ShouldResemble, map[string]string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revs, should.Resemble(map[string]string{
 				"infra":      "ac092d7b6d2c54346ac4ba0027580dbf31183abe",
 				"playground": "59673f3521611145fd45e35a2d9e8e2051e7de53",
-			})
+			}))
 			rev, err = getStoredServiceConfigRevision(ctx)
-			So(err, ShouldBeNil)
-			So(rev, ShouldEqual, "6100757dc507346393ee9bfa4c61ae1f2b6935b6")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, rev, should.Equal("6100757dc507346393ee9bfa4c61ae1f2b6935b6"))
 		})
 
-		Convey("Updating an invalid config", func() {
+		t.Run("Updating an invalid config", func(t *ftt.Test) {
 			ctx := WithConfigService(triciumtest.Context(), memory.New(invalidConfig))
-			So(common.AppID(ctx), ShouldEqual, "app")
-			So(UpdateAllConfigs(ctx), ShouldNotBeNil)
+			assert.Loosely(t, common.AppID(ctx), should.Equal("app"))
+			assert.Loosely(t, UpdateAllConfigs(ctx), should.NotBeNil)
 		})
 	})
 }

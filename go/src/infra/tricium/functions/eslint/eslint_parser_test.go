@@ -8,22 +8,24 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/api/v1"
 )
 
 func TestEslintParsingFunctions(t *testing.T) {
 
-	Convey("readESLintOutput", t, func() {
+	ftt.Run("readESLintOutput", t, func(t *ftt.Test) {
 
-		Convey("Parsing empty file gives no warnings", func() {
+		t.Run("Parsing empty file gives no warnings", func(t *ftt.Test) {
 			r := strings.NewReader(`[{"filePath":"/abs/path/to/input/test.js", "messages":[]}]`)
 			results := readESLintOutput(r, "/abs/path/to/input")
-			So(results.Comments, ShouldBeEmpty)
+			assert.Loosely(t, results.Comments, should.BeEmpty)
 		})
 
-		Convey("Parsing normal eslint output generates the appropriate comments", func() {
+		t.Run("Parsing normal eslint output generates the appropriate comments", func(t *ftt.Test) {
 			output := `[{"filePath":"/x/y/in/test.js",` +
 				`"messages":[{"ruleId":"no-unused-vars","severity":2,"message":"'addOne' is defined but never used.",` +
 				`"line":1,"column":10,"nodeType":"Identifier","endLine":1,"endColumn":16}],` +
@@ -58,10 +60,10 @@ func TestEslintParsingFunctions(t *testing.T) {
 			}
 
 			results := readESLintOutput(strings.NewReader(output), "/x/y/in")
-			So(results, ShouldResemble, expected)
+			assert.Loosely(t, results, should.Resemble(expected))
 		})
 
-		Convey("ESLint message with no rule gives comment with no disable message", func() {
+		t.Run("ESLint message with no rule gives comment with no disable message", func(t *ftt.Test) {
 			output := `[{"filePath":"/x/y/in/test.js",` +
 				`"messages":[{"severity":2,"message":"Parser error, eslint could not continue"}]}]`
 			results := readESLintOutput(strings.NewReader(output), "/x/y/in")
@@ -74,7 +76,7 @@ func TestEslintParsingFunctions(t *testing.T) {
 						Message:  "Parser error, eslint could not continue",
 					},
 				}}
-			So(results, ShouldResemble, expected)
+			assert.Loosely(t, results, should.Resemble(expected))
 		})
 	})
 }

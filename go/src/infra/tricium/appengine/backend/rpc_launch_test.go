@@ -7,8 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
@@ -26,7 +27,7 @@ const (
 )
 
 func TestLaunchRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		cp := &mockConfigProvider{
@@ -106,7 +107,7 @@ func TestLaunchRequest(t *testing.T) {
 		}
 
 		runID := int64(123456789)
-		Convey("Launch request", func() {
+		t.Run("Launch request", func(t *ftt.Test) {
 			err := launch(ctx, &admin.LaunchRequest{
 				RunId:   runID,
 				Project: project,
@@ -117,19 +118,19 @@ func TestLaunchRequest(t *testing.T) {
 				},
 				CommitMessage: "CL summary\n\nBug: 123\n",
 			}, cp, common.MockPubSub)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("Enqueues track request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), ShouldEqual, 1)
+			t.Run("Enqueues track request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), should.Equal(1))
 			})
 
-			Convey("Stores workflow config", func() {
+			t.Run("Stores workflow config", func(t *ftt.Test) {
 				wf := &config.Workflow{ID: runID}
-				So(ds.Get(ctx, wf), ShouldBeNil)
+				assert.Loosely(t, ds.Get(ctx, wf), should.BeNil)
 			})
 
-			Convey("Enqueues driver requests", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 2)
+			t.Run("Enqueues driver requests", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.Equal(2))
 			})
 
 			// Check guard: one more launch request with the same run ID results in no added tasks.
@@ -143,10 +144,10 @@ func TestLaunchRequest(t *testing.T) {
 				},
 				CommitMessage: "CL summary\n\nBug: 123\n",
 			}, config.MockProvider, common.MockPubSub)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("Succeeding launch request for the same run enqueues no track request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), ShouldEqual, 1)
+			t.Run("Succeeding launch request for the same run enqueues no track request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), should.Equal(1))
 			})
 
 		})

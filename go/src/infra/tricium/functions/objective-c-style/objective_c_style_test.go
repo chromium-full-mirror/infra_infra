@@ -7,9 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -27,22 +27,22 @@ const (
 
 func TestGetPrefix(t *testing.T) {
 
-	Convey("Produces no comment for file with correct function names", t, func() {
-		So(checkSourceFile("", goodGet), ShouldBeNil)
+	ftt.Run("Produces no comment for file with correct function names", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSourceFile("", goodGet), should.BeNil)
 	})
 
-	Convey("Produces no comment for file with correct delegate specifiers", t, func() {
-		So(checkSourceFile("", goodDelegate), ShouldBeNil)
+	ftt.Run("Produces no comment for file with correct delegate specifiers", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSourceFile("", goodDelegate), should.BeNil)
 	})
 
-	Convey("Produces no comment for file with correct delegate specifiers", t, func() {
-		So(checkSourceFile("", goodProperty), ShouldBeNil)
+	ftt.Run("Produces no comment for file with correct delegate specifiers", t, func(t *ftt.Test) {
+		assert.Loosely(t, checkSourceFile("", goodProperty), should.BeNil)
 	})
 
-	Convey("Flags strong delegates", t, func() {
+	ftt.Run("Flags strong delegates", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badDelegate)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, []*tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
 
 			{
 				Category:  "ObjectiveCStyle/StrongDelegate",
@@ -164,13 +164,13 @@ func TestGetPrefix(t *testing.T) {
 				StartChar: 0,
 				EndChar:   46,
 			},
-		})
+		}))
 	})
 
-	Convey("Flags properties without explicit ownership", t, func() {
+	ftt.Run("Flags properties without explicit ownership", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badProperty)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, []*tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
 
 			{
 				Category:  "ObjectiveCStyle/ExplicitOwnership",
@@ -217,12 +217,12 @@ func TestGetPrefix(t *testing.T) {
 				StartChar: 0,
 				EndChar:   44,
 			},
-		})
+		}))
 	})
-	Convey("Flags functions have unnecessary get prefixes", t, func() {
+	ftt.Run("Flags functions have unnecessary get prefixes", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badGet)
-		So(c, ShouldNotBeNil)
-		So(c, ShouldResembleProto, []*tricium.Data_Comment{
+		assert.Loosely(t, c, should.NotBeNil)
+		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  "ObjectiveCStyle/Get",
 				Message:   "The use of \"get\" is unnecessary, unless one or more values are returned indirectly. See: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingMethods.html#:~:text=The%20use%20of%20%22get%22%20is%20unnecessary,%20unless%20one%20or%20more%20values%20are%20returned%20indirectly.",
@@ -260,6 +260,6 @@ func TestGetPrefix(t *testing.T) {
 				StartChar: 0,
 				EndChar:   21,
 			},
-		})
+		}))
 	})
 }

@@ -7,13 +7,15 @@ package config
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/api/v1"
 )
 
 func TestValidate(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		functionName := "FunctionName"
 		platform := tricium.Platform_UBUNTU
 		sd := &tricium.ServiceConfig{
@@ -57,7 +59,7 @@ func TestValidate(t *testing.T) {
 			},
 		}
 
-		Convey("Supported function platform OK", func() {
+		t.Run("Supported function platform OK", func(t *ftt.Test) {
 			err := Validate(sd, &tricium.ProjectConfig{
 				Functions: functions,
 				Selections: []*tricium.Selection{
@@ -67,10 +69,10 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Non-supported function platform causes error", func() {
+		t.Run("Non-supported function platform causes error", func(t *ftt.Test) {
 			err := Validate(sd, &tricium.ProjectConfig{
 				Functions: functions,
 				Selections: []*tricium.Selection{
@@ -80,13 +82,13 @@ func TestValidate(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
 
 func TestMergeFunctions(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		functionName := "Analyzer"
 		platform := tricium.Platform_UBUNTU
 		sc := &tricium.ServiceConfig{
@@ -108,43 +110,43 @@ func TestMergeFunctions(t *testing.T) {
 			},
 		}
 
-		Convey("Project function def without service def must have data deps", func() {
+		t.Run("Project function def without service def must have data deps", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, nil, &tricium.Function{
 				Type: tricium.Function_ANALYZER,
 				Name: functionName,
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Service function def must have data deps", func() {
+		t.Run("Service function def must have data deps", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, &tricium.Function{
 				Type: tricium.Function_ANALYZER,
 				Name: functionName,
 			}, nil)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("No service function config is OK", func() {
+		t.Run("No service function config is OK", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, nil, &tricium.Function{
 				Type:     tricium.Function_ANALYZER,
 				Name:     functionName,
 				Needs:    tricium.Data_GIT_FILE_DETAILS,
 				Provides: tricium.Data_RESULTS,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("No project function config is OK", func() {
+		t.Run("No project function config is OK", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, &tricium.Function{
 				Type:     tricium.Function_ANALYZER,
 				Name:     functionName,
 				Needs:    tricium.Data_GIT_FILE_DETAILS,
 				Provides: tricium.Data_RESULTS,
 			}, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Change of service data deps not allowed", func() {
+		t.Run("Change of service data deps not allowed", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, &tricium.Function{
 				Type:     tricium.Function_ANALYZER,
 				Name:     functionName,
@@ -155,15 +157,15 @@ func TestMergeFunctions(t *testing.T) {
 				Name:     functionName,
 				Provides: tricium.Data_FILES,
 			})
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Neither service nor function config not OK", func() {
+		t.Run("Neither service nor function config not OK", func(t *ftt.Test) {
 			_, err := mergeFunction(functionName, sc, nil, nil)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Project details override service details", func() {
+		t.Run("Project details override service details", func(t *ftt.Test) {
 			user := "someone"
 			comp := "someonesComp"
 			a, err := mergeFunction(functionName, sc, &tricium.Function{
@@ -207,18 +209,18 @@ func TestMergeFunctions(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(a, ShouldNotBeNil)
-			So(a.Owner, ShouldEqual, user)
-			So(a.MonorailComponent, ShouldEqual, comp)
-			So(len(a.PathFilters), ShouldEqual, 1)
-			So(len(a.Impls), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a, should.NotBeNil)
+			assert.Loosely(t, a.Owner, should.Equal(user))
+			assert.Loosely(t, a.MonorailComponent, should.Equal(comp))
+			assert.Loosely(t, len(a.PathFilters), should.Equal(1))
+			assert.Loosely(t, len(a.Impls), should.Equal(1))
 		})
 	})
 }
 
 func TestMergeImpls(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		si := []*tricium.Impl{
 			{
 				ProvidesForPlatform: tricium.Platform_UBUNTU,
@@ -235,9 +237,9 @@ func TestMergeImpls(t *testing.T) {
 				ProvidesForPlatform: tricium.Platform_MAC,
 			},
 		}
-		Convey("Merges impls with override", func() {
+		t.Run("Merges impls with override", func(t *ftt.Test) {
 			mi := mergeImpls(si, pi)
-			So(len(mi), ShouldEqual, 3)
+			assert.Loosely(t, len(mi), should.Equal(3))
 		})
 	})
 }

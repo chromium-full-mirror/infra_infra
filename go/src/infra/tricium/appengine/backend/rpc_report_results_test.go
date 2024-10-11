@@ -8,8 +8,10 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
@@ -22,7 +24,7 @@ import (
 )
 
 func TestReportResultsRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		// Add request -> run -> function -> worker to datastore.
@@ -34,27 +36,27 @@ func TestReportResultsRequest(t *testing.T) {
 				{Path: "dir/file.txt"},
 			},
 		}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		run := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.FunctionRun{
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRun{
 			ID:     "MyLinter",
 			Parent: runKey,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		analyzerKey := ds.NewKey(ctx, "FunctionRun", "MyLinter", 0, runKey)
-		So(ds.Put(ctx, &track.FunctionRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRunResult{
 			ID:          1,
 			Parent:      analyzerKey,
 			Name:        "MyLinter",
 			NumComments: 2,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		workerName := "MyLinter_UBUNTU"
-		So(ds.Put(ctx, &track.WorkerRun{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkerRun{
 			ID:     workerName,
 			Parent: analyzerKey,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Add example Comment and associated CommentSelection entities.
 		workerKey := ds.NewKey(ctx, "WorkerRun", workerName, 0, analyzerKey)
@@ -76,58 +78,58 @@ func TestReportResultsRequest(t *testing.T) {
 			EndLine:   3,
 		}
 		inChangeCommentJSON, err := (&jsonpb.Marshaler{}).MarshalToString(&dataComment)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		comments := []*track.Comment{
 			{Parent: workerKey, Comment: []byte(deletedFileCommentJSON)},
 			{Parent: workerKey, Comment: []byte(inChangeCommentJSON)},
 			{Parent: workerKey, Comment: []byte(inChangeCommentJSON)},
 		}
-		So(ds.Put(ctx, comments), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		assert.Loosely(t, ds.Put(ctx, comments), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comments[0]),
 			Included: true,
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID: 1, Parent: ds.KeyForObj(ctx, comments[1]),
 			Included: true,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		// The third comment added is not "included" when reporting
 		// comments.
-		So(ds.Put(ctx, &track.CommentSelection{
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comments[2]),
 			Included: false,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		Convey("Reports only included comments", func() {
+		t.Run("Reports only included comments", func(t *ftt.Test) {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err = reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: "MyLinter",
 			}, mock)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// This only includes the two selected comments.
-			So(len(mock.LastComments), ShouldEqual, len(comments)-1)
+			assert.Loosely(t, len(mock.LastComments), should.Equal(len(comments)-1))
 
-			Convey("A successful request also sends a row to BQ", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.FeedbackEventsQueue]), ShouldEqual, 1)
+			t.Run("A successful request also sends a row to BQ", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.FeedbackEventsQueue]), should.Equal(1))
 			})
 		})
 
-		Convey("Does not report results when reporting is disabled", func() {
+		t.Run("Does not report results when reporting is disabled", func(t *ftt.Test) {
 			request.GerritReportingDisabled = true
-			So(ds.Put(ctx, request), ShouldBeNil)
+			assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err = reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: functionName,
 			}, mock)
-			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mock.LastComments), should.BeZero)
 
-			Convey("When no comments are posted, no rows are sent to BQ", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.FeedbackEventsQueue]), ShouldEqual, 0)
+			t.Run("When no comments are posted, no rows are sent to BQ", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.FeedbackEventsQueue]), should.BeZero)
 			})
 		})
 
@@ -136,23 +138,23 @@ func TestReportResultsRequest(t *testing.T) {
 		for len(comments) < maxComments+1 {
 			comment := &track.Comment{Parent: workerKey, Comment: []byte(deletedFileCommentJSON)}
 			comments = append(comments, comment)
-			So(ds.Put(ctx, comment), ShouldBeNil)
-			So(ds.Put(ctx, &track.CommentSelection{
+			assert.Loosely(t, ds.Put(ctx, comment), should.BeNil)
+			assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 				ID:       1,
 				Parent:   ds.KeyForObj(ctx, comment),
 				Included: true,
-			}), ShouldBeNil)
+			}), should.BeNil)
 		}
-		So(len(comments), ShouldEqual, maxComments+1)
+		assert.Loosely(t, len(comments), should.Equal(maxComments+1))
 
-		Convey("Reports when number of comments is at maximum", func() {
+		t.Run("Reports when number of comments is at maximum", func(t *ftt.Test) {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err = reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: functionName,
 			}, mock)
-			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, maxComments)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mock.LastComments), should.Equal(maxComments))
 		})
 
 		// This comment is not on a changed line.
@@ -167,49 +169,49 @@ func TestReportResultsRequest(t *testing.T) {
 		// Put the new comment with line numbers in.
 		outsideChangeComment := &track.Comment{Parent: workerKey, Comment: []byte(outsideChangeCommentJSON)}
 		comments = append(comments, outsideChangeComment)
-		So(ds.Put(ctx, outsideChangeComment), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		assert.Loosely(t, ds.Put(ctx, outsideChangeComment), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, outsideChangeComment),
 			Included: gc.CommentIsInChangedLines(ctx, &dataOutside, changedLines, 0),
-		}), ShouldBeNil)
-		So(len(comments), ShouldEqual, maxComments+2)
+		}), should.BeNil)
+		assert.Loosely(t, len(comments), should.Equal(maxComments+2))
 
-		Convey("Does not report comments that are not on changed lines", func() {
+		t.Run("Does not report comments that are not on changed lines", func(t *ftt.Test) {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err := reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: functionName,
 			}, mock)
-			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, maxComments)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mock.LastComments), should.Equal(maxComments))
 		})
 
 		// Put one more comment in;
 		comment := &track.Comment{Parent: workerKey, Comment: []byte(deletedFileCommentJSON)}
 		comments = append(comments, comment)
-		So(ds.Put(ctx, comment), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		assert.Loosely(t, ds.Put(ctx, comment), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comment),
 			Included: gc.CommentIsInChangedLines(ctx, &dataCommentDeleted, changedLines, 0),
-		}), ShouldBeNil)
-		So(len(comments), ShouldEqual, maxComments+3)
+		}), should.BeNil)
+		assert.Loosely(t, len(comments), should.Equal(maxComments+3))
 
-		Convey("Truncates comments when number of comments exceeds maximum", func() {
+		t.Run("Truncates comments when number of comments exceeds maximum", func(t *ftt.Test) {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err := reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: functionName,
 			}, mock)
-			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, maxComments)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mock.LastComments), should.Equal(maxComments))
 		})
 	})
 }
 
 func TestReportResultsRequestWithRenamedOrCopiedFiles(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		// Add request -> run -> function -> worker to datastore.
@@ -222,27 +224,27 @@ func TestReportResultsRequestWithRenamedOrCopiedFiles(t *testing.T) {
 				{Path: "dir/copied_file.txt", Status: tricium.Data_COPIED},
 			},
 		}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		run := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.FunctionRun{
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRun{
 			ID:     "MyLinter",
 			Parent: runKey,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		analyzerKey := ds.NewKey(ctx, "FunctionRun", "MyLinter", 0, runKey)
-		So(ds.Put(ctx, &track.FunctionRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRunResult{
 			ID:          1,
 			Parent:      analyzerKey,
 			Name:        "MyLinter",
 			NumComments: 2,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		workerName := "MyLinter_UBUNTU"
-		So(ds.Put(ctx, &track.WorkerRun{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkerRun{
 			ID:     workerName,
 			Parent: analyzerKey,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Add example Comment and associated CommentSelection entities.
 		workerKey := ds.NewKey(ctx, "WorkerRun", workerName, 0, analyzerKey)
@@ -277,37 +279,37 @@ func TestReportResultsRequestWithRenamedOrCopiedFiles(t *testing.T) {
 			EndLine:   3,
 		}
 		inCopiedFileCommentJSON, err := (&jsonpb.Marshaler{}).MarshalToString(&dataCommentCopied)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		comments := []*track.Comment{
 			{Parent: workerKey, Comment: []byte(inChangeCommentJSON)},
 			{Parent: workerKey, Comment: []byte(inRenamedFileCommentJSON)},
 			{Parent: workerKey, Comment: []byte(inCopiedFileCommentJSON)},
 		}
-		So(ds.Put(ctx, comments), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		assert.Loosely(t, ds.Put(ctx, comments), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comments[0]),
 			Included: gc.CommentIsInChangedLines(ctx, &dataCommentChanged, changedLines, 0),
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comments[1]),
 			Included: gc.CommentIsInChangedLines(ctx, &dataCommentRenamed, changedLines, 0),
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &track.CommentSelection{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comments[2]),
 			Included: gc.CommentIsInChangedLines(ctx, &dataCommentCopied, changedLines, 0),
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		Convey("Does not report comments in renamed or copied files", func() {
+		t.Run("Does not report comments in renamed or copied files", func(t *ftt.Test) {
 			mock := &gc.MockRestAPI{ChangedLines: changedLines}
 			err := reportResults(ctx, &admin.ReportResultsRequest{
 				RunId:    run.ID,
 				Analyzer: "MyLinter",
 			}, mock)
-			So(err, ShouldBeNil)
-			So(len(mock.LastComments), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mock.LastComments), should.Equal(1))
 		})
 	})
 }

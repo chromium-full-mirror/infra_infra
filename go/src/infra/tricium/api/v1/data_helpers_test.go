@@ -7,59 +7,61 @@ package tricium
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGetPathForDataType(t *testing.T) {
-	Convey("Known data type has path", t, func() {
+	ftt.Run("Known data type has path", t, func(t *ftt.Test) {
 		d := &Data_GitFileDetails{}
 		_, err := GetPathForDataType(d)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Unknown data type returns an error", t, func() {
+	ftt.Run("Unknown data type returns an error", t, func(t *ftt.Test) {
 		_, err := GetPathForDataType("jkgdsjf")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestFilterFiles(t *testing.T) {
 
-	Convey("Filter with an empty list of patterns", t, func() {
+	ftt.Run("Filter with an empty list of patterns", t, func(t *ftt.Test) {
 		// The result is the union of all files that match any of the
 		// patterns, so if no patterns are given, then the result is
 		// empty.
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files)
-		So(err, ShouldBeNil)
-		So(filtered, ShouldBeEmpty)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.BeEmpty)
 	})
 
-	Convey("Filter with one pattern", t, func() {
+	ftt.Run("Filter with one pattern", t, func(t *ftt.Test) {
 		// Note that the pattern only has to match the basename.
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*.py")
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, []*Data_File{{Path: "x/y/z.py"}})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble([]*Data_File{{Path: "x/y/z.py"}}))
 	})
 
-	Convey("Filter with one invalid pattern", t, func() {
+	ftt.Run("Filter with one invalid pattern", t, func(t *ftt.Test) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		_, err := FilterFiles(files, "[-]")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Filter with two patterns", t, func() {
+	ftt.Run("Filter with two patterns", t, func(t *ftt.Test) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*.py", "*.txt")
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, files)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble(files))
 	})
 
-	Convey("Filter with two patterns that overlap", t, func() {
+	ftt.Run("Filter with two patterns that overlap", t, func(t *ftt.Test) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*", "*.txt")
-		So(err, ShouldBeNil)
-		So(filtered, ShouldResemble, files)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, filtered, should.Resemble(files))
 	})
 }

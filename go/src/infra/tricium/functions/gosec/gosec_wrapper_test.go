@@ -8,21 +8,23 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
 
 func TestGosecWrapper(t *testing.T) {
 
-	Convey("Test min function", t, func() {
-		So(min(3, 4), ShouldResemble, 3)
-		So(min(-1, 4), ShouldResemble, -1)
-		So(min(-3, -4), ShouldResemble, -4)
-		So(min(0, 0), ShouldResemble, 0)
+	ftt.Run("Test min function", t, func(t *ftt.Test) {
+		assert.Loosely(t, min(3, 4), should.Match(3))
+		assert.Loosely(t, min(-1, 4), should.Resemble(-1))
+		assert.Loosely(t, min(-3, -4), should.Resemble(-4))
+		assert.Loosely(t, min(0, 0), should.BeZero)
 	})
 
-	Convey("hashIssue function is implementation of sha256", t, func() {
+	ftt.Run("hashIssue function is implementation of sha256", t, func(t *ftt.Test) {
 		issue := Issue{
 			Severity:   "HIGH",
 			Confidence: "LOW",
@@ -37,12 +39,12 @@ func TestGosecWrapper(t *testing.T) {
 			110, 157, 73, 217, 74, 91, 117, 141, 251, 137, 228, 144, 93, 155, 215,
 			152, 226, 0, 255, 83, 42, 178, 23, 140, 77, 241, 151, 53, 67, 141, 116, 1}
 
-		So(hashIssue(&issue), ShouldResemble, expected)
+		assert.Loosely(t, hashIssue(&issue), should.Resemble(expected))
 		// Assert x = y -> f(x) = f(y)
-		So(hashIssue(&issue), ShouldResemble, hashIssue(&other))
+		assert.Loosely(t, hashIssue(&issue), should.Resemble(hashIssue(&other)))
 	})
 
-	Convey("Test postProcess function", t, func() {
+	ftt.Run("Test postProcess function", t, func(t *ftt.Test) {
 		*inputDir = ""
 		f1, _ := filepath.Abs("example.go")
 		f2, _ := filepath.Abs("example2.go")
@@ -137,7 +139,7 @@ func TestGosecWrapper(t *testing.T) {
 			},
 		}
 
-		So(len(postProcess(results, input, false)), ShouldResemble, 2)
+		assert.Loosely(t, len(postProcess(results, input, false)), should.Match(2))
 	})
 
 }

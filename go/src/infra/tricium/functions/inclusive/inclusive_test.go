@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -24,17 +24,17 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error getting current working directory: %v", err)
 	}
-	Convey("Produces no comment for text containing no blocked terms", t, func() {
+	ftt.Run("Produces no comment for text containing no blocked terms", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, okSource), okSource, results)
-		So(results.Comments, ShouldBeNil)
+		assert.Loosely(t, results.Comments, should.BeNil)
 	})
 
-	Convey("Flags blocked terms in file contents", t, func() {
+	ftt.Run("Flags blocked terms in file contents", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, okPathNotOkSource), okPathNotOkSource, results)
-		So(results.Comments, ShouldNotBeNil)
-		So(results.Comments[0], ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.NotBeNil)
+		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      okPathNotOkSource,
@@ -53,14 +53,14 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 					EndChar:     17,
 				}},
 			}},
-		})
+		}))
 	})
 
-	Convey("Flags blocked terms in file names and file contents", t, func() {
+	ftt.Run("Flags blocked terms in file names and file contents", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, notOkPath), notOkPath, results)
-		So(results.Comments, ShouldNotBeNil)
-		So(results.Comments[0], ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.NotBeNil)
+		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      notOkPath,
@@ -79,8 +79,8 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 					EndChar:     18,
 				}},
 			}},
-		})
-		So(results.Comments[1], ShouldResembleProto, &tricium.Data_Comment{
+		}))
+		assert.Loosely(t, results.Comments[1], should.Resemble(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      notOkPath,
@@ -99,14 +99,14 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 					EndChar:     17,
 				}},
 			}},
-		})
+		}))
 	})
 
-	Convey("Ingores nocheck lines", t, func() {
+	ftt.Run("Ingores nocheck lines", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, nocheckSource), nocheckSource, results)
-		So(results.Comments, ShouldNotBeNil)
-		So(results.Comments, ShouldResembleProto, []*tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.NotBeNil)
+		assert.Loosely(t, results.Comments, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  "InclusiveLanguageCheck/Warning",
 				Message:   commentText["master"],
@@ -226,6 +226,6 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 					}},
 				}},
 			},
-		})
+		}))
 	})
 }

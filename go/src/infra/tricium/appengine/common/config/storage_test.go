@@ -7,27 +7,27 @@ package config
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/triciumtest"
 )
 
 func TestConfigStorage(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		Convey("Set and get single project config", func() {
+		t.Run("Set and get single project config", func(t *ftt.Test) {
 			config := &tricium.ProjectConfig{}
-			So(setProjectConfig(ctx, "my-project", "version", config), ShouldBeNil)
+			assert.Loosely(t, setProjectConfig(ctx, "my-project", "version", config), should.BeNil)
 			result, err := getProjectConfig(ctx, "my-project")
-			So(err, ShouldBeNil)
-			So(result, ShouldResembleProto, config)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, result, should.Resemble(config))
 		})
 
-		Convey("Set, get, delete multiple project configs", func() {
+		t.Run("Set, get, delete multiple project configs", func(t *ftt.Test) {
 			configs := map[string]*tricium.ProjectConfig{
 				"infra": {
 					Repos: []*tricium.RepoDetails{
@@ -52,19 +52,19 @@ func TestConfigStorage(t *testing.T) {
 					},
 				},
 			}
-			So(setProjectConfig(ctx, "infra", "v", configs["infra"]), ShouldBeNil)
-			So(setProjectConfig(ctx, "playground", "v", configs["playground"]), ShouldBeNil)
+			assert.Loosely(t, setProjectConfig(ctx, "infra", "v", configs["infra"]), should.BeNil)
+			assert.Loosely(t, setProjectConfig(ctx, "playground", "v", configs["playground"]), should.BeNil)
 			result, err := getAllProjectConfigs(ctx)
-			So(err, ShouldBeNil)
-			So(len(result), ShouldEqual, 2)
-			So(deleteProjectConfigs(ctx, []string{"playground"}), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(result), should.Equal(2))
+			assert.Loosely(t, deleteProjectConfigs(ctx, []string{"playground"}), should.BeNil)
 			result, err = getAllProjectConfigs(ctx)
-			So(err, ShouldBeNil)
-			So(len(result), ShouldEqual, 1)
-			So(result["infra"], ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(result), should.Equal(1))
+			assert.Loosely(t, result["infra"], should.NotBeNil)
 		})
 
-		Convey("Set and get service config", func() {
+		t.Run("Set and get service config", func(t *ftt.Test) {
 			config := &tricium.ServiceConfig{
 				Platforms: []*tricium.Platform_Details{
 					{
@@ -82,28 +82,28 @@ func TestConfigStorage(t *testing.T) {
 			}
 			setServiceConfig(ctx, "version", config)
 			result, err := getServiceConfig(ctx)
-			So(err, ShouldBeNil)
-			So(result, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, result, should.NotBeNil)
 		})
 	})
 
-	Convey("Test Environment with nothing set", t, func() {
+	ftt.Run("Test Environment with nothing set", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		Convey("Get service config when none is set", func() {
+		t.Run("Get service config when none is set", func(t *ftt.Test) {
 			_, err := getServiceConfig(ctx)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Get project config when none is set", func() {
+		t.Run("Get project config when none is set", func(t *ftt.Test) {
 			_, err := getProjectConfig(ctx, "project-name")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Get all project configs when none are set", func() {
+		t.Run("Get all project configs when none are set", func(t *ftt.Test) {
 			configs, err := getAllProjectConfigs(ctx)
-			So(configs, ShouldBeEmpty)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, configs, should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})

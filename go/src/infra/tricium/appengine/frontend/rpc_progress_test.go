@@ -9,10 +9,12 @@ import (
 	"strconv"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
@@ -24,7 +26,7 @@ import (
 )
 
 func TestProgress(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		var runID int64 = 22
 
@@ -32,55 +34,55 @@ func TestProgress(t *testing.T) {
 		request := &track.AnalyzeRequest{
 			ID: runID,
 		}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
-		So(ds.Put(ctx, &track.AnalyzeRequestResult{
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequestResult{
 			ID:     1,
 			Parent: requestKey,
 			State:  tricium.State_SUCCESS,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		functionName := "Hello"
 		run := &track.WorkflowRun{
 			ID:        1,
 			Parent:    requestKey,
 			Functions: []string{functionName},
 		}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkflowRunResult{
 			ID:     1,
 			Parent: runKey,
 			State:  tricium.State_SUCCESS,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		platform := tricium.Platform_UBUNTU
 		functionKey := ds.NewKey(ctx, "FunctionRun", functionName, 0, runKey)
 		workerName := functionName + "_UBUNTU"
-		So(ds.Put(ctx, &track.FunctionRun{
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRun{
 			ID:      functionName,
 			Parent:  runKey,
 			Workers: []string{workerName},
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &track.FunctionRunResult{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.FunctionRunResult{
 			ID:     1,
 			Parent: functionKey,
 			State:  tricium.State_SUCCESS,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		workerKey := ds.NewKey(ctx, "WorkerRun", workerName, 0, functionKey)
 		worker := &track.WorkerRun{
 			ID:       workerName,
 			Parent:   functionKey,
 			Platform: platform,
 		}
-		So(ds.Put(ctx, worker), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, worker), should.BeNil)
 		workerKey = ds.KeyForObj(ctx, worker)
-		So(ds.Put(ctx, &track.WorkerRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkerRunResult{
 			ID:          1,
 			Parent:      workerKey,
 			Function:    functionName,
 			Platform:    tricium.Platform_UBUNTU,
 			State:       tricium.State_SUCCESS,
 			NumComments: 1,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Add mapping from Gerrit change to the run ID.
 		host := "chromium-review.googlesource.com"
@@ -92,9 +94,9 @@ func TestProgress(t *testing.T) {
 			ID:    gerritMappingID(host, project, change, revision),
 			RunID: runID,
 		}
-		So(ds.Put(ctx, g), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, g), should.BeNil)
 
-		Convey("Progress request handler", func() {
+		t.Run("Progress request handler", func(t *ftt.Test) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: identity.Identity(okACLUser),
 			})
@@ -109,8 +111,8 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			response, err := server.Progress(ctx, request)
-			So(err, ShouldBeNil)
-			So(response, ShouldResemble, &tricium.ProgressResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.Resemble(&tricium.ProgressResponse{
 				RunId: strconv.FormatInt(runID, 10),
 				State: tricium.State_SUCCESS,
 				FunctionProgress: []*tricium.FunctionProgress{
@@ -121,10 +123,10 @@ func TestProgress(t *testing.T) {
 						NumComments: 1,
 					},
 				},
-			})
+			}))
 		})
 
-		Convey("Progress request handler with Gerrit patch not found", func() {
+		t.Run("Progress request handler with Gerrit patch not found", func(t *ftt.Test) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: identity.Identity(okACLUser),
 			})
@@ -139,38 +141,38 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			response, err := server.Progress(ctx, request)
-			So(response, ShouldResemble, &tricium.ProgressResponse{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, response, should.Resemble(&tricium.ProgressResponse{}))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Validate request with valid run ID", func() {
+		t.Run("Validate request with valid run ID", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_RunId{
 					RunId: "12345",
 				},
 			}
 			id, err := validateProgressRequest(ctx, request)
-			So(id, ShouldEqual, 12345)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, id, should.Equal(12345))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Validate request with invalid run ID", func() {
+		t.Run("Validate request with invalid run ID", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_RunId{
 					RunId: "not a valid run ID",
 				},
 			}
 			_, err := validateProgressRequest(ctx, request)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Validate request with no contents", func() {
+		t.Run("Validate request with no contents", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{}
 			_, err := validateProgressRequest(ctx, request)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Validate request with valid Gerrit details", func() {
+		t.Run("Validate request with valid Gerrit details", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_GerritRevision{
 					GerritRevision: &tricium.GerritRevision{
@@ -182,11 +184,11 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			id, err := validateProgressRequest(ctx, request)
-			So(id, ShouldEqual, runID)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, id, should.Equal(runID))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Validate request with valid Gerrit details but no stored run", func() {
+		t.Run("Validate request with valid Gerrit details but no stored run", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_GerritRevision{
 					GerritRevision: &tricium.GerritRevision{
@@ -198,11 +200,11 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			id, err := validateProgressRequest(ctx, request)
-			So(id, ShouldEqual, 0)
-			So(grpcutil.Code(err), ShouldEqual, codes.OK)
+			assert.Loosely(t, id, should.BeZero)
+			assert.Loosely(t, grpcutil.Code(err), should.Equal(codes.OK))
 		})
 
-		Convey("Validate request with missing Gerrit change ID", func() {
+		t.Run("Validate request with missing Gerrit change ID", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_GerritRevision{
 					GerritRevision: &tricium.GerritRevision{
@@ -213,10 +215,10 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			_, err := validateProgressRequest(ctx, request)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 
 		})
-		Convey("Validate request with invalid Gerrit change ID", func() {
+		t.Run("Validate request with invalid Gerrit change ID", func(t *ftt.Test) {
 			request := &tricium.ProgressRequest{
 				Source: &tricium.ProgressRequest_GerritRevision{
 					GerritRevision: &tricium.GerritRevision{
@@ -228,7 +230,7 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			_, err := validateProgressRequest(ctx, request)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

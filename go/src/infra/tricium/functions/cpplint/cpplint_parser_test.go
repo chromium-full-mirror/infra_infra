@@ -9,26 +9,28 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/api/v1"
 )
 
 func TestPylintParsingFunctions(t *testing.T) {
 
-	Convey("scanPylintOutput", t, func() {
+	ftt.Run("scanPylintOutput", t, func(t *ftt.Test) {
 
-		Convey("Parsing empty buffer gives no warnings", func() {
+		t.Run("Parsing empty buffer gives no warnings", func(t *ftt.Test) {
 			buf := strings.NewReader("")
 			s := bufio.NewScanner(buf)
-			So(s, ShouldNotBeNil)
+			assert.Loosely(t, s, should.NotBeNil)
 
 			results := &tricium.Data_Results{}
 			scanCpplintOutput(s, results)
-			So(results.Comments, ShouldBeEmpty)
+			assert.Loosely(t, results.Comments, should.BeEmpty)
 		})
 
-		Convey("Parsing normal cpplint output generates the appropriate comments", func() {
+		t.Run("Parsing normal cpplint output generates the appropriate comments", func(t *ftt.Test) {
 			output := "test.cc:0:  No copyright message found  [legal/copyright] [5]\n" +
 				"test.cc:141:  If an else has a brace on one side, it should have it on both  [readability/braces] [5]\n" +
 				"test.cc:42:  Add #include <vector> for vector<>  [build/include_what_you_use] [4]\n"
@@ -64,35 +66,35 @@ func TestPylintParsingFunctions(t *testing.T) {
 
 			results := &tricium.Data_Results{}
 			scanCpplintOutput(bufio.NewScanner(strings.NewReader(output)), results)
-			So(results, ShouldResemble, expected)
+			assert.Loosely(t, results, should.Resemble(expected))
 		})
 	})
 
-	Convey("parsePylintLine", t, func() {
+	ftt.Run("parsePylintLine", t, func(t *ftt.Test) {
 
-		Convey("Parsing valid line gives a comment", func() {
+		t.Run("Parsing valid line gives a comment", func(t *ftt.Test) {
 			line := "test.cc:148:  This is the helpful explanation  [readability/foo] [4]"
-			So(parseCpplintLine(line), ShouldResemble, &tricium.Data_Comment{
+			assert.Loosely(t, parseCpplintLine(line), should.Resemble(&tricium.Data_Comment{
 				Category: "Cpplint/readability/foo",
 				Message: "This is the helpful explanation (confidence 4/5).\n" +
 					"To disable, add: // NOLINT(readability/foo)",
 				Path:      "test.cc",
 				StartLine: 148,
-			})
+			}))
 		})
 
-		Convey("Parsing some other line gives nil", func() {
-			So(parseCpplintLine("Total errors found: 24"), ShouldBeNil)
+		t.Run("Parsing some other line gives nil", func(t *ftt.Test) {
+			assert.Loosely(t, parseCpplintLine("Total errors found: 24"), should.BeNil)
 		})
 
-		Convey("Warnings for include_what_you_use for string are ignored", func() {
+		t.Run("Warnings for include_what_you_use for string are ignored", func(t *ftt.Test) {
 			line := "test.cc:148:  Add #include <string> for string  [build/include_what_you_use] [4]"
-			So(parseCpplintLine(line), ShouldBeNil)
+			assert.Loosely(t, parseCpplintLine(line), should.BeNil)
 		})
 
-		Convey("An extra note is added for include_what_you_use", func() {
+		t.Run("An extra note is added for include_what_you_use", func(t *ftt.Test) {
 			line := "test.cc:148:  Add #include <foo> for foo  [build/include_what_you_use] [4]"
-			So(parseCpplintLine(line), ShouldResemble, &tricium.Data_Comment{
+			assert.Loosely(t, parseCpplintLine(line), should.Resemble(&tricium.Data_Comment{
 				Category: "Cpplint/build/include_what_you_use",
 				Message: ("Add #include <foo> for foo\n" +
 					"Note: This check is known to produce false positives, " +
@@ -100,19 +102,19 @@ func TestPylintParsingFunctions(t *testing.T) {
 					"To disable, add: // NOLINT(build/include_what_you_use)"),
 				Path:      "test.cc",
 				StartLine: 148,
-			})
+			}))
 		})
 	})
 
-	Convey("Command line argument helper functions", t, func() {
-		Convey("Building the verbose argument", func() {
-			So(verboseArg("5"), ShouldEqual, "5")
-			So(verboseArg(""), ShouldEqual, "4")
+	ftt.Run("Command line argument helper functions", t, func(t *ftt.Test) {
+		t.Run("Building the verbose argument", func(t *ftt.Test) {
+			assert.Loosely(t, verboseArg("5"), should.Equal("5"))
+			assert.Loosely(t, verboseArg(""), should.Equal("4"))
 		})
 
-		Convey("Building the filter argument", func() {
-			So(filterArg("-whitespace/braces"), ShouldEqual, "-whitespace/braces")
-			So(filterArg(""), ShouldEqual, "-whitespace")
+		t.Run("Building the filter argument", func(t *ftt.Test) {
+			assert.Loosely(t, filterArg("-whitespace/braces"), should.Equal("-whitespace/braces"))
+			assert.Loosely(t, filterArg(""), should.Equal("-whitespace"))
 		})
 	})
 }

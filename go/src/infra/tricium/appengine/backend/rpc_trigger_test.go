@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
@@ -30,7 +31,7 @@ func (p mockWorkflowProvider) GetWorkflow(c context.Context, runID int64) (*admi
 }
 
 func TestTriggerRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		runID := int64(123456789)
 
@@ -47,24 +48,24 @@ func TestTriggerRequest(t *testing.T) {
 			},
 		}
 
-		Convey("Driver trigger request", func() {
+		t.Run("Driver trigger request", func(t *ftt.Test) {
 			err := trigger(ctx, &admin.TriggerRequest{
 				RunId:  runID,
 				Worker: "Hello",
 			}, workflowProvider, common.MockTaskServerAPI)
-			So(err, ShouldBeNil)
-			Convey("Enqueues track request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("Enqueues track request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), should.Equal(1))
 			})
 		})
 	})
 }
 
 func TestHelperFunctions(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		So(ds.Put(ctx, &track.AnalyzeRequest{
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{
 			ID:            123,
 			Project:       "my-luci-config-project-id",
 			GitURL:        "http://my-gerrit.com/my-project",
@@ -74,26 +75,26 @@ func TestHelperFunctions(t *testing.T) {
 			GerritProject: "my-project",
 			GerritChange:  "my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940",
 			CommitMessage: "My CL summary\n\nBug: 123\n",
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		So(ds.Put(ctx, &track.AnalyzeRequest{
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{
 			ID:      321,
 			Project: "another-luci-config-project-id",
 			GitURL:  "http://my-nongerrit.com/repo-url",
 			GitRef:  "refs/foo",
 			Files:   []tricium.Data_File{{Path: "README.md"}},
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		Convey("Tags include Gerrit details for Gerrit requests", func() {
+		t.Run("Tags include Gerrit details for Gerrit requests", func(t *ftt.Test) {
 			patch := fetchPatchDetails(ctx, 123)
-			So(patch.GitilesHost, ShouldEqual, "http://my-gerrit.com/my-project")
-			So(patch.GitilesProject, ShouldEqual, "my-luci-config-project-id")
-			So(patch.GerritHost, ShouldEqual, "http://my-gerrit-review.com/my-project")
-			So(patch.GerritProject, ShouldEqual, "my-project")
-			So(patch.GerritChange, ShouldEqual, "my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940")
-			So(patch.GerritCl, ShouldEqual, "597")
-			So(patch.GerritPatch, ShouldEqual, "2")
-			So(getTags(ctx, "Spacey_UBUNTU", 123, patch), ShouldResemble, []string{
+			assert.Loosely(t, patch.GitilesHost, should.Equal("http://my-gerrit.com/my-project"))
+			assert.Loosely(t, patch.GitilesProject, should.Equal("my-luci-config-project-id"))
+			assert.Loosely(t, patch.GerritHost, should.Equal("http://my-gerrit-review.com/my-project"))
+			assert.Loosely(t, patch.GerritProject, should.Equal("my-project"))
+			assert.Loosely(t, patch.GerritChange, should.Equal("my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940"))
+			assert.Loosely(t, patch.GerritCl, should.Equal("597"))
+			assert.Loosely(t, patch.GerritPatch, should.Equal("2"))
+			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 123, patch), should.Resemble([]string{
 				"function:Spacey",
 				"platform:UBUNTU",
 				"run_id:123",
@@ -103,37 +104,37 @@ func TestHelperFunctions(t *testing.T) {
 				"gerrit_cl_number:597",
 				"gerrit_patch_set:2",
 				"buildset:patch/gerrit/http://my-gerrit-review.com/my-project/597/2",
-			})
+			}))
 		})
 
-		Convey("Tags omit Gerrit details for non-Gerrit requests", func() {
+		t.Run("Tags omit Gerrit details for non-Gerrit requests", func(t *ftt.Test) {
 			patch := fetchPatchDetails(ctx, 321)
 			expected := common.PatchDetails{
 				GitilesHost:    "http://my-nongerrit.com/repo-url",
 				GitilesProject: "another-luci-config-project-id",
 			}
-			So(patch, ShouldResemble, expected)
-			So(getTags(ctx, "Pylint_UBUNTU", 321, patch), ShouldResemble, []string{
+			assert.Loosely(t, patch, should.Resemble(expected))
+			assert.Loosely(t, getTags(ctx, "Pylint_UBUNTU", 321, patch), should.Resemble([]string{
 				"function:Pylint",
 				"platform:UBUNTU",
 				"run_id:321",
 				"tricium:1",
-			})
+			}))
 		})
 
-		Convey("Tags omit Gerrit details if run not found", func() {
+		t.Run("Tags omit Gerrit details if run not found", func(t *ftt.Test) {
 			patch := fetchPatchDetails(ctx, 789)
-			So(patch, ShouldResemble, common.PatchDetails{})
-			So(getTags(ctx, "Spacey_UBUNTU", 789, patch), ShouldResemble, []string{
+			assert.Loosely(t, patch, should.Resemble(common.PatchDetails{}))
+			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 789, patch), should.Resemble([]string{
 				"function:Spacey",
 				"platform:UBUNTU",
 				"run_id:789",
 				"tricium:1",
-			})
+			}))
 		})
 
-		Convey("Tags are nil for invalid worker names", func() {
-			So(getTags(ctx, "invalidworker", 1, common.PatchDetails{}), ShouldBeNil)
+		t.Run("Tags are nil for invalid worker names", func(t *ftt.Test) {
+			assert.Loosely(t, getTags(ctx, "invalidworker", 1, common.PatchDetails{}), should.BeNil)
 		})
 	})
 }

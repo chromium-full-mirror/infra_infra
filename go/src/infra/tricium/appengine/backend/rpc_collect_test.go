@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
 	admin "infra/tricium/api/admin/v1"
@@ -33,7 +34,7 @@ func (m mockTaskServer) Collect(c context.Context, params *common.CollectParamet
 }
 
 func TestCollectRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		runID := int64(123456789)
 
@@ -50,40 +51,40 @@ func TestCollectRequest(t *testing.T) {
 			},
 		}
 
-		Convey("Driver collect request for worker without successors", func() {
+		t.Run("Driver collect request for worker without successors", func(t *ftt.Test) {
 			err := collect(ctx, &admin.CollectRequest{
 				RunId:  runID,
 				Worker: "Hello",
 			}, workflowProvider, common.MockTaskServerAPI)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("Enqueues track request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), ShouldEqual, 1)
+			t.Run("Enqueues track request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.TrackerQueue]), should.Equal(1))
 			})
 
-			Convey("Enqueues no driver request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+			t.Run("Enqueues no driver request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.BeZero)
 			})
 		})
 	})
 }
 
 func TestValidateCollectRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
-		Convey("A request with run ID and worker name is valid", func() {
-			So(validateCollectRequest(&admin.CollectRequest{
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
+		t.Run("A request with run ID and worker name is valid", func(t *ftt.Test) {
+			assert.Loosely(t, validateCollectRequest(&admin.CollectRequest{
 				RunId:  int64(1234),
 				Worker: "Hello",
-			}), ShouldBeNil)
+			}), should.BeNil)
 		})
 
-		Convey("A request missing either run ID or worker name is not valid", func() {
-			So(validateCollectRequest(&admin.CollectRequest{
+		t.Run("A request missing either run ID or worker name is not valid", func(t *ftt.Test) {
+			assert.Loosely(t, validateCollectRequest(&admin.CollectRequest{
 				Worker: "Hello",
-			}), ShouldNotBeNil)
-			So(validateCollectRequest(&admin.CollectRequest{
+			}), should.NotBeNil)
+			assert.Loosely(t, validateCollectRequest(&admin.CollectRequest{
 				RunId: int64(1234),
-			}), ShouldNotBeNil)
+			}), should.NotBeNil)
 		})
 	})
 }

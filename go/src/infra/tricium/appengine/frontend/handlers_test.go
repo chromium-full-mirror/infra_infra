@@ -10,8 +10,10 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
@@ -21,7 +23,7 @@ import (
 )
 
 func TestMainPageHandler(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		authState := &authtest.FakeState{
 			Identity: "user:user@example.com",
@@ -29,39 +31,39 @@ func TestMainPageHandler(t *testing.T) {
 		ctx = auth.WithState(ctx, authState)
 		w := httptest.NewRecorder()
 
-		Convey("Basic request to main page handler", func() {
+		t.Run("Basic request to main page handler", func(t *ftt.Test) {
 			mainPageHandler(&router.Context{
 				Writer:  w,
 				Request: triciumtest.MakeGetRequest(nil).WithContext(ctx),
 				Params:  triciumtest.MakeParams(),
 			})
-			So(w.Code, ShouldEqual, 200)
+			assert.Loosely(t, w.Code, should.Equal(200))
 			r, err := ioutil.ReadAll(w.Body)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			body := string(r)
-			So(body, ShouldContainSubstring, "html")
+			assert.Loosely(t, body, should.ContainSubstring("html"))
 		})
 
-		Convey("Constructing template args", func() {
+		t.Run("Constructing template args", func(t *ftt.Test) {
 			args, err := templateArgs(ctx, triciumtest.MakeGetRequest(nil))
-			So(err, ShouldBeNil)
-			So(args, ShouldResemble, map[string]interface{}{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, args, should.Resemble(map[string]interface{}{
 				"AppVersion":  "testVersionID",
 				"IsAnonymous": false,
 				"LoginURL":    "http://fake.example.com/login?dest=%2Ftesting-path",
 				"LogoutURL":   "http://fake.example.com/logout?dest=%2Ftesting-path",
 				"User":        "user@example.com",
-			})
+			}))
 		})
 	})
 }
 
 func TestAnalyzeQueueHandler(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		w := httptest.NewRecorder()
 
-		Convey("Analyze queue handler checks for invalid requests", func() {
+		t.Run("Analyze queue handler checks for invalid requests", func(t *ftt.Test) {
 			// A request with an empty paths list is not valid.
 			ar := &tricium.AnalyzeRequest{
 				Project: "some-project",
@@ -79,11 +81,11 @@ func TestAnalyzeQueueHandler(t *testing.T) {
 				Request: triciumtest.MakeGetRequest(bytes).WithContext(ctx),
 				Params:  triciumtest.MakeParams(),
 			})
-			So(w.Code, ShouldEqual, 400)
+			assert.Loosely(t, w.Code, should.Equal(400))
 			r, err := ioutil.ReadAll(w.Body)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			body := string(r)
-			So(body, ShouldEqual, "")
+			assert.Loosely(t, body, should.BeEmpty)
 		})
 	})
 }

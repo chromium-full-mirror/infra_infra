@@ -7,9 +7,9 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -27,29 +27,29 @@ const (
 
 func TestHTTPSChecker(t *testing.T) {
 
-	Convey("Produces no comment for g/ link", t, func() {
+	ftt.Run("Produces no comment for g/ link", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, gLinks, results)
-		So(results.Comments, ShouldBeNil)
+		assert.Loosely(t, results.Comments, should.BeNil)
 	})
 
-	Convey("Produces no comment for file with go/ link", t, func() {
+	ftt.Run("Produces no comment for file with go/ link", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, goLinks, results)
-		So(results.Comments, ShouldBeNil)
+		assert.Loosely(t, results.Comments, should.BeNil)
 	})
 
-	Convey("Produces no comment for file with httpsURLs", t, func() {
+	ftt.Run("Produces no comment for file with httpsURLs", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, httpsURLs, results)
-		So(results.Comments, ShouldBeNil)
+		assert.Loosely(t, results.Comments, should.BeNil)
 	})
 
-	Convey("Flags a single http URL", t, func() {
+	ftt.Run("Flags a single http URL", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, httpURL, results)
-		So(results.Comments, ShouldNotBeNil)
-		So(results.Comments[0], ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.NotBeNil)
+		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",
 			Message:   ("Nit: Replace http:// URLs with https://"),
 			Path:      httpURL,
@@ -57,14 +57,14 @@ func TestHTTPSChecker(t *testing.T) {
 			EndLine:   5,
 			StartChar: 7,
 			EndChar:   24,
-		})
+		}))
 	})
 
-	Convey("Flags multiple http URLs", t, func() {
+	ftt.Run("Flags multiple http URLs", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, multipleHTTPURLs, results)
-		So(len(results.Comments), ShouldEqual, 2)
-		So(results.Comments[1], ShouldResembleProto, &tricium.Data_Comment{
+		assert.Loosely(t, len(results.Comments), should.Equal(2))
+		assert.Loosely(t, results.Comments[1], should.Resemble(&tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",
 			Message:   ("Nit: Replace http:// URLs with https://"),
 			Path:      multipleHTTPURLs,
@@ -72,6 +72,6 @@ func TestHTTPSChecker(t *testing.T) {
 			EndLine:   9,
 			StartChar: 7,
 			EndChar:   26,
-		})
+		}))
 	})
 }

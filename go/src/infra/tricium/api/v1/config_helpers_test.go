@@ -8,10 +8,11 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -40,7 +41,7 @@ func TestLookupRepoDetails(t *testing.T) {
 		},
 	}
 
-	Convey("Matches GerritProject when URL matches", t, func() {
+	ftt.Run("Matches GerritProject when URL matches", t, func(t *ftt.Test) {
 		request := &AnalyzeRequest{
 			Source: &AnalyzeRequest_GerritRevision{
 				GerritRevision: &GerritRevision{
@@ -49,10 +50,10 @@ func TestLookupRepoDetails(t *testing.T) {
 				},
 			},
 		}
-		So(LookupRepoDetails(pc, request), ShouldEqual, pc.Repos[1])
+		assert.Loosely(t, LookupRepoDetails(pc, request), should.Equal(pc.Repos[1]))
 	})
 
-	Convey("Matches GitRepo when URL matches", t, func() {
+	ftt.Run("Matches GitRepo when URL matches", t, func(t *ftt.Test) {
 		request := &AnalyzeRequest{
 			Source: &AnalyzeRequest_GitCommit{
 				GitCommit: &GitCommit{
@@ -61,10 +62,10 @@ func TestLookupRepoDetails(t *testing.T) {
 				},
 			},
 		}
-		So(LookupRepoDetails(pc, request), ShouldEqual, pc.Repos[0])
+		assert.Loosely(t, LookupRepoDetails(pc, request), should.Equal(pc.Repos[0]))
 	})
 
-	Convey("Returns nil when no repo is found", t, func() {
+	ftt.Run("Returns nil when no repo is found", t, func(t *ftt.Test) {
 		request := &AnalyzeRequest{
 			Source: &AnalyzeRequest_GerritRevision{
 				GerritRevision: &GerritRevision{
@@ -73,7 +74,7 @@ func TestLookupRepoDetails(t *testing.T) {
 				},
 			},
 		}
-		So(LookupRepoDetails(pc, request), ShouldBeNil)
+		assert.Loosely(t, LookupRepoDetails(pc, request), should.BeNil)
 	})
 }
 
@@ -95,32 +96,32 @@ func TestCanRequest(t *testing.T) {
 		},
 	}
 
-	Convey("Only users in OK ACL group can request", t, func() {
+	ftt.Run("Only users in OK ACL group can request", t, func(t *ftt.Test) {
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity:       "user:abc@example.com",
 			IdentityGroups: []string{okACLGroup},
 		})
 		ok, err := CanRequest(ctx, pc)
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeTrue)
 	})
 
-	Convey("User with OK ACL can request", t, func() {
+	ftt.Run("User with OK ACL can request", t, func(t *ftt.Test) {
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity: identity.Identity(okACLUser),
 		})
 		ok, err := CanRequest(ctx, pc)
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeTrue)
 	})
 
-	Convey("Anonymous users cannot request", t, func() {
+	ftt.Run("Anonymous users cannot request", t, func(t *ftt.Test) {
 		ctx = auth.WithState(ctx, &authtest.FakeState{
 			Identity: identity.AnonymousIdentity,
 		})
 		ok, err := CanRequest(ctx, pc)
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeFalse)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeFalse)
 	})
 }
 
@@ -133,12 +134,12 @@ func TestLookupFunction(t *testing.T) {
 		},
 	}
 
-	Convey("Known function is known", t, func() {
-		So(LookupFunction(functions, "Pylint"), ShouldResemble, functions[0])
+	ftt.Run("Known function is known", t, func(t *ftt.Test) {
+		assert.Loosely(t, LookupFunction(functions, "Pylint"), should.Resemble(functions[0]))
 	})
 
-	Convey("Unknown function is unknown", t, func() {
-		So(LookupFunction(functions, "blabla"), ShouldBeNil)
+	ftt.Run("Unknown function is unknown", t, func(t *ftt.Test) {
+		assert.Loosely(t, LookupFunction(functions, "blabla"), should.BeNil)
 	})
 }
 
@@ -156,16 +157,16 @@ func TestSupportsPlatform(t *testing.T) {
 		},
 	}
 
-	Convey("Supported platform is supported", t, func() {
-		So(SupportsPlatform(analyzer, Platform_UBUNTU), ShouldBeTrue)
+	ftt.Run("Supported platform is supported", t, func(t *ftt.Test) {
+		assert.Loosely(t, SupportsPlatform(analyzer, Platform_UBUNTU), should.BeTrue)
 	})
 
-	Convey("Unsupported platform is not supported", t, func() {
-		So(SupportsPlatform(analyzer, Platform_MAC), ShouldBeFalse)
+	ftt.Run("Unsupported platform is not supported", t, func(t *ftt.Test) {
+		assert.Loosely(t, SupportsPlatform(analyzer, Platform_MAC), should.BeFalse)
 	})
 
-	Convey("ANY platform always supported", t, func() {
-		So(SupportsPlatform(analyzer, Platform_ANY), ShouldBeTrue)
+	ftt.Run("ANY platform always supported", t, func(t *ftt.Test) {
+		assert.Loosely(t, SupportsPlatform(analyzer, Platform_ANY), should.BeTrue)
 	})
 }
 
@@ -179,22 +180,22 @@ func TestLookupImplForPlatform(t *testing.T) {
 		},
 	}
 
-	Convey("Impl for known platform is returned", t, func() {
+	ftt.Run("Impl for known platform is returned", t, func(t *ftt.Test) {
 		i := LookupImplForPlatform(analyzer, Platform_LINUX)
-		So(i, ShouldEqual, implForLinux)
+		assert.Loosely(t, i, should.Equal(implForLinux))
 	})
 
-	Convey("Impl for any platform returns first", t, func() {
+	ftt.Run("Impl for any platform returns first", t, func(t *ftt.Test) {
 		// In this case, there is no implementation in
 		// the list that is explicitly for any platform;
 		// we return the first implementation.
 		i := LookupImplForPlatform(analyzer, Platform_ANY)
-		So(i, ShouldEqual, implForLinux)
+		assert.Loosely(t, i, should.Equal(implForLinux))
 	})
 
-	Convey("Impl for unknown platform returns nil", t, func() {
+	ftt.Run("Impl for unknown platform returns nil", t, func(t *ftt.Test) {
 		i := LookupImplForPlatform(analyzer, Platform_WINDOWS)
-		So(i, ShouldBeNil)
+		assert.Loosely(t, i, should.BeNil)
 	})
 
 	implForAny := &Impl{ProvidesForPlatform: Platform_ANY}
@@ -205,12 +206,12 @@ func TestLookupImplForPlatform(t *testing.T) {
 		},
 	}
 
-	Convey("Impl for 'any' platform is used if present", t, func() {
+	ftt.Run("Impl for 'any' platform is used if present", t, func(t *ftt.Test) {
 		// In this case, there is an implementation in
 		// the list that is explicitly for any platform;
 		// we return the 'any' implementation.
 		i := LookupImplForPlatform(analyzer, Platform_ANY)
-		So(i, ShouldEqual, implForAny)
+		assert.Loosely(t, i, should.Equal(implForAny))
 	})
 }
 
@@ -218,14 +219,14 @@ func TestLookupPlatform(t *testing.T) {
 	platform := Platform_UBUNTU
 	sc := &ServiceConfig{Platforms: []*Platform_Details{{Name: platform}}}
 
-	Convey("Known platform is returned", t, func() {
+	ftt.Run("Known platform is returned", t, func(t *ftt.Test) {
 		p := LookupPlatform(sc, platform)
-		So(p, ShouldNotBeNil)
+		assert.Loosely(t, p, should.NotBeNil)
 	})
 
-	Convey("Unknown platform returns nil", t, func() {
+	ftt.Run("Unknown platform returns nil", t, func(t *ftt.Test) {
 		p := LookupPlatform(sc, Platform_WINDOWS)
-		So(p, ShouldBeNil)
+		assert.Loosely(t, p, should.BeNil)
 	})
 }
 
@@ -246,73 +247,73 @@ func TestValidateFunction(t *testing.T) {
 		},
 	}
 
-	Convey("Function with all required fields is valid", t, func() {
+	ftt.Run("Function with all required fields is valid", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:     Function_ANALYZER,
 			Name:     "PyLint",
 			Needs:    Data_FILES,
 			Provides: Data_RESULTS,
 		}
-		So(ValidateFunction(f, sc), ShouldBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.BeNil)
 	})
 
-	Convey("Function names must not be non-empty", t, func() {
+	ftt.Run("Function names must not be non-empty", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:     Function_ANALYZER,
 			Name:     "",
 			Needs:    Data_FILES,
 			Provides: Data_RESULTS,
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 	})
 
-	Convey("Function names must not contain underscore", t, func() {
+	ftt.Run("Function names must not contain underscore", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:     Function_ANALYZER,
 			Name:     "Py_Lint",
 			Needs:    Data_FILES,
 			Provides: Data_RESULTS,
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 	})
 
-	Convey("Function without type is invalid", t, func() {
+	ftt.Run("Function without type is invalid", t, func(t *ftt.Test) {
 		f := &Function{
 			Name:     "PyLint",
 			Needs:    Data_FILES,
 			Provides: Data_RESULTS,
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 	})
 
-	Convey("Function without name is invalid", t, func() {
+	ftt.Run("Function without name is invalid", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:     Function_ANALYZER,
 			Needs:    Data_FILES,
 			Provides: Data_RESULTS,
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 	})
 
-	Convey("Analyzer function must return results", t, func() {
+	ftt.Run("Analyzer function must return results", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:     Function_ANALYZER,
 			Name:     "ConfusedAnalyzer",
 			Needs:    Data_FILES,
 			Provides: Data_GIT_FILE_DETAILS,
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 		f.Provides = Data_RESULTS
-		So(ValidateFunction(f, sc), ShouldBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.BeNil)
 	})
 
-	Convey("Function with impl without platforms is invalid", t, func() {
+	ftt.Run("Function with impl without platforms is invalid", t, func(t *ftt.Test) {
 		f := &Function{
 			Type:  Function_ANALYZER,
 			Name:  "PyLint",
 			Impls: []*Impl{{}},
 		}
-		So(ValidateFunction(f, sc), ShouldNotBeNil)
+		assert.Loosely(t, ValidateFunction(f, sc), should.NotBeNil)
 	})
 }
 
@@ -336,10 +337,10 @@ func TestValidateImpl(t *testing.T) {
 		IsPlatformSpecific: false,
 	}
 
-	Convey("Impl must have a recipe specified", t, func() {
+	ftt.Run("Impl must have a recipe specified", t, func(t *ftt.Test) {
 		impl := &Impl{
 			RuntimePlatform: Platform_UBUNTU,
 		}
-		So(validateImpl(impl, sc, anyType, anyType), ShouldNotBeNil)
+		assert.Loosely(t, validateImpl(impl, sc, anyType, anyType), should.NotBeNil)
 	})
 }

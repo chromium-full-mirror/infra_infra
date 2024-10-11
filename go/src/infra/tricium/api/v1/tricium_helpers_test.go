@@ -7,24 +7,26 @@ package tricium
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestIsDone(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
-		Convey("Done means done", func() {
+		t.Run("Done means done", func(t *ftt.Test) {
 			done := IsDone(State_SUCCESS)
-			So(done, ShouldBeTrue)
+			assert.Loosely(t, done, should.BeTrue)
 			done = IsDone(State_FAILURE)
-			So(done, ShouldBeTrue)
+			assert.Loosely(t, done, should.BeTrue)
 		})
 
-		Convey("Pending or running is not done", func() {
+		t.Run("Pending or running is not done", func(t *ftt.Test) {
 			done := IsDone(State_PENDING)
-			So(done, ShouldBeFalse)
+			assert.Loosely(t, done, should.BeFalse)
 			done = IsDone(State_RUNNING)
-			So(done, ShouldBeFalse)
+			assert.Loosely(t, done, should.BeFalse)
 		})
 	})
 }

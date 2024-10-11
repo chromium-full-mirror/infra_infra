@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -66,10 +67,10 @@ func (cp *mockConfigProvider) GetAllProjectConfigs(c context.Context) (map[strin
 }
 
 func TestAnalyze(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		Convey("Basic request", func() {
+		t.Run("Basic request", func(t *ftt.Test) {
 			ctx = auth.WithState(ctx, &authtest.FakeState{
 				Identity: identity.Identity(okACLUser),
 			})
@@ -88,16 +89,16 @@ func TestAnalyze(t *testing.T) {
 					},
 				},
 			}, &mockConfigProvider{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			Convey("Enqueues launch request", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.LauncherQueue]), ShouldEqual, 1)
+			t.Run("Enqueues launch request", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.LauncherQueue]), should.Equal(1))
 			})
 
-			Convey("Adds tracking of run", func() {
+			t.Run("Adds tracking of run", func(t *ftt.Test) {
 				r, err := track.FetchRecentRequests(ctx, &mockConfigProvider{})
-				So(err, ShouldBeNil)
-				So(len(r), ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(r), should.Equal(1))
 			})
 		})
 	})
@@ -112,7 +113,7 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 	}
 	url := "https://example.com/notimportant.git"
 
-	Convey("A request for a Gerrit change with no host is invalid", t, func() {
+	ftt.Run("A request for a Gerrit change with no host is invalid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -126,10 +127,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("A request with all Gerrit details is valid", t, func() {
+	ftt.Run("A request with all Gerrit details is valid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -143,10 +144,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("A request with an invalid Change ID format is invalid", t, func() {
+	ftt.Run("A request with an invalid Change ID format is invalid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -160,10 +161,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("A request for a Gerrit change with no git URL is invalid", t, func() {
+	ftt.Run("A request for a Gerrit change with no git URL is invalid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -176,10 +177,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("A request for a git commit with all fields is valid", t, func() {
+	ftt.Run("A request for a git commit with all fields is valid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -190,10 +191,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("A request for a git commit with no URL is invalid", t, func() {
+	ftt.Run("A request for a git commit with no URL is invalid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -203,10 +204,10 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("A request for a git commit with no ref is invalid", t, func() {
+	ftt.Run("A request for a git commit with no ref is invalid", t, func(t *ftt.Test) {
 		err := validateAnalyzeRequest(ctx, &tricium.AnalyzeRequest{
 			Project: project,
 			Files:   files,
@@ -216,6 +217,6 @@ func TestValidateAnalyzeRequest(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
