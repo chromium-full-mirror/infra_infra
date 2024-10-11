@@ -29,37 +29,14 @@ class CompletedBuildPubsubIngestor(BaseHandler):
   def HandlePost(self, **kwargs):
     build_id = None
     status = None
-    builder_name = None
     try:
       envelope = self.request.get_json(force=True)
       # See the list of available 'attributes' at https://bit.ly/47fCmXC
       version = envelope['message']['attributes'].get('version')
-      if version and (version != 'v1' and version != 'v2'):
-        logging.info('Ignoring versions other than v1 & v2')
+      if version and version != 'v2':
+        logging.info('Ignoring versions other than v2')
         return
-      if not version or version == 'v1':
-        build_id = envelope['message']['attributes']['build_id']
-        build = json.loads(base64.b64decode(
-            envelope['message']['data']))['build']
-        status = build['status']
-        parameters_json = json.loads(build['parameters_json'])
-        builder_name = parameters_json['builder_name']
-
-        # Legacy Buildbucket Status
-        # Visit https://bit.ly/3nnra8P to understand the mapping to new status
-        # enum
-        if status == 'COMPLETED':
-          # Filter the builds Findit doesn't have permission to read
-          bb_build = GetV2Build(build_id)
-          if not bb_build:
-            logging.error('Failed to download build for %s/%r.', builder_name,
-                          build_id)
-            return
-          _HandlePossibleCodeCoverageBuild(int(build_id))
-        # We don't care about pending or non-supported builds, so we accept the
-        # notification by returning 200, and prevent pubsub from retrying it.
-
-      else:
+      if not version or version == 'v2':
         result = Parse(
             base64.b64decode(envelope['message']['data']),
             notification_pb2.BuildsV2PubSub(),
