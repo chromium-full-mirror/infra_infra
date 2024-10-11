@@ -22,7 +22,7 @@ import (
 	common_utils "go.chromium.org/chromiumos/test/publish/cmd/common-utils"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
-	ants "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
 )
 
 const (
@@ -105,7 +105,7 @@ func createTestService(ctx context.Context) (*AntsPublishService, error) {
 		return nil, err
 	}
 
-	wu := &ants.WorkUnit{
+	wu := &ab_qa_atp.WorkUnit{
 		Name:         "ParentWorkUnit1",
 		Type:         "TF_MODULE",
 		InvocationId: inv.InvocationId,
@@ -128,17 +128,17 @@ func createTestService(ctx context.Context) (*AntsPublishService, error) {
 
 // createInvocation is used to create a default invocation
 // This is used for testing only. Invocation Id should be received from ATP/CTP
-func (aps *AntsPublishService) createInvocation() (*ants.Invocation, error) {
+func (aps *AntsPublishService) createInvocation() (*ab_qa_atp.Invocation, error) {
 	log.Println("creating invocation")
 
-	build := &ants.BuildDescriptor{
+	build := &ab_qa_atp.BuildDescriptor{
 		Branch:      "git_main-al-dev",
 		BuildTarget: "brya-trunk_staging-userdebug",
 		BuildId:     "12425286",
 	}
-	inv := &ants.Invocation{
+	inv := &ab_qa_atp.Invocation{
 		PrimaryBuild: build,
-		Properties: []*ants.Property{
+		Properties: []*ab_qa_atp.Property{
 			{Name: "account_id", Value: "1"},
 		},
 	}
@@ -146,8 +146,8 @@ func (aps *AntsPublishService) createInvocation() (*ants.Invocation, error) {
 	return aps.service.InvocationService.Insert(inv)
 }
 
-func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*ants.WorkUnit, error) {
-	wu := &ants.WorkUnit{
+func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*ab_qa_atp.WorkUnit, error) {
+	wu := &ab_qa_atp.WorkUnit{
 		Name:         name,
 		Type:         wuType,
 		ParentId:     parent,
@@ -161,9 +161,9 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	modules := make(map[string]*ants.WorkUnit)
-	testCases := make(map[string]*ants.WorkUnit)
-	var entries []*ants.BatchInsertEntry
+	modules := make(map[string]*ab_qa_atp.WorkUnit)
+	testCases := make(map[string]*ab_qa_atp.WorkUnit)
+	var entries []*ab_qa_atp.BatchInsertEntry
 
 	for i, result := range aps.results {
 		log.Printf("looking at result: %s", result.GetTestCaseId().Value)
@@ -190,12 +190,12 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 			testCases[tcName] = tcwu
 		}
 
-		tr := &ants.BatchInsertEntry{
+		tr := &ab_qa_atp.BatchInsertEntry{
 			Token: int64(i),
-			TestResult: &ants.TestResult{
+			TestResult: &ab_qa_atp.TestResult{
 				InvocationId: aps.metadata.GetAntsInvocationId(),
 				WorkUnitId:   testCases[tcName].Id,
-				TestIdentifier: &ants.TestIdentifier{
+				TestIdentifier: &ab_qa_atp.TestIdentifier{
 					Module:    moduleName,
 					TestClass: tcName,
 					Method:    testName,
@@ -206,7 +206,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		entries = append(entries, tr)
 	}
 
-	request := &ants.TestResultBatchInsertRequest{
+	request := &ab_qa_atp.TestResultBatchInsertRequest{
 		TestResults:     entries,
 		InsertBatchSize: int64(len(entries)),
 	}
@@ -244,10 +244,10 @@ func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
 	})
 }
 
-func (aps *AntsPublishService) uploadArtifact(path string) (*ants.BuildArtifactMetadata, error) {
+func (aps *AntsPublishService) uploadArtifact(path string) (*ab_qa_atp.BuildArtifactMetadata, error) {
 	filename := filepath.Base(path)
 
-	artifactMetadata := &ants.BuildArtifactMetadata{
+	artifactMetadata := &ab_qa_atp.BuildArtifactMetadata{
 		Name:         filename,
 		InvocationId: aps.metadata.AntsInvocationId,
 		WorkUnitId:   aps.metadata.ParentWorkUnitId,

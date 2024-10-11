@@ -8,23 +8,23 @@ import (
 	"context"
 	"io"
 
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
 )
 
 // TestArtifactsService handles API calls related to testResults.
 type TestArtifactsService interface {
-	Get(resourceID string) (*androidbuildinternal.BuildArtifactMetadata, error)
-	Update(resourceID string, reader io.Reader, metadata *androidbuildinternal.BuildArtifactMetadata) (*androidbuildinternal.BuildArtifactMetadata, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.TestArtifactListResponse, error)
+	Get(resourceID string) (*ab_qa_atp.BuildArtifactMetadata, error)
+	Update(resourceID string, reader io.Reader, metadata *ab_qa_atp.BuildArtifactMetadata) (*ab_qa_atp.BuildArtifactMetadata, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestArtifactListResponse, error)
 }
 
 // TestArtifactsServiceImpl is the RPC implementation of TestArtifactsService.
 type TestArtifactsServiceImpl struct {
-	client *androidbuildinternal.TestartifactService
+	client *ab_qa_atp.TestartifactService
 }
 
 // Get implmentation for test artifact metadata.
-func (w *TestArtifactsServiceImpl) Get(resourceID string) (*androidbuildinternal.BuildArtifactMetadata, error) {
+func (w *TestArtifactsServiceImpl) Get(resourceID string) (*ab_qa_atp.BuildArtifactMetadata, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -35,7 +35,7 @@ func (w *TestArtifactsServiceImpl) Get(resourceID string) (*androidbuildinternal
 }
 
 // Update implementation for test artifact metadata.
-func (w *TestArtifactsServiceImpl) Update(resourceID string, reader io.Reader, metadata *androidbuildinternal.BuildArtifactMetadata) (*androidbuildinternal.BuildArtifactMetadata, error) {
+func (w *TestArtifactsServiceImpl) Update(resourceID string, reader io.Reader, metadata *ab_qa_atp.BuildArtifactMetadata) (*ab_qa_atp.BuildArtifactMetadata, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -46,7 +46,7 @@ func (w *TestArtifactsServiceImpl) Update(resourceID string, reader io.Reader, m
 }
 
 // List implmentation for test artifact.
-func (w *TestArtifactsServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.TestArtifactListResponse, error) {
+func (w *TestArtifactsServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestArtifactListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}

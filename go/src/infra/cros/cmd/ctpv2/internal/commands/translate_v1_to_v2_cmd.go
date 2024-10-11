@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
+	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_builders"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -32,6 +33,8 @@ type TranslateV1ToV2Cmd struct {
 	RequestToTargetChainMap map[string]map[string]string
 	CtpV2RequestMap         map[string]*api.CTPRequest
 	DddTrackerMap           map[string]bool
+
+	AlStateInfo *data.AlStateInfo
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -88,6 +91,14 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 		cmd.CtpV2Request = sk.CtpV2Request
 	}
 
+	cmd.AlStateInfo = sk.AlStateInfo
+	if cmd.AlStateInfo == nil {
+		cmd.AlStateInfo = &data.AlStateInfo{
+			IsAlRun:       false,
+			WorkUnitTrees: map[string]*androidapi.WorkUnitNode{},
+		}
+	}
+
 	return nil
 }
 
@@ -111,7 +122,37 @@ func (cmd *TranslateV1ToV2Cmd) updateLocalTestStateKeeper(
 		sk.DddTrackerMap = cmd.DddTrackerMap
 	}
 
+	if cmd.AlStateInfo != nil {
+		sk.AlStateInfo = cmd.AlStateInfo
+	}
+
 	return nil
+}
+
+// getATPDeps reaches into the request to extract the parentWUID and invocation
+// ID of the ATP run.
+//
+// NOTE: CTPv2 currently only supports one ATP request per builder. If we want
+// to support multiple requests then we need to adjust this function to handle
+// that.
+func getATPDeps(req *api.CTPv2Request) (parentWUID, invocationID string) {
+	// If the current request is an AL run then fetch the Invocation ID and the
+	// ATP WU ID so that we can build our tree.
+	for _, request := range req.GetRequests() {
+		if args := request.GetSuiteRequest().GetTestSuite().GetExecutionMetadata().GetArgs(); args != nil {
+			for _, arg := range args {
+				if arg.GetFlag() == "ants_invocation_id" {
+					invocationID = arg.GetValue()
+				}
+				if arg.GetFlag() == "ants_work_unit_id" {
+					parentWUID = arg.GetValue()
+				}
+			}
+
+		}
+	}
+
+	return
 }
 
 // Execute executes the command.
@@ -123,6 +164,28 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	// exit if v2 is already set
 	if cmd.CtpV2Request != nil && len(cmd.CtpV2Request.GetRequests()) > 0 {
 		step.SetSummaryMarkdown("V2 request already set so skipping translation...")
+
+		// If the current run is an AL run then pull the ATP details out of the
+		// request arguments.
+		if parentWUID, invocationID := getATPDeps(cmd.CtpV2Request); parentWUID != "" && invocationID != "" {
+			// Set true if not done already.
+			cmd.AlStateInfo.IsAlRun = true
+
+			// Generate the top of the tree node to begin the ATP WU tree.
+			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.TestJob, nil)
+			if err != nil {
+				return err
+			}
+
+			// TODO: Set the cached tree inside of the State keeper rather than
+			// inside of the API. We also likely want to pass along which node
+			// dependant steps should be using rather than giving them the full
+			// tree to traverse.
+			cmd.AlStateInfo.WorkUnitTrees["test"] = top
+
+			fmt.Printf("top %s: %+v\n", top.GetWorkUnit().Id, top)
+		}
+
 		return nil
 	}
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV1Requests, "Received CtpV1 Request")

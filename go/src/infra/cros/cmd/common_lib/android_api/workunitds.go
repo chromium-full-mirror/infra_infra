@@ -5,17 +5,36 @@
 package androidapi
 
 import (
+	"context"
 	"fmt"
 	"sort"
 
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
 )
 
 // WULayer is and enum signifying what WU layer type the node represents
 type WULayer int
 
+func (w WULayer) String() string {
+	switch w {
+	case Unknown:
+		return "UNKNOWN"
+	case TestJob:
+		return "TEST_JOB"
+	case Run:
+		return "RUN"
+	case Shard:
+		return "SHARD"
+	case Attempt:
+		return "ATTEMPT"
+	default:
+		return "ERROR"
+	}
+}
+
 const (
-	TestJob WULayer = iota
+	Unknown WULayer = iota
+	TestJob
 	Run
 	Shard
 	Attempt
@@ -26,7 +45,7 @@ const (
 // access of the tree limited to the exposed functions.
 type WorkUnitNode struct {
 	// workUnit contains the actual ATP Work Unit of the node.
-	workUnit *androidbuildinternal.WorkUnit
+	workUnit *ab_qa_atp.WorkUnit
 
 	// layer describes the which stage in the tree this work unit represents
 	layer WULayer
@@ -40,10 +59,16 @@ type WorkUnitNode struct {
 
 	// children is a list of all nodes that are descendants of this node.
 	children ChildNodes
+
+	Service WorkUnitService
 }
 
-func (w *WorkUnitNode) GetWorkUnit() *androidbuildinternal.WorkUnit {
+func (w *WorkUnitNode) GetWorkUnit() *ab_qa_atp.WorkUnit {
 	return w.workUnit
+}
+
+func (w *WorkUnitNode) SetWorkUnit(newWU *ab_qa_atp.WorkUnit) {
+	w.workUnit = newWU
 }
 
 func (w *WorkUnitNode) GetLayer() WULayer {
@@ -97,16 +122,123 @@ func (w *WorkUnitNode) AddChild(node *WorkUnitNode) error {
 	return nil
 }
 
-func NewWorkUnitNode(workUnit *androidbuildinternal.WorkUnit, nodeType WULayer, parent *WorkUnitNode) *WorkUnitNode {
-	return &WorkUnitNode{
-		workUnit: workUnit,
-		layer:    nodeType,
+func (w *WorkUnitNode) FetchTop() (*WorkUnitNode, error) {
+	cycleChecker := map[*WorkUnitNode]struct{}{}
+
+	top := w
+	for {
+		// Check to see if we are stuck in a cycle.
+		if _, ok := cycleChecker[top]; ok {
+			return nil, fmt.Errorf("a cycle has been detected in the node graph")
+		} else {
+			cycleChecker[top] = struct{}{}
+		}
+
+		if top.parent == nil {
+			return top, nil
+		}
+
+		top = top.parent
+	}
+}
+
+func (w *WorkUnitNode) FetchRunLayer() ([]*WorkUnitNode, error) {
+	topNode, err := w.FetchTop()
+	if err != nil {
+		return nil, err
+	}
+
+	return topNode.GetChildren(), nil
+}
+
+func (w *WorkUnitNode) FetchShardLayer() ([][]*WorkUnitNode, error) {
+	runLayer, err := w.FetchRunLayer()
+	if err != nil {
+		return nil, err
+	}
+
+	shardLayer := [][]*WorkUnitNode{}
+	for _, runNode := range runLayer {
+		shardLayer = append(shardLayer, runNode.children)
+	}
+
+	return shardLayer, nil
+}
+
+func (w *WorkUnitNode) FetchAttemptLayer() ([][]*WorkUnitNode, error) {
+	shardLayer, err := w.FetchShardLayer()
+	if err != nil {
+		return nil, err
+	}
+
+	attemptLayer := [][]*WorkUnitNode{}
+	for _, runNodes := range shardLayer {
+		for _, runNode := range runNodes {
+			attemptLayer = append(attemptLayer, runNode.children)
+		}
+	}
+
+	return attemptLayer, nil
+}
+
+// NewWorkUnitNode Creates and registers a Work Unit using the ATP API and
+// inserts it into the local Work Unit tree.
+func NewWorkUnitNode(parentWUId, InvocationID string, nodeType WULayer, parent *WorkUnitNode) (*WorkUnitNode, error) {
+	// TODO: Pass this in rather than create a new one each time
+	service, err := NewAndroidBuildService(context.Background(), SERVICEACCOUNT)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the node that will represent the work unit in the cached tree.
+	newWU := &WorkUnitNode{
+		layer: nodeType,
 		// Default to 0. If it is added to a ChildNodes list then get the index
 		// based on the order of insertion.
 		index:    0,
 		parent:   parent,
 		children: ChildNodes{},
 	}
+
+	// If parent is nil then that means we are at the top node and do not need
+	// to add this node to a ChildNodes list.
+	//
+	// NOTE: This will only be used by a TEST_JOB type node.
+	if parent != nil {
+		err := parent.AddChild(newWU)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Set the layer corresponding child number.
+	childRunNumber, childShardNumber, childAttemptNumber := 0, 0, 0
+	runNumber := newWU.index - 1
+	if runNumber < 0 {
+		runNumber = 0
+	}
+	switch nodeType {
+	case Run:
+		childRunNumber = runNumber
+	case Shard:
+		childShardNumber = runNumber
+	case Attempt:
+		childAttemptNumber = runNumber
+	}
+
+	// Create the work unit "request" then insert it using the ATP API. The API
+	// will return a WU that has a registered WUID. We do not set that in code
+	// here.
+	workUnit := NewWorkUnit(parentWUId, InvocationID, fmt.Sprintf("%s #%d", nodeType.String(), runNumber), childRunNumber, childShardNumber, childAttemptNumber)
+	workUnit, err = service.WorkUnitService.Insert(workUnit)
+	if err != nil {
+		return nil, err
+	}
+
+	// Place the registered WU inside the node structure.
+	newWU.workUnit = workUnit
+
+	return newWU, nil
 }
 
 // ChildNodes implements sort.Interface so that we can iterate according to the

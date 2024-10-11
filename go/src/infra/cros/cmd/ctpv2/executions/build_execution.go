@@ -11,6 +11,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	androidapi "infra/cros/cmd/common_lib/android_api"
 	"log"
 	"strconv"
 	"strings"
@@ -146,7 +147,13 @@ func executeRequests(
 	} else {
 		keyReqMap = sk.V1KeyToCTPv2Req
 	}
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion)
+
+	var workUnitTrees map[string]*androidapi.WorkUnitNode
+	if sk.AlStateInfo != nil && sk.AlStateInfo.WorkUnitTrees != nil {
+		workUnitTrees = sk.AlStateInfo.WorkUnitTrees
+	}
+
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -169,7 +176,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitNode) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -195,7 +202,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees)
 	}
 	go func() {
 		wg.Wait()
@@ -223,7 +230,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitNode) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -252,7 +259,7 @@ func executeFiltersInLuciBuild(
 			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDAlpha, err)
 		}
 		defer client.Close()
-		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJob, CurrentTestJob: inputTestJob, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client}
+		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJob, CurrentTestJob: inputTestJob, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees}
 	} else {
 		alStateInfo = nil
 	}

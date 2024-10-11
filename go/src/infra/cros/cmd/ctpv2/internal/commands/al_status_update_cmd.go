@@ -7,11 +7,13 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/outputprops"
@@ -54,6 +56,22 @@ func (cmd *AlStatusUpdateCmd) UpdateStateKeeper(
 	ctx context.Context,
 	ski interfaces.StateKeeperInterface) error {
 
+	var err error
+	switch sk := ski.(type) {
+	case *data.FilterStateKeeper:
+		err = cmd.updateScheduleStateKeeper(ctx, sk)
+	}
+
+	if err != nil {
+		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	return nil
+}
+
+func (cmd *AlStatusUpdateCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
+	sk.AlStateInfo = cmd.AlStateInfo
+
 	return nil
 }
 
@@ -83,6 +101,100 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromPrePostStateKeeper(
 	return nil
 }
 
+func (cmd *AlStatusUpdateCmd) initRunLayer() error {
+	top := cmd.AlStateInfo.WorkUnitTrees["test"]
+	if top == nil {
+		return fmt.Errorf("WU tree was not initialized")
+	}
+
+	runs, err := top.FetchRunLayer()
+	if err != nil {
+		return err
+	}
+
+	if len(runs) == 0 {
+		fmt.Printf("top Parent %s-%s#%d: %+v\n", top.GetWorkUnit().Id, top.GetWorkUnit().Name, top.GetIndex(), top)
+
+		// Generate and insert the Run Node into the WU tree.
+		runNode, err := androidapi.NewWorkUnitNode(top.GetWorkUnit().Id, top.GetWorkUnit().InvocationId, androidapi.Run, top)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
+	}
+
+	return nil
+}
+
+func patchRunsAndTestJob(service *androidapi.Service, top *androidapi.WorkUnitNode) error {
+
+	runNodes, err := top.FetchRunLayer()
+	if err != nil {
+		return err
+	}
+
+	allRunsSuccessful := true
+	for _, run := range runNodes {
+		allSuccess := true
+		for _, attempt := range run.GetChildren() {
+			if strings.ToLower(attempt.GetWorkUnit().State) != "completed" {
+				allSuccess = false
+				break
+			}
+		}
+
+		if !allSuccess {
+			allRunsSuccessful = false
+			run.GetWorkUnit().State = "ERROR"
+		} else {
+			run.GetWorkUnit().State = "COMPLETED"
+		}
+
+		patchedRunWU, err := service.WorkUnitService.Patch(run.GetWorkUnit().Id, run.GetWorkUnit())
+		if err != nil {
+			return err
+		}
+
+		run.SetWorkUnit(patchedRunWU)
+	}
+
+	if !allRunsSuccessful {
+		top.GetWorkUnit().State = "ERROR"
+	} else {
+		top.GetWorkUnit().State = "COMPLETED"
+	}
+
+	patchedTopWU, err := service.WorkUnitService.Patch(top.GetWorkUnit().Id, top.GetWorkUnit())
+	if err != nil {
+		return err
+	}
+
+	top.SetWorkUnit(patchedTopWU)
+
+	return nil
+}
+
+func (cmd *AlStatusUpdateCmd) closeWUTree() error {
+	top := cmd.AlStateInfo.WorkUnitTrees["test"]
+	if top == nil {
+		return fmt.Errorf("wu tree was removed unexpectedly")
+	}
+
+	// TODO(b/372507028): Pass this in rather than create a new one each time
+	service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT)
+	if err != nil {
+		return err
+	}
+
+	err = patchRunsAndTestJob(service, top)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Execute executes the command.
 func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	var err error
@@ -91,6 +203,20 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	if cmd.AlStateInfo == nil || cmd.AlStateInfo.CurrentTestJobEvent == nil {
 		return nil
 	}
+
+	// WORK UNIT MAINTENANCE
+	err = cmd.initRunLayer()
+	if err != nil {
+		return err
+	}
+
+	if cmd.AlStateInfo.DoneTesting {
+		err = cmd.closeWUTree()
+		if err != nil {
+			return err
+		}
+	}
+	// WORK UNIT MAINTENANCE
 
 	currTestJobEvent := cmd.AlStateInfo.CurrentTestJobEvent
 

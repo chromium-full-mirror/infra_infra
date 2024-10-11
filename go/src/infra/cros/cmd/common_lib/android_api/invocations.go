@@ -6,25 +6,25 @@ package androidapi
 import (
 	"context"
 
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atsqa "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
 )
 
 // InvocationService handles API calls related to invocations.
 type InvocationService interface {
-	Get(resourceID string) (*androidbuildinternal.Invocation, error)
-	Insert(invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error)
-	Update(resourceID string, invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error)
-	Patch(resourceID string, invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.InvocationListResponse, error)
+	Get(resourceID string) (*atsqa.Invocation, error)
+	Insert(invocation *atsqa.Invocation) (*atsqa.Invocation, error)
+	Update(resourceID string, invocation *atsqa.Invocation) (*atsqa.Invocation, error)
+	Patch(resourceID string, invocation *atsqa.Invocation) (*atsqa.Invocation, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*atsqa.InvocationListResponse, error)
 }
 
 // InvocationServiceImpl is the RPC implementation of InvocationService.
 type InvocationServiceImpl struct {
-	client *androidbuildinternal.InvocationService
+	client *atsqa.InvocationService
 }
 
-// Get implmentation for invocations.
-func (w *InvocationServiceImpl) Get(resourceID string) (*androidbuildinternal.Invocation, error) {
+// Get implementation for invocations.
+func (w *InvocationServiceImpl) Get(resourceID string) (*atsqa.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -34,8 +34,8 @@ func (w *InvocationServiceImpl) Get(resourceID string) (*androidbuildinternal.In
 	return call.Do()
 }
 
-// Insert implmentation for invocations.
-func (w *InvocationServiceImpl) Insert(invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error) {
+// Insert implementation for invocations.
+func (w *InvocationServiceImpl) Insert(invocation *atsqa.Invocation) (*atsqa.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -45,8 +45,8 @@ func (w *InvocationServiceImpl) Insert(invocation *androidbuildinternal.Invocati
 	return call.Do()
 }
 
-// Update implmentation for invocations.
-func (w *InvocationServiceImpl) Update(resourceID string, invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error) {
+// Update implementation for invocations.
+func (w *InvocationServiceImpl) Update(resourceID string, invocation *atsqa.Invocation) (*atsqa.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -56,8 +56,8 @@ func (w *InvocationServiceImpl) Update(resourceID string, invocation *androidbui
 	return call.Do()
 }
 
-// Patch implmentation for invocations.
-func (w *InvocationServiceImpl) Patch(resourceID string, invocation *androidbuildinternal.Invocation) (*androidbuildinternal.Invocation, error) {
+// Patch implementation for invocations.
+func (w *InvocationServiceImpl) Patch(resourceID string, invocation *atsqa.Invocation) (*atsqa.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -67,8 +67,8 @@ func (w *InvocationServiceImpl) Patch(resourceID string, invocation *androidbuil
 	return call.Do()
 }
 
-// List implmentation for invocations.
-func (w *InvocationServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.InvocationListResponse, error) {
+// List implementation for invocations.
+func (w *InvocationServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*atsqa.InvocationListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}

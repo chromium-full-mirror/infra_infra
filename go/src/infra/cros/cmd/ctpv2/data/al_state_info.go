@@ -13,7 +13,9 @@ import (
 
 // AlStateInfo captures the state info for Al runs
 type AlStateInfo struct {
-	IsAlRun bool
+	IsAlRun     bool
+	DoneTesting bool
+
 	// Input test job that should not change during execution and only be used as reader
 	InputTestJob *common.TestJobMessage
 

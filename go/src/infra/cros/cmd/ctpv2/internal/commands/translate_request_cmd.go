@@ -113,7 +113,7 @@ func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(
 // Execute executes the command.
 func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	var err error
-	step, ctx := build.StartStep(ctx, "Translate equest")
+	step, ctx := build.StartStep(ctx, "Translate request")
 	defer func() { step.End(err) }()
 
 	req := step.Log("request received")

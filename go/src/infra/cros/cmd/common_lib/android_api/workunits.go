@@ -7,25 +7,25 @@ package androidapi
 import (
 	"context"
 
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
 )
 
 // WorkUnitService handles API calls related to workunits.
 type WorkUnitService interface {
-	Get(resourceID string) (*androidbuildinternal.WorkUnit, error)
-	Insert(workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error)
-	Update(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error)
-	Patch(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.WorkUnitListResponse, error)
+	Get(resourceID string) (*ab_qa_atp.WorkUnit, error)
+	Insert(workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
+	Update(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
+	Patch(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.WorkUnitListResponse, error)
 }
 
 // WorkUnitServiceImpl is the RPC implementation of WorkUnitService.
 type WorkUnitServiceImpl struct {
-	client *androidbuildinternal.WorkunitService
+	client *ab_qa_atp.WorkunitService
 }
 
 // Get implementation for workunits.
-func (w *WorkUnitServiceImpl) Get(resourceID string) (*androidbuildinternal.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Get(resourceID string) (*ab_qa_atp.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -36,7 +36,7 @@ func (w *WorkUnitServiceImpl) Get(resourceID string) (*androidbuildinternal.Work
 }
 
 // Insert implementation for workunits.
-func (w *WorkUnitServiceImpl) Insert(workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Insert(workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -47,7 +47,7 @@ func (w *WorkUnitServiceImpl) Insert(workunit *androidbuildinternal.WorkUnit) (*
 }
 
 // Update implementation for workunits.
-func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -58,7 +58,7 @@ func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *androidbuildin
 }
 
 // Patch implementation for workunits.
-func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -69,7 +69,7 @@ func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *androidbuildint
 }
 
 // List implementation for workunits.
-func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*androidbuildinternal.WorkUnitListResponse, error) {
+func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.WorkUnitListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -85,4 +85,17 @@ func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, opt
 	}
 
 	return call.MaxResults(maxResults).Do()
+}
+
+// NewWorkUnit is a helper function to generate a new WorkUnit.
+func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childShardNumber, childAttemptNumber int) *ab_qa_atp.WorkUnit {
+	return &ab_qa_atp.WorkUnit{
+		InvocationId:       invocationID,
+		ParentId:           parentWUId,
+		Name:               name,
+		State:              "RUNNING",
+		ChildRunNumber:     int64(childRunNumber),
+		ChildShardNumber:   int64(childShardNumber),
+		ChildAttemptNumber: int64(childAttemptNumber),
+	}
 }
