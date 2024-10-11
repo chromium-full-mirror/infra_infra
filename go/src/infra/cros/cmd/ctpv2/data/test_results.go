@@ -37,20 +37,36 @@ func (t *TestResults) GetFailureErr() error {
 		return t.TopLevelError
 	}
 
-	// TODO (TSE): update this when modules are added here
-	testResults, ok := t.Results.GetAutotestResults()["original_test"]
-	if !ok {
-		// the test results from trv2 should be here, if not,
-		// something else failed before test execution. so fail.
+	if t.Results.GetAutotestResults() == nil && t.Results.GetAndroidGenericResult() == nil {
 		return fmt.Errorf("no test result found")
 	}
 
-	for _, testCase := range testResults.GetTestCases() {
-		if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
-			return fmt.Errorf("test(s) failure")
+	if t.Results.GetAutotestResults() != nil {
+		testResults, ok := t.Results.GetAutotestResults()["original_test"]
+		if !ok {
+			// the test results from trv2 should be here, if not,
+			// something else failed before test execution. so fail.
+			return fmt.Errorf("no test result found")
 		}
+
+		for _, testCase := range testResults.GetTestCases() {
+			if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+				return fmt.Errorf("test(s) failure")
+			}
+		}
+
+		return nil
 	}
 
+	if t.Results.GetAndroidGenericResult() != nil {
+		for _, givenTestCase := range t.Results.GetAndroidGenericResult().GetGivenTestCases() {
+			for _, testCase := range givenTestCase.GetChildTestCases() {
+				if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+					return fmt.Errorf("test(s) failure")
+				}
+			}
+		}
+	}
 	return nil
 }
 
