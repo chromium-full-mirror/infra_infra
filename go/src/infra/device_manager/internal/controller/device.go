@@ -66,10 +66,9 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 }
 
 // PublishDeviceEvent takes a Device and publishes an event to PubSub.
-func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *model.Device) error {
+func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, device *model.Device) error {
 	// Send message to PubSub Device events stream
-	topic := psClient.Topic(external.DeviceEventsPubSubTopic)
-	defer topic.Stop()
+	topic := psClient.DeviceEventsPubSubTopic
 
 	dutID, err := device.DUTID()
 	if err != nil {
@@ -115,7 +114,7 @@ func PublishDeviceEvent(ctx context.Context, psClient *pubsub.Client, device *mo
 func SendNotifications(
 	ctx context.Context,
 	db *sql.DB,
-	psClient *pubsub.Client,
+	psClient external.PubSubClient,
 	opts *NotifierOpts,
 ) {
 	var (
@@ -196,7 +195,7 @@ func SendNotifications(
 func publishDeviceWorker(
 	ctx context.Context,
 	wg *sync.WaitGroup,
-	psClient *pubsub.Client,
+	psClient external.PubSubClient,
 	devices <-chan *model.Device,
 	successes chan<- *model.Device,
 ) {

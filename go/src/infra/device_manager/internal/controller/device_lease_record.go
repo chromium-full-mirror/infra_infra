@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"time"
 
-	"cloud.google.com/go/pubsub"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,7 +30,7 @@ import (
 // The function executes as a transaction. It attempts to create a lease record
 // with an available device. Then it updates the Device's state to LEASED
 // and publishes to a PubSub stream. The transaction is then committed.
-func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.LeaseDeviceRequest, deviceID string, idType model.DeviceIDType) (*api.LeaseDeviceResponse, error) {
+func LeaseDevice(ctx context.Context, db *sql.DB, r *api.LeaseDeviceRequest, deviceID string, idType model.DeviceIDType) (*api.LeaseDeviceResponse, error) {
 	// TODO (b/328662436): Collect metrics
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -101,7 +100,7 @@ func LeaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *ap
 // The function executes as a transaction. It attempts to create lease records
 // on available Devices. Then it updates the Devices' state to LEASED and
 // publishes to a PubSub stream. The transaction is then committed.
-func BulkLeaseDevices(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.BulkLeaseDevicesRequest) (*api.BulkLeaseDevicesResponse, error) {
+func BulkLeaseDevices(ctx context.Context, db *sql.DB, r *api.BulkLeaseDevicesRequest) (*api.BulkLeaseDevicesResponse, error) {
 	// TODO (b/328662436): Collect metrics
 
 	// A map for DUT ID to lease record
@@ -288,7 +287,7 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 // ReleaseDevice takes a lease ID and releases the device associated. In a
 // transaction, the RPC will update the lease and set the device to be
 // available.
-func ReleaseDevice(ctx context.Context, db *sql.DB, psClient *pubsub.Client, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
+func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
 	// TODO (b/328662436): Collect metrics
 	record, err := model.GetDeviceLeaseRecordByID(ctx, db, r.GetLeaseId())
 	if err != nil {

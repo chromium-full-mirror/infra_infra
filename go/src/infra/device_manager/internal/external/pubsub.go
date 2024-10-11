@@ -16,17 +16,19 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-const DeviceEventsPubSubTopic string = "device-events-v1"
-
-var allDMTopics = []string{
-	DeviceEventsPubSubTopic,
+type PubSubClient struct {
+	Client                  *pubsub.Client
+	DeviceEventsPubSubTopic *pubsub.Topic
 }
 
+const DeviceEventsTopicName string = "device-events-v1"
+
 // NewPubSubClient creates a PubSub client based on cloud project.
-func NewPubSubClient(ctx context.Context, cloudProject string) (*pubsub.Client, error) {
+func NewPubSubClient(ctx context.Context, cloudProject string) (PubSubClient, error) {
+	psClient := PubSubClient{}
 	tokenSource, err := auth.GetTokenSource(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 	if err != nil {
-		return nil, errors.Annotate(err, "NewPubSubClient: failed to get AsSelf credentails").Err()
+		return psClient, errors.Annotate(err, "NewPubSubClient: failed to get AsSelf credentails").Err()
 	}
 	client, err := pubsub.NewClient(
 		ctx, cloudProject,
@@ -34,30 +36,30 @@ func NewPubSubClient(ctx context.Context, cloudProject string) (*pubsub.Client, 
 	)
 	if err != nil {
 		logging.Errorf(ctx, "NewPubSubClient: cannot set up PubSub client: %s", err)
-		return nil, err
+		return psClient, err
 	}
 
-	err = verifyTopics(ctx, client)
+	det, err := setTopic(ctx, client, DeviceEventsTopicName)
 	if err != nil {
 		logging.Errorf(ctx, "NewPubSubClient: cannot set up PubSub client: %s", err)
-		return nil, err
+		return psClient, err
 	}
-	return client, nil
+
+	psClient.Client = client
+	psClient.DeviceEventsPubSubTopic = det
+
+	return psClient, nil
 }
 
-// verifyTopics verifies that a list of PubSub topics exist.
-func verifyTopics(ctx context.Context, psClient *pubsub.Client) error {
-	for _, t := range allDMTopics {
-		topic := psClient.Topic(t)
-		defer topic.Stop()
-
-		ok, err := topic.Exists(ctx)
-		if err != nil {
-			return err
-		}
-		if !ok {
-			return fmt.Errorf("verifyTopics: topic %s not found", t)
-		}
+// setTopic verifies that a list of PubSub topics exist.
+func setTopic(ctx context.Context, psClient *pubsub.Client, name string) (*pubsub.Topic, error) {
+	topic := psClient.Topic(name)
+	ok, err := topic.Exists(ctx)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	if !ok {
+		return nil, fmt.Errorf("setTopic: topic %s not found", name)
+	}
+	return topic, nil
 }

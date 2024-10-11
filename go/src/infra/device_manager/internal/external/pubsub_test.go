@@ -15,9 +15,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// Test_verifyTopics ensures verifyTopics checks that topics are created or
-// absent properly.
-func Test_verifyTopics(t *testing.T) {
+// Test_setTopics ensures setTopics checks that topics are created or absent.
+func Test_setTopics(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
@@ -52,14 +51,13 @@ func Test_verifyTopics(t *testing.T) {
 			}
 		}()
 
-		for _, topic := range allDMTopics {
-			_, err = psClient.CreateTopic(ctx, topic)
-			if err != nil {
-				t.Fatalf("failed to create fake pubsub topic")
-			}
+		_, err = psClient.CreateTopic(ctx, DeviceEventsTopicName)
+		if err != nil {
+			t.Fatalf("failed to create fake pubsub topic")
 		}
 
-		if err = verifyTopics(ctx, psClient); err != nil {
+		_, err = setTopic(ctx, psClient, DeviceEventsTopicName)
+		if err != nil {
 			t.Fatalf("unexpected error: %s", err)
 		}
 	})
@@ -95,7 +93,8 @@ func Test_verifyTopics(t *testing.T) {
 			}
 		}()
 
-		if err = verifyTopics(ctx, psClient); err == nil {
+		_, err = setTopic(ctx, psClient, DeviceEventsTopicName)
+		if err == nil {
 			t.Fatalf("unexpected success")
 		}
 	})

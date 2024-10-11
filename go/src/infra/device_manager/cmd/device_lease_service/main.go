@@ -120,11 +120,6 @@ func main() {
 			return err
 		}
 
-		err = frontend.SetUpPubSubClient(srv.Context, deviceLeaseServer, srv.Options.CloudProject)
-		if err != nil {
-			return err
-		}
-
 		err = frontend.SetUpBQClient(srv.Context, deviceLeaseServer, srv.Options.CloudProject)
 		if err != nil {
 			return err

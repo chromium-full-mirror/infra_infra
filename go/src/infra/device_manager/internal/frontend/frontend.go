@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"cloud.google.com/go/pubsub"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -42,7 +41,7 @@ type Server struct {
 // ServiceClients contains all relevant service clients for Device Manager Service.
 type ServiceClients struct {
 	DBClient     database.Client
-	PubSubClient *pubsub.Client
+	PubSubClient external.PubSubClient
 	UFSClient    ufsAPI.FleetClient
 	BQClient     *bigquery.Client
 }
@@ -151,7 +150,7 @@ func (s *Server) LeaseDevice(ctx context.Context, r *api.LeaseDeviceRequest) (*a
 	if deviceID == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "LeaseDevice: dut_id and device_id labels have no values")
 	}
-	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r, deviceID, idType)
+	return controller.LeaseDevice(ctx, s.ServiceClients.DBClient.Conn, r, deviceID, idType)
 }
 
 // BulkLeaseDevices takes a BulkLeaseDevicesRequest and leases a corresponding device.
@@ -165,12 +164,12 @@ func (s *Server) BulkLeaseDevices(ctx context.Context, r *api.BulkLeaseDevicesRe
 	}
 
 	logging.Debugf(ctx, "BulkLeaseDevices: controller processing BulkLeaseDevicesRequests")
-	return controller.BulkLeaseDevices(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r)
+	return controller.BulkLeaseDevices(ctx, s.ServiceClients.DBClient.Conn, r)
 }
 
 // ReleaseDevice releases the leased device.
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
-	return controller.ReleaseDevice(ctx, s.ServiceClients.DBClient.Conn, s.ServiceClients.PubSubClient, r)
+	return controller.ReleaseDevice(ctx, s.ServiceClients.DBClient.Conn, r)
 }
 
 // ExtendLease attempts to extend the lease on a device by ExtendLeaseRequest.
