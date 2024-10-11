@@ -11,15 +11,7 @@ import sys
 import urllib.request
 
 _PLATFORMS = {
-    'windows-386': 'x86',
     'windows-amd64': 'x64',
-    'windows-arm64': 'arm',
-}
-
-_PLATFORMS_ALT = {
-    'windows-386': 'i386',
-    'windows-amd64': 'x86_64',
-    'windows-arm64': 'arm',
 }
 
 _EXTENSION = {
@@ -45,14 +37,13 @@ def get_download_url(version, platform):
   if platform not in _PLATFORMS:
     raise ValueError(f'unsupported platform {platform}')
 
-  platform_alt = _PLATFORMS_ALT[platform]
   extension = _EXTENSION[platform.split('-')[0]]
   platform = _PLATFORMS[platform]
 
   base_url = f'https://packages.vmware.com/tools/releases/latest/windows/{platform}/'
   req = urllib.request.Request(base_url, headers=_HTTP_HEADERS)
   resp = urllib.request.urlopen(req)
-  file_name = re.findall(rf'href="(.*-{version}-{platform_alt}{extension})"',
+  file_name = re.findall(rf'href="(VMware-tools-{version}-{platform}{extension})"',
                          resp.read().decode('utf-8'))[0]
   url = (f'{base_url}{file_name}')
 
