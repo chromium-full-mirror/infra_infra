@@ -7,7 +7,9 @@ package configs
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/common_configs"
@@ -17,151 +19,151 @@ import (
 
 func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported command type", t, func() {
+	ftt.Run("Unsupported command type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		cmd, err := cmdConfig.GetCommand(common_commands.UnSupportedCmdType, common_executors.NoExecutorType)
-		So(cmd, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, cmd, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 // TODO: Fix tests
 // func TestGetCommand_SupportedCmdType(t *testing.T) {
 // 	t.Parallel()
-
-// 	Convey("Supported command type", t, func() {
+//
+// 	ftt.Run("Supported command type", t, func(t *ftt.Test) {
 // 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 // 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 // 		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 // 		execConfig := NewExecutorConfig(ctr, contConfig)
 // 		cmdConfig := NewCommandConfig(execConfig)
-
+//
 // 		cmd, err := cmdConfig.GetCommand(commands.BuildInputValidationCmdType, executors.NoExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.ParseEnvInfoCmdType, executors.NoExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.InvServiceStartCmdType, executors.InvServiceExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.InvServiceStopCmdType, executors.InvServiceExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.LoadDutTopologyCmdType, executors.InvServiceExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.CtrServiceStartAsyncCmdType, executors.CtrExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.CtrServiceStopCmdType, executors.CtrExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.GcloudAuthCmdType, executors.CtrExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.DutServiceStartCmdType, executors.CrosDutExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.DutVmGetImageCmdType, executors.CrosDutVmExecutorType)
-// 		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmGetImageCmdType)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd.GetCommandType(), should.Equal(commands.DutVmGetImageCmdType))
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.DutVmLeaseCmdType, executors.CrosDutVmExecutorType)
-// 		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmLeaseCmdType)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd.GetCommandType(), should.Equal(commands.DutVmLeaseCmdType))
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.DutVmReleaseCmdType, executors.CrosDutVmExecutorType)
-// 		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmReleaseCmdType)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd.GetCommandType(), should.Equal(commands.DutVmReleaseCmdType))
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.DutVmCacheServerStartCmdType, executors.CrosDutVmExecutorType)
-// 		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmCacheServerStartCmdType)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd.GetCommandType(), should.Equal(commands.DutVmCacheServerStartCmdType))
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.ProvisionServiceStartCmdType, executors.CrosProvisionExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.ProvisonInstallCmdType, executors.CrosProvisionExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TestServiceStartCmdType, executors.CrosTestExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TestsExecutionCmdType, executors.CrosTestExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.RdbPublishStartCmdType, executors.CrosRdbPublishExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.RdbPublishUploadCmdType, executors.CrosRdbPublishExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TkoPublishStartCmdType, executors.CrosTkoPublishExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TkoPublishUploadCmdType, executors.CrosTkoPublishExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.GcsPublishStartCmdType, executors.CrosGcsPublishExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.SshStartReverseTunnelCmdType, executors.SshTunnelExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.SshStartTunnelCmdType, executors.SshTunnelExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.SshStopTunnelsCmdType, executors.SshTunnelExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TestFinderServiceStartCmdType, executors.CrosTestFinderExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.TestFinderExecutionCmdType, executors.CrosTestFinderExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.BuildDutTopologyCmdType, executors.InvServiceExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.CacheServerStartCmdType, executors.CacheServerExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.ParseArgsCmdType, executors.NoExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
-
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
+//
 // 		cmd, err = cmdConfig.GetCommand(commands.UpdateContainerImagesLocallyCmdType, executors.NoExecutorType)
-// 		So(cmd, ShouldNotBeNil)
-// 		So(err, ShouldBeNil)
+// 		assert.Loosely(t, cmd, should.NotBeNil)
+// 		assert.Loosely(t, err, should.BeNil)
 // 	})
 // }
