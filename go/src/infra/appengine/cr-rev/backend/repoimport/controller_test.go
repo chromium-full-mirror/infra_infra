@@ -7,7 +7,8 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
 
 	"infra/appengine/cr-rev/common"
 )
@@ -22,9 +23,9 @@ func TestController(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	Convey("No errors", t, func() {
+	ftt.Run("No errors", t, func(t *ftt.Test) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		Convey("one repo", func() {
+		t.Run("one repo", func(t *ftt.Test) {
 			repo := common.GitRepository{}
 			mock := NewMockImporter(mockCtrl)
 			mock.EXPECT().Run(gomock.Any()).DoAndReturn(func(ctx context.Context) error {
@@ -39,7 +40,7 @@ func TestController(t *testing.T) {
 			c.Start(ctx)
 		})
 
-		Convey("two repos", func() {
+		t.Run("two repos", func(t *ftt.Test) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			repo1 := common.GitRepository{Name: "foo"}
 			repo2 := common.GitRepository{Name: "bar"}
@@ -62,9 +63,9 @@ func TestController(t *testing.T) {
 		})
 	})
 
-	Convey("With errors", t, func() {
+	ftt.Run("With errors", t, func(t *ftt.Test) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		Convey("one repo", func() {
+		t.Run("one repo", func(t *ftt.Test) {
 			repo := common.GitRepository{}
 			mock := NewMockImporter(mockCtrl)
 			mock.EXPECT().Run(gomock.Any()).DoAndReturn(func(ctx context.Context) error {
@@ -78,7 +79,7 @@ func TestController(t *testing.T) {
 			c.Start(ctx)
 		})
 
-		Convey("two repos", func() {
+		t.Run("two repos", func(t *ftt.Test) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			repo1 := common.GitRepository{Name: "foo"}
 			repo2 := common.GitRepository{Name: "bar"}

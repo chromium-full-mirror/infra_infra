@@ -12,10 +12,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
@@ -62,7 +64,7 @@ func TestBatchUpdateRotations(t *testing.T) {
 
 	server := &RotationProxyServer{}
 
-	Convey("batch update rotations new rotation", t, func() {
+	ftt.Run("batch update rotations new rotation", t, func(t *ftt.Test) {
 		// TODO(nqmtuan): Figure out how can we set datastore to deal with
 		// multiple entity groups in testing.
 		// Currently, it is complaining about enabling XG=true, which should not
@@ -75,25 +77,25 @@ func TestBatchUpdateRotations(t *testing.T) {
 		response, err := server.BatchUpdateRotations(ctx, request)
 		datastore.GetTestable(ctx).CatchupIndexes()
 
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Checking response
 		rotations := response.Rotations
-		So(len(rotations), ShouldEqual, 1)
-		So(rotations[0], ShouldEqual, rotation1)
+		assert.Loosely(t, len(rotations), should.Equal(1))
+		assert.Loosely(t, rotations[0], should.Equal(rotation1))
 
 		// Checking data in datastore
 		q := datastore.NewQuery("Rotation")
 		dsRotations := []*Rotation{}
 		err = datastore.GetAll(ctx, q, &dsRotations)
-		So(err, ShouldBeNil)
-		So(len(dsRotations), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(dsRotations), should.Equal(1))
 		diff := cmp.Diff(rotation1, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
-		So(diff, ShouldEqual, "")
-		So(dsRotations[0].ExpiryAt, ShouldResemble, currentTime.Add(7*24*time.Hour))
+		assert.Loosely(t, diff, should.BeEmpty)
+		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Resemble(currentTime.Add(7*24*time.Hour)))
 	})
 
-	Convey("batch update rotations should delete previous shifts", t, func() {
+	ftt.Run("batch update rotations should delete previous shifts", t, func(t *ftt.Test) {
 		rotation1Updated := &rpb.Rotation{
 			Name: "rotation1",
 			Shifts: []*rpb.Shift{
@@ -111,15 +113,15 @@ func TestBatchUpdateRotations(t *testing.T) {
 		}
 		_, err := server.BatchUpdateRotations(ctx, request)
 		datastore.GetTestable(ctx).CatchupIndexes()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		q := datastore.NewQuery("Rotation")
 		dsRotations := []*Rotation{}
 		err = datastore.GetAll(ctx, q, &dsRotations)
-		So(err, ShouldBeNil)
-		So(len(dsRotations), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(dsRotations), should.Equal(1))
 		diff := cmp.Diff(rotation1Updated, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
-		So(diff, ShouldEqual, "")
-		So(dsRotations[0].ExpiryAt, ShouldResemble, currentTime.Add(7*24*time.Hour))
+		assert.Loosely(t, diff, should.BeEmpty)
+		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Resemble(currentTime.Add(7*24*time.Hour)))
 	})
 }
 
@@ -129,7 +131,7 @@ func TestGetRotation(t *testing.T) {
 	ctx = clock.Set(ctx, cl)
 
 	server := &RotationProxyServer{}
-	Convey("get rotation", t, func() {
+	ftt.Run("get rotation", t, func(t *ftt.Test) {
 		var rotation = &rpb.Rotation{
 			Name: "rotation",
 			Shifts: []*rpb.Shift{
@@ -156,7 +158,7 @@ func TestGetRotation(t *testing.T) {
 		}
 		_, err := server.BatchUpdateRotations(ctx, updateRequest)
 		datastore.GetTestable(ctx).CatchupIndexes()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		getRequest := &rpb.GetRotationRequest{
 			Name: "rotation",
@@ -166,7 +168,7 @@ func TestGetRotation(t *testing.T) {
 		ctx, _ = testclock.UseTime(ctx, time.Unix(444, 0))
 
 		response, err := server.GetRotation(ctx, getRequest)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		expected := &rpb.Rotation{
 			Name: "rotation",
 			Shifts: []*rpb.Shift{
@@ -182,7 +184,7 @@ func TestGetRotation(t *testing.T) {
 			},
 		}
 		diff := cmp.Diff(expected, response, cmp.Comparer(proto.Equal))
-		So(diff, ShouldEqual, "")
+		assert.Loosely(t, diff, should.BeEmpty)
 	})
 }
 
@@ -192,7 +194,7 @@ func TestBatchGetRotations(t *testing.T) {
 	cl := testclock.New(testclock.TestTimeUTC)
 	ctx = clock.Set(ctx, cl)
 
-	Convey("batch get rotations", t, func() {
+	ftt.Run("batch get rotations", t, func(t *ftt.Test) {
 		var rotation = &rpb.Rotation{
 			Name: "rotation",
 			Shifts: []*rpb.Shift{
@@ -219,7 +221,7 @@ func TestBatchGetRotations(t *testing.T) {
 		}
 		_, err := server.BatchUpdateRotations(ctx, updateRequest)
 		datastore.GetTestable(ctx).CatchupIndexes()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		getRequest := &rpb.BatchGetRotationsRequest{
 			Names: []string{"rotation"},
@@ -229,8 +231,8 @@ func TestBatchGetRotations(t *testing.T) {
 		ctx, _ = testclock.UseTime(ctx, time.Unix(444, 0))
 
 		response, err := server.BatchGetRotations(ctx, getRequest)
-		So(err, ShouldBeNil)
-		So(len(response.Rotations), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(response.Rotations), should.Equal(1))
 		expected := &rpb.Rotation{
 			Name: "rotation",
 			Shifts: []*rpb.Shift{
@@ -246,7 +248,7 @@ func TestBatchGetRotations(t *testing.T) {
 			},
 		}
 		diff := cmp.Diff(expected, response.Rotations[0], cmp.Comparer(proto.Equal))
-		So(diff, ShouldEqual, "")
+		assert.Loosely(t, diff, should.BeEmpty)
 	})
 }
 
@@ -256,7 +258,7 @@ func TestGetCurrentOncallEmails(t *testing.T) {
 	ctx = clock.Set(ctx, cl)
 
 	server := &RotationProxyServer{}
-	Convey("Test get current oncall emails", t, func() {
+	ftt.Run("Test get current oncall emails", t, func(t *ftt.Test) {
 		var rotation = &rpb.Rotation{
 			Name: "rotation",
 			Shifts: []*rpb.Shift{
@@ -278,25 +280,25 @@ func TestGetCurrentOncallEmails(t *testing.T) {
 		}
 		_, err := server.BatchUpdateRotations(ctx, updateRequest)
 		datastore.GetTestable(ctx).CatchupIndexes()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(444, 0))
 		emails, err := getCurrentOncallEmails(ctx, "rotation")
-		So(err, ShouldBeNil)
-		So(emails, ShouldResemble, []string{"person3@google.com", "person4@google.com"})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, emails, should.Resemble([]string{"person3@google.com", "person4@google.com"}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(666, 0))
 		emails, err = getCurrentOncallEmails(ctx, "rotation")
-		So(err, ShouldBeNil)
-		So(emails, ShouldResemble, []string{})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, emails, should.Resemble([]string{}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(888, 0))
 		emails, err = getCurrentOncallEmails(ctx, "rotation")
-		So(err, ShouldBeNil)
-		So(emails, ShouldResemble, []string{"person5@google.com"})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, emails, should.Resemble([]string{"person5@google.com"}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(888, 0))
 		emails, err = getCurrentOncallEmails(ctx, "anotherrotation")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

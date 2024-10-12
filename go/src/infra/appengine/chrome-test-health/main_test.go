@@ -9,10 +9,13 @@ import (
 	"testing"
 
 	"cloud.google.com/go/civil"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/chrome-test-health/api"
 )
@@ -78,18 +81,18 @@ func (ccm *coverageClientMock) GetIncrementalCoverageDataOneYear(
 func TestValidatePresence(t *testing.T) {
 	t.Parallel()
 
-	Convey("Validate Presence", t, func() {
-		Convey("Should be false for empty string", func() {
+	ftt.Run("Validate Presence", t, func(t *ftt.Test) {
+		t.Run("Should be false for empty string", func(t *ftt.Test) {
 			isPresent := validatePresence("   ")
-			So(isPresent, ShouldBeFalse)
+			assert.Loosely(t, isPresent, should.BeFalse)
 		})
-		Convey("Should be false for nil", func() {
+		t.Run("Should be false for nil", func(t *ftt.Test) {
 			isPresent := validatePresence(nil)
-			So(isPresent, ShouldBeFalse)
+			assert.Loosely(t, isPresent, should.BeFalse)
 		})
-		Convey("Should be true", func() {
+		t.Run("Should be true", func(t *ftt.Test) {
 			isPresent := validatePresence("test")
-			So(isPresent, ShouldBeTrue)
+			assert.Loosely(t, isPresent, should.BeTrue)
 		})
 	})
 }
@@ -97,14 +100,14 @@ func TestValidatePresence(t *testing.T) {
 func TestValidateFormat(t *testing.T) {
 	t.Parallel()
 
-	Convey("Validate Format", t, func() {
-		Convey("Should be false", func() {
+	ftt.Run("Validate Format", t, func(t *ftt.Test) {
+		t.Run("Should be false", func(t *ftt.Test) {
 			isValidFormat := validateFormat("test4", "^(test1|test2|test3)$")
-			So(isValidFormat, ShouldBeFalse)
+			assert.Loosely(t, isValidFormat, should.BeFalse)
 		})
-		Convey("Should be true", func() {
+		t.Run("Should be true", func(t *ftt.Test) {
 			isValidFormat := validateFormat("test1", "^(test1|test2|test3)$")
-			So(isValidFormat, ShouldBeTrue)
+			assert.Loosely(t, isValidFormat, should.BeTrue)
 		})
 	})
 }
@@ -113,59 +116,59 @@ func TestUpdateDailySummary(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	Convey("DailySummary", t, func() {
+	ftt.Run("DailySummary", t, func(t *ftt.Test) {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		Convey("Valid request", func() {
+		t.Run("Valid request", func(t *ftt.Test) {
 			request := &api.UpdateMetricsTableRequest{
 				FromDate: "2023-01-01",
 				ToDate:   "2023-01-02",
 			}
 			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
 		})
-		Convey("Bad from date request", func() {
+		t.Run("Bad from date request", func(t *ftt.Test) {
 			request := &api.UpdateMetricsTableRequest{
 				FromDate: "asdf",
 				ToDate:   "2023-01-02",
 			}
 			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Bad to date request", func() {
+		t.Run("Bad to date request", func(t *ftt.Test) {
 			request := &api.UpdateMetricsTableRequest{
 				FromDate: "2023-01-01",
 				ToDate:   "asdf",
 			}
 			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-			So(err, ShouldNotBeNil)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing from date", func() {
+		t.Run("Missing from date", func(t *ftt.Test) {
 			request := &api.UpdateMetricsTableRequest{
 				ToDate: "2023-01-01",
 			}
 			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-			So(err, ShouldErrLike, "from_date")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("from_date"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing to date", func() {
+		t.Run("Missing to date", func(t *ftt.Test) {
 			request := &api.UpdateMetricsTableRequest{
 				FromDate: "2023-01-01",
 			}
 			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-			So(err, ShouldErrLike, "to_date")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("to_date"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 
@@ -175,7 +178,7 @@ func TestListComponents(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	Convey("ListComponents", t, func() {
+	ftt.Run("ListComponents", t, func(t *ftt.Test) {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
@@ -184,7 +187,7 @@ func TestListComponents(t *testing.T) {
 		request := &api.ListComponentsRequest{}
 		srv.ListComponents(ctx, request)
 
-		So(request, ShouldResemble, mock.lastListReq)
+		assert.Loosely(t, request, should.Resemble(mock.lastListReq))
 	})
 }
 
@@ -193,13 +196,13 @@ func TestFetchMetrics(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("FetchMetrics", t, func() {
+	ftt.Run("FetchMetrics", t, func(t *ftt.Test) {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		Convey("Valid request", func() {
+		t.Run("Valid request", func(t *ftt.Test) {
 			request := &api.FetchTestMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -215,11 +218,11 @@ func TestFetchMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchTestMetrics(ctx, request)
 
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(mock.lastFetchReq, ShouldResemble, request)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, mock.lastFetchReq, should.Resemble(request))
 		})
-		Convey("Missing dates", func() {
+		t.Run("Missing dates", func(t *ftt.Test) {
 			request := &api.FetchTestMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -234,10 +237,10 @@ func TestFetchMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchTestMetrics(ctx, request)
 
-			So(err, ShouldErrLike, "dates")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("dates"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing metrics", func() {
+		t.Run("Missing metrics", func(t *ftt.Test) {
 			request := &api.FetchTestMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -252,8 +255,8 @@ func TestFetchMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchTestMetrics(ctx, request)
 
-			So(err, ShouldErrLike, "metrics")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("metrics"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }
@@ -263,13 +266,13 @@ func TestFetchFileMetrics(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("FetchFileMetrics", t, func() {
+	ftt.Run("FetchFileMetrics", t, func(t *ftt.Test) {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		Convey("Valid request", func() {
+		t.Run("Valid request", func(t *ftt.Test) {
 			request := &api.FetchDirectoryMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -284,11 +287,11 @@ func TestFetchFileMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(mock.lastFetchDirReq, ShouldResemble, request)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, mock.lastFetchDirReq, should.Resemble(request))
 		})
-		Convey("Missing dates", func() {
+		t.Run("Missing dates", func(t *ftt.Test) {
 			request := &api.FetchDirectoryMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -302,10 +305,10 @@ func TestFetchFileMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
-			So(err, ShouldErrLike, "dates")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("dates"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing parentId", func() {
+		t.Run("Missing parentId", func(t *ftt.Test) {
 			request := &api.FetchDirectoryMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -319,10 +322,10 @@ func TestFetchFileMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
-			So(err, ShouldErrLike, "parent_id")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("parent_id"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing metrics", func() {
+		t.Run("Missing metrics", func(t *ftt.Test) {
 			request := &api.FetchDirectoryMetricsRequest{
 				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
@@ -336,8 +339,8 @@ func TestFetchFileMetrics(t *testing.T) {
 			}
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
-			So(err, ShouldErrLike, "metrics")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("metrics"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }
@@ -347,7 +350,7 @@ func TestGetCoverageSummary(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("GetCoverageSummary", t, func() {
+	ftt.Run("GetCoverageSummary", t, func(t *ftt.Test) {
 		mock := &coverageClientMock{}
 		srv := &coverageServer{
 			Client: mock,
@@ -362,89 +365,89 @@ func TestGetCoverageSummary(t *testing.T) {
 			Bucket:          "ci",
 			Builder:         "linux-code-coverage",
 		}
-		Convey("Valid request", func() {
+		t.Run("Valid request", func(t *ftt.Test) {
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(mock.lastGetCoverageSummaryReq, ShouldResemble, request)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, mock.lastGetCoverageSummaryReq, should.Resemble(request))
 		})
-		Convey("Missing gitiles host", func() {
+		t.Run("Missing gitiles host", func(t *ftt.Test) {
 			req := request
 			req.GitilesHost = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Gitiles Host is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Gitiles Host is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing gitiles project", func() {
+		t.Run("Missing gitiles project", func(t *ftt.Test) {
 			req := request
 			req.GitilesProject = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Gitiles Project is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Gitiles Project is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing gitiles ref", func() {
+		t.Run("Missing gitiles ref", func(t *ftt.Test) {
 			req := request
 			req.GitilesRef = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Gitiles Ref is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Gitiles Ref is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing gitiles revision", func() {
+		t.Run("Missing gitiles revision", func(t *ftt.Test) {
 			req := request
 			req.GitilesRevision = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Gitiles Revision is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Gitiles Revision is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing gitiles both path and components", func() {
+		t.Run("Missing gitiles both path and components", func(t *ftt.Test) {
 			req := request
 			req.Path = ""
 			req.Components = []string{}
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Either path or components should be specified")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Either path or components should be specified"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Both path and components specified", func() {
+		t.Run("Both path and components specified", func(t *ftt.Test) {
 			req := request
 			req.Path = "//"
 			req.Components = []string{"C1", "C2"}
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Either path or components should be specified not both")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Either path or components should be specified not both"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Invalid Builder", func() {
+		t.Run("Invalid Builder", func(t *ftt.Test) {
 			req := request
 			req.Builder = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Builder is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Builder is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 
 			req.Builder = "linux-code-coverage&123"
 			resp, err = srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Builder is not provided in required format")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Builder is not provided in required format"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Invalid Bucket", func() {
+		t.Run("Invalid Bucket", func(t *ftt.Test) {
 			req := request
 			req.Bucket = ""
 			resp, err := srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Bucket is a required argument")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Bucket is a required argument"))
+			assert.Loosely(t, resp, should.BeNil)
 
 			req.Bucket = "ci#121"
 			resp, err = srv.GetCoverageSummary(ctx, request)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Bucket is not provided in required format")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Bucket is not provided in required format"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }
@@ -464,58 +467,58 @@ func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
 		Builder:       "linux-code-coverage",
 	}
 
-	Convey("Should pass", t, func() {
+	ftt.Run("Should pass", t, func(t *ftt.Test) {
 		req := request
 		_, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Should fail", t, func() {
-		Convey("Missing required params", func() {
-			Convey("Missing both paths and components", func() {
+	ftt.Run("Should fail", t, func(t *ftt.Test) {
+		t.Run("Missing required params", func(t *ftt.Test) {
+			t.Run("Missing both paths and components", func(t *ftt.Test) {
 				req := request
 				req.Paths = []string{}
 				req.Components = []string{}
 				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldErrLike, "Either paths or components should be specified")
-				So(resp, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.ErrLike("Either paths or components should be specified"))
+				assert.Loosely(t, resp, should.BeNil)
 			})
-			Convey("Missing bucket", func() {
+			t.Run("Missing bucket", func(t *ftt.Test) {
 				req := request
 				req.Bucket = ""
 				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldErrLike, "Bucket is a required argument")
-				So(resp, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.ErrLike("Bucket is a required argument"))
+				assert.Loosely(t, resp, should.BeNil)
 			})
-			Convey("Missing builder", func() {
+			t.Run("Missing builder", func(t *ftt.Test) {
 				req := request
 				req.Builder = ""
 				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldErrLike, "Builder is a required argument")
-				So(resp, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.ErrLike("Builder is a required argument"))
+				assert.Loosely(t, resp, should.BeNil)
 			})
 		})
 
-		Convey("Invalid params", func() {
-			Convey("Invalid Builder", func() {
+		t.Run("Invalid params", func(t *ftt.Test) {
+			t.Run("Invalid Builder", func(t *ftt.Test) {
 				req := request
 				req.Builder = "a___$$$b"
 				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldErrLike, "Builder is not provided in required format")
-				So(resp, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.ErrLike("Builder is not provided in required format"))
+				assert.Loosely(t, resp, should.BeNil)
 			})
-			Convey("Invalid Bucket", func() {
+			t.Run("Invalid Bucket", func(t *ftt.Test) {
 				req := request
 				req.Builder = "linux-code-coverage"
 				req.Bucket = "a___$$$b"
 				resp, err := srv.GetAbsoluteCoverageDataOneYear(ctx, req)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldErrLike, "Bucket is not provided in required format")
-				So(resp, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.ErrLike("Bucket is not provided in required format"))
+				assert.Loosely(t, resp, should.BeNil)
 			})
 		})
 	})
@@ -532,23 +535,23 @@ func TestGetIncrementalCoverageDataOneYear(t *testing.T) {
 		Paths: []string{"//p1/p2/"},
 	}
 
-	Convey("Should fail", t, func() {
-		Convey("Missing paths", func() {
+	ftt.Run("Should fail", t, func(t *ftt.Test) {
+		t.Run("Missing paths", func(t *ftt.Test) {
 			req := request
 			req.Paths = []string{}
 			resp, err := srv.GetIncrementalCoverageDataOneYear(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Paths should be specified")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Paths should be specified"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 
-		Convey("Path not relative to project root", func() {
+		t.Run("Path not relative to project root", func(t *ftt.Test) {
 			req := request
 			req.Paths = []string{"/a/b/"}
 			resp, err := srv.GetIncrementalCoverageDataOneYear(ctx, req)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldErrLike, "Path /a/b/ is not relative to root, it should start with //")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.ErrLike("Path /a/b/ is not relative to root, it should start with //"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }
@@ -558,38 +561,38 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("GetProjectDefaultConfig", t, func() {
+	ftt.Run("GetProjectDefaultConfig", t, func(t *ftt.Test) {
 		mock := &coverageClientMock{}
 
 		srv := &coverageServer{
 			Client: mock,
 		}
-		Convey("Valid request", func() {
+		t.Run("Valid request", func(t *ftt.Test) {
 			request := &api.GetProjectDefaultConfigRequest{
 				LuciProject: "chromium",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(mock.lastGetProjectDefaultConfigReq, ShouldResemble, request)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, mock.lastGetProjectDefaultConfigReq, should.Resemble(request))
 		})
-		Convey("Invalid argument Project", func() {
+		t.Run("Invalid argument Project", func(t *ftt.Test) {
 			request := &api.GetProjectDefaultConfigRequest{
 				LuciProject: "chromium src",
 			}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 
-			So(err, ShouldErrLike, "Argument Project is invalid")
-			So(err, ShouldHaveAppStatus, codes.InvalidArgument)
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("Argument Project is invalid"))
+			assert.Loosely(t, err, convey.Adapt(ShouldHaveAppStatus)(codes.InvalidArgument))
+			assert.Loosely(t, resp, should.BeNil)
 		})
-		Convey("Missing project", func() {
+		t.Run("Missing project", func(t *ftt.Test) {
 			request := &api.GetProjectDefaultConfigRequest{}
 			resp, err := srv.GetProjectDefaultConfig(ctx, request)
 
-			So(err, ShouldErrLike, "project")
-			So(resp, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("project"))
+			assert.Loosely(t, resp, should.BeNil)
 		})
 	})
 }
@@ -597,13 +600,13 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 func TestPathRelativeToRoot(t *testing.T) {
 	t.Parallel()
 
-	Convey("Should be true when path starts with //", t, func() {
+	ftt.Run("Should be true when path starts with //", t, func(t *ftt.Test) {
 		isRel := pathRelativeToRoot("//a/b/")
-		So(isRel, ShouldBeTrue)
+		assert.Loosely(t, isRel, should.BeTrue)
 	})
 
-	Convey("Should be false when path doesn't start with //", t, func() {
+	ftt.Run("Should be false when path doesn't start with //", t, func(t *ftt.Test) {
 		isRel := pathRelativeToRoot("/a/b/")
-		So(isRel, ShouldBeFalse)
+		assert.Loosely(t, isRel, should.BeFalse)
 	})
 }

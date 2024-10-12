@@ -5,10 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
 
@@ -24,8 +25,8 @@ func TestRevRangeHandler(t *testing.T) {
 	c = gologger.StdConfig.Use(c)
 	crRev := client.NewCrRev(fakeCrRev.Server.URL)
 
-	Convey("get rev range", t, func() {
-		Convey("ok with positions", func() {
+	ftt.Run("get rev range", t, func(t *ftt.Test) {
+		t.Run("ok with positions", func(t *ftt.Test) {
 			c = authtest.MockAuthConfig(c)
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
@@ -37,9 +38,9 @@ func TestRevRangeHandler(t *testing.T) {
 					"host", "chromium", "repo", "chromium.src"),
 			}, crRev)
 
-			So(w.Code, ShouldEqual, 301)
+			assert.Loosely(t, w.Code, should.Equal(301))
 		})
-		Convey("ok with revisions", func() {
+		t.Run("ok with revisions", func(t *ftt.Test) {
 			c = authtest.MockAuthConfig(c)
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
@@ -50,9 +51,9 @@ func TestRevRangeHandler(t *testing.T) {
 					"host", "chromium", "repo", "chromium.src"),
 			}, crRev)
 
-			So(w.Code, ShouldEqual, 301)
+			assert.Loosely(t, w.Code, should.Equal(301))
 		})
-		Convey("bad oauth", func() {
+		t.Run("bad oauth", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
 				Writer: w,
@@ -62,9 +63,9 @@ func TestRevRangeHandler(t *testing.T) {
 				Params: makeParams(
 					"host", "chromium", "repo", "chromium.src"),
 			}, crRev)
-			So(w.Code, ShouldEqual, http.StatusMovedPermanently)
+			assert.Loosely(t, w.Code, should.Equal(http.StatusMovedPermanently))
 		})
-		Convey("bad request", func() {
+		t.Run("bad request", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
@@ -72,9 +73,9 @@ func TestRevRangeHandler(t *testing.T) {
 				Request: makeGetRequest(c),
 			}, crRev)
 
-			So(w.Code, ShouldEqual, 400)
+			assert.Loosely(t, w.Code, should.Equal(400))
 		})
-		Convey("bad start and end params", func() {
+		t.Run("bad start and end params", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
@@ -84,9 +85,9 @@ func TestRevRangeHandler(t *testing.T) {
 				Params: makeParams(
 					"host", "chromium", "repo", "chromium.src"),
 			}, crRev)
-			So(w.Code, ShouldEqual, 400)
+			assert.Loosely(t, w.Code, should.Equal(400))
 		})
-		Convey("bad repo and host", func() {
+		t.Run("bad repo and host", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
@@ -96,7 +97,7 @@ func TestRevRangeHandler(t *testing.T) {
 					"startRev", "2a2b3c4d", "endRev", "1a2b3c4d"),
 				Params: makeParams(),
 			}, crRev)
-			So(w.Code, ShouldEqual, 400)
+			assert.Loosely(t, w.Code, should.Equal(400))
 		})
 
 	})

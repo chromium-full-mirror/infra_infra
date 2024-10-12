@@ -11,7 +11,10 @@ import (
 	"testing"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func getFakeCompressedString() (string, []byte) {
@@ -29,28 +32,28 @@ func getFakeCompressedStringWithInvalidJson() (string, []byte) {
 func TestGetStructFromCompressedData(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Should be able to return decompressed data`, t, func() {
-		Convey(`Not compressed in correct format`, func() {
+	ftt.Run(`Should be able to return decompressed data`, t, func(t *ftt.Test) {
+		t.Run(`Not compressed in correct format`, func(t *ftt.Test) {
 			compressedMalformedData := []byte("malformed data")
 			st := structpb.Struct{}
 			err := getStructFromCompressedData(compressedMalformedData, &st)
-			So(err, ShouldNotBeNil)
-			So(err, ShouldResemble, errors.New("zlib: invalid header"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.Resemble(errors.New("zlib: invalid header")))
 		})
-		Convey(`Compressed in correct format but invalid json`, func() {
+		t.Run(`Compressed in correct format but invalid json`, func(t *ftt.Test) {
 			_, compressedInvalidJsonData := getFakeCompressedStringWithInvalidJson()
 			st := structpb.Struct{}
 			err := getStructFromCompressedData(compressedInvalidJsonData, &st)
-			So(err, ShouldNotBeNil)
-			So(fmt.Sprintf("%s", err), ShouldContainSubstring, "unexpected end of JSON input")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, fmt.Sprintf("%s", err), should.ContainSubstring("unexpected end of JSON input"))
 		})
-		Convey(`Well formed data`, func() {
+		t.Run(`Well formed data`, func(t *ftt.Test) {
 			str, compressedWellFormedData := getFakeCompressedString()
 			st := structpb.Struct{}
 			err := getStructFromCompressedData(compressedWellFormedData, &st)
 			jsonStr, _ := json.Marshal(st.Fields)
-			So(err, ShouldBeNil)
-			So(string(jsonStr), ShouldResemble, str)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(jsonStr), should.Resemble(str))
 		})
 	})
 }

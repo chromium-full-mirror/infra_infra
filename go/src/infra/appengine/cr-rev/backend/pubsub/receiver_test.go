@@ -10,7 +10,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/pubsub"
-	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 type psmObserver struct {
@@ -53,7 +56,7 @@ func (m *mockProcessMessage) processPubsubMessage(ctx context.Context,
 func TestPubsubSubscribe(t *testing.T) {
 	t.Skip("Unsafe memory hacks in mockPubsubReceiver.Receive broke when PubSub library changed its internal structs")
 
-	Convey("no messages", t, func() {
+	ftt.Run("no messages", t, func(t *ftt.Test) {
 		psmo := &psmObserver{}
 		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
@@ -62,12 +65,12 @@ func TestPubsubSubscribe(t *testing.T) {
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
-		So(err, ShouldBeNil)
-		So(psmo.acked, ShouldEqual, 0)
-		So(psmo.nacked, ShouldEqual, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, psmo.acked, should.BeZero)
+		assert.Loosely(t, psmo.nacked, should.BeZero)
 	})
 
-	Convey("invalid message", t, func() {
+	ftt.Run("invalid message", t, func(t *ftt.Test) {
 		psmo := &psmObserver{}
 		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
@@ -80,12 +83,12 @@ func TestPubsubSubscribe(t *testing.T) {
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
-		So(err, ShouldBeNil)
-		So(psmo.acked, ShouldEqual, 0)
-		So(psmo.nacked, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, psmo.acked, should.BeZero)
+		assert.Loosely(t, psmo.nacked, should.Equal(1))
 	})
 
-	Convey("valid message", t, func() {
+	ftt.Run("valid message", t, func(t *ftt.Test) {
 		psmo := &psmObserver{}
 		ctx := WithObserver(context.Background(), psmo.observe)
 		mReceiver := &mockPubsubReceiver{
@@ -113,9 +116,9 @@ func TestPubsubSubscribe(t *testing.T) {
 		mProcess := &mockProcessMessage{}
 
 		err := Subscribe(ctx, mReceiver, mProcess.processPubsubMessage)
-		So(err, ShouldBeNil)
-		So(psmo.acked, ShouldEqual, 1)
-		So(psmo.nacked, ShouldEqual, 0)
-		So(mProcess.calls, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, psmo.acked, should.Equal(1))
+		assert.Loosely(t, psmo.nacked, should.BeZero)
+		assert.Loosely(t, mProcess.calls, should.Equal(1))
 	})
 }

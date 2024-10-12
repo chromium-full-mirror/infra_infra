@@ -3,26 +3,28 @@ package models
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCommit(t *testing.T) {
-	Convey("Compare repos", t, func() {
-		Convey("Empty repo", func() {
+	ftt.Run("Compare repos", t, func(t *ftt.Test) {
+		t.Run("Empty repo", func(t *ftt.Test) {
 			c1 := Commit{}
 			c2 := Commit{}
-			So(c1.SameRepoAs(c1), ShouldBeTrue)
-			So(c1.SameRepoAs(c2), ShouldBeTrue)
+			assert.Loosely(t, c1.SameRepoAs(c1), should.BeTrue)
+			assert.Loosely(t, c1.SameRepoAs(c2), should.BeTrue)
 		})
-		Convey("Identical", func() {
+		t.Run("Identical", func(t *ftt.Test) {
 			c1 := Commit{Host: "foo", Repository: "bar"}
 			c2 := Commit{Host: "foo", Repository: "bar"}
-			So(c1.SameRepoAs(c2), ShouldBeTrue)
+			assert.Loosely(t, c1.SameRepoAs(c2), should.BeTrue)
 		})
-		Convey("Different hosts", func() {
+		t.Run("Different hosts", func(t *ftt.Test) {
 			c1 := Commit{Host: "foo", Repository: "bar"}
 			c2 := Commit{Host: "baz", Repository: "bar"}
-			So(c1.SameRepoAs(c2), ShouldBeFalse)
+			assert.Loosely(t, c1.SameRepoAs(c2), should.BeFalse)
 		})
 	})
 }

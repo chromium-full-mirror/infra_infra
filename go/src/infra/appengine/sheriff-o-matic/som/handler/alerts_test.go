@@ -4,18 +4,19 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/sheriff-o-matic/som/model"
 )
 
 func TestFlushAlerts(t *testing.T) {
-	Convey("test flush alerts", t, func() {
+	ftt.Run("test flush alerts", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		cl := testclock.New(testclock.TestRecentTimeUTC)
 		c = clock.Set(c, cl)
@@ -56,18 +57,18 @@ func TestFlushAlerts(t *testing.T) {
 			},
 		}
 
-		So(datastore.Put(c, alerts), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, alerts), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 		num, err := flushOldAlerts(c)
-		So(err, ShouldBeNil)
-		So(num, ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, num, should.Equal(1))
 
 		q := datastore.NewQuery("AlertJSONNonGrouping")
 		result := []*model.AlertJSONNonGrouping{}
 		err = datastore.GetAll(c, q, &result)
-		So(err, ShouldBeNil)
-		So(len(result), ShouldEqual, 2)
-		So(result[0].ID, ShouldEqual, "alert1")
-		So(result[1].ID, ShouldEqual, "alert3")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(result), should.Equal(2))
+		assert.Loosely(t, result[0].ID, should.Equal("alert1"))
+		assert.Loosely(t, result[1].ID, should.Equal("alert3"))
 	})
 }

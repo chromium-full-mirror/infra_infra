@@ -16,13 +16,15 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/auth/xsrf"
@@ -33,7 +35,7 @@ import (
 )
 
 func TestFilterAnnotations(t *testing.T) {
-	Convey("Test filter annotation", t, func() {
+	ftt.Run("Test filter annotation", t, func(t *ftt.Test) {
 		activeKeys := map[string]interface{}{
 			"alert_1": nil,
 			"alert_2": nil,
@@ -63,16 +65,16 @@ func TestFilterAnnotations(t *testing.T) {
 			},
 		}
 		result := filterAnnotations(annotations, activeKeys)
-		So(len(result), ShouldEqual, 4)
-		So(result[0].Key, ShouldEqual, "alert_1")
-		So(result[1].Key, ShouldEqual, "alert_2")
-		So(result[2].Key, ShouldEqual, "group_2")
-		So(result[3].Key, ShouldEqual, "group_1")
+		assert.Loosely(t, len(result), should.Equal(4))
+		assert.Loosely(t, result[0].Key, should.Equal("alert_1"))
+		assert.Loosely(t, result[1].Key, should.Equal("alert_2"))
+		assert.Loosely(t, result[2].Key, should.Equal("group_2"))
+		assert.Loosely(t, result[3].Key, should.Equal("group_1"))
 	})
 }
 
 func TestFilterDuplicateBugs(t *testing.T) {
-	Convey("Test filter annotation", t, func() {
+	ftt.Run("Test filter annotation", t, func(t *ftt.Test) {
 		bugs := []model.MonorailBug{
 			{
 				BugID:     "bug_1",
@@ -93,15 +95,15 @@ func TestFilterDuplicateBugs(t *testing.T) {
 		}
 
 		result := filterDuplicateBugs(bugs)
-		So(len(result), ShouldEqual, 3)
-		So(result[0].BugID, ShouldEqual, "bug_1")
-		So(result[1].BugID, ShouldEqual, "bug_2")
-		So(result[2].BugID, ShouldEqual, "bug_3")
+		assert.Loosely(t, len(result), should.Equal(3))
+		assert.Loosely(t, result[0].BugID, should.Equal("bug_1"))
+		assert.Loosely(t, result[1].BugID, should.Equal("bug_2"))
+		assert.Loosely(t, result[2].BugID, should.Equal("bug_3"))
 	})
 }
 
 func TestCreateProjectChunksMapping(t *testing.T) {
-	Convey("Test create project chunk mapping", t, func() {
+	ftt.Run("Test create project chunk mapping", t, func(t *ftt.Test) {
 		bugs := []model.MonorailBug{
 			{
 				BugID:     "bug_1",
@@ -130,45 +132,45 @@ func TestCreateProjectChunksMapping(t *testing.T) {
 		}
 
 		result := createMonorailProjectChunksMapping(bugs, 100)
-		So(
+		assert.Loosely(t,
 			result,
-			ShouldResemble,
-			map[string][][]string{
-				"project_1": {{"bug_1", "bug_3", "bug_5"}},
-				"project_2": {{"bug_2"}},
-				"project_3": {{"bug_4"}},
-			},
-		)
+			should.Resemble(
+				map[string][][]string{
+					"project_1": {{"bug_1", "bug_3", "bug_5"}},
+					"project_2": {{"bug_2"}},
+					"project_3": {{"bug_4"}},
+				},
+			))
 
 		result = createMonorailProjectChunksMapping(bugs, 2)
-		So(
+		assert.Loosely(t,
 			result,
-			ShouldResemble,
-			map[string][][]string{
-				"project_1": {{"bug_1", "bug_3"}, {"bug_5"}},
-				"project_2": {{"bug_2"}},
-				"project_3": {{"bug_4"}},
-			},
-		)
+			should.Resemble(
+				map[string][][]string{
+					"project_1": {{"bug_1", "bug_3"}, {"bug_5"}},
+					"project_2": {{"bug_2"}},
+					"project_3": {{"bug_4"}},
+				},
+			))
 	})
 }
 
 func TestBreakToChunk(t *testing.T) {
-	Convey("Test break bug ids to chunk", t, func() {
+	ftt.Run("Test break bug ids to chunk", t, func(t *ftt.Test) {
 		bugIDs := []string{"bug1", "bug2", "bug3", "bug4", "bug5"}
 		chunks := breakToChunks(bugIDs, 1)
-		So(chunks, ShouldResemble, [][]string{{"bug1"}, {"bug2"}, {"bug3"}, {"bug4"}, {"bug5"}})
+		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1"}, {"bug2"}, {"bug3"}, {"bug4"}, {"bug5"}}))
 		chunks = breakToChunks(bugIDs, 3)
-		So(chunks, ShouldResemble, [][]string{{"bug1", "bug2", "bug3"}, {"bug4", "bug5"}})
+		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3"}, {"bug4", "bug5"}}))
 		chunks = breakToChunks(bugIDs, 5)
-		So(chunks, ShouldResemble, [][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}})
+		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
 		chunks = breakToChunks(bugIDs, 6)
-		So(chunks, ShouldResemble, [][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}})
+		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
 	})
 }
 
 func TestMakeAnnotationResponse(t *testing.T) {
-	Convey("Test make annotation response successful", t, func() {
+	ftt.Run("Test make annotation response successful", t, func(t *ftt.Test) {
 		annotations := &model.Annotation{
 			Bugs: []model.MonorailBug{
 				{BugID: "123", ProjectID: "chromium"},
@@ -207,7 +209,7 @@ func TestMakeAnnotationResponse(t *testing.T) {
 			},
 		}
 		actual := makeAnnotationResponse(annotations, meta)
-		So(actual, ShouldResemble, expected)
+		assert.Loosely(t, actual, should.Resemble(expected))
 	})
 }
 
@@ -274,30 +276,30 @@ func TestAnnotations(t *testing.T) {
 		c = clock.Set(c, cl)
 		return c, cl
 	}
-	Convey("/annotations", t, func() {
+	ftt.Run("/annotations", t, func(t *ftt.Test) {
 
 		w := httptest.NewRecorder()
 		c, cl := newContext()
 		tok, err := xsrf.Token(c)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		ah := &AnnotationHandler{
 			Bqh:                 &BugQueueHandler{},
 			MonorailIssueClient: FakeIC{},
 		}
 
-		Convey("GET", func() {
-			Convey("no annotations yet", func() {
+		t.Run("GET", func(t *ftt.Test) {
+			t.Run("no annotations yet", func(t *ftt.Test) {
 				ah.GetAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
 				}, nil)
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(w.Code, ShouldEqual, 200)
-				So(body, ShouldEqual, "[]")
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, body, should.Equal("[]"))
 			})
 
 			ann := &model.Annotation{
@@ -308,38 +310,38 @@ func TestAnnotations(t *testing.T) {
 				ModificationTime: datastore.RoundTime(clock.Now(c).Add(4 * time.Hour)),
 			}
 
-			So(datastorePutAnnotation(c, ann), ShouldBeNil)
+			assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("basic annotation", func() {
+			t.Run("basic annotation", func(t *ftt.Test) {
 				ah.GetAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
 				}, map[string]interface{}{ann.Key: nil})
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 				rslt := []*model.Annotation{}
-				So(json.NewDecoder(strings.NewReader(body)).Decode(&rslt), ShouldBeNil)
-				So(rslt, ShouldHaveLength, 1)
-				So(rslt[0], ShouldResemble, ann)
+				assert.Loosely(t, json.NewDecoder(strings.NewReader(body)).Decode(&rslt), should.BeNil)
+				assert.Loosely(t, rslt, should.HaveLength(1))
+				assert.Loosely(t, rslt[0], should.Resemble(ann))
 			})
 
-			Convey("basic annotation, alert no longer active", func() {
+			t.Run("basic annotation, alert no longer active", func(t *ftt.Test) {
 				ah.GetAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
 				}, nil)
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 				rslt := []*model.Annotation{}
-				So(json.NewDecoder(strings.NewReader(body)).Decode(&rslt), ShouldBeNil)
-				So(rslt, ShouldHaveLength, 0)
+				assert.Loosely(t, json.NewDecoder(strings.NewReader(body)).Decode(&rslt), should.BeNil)
+				assert.Loosely(t, rslt, should.HaveLength(0))
 			})
 		})
 
@@ -348,29 +350,29 @@ func TestAnnotations(t *testing.T) {
 				"xsrf_token": tok,
 				"data":       data,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return string(change)
 		}
 
-		Convey("POST", func() {
-			Convey("invalid action", func() {
+		t.Run("POST", func(t *ftt.Test) {
+			t.Run("invalid action", func(t *ftt.Test) {
 				ah.PostAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makePostRequest(c, ""),
 					Params:  makeParams("action", "lolwut"),
 				})
 
-				So(w.Code, ShouldEqual, 400)
+				assert.Loosely(t, w.Code, should.Equal(400))
 			})
 
-			Convey("invalid json", func() {
+			t.Run("invalid json", func(t *ftt.Test) {
 				ah.PostAnnotationsHandler(&router.Context{
 					Writer:  w,
 					Request: makePostRequest(c, "invalid json"),
 					Params:  makeParams("annKey", "foobar", "action", "add"),
 				})
 
-				So(w.Code, ShouldEqual, http.StatusBadRequest)
+				assert.Loosely(t, w.Code, should.Equal(http.StatusBadRequest))
 			})
 
 			ann := &model.Annotation{
@@ -381,7 +383,7 @@ func TestAnnotations(t *testing.T) {
 			}
 			cl.Add(time.Hour)
 
-			Convey("add, bad xsrf token", func() {
+			t.Run("add, bad xsrf token", func(t *ftt.Test) {
 				ah.PostAnnotationsHandler(&router.Context{
 					Writer: w,
 					Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
@@ -390,10 +392,10 @@ func TestAnnotations(t *testing.T) {
 					Params: makeParams("annKey", "foobar", "action", "add"),
 				})
 
-				So(w.Code, ShouldEqual, http.StatusForbidden)
+				assert.Loosely(t, w.Code, should.Equal(http.StatusForbidden))
 			})
 
-			Convey("add", func() {
+			t.Run("add", func(t *ftt.Test) {
 				ann = &model.Annotation{
 					Tree:             datastore.MakeKey(c, "Tree", "tree.unknown"),
 					Key:              "foobar",
@@ -401,7 +403,7 @@ func TestAnnotations(t *testing.T) {
 					ModificationTime: datastore.RoundTime(clock.Now(c)),
 				}
 				change := map[string]interface{}{}
-				Convey("snoozeTime", func() {
+				t.Run("snoozeTime", func(t *ftt.Test) {
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer: w,
 						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
@@ -411,12 +413,12 @@ func TestAnnotations(t *testing.T) {
 						Params: makeParams("action", "add", "tree", "tree.unknown"),
 					})
 
-					So(w.Code, ShouldEqual, 200)
-					So(datastoreGetAnnotation(c, ann), ShouldBeNil)
-					So(ann.SnoozeTime, ShouldEqual, 123123)
+					assert.Loosely(t, w.Code, should.Equal(200))
+					assert.Loosely(t, datastoreGetAnnotation(c, ann), should.BeNil)
+					assert.Loosely(t, ann.SnoozeTime, should.Equal(123123))
 				})
 
-				Convey("bugs", func() {
+				t.Run("bugs", func(t *ftt.Test) {
 					change["bugs"] = []model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}}
 					change["key"] = "foobar"
 					ah.PostAnnotationsHandler(&router.Context{
@@ -425,29 +427,29 @@ func TestAnnotations(t *testing.T) {
 						Params:  makeParams("action", "add", "tree", "tree.unknown"),
 					})
 
-					So(w.Code, ShouldEqual, 200)
+					assert.Loosely(t, w.Code, should.Equal(200))
 
-					So(datastoreGetAnnotation(c, ann), ShouldBeNil)
-					So(ann.Bugs, ShouldResemble, []model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}})
+					assert.Loosely(t, datastoreGetAnnotation(c, ann), should.BeNil)
+					assert.Loosely(t, ann.Bugs, should.Resemble([]model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}}))
 				})
 			})
 
-			Convey("remove", func() {
-				Convey("can't remove non-existent annotation", func() {
+			t.Run("remove", func(t *ftt.Test) {
+				t.Run("can't remove non-existent annotation", func(t *ftt.Test) {
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer:  w,
 						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{"key": "foobar"}, tok)),
 						Params:  makeParams("action", "remove", "tree", "tree.unknown"),
 					})
 
-					So(w.Code, ShouldEqual, 404)
+					assert.Loosely(t, w.Code, should.Equal(404))
 				})
 
 				ann.SnoozeTime = 123
-				So(datastorePutAnnotation(c, ann), ShouldBeNil)
+				assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
 
-				Convey("basic", func() {
-					So(ann.SnoozeTime, ShouldEqual, 123)
+				t.Run("basic", func(t *ftt.Test) {
+					assert.Loosely(t, ann.SnoozeTime, should.Equal(123))
 
 					ah.PostAnnotationsHandler(&router.Context{
 						Writer: w,
@@ -458,18 +460,18 @@ func TestAnnotations(t *testing.T) {
 						Params: makeParams("action", "remove", "tree", "tree.unknown"),
 					})
 
-					So(w.Code, ShouldEqual, 200)
-					So(datastoreGetAnnotation(c, ann), ShouldBeNil)
-					So(ann.SnoozeTime, ShouldEqual, 0)
+					assert.Loosely(t, w.Code, should.Equal(200))
+					assert.Loosely(t, datastoreGetAnnotation(c, ann), should.BeNil)
+					assert.Loosely(t, ann.SnoozeTime, should.BeZero)
 				})
 			})
 		})
 
-		Convey("refreshAnnotations", func() {
-			Convey("handler", func() {
+		t.Run("refreshAnnotations", func(t *ftt.Test) {
+			t.Run("handler", func(t *ftt.Test) {
 				c, _ := newContext()
 				err := ah.RefreshAnnotationsHandler(c)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 
 			ann := &model.Annotation{
@@ -484,13 +486,13 @@ func TestAnnotations(t *testing.T) {
 				Bugs:      []model.MonorailBug{{BugID: "555", ProjectID: "fuchsia"}, {BugID: "666", ProjectID: "fuchsia"}},
 			}
 
-			So(datastorePutAnnotation(c, ann), ShouldBeNil)
-			So(datastorePutAnnotation(c, ann1), ShouldBeNil)
+			assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
+			assert.Loosely(t, datastorePutAnnotation(c, ann1), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("query alerts which have multiple bugs", func() {
+			t.Run("query alerts which have multiple bugs", func(t *ftt.Test) {
 				err := ah.RefreshAnnotationsHandler(c)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 	})

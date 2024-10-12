@@ -10,8 +10,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/urlfetch"
 	"go.chromium.org/luci/server/router"
@@ -69,36 +70,36 @@ func TestRevisionHandler(t *testing.T) {
 	srv := httptest.NewServer(r)
 	crRevURL = srv.URL + "/commitHash"
 
-	Convey("commitHash", t, func() {
+	ftt.Run("commitHash", t, func(t *ftt.Test) {
 		client := crRevClient{
 			HTTPClient: &http.Client{},
 			BaseURL:    crRevURL,
 		}
 
-		Convey("with existing position", func() {
+		t.Run("with existing position", func(t *ftt.Test) {
 			hash, err := client.commitHash("1300")
-			So(err, ShouldBeNil)
-			So(hash, ShouldEqual, "0dfc81bbe403cd98f4cd2d58e7817cdc8a881a5f")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, hash, should.Equal("0dfc81bbe403cd98f4cd2d58e7817cdc8a881a5f"))
 		})
 
-		Convey("with non-existent position", func() {
+		t.Run("with non-existent position", func(t *ftt.Test) {
 			_, err := client.commitHash("0")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("with invalid returned JSON", func() {
+		t.Run("with invalid returned JSON", func(t *ftt.Test) {
 			_, err := client.commitHash("500")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("with HTTP error", func() {
+		t.Run("with HTTP error", func(t *ftt.Test) {
 			client.BaseURL = "invalid-url"
 			_, err := client.commitHash("500")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 
-	Convey("revisionHandler", t, func() {
+	ftt.Run("revisionHandler", t, func(t *ftt.Test) {
 		ctx = urlfetch.Set(ctx, http.DefaultTransport)
 
 		client := &http.Client{
@@ -107,24 +108,24 @@ func TestRevisionHandler(t *testing.T) {
 			},
 		}
 
-		Convey("with valid range", func() {
+		t.Run("with valid range", func(t *ftt.Test) {
 			resp, err := client.Get(
 				srv.URL + "/revision_range?start=1300&end=1350&n=1000")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer resp.Body.Close()
 
-			So(resp.StatusCode, ShouldEqual, http.StatusMovedPermanently)
-			So(resp.Header.Get("Location"), ShouldEqual,
+			assert.Loosely(t, resp.StatusCode, should.Equal(http.StatusMovedPermanently))
+			assert.Loosely(t, resp.Header.Get("Location"), should.Equal(
 				"https://chromium.googlesource.com/chromium/src/+log/"+
 					"0dfc81bbe403cd98f4cd2d58e7817cdc8a881a5f^.."+
-					"2a2d3d036c39043ef5f8232493252732a17f7e16?pretty=fuller&n=1000")
+					"2a2d3d036c39043ef5f8232493252732a17f7e16?pretty=fuller&n=1000"))
 		})
 
-		Convey("with invalid range", func() {
+		t.Run("with invalid range", func(t *ftt.Test) {
 			resp, err := client.Get(srv.URL + "/revision_range?start=0&end=100")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer resp.Body.Close()
-			So(resp.StatusCode, ShouldEqual, http.StatusInternalServerError)
+			assert.Loosely(t, resp.StatusCode, should.Equal(http.StatusInternalServerError))
 		})
 	})
 }

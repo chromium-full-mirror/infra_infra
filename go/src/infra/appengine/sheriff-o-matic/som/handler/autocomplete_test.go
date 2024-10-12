@@ -5,14 +5,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/router"
 )
 
 func TestGetUserAutocompleteHandler(t *testing.T) {
-	Convey("basic", t, func() {
+	ftt.Run("basic", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		r := makeGetRequest(c)
 		w := httptest.NewRecorder()
@@ -24,51 +25,51 @@ func TestGetUserAutocompleteHandler(t *testing.T) {
 		}
 
 		GetUserAutocompleteHandler(ctx)
-		So(w.Code, ShouldEqual, http.StatusOK)
+		assert.Loosely(t, w.Code, should.Equal(http.StatusOK))
 	})
 }
 
 func TestAutocompleter(t *testing.T) {
-	Convey("basic", t, func() {
+	ftt.Run("basic", t, func(t *ftt.Test) {
 		testStrs := []string{"abc", "bcd", "abcd", "def", "fghij"}
 
 		ac := newAutocompleter(testStrs)
-		Convey("single char", func() {
+		t.Run("single char", func(t *ftt.Test) {
 			res := ac.query("a")
 
-			So(res, ShouldNotBeEmpty)
-			So(res, ShouldResemble, []string{"abc", "abcd"})
+			assert.Loosely(t, res, should.NotBeEmpty)
+			assert.Loosely(t, res, should.Resemble([]string{"abc", "abcd"}))
 		})
 
-		Convey("multi-char prefix", func() {
+		t.Run("multi-char prefix", func(t *ftt.Test) {
 			res := ac.query("ab")
 
-			So(res, ShouldNotBeEmpty)
-			So(res, ShouldResemble, []string{"abc", "abcd"})
+			assert.Loosely(t, res, should.NotBeEmpty)
+			assert.Loosely(t, res, should.Resemble([]string{"abc", "abcd"}))
 		})
 
-		Convey("multi-char suffix", func() {
+		t.Run("multi-char suffix", func(t *ftt.Test) {
 			res := ac.query("cd")
 
-			So(res, ShouldNotBeEmpty)
-			So(res, ShouldResemble, []string{"bcd", "abcd"})
+			assert.Loosely(t, res, should.NotBeEmpty)
+			assert.Loosely(t, res, should.Resemble([]string{"bcd", "abcd"}))
 		})
 
-		Convey("mid-string match", func() {
+		t.Run("mid-string match", func(t *ftt.Test) {
 			res := ac.query("bc")
 
-			So(res, ShouldNotBeEmpty)
-			So(res, ShouldResemble, []string{"abc", "bcd", "abcd"})
+			assert.Loosely(t, res, should.NotBeEmpty)
+			assert.Loosely(t, res, should.Resemble([]string{"abc", "bcd", "abcd"}))
 
 			res = ac.query("ghi")
 
-			So(res, ShouldNotBeEmpty)
-			So(res, ShouldResemble, []string{"fghij"})
+			assert.Loosely(t, res, should.NotBeEmpty)
+			assert.Loosely(t, res, should.Resemble([]string{"fghij"}))
 		})
 
-		Convey("no match", func() {
+		t.Run("no match", func(t *ftt.Test) {
 			res := ac.query("x")
-			So(res, ShouldBeEmpty)
+			assert.Loosely(t, res, should.BeEmpty)
 		})
 	})
 }

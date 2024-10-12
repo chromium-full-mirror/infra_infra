@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestParse(t *testing.T) {
-	Convey("Parser", t, func() {
+	ftt.Run("Parser", t, func(t *ftt.Test) {
 		tests := []struct {
 			input    string
 			expected *ExpectationStatement
@@ -133,15 +135,15 @@ func TestParse(t *testing.T) {
 				test.expected.Original = test.input
 			}
 			stmt, err := p.Parse()
-			So(err, ShouldResemble, test.err)
-			So(stmt, ShouldResemble, test.expected)
+			assert.Loosely(t, err, should.Resemble(test.err))
+			assert.Loosely(t, stmt, should.Resemble(test.expected))
 
 			if test.err != nil {
 				continue
 			}
 
 			// And test round-trip back into a string.
-			So(stmt.String(), ShouldEqual, test.input)
+			assert.Loosely(t, stmt.String(), should.Equal(test.input))
 		}
 	})
 }

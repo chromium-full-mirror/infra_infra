@@ -12,7 +12,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/luci/appengine/gaetesting"
@@ -20,6 +19,9 @@ import (
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
@@ -39,7 +41,7 @@ func (ic FakeIssueClient) SearchIssues(context.Context, *monorailv3.SearchIssues
 }
 
 func TestBugQueue(t *testing.T) {
-	Convey("/bugqueue", t, func() {
+	ftt.Run("/bugqueue", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = authtest.MockAuthConfig(c)
 		c = gologger.StdConfig.Use(c)
@@ -74,25 +76,25 @@ func TestBugQueue(t *testing.T) {
 			DefaultMonorailProject: "",
 		}
 
-		Convey("mock getBugsFromMonorail", func() {
-			Convey("get bug queue handler", func() {
+		t.Run("mock getBugsFromMonorail", func(t *ftt.Test) {
+			t.Run("get bug queue handler", func(t *ftt.Test) {
 				bqh.GetBugQueueHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-				So(string(b), ShouldEqual, `{"extras":{"priority_field":"projects/chromium/fieldDefs/11"}}`)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, string(b), should.Equal(`{"extras":{"priority_field":"projects/chromium/fieldDefs/11"}}`))
 			})
 
-			Convey("refresh bug queue handler", func() {
+			t.Run("refresh bug queue handler", func(t *ftt.Test) {
 				err := bqh.RefreshBugQueueHandler(c)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 
-			Convey("refresh bug queue", func() {
+			t.Run("refresh bug queue", func(t *ftt.Test) {
 				// HACK:
 				oldOAClient := getOAuthClient
 				getOAuthClient = func(c context.Context) (*http.Client, error) {
@@ -100,11 +102,11 @@ func TestBugQueue(t *testing.T) {
 				}
 
 				_, err := bqh.refreshBugQueue(c, "sheriff-chromium", "chromium")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				getOAuthClient = oldOAClient
 			})
 
-			Convey("get uncached bugs", func() {
+			t.Run("get uncached bugs", func(t *ftt.Test) {
 				bqh.GetUncachedBugsHandler(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c),
@@ -112,54 +114,54 @@ func TestBugQueue(t *testing.T) {
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-				So(string(b), ShouldEqual, `{"extras":{"priority_field":"projects/chromium/fieldDefs/11"}}`)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, string(b), should.Equal(`{"extras":{"priority_field":"projects/chromium/fieldDefs/11"}}`))
 			})
 
-			Convey("get alternate email", func() {
+			t.Run("get alternate email", func(t *ftt.Test) {
 				e := getAlternateEmail("test@chromium.org")
-				So(e, ShouldEqual, "test@google.com")
+				assert.Loosely(t, e, should.Equal("test@google.com"))
 
 				e = getAlternateEmail("test@google.com")
-				So(e, ShouldEqual, "test@chromium.org")
+				assert.Loosely(t, e, should.Equal("test@chromium.org"))
 			})
 		})
 
-		Convey("GetMonorailProjectNameFromLabel", func() {
-			Convey("label match", func() {
+		t.Run("GetMonorailProjectNameFromLabel", func(t *ftt.Test) {
+			t.Run("label match", func(t *ftt.Test) {
 				tree := &model.Tree{
 					Name:                       "oak",
 					DisplayName:                "Oak",
 					BugQueueLabel:              "sheriff-oak",
 					DefaultMonorailProjectName: "oak-project",
 				}
-				So(datastore.Put(c, tree), ShouldBeNil)
+				assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
-				So(bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), ShouldEqual, "oak-project")
+				assert.Loosely(t, bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), should.Equal("oak-project"))
 			})
 
-			Convey("label not match", func() {
+			t.Run("label not match", func(t *ftt.Test) {
 				tree := &model.Tree{
 					Name:                       "oak2",
 					DisplayName:                "Oak2",
 					BugQueueLabel:              "sheriff-oak-2",
 					DefaultMonorailProjectName: "oak-project",
 				}
-				So(datastore.Put(c, tree), ShouldBeNil)
+				assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
-				So(bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), ShouldEqual, "chromium")
+				assert.Loosely(t, bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), should.Equal("chromium"))
 			})
 
-			Convey("no label", func() {
+			t.Run("no label", func(t *ftt.Test) {
 				tree := &model.Tree{
 					Name:          "oak3",
 					DisplayName:   "Oak3",
 					BugQueueLabel: "sheriff-oak-3",
 				}
-				So(datastore.Put(c, tree), ShouldBeNil)
+				assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
-				So(bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), ShouldEqual, "chromium")
+				assert.Loosely(t, bqh.GetMonorailProjectNameFromLabel(c, "sheriff-oak"), should.Equal("chromium"))
 			})
 		})
 	})

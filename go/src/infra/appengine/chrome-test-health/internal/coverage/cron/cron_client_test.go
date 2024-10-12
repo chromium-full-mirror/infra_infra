@@ -12,8 +12,11 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	mock "github.com/stretchr/testify/mock"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/chrome-test-health/datastorage"
 	"infra/appengine/chrome-test-health/datastorage/mocks"
@@ -91,8 +94,8 @@ func TestUpdatePresubmitData(t *testing.T) {
 	client := CronClient{}
 	ctx := context.Background()
 
-	Convey("Update presubmit data", t, func() {
-		Convey("Should pass", func() {
+	ftt.Run("Update presubmit data", t, func(t *ftt.Test) {
+		t.Run("Should pass", func(t *ftt.Test) {
 			reports := getMockPresubmitData()
 			mockDataClient := mocks.NewIDataClient(t)
 			mockDataClient.On(
@@ -132,11 +135,11 @@ func TestUpdatePresubmitData(t *testing.T) {
 			client.coverageV2DsClient = mockDataClient
 
 			err := client.UpdatePresubmitData(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Should fail", func() {
-			Convey("Cannot fetch presubmit data", func() {
+		t.Run("Should fail", func(t *ftt.Test) {
+			t.Run("Cannot fetch presubmit data", func(t *ftt.Test) {
 				mockDataClient := mocks.NewIDataClient(t)
 				mockDataClient.On(
 					"Query",
@@ -155,11 +158,11 @@ func TestUpdatePresubmitData(t *testing.T) {
 				client.coverageV2DsClient = mockDataClient
 
 				err := client.UpdatePresubmitData(ctx)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldResemble, coverage.ErrInternalServerError)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.Resemble(coverage.ErrInternalServerError))
 			})
 
-			Convey("Cannot store processed data", func() {
+			t.Run("Cannot store processed data", func(t *ftt.Test) {
 				reports := getMockPresubmitData()
 				mockDataClient := mocks.NewIDataClient(t)
 				mockDataClient.On(
@@ -199,8 +202,8 @@ func TestUpdatePresubmitData(t *testing.T) {
 				client.coverageV2DsClient = mockDataClient
 
 				err := client.UpdatePresubmitData(ctx)
-				So(err, ShouldNotBeNil)
-				So(err, ShouldResemble, errors.New("PresubmitCoverageData: Error storing the entity"))
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, err, should.Resemble(errors.New("PresubmitCoverageData: Error storing the entity")))
 			})
 		})
 	})
@@ -211,7 +214,7 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 	client := CronClient{}
 	ctx := context.Background()
 
-	Convey("Should return presubmit data for last day", t, func() {
+	ftt.Run("Should return presubmit data for last day", t, func(t *ftt.Test) {
 		reports := getMockPresubmitData()
 		mockDataClient := mocks.NewIDataClient(t)
 		mockDataClient.On(
@@ -240,15 +243,15 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 		client.coverageV1DsClient = mockDataClient
 
 		data, err := client.getPresubmitReportsOneDay(ctx)
-		So(err, ShouldBeNil)
-		So(data, ShouldHaveLength, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, data, should.HaveLength(1))
 		expectedData := []entities.PresubmitCoverageData{
 			*reports[0],
 		}
-		So(data, ShouldResemble, expectedData)
+		assert.Loosely(t, data, should.Resemble(expectedData))
 	})
 
-	Convey("Should error out with no matching index message", t, func() {
+	ftt.Run("Should error out with no matching index message", t, func(t *ftt.Test) {
 		mockDataClient := mocks.NewIDataClient(t)
 		mockDataClient.On(
 			"Query",
@@ -266,9 +269,9 @@ func TestGetPresubmitReportsForLastYear(t *testing.T) {
 		client.coverageV1DsClient = mockDataClient
 
 		reports, err := client.getPresubmitReportsOneDay(ctx)
-		So(err, ShouldNotBeNil)
-		So(err, ShouldResemble, coverage.ErrInternalServerError)
-		So(reports, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err, should.Resemble(coverage.ErrInternalServerError))
+		assert.Loosely(t, reports, should.BeNil)
 	})
 }
 
@@ -276,7 +279,7 @@ func TestSplitSinglePresubmitData(t *testing.T) {
 	t.Parallel()
 	client := CronClient{}
 
-	Convey("Should split presubmit data if patchset is latest", t, func() {
+	ftt.Run("Should split presubmit data if patchset is latest", t, func(t *ftt.Test) {
 		reports := getMockPresubmitData()
 		maxPatchsetMap := map[int64]int64{1: 2}
 		result := client.splitSinglePresubmitData(reports[0], maxPatchsetMap, false)
@@ -288,14 +291,14 @@ func TestSplitSinglePresubmitData(t *testing.T) {
 			"//dir1/dir3/":         {CoveredFiles: 1, TotalFiles: 1, IsDir: true},
 			"//dir1/dir3/file2.cc": {CoveredFiles: 1, TotalFiles: 1, IsDir: false},
 		}
-		So(result, ShouldResemble, expected)
+		assert.Loosely(t, result, should.Resemble(expected))
 	})
 
-	Convey("Should return nil if patchset is not latest", t, func() {
+	ftt.Run("Should return nil if patchset is not latest", t, func(t *ftt.Test) {
 		reports := getMockPresubmitData()
 		maxPatchsetMap := map[int64]int64{1: 2}
 		result := client.splitSinglePresubmitData(reports[1], maxPatchsetMap, false)
-		So(result, ShouldBeNil)
+		assert.Loosely(t, result, should.BeNil)
 	})
 }
 
@@ -303,15 +306,15 @@ func TestGetMaxPatchsetToChangeMap(t *testing.T) {
 	t.Parallel()
 	client := CronClient{}
 
-	Convey("Should return map", t, func() {
-		Convey("With no reports", func() {
+	ftt.Run("Should return map", t, func(t *ftt.Test) {
+		t.Run("With no reports", func(t *ftt.Test) {
 			reports := []entities.PresubmitCoverageData{}
 			have := client.getMaxPatchsetToChangeMap(reports)
 			want := map[int64]int64{}
-			So(have, ShouldResemble, want)
+			assert.Loosely(t, have, should.Resemble(want))
 		})
 
-		Convey("With some reports", func() {
+		t.Run("With some reports", func(t *ftt.Test) {
 			mockRep := getMockPresubmitData()
 			rep1 := *mockRep[0]
 			rep2 := rep1
@@ -323,7 +326,7 @@ func TestGetMaxPatchsetToChangeMap(t *testing.T) {
 			reports := []entities.PresubmitCoverageData{rep1, rep2, rep3}
 			have := client.getMaxPatchsetToChangeMap(reports)
 			want := map[int64]int64{1: 3, 2: 1}
-			So(have, ShouldResemble, want)
+			assert.Loosely(t, have, should.Resemble(want))
 		})
 	})
 }
@@ -331,23 +334,23 @@ func TestGetMaxPatchsetToChangeMap(t *testing.T) {
 func TestGetDir(t *testing.T) {
 	t.Parallel()
 
-	Convey("Should return parent directory", t, func() {
-		Convey("For a directory path", func() {
+	ftt.Run("Should return parent directory", t, func(t *ftt.Test) {
+		t.Run("For a directory path", func(t *ftt.Test) {
 			parent := getDir("//a/b/")
-			So(parent, ShouldEqual, "//a/")
+			assert.Loosely(t, parent, should.Equal("//a/"))
 
 			parent = getDir("//a/")
-			So(parent, ShouldEqual, "//")
+			assert.Loosely(t, parent, should.Equal("//"))
 		})
 
-		Convey("For a file path", func() {
+		t.Run("For a file path", func(t *ftt.Test) {
 			parent := getDir("//a/b/c.ext")
-			So(parent, ShouldEqual, "//a/b/")
+			assert.Loosely(t, parent, should.Equal("//a/b/"))
 		})
 
-		Convey("For root path", func() {
+		t.Run("For root path", func(t *ftt.Test) {
 			parent := getDir("//")
-			So(parent, ShouldEqual, "//")
+			assert.Loosely(t, parent, should.Equal("//"))
 		})
 	})
 }
@@ -356,8 +359,8 @@ func TestCreateCqSummaryDatat(t *testing.T) {
 	t.Parallel()
 	client := CronClient{}
 
-	Convey("Create CQ summary coverage data", t, func() {
-		Convey("Should pass", func() {
+	ftt.Run("Create CQ summary coverage data", t, func(t *ftt.Test) {
+		t.Run("Should pass", func(t *ftt.Test) {
 			mockDataClient := mocks.NewIDataClient(t)
 			mockDataClient.On(
 				"BatchPut",
@@ -377,10 +380,10 @@ func TestCreateCqSummaryDatat(t *testing.T) {
 				"//b/": {CoveredFiles: 1, TotalFiles: 2, IsDir: true},
 			}
 			err := client.createCqSummaryData(context.Background(), time.Now(), int64(1234), int64(1), false, mockData)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Should fail", func() {
+		t.Run("Should fail", func(t *ftt.Test) {
 			mockDataClient := mocks.NewIDataClient(t)
 			mockDataClient.On(
 				"BatchPut",
@@ -394,8 +397,8 @@ func TestCreateCqSummaryDatat(t *testing.T) {
 			)
 			client.coverageV2DsClient = mockDataClient
 			err := client.createCqSummaryData(context.Background(), time.Now(), int64(1234), int64(1), false, map[string]IncrementalCoverageData{})
-			So(err, ShouldNotBeNil)
-			So(err, ShouldResemble, errors.New("Datastore: Error putting entities"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.Resemble(errors.New("Datastore: Error putting entities")))
 		})
 	})
 }

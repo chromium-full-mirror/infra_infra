@@ -10,12 +10,13 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/dummy"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
@@ -62,8 +63,8 @@ func (mbc *mockBisectionClient) BatchGetTestAnalyses(c context.Context, req *bis
 
 func TestAttachLuciBisectionResults(t *testing.T) {
 	c := gaetesting.TestingContext()
-	Convey("attachLUCIBisectionBuildFailureAnalyses", t, func() {
-		Convey("not a compile failure", func() {
+	ftt.Run("attachLUCIBisectionBuildFailureAnalyses", t, func(t *ftt.Test) {
+		t.Run("not a compile failure", func(t *ftt.Test) {
 			bf := []*messages.BuildFailure{
 				{
 					Builders: []*messages.AlertedBuilder{
@@ -89,11 +90,11 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			}
 			err := attachLuciBisectionResults(c, bf, mockClient)
-			So(err, ShouldBeNil)
-			So(bf[0].LuciBisectionResult, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bf[0].LuciBisectionResult, should.BeNil)
 		})
 
-		Convey("compile failure, not chromium ci", func() {
+		t.Run("compile failure, not chromium ci", func(t *ftt.Test) {
 			bf := []*messages.BuildFailure{
 				{
 					Builders: []*messages.AlertedBuilder{
@@ -119,12 +120,12 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			}
 			err := attachLuciBisectionResults(c, bf, mockClient)
-			So(err, ShouldBeNil)
-			So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, false)
-			So(bf[0].LuciBisectionResult.Analysis, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bf[0].LuciBisectionResult.IsSupported, should.Equal(false))
+			assert.Loosely(t, bf[0].LuciBisectionResult.Analysis, should.BeNil)
 		})
 
-		Convey("compile failure", func() {
+		t.Run("compile failure", func(t *ftt.Test) {
 			bf := []*messages.BuildFailure{
 				{
 					Builders: []*messages.AlertedBuilder{
@@ -150,13 +151,13 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			}
 			err := attachLuciBisectionResults(c, bf, mockClient)
-			So(err, ShouldBeNil)
-			So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, true)
-			So(bf[0].LuciBisectionResult.Analysis.AnalysisId, ShouldEqual, 12345)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, bf[0].LuciBisectionResult.IsSupported, should.Equal(true))
+			assert.Loosely(t, bf[0].LuciBisectionResult.Analysis.AnalysisId, should.Equal(12345))
 		})
 	})
 
-	Convey("attachLUCIBisectionTestAnalyses", t, func() {
+	ftt.Run("attachLUCIBisectionTestAnalyses", t, func(t *ftt.Test) {
 		bf := []*messages.BuildFailure{
 			{
 				Builders: []*messages.AlertedBuilder{
@@ -207,14 +208,14 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			},
 		}
 		err := attachLuciBisectionResults(c, bf, mockClient)
-		So(err, ShouldBeNil)
-		So(bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, ShouldBeNil)
-		So(bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[1].LUCIBisectionResult, ShouldResemble, &step.LUCIBisectionTestAnalysis{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, should.BeNil)
+		assert.Loosely(t, bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[1].LUCIBisectionResult, should.Resemble(&step.LUCIBisectionTestAnalysis{
 			AnalysisID: "2",
 			Status:     bisectionpb.AnalysisStatus(3).String(),
-		})
+		}))
 
-		Convey("batch, single project", func() {
+		t.Run("batch, single project", func(t *ftt.Test) {
 			bf := []*messages.BuildFailure{}
 			// Create 201 failures, each failure has one failed test.
 			// This will be put into 3 batches 0..99, 100..199, 200 when calling bisection.
@@ -264,19 +265,19 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			mockClient := &mockBisectionClient{BatchGetTestAnalysesResponses: responses}
 
 			err := attachLuciBisectionResults(c, bf, mockClient)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			for i, b := range bf {
-				So(b.Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, ShouldResemble, &step.LUCIBisectionTestAnalysis{
+				assert.Loosely(t, b.Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, should.Resemble(&step.LUCIBisectionTestAnalysis{
 					AnalysisID: fmt.Sprint(i + 1),
 					Status:     bisectionpb.AnalysisStatus(3).String(),
-				})
+				}))
 			}
 		})
 	})
 }
 
 func TestStoreAlertsSummary(t *testing.T) {
-	Convey("success", t, func() {
+	ftt.Run("success", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = info.SetFactory(c, func(ic context.Context) info.RawInterface {
 			return giMock{dummy.Info(), "", clock.Now(c), nil}
@@ -294,6 +295,6 @@ func TestStoreAlertsSummary(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

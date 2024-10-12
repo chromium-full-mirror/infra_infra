@@ -9,11 +9,13 @@ import (
 	"testing"
 
 	gerrit "github.com/andygrunwald/go-gerrit"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 )
@@ -22,7 +24,7 @@ func TestGerritClient(t *testing.T) {
 	testMux := http.NewServeMux()
 	testServer := httptest.NewServer(testMux)
 
-	Convey("get client", t, func() {
+	ftt.Run("get client", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = authtest.MockAuthConfig(c)
 		authState := &authtest.FakeState{
@@ -31,11 +33,11 @@ func TestGerritClient(t *testing.T) {
 		c = auth.WithState(c, authState)
 		c = withGerritInstance(c, testServer.URL)
 		client, err := getGerritClient(c)
-		So(err, ShouldBeNil)
-		So(client, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, client, should.NotBeNil)
 	})
 
-	Convey("create CL", t, func() {
+	ftt.Run("create CL", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = gologger.StdConfig.Use(c)
 		c = authtest.MockAuthConfig(c)
@@ -75,16 +77,16 @@ func TestGerritClient(t *testing.T) {
 
 		c = withGerritInstance(c, testServer.URL)
 		client, err := getGerritClient(c)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		fileContents := map[string]string{
 			"test_file.txt": "file contents",
 		}
 		changeID, err := createCL(client, "project", "branch", "subject", fileContents)
-		So(err, ShouldBeNil)
-		So(created, ShouldBeTrue)
-		So(uploaded, ShouldBeTrue)
-		So(published, ShouldBeTrue)
-		So(changeID, ShouldEqual, "1234")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, created, should.BeTrue)
+		assert.Loosely(t, uploaded, should.BeTrue)
+		assert.Loosely(t, published, should.BeTrue)
+		assert.Loosely(t, changeID, should.Equal("1234"))
 	})
 }

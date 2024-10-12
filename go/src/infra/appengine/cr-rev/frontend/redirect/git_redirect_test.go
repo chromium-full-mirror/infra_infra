@@ -7,7 +7,9 @@ package redirect
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/cr-rev/models"
 )
@@ -19,190 +21,190 @@ func TestGitilesRedirect(t *testing.T) {
 		CommitHash: "1234567890123456789012345678901234567890",
 	}
 	redirect := &gitilesRedirect{}
-	Convey("Commit redirect", t, func() {
-		Convey("no path provided", func() {
+	ftt.Run("Commit redirect", t, func(t *ftt.Test) {
+		t.Run("no path provided", func(t *ftt.Test) {
 			url, err := redirect.Commit(commit, "")
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890",
-			)
+				should.Equal(
+					"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890",
+				))
 		})
 
-		Convey("path provided", func() {
+		t.Run("path provided", func(t *ftt.Test) {
 			url, err := redirect.Commit(commit, "README.md")
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890/README.md",
-			)
+				should.Equal(
+					"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890/README.md",
+				))
 		})
 	})
 
-	Convey("Diff redirect", t, func() {
-		Convey("identical repositories", func() {
+	ftt.Run("Diff redirect", t, func(t *ftt.Test) {
+		t.Run("identical repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			url, err := redirect.Diff(commit, commit2)
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890..0000000000000000000000000000000000000000",
-			)
+				should.Equal(
+					"https://foo.googlesource.com/bar/baz/+/1234567890123456789012345678901234567890..0000000000000000000000000000000000000000",
+				))
 		})
 
-		Convey("different repositories", func() {
+		t.Run("different repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz/baq",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Diff(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 
-		Convey("different host repositories", func() {
+		t.Run("different host repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "bar",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Diff(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 	})
 
-	Convey("Log redirect", t, func() {
-		Convey("identical repositories", func() {
+	ftt.Run("Log redirect", t, func(t *ftt.Test) {
+		t.Run("identical repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			url, err := redirect.Log(commit, commit2)
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://foo.googlesource.com/bar/baz/+log/1234567890123456789012345678901234567890..0000000000000000000000000000000000000000",
-			)
+				should.Equal(
+					"https://foo.googlesource.com/bar/baz/+log/1234567890123456789012345678901234567890..0000000000000000000000000000000000000000",
+				))
 		})
 
-		Convey("different repositories", func() {
+		t.Run("different repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz/baq",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Log(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 
-		Convey("different host repositories", func() {
+		t.Run("different host repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "bar",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Log(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 	})
 }
 
 func TestCodesearchRedirect(t *testing.T) {
 	redirect := &codesearchRedirect{}
-	Convey("Test commit redirect", t, func() {
+	ftt.Run("Test commit redirect", t, func(t *ftt.Test) {
 		commit := models.Commit{
 			Host:       "chromium",
 			Repository: "bar/baz",
 			CommitHash: "1234567890123456789012345678901234567890",
 		}
-		Convey("no path provided", func() {
+		t.Run("no path provided", func(t *ftt.Test) {
 			url, err := redirect.Commit(commit, "")
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890",
-			)
+				should.Equal(
+					"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890",
+				))
 		})
 
-		Convey("path provided", func() {
+		t.Run("path provided", func(t *ftt.Test) {
 			url, err := redirect.Commit(commit, "README.md")
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890:README.md",
-			)
+				should.Equal(
+					"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890:README.md",
+				))
 		})
 	})
 
-	Convey("Diff redirect", t, func() {
+	ftt.Run("Diff redirect", t, func(t *ftt.Test) {
 		commit := models.Commit{
 			Host:       "chromium",
 			Repository: "bar/baz",
 			CommitHash: "1234567890123456789012345678901234567890",
 		}
-		Convey("identical repositories", func() {
+		t.Run("identical repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "chromium",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			url, err := redirect.Diff(commit, commit2)
-			So(err, ShouldBeNil)
-			So(
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t,
 				url,
-				ShouldEqual,
-				"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890...0000000000000000000000000000000000000000",
-			)
+				should.Equal(
+					"https://source.chromium.org/chromium/bar/baz/+/1234567890123456789012345678901234567890...0000000000000000000000000000000000000000",
+				))
 		})
 
-		Convey("different repositories", func() {
+		t.Run("different repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "chromium",
 				Repository: "bar/baz/baq",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Diff(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 
-		Convey("different host repositories", func() {
+		t.Run("different host repositories", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz",
 				CommitHash: "0000000000000000000000000000000000000000",
 			}
 			_, err := redirect.Diff(commit, commit2)
-			So(err, ShouldEqual, errNotIdenticalRepositories)
+			assert.Loosely(t, err, should.Equal(errNotIdenticalRepositories))
 		})
 	})
 
-	Convey("Test not supported GoB hosts", t, func() {
+	ftt.Run("Test not supported GoB hosts", t, func(t *ftt.Test) {
 		commit := models.Commit{
 			Host:       "foo",
 			Repository: "bar/baz",
 		}
-		Convey("no commit redirect", func() {
+		t.Run("no commit redirect", func(t *ftt.Test) {
 			_, err := redirect.Commit(commit, "")
-			So(err, ShouldEqual, errNotSupportedRepository)
+			assert.Loosely(t, err, should.Equal(errNotSupportedRepository))
 		})
-		Convey("no diff redirect", func() {
+		t.Run("no diff redirect", func(t *ftt.Test) {
 			commit2 := models.Commit{
 				Host:       "foo",
 				Repository: "bar/baz",
 			}
 			_, err := redirect.Diff(commit, commit2)
-			So(err, ShouldEqual, errNotSupportedRepository)
+			assert.Loosely(t, err, should.Equal(errNotSupportedRepository))
 		})
 	})
 }

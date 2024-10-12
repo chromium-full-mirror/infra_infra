@@ -9,11 +9,13 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 )
@@ -47,18 +49,18 @@ func TestAnnouncementsPrelude(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		Convey(fmt.Sprintf("%d - %s by %s", i, tc.methodName, tc.caller), t, func() {
+		ftt.Run(fmt.Sprintf("%d - %s by %s", i, tc.methodName, tc.caller), t, func(t *ftt.Test) {
 			state.Identity = tc.caller
 			_, err := announcementsPrelude(ctx, tc.methodName, nil)
 			if tc.code == 0 {
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			} else {
-				So(status.Code(err), ShouldEqual, tc.code)
+				assert.Loosely(t, status.Code(err), should.Equal(tc.code))
 			}
 		})
 	}
-	Convey("unrecognized method", t, func() {
+	ftt.Run("unrecognized method", t, func(t *ftt.Test) {
 		state.Identity = trooper
-		So(func() { announcementsPrelude(ctx, "melemele", nil) }, ShouldPanic)
+		assert.Loosely(t, func() { announcementsPrelude(ctx, "melemele", nil) }, should.Panic)
 	})
 }

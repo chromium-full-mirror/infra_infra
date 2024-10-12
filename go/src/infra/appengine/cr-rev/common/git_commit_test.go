@@ -3,11 +3,13 @@ package common
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGitCommit(t *testing.T) {
-	Convey("ID generation", t, func() {
+	ftt.Run("ID generation", t, func(t *ftt.Test) {
 		commit := &GitCommit{
 			Repository: GitRepository{
 				Host: "foo",
@@ -15,114 +17,114 @@ func TestGitCommit(t *testing.T) {
 			},
 			Hash: "0000000000000000000000000000000000000000",
 		}
-		So(commit.ID(), ShouldEqual, "foo-bar-0000000000000000000000000000000000000000")
+		assert.Loosely(t, commit.ID(), should.Equal("foo-bar-0000000000000000000000000000000000000000"))
 	})
 
-	Convey("extract Footers", t, func() {
-		Convey("nothing to extract", func() {
+	ftt.Run("extract Footers", t, func(t *ftt.Test) {
+		t.Run("nothing to extract", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nbar",
 			}
-			So(commit.GetFooters("Foo"), ShouldBeEmpty)
-			So(commit.GetFooters("Bar"), ShouldBeEmpty)
-			So(commit.GetFooters("Baz"), ShouldBeEmpty)
+			assert.Loosely(t, commit.GetFooters("Foo"), should.BeEmpty)
+			assert.Loosely(t, commit.GetFooters("Bar"), should.BeEmpty)
+			assert.Loosely(t, commit.GetFooters("Baz"), should.BeEmpty)
 		})
 
-		Convey("empty value", func() {
+		t.Run("empty value", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nbar:",
 			}
-			So(commit.GetFooters("Foo"), ShouldBeEmpty)
-			So(commit.GetFooters("Bar"), ShouldResemble, []string{""})
+			assert.Loosely(t, commit.GetFooters("Foo"), should.BeEmpty)
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{""}))
 		})
 
-		Convey("multiple values", func() {
+		t.Run("multiple values", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nBar: 42\nBar: 43",
 			}
-			So(commit.GetFooters("Bar"), ShouldResemble, []string{"43", "42"})
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{"43", "42"}))
 		})
 
-		Convey("quoted values not extracted", func() {
+		t.Run("quoted values not extracted", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\n> Bar: 42\nBar: 43",
 			}
-			So(commit.GetFooters("Bar"), ShouldResemble, []string{"43"})
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{"43"}))
 		})
 	})
 
-	Convey("position footer", t, func() {
-		Convey("no number", func() {
+	ftt.Run("position footer", t, func(t *ftt.Test) {
+		t.Run("no number", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo",
 			}
 			_, err := commit.GetPositionNumber()
-			So(err, ShouldEqual, ErrNoPositionFooter)
+			assert.Loosely(t, err, should.Equal(ErrNoPositionFooter))
 		})
 
-		Convey("gitnumberer syntax", func() {
+		t.Run("gitnumberer syntax", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nCr-Commit-Position: refs/heads/main@{#42}",
 			}
 			position, err := commit.GetPositionNumber()
-			So(err, ShouldBeNil)
-			So(position.Number, ShouldEqual, 42)
-			So(position.Name, ShouldEqual, "refs/heads/main")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, position.Number, should.Equal(42))
+			assert.Loosely(t, position.Name, should.Equal("refs/heads/main"))
 		})
 
-		Convey("svn-id syntax", func() {
+		t.Run("svn-id syntax", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\ngit-svn-id: svn://svn.chromium.org/chrome/trunk/src@42 00000000-0000-0000-0000-000000000000",
 			}
 			position, err := commit.GetPositionNumber()
-			So(err, ShouldBeNil)
-			So(position.Number, ShouldEqual, 42)
-			So(position.Name, ShouldEqual, "svn://svn.chromium.org/chrome/trunk/src")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, position.Number, should.Equal(42))
+			assert.Loosely(t, position.Name, should.Equal("svn://svn.chromium.org/chrome/trunk/src"))
 		})
 
-		Convey("with quoted text position", func() {
+		t.Run("with quoted text position", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\n>Cr-Commit-Position: refs/heads/main@{#42}",
 			}
 			_, err := commit.GetPositionNumber()
-			So(err, ShouldEqual, ErrNoPositionFooter)
+			assert.Loosely(t, err, should.Equal(ErrNoPositionFooter))
 		})
 
-		Convey("gitnumberer syntax with quoted text", func() {
+		t.Run("gitnumberer syntax with quoted text", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\n>Cr-Commit-Position: refs/heads/foo@{#42}\nCr-Commit-Position: refs/heads/main@{#43}",
 			}
 			position, err := commit.GetPositionNumber()
-			So(err, ShouldBeNil)
-			So(position.Number, ShouldEqual, 43)
-			So(position.Name, ShouldEqual, "refs/heads/main")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, position.Number, should.Equal(43))
+			assert.Loosely(t, position.Name, should.Equal("refs/heads/main"))
 		})
 
-		Convey("gitnumberer syntax with quoted text2", func() {
+		t.Run("gitnumberer syntax with quoted text2", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nCr-Commit-Position: refs/heads/foo@{#42}\n>Cr-Commit-Position: refs/heads/main@{#43}",
 			}
 			position, err := commit.GetPositionNumber()
-			So(err, ShouldBeNil)
-			So(position.Number, ShouldEqual, 42)
-			So(position.Name, ShouldEqual, "refs/heads/foo")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, position.Number, should.Equal(42))
+			assert.Loosely(t, position.Name, should.Equal("refs/heads/foo"))
 		})
 
-		Convey("multiple gitnumberer", func() {
+		t.Run("multiple gitnumberer", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nCr-Commit-Position: refs/heads/foo@{#42}\nCr-Commit-Position: refs/heads/main@{#43}",
 			}
 			position, err := commit.GetPositionNumber()
-			So(err, ShouldBeNil)
-			So(position.Number, ShouldEqual, 42)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, position.Number, should.Equal(42))
 		})
 
-		Convey("invalid format", func() {
+		t.Run("invalid format", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nCr-Commit-Position: foo",
 			}
 			_, err := commit.GetPositionNumber()
-			So(err, ShouldEqual, ErrInvalidPositionFooter)
+			assert.Loosely(t, err, should.Equal(ErrInvalidPositionFooter))
 		})
 	})
 }

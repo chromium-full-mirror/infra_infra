@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	gomock "github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/server/router"
 )
 
@@ -25,8 +25,8 @@ func TestRest(t *testing.T) {
 		grpcServer: mock,
 	}
 
-	Convey("Numbering request", t, func() {
-		Convey("non-chromim/src", func() {
+	ftt.Run("Numbering request", t, func(t *ftt.Test) {
+		t.Run("non-chromim/src", func(t *ftt.Test) {
 			expectedReq := &NumberingRequest{
 				Host:           "chromium",
 				Repository:     "foo",
@@ -44,9 +44,9 @@ func TestRest(t *testing.T) {
 			s.handleNumbering(c)
 		})
 
-		Convey("chromim/src", func() {
-			Convey("before migration", func() {
-				Convey("using old ref", func() {
+		t.Run("chromim/src", func(t *ftt.Test) {
+			t.Run("before migration", func(t *ftt.Test) {
+				t.Run("using old ref", func(t *ftt.Test) {
 					expectedReq := &NumberingRequest{
 						Host:           "chromium",
 						Repository:     "chromium/src",
@@ -63,7 +63,7 @@ func TestRest(t *testing.T) {
 					}
 					s.handleNumbering(c)
 				})
-				Convey("using new ref", func() {
+				t.Run("using new ref", func(t *ftt.Test) {
 					expectedReq := &NumberingRequest{
 						Host:           "chromium",
 						Repository:     "chromium/src",
@@ -81,8 +81,8 @@ func TestRest(t *testing.T) {
 					s.handleNumbering(c)
 				})
 			})
-			Convey("chromim/src after migration", func() {
-				Convey("using old ref", func() {
+			t.Run("chromim/src after migration", func(t *ftt.Test) {
+				t.Run("using old ref", func(t *ftt.Test) {
 					expectedReq := &NumberingRequest{
 						Host:           "chromium",
 						Repository:     "chromium/src",
@@ -99,7 +99,7 @@ func TestRest(t *testing.T) {
 					}
 					s.handleNumbering(c)
 				})
-				Convey("using new ref", func() {
+				t.Run("using new ref", func(t *ftt.Test) {
 					expectedReq := &NumberingRequest{
 						Host:           "chromium",
 						Repository:     "chromium/src",

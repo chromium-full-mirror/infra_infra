@@ -8,9 +8,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/dummy"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/urlfetch"
@@ -34,7 +35,7 @@ func (m mck) ModuleHostname(a, b, c string) (string, error) {
 }
 
 func TestGetLayoutTestsHandler(t *testing.T) {
-	Convey("get layout tests", t, func() {
+	ftt.Run("get layout tests", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = info.SetFactory(c, func(ic context.Context) info.RawInterface {
 			return giMock{dummy.Info(), "", time.Now(), nil}
@@ -48,25 +49,25 @@ func TestGetLayoutTestsHandler(t *testing.T) {
 			Request: makeGetRequest(c),
 		}
 
-		Convey("load all, error", func() {
+		t.Run("load all, error", func(t *ftt.Test) {
 			GetLayoutTestsHandler(ctx)
 
-			So(w.Code, ShouldEqual, http.StatusInternalServerError)
+			assert.Loosely(t, w.Code, should.Equal(http.StatusInternalServerError))
 		})
 
-		Convey("load all, no error", func() {
+		t.Run("load all, no error", func(t *ftt.Test) {
 			for _, path := range te.LayoutTestExpectations {
 				gt.Responses[gitilesPrefix+path+"?format=TEXT"] = `unused`
 			}
 			GetLayoutTestsHandler(ctx)
 
-			So(w.Code, ShouldEqual, http.StatusOK)
+			assert.Loosely(t, w.Code, should.Equal(http.StatusOK))
 		})
 	})
 }
 
 func TestPostLayoutTestExpectationChangeHandler(t *testing.T) {
-	Convey("basic", t, func() {
+	ftt.Run("basic", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		gt := &testhelper.MockGitilesTransport{Responses: map[string]string{}}
 		for _, path := range te.LayoutTestExpectations {
@@ -79,7 +80,7 @@ func TestPostLayoutTestExpectationChangeHandler(t *testing.T) {
 			return mck{giMock{dummy.Info(), "", time.Now(), nil}}
 		})
 
-		Convey("empty body, error", func() {
+		t.Run("empty body, error", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 			ctx := &router.Context{
 				Writer:  w,
@@ -87,22 +88,22 @@ func TestPostLayoutTestExpectationChangeHandler(t *testing.T) {
 			}
 
 			PostLayoutTestExpectationChangeHandler(ctx)
-			So(w.Code, ShouldEqual, http.StatusInternalServerError)
+			assert.Loosely(t, w.Code, should.Equal(http.StatusInternalServerError))
 		})
 
-		Convey("valid body", func() {
+		t.Run("valid body", func(t *ftt.Test) {
 			w := httptest.NewRecorder()
 			body, err := json.Marshal(&shortExp{
 				TestName: "test_test/test.html",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			ctx := &router.Context{
 				Writer:  w,
 				Request: makePostRequest(c, string(body)),
 			}
 
 			PostLayoutTestExpectationChangeHandler(ctx)
-			So(w.Code, ShouldNotEqual, http.StatusInternalServerError)
+			assert.Loosely(t, w.Code, should.NotEqual(http.StatusInternalServerError))
 		})
 	})
 }

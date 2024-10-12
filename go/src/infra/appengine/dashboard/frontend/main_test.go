@@ -13,10 +13,12 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -27,7 +29,7 @@ import (
 func TestDashboard(t *testing.T) {
 	t.Parallel()
 
-	Convey("dashboard", t, func() {
+	ftt.Run("dashboard", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = templates.Use(
 			c, prepareTemplates(&server.Options{}), &templates.Extra{
@@ -37,8 +39,8 @@ func TestDashboard(t *testing.T) {
 
 		w := httptest.NewRecorder()
 
-		Convey("template params", func() {
-			Convey("anonymous", func() {
+		t.Run("template params", func(t *ftt.Test) {
+			t.Run("anonymous", func(t *ftt.Test) {
 				c = auth.WithState(c, &authtest.FakeState{})
 				dashboard(&router.Context{
 					Writer:  w,
@@ -46,18 +48,18 @@ func TestDashboard(t *testing.T) {
 					Params:  makeParams("path", "/"),
 				})
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(body, ShouldContainSubstring, "chopsdash-app")
-				So(w.Code, ShouldEqual, 200)
-				So(body, ShouldNotContainSubstring, "is-googler")
-				So(body, ShouldContainSubstring, "user=\"\"")
+				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, body, should.NotContainSubstring("is-googler"))
+				assert.Loosely(t, body, should.ContainSubstring("user=\"\""))
 			})
 
 			authState := &authtest.FakeState{
 				Identity: "user:user@example.com",
 			}
-			Convey("not-googler", func() {
+			t.Run("not-googler", func(t *ftt.Test) {
 				c = auth.WithState(c, authState)
 				dashboard(&router.Context{
 					Writer:  w,
@@ -66,15 +68,15 @@ func TestDashboard(t *testing.T) {
 				})
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(body, ShouldContainSubstring, "chopsdash-app")
-				So(w.Code, ShouldEqual, 200)
-				So(body, ShouldNotContainSubstring, "is-googler")
-				So(body, ShouldContainSubstring, "user=\"user@example.com\"")
+				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, body, should.NotContainSubstring("is-googler"))
+				assert.Loosely(t, body, should.ContainSubstring("user=\"user@example.com\""))
 			})
 
-			Convey("googler", func() {
+			t.Run("googler", func(t *ftt.Test) {
 				authState.IdentityGroups = []string{authGroup}
 				c = auth.WithState(c, authState)
 				dashboard(&router.Context{
@@ -84,12 +86,12 @@ func TestDashboard(t *testing.T) {
 				})
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(body, ShouldContainSubstring, "chopsdash-app")
-				So(w.Code, ShouldEqual, 200)
-				So(body, ShouldContainSubstring, "is-googler")
-				So(body, ShouldContainSubstring, "user=\"user@example.com\"")
+				assert.Loosely(t, body, should.ContainSubstring("chopsdash-app"))
+				assert.Loosely(t, w.Code, should.Equal(200))
+				assert.Loosely(t, body, should.ContainSubstring("is-googler"))
+				assert.Loosely(t, body, should.ContainSubstring("user=\"user@example.com\""))
 			})
 		})
 	})

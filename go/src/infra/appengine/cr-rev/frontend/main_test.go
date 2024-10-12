@@ -3,17 +3,19 @@ package main
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGetGerritUrl(t *testing.T) {
-	Convey("returns CL", t, func() {
+	ftt.Run("returns CL", t, func(t *ftt.Test) {
 		url := getGerritUrl("https://www.example.com/", "42")
-		So(url, ShouldEqual, "https://www.example.com/c/42")
+		assert.Loosely(t, url, should.Equal("https://www.example.com/c/42"))
 	})
 
-	Convey("returns dashboard", t, func() {
+	ftt.Run("returns dashboard", t, func(t *ftt.Test) {
 		url := getGerritUrl("https://www.example.com/", "")
-		So(url, ShouldEqual, "https://www.example.com/dashboard/self")
+		assert.Loosely(t, url, should.Equal("https://www.example.com/dashboard/self"))
 	})
 }

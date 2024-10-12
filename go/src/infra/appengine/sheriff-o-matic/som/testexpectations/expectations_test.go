@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/dummy"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/urlfetch"
@@ -17,7 +18,7 @@ import (
 )
 
 func TestUpdateExpectations(t *testing.T) {
-	Convey("Update with empty expectation returns error", t, func() {
+	ftt.Run("Update with empty expectation returns error", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -28,10 +29,10 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		err := fs.UpdateExpectation(&ExpectationStatement{})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Update basic, single file, existing test", t, func() {
+	ftt.Run("Update basic, single file, existing test", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -48,25 +49,25 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		cl := fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
 
-		So(cl["/some/path"], ShouldEqual, "/third_party/test_name [ PASS ]")
+		assert.Loosely(t, cl["/some/path"], should.Equal("/third_party/test_name [ PASS ]"))
 
 		err := fs.UpdateExpectation(&ExpectationStatement{
 			TestName:     "/third_party/test_name",
 			Expectations: []string{"PASS", "FAIL"},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		cl = fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
 
-		So(cl["/some/path"], ShouldEqual, "/third_party/test_name [ PASS FAIL ]")
+		assert.Loosely(t, cl["/some/path"], should.Equal("/third_party/test_name [ PASS FAIL ]"))
 	})
 
-	Convey("Update basic, single file, new test", t, func() {
+	ftt.Run("Update basic, single file, new test", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -83,23 +84,23 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		cl := fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 0)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.BeZero)
 
 		err := fs.UpdateExpectation(&ExpectationStatement{
 			TestName:     "/third_party/new_test_name",
 			Expectations: []string{"PASS", "FAIL"},
 			Dirty:        true,
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		cl = fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
-		So(cl[defaultExpectationsFile], ShouldEqual, "/third_party/test_name [ PASS ]\n/third_party/new_test_name [ PASS FAIL ]")
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
+		assert.Loosely(t, cl[defaultExpectationsFile], should.Equal("/third_party/test_name [ PASS ]\n/third_party/new_test_name [ PASS FAIL ]"))
 	})
 
-	Convey("Update basic, multiple files, new test", t, func() {
+	ftt.Run("Update basic, multiple files, new test", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -120,24 +121,24 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		cl := fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 0)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.BeZero)
 
 		err := fs.UpdateExpectation(&ExpectationStatement{
 			TestName:     "/third_party/new_test_name",
 			Expectations: []string{"PASS", "FAIL"},
 			Dirty:        true,
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		cl = fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
 
-		So(cl[defaultExpectationsFile], ShouldEqual, "/third_party/new_test_name [ PASS FAIL ]")
+		assert.Loosely(t, cl[defaultExpectationsFile], should.Equal("/third_party/new_test_name [ PASS FAIL ]"))
 	})
 
-	Convey("Update basic, multiple files and tests", t, func() {
+	ftt.Run("Update basic, multiple files and tests", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -169,28 +170,28 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		cl := fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 0)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.BeZero)
 
 		err := fs.UpdateExpectation(&ExpectationStatement{
 			TestName:     "/third_party/test_name1",
 			Expectations: []string{"PASS", "FAIL"},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		cl = fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
 
-		So(cl["/some/path1"], ShouldEqual, strings.Join([]string{
+		assert.Loosely(t, cl["/some/path1"], should.Equal(strings.Join([]string{
 			"/third_party/test_name1 [ PASS FAIL ]",
 			"/third_party/test_name1b [ FAIL ]",
-		}, "\n"))
+		}, "\n")))
 
-		So(cl["/some/path2"], ShouldEqual, "")
+		assert.Loosely(t, cl["/some/path2"], should.BeEmpty)
 	})
 
-	Convey("Update basic, comments, multiple files and tests", t, func() {
+	ftt.Run("Update basic, comments, multiple files and tests", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -230,33 +231,33 @@ func TestUpdateExpectations(t *testing.T) {
 		}
 
 		cl := fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 0)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.BeZero)
 
 		err := fs.UpdateExpectation(&ExpectationStatement{
 			TestName:     "/third_party/test_name1",
 			Expectations: []string{"PASS", "FAIL"},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		cl = fs.ToCL()
-		So(cl, ShouldNotBeNil)
-		So(len(cl), ShouldEqual, 1)
+		assert.Loosely(t, cl, should.NotBeNil)
+		assert.Loosely(t, len(cl), should.Equal(1))
 
-		So(cl["/some/path1"], ShouldEqual, strings.Join([]string{
+		assert.Loosely(t, cl["/some/path1"], should.Equal(strings.Join([]string{
 			"# a comment",
 			"",
 			"/third_party/test_name1 [ PASS FAIL ]",
 			"/third_party/test_name1b [ FAIL ]",
-		}, "\n"))
+		}, "\n")))
 
-		So(cl["/some/path2"], ShouldEqual, "")
+		assert.Loosely(t, cl["/some/path2"], should.BeEmpty)
 	})
 }
 
 func TestExpectationStatement(t *testing.T) {
-	Convey("modifiers", t, func() {
-		Convey("expanded match", func() {
+	ftt.Run("modifiers", t, func(t *ftt.Test) {
+		t.Run("expanded match", func(t *ftt.Test) {
 			es := &ExpectationStatement{
 				Original:     "[ Mac ] /third_party/test_dir/foo_bar/baz.html [ FAIL ]",
 				TestName:     "/third_party/test_dir/foo_bar/baz.html",
@@ -264,12 +265,12 @@ func TestExpectationStatement(t *testing.T) {
 				Modifiers:    []string{"Mac"},
 			}
 
-			So(es.ExpandModifiers(), ShouldResemble, []string{"Mac", "retina", "mac10.9", "mac10.11", "mac10.12"})
-			So(es.ModifierMatch("Mac10.9"), ShouldEqual, true)
+			assert.Loosely(t, es.ExpandModifiers(), should.Resemble([]string{"Mac", "retina", "mac10.9", "mac10.11", "mac10.12"}))
+			assert.Loosely(t, es.ModifierMatch("Mac10.9"), should.Equal(true))
 		})
 
-		Convey("applies", func() {
-			Convey("narrow specifiers", func() {
+		t.Run("applies", func(t *ftt.Test) {
+			t.Run("narrow specifiers", func(t *ftt.Test) {
 				es := &ExpectationStatement{
 					Original:     "[ Mac ] /third_party/test_dir/foo_bar/baz.html [ FAIL ]",
 					TestName:     "/third_party/test_dir/foo_bar/baz.html",
@@ -277,14 +278,14 @@ func TestExpectationStatement(t *testing.T) {
 					Modifiers:    []string{"Mac"},
 				}
 
-				So(es.Applies("/third_party/test_dir/foo_bar/baz.html", "Mac"), ShouldEqual, true)
+				assert.Loosely(t, es.Applies("/third_party/test_dir/foo_bar/baz.html", "Mac"), should.Equal(true))
 			})
 		})
 	})
 }
 
 func TestForTest(t *testing.T) {
-	Convey("basic", t, func() {
+	ftt.Run("basic", t, func(t *ftt.Test) {
 		fs := &FileSet{
 			Files: []*File{
 				{
@@ -347,39 +348,39 @@ func TestForTest(t *testing.T) {
 			},
 		}
 
-		Convey("no matches", func() {
+		t.Run("no matches", func(t *ftt.Test) {
 			matches := fs.ForTest("foo", &BuilderConfig{})
-			So(len(matches), ShouldEqual, 0)
+			assert.Loosely(t, len(matches), should.BeZero)
 		})
 
-		Convey("one match", func() {
+		t.Run("one match", func(t *ftt.Test) {
 			matches := fs.ForTest("/third_party/test_name2", &BuilderConfig{})
-			So(len(matches), ShouldEqual, 1)
+			assert.Loosely(t, len(matches), should.Equal(1))
 		})
 
-		Convey("multiple matches", func() {
+		t.Run("multiple matches", func(t *ftt.Test) {
 			matches := fs.ForTest("/third_party/test_dir/foo_bar/zippy.html", &BuilderConfig{})
-			So(len(matches), ShouldEqual, 1)
-			So(matches[0].Original, ShouldEqual, "/third_party/test_dir/foo_bar [ PASS ]")
+			assert.Loosely(t, len(matches), should.Equal(1))
+			assert.Loosely(t, matches[0].Original, should.Equal("/third_party/test_dir/foo_bar [ PASS ]"))
 		})
 
-		Convey("modifier expansion", func() {
+		t.Run("modifier expansion", func(t *ftt.Test) {
 			matches := fs.ForTest("/third_party/test_dir/foo_bar/baz.html", &BuilderConfig{Specifiers: []string{"Mac10.11"}})
-			Printf("matches: %v", matches)
-			So(len(matches), ShouldEqual, 2)
+			t.Logf("matches: %v", matches)
+			assert.Loosely(t, len(matches), should.Equal(2))
 			// Eventually should only return 1 result. For now, most specific first.
-			So(matches[0].Original, ShouldEqual, "[ Mac ] /third_party/test_dir/foo_bar/baz.html [ FAIL ]")
-			So(matches[1].Original, ShouldEqual, "/third_party/test_dir/foo_bar [ PASS ]")
+			assert.Loosely(t, matches[0].Original, should.Equal("[ Mac ] /third_party/test_dir/foo_bar/baz.html [ FAIL ]"))
+			assert.Loosely(t, matches[1].Original, should.Equal("/third_party/test_dir/foo_bar [ PASS ]"))
 
 			// The first (and eventually, only) ExpectationStatement should override the rest.
-			So(matches[0].Overrides(matches[1]), ShouldBeTrue)
+			assert.Loosely(t, matches[0].Overrides(matches[1]), should.BeTrue)
 		})
 
-		Convey("rule has similar modifier, but doesn't apply", func() {
+		t.Run("rule has similar modifier, but doesn't apply", func(t *ftt.Test) {
 			matches := fs.ForTest("/third_party/test_dir/zippy.html", &BuilderConfig{Specifiers: []string{"Mac10.11", "Release"}})
-			So(len(matches), ShouldEqual, 0)
+			assert.Loosely(t, len(matches), should.BeZero)
 			matches = fs.ForTest("/third_party/test_dir/zippy.html", &BuilderConfig{Specifiers: []string{"Mac10.12"}})
-			So(len(matches), ShouldEqual, 1)
+			assert.Loosely(t, len(matches), should.Equal(1))
 		})
 	})
 }
@@ -406,9 +407,9 @@ func TestLoadAll(t *testing.T) {
 		},
 	})
 
-	Convey("load all, error", t, func() {
+	ftt.Run("load all, error", t, func(t *ftt.Test) {
 		all, err := LoadAll(c)
-		So(all, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, all, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

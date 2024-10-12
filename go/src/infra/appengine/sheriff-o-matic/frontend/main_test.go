@@ -13,12 +13,14 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
@@ -29,7 +31,7 @@ var _ = fmt.Printf
 func TestMain(t *testing.T) {
 	t.Parallel()
 
-	Convey("main", t, func() {
+	ftt.Run("main", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		c = gologger.StdConfig.Use(c)
 
@@ -38,28 +40,28 @@ func TestMain(t *testing.T) {
 
 		w := httptest.NewRecorder()
 
-		Convey("index", func() {
-			Convey("pathless", func() {
+		t.Run("index", func(t *ftt.Test) {
+			t.Run("pathless", func(t *ftt.Test) {
 				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c, "/"),
 				})
 
-				So(w.Code, ShouldEqual, 302)
+				assert.Loosely(t, w.Code, should.Equal(302))
 			})
 
-			Convey("anonymous", func() {
+			t.Run("anonymous", func(t *ftt.Test) {
 				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c, "/chromium"),
 				})
 
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(w.Code, ShouldEqual, 500)
-				So(body, ShouldNotContainSubstring, "som-app")
-				So(body, ShouldContainSubstring, "login")
+				assert.Loosely(t, w.Code, should.Equal(500))
+				assert.Loosely(t, body, should.NotContainSubstring("som-app"))
+				assert.Loosely(t, body, should.ContainSubstring("login"))
 			})
 
 			authState := &authtest.FakeState{
@@ -67,35 +69,35 @@ func TestMain(t *testing.T) {
 			}
 			c = auth.WithState(c, authState)
 
-			Convey("No access", func() {
+			t.Run("No access", func(t *ftt.Test) {
 				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c, "/chromium"),
 				})
 
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(body, ShouldNotContainSubstring, "som-app")
-				So(body, ShouldContainSubstring, "Access denied")
+				assert.Loosely(t, body, should.NotContainSubstring("som-app"))
+				assert.Loosely(t, body, should.ContainSubstring("Access denied"))
 			})
 			authState.IdentityGroups = []string{authGroup}
 
-			Convey("good path", func() {
+			t.Run("good path", func(t *ftt.Test) {
 				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
 					Request: makeGetRequest(c, "/chromium"),
 				})
 				r, err := ioutil.ReadAll(w.Body)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				body := string(r)
-				So(body, ShouldContainSubstring, "som-app")
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, body, should.ContainSubstring("som-app"))
+				assert.Loosely(t, w.Code, should.Equal(200))
 			})
 		})
 
-		Convey("noop", func() {
+		t.Run("noop", func(t *ftt.Test) {
 			noopHandler(nil)
 		})
 	})

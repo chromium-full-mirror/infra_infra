@@ -8,11 +8,13 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 type mockBuildersClient struct{}
@@ -60,12 +62,12 @@ func TestListBuildersByBucket(t *testing.T) {
 	ctx = gologger.StdConfig.Use(ctx)
 	cl := mockBuildersClient{}
 
-	Convey("no builder", t, func() {
+	ftt.Run("no builder", t, func(t *ftt.Test) {
 		builders, err := ListBuildersByBucket(ctx, cl, "chromium", "ci")
-		So(err, ShouldBeNil)
-		So(len(builders), ShouldEqual, 3)
-		So(builders[0].Id.Builder, ShouldEqual, "ci_1")
-		So(builders[1].Id.Builder, ShouldEqual, "ci_2")
-		So(builders[2].Id.Builder, ShouldEqual, "ci_3")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(builders), should.Equal(3))
+		assert.Loosely(t, builders[0].Id.Builder, should.Equal("ci_1"))
+		assert.Loosely(t, builders[1].Id.Builder, should.Equal("ci_2"))
+		assert.Loosely(t, builders[2].Id.Builder, should.Equal("ci_3"))
 	})
 }

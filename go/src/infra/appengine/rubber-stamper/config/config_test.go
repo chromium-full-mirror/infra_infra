@@ -8,13 +8,14 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 )
 
 func TestConfig(t *testing.T) {
-	Convey("loads config and updates context", t, func() {
+	ftt.Run("loads config and updates context", t, func(t *ftt.Test) {
 		sampleCfg := &Config{
 			HostConfigs: map[string]*HostConfig{
 				"test-host": {
@@ -33,21 +34,21 @@ func TestConfig(t *testing.T) {
 		SetTestConfig(c, sampleCfg)
 
 		cfg, err := Get(c)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		_, ok := cfg.HostConfigs["test-host"]
-		So(ok, ShouldEqual, true)
+		assert.Loosely(t, ok, should.Equal(true))
 	})
 }
 
 func TestIsRepoRegexpConfigMatch(t *testing.T) {
-	Convey("Works", t, func() {
+	ftt.Run("Works", t, func(t *ftt.Test) {
 		sampleCfg := &RepoConfig{
 			BenignFilePattern: &BenignFilePattern{
 				Paths: []string{"whitespace.txt", "a/*.txt"},
 			},
 		}
-		Convey("Should return the matched config when there is one", func() {
+		t.Run("Should return the matched config when there is one", func(t *ftt.Test) {
 			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
 				{
 					Key:   "^dummy/dummy-.*$",
@@ -58,16 +59,16 @@ func TestIsRepoRegexpConfigMatch(t *testing.T) {
 					Value: nil,
 				},
 			}
-			So(RetrieveRepoRegexpConfig(context.Background(), "dummy/dummy-valid", rrcfgs), ShouldEqual, sampleCfg)
+			assert.Loosely(t, RetrieveRepoRegexpConfig(context.Background(), "dummy/dummy-valid", rrcfgs), should.Equal(sampleCfg))
 		})
-		Convey("Should return nil when no matched config", func() {
+		t.Run("Should return nil when no matched config", func(t *ftt.Test) {
 			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
 				{
 					Key:   "^dummy/dummy-.*$",
 					Value: sampleCfg,
 				},
 			}
-			So(RetrieveRepoRegexpConfig(context.Background(), "dummy-valid", rrcfgs), ShouldBeNil)
+			assert.Loosely(t, RetrieveRepoRegexpConfig(context.Background(), "dummy-valid", rrcfgs), should.BeNil)
 		})
 	})
 }
