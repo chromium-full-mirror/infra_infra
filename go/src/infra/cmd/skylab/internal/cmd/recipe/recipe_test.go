@@ -9,10 +9,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 )
 
@@ -142,7 +144,7 @@ func TestNoDummyAutotestArg(t *testing.T) {
 }
 
 func TestSchedulingParam(t *testing.T) {
-	Convey("Given a", t, func() {
+	ftt.Run("Given a", t, func(t *ftt.Test) {
 		cases := []struct {
 			name                  string
 			inputPool             string
@@ -194,13 +196,13 @@ func TestSchedulingParam(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.name, func() {
+			t.Run(c.name, func(t *ftt.Test) {
 				s := toScheduling(c.inputPool, c.inputAccount, c.inputPriority)
-				Convey("then scheduling parameters are correct.", func() {
-					So(s.GetManagedPool(), ShouldResemble, c.expectedManagedPool)
-					So(s.GetUnmanagedPool(), ShouldResemble, c.expectedUnmanagedPool)
-					So(s.Priority, ShouldEqual, c.expectedPriority)
-					So(s.QsAccount, ShouldEqual, c.expectedAccount)
+				t.Run("then scheduling parameters are correct.", func(t *ftt.Test) {
+					assert.Loosely(t, s.GetManagedPool(), should.Resemble(c.expectedManagedPool))
+					assert.Loosely(t, s.GetUnmanagedPool(), should.Resemble(c.expectedUnmanagedPool))
+					assert.Loosely(t, s.Priority, should.Equal(c.expectedPriority))
+					assert.Loosely(t, s.QsAccount, should.Equal(c.expectedAccount))
 				})
 			})
 		}
