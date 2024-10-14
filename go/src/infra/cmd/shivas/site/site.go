@@ -163,7 +163,7 @@ func (f *EnvFlags) validate() error {
 	if f.dev {
 		devlikeFlags++
 	}
-	if devlikeFlags > 0 {
+	if devlikeFlags > 1 {
 		return errors.New("exactly one of -dev and -local may be specified")
 	}
 	return nil
