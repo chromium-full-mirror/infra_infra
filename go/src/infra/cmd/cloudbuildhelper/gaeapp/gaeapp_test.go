@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 const input = `service: default-go
@@ -86,36 +88,36 @@ vpc_access_connector:
 func TestApp(t *testing.T) {
 	t.Parallel()
 
-	Convey("Marshaling", t, func() {
+	ftt.Run("Marshaling", t, func(t *ftt.Test) {
 		app, err := LoadAppYAML([]byte(input))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		out, err := app.Save()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		fmt.Printf("%s\n", string(out))
-		So(string(out), ShouldEqual, output)
+		assert.Loosely(t, string(out), should.Equal(output))
 	})
 
-	Convey("Replacing string", t, func() {
+	ftt.Run("Replacing string", t, func(t *ftt.Test) {
 		app, err := LoadAppYAML([]byte("entrypoint: abc"))
-		So(err, ShouldBeNil)
-		So(app.Entrypoint, ShouldEqual, "abc")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, app.Entrypoint, should.Equal("abc"))
 		app.Entrypoint = "def"
 		blob, err := app.Save()
-		So(err, ShouldBeNil)
-		So(string(blob), ShouldEqual, "entrypoint: def\n")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, string(blob), should.Equal("entrypoint: def\n"))
 	})
 
-	Convey("Removing string", t, func() {
+	ftt.Run("Removing string", t, func(t *ftt.Test) {
 		app, err := LoadAppYAML([]byte("entrypoint: abc"))
-		So(err, ShouldBeNil)
-		So(app.Entrypoint, ShouldEqual, "abc")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, app.Entrypoint, should.Equal("abc"))
 		app.Entrypoint = ""
 		blob, err := app.Save()
-		So(err, ShouldBeNil)
-		So(string(blob), ShouldEqual, "{}\n")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, string(blob), should.Equal("{}\n"))
 	})
 
-	Convey("Modifying handlers", t, func() {
+	ftt.Run("Modifying handlers", t, func(t *ftt.Test) {
 		app, err := LoadAppYAML([]byte(`handlers:
       - url: /.*
         script: auto
@@ -126,7 +128,7 @@ func TestApp(t *testing.T) {
         static_files: static_files
         upload: upload
     `))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		for _, h := range app.Handlers {
 			if h.StaticDir != "" {
@@ -141,8 +143,8 @@ func TestApp(t *testing.T) {
 		}
 
 		blob, err := app.Save()
-		So(err, ShouldBeNil)
-		So(string(blob), ShouldEqual, `handlers:
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, string(blob), should.Equal(`handlers:
     - script: auto
       secure: always
       url: /.*
@@ -151,6 +153,6 @@ func TestApp(t *testing.T) {
     - static_files: static_files-sfx2
       upload: upload-sfx3
       url: url2
-`)
+`))
 	})
 }
