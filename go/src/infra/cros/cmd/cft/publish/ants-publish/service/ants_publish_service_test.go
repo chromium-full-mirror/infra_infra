@@ -8,7 +8,11 @@ package service
 import (
 	"testing"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
+	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 )
 
 func TestAntsStatus(t *testing.T) {
@@ -51,38 +55,73 @@ func TestAntsStatus(t *testing.T) {
 	}
 }
 
-func TestTradefedNames(t *testing.T) {
+func TestValidateAntsPublishRequest(t *testing.T) {
+	defaultResult := &api.TestCaseResult{TestCaseId: &api.TestCase_Id{Value: "test"}}
 	testCases := []struct {
-		name       string
-		testCaseID string
-		want       []string
+		name    string
+		request *metadata.PublishAntsMetadata
+		gtr     *api.CrosTestResponse_GivenTestResult
+		wantErr bool
 	}{
 		{
-			name:       "success",
-			testCaseID: "tradefed.cts.Module1#Testcase1#Name1",
-			want:       []string{"Module1", "Testcase1", "Name1"},
+			name: "missingInvocation",
+			request: &metadata.PublishAntsMetadata{
+				ParentWorkUnitId: "WU1",
+				AccountId:        "1",
+			},
+			wantErr: true,
+		},
+		{
+			name: "missingParentWU",
+			request: &metadata.PublishAntsMetadata{
+				AntsInvocationId: "I1234",
+				AccountId:        "1",
+			},
+			wantErr: true,
+		},
+		{
+			name: "missingAccountID",
+			request: &metadata.PublishAntsMetadata{
+				ParentWorkUnitId: "WU1",
+				AntsInvocationId: "I1234",
+			},
+			wantErr: true,
+		},
+		{
+			name: "givenResult",
+			request: &metadata.PublishAntsMetadata{
+				ParentWorkUnitId: "WU1",
+				AntsInvocationId: "I1234",
+				AccountId:        "1",
+			},
+			gtr: &api.CrosTestResponse_GivenTestResult{
+				ParentTest:           "parent",
+				ChildTestCaseResults: []*api.TestCaseResult{defaultResult},
+			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotModule, gotCase, gotName, err := tradefedNames(tc.testCaseID)
+			metadata := &anypb.Any{}
+			err := metadata.MarshalFrom(tc.request)
 			if err != nil {
 				t.Error(err)
 			}
 
-			if tc.want[0] != gotModule {
-				t.Errorf("Module name different. got: %s want: %s", gotModule, tc.want[0])
+			req := &api.PublishRequest{
+				ArtifactDirPath: &storage_path.StoragePath{Path: "gs://test", HostType: storage_path.StoragePath_LOCAL},
+				Metadata:        metadata,
+				TestResponse: &api.CrosTestResponse{
+					GivenTestResults: []*api.CrosTestResponse_GivenTestResult{tc.gtr},
+				},
 			}
 
-			if tc.want[1] != gotCase {
-				t.Errorf("Test case name different. got: %s want: %s", gotCase, tc.want[1])
+			gotErr := validateAntsPublishRequest(req)
+			if (tc.wantErr && gotErr == nil) || (gotErr != nil && !tc.wantErr) {
+				t.Errorf("Unexpected error. want: %v, got %v", tc.wantErr, gotErr)
 			}
-
-			if tc.want[2] != gotName {
-				t.Errorf("Test name different. got: %s want: %s", gotName, tc.want[2])
-			}
-
 		})
 	}
+
 }

@@ -16,10 +16,10 @@ import (
 	"strings"
 
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
-	common_utils "go.chromium.org/chromiumos/test/publish/cmd/common-utils"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
 	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
@@ -31,119 +31,88 @@ const (
 
 type AntsPublishService struct {
 	metadata *metadata.PublishAntsMetadata
-	results  []*api.TestCaseResult
+	results  []*api.CrosTestResponse_GivenTestResult
 	service  *androidlib.Service
+}
+
+func defaultResults() []*api.CrosTestResponse_GivenTestResult {
+	r := []*api.CrosTestResponse_GivenTestResult{
+		{
+			ParentTest: "CtsAccelerationTestCases",
+			ChildTestCaseResults: []*api.TestCaseResult{
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.HardwareAccelerationTest#testIsHardwareAccelerated"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12456},
+				},
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.HardwareAccelerationTest#testNotAttachedView"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
+				},
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.SoftwareAccelerationTest#testIsHardwareAccelerated"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
+				},
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.SoftwareAccelerationTest#testNotAttachedView"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
+				},
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.WindowFlagHardwareAccelerationTest#testIsHardwareAccelerated"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
+				},
+				{
+					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.WindowFlagHardwareAccelerationTest#testNotAttachedView"},
+					Verdict:     &api.TestCaseResult_Pass_{},
+					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
+					Duration:    &durationpb.Duration{Seconds: 0},
+					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
+				},
+			},
+		},
+	}
+
+	return r
 }
 
 // NewAntsPublishService creates a new publish service to interact with Ants.
 func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsPublishService, error) {
 	m, err := unpackMetadata(req)
 	if err = validateAntsPublishRequest(req); err != nil {
-		if req == nil || m == nil || m.GetAntsInvocationId() == "" {
-			return createTestService(ctx)
-		}
-		return nil, err
+		log.Print(req)
+		//return nil, err
 	}
 
 	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB)
 	if err != nil {
 		return nil, err
+	}
+
+	r := req.GetTestResponse().GetGivenTestResults()
+	if len(r) == 0 {
+		r = defaultResults()
+		log.Printf("Using default results for testing: %v", r)
 	}
 
 	return &AntsPublishService{
 		metadata: m,
-		results:  req.GetTestResponse().GetTestCaseResults(),
+		results:  r,
 		service:  s,
 	}, nil
-}
-
-func createTestService(ctx context.Context) (*AntsPublishService, error) {
-	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB)
-	if err != nil {
-		return nil, err
-	}
-
-	aps := &AntsPublishService{
-		service: s,
-		results: []*api.TestCaseResult{
-			{
-				TestCaseId: &api.TestCase_Id{
-					Value: "tradefed.dts.CtsBluetoothTestCases#android.bluetooth.cts.AdvertiseDataTest#serviceUuid",
-				},
-				Verdict:  &api.TestCaseResult_Pass_{Pass: &api.TestCaseResult_Pass{}},
-				Duration: &durationpb.Duration{Seconds: 0},
-			},
-			{
-				TestCaseId: &api.TestCase_Id{
-					Value: "tradefed.dts.CtsBluetoothTestCases#android.bluetooth.cts.AdvertiseDataTest#emptyManufacturerData",
-				},
-				Verdict: &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}},
-				Errors: []*api.TestCaseResult_Error{
-					{Message: "error message"},
-				},
-				Duration: &durationpb.Duration{Seconds: 5},
-			},
-			{
-				TestCaseId: &api.TestCase_Id{
-					Value: "tradefed.dts.CtsBluetoothTestCases#android.bluetooth.cts.SampleDataTest#emptyManufacturerData",
-				},
-				Verdict:  &api.TestCaseResult_Abort_{Abort: &api.TestCaseResult_Abort{}},
-				Duration: &durationpb.Duration{Seconds: 1},
-			},
-			{
-				TestCaseId: &api.TestCase_Id{
-					Value: "tradefed.dts.CtsBluetoothTestCases#android.bluetooth.dts.SampleDTSTest#emptyManufacturerData1",
-				},
-				Verdict:  &api.TestCaseResult_Skip_{Skip: &api.TestCaseResult_Skip{}},
-				Duration: &durationpb.Duration{Seconds: 1},
-			},
-		},
-	}
-
-	inv, err := aps.createInvocation()
-	if err != nil {
-		return nil, err
-	}
-
-	wu := &ab_qa_atp.WorkUnit{
-		Name:         "ParentWorkUnit1",
-		Type:         "TF_MODULE",
-		InvocationId: inv.InvocationId,
-	}
-
-	pwu, err := aps.service.WorkUnitService.Insert(wu)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Printf("created invocation: %s and wu: %s", inv.InvocationId, pwu.Id)
-	aps.metadata = &metadata.PublishAntsMetadata{
-		AntsInvocationId: inv.InvocationId,
-		ParentWorkUnitId: pwu.Id,
-		AccountId:        "1",
-	}
-
-	return aps, nil
-}
-
-// createInvocation is used to create a default invocation
-// This is used for testing only. Invocation Id should be received from ATP/CTP
-func (aps *AntsPublishService) createInvocation() (*ab_qa_atp.Invocation, error) {
-	log.Println("creating invocation")
-
-	build := &ab_qa_atp.BuildDescriptor{
-		Branch:      "git_main-al-dev",
-		BuildTarget: "brya-trunk_staging-userdebug",
-		BuildId:     "12425286",
-	}
-	inv := &ab_qa_atp.Invocation{
-		PrimaryBuild: build,
-		Properties: []*ab_qa_atp.Property{
-			{Name: "account_id", Value: "1"},
-		},
-	}
-
-	return aps.service.InvocationService.Insert(inv)
 }
 
 func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*ab_qa_atp.WorkUnit, error) {
@@ -157,53 +126,78 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	return aps.service.WorkUnitService.Insert(wu)
 }
 
+func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token int64, results []*api.TestCaseResult) ([]*ab_qa_atp.BatchInsertEntry, int64, error) {
+	tcWorkunits := make(map[string]bool)
+	var entries []*ab_qa_atp.BatchInsertEntry
+
+	for _, result := range results {
+		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
+		parentwu := module
+		var tr *ab_qa_atp.TestResult
+		var err error
+		// If testcase exists, use that as the parent module instead
+		if len(names) == 2 {
+			// Create work unit if it does not exist.
+			if !tcWorkunits[names[0]] {
+				parentwu, err = aps.insertModuleWorkUnit(names[0], "TF_TEST_RUN", module.Id)
+				if err != nil {
+					log.Printf("unable to create test run workunit for %s due to %q", names[0], err)
+					return nil, token, err
+				}
+				tcWorkunits[names[0]] = true
+			}
+
+			tr = &ab_qa_atp.TestResult{
+				InvocationId: aps.metadata.GetAntsInvocationId(),
+				WorkUnitId:   parentwu.Id,
+				TestIdentifier: &ab_qa_atp.TestIdentifier{
+					Module:    module.Name,
+					TestClass: names[0],
+					Method:    names[1],
+				},
+				TestStatus: antsTestStatus(result),
+			}
+		} else if len(names) == 1 {
+			tr = &ab_qa_atp.TestResult{
+				InvocationId: aps.metadata.GetAntsInvocationId(),
+				WorkUnitId:   parentwu.Id,
+				TestIdentifier: &ab_qa_atp.TestIdentifier{
+					TestClass: module.Name,
+					Method:    names[0],
+				},
+				TestStatus: antsTestStatus(result),
+			}
+		} else {
+			return nil, token, fmt.Errorf("unexpected testcaseid: %s", result.GetTestCaseId().GetValue())
+		}
+
+		entries = append(entries, &ab_qa_atp.BatchInsertEntry{TestResult: tr, Token: token})
+		token = token + 1
+	}
+	return entries, token, nil
+}
+
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	modules := make(map[string]*ab_qa_atp.WorkUnit)
-	testCases := make(map[string]*ab_qa_atp.WorkUnit)
 	var entries []*ab_qa_atp.BatchInsertEntry
+	token := int64(0)
+	for _, result := range aps.results {
+		log.Printf("looking at result: %+v", result)
 
-	for i, result := range aps.results {
-		log.Printf("looking at result: %s", result.GetTestCaseId().Value)
-
-		// TODO(srinivashegde): Add support for mobly
-		moduleName, tcName, testName, err := tradefedNames(result.GetTestCaseId().Value)
+		// Add a module workunit
+		mwu, err := aps.insertModuleWorkUnit(result.GetParentTest(), "TF_MODULE", aps.metadata.GetParentWorkUnitId())
 		if err != nil {
 			return err
 		}
 
-		if _, ok := modules[moduleName]; !ok {
-			mwu, err := aps.insertModuleWorkUnit(moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
-			if err != nil {
-				return err
-			}
-			modules[moduleName] = mwu
+		var childEntries []*ab_qa_atp.BatchInsertEntry
+		childEntries, token, err = aps.resultEntries(mwu, token, result.GetChildTestCaseResults())
+		if err != nil {
+			return err
 		}
-
-		if _, ok := testCases[tcName]; !ok {
-			tcwu, err := aps.insertModuleWorkUnit(tcName, "TF_TESTCASE", modules[moduleName].Id)
-			if err != nil {
-				return err
-			}
-			testCases[tcName] = tcwu
-		}
-
-		tr := &ab_qa_atp.BatchInsertEntry{
-			Token: int64(i),
-			TestResult: &ab_qa_atp.TestResult{
-				InvocationId: aps.metadata.GetAntsInvocationId(),
-				WorkUnitId:   testCases[tcName].Id,
-				TestIdentifier: &ab_qa_atp.TestIdentifier{
-					Module:    moduleName,
-					TestClass: tcName,
-					Method:    testName,
-				},
-				TestStatus: antsTestStatus(result),
-			},
-		}
-		entries = append(entries, tr)
+		entries = append(entries, childEntries...)
 	}
 
 	request := &ab_qa_atp.TestResultBatchInsertRequest{
@@ -263,22 +257,6 @@ func (aps *AntsPublishService) uploadArtifact(path string) (*ab_qa_atp.BuildArti
 	return aps.service.TestArtifactsService.Update(filename, f, artifactMetadata)
 }
 
-// TestCaseID is of the form:
-// `tradefed.<xts_type>.<module_name>#<class_name>#<test_name>`
-func tradefedNames(testcaseID string) (string, string, string, error) {
-	if !strings.HasPrefix(testcaseID, "tradefed.") {
-		return "", "", "", fmt.Errorf("cannot get testnames. got: %s", testcaseID)
-	}
-
-	names := strings.Split(testcaseID, "#")
-	modules := strings.Split(names[0], ".")
-	if len(names) != 3 || len(modules) != 3 {
-		return "", "", "", fmt.Errorf("unexpected format for testcaseID: %s", testcaseID)
-	}
-
-	return modules[2], names[1], names[2], nil
-}
-
 func antsTestStatus(result *api.TestCaseResult) string {
 	switch result.Verdict.(type) {
 	case *api.TestCaseResult_Pass_:
@@ -300,11 +278,7 @@ func antsTestStatus(result *api.TestCaseResult) string {
 }
 
 func validateAntsPublishRequest(req *api.PublishRequest) error {
-	if err := common_utils.ValidateGenericPublishRequest(req); err != nil {
-		return err
-	}
-
-	if len(req.GetTestResponse().GetTestCaseResults()) == 0 {
+	if len(req.GetTestResponse().GetTestCaseResults()) == 0 && len(req.GetTestResponse().GetGivenTestResults()) == 0 {
 		return fmt.Errorf("no test responses found")
 	}
 
