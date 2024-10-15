@@ -9,10 +9,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
 	"infra/chromium/bootstrapper/clients/cas"
@@ -28,7 +30,7 @@ func TestDownloadPackages(t *testing.T) {
 
 	fakePackagesRoot := filepath.Join(t.TempDir(), "fake-packages-root")
 
-	Convey("DownloadPackages", t, func() {
+	ftt.Run("DownloadPackages", t, func(t *ftt.Test) {
 
 		exePkg := &fakecipd.Package{
 			Refs:      map[string]string{},
@@ -47,53 +49,53 @@ func TestDownloadPackages(t *testing.T) {
 
 		packageChannels := map[string]chan<- string{}
 
-		Convey("fails on nil input", func() {
+		t.Run("fails on nil input", func(t *ftt.Test) {
 			exe, cmd, err := DownloadPackages(ctx, nil, fakePackagesRoot, nil)
 
-			So(err, ShouldErrLike, "nil input provided")
-			So(exe, ShouldBeNil)
-			So(cmd, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("nil input provided"))
+			assert.Loosely(t, exe, should.BeNil)
+			assert.Loosely(t, cmd, should.BeNil)
 		})
 
-		Convey("fails on empty CIPD root", func() {
+		t.Run("fails on empty CIPD root", func(t *ftt.Test) {
 			exe, cmd, err := DownloadPackages(ctx, &Input{}, "", nil)
 
-			So(err, ShouldErrLike, "empty packagesRoot provided")
-			So(exe, ShouldBeNil)
-			So(cmd, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("empty packagesRoot provided"))
+			assert.Loosely(t, exe, should.BeNil)
+			assert.Loosely(t, cmd, should.BeNil)
 		})
 
-		Convey("fails when provided channel for exe", func() {
+		t.Run("fails when provided channel for exe", func(t *ftt.Test) {
 			packageChannels[ExeId] = make(chan string, 1)
 
 			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
-			So(err, ShouldErrLike, "channel provided for ExeId")
-			So(exe, ShouldBeNil)
-			So(cmd, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("channel provided for ExeId"))
+			assert.Loosely(t, exe, should.BeNil)
+			assert.Loosely(t, cmd, should.BeNil)
 		})
 
-		Convey("fails when provided channel for unknown ID", func() {
+		t.Run("fails when provided channel for unknown ID", func(t *ftt.Test) {
 			packageChannels["foo"] = make(chan string, 1)
 
 			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
-			So(err, ShouldErrLike, "channel provided for unknown package ID foo")
-			So(exe, ShouldBeNil)
-			So(cmd, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("channel provided for unknown package ID foo"))
+			assert.Loosely(t, exe, should.BeNil)
+			assert.Loosely(t, cmd, should.BeNil)
 		})
 
-		Convey("fails when provided an unbuffer channel", func() {
+		t.Run("fails when provided an unbuffer channel", func(t *ftt.Test) {
 			packageChannels[DepotToolsId] = make(chan string)
 
 			exe, cmd, err := DownloadPackages(ctx, &Input{}, fakePackagesRoot, packageChannels)
 
-			So(err, ShouldErrLike, "channel for package ID depot-tools is unbuffered")
-			So(exe, ShouldBeNil)
-			So(cmd, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("channel for package ID depot-tools is unbuffered"))
+			assert.Loosely(t, exe, should.BeNil)
+			assert.Loosely(t, cmd, should.BeNil)
 		})
 
-		Convey("downloading exe from CIPD", func() {
+		t.Run("downloading exe from CIPD", func(t *ftt.Test) {
 			input := &Input{
 				propsProperties: &BootstrapPropertiesProperties{
 					ConfigProject: &BootstrapPropertiesProperties_TopLevelProject_{
@@ -116,23 +118,23 @@ func TestDownloadPackages(t *testing.T) {
 				},
 			}
 
-			Convey("fails if ensuring packages fails", func() {
+			t.Run("fails if ensuring packages fails", func(t *ftt.Test) {
 				exePkg.Refs["fake-exe-version"] = ""
 
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldErrLike, "unknown version")
-				So(exe, ShouldBeNil)
-				So(cmd, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("unknown version"))
+				assert.Loosely(t, exe, should.BeNil)
+				assert.Loosely(t, cmd, should.BeNil)
 			})
 
-			Convey("returns exe info and command on success", func() {
+			t.Run("returns exe info and command on success", func(t *ftt.Test) {
 				exePkg.Refs["fake-exe-version"] = "fake-exe-instance"
 
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldBeNil)
-				So(exe, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, exe, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"cipd": {
 						"server": "https://chrome-infra-packages.appspot.com",
 						"package": "fake-exe-package",
@@ -144,11 +146,11 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg1",
 						"fake-arg2"
 					]
-				}`)
-				So(cmd, ShouldResemble, []string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"})
+				}`))
+				assert.Loosely(t, cmd, should.Resemble([]string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
-			Convey("downloads depot_tools for dependent project", func() {
+			t.Run("downloads depot_tools for dependent project", func(t *ftt.Test) {
 				input.propsProperties.ConfigProject = &BootstrapPropertiesProperties_DependencyProject_{
 					DependencyProject: &BootstrapPropertiesProperties_DependencyProject{
 						TopLevelRepo: &GitilesRepo{
@@ -170,15 +172,15 @@ func TestDownloadPackages(t *testing.T) {
 
 				_, _, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldBeNil)
-				So(len(depotToolsCh), ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(depotToolsCh), should.Equal(1))
 				depotToolsPackagePath := <-depotToolsCh
-				So(depotToolsPackagePath, ShouldEqual, filepath.Join(fakePackagesRoot, "cipd", "depot-tools"))
+				assert.Loosely(t, depotToolsPackagePath, should.Equal(filepath.Join(fakePackagesRoot, "cipd", "depot-tools")))
 			})
 
 		})
 
-		Convey("downloading exe from CAS", func() {
+		t.Run("downloading exe from CAS", func(t *ftt.Test) {
 			input := &Input{
 				propsProperties: &BootstrapPropertiesProperties{
 					ConfigProject: &BootstrapPropertiesProperties_TopLevelProject_{
@@ -208,21 +210,21 @@ func TestDownloadPackages(t *testing.T) {
 				},
 			}
 
-			Convey("fails if downloading from CAS fails", func() {
+			t.Run("fails if downloading from CAS fails", func(t *ftt.Test) {
 				fakeCas.Blobs["fake-cas-hash"] = false
 
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldErrLike, "hash fake-cas-hash does not identify any blobs")
-				So(exe, ShouldBeNil)
-				So(cmd, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("hash fake-cas-hash does not identify any blobs"))
+				assert.Loosely(t, exe, should.BeNil)
+				assert.Loosely(t, cmd, should.BeNil)
 			})
 
-			Convey("returns exe info and command on success", func() {
+			t.Run("returns exe info and command on success", func(t *ftt.Test) {
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldBeNil)
-				So(exe, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, exe, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"cas": {
 						"cas_instance": "fake-cas-instance",
 						"digest": {
@@ -235,11 +237,11 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg1",
 						"fake-arg2"
 					]
-				}`)
-				So(cmd, ShouldResemble, []string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"})
+				}`))
+				assert.Loosely(t, cmd, should.Resemble([]string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
-			Convey("downloads depot_tools for dependent project", func() {
+			t.Run("downloads depot_tools for dependent project", func(t *ftt.Test) {
 				input.propsProperties.ConfigProject = &BootstrapPropertiesProperties_DependencyProject_{
 					DependencyProject: &BootstrapPropertiesProperties_DependencyProject{
 						TopLevelRepo: &GitilesRepo{
@@ -261,10 +263,10 @@ func TestDownloadPackages(t *testing.T) {
 
 				_, _, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
-				So(err, ShouldBeNil)
-				So(len(depotToolsCh), ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(depotToolsCh), should.Equal(1))
 				depotToolsPackagePath := <-depotToolsCh
-				So(depotToolsPackagePath, ShouldEqual, filepath.Join(fakePackagesRoot, "cipd", "depot-tools"))
+				assert.Loosely(t, depotToolsPackagePath, should.Equal(filepath.Join(fakePackagesRoot, "cipd", "depot-tools")))
 			})
 
 		})
