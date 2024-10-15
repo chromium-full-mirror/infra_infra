@@ -21,37 +21,39 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestEnsureArgsValid(t *testing.T) {
 	t.Parallel()
 
 	r := &goRun{}
-	Convey(`does not alter correct command`, t, func() {
+	ftt.Run(`does not alter correct command`, t, func(t *ftt.Test) {
 		args := strings.Split("go test -json infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
-		So(err, ShouldBeNil)
-		So(validArgs, ShouldResemble, args)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, validArgs, should.Resemble(args))
 	})
-	Convey(`adds -json flag`, t, func() {
+	ftt.Run(`adds -json flag`, t, func(t *ftt.Test) {
 		args := strings.Split("go test infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
-		So(err, ShouldBeNil)
-		So(validArgs, ShouldResemble, strings.Split("go test -json infra/tools/result_adapter", " "))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, validArgs, should.Resemble(strings.Split("go test -json infra/tools/result_adapter", " ")))
 	})
-	Convey(`passes plausible command through as is`, t, func() {
+	ftt.Run(`passes plausible command through as is`, t, func(t *ftt.Test) {
 		args := strings.Split("GOROOT/src/run.bash -json", " ")
 		plausibleArgs, err := r.ensureArgsValid(args)
-		So(err, ShouldBeNil)
-		So(plausibleArgs, ShouldResemble, args)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, plausibleArgs, should.Resemble(args))
 	})
-	Convey(`reports unlikely command`, t, func() {
+	ftt.Run(`reports unlikely command`, t, func(t *ftt.Test) {
 		args := strings.Split("not_the_right_thing --at=all", " ")
 		_, err := r.ensureArgsValid(args)
-		So(err, ShouldErrLike, "Expected command to be an invocation of `go test -json` or equivalent:")
+		assert.Loosely(t, err, should.ErrLike("Expected command to be an invocation of `go test -json` or equivalent:"))
 	})
 }
 
@@ -60,7 +62,7 @@ func TestGenerateTestResults(t *testing.T) {
 
 	r := &goRun{}
 
-	Convey(`parses output`, t, func() {
+	ftt.Run(`parses output`, t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(),
 			[]byte(`
 			{"Time":"2021-06-17T15:59:10.536701-07:00","Action":"start","Package":"infra/tools/result_adapter"}
@@ -76,9 +78,9 @@ func TestGenerateTestResults(t *testing.T) {
 			{"Time":"2021-06-17T15:59:10.541301-07:00","Action":"output","Package":"infra/tools/result_adapter","Output":"ok  \tinfra/tools/result_adapter\t0.143s\n"}
 			{"Time":"2021-06-17T15:59:10.541324-07:00","Action":"pass","Package":"infra/tools/result_adapter","Elapsed":0.143}`),
 		)
-		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 2)
-		So(trs[0], ShouldResembleProtoText,
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(2))
+		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id:  "infra/tools/result_adapter"
 			expected:  true
 			status:  PASS
@@ -95,8 +97,8 @@ func TestGenerateTestResults(t *testing.T) {
 		  		value:  {
 					contents:  "PASS\nok  	infra/tools/result_adapter	0.143s\n"
 		  		}
-			}`)
-		So(trs[1], ShouldResembleProtoText,
+			}`))
+		assert.Loosely(t, trs[1], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id:  "infra/tools/result_adapter.TestEnsureArgsValid"
 			expected:  true
 			status:  PASS
@@ -111,7 +113,7 @@ func TestGenerateTestResults(t *testing.T) {
 		  		value:  {
 					contents:  "=== RUN   TestEnsureArgsValid\n=== PAUSE TestEnsureArgsValid\n=== CONT  TestEnsureArgsValid\n--- PASS: TestEnsureArgsValid (0.00s)\n"
 		  		}
-			}`)
+			}`))
 	})
 
 	// Test that output is associated with the test that produced it, and only that test.
@@ -137,7 +139,7 @@ func TestGenerateTestResults(t *testing.T) {
 	//		t.Log("TestAB line 3 of 3")
 	//	}
 	//
-	Convey(`test output separate`, t, func() {
+	ftt.Run(`test output separate`, t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(),
 			[]byte(`{"Time":"2023-04-03T12:44:58.511534-04:00","Action":"start","Package":"example/pkg"}
 {"Time":"2023-04-03T12:44:58.73917-04:00","Action":"run","Package":"example/pkg","Test":"TestA"}
@@ -162,9 +164,9 @@ func TestGenerateTestResults(t *testing.T) {
 {"Time":"2023-04-03T12:44:58.73966-04:00","Action":"output","Package":"example/pkg","Output":"ok  \texample/pkg\t0.228s\n"}
 {"Time":"2023-04-03T12:44:58.739667-04:00","Action":"pass","Package":"example/pkg","Elapsed":0.228}`),
 		)
-		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 4)
-		So(trs[0], ShouldResembleProtoText,
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(4))
+		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id: "example/pkg"
 			expected: true
 			status: PASS
@@ -181,8 +183,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 				contents:  "PASS\nok  	example/pkg	0.228s\n"
 			  }
-			}`)
-		So(trs[1], ShouldResembleProtoText,
+			}`))
+		assert.Loosely(t, trs[1], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id: "example/pkg.TestA"
 			expected: true
 			status: PASS
@@ -197,8 +199,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 			    contents: "=== RUN   TestA\n    main_test.go:6: TestA line 1 of 1\n--- PASS: TestA (0.00s)\n"
 			  }
-			}`)
-		So(trs[2], ShouldResembleProtoText,
+			}`))
+		assert.Loosely(t, trs[2], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id: "example/pkg.TestB"
 			expected: true
 			status: PASS
@@ -213,8 +215,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 			    contents: "=== RUN   TestB\n    main_test.go:10: TestB line 1 of 2\n    main_test.go:11: TestB line 2 of 2\n--- PASS: TestB (0.00s)\n"
 			  }
-			}`)
-		So(trs[3], ShouldResembleProtoText,
+			}`))
+		assert.Loosely(t, trs[3], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id:  "example/pkg.TestAB"
 			expected:  true
 			status:  PASS
@@ -229,17 +231,17 @@ func TestGenerateTestResults(t *testing.T) {
 			  value:  {
 			    contents:  "=== RUN   TestAB\n    main_test.go:15: TestAB line 1 of 3\n    main_test.go:16: TestAB line 2 of 3\n    main_test.go:17: TestAB line 3 of 3\n--- PASS: TestAB (0.00s)\n"
 			  }
-			}`)
+			}`))
 	})
 
-	Convey(`parses skipped package`, t, func() {
+	ftt.Run(`parses skipped package`, t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(),
 			[]byte(`{"Time":"2021-06-17T16:11:01.086366-07:00","Action":"output","Package":"go.chromium.org/luci/resultdb/internal/permissions","Output":"?   \tgo.chromium.org/luci/resultdb/internal/permissions\t[no test files]\n"}
 			{"Time":"2021-06-17T16:11:01.086381-07:00","Action":"skip","Package":"go.chromium.org/luci/resultdb/internal/permissions","Elapsed":0}`),
 		)
-		So(err, ShouldBeNil)
-		So(trs, ShouldHaveLength, 1)
-		So(trs[0], ShouldResembleProtoText,
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(1))
+		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
 			`test_id: "go.chromium.org/luci/resultdb/internal/permissions"
 			expected: true
 			status: SKIP
@@ -250,7 +252,7 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 				contents:  "?   	go.chromium.org/luci/resultdb/internal/permissions	[no test files]\n"
 			  }
-			}`)
+			}`))
 	})
 }
 
