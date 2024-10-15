@@ -8,9 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGetDep(t *testing.T) {
@@ -20,28 +20,28 @@ func TestGetDep(t *testing.T) {
 
 	client, _ := NewClientForTesting()
 
-	Convey("getDep", t, func() {
+	ftt.Run("getDep", t, func(t *ftt.Test) {
 
-		Convey("returns the revision for the specified path", func() {
+		t.Run("returns the revision for the specified path", func(t *ftt.Test) {
 			depsContents := `deps = {
 				'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
 			}`
 
 			revision, err := client.GetDep(ctx, depsContents, "foo")
 
-			So(err, ShouldBeNil)
-			So(revision, ShouldEqual, "foo-revision")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revision, should.Equal("foo-revision"))
 		})
 
-		Convey("fails for unknown path", func() {
+		t.Run("fails for unknown path", func(t *ftt.Test) {
 			depsContents := `deps = {
 				'foo': 'https://chromium.googlesource.com/foo.git@foo-revision',
 			}`
 
 			revision, err := client.GetDep(ctx, depsContents, "bar")
 
-			So(err, ShouldErrLike, "Could not find any dependency called bar")
-			So(revision, ShouldBeEmpty)
+			assert.Loosely(t, err, should.ErrLike("Could not find any dependency called bar"))
+			assert.Loosely(t, revision, should.BeEmpty)
 		})
 
 	})
