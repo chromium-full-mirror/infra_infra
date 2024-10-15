@@ -12,11 +12,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -60,16 +61,16 @@ func genJSONLine(m map[string]string) string {
 func TestTastConversions(t *testing.T) {
 	t.Parallel()
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		r := &TastResults{}
-		Convey(`Basic`, func() {
+		t.Run(`Basic`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
 				"skipReason":  "skipped",
 				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
-			So(r.Cases[0], ShouldResemble, TastCase{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r.Cases[0], should.Resemble(TastCase{
 				Name:         "lacros.Basic",
 				Contacts:     []string{"user1@google.com", "user2@google.com"},
 				BugComponent: "b:1234",
@@ -79,26 +80,26 @@ func TestTastConversions(t *testing.T) {
 				Start:        parseTime("2021-07-26T18:53:33.983328614Z"),
 				End:          parseTime("2021-07-26T18:53:34.983328614Z"),
 				SearchFlags:  []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
-			})
+			}))
 		})
-		Convey(`Errors`, func() {
+		t.Run(`Errors`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
 				"errors": `[{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Failed due to dummy error", "stack": "Dummy Failure" }]`,
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
-			So(r.Cases[0].Errors[0], ShouldResemble, TastError{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r.Cases[0].Errors[0], should.Resemble(TastError{
 				parseTime("2021-07-26T18:54:38.153491776Z"),
 				"Failed due to dummy error",
 				"dummy.go",
 				"Dummy Failure",
-			})
+			}))
 		})
 	})
 
-	Convey(`ToProtos works`, t, func() {
+	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey(`Basic`, func() {
+		t.Run(`Basic`, func(t *ftt.Test) {
 			testhausBaseUrl := "https://tests.chromeos.goog/p/chromeos/logs/unified/build-12345"
 			jsonLine := genJSONLine(map[string]string{
 				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
@@ -107,10 +108,10 @@ func TestTastConversions(t *testing.T) {
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
-			So(err, ShouldBeNil)
-			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
 				TestId:   "tast.lacros.Basic",
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
@@ -141,9 +142,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-			})
+			}))
 		})
-		Convey(`With metadata`, func() {
+		t.Run(`With metadata`, func(t *ftt.Test) {
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
@@ -151,9 +152,9 @@ func TestTastConversions(t *testing.T) {
 				"name":   "lacros.Migrate",
 				"outDir": "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Migrate",
 			})))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expected := []*sinkpb.TestResult{
 				{
 					TestId:   "tast.lacros.Basic",
@@ -237,10 +238,10 @@ func TestTastConversions(t *testing.T) {
 					Duration:  &duration.Duration{Seconds: 1},
 				},
 			}
-			So(got, ShouldHaveLength, 2)
-			So(got, ShouldResemble, expected)
+			assert.Loosely(t, got, should.HaveLength(2))
+			assert.Loosely(t, got, should.Resemble(expected))
 		})
-		Convey(`Skipped`, func() {
+		t.Run(`Skipped`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
 				"skipReason": "skipped",
 				"outDir":     "",
@@ -249,10 +250,10 @@ func TestTastConversions(t *testing.T) {
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
-			So(err, ShouldBeNil)
-			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    true,
 				Status:      pb.TestStatus_SKIP,
@@ -288,9 +289,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-			})
+			}))
 		})
-		Convey(`Unexpectedly Skipped`, func() {
+		t.Run(`Unexpectedly Skipped`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
 				"skipReason": "",
 				"errors":     `[{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Test did not run", "stack": "Dummy Failure" }]`,
@@ -299,10 +300,10 @@ func TestTastConversions(t *testing.T) {
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
-			So(err, ShouldBeNil)
-			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    false,
 				Status:      pb.TestStatus_SKIP,
@@ -341,9 +342,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-			})
+			}))
 		})
-		Convey(`Errors`, func() {
+		t.Run(`Errors`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
 				"errors": `[
 					{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Failed due to dummy error", "stack": "Dummy Failure" },
@@ -354,11 +355,11 @@ func TestTastConversions(t *testing.T) {
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
-			So(err, ShouldBeNil)
-			So(got[0].Duration, ShouldResemble, &duration.Duration{Seconds: 1})
-			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0].Duration, should.Resemble(&duration.Duration{Seconds: 1}))
+			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    false,
 				Status:      pb.TestStatus_FAIL,
@@ -398,9 +399,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-			})
+			}))
 		})
-		Convey(`Truncate errors for failed tests`, func() {
+		t.Run(`Truncate errors for failed tests`, func(t *ftt.Test) {
 			maxErrorMessage := strings.Repeat(".", 1024)
 			jsonLine := genJSONLine(map[string]string{
 				"errors": fmt.Sprintf(`[
@@ -416,12 +417,12 @@ func TestTastConversions(t *testing.T) {
 			}
 
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 
 			// Only 3 errors are stored while 1 error is truncated.
-			So(err, ShouldBeNil)
-			So(got[0].FailureReason, ShouldResemble, &pb.FailureReason{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0].FailureReason, should.Resemble(&pb.FailureReason{
 				PrimaryErrorMessage: maxErrorMessage,
 				Errors: []*pb.FailureReason_Error{
 					{Message: maxErrorMessage},
@@ -429,7 +430,7 @@ func TestTastConversions(t *testing.T) {
 					{Message: maxErrorMessage},
 				},
 				TruncatedErrorsCount: 1,
-			})
+			}))
 		})
 	})
 }
