@@ -6,14 +6,15 @@ package git
 
 import (
 	"bufio"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestLogReader(t *testing.T) {
-	Convey(`LogReader`, t, func() {
+	ftt.Run(`LogReader`, t, func(t *ftt.Test) {
 
 		read := func(log string) []commit {
 			r := &logReader{r: bufio.NewReader(strings.NewReader(log))}
@@ -23,21 +24,21 @@ func TestLogReader(t *testing.T) {
 				commits = append(commits, c)
 				return nil
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return commits
 		}
 
-		Convey(`one commit`, func() {
+		t.Run(`one commit`, func(t *ftt.Test) {
 			parseOneCommit := func(log string) commit {
 				commits := read(log)
-				So(commits, ShouldHaveLength, 1)
+				assert.Loosely(t, commits, should.HaveLength(1))
 				return commits[0]
 			}
 
-			Convey(`M`, func() {
+			t.Run(`M`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||`)
-				So(actual, ShouldResemble, commit{
+				assert.Loosely(t, actual, should.Resemble(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -46,14 +47,14 @@ func TestLogReader(t *testing.T) {
 							Path:   "path/to/file",
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`M, M`, func() {
+			t.Run(`M, M`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file|:100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
 
-				So(actual, ShouldResemble, commit{
+				assert.Loosely(t, actual, should.Resemble(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -66,13 +67,13 @@ func TestLogReader(t *testing.T) {
 							Path:   "path/to/file2",
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`C`, func() {
+			t.Run(`C`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 C|path/to/file|path/to/file2||`)
-				So(actual, ShouldResemble, commit{
+				assert.Loosely(t, actual, should.Resemble(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -82,13 +83,13 @@ func TestLogReader(t *testing.T) {
 							Path2:  "path/to/file2",
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`R50`, func() {
+			t.Run(`R50`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 R50|path/to/file|path/to/file2||`)
-				So(actual, ShouldResemble, commit{
+				assert.Loosely(t, actual, should.Resemble(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -98,13 +99,13 @@ func TestLogReader(t *testing.T) {
 							Path2:  "path/to/file2",
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`two parents`, func() {
+			t.Run(`two parents`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee 3a89a841f9d213cc273af75f085f52c2597a63d2
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||`)
-				So(actual, ShouldResemble, commit{
+				assert.Loosely(t, actual, should.Resemble(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee", "3a89a841f9d213cc273af75f085f52c2597a63d2"},
 					Files: []fileChange{
@@ -113,17 +114,17 @@ func TestLogReader(t *testing.T) {
 							Path:   "path/to/file",
 						},
 					},
-				})
+				}))
 			})
 
 		})
 
-		Convey(`two commits`, func() {
-			Convey(`M; M`, func() {
+		t.Run(`two commits`, func(t *ftt.Test) {
+			t.Run(`M; M`, func(t *ftt.Test) {
 				actual := read(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||3a89a841f9d213cc273af75f085f52c2597a63d2 5376d1941a55c6481fc568004d4836ffc2c332b9
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-				So(actual, ShouldResemble, []commit{
+				assert.Loosely(t, actual, should.Resemble([]commit{
 					{
 						Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 						ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
@@ -144,14 +145,14 @@ func TestLogReader(t *testing.T) {
 							},
 						},
 					},
-				})
+				}))
 			})
 		})
 
-		Convey(`empty commit`, func() {
+		t.Run(`empty commit`, func(t *ftt.Test) {
 			actual := read(`f71d633d037422e101edb573038b8e281f283d16 |2f1870f85324ed520077653a2c8a881e9052d96c f71d633d037422e101edb573038b8e281f283d16
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-			So(actual, ShouldResemble, []commit{
+			assert.Loosely(t, actual, should.Resemble([]commit{
 				{
 					Hash: "f71d633d037422e101edb573038b8e281f283d16",
 				},
@@ -165,16 +166,16 @@ func TestLogReader(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`orphan commit`, func() {
+		t.Run(`orphan commit`, func(t *ftt.Test) {
 			// This string is split into two because some editors trim trailing
 			// whitespace, even if it is a part of a string literal.
 			actual := read("f71d633d037422e101edb573038b8e281f283d16 " + `
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||2f1870f85324ed520077653a2c8a881e9052d96c f71d633d037422e101edb573038b8e281f283d16
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-			So(actual, ShouldResemble, []commit{
+			assert.Loosely(t, actual, should.Resemble([]commit{
 				{
 					Hash: "f71d633d037422e101edb573038b8e281f283d16",
 					Files: []fileChange{
@@ -194,7 +195,7 @@ func TestLogReader(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
 	})
