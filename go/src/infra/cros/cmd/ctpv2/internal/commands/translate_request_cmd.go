@@ -341,7 +341,10 @@ func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 		v := ""
 		for _, innerkv := range strings.Split(kv, "=") {
 			if k == "resultdb_settings" {
-				continue
+				// force split to 2 (since the value may have multiple '='s)
+				rdbKVs := strings.SplitN(kv, "=", 2)
+				k = rdbKVs[0]
+				v = rdbKVs[1]
 			} else if k == "" {
 				k = innerkv
 			} else if v == "" {

@@ -276,13 +276,15 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	// If we are inside of an AL run that has built a WU tree then generate and
 	// insert a run node.
 	var runNode *androidapi.WorkUnitNode
-	if top := cmd.AlStateInfo.WorkUnitTrees["test"]; top != nil {
-		runNodes, err := top.FetchRunLayer()
-		if err != nil {
-			return err
-		}
+	if cmd.AlStateInfo != nil && cmd.AlStateInfo.WorkUnitTrees != nil {
+		if top := cmd.AlStateInfo.WorkUnitTrees["test"]; top != nil {
+			runNodes, err := top.FetchRunLayer()
+			if err != nil {
+				return err
+			}
 
-		runNode = runNodes[0]
+			runNode = runNodes[0]
+		}
 	}
 
 	// Todo: batch call
@@ -365,7 +367,10 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	cmd.ObserveCmdEndSuccess(ctx)
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.TestResults, "consolidated results")
 
-	cmd.AlStateInfo.DoneTesting = true
+	if cmd.AlStateInfo != nil {
+		cmd.AlStateInfo.DoneTesting = true
+	}
+
 	return nil
 
 }
