@@ -13,10 +13,12 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -65,7 +67,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 		TestCases: tc,
 	}}
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		str := `{
 			"autotest_result": {
 				"test_cases": [
@@ -105,17 +107,17 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 		results := &TestRunnerResult{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
-		So(err, ShouldBeNil)
-		So(results.Autotest.TestCases, ShouldResemble, tc)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, results.Autotest.TestCases, should.Resemble(tc))
 	})
 
-	Convey(`ToProtos`, t, func() {
+	ftt.Run(`ToProtos`, t, func(t *ftt.Test) {
 		artBaseDir := filepath.Join("test_data", "cros_test_result", "artifacts")
 
-		Convey("test passes", func() {
+		t.Run("test passes", func(t *ftt.Test) {
 
 			testResults, err := results.ToProtos(ctx, "", artBaseDir)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -192,11 +194,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					TestMetadata: &pb.TestMetadata{},
 				},
 			}
-			So(testResults, ShouldHaveLength, 5)
-			So(testResults, ShouldResemble, expected)
+			assert.Loosely(t, testResults, should.HaveLength(5))
+			assert.Loosely(t, testResults, should.Resemble(expected))
 		})
 
-		Convey("test passes: CFT test run with CFT metadata", func() {
+		t.Run("test passes: CFT test run with CFT metadata", func(t *ftt.Test) {
 			testCases := make([]TestRunnerTestCase, len(tc))
 			copy(testCases, tc)
 
@@ -209,7 +211,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 				TestCases: testCases,
 			}}
 			testResults, err := results.ToProtos(ctx, "./test_data/skylab_test_runner/test_metadata.json", "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -348,11 +350,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					TestMetadata: &pb.TestMetadata{},
 				},
 			}
-			So(testResults, ShouldHaveLength, 5)
-			So(testResults, ShouldResemble, expected)
+			assert.Loosely(t, testResults, should.HaveLength(5))
+			assert.Loosely(t, testResults, should.Resemble(expected))
 		})
 
-		Convey(`check the oversize failure reason`, func() {
+		t.Run(`check the oversize failure reason`, func(t *ftt.Test) {
 			// Creates an oversize random failure reason.
 			letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			failureReason := make([]byte, maxSummaryHtmlBytes+100)
@@ -377,13 +379,13 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			testResults, err := results.ToProtos(ctx, "", "")
 
 			// Checks if the test result conversion succeeded and size limitation was set properly.
-			So(err, ShouldBeNil)
-			So(testResults, ShouldHaveLength, 1)
-			So(len(testResults[0].SummaryHtml), ShouldBeLessThanOrEqualTo, maxSummaryHtmlBytes)
-			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxErrorMessageBytes)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, len(testResults[0].SummaryHtml), should.BeLessThanOrEqual(maxSummaryHtmlBytes))
+			assert.Loosely(t, len(testResults[0].FailureReason.PrimaryErrorMessage), should.BeLessThanOrEqual(maxErrorMessageBytes))
 		})
 
-		Convey(`check an expected skip test`, func() {
+		t.Run(`check an expected skip test`, func(t *ftt.Test) {
 			str := `{
 				"autotest_result": {
 					"test_cases": [
@@ -400,13 +402,13 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			results.ConvertFromJSON(strings.NewReader(str))
 			testResults, err := results.ToProtos(ctx, "", "")
 
-			So(err, ShouldBeNil)
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults[0].Status, ShouldResemble, pb.TestStatus_SKIP)
-			So(testResults[0].Expected, ShouldResemble, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults[0].Status, should.Resemble(pb.TestStatus_SKIP))
+			assert.Loosely(t, testResults[0].Expected, should.Resemble(true))
 		})
 
-		Convey("When running one test case should upload all artifacts under that test", func() {
+		t.Run("When running one test case should upload all artifacts under that test", func(t *ftt.Test) {
 			artName1 := "test_artifact_1.txt"
 			artName2 := "test_artifact_2.txt"
 			wantArtifacts := map[string]*sinkpb.Artifact{
@@ -431,12 +433,12 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			gotTestResults, err := results.ToProtos(ctx, "", artBaseDir)
 
-			So(err, ShouldBeNil)
-			So(gotTestResults, ShouldHaveLength, 1)
-			So(gotTestResults[0].GetArtifacts(), ShouldResemble, wantArtifacts)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotTestResults, should.HaveLength(1))
+			assert.Loosely(t, gotTestResults[0].GetArtifacts(), should.Resemble(wantArtifacts))
 		})
 
-		Convey("Skips test artifacts upload when result dir is invalid", func() {
+		t.Run("Skips test artifacts upload when result dir is invalid", func(t *ftt.Test) {
 			tc := []TestRunnerTestCase{
 				{
 					Name:      "test1",
@@ -451,9 +453,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			gotTestResults, err := results.ToProtos(ctx, "", "invalid_dir")
 
-			So(err, ShouldBeNil)
-			So(gotTestResults, ShouldHaveLength, 1)
-			So(gotTestResults[0].GetArtifacts(), ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotTestResults, should.HaveLength(1))
+			assert.Loosely(t, gotTestResults[0].GetArtifacts(), should.BeEmpty)
 		})
 	})
 }
