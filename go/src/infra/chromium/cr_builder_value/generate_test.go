@@ -5,20 +5,21 @@
 package main
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGenerate(t *testing.T) {
 	t.Parallel()
 
-	Convey("Check isChromeOrChromiumProject", t, func() {
-		So(isChromeOrChromiumProject("chrome"), ShouldEqual, true)
-		So(isChromeOrChromiumProject("chromium"), ShouldEqual, true)
-		So(isChromeOrChromiumProject("chromeos"), ShouldEqual, false)
-		So(isChromeOrChromiumProject("chrome-100"), ShouldEqual, true)
-		So(isChromeOrChromiumProject("chromium-100"), ShouldEqual, true)
-		So(isChromeOrChromiumProject("turquoise"), ShouldEqual, false)
+	ftt.Run("Check isChromeOrChromiumProject", t, func(t *ftt.Test) {
+		assert.Loosely(t, isChromeOrChromiumProject("chrome"), should.Equal(true))
+		assert.Loosely(t, isChromeOrChromiumProject("chromium"), should.Equal(true))
+		assert.Loosely(t, isChromeOrChromiumProject("chromeos"), should.Equal(false))
+		assert.Loosely(t, isChromeOrChromiumProject("chrome-100"), should.Equal(true))
+		assert.Loosely(t, isChromeOrChromiumProject("chromium-100"), should.Equal(true))
+		assert.Loosely(t, isChromeOrChromiumProject("turquoise"), should.Equal(false))
 	})
 }
