@@ -12,9 +12,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cmd/cloudbuildhelper/bundledesc"
 	"infra/cmd/cloudbuildhelper/fileset"
@@ -35,34 +36,34 @@ func TestBuilder(t *testing.T) {
 	ctx := context.Background()
 	ctx = gologger.StdConfig.Use(ctx)
 
-	Convey("With temp dir", t, func() {
+	ftt.Run("With temp dir", t, func(t *ftt.Test) {
 		srcDir, err := filepath.Abs("testdata")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		tmpDir, err := os.MkdirTemp("", "builder_test")
-		So(err, ShouldBeNil)
-		Reset(func() { os.RemoveAll(tmpDir) })
+		assert.Loosely(t, err, should.BeNil)
+		t.Cleanup(func() { os.RemoveAll(tmpDir) })
 
 		b, err := New()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer b.Close()
 
 		put := func(path, body string) {
 			fp := filepath.Join(tmpDir, filepath.FromSlash(path))
-			So(os.MkdirAll(filepath.Dir(fp), 0777), ShouldBeNil)
-			So(os.WriteFile(fp, []byte(body), 0666), ShouldBeNil)
+			assert.Loosely(t, os.MkdirAll(filepath.Dir(fp), 0777), should.BeNil)
+			assert.Loosely(t, os.WriteFile(fp, []byte(body), 0666), should.BeNil)
 		}
 
 		build := func(manifestBody string) (*fileset.Set, error) {
 			manifestPath := filepath.Join(tmpDir, "manifest.yaml")
-			So(os.WriteFile(manifestPath, []byte(manifestBody), 0600), ShouldBeNil)
+			assert.Loosely(t, os.WriteFile(manifestPath, []byte(manifestBody), 0600), should.BeNil)
 			loaded, err := manifest.Load(manifestPath)
-			So(err, ShouldBeNil)
-			So(loaded.Finalize(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, loaded.Finalize(), should.BeNil)
 			return b.Build(ctx, loaded)
 		}
 
-		Convey("ContextDir only", func() {
+		t.Run("ContextDir only", func(t *ftt.Test) {
 			put("ctx/f1", "file 1")
 			put("ctx/f2", "file 2")
 
@@ -70,14 +71,14 @@ func TestBuilder(t *testing.T) {
 				"name": "test",
 				"contextdir": "ctx"
 			}`)
-			So(err, ShouldBeNil)
-			So(out.Files(), ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, out.Files(), should.HaveLength(2))
 
-			So(b.Close(), ShouldBeNil)
-			So(b.Close(), ShouldBeNil) // idempotent
+			assert.Loosely(t, b.Close(), should.BeNil)
+			assert.Loosely(t, b.Close(), should.BeNil) // idempotent
 		})
 
-		Convey("A bunch of steps", func() {
+		t.Run("A bunch of steps", func(t *ftt.Test) {
 			put("ctx/f1", "file 1")
 			put("ctx/f2", "file 2")
 
@@ -108,7 +109,7 @@ func TestBuilder(t *testing.T) {
 					}
 				]
 			}`, filepath.Join(srcDir, "src", "testpkg")))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			names := make([]string, out.Len())
 			byName := make(map[string]fileset.File, out.Len())
@@ -116,31 +117,31 @@ func TestBuilder(t *testing.T) {
 				names[i] = f.Path
 				byName[f.Path] = f
 			}
-			So(names, ShouldResemble, []string{
+			assert.Loosely(t, names, should.Resemble([]string{
 				"dir", "dir/f", "f1", "f2", "gocmd", "say_hi",
-			})
+			}))
 
 			r, err := byName["f1"].Body()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			blob, err := io.ReadAll(r)
-			So(err, ShouldBeNil)
-			So(string(blob), ShouldEqual, "overridden")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(blob), should.Equal("overridden"))
 		})
 
-		Convey("Go GAE bundling", func() {
+		t.Run("Go GAE bundling", func(t *ftt.Test) {
 			// To test .gitignore handling, create a gitignored file manually, since
 			// we can't check it in.
 			err := os.WriteFile(filepath.FromSlash("testdata/src/testpkg/helloworld/static/ignored"), nil, 0600)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			buildBundle := func(manifestPath string) ([]string, map[string]*fileset.File) {
 				m, err := manifest.Load(manifestPath)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				m.ContextDir = tmpDir
-				So(m.Finalize(), ShouldBeNil)
+				assert.Loosely(t, m.Finalize(), should.BeNil)
 
 				out, err := b.Build(ctx, m)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				files := make([]string, 0, out.Len())
 				byName := make(map[string]*fileset.File, out.Len())
@@ -155,10 +156,10 @@ func TestBuilder(t *testing.T) {
 				return files, byName
 			}
 
-			Convey("GOPATH bundle", func() {
+			t.Run("GOPATH bundle", func(t *ftt.Test) {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_gopath.yaml"))
 
-				So(files, ShouldResemble, []string{
+				assert.Loosely(t, files, should.Resemble([]string{
 					".cloudbuildhelper.json",
 					"_gopath/goenv",
 					"_gopath/src/example.com/another/another_a.go",
@@ -179,30 +180,30 @@ func TestBuilder(t *testing.T) {
 					"_gopath/src/testpkg/pkg1/vendor.go",
 					"_gopath/src/testpkg/pkg2/pkg2.go",
 					"helloworld",
-				})
+				}))
 
-				So(byName["helloworld"], ShouldResemble, &fileset.File{
+				assert.Loosely(t, byName["helloworld"], should.Resemble(&fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gopath/src/testpkg/helloworld",
-				})
+				}))
 
 				desc, err := byName[".cloudbuildhelper.json"].ReadAll()
-				So(err, ShouldBeNil)
-				So(string(desc), ShouldEqual, fmt.Sprintf(`{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, string(desc), should.Equal(fmt.Sprintf(`{
   "format_version": "%s",
   "go_gae_bundles": [
     {
       "app_yaml": "_gopath/src/testpkg/helloworld/fake-app.yaml"
     }
   ]
-}`, bundledesc.FormatVersion))
+}`, bundledesc.FormatVersion)))
 
 			})
 
-			Convey("Modules bundle", func() {
+			t.Run("Modules bundle", func(t *ftt.Test) {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_modules.yaml"))
 
-				So(files, ShouldResemble, []string{
+				assert.Loosely(t, files, should.Resemble([]string{
 					".cloudbuildhelper.json",
 					"_gomod/go.mod",
 					"_gomod/goenv",
@@ -225,27 +226,27 @@ func TestBuilder(t *testing.T) {
 					"_gomod/vendor/example.com/pkg/pkg_a.go",
 					"_gomod/vendor/modules.txt",
 					"helloworld",
-				})
+				}))
 
-				So(byName["helloworld"], ShouldResemble, &fileset.File{
+				assert.Loosely(t, byName["helloworld"], should.Resemble(&fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gomod/helloworld",
-				})
+				}))
 
 				desc, err := byName[".cloudbuildhelper.json"].ReadAll()
-				So(err, ShouldBeNil)
-				So(string(desc), ShouldEqual, fmt.Sprintf(`{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, string(desc), should.Equal(fmt.Sprintf(`{
   "format_version": "%s",
   "go_gae_bundles": [
     {
       "app_yaml": "_gomod/helloworld/fake-app.yaml"
     }
   ]
-}`, bundledesc.FormatVersion))
+}`, bundledesc.FormatVersion)))
 
 				appYaml, err := byName["_gomod/helloworld/fake-app.yaml"].ReadAll()
-				So(err, ShouldBeNil)
-				So(string(appYaml), ShouldEqual, `entrypoint: |
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, string(appYaml), should.Equal(`entrypoint: |
     cd helloworld && main -auth-service-host ${AUTH_SERVICE_HOST}
 handlers:
     - static_files: helloworld/frontend/static/robots.txt
@@ -266,7 +267,7 @@ handlers:
       secure: always
       url: /.*
 runtime: go111
-`)
+`))
 			})
 		})
 	})
