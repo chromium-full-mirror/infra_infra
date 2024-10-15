@@ -13,7 +13,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/rts/filegraph"
 	"infra/rts/internal/gitutil"
@@ -88,35 +90,35 @@ func TestE2E(t *testing.T) {
 	t.Parallel()
 
 	repoDir := benchRepoDir(t)
-	Convey(`E2E`, t, func() {
+	ftt.Run(`E2E`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		// Build the graph from scratch.
 		g := &Graph{}
 		err := g.Update(ctx, repoDir, "refs/remotes/origin/main", UpdateOptions{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Ensure each file in the repo is also present in the graph.
-		gitListFiles(ctx, repoDir, "origin/main", func(file string) {
+		gitListFiles(ctx, t, repoDir, "origin/main", func(file string) {
 			n := g.node("//" + file)
 			t.Log(file)
-			So(n, ShouldNotBeNil)
+			assert.Loosely(t, n, should.NotBeNil)
 		})
 	})
 }
 
-func gitListFiles(ctx context.Context, dir, ref string, callback func(file string)) {
+func gitListFiles(ctx context.Context, t *ftt.Test, dir, ref string, callback func(file string)) {
 	cmd := exec.CommandContext(ctx, "git", "-C", dir, "ls-files", ref)
 	stdout, err := cmd.StdoutPipe()
-	So(err, ShouldBeNil)
-	So(cmd.Start(), ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, cmd.Start(), should.BeNil)
 
 	scan := bufio.NewScanner(stdout)
 	for scan.Scan() {
 		callback(scan.Text())
 	}
-	So(scan.Err(), ShouldBeNil)
-	So(cmd.Wait(), ShouldBeNil)
+	assert.Loosely(t, scan.Err(), should.BeNil)
+	assert.Loosely(t, cmd.Wait(), should.BeNil)
 }
 
 func printStats(g *Graph, b *testing.B) {
