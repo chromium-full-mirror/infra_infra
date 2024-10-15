@@ -7,16 +7,18 @@ package ethernethook
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCountSections(t *testing.T) {
 	t.Parallel()
 	e := extendedGSClient{}
-	Convey("test count sections", t, func() {
-		So(e.CountSections(""), ShouldEqual, 0)
-		So(e.CountSections("gs://"), ShouldEqual, 0)
-		So(e.CountSections("gs://a/b/c"), ShouldEqual, 3)
-		So(e.CountSections("gs://a/b/c/"), ShouldEqual, 3)
+	ftt.Run("test count sections", t, func(t *ftt.Test) {
+		assert.Loosely(t, e.CountSections(""), should.BeZero)
+		assert.Loosely(t, e.CountSections("gs://"), should.BeZero)
+		assert.Loosely(t, e.CountSections("gs://a/b/c"), should.Equal(3))
+		assert.Loosely(t, e.CountSections("gs://a/b/c/"), should.Equal(3))
 	})
 }
