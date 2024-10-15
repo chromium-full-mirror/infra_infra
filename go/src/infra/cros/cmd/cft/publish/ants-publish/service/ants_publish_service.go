@@ -127,7 +127,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 }
 
 func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token int64, results []*api.TestCaseResult) ([]*ab_qa_atp.BatchInsertEntry, int64, error) {
-	tcWorkunits := make(map[string]bool)
+	tcWorkunits := make(map[string]string)
 	var entries []*ab_qa_atp.BatchInsertEntry
 
 	for _, result := range results {
@@ -138,15 +138,16 @@ func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token i
 		// If testcase exists, use that as the parent module instead
 		if len(names) == 2 {
 			// Create work unit if it does not exist.
-			if !tcWorkunits[names[0]] {
+			if tcWorkunits[names[0]] == "" {
 				parentwu, err = aps.insertModuleWorkUnit(names[0], "TF_TEST_RUN", module.Id)
 				if err != nil {
 					log.Printf("unable to create test run workunit for %s due to %q", names[0], err)
 					return nil, token, err
 				}
-				tcWorkunits[names[0]] = true
+				tcWorkunits[names[0]] = parentwu.Id
 			}
 
+			startTime := result.GetStartTime().AsTime().Unix()
 			tr = &ab_qa_atp.TestResult{
 				InvocationId: aps.metadata.GetAntsInvocationId(),
 				WorkUnitId:   parentwu.Id,
@@ -156,6 +157,13 @@ func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token i
 					Method:    names[1],
 				},
 				TestStatus: antsTestStatus(result),
+				Timing: &ab_qa_atp.Timing{
+					CreationTimestamp: startTime,
+					CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
+				},
+				AggregationDetail: &ab_qa_atp.AggregationDetail{
+					AggregationLevel: "method",
+				},
 			}
 		} else if len(names) == 1 {
 			tr = &ab_qa_atp.TestResult{
@@ -174,6 +182,7 @@ func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token i
 		entries = append(entries, &ab_qa_atp.BatchInsertEntry{TestResult: tr, Token: token})
 		token = token + 1
 	}
+
 	return entries, token, nil
 }
 
