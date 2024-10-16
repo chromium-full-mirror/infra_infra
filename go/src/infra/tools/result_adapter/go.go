@@ -15,7 +15,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -151,31 +150,6 @@ type TestEvent struct {
 	Test    string
 	Elapsed float64 // seconds
 	Output  string
-}
-
-// maybeEscape returns s unmodified if it consists entirely of ASCII runes,
-// or else with each non-ASCII rune replaced by its hex Unicode code point
-// inside round brackets. For example, "TestNameIsASCII" is returned as is,
-// but "TestSeeሴLater" is escaped to "TestSee(U+1234)Later".
-func maybeEscape(s string) string {
-	for i, r := range s {
-		if r < utf8.RuneSelf {
-			continue
-		}
-		// Rare case: at least one non-ASCII rune, so need to escape.
-		var b strings.Builder
-		b.WriteString(s[:i]) // Fast-forward to first non-ASCII rune.
-		for _, r := range s[i:] {
-			if r < utf8.RuneSelf {
-				b.WriteByte(byte(r))
-			} else {
-				b.WriteString(fmt.Sprintf("(%U)", r))
-			}
-		}
-		return b.String()
-	}
-	// Common case.
-	return s
 }
 
 // PackageRecord represents the results of a single package.
@@ -326,11 +300,7 @@ func (tr *TestRecord) ingest(te *TestEvent) {
 func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.TestResult {
 	result := &sinkpb.TestResult{}
 
-	// Test names in Go may contain Unicode printable runes, but
-	// ResultDB currently only allows ASCII printable runes. See crbug.com/1446084.
-	// Work around that by temporarily escaping non-ASCII test names to ASCII.
-	// TODO(crbug.com/1446084): Drop maybeEscape after the ResultDB fix rolls out.
-	testID := fmt.Sprintf("%s.%s", tr.PackageName, maybeEscape(tr.TestName))
+	testID := fmt.Sprintf("%s.%s", tr.PackageName, tr.TestName)
 	result.TestId = testID
 
 	switch tr.Result {
