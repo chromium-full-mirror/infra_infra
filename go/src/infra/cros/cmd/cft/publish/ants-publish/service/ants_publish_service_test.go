@@ -123,5 +123,4 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 			}
 		})
 	}
-
 }

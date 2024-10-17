@@ -26,13 +26,15 @@ import (
 )
 
 const (
-	artifactsDir = "/tmp/artifacts"
+	artifactsDir      = "/tmp/artifacts"
+	aggregationStatus = "method"
 )
 
 type AntsPublishService struct {
-	metadata *metadata.PublishAntsMetadata
-	results  []*api.CrosTestResponse_GivenTestResult
-	service  *androidlib.Service
+	metadata   *metadata.PublishAntsMetadata
+	results    []*api.CrosTestResponse_GivenTestResult
+	service    *androidlib.Service
+	invocation *ab_qa_atp.Invocation
 }
 
 func defaultResults() []*api.CrosTestResponse_GivenTestResult {
@@ -108,10 +110,16 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 		log.Printf("Using default results for testing: %v", r)
 	}
 
+	inv, err := s.InvocationService.Get(m.AntsInvocationId)
+	if err != nil {
+		log.Printf("Cannot get primary invocation for: %s", m.AntsInvocationId)
+	}
+
 	return &AntsPublishService{
-		metadata: m,
-		results:  r,
-		service:  s,
+		metadata:   m,
+		results:    r,
+		service:    s,
+		invocation: inv,
 	}, nil
 }
 
@@ -133,7 +141,7 @@ func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token i
 	for _, result := range results {
 		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
 		parentwu := module
-		var tr *ab_qa_atp.TestResult
+		var testID *ab_qa_atp.TestIdentifier
 		var err error
 		// If testcase exists, use that as the parent module instead
 		if len(names) == 2 {
@@ -147,36 +155,34 @@ func (aps *AntsPublishService) resultEntries(module *ab_qa_atp.WorkUnit, token i
 				tcWorkunits[names[0]] = parentwu.Id
 			}
 
-			startTime := result.GetStartTime().AsTime().Unix()
-			tr = &ab_qa_atp.TestResult{
-				InvocationId: aps.metadata.GetAntsInvocationId(),
-				WorkUnitId:   parentwu.Id,
-				TestIdentifier: &ab_qa_atp.TestIdentifier{
-					Module:    module.Name,
-					TestClass: names[0],
-					Method:    names[1],
-				},
-				TestStatus: antsTestStatus(result),
-				Timing: &ab_qa_atp.Timing{
-					CreationTimestamp: startTime,
-					CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
-				},
-				AggregationDetail: &ab_qa_atp.AggregationDetail{
-					AggregationLevel: "method",
-				},
+			testID = &ab_qa_atp.TestIdentifier{
+				Module:    module.Name,
+				TestClass: names[0],
+				Method:    names[1],
 			}
 		} else if len(names) == 1 {
-			tr = &ab_qa_atp.TestResult{
-				InvocationId: aps.metadata.GetAntsInvocationId(),
-				WorkUnitId:   parentwu.Id,
-				TestIdentifier: &ab_qa_atp.TestIdentifier{
-					TestClass: module.Name,
-					Method:    names[0],
-				},
-				TestStatus: antsTestStatus(result),
+			testID = &ab_qa_atp.TestIdentifier{
+				TestClass: module.Name,
+				Method:    names[0],
 			}
 		} else {
 			return nil, token, fmt.Errorf("unexpected testcaseid: %s", result.GetTestCaseId().GetValue())
+		}
+
+		startTime := result.GetStartTime().AsTime().Unix()
+		tr := &ab_qa_atp.TestResult{
+			InvocationId:   aps.metadata.GetAntsInvocationId(),
+			WorkUnitId:     parentwu.Id,
+			TestIdentifier: testID,
+			TestStatus:     antsTestStatus(result),
+			Timing: &ab_qa_atp.Timing{
+				CreationTimestamp: startTime,
+				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
+			},
+			AggregationDetail: &ab_qa_atp.AggregationDetail{
+				AggregationLevel: aggregationStatus,
+			},
+			PrimaryBuildInfo: aps.invocation.PrimaryBuild,
 		}
 
 		entries = append(entries, &ab_qa_atp.BatchInsertEntry{TestResult: tr, Token: token})
