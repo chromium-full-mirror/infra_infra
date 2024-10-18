@@ -6,6 +6,7 @@
 package gerrit
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -20,7 +21,7 @@ type FakeAPIClient struct {
 }
 
 // DownloadFileFromGitiles downloads a file from Gitiles.
-func (g *FakeAPIClient) DownloadFileFromGitiles(project, branch, path string) (string, error) {
+func (g *FakeAPIClient) DownloadFileFromGitiles(ctx context.Context, project, branch, path string) (string, error) {
 	if projectData, ok := g.ExpectedDownloads[project]; !ok {
 		g.T.Fatalf("unexpected download for project %s", project)
 	} else if branchData, ok := projectData[branch]; !ok {
@@ -34,8 +35,8 @@ func (g *FakeAPIClient) DownloadFileFromGitiles(project, branch, path string) (s
 }
 
 // DownloadFileFromGitilesToPath downloads a file from Gitiles to a specified path.
-func (g *FakeAPIClient) DownloadFileFromGitilesToPath(project, branch, path, saveToPath string) error {
-	data, _ := g.DownloadFileFromGitiles(project, branch, path)
+func (g *FakeAPIClient) DownloadFileFromGitilesToPath(ctx context.Context, project, branch, path, saveToPath string) error {
+	data, _ := g.DownloadFileFromGitiles(ctx, project, branch, path)
 
 	assert.NilError(g.T, ioutil.WriteFile(saveToPath, []byte(data), 0644))
 	return nil

@@ -17,6 +17,7 @@ import (
 	gerritapi "github.com/andygrunwald/go-gerrit"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
@@ -27,8 +28,8 @@ import (
 
 type APIClient interface {
 	Projects() ([]string, error)
-	DownloadFileFromGitiles(project, branch, path string) (string, error)
-	DownloadFileFromGitilesToPath(project, branch, path, saveToPath string) error
+	DownloadFileFromGitiles(ctx context.Context, project, branch, path string) (string, error)
+	DownloadFileFromGitilesToPath(ctx context.Context, project, branch, path, saveToPath string) error
 }
 
 type ProdAPIClient struct {
@@ -84,8 +85,9 @@ func NewProdAPIClient(ctx context.Context, host, gitcookiesPath string) (*ProdAP
 }
 
 // DownloadFileFromGitiles downloads a file from Gitiles.
-func (g *ProdAPIClient) DownloadFileFromGitiles(project, branch, path string) (string, error) {
+func (g *ProdAPIClient) DownloadFileFromGitiles(ctx context.Context, project, branch, path string) (string, error) {
 	branch = git.NormalizeRef(branch)
+	logging.Debugf(ctx, "calling GetBranchContent(project=%s, branch=%s, path=%s)", project, branch, path)
 	data, resp, err := g.innerClient.Projects.GetBranchContent(project, branch, path)
 	if err != nil {
 		if resp.StatusCode == 404 {
@@ -97,8 +99,8 @@ func (g *ProdAPIClient) DownloadFileFromGitiles(project, branch, path string) (s
 }
 
 // DownloadFileFromGitilesToPath downloads a file from Gitiles to a specified path.
-func (g *ProdAPIClient) DownloadFileFromGitilesToPath(project, branch, path, saveToPath string) error {
-	contents, err := g.DownloadFileFromGitiles(project, branch, path)
+func (g *ProdAPIClient) DownloadFileFromGitilesToPath(ctx context.Context, project, branch, path, saveToPath string) error {
+	contents, err := g.DownloadFileFromGitiles(ctx, project, branch, path)
 	if err != nil {
 		return err
 	}
