@@ -209,7 +209,7 @@ ALL = {
                 # Necessary for some wheels to build. See for instance:
                 # https://github.com/giampaolo/psutil/issues/1832
                 'ARCHFLAGS': '-arch x86_64',
-                'MACOSX_DEPLOYMENT_TARGET': '10.11'
+                'MACOSX_DEPLOYMENT_TARGET': '10.13'
             },
             default=True,
         ),
@@ -228,7 +228,7 @@ ALL = {
                 # Necessary for some wheels to build. See for instance:
                 # https://github.com/giampaolo/psutil/issues/1832
                 'ARCHFLAGS': '-arch x86_64',
-                'MACOSX_DEPLOYMENT_TARGET': '10.11'
+                'MACOSX_DEPLOYMENT_TARGET': '10.13'
             },
             default=True,
         ),
