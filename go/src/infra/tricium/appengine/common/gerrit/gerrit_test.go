@@ -9,27 +9,29 @@ import (
 	"encoding/json"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/triciumtest"
 )
 
 func TestCreateRobotComment(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
 		ctx := triciumtest.Context()
 		runID := int64(1234567)
 		uuid := "7ae6f43d-22e9-4350-ace4-1fee9014509a"
 
-		Convey("Basic comment fields include UUID and URL", func() {
+		t.Run("Basic comment fields include UUID and URL", func(t *ftt.Test) {
 			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:       uuid,
 				Path:     "README.md",
 				Message:  "Message",
 				Category: "Hello",
 			})
-			So(roco, ShouldResemble, &robotCommentInput{
+			assert.Loosely(t, roco, should.Resemble(&robotCommentInput{
 				Message:    "Message",
 				RobotID:    "Hello",
 				RobotRunID: "1234567",
@@ -38,34 +40,34 @@ func TestCreateRobotComment(t *testing.T) {
 				Properties: map[string]string{
 					"tricium_comment_uuid": "7ae6f43d-22e9-4350-ace4-1fee9014509a",
 				},
-			})
+			}))
 		})
 
-		Convey("File comment has no position info", func() {
+		t.Run("File comment has no position info", func(t *ftt.Test) {
 			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:       uuid,
 				Path:     "README.md",
 				Message:  "Message",
 				Category: "Hello",
 			})
-			So(roco.Line, ShouldEqual, 0)
-			So(roco.Range, ShouldBeNil)
+			assert.Loosely(t, roco.Line, should.BeZero)
+			assert.Loosely(t, roco.Range, should.BeNil)
 		})
 
-		Convey("Line comment has no range info", func() {
-			line := int32(10)
+		t.Run("Line comment has no range info", func(t *ftt.Test) {
+			line := 10
 			roco := createRobotComment(ctx, runID, &tricium.Data_Comment{
 				Id:        uuid,
 				Path:      "README.md",
 				Message:   "Message",
 				Category:  "Hello",
-				StartLine: line,
+				StartLine: int32(line),
 			})
-			So(roco.Line, ShouldEqual, line)
-			So(roco.Range, ShouldBeNil)
+			assert.That(t, roco.Line, should.Equal(line))
+			assert.Loosely(t, roco.Range, should.BeNil)
 		})
 
-		Convey("Range comment has range", func() {
+		t.Run("Range comment has range", func(t *ftt.Test) {
 			startLine := 10
 			endLine := 20
 			startChar := 2
@@ -80,16 +82,16 @@ func TestCreateRobotComment(t *testing.T) {
 				StartChar: int32(startChar),
 				EndChar:   int32(endChar),
 			})
-			So(roco.Line, ShouldEqual, endLine)
-			So(roco.Range, ShouldResemble, &commentRange{
+			assert.Loosely(t, roco.Line, should.Equal(endLine))
+			assert.Loosely(t, roco.Range, should.Resemble(&commentRange{
 				StartLine:      startLine,
 				EndLine:        endLine,
 				StartCharacter: startChar,
 				EndCharacter:   endChar,
-			})
+			}))
 		})
 
-		Convey("Comment gets marshaled correctly", func() {
+		t.Run("Comment gets marshaled correctly", func(t *ftt.Test) {
 			startLine := 10
 			endLine := 20
 			startChar := 2
@@ -121,7 +123,7 @@ func TestCreateRobotComment(t *testing.T) {
 			})
 
 			marshaledRoco, _ := json.MarshalIndent(roco, "", "  ")
-			So(string(marshaledRoco), ShouldEqual, `{
+			assert.Loosely(t, string(marshaledRoco), should.Equal(`{
   "robot_id": "Hello",
   "robot_run_id": "1234567",
   "url": "https://app.example.com/run/1234567",
@@ -154,14 +156,14 @@ func TestCreateRobotComment(t *testing.T) {
     "end_character": 18
   },
   "message": "Message"
-}`)
+}`))
 
 		})
 	})
 }
 
 func TestGetChangedLinesFromPatch(t *testing.T) {
-	Convey("Extract changed lines with added and modified files", t, func() {
+	ftt.Run("Extract changed lines with added and modified files", t, func(t *ftt.Test) {
 		patch := `commit 29943c31812f582bd174740d9f9414a99632c687 (HEAD -> master)
 Author: Foo Bar <foobar@google.com>
 Date:   Tue Jun 26 17:58:25 2018 -0700
@@ -201,11 +203,11 @@ index 0000000..ab8dadd
 		expectedLines["test.cpp"] = []int{1, 2, 3, 4, 5, 6}
 		expectedLines["test2.cpp"] = []int{2, 3}
 		actualLines, err := getChangedLinesFromPatch(base64Patch)
-		So(err, ShouldBeNil)
-		So(actualLines, ShouldResemble, expectedLines)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, actualLines, should.Resemble(expectedLines))
 	})
 
-	Convey("Extract changed lines with a deleted file", t, func() {
+	ftt.Run("Extract changed lines with a deleted file", t, func(t *ftt.Test) {
 		patch := `commit 29943c31812f582bd174740d9f9414a99632c687 (HEAD -> master)
 Author: Foo Bar <foobar@google.com>
 Date:   Tue Jun 26 17:58:25 2018 -0700
@@ -229,25 +231,25 @@ index 382e810..0000000
 		base64Patch := base64.StdEncoding.EncodeToString([]byte(patch))
 		expectedLines := ChangedLinesInfo{}
 		actualLines, err := getChangedLinesFromPatch(base64Patch)
-		So(err, ShouldBeNil)
-		So(actualLines, ShouldResemble, expectedLines)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, actualLines, should.Resemble(expectedLines))
 	})
 }
 
 func TestCommentIsInChangedLines(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 
 		ctx := triciumtest.Context()
 
-		Convey("Anything in CL description is included", func() {
+		t.Run("Anything in CL description is included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path: "",
 			}
 			lines := ChangedLinesInfo{"": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeTrue)
 		})
 
-		Convey("Single line comment in changed lines", func() {
+		t.Run("Single line comment in changed lines", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 5,
@@ -256,10 +258,10 @@ func TestCommentIsInChangedLines(t *testing.T) {
 				EndChar:   10,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeTrue)
 		})
 
-		Convey("Single line comment outside of changed lines", func() {
+		t.Run("Single line comment outside of changed lines", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 4,
@@ -268,10 +270,10 @@ func TestCommentIsInChangedLines(t *testing.T) {
 				EndChar:   10,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeFalse)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeFalse)
 		})
 
-		Convey("Single line comment outside of changed files", func() {
+		t.Run("Single line comment outside of changed files", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "DELETED.txt",
 				StartLine: 5,
@@ -280,107 +282,107 @@ func TestCommentIsInChangedLines(t *testing.T) {
 				EndChar:   10,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeFalse)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeFalse)
 		})
 
-		Convey("Comment with line range that overlaps changed line", func() {
+		t.Run("Comment with line range that overlaps changed line", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 3,
 				EndLine:   8,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeTrue)
 		})
 
-		Convey("Comment with end char == 0, implying end line is not included", func() {
+		t.Run("Comment with end char == 0, implying end line is not included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 6,
 				EndLine:   10,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeFalse)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeFalse)
 		})
 
-		Convey("File-level comments are included", func() {
+		t.Run("File-level comments are included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path: "dir/file.txt",
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeTrue)
 		})
 
-		Convey("Line comments on changed lines are included", func() {
+		t.Run("Line comments on changed lines are included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 2,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 0), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 0), should.BeTrue)
 		})
 
 		// Fuzzy matching.
 
-		Convey("Line comments not close before changed lines are excluded", func() {
+		t.Run("Line comments not close before changed lines are excluded", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 1,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {3, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 1), ShouldBeFalse)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 1), should.BeFalse)
 		})
 
-		Convey("Line comments not close after changed lines are excluded", func() {
+		t.Run("Line comments not close after changed lines are excluded", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 7,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {3, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 1), ShouldBeFalse)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 1), should.BeFalse)
 		})
 
-		Convey("Line comments close before changed lines are included", func() {
+		t.Run("Line comments close before changed lines are included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 2,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {3, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 1), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 1), should.BeTrue)
 		})
 
-		Convey("Line comments close after changed lines are included", func() {
+		t.Run("Line comments close after changed lines are included", func(t *ftt.Test) {
 			data := tricium.Data_Comment{
 				Path:      "dir/file.txt",
 				StartLine: 6,
 			}
 			lines := ChangedLinesInfo{"dir/file.txt": {2, 5, 10}}
-			So(CommentIsInChangedLines(ctx, &data, lines, 1), ShouldBeTrue)
+			assert.Loosely(t, CommentIsInChangedLines(ctx, &data, lines, 1), should.BeTrue)
 		})
 	})
 }
 
 func TestIsInChangedLines(t *testing.T) {
-	Convey("Overlapping cases", t, func() {
-		So(isInChangedLines(1, 3, []int{2, 3, 4}, 0), ShouldBeTrue)
-		So(isInChangedLines(4, 5, []int{2, 3, 4}, 0), ShouldBeTrue)
+	ftt.Run("Overlapping cases", t, func(t *ftt.Test) {
+		assert.Loosely(t, isInChangedLines(1, 3, []int{2, 3, 4}, 0), should.BeTrue)
+		assert.Loosely(t, isInChangedLines(4, 5, []int{2, 3, 4}, 0), should.BeTrue)
 		// The end line is inclusive.
-		So(isInChangedLines(1, 2, []int{2, 3, 4}, 0), ShouldBeTrue)
-		So(isInChangedLines(3, 3, []int{2, 3, 4}, 0), ShouldBeTrue)
+		assert.Loosely(t, isInChangedLines(1, 2, []int{2, 3, 4}, 0), should.BeTrue)
+		assert.Loosely(t, isInChangedLines(3, 3, []int{2, 3, 4}, 0), should.BeTrue)
 	})
 
-	Convey("Non-overlapping cases", t, func() {
-		So(isInChangedLines(5, 6, []int{2, 3, 4}, 0), ShouldBeFalse)
-		So(isInChangedLines(1, 1, []int{2, 3, 4}, 0), ShouldBeFalse)
+	ftt.Run("Non-overlapping cases", t, func(t *ftt.Test) {
+		assert.Loosely(t, isInChangedLines(5, 6, []int{2, 3, 4}, 0), should.BeFalse)
+		assert.Loosely(t, isInChangedLines(1, 1, []int{2, 3, 4}, 0), should.BeFalse)
 	})
 
-	Convey("Invalid range cases", t, func() {
-		So(isInChangedLines(2, 0, []int{2, 3, 4}, 0), ShouldBeFalse)
+	ftt.Run("Invalid range cases", t, func(t *ftt.Test) {
+		assert.Loosely(t, isInChangedLines(2, 0, []int{2, 3, 4}, 0), should.BeFalse)
 	})
 }
 
 func TestAdjustCommitMessage(t *testing.T) {
-	Convey("adjustCommitMessageComment changes positions in comment and replacements", t, func() {
+	ftt.Run("adjustCommitMessageComment changes positions in comment and replacements", t, func(t *ftt.Test) {
 		comment := &tricium.Data_Comment{
 			Category:  "Foo",
 			Message:   "Bar",
@@ -402,7 +404,7 @@ func TestAdjustCommitMessage(t *testing.T) {
 			},
 		}
 		adjustCommitMessageComment(comment)
-		So(comment, ShouldResemble, &tricium.Data_Comment{
+		assert.Loosely(t, comment, should.Resemble(&tricium.Data_Comment{
 			Category:  "Foo",
 			Message:   "Bar",
 			StartLine: 5 + numHeaderLines,
@@ -421,18 +423,18 @@ func TestAdjustCommitMessage(t *testing.T) {
 					},
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("File level comments don't have line numbers adjusted", t, func() {
+	ftt.Run("File level comments don't have line numbers adjusted", t, func(t *ftt.Test) {
 		comment := &tricium.Data_Comment{
 			Category: "Foo",
 			Message:  "Bar",
 		}
 		adjustCommitMessageComment(comment)
-		So(comment, ShouldResemble, &tricium.Data_Comment{
+		assert.Loosely(t, comment, should.Resemble(&tricium.Data_Comment{
 			Category: "Foo",
 			Message:  "Bar",
-		})
+		}))
 	})
 }
