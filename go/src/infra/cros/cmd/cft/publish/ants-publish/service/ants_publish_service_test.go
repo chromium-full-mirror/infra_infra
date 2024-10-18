@@ -6,6 +6,7 @@
 package service
 
 import (
+	"slices"
 	"testing"
 
 	"google.golang.org/protobuf/types/known/anypb"
@@ -120,6 +121,45 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 			gotErr := validateAntsPublishRequest(req)
 			if (tc.wantErr && gotErr == nil) || (gotErr != nil && !tc.wantErr) {
 				t.Errorf("Unexpected error. want: %v, got %v", tc.wantErr, gotErr)
+			}
+		})
+	}
+}
+
+func TestArtifactMetadata(t *testing.T) {
+	testCases := []struct {
+		name      string
+		path      string
+		wantName  string
+		wantTypes []string
+	}{
+		{
+			name:      "log",
+			path:      "provision/foo/log.txt",
+			wantName:  "provision_foo_log.txt",
+			wantTypes: []string{"text/plain"},
+		},
+		{
+			name:      "xml",
+			path:      "test/tf/result.xml",
+			wantName:  "result.xml",
+			wantTypes: []string{"application/xml", "text/xml"},
+		},
+	}
+
+	aps := &AntsPublishService{
+		metadata: &metadata.PublishAntsMetadata{AntsInvocationId: "I123", ParentWorkUnitId: "WU1"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := aps.artifactMetadata(tc.path)
+
+			if got.Name != tc.wantName {
+				t.Errorf("Unexpected name. want %s got %s", tc.wantName, got.Name)
+			}
+
+			if !slices.Contains(tc.wantTypes, got.ContentType) {
+				t.Errorf("Unexpected content type. want %s got %s", tc.wantTypes, got.ContentType)
 			}
 		})
 	}

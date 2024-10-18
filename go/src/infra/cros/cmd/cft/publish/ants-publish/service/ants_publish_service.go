@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	artifactsDir      = "/tmp/artifacts"
+	artifactsDir      = "/tmp/artifacts/"
 	aggregationStatus = "method"
 )
 
@@ -238,38 +238,50 @@ func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
 			return err
 		}
 
-		// We only need to look at files inside cros-test dir
-		if info.IsDir() || !strings.HasPrefix(path, "cros-test") {
+		// Skip directories.
+		if info.IsDir() {
 			return nil
 		}
 
 		artifactMetadata, err := aps.uploadArtifact(path)
 		if err != nil {
 			log.Printf("Cannot open file: %s due to error: %q. Skipping upload", path, err)
+		} else {
+			log.Printf("Uploaded artifact for: %s", artifactMetadata.Name)
 		}
-
-		log.Printf("Uploaded artifact for: %s", artifactMetadata.Name)
 		return nil
 	})
 }
 
 func (aps *AntsPublishService) uploadArtifact(path string) (*ab_qa_atp.BuildArtifactMetadata, error) {
-	filename := filepath.Base(path)
-
-	artifactMetadata := &ab_qa_atp.BuildArtifactMetadata{
-		Name:         filename,
-		InvocationId: aps.metadata.AntsInvocationId,
-		WorkUnitId:   aps.metadata.ParentWorkUnitId,
-		ContentType:  mime.TypeByExtension(filename),
-	}
-
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
-	return aps.service.TestArtifactsService.Update(filename, f, artifactMetadata)
+	am := aps.artifactMetadata(path)
+	return aps.service.TestArtifactsService.Update(am.Name, f, am)
+}
+
+func (aps *AntsPublishService) artifactMetadata(path string) *ab_qa_atp.BuildArtifactMetadata {
+	filename := filepath.Base(path)
+	if strings.HasSuffix(path, "log.txt") {
+		// Multiple path names have the same log.txt file
+		// Use the whole path for filename instead for log files.
+		filename = strings.ReplaceAll(strings.TrimPrefix(path, artifactsDir), "/", "_")
+	}
+
+	// Mime type is of the form `text/plain; charset utf-8`
+	// Just use the content type from this.
+	contentType := strings.Split(mime.TypeByExtension(filepath.Ext(path)), ";")[0]
+
+	return &ab_qa_atp.BuildArtifactMetadata{
+		Name:         filename,
+		InvocationId: aps.metadata.AntsInvocationId,
+		WorkUnitId:   aps.metadata.ParentWorkUnitId,
+		ContentType:  contentType,
+	}
 }
 
 func antsTestStatus(result *api.TestCaseResult) string {
