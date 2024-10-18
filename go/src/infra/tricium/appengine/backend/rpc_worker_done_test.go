@@ -9,10 +9,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/data/stringset"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	"infra/qscheduler/qslib/tutils"
@@ -24,7 +25,7 @@ import (
 )
 
 func TestWorkerDoneRequest(t *testing.T) {
-	Convey("Worker done request with successful worker", t, func() {
+	ftt.Run("Worker done request with successful worker", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		simple := "Simple"
@@ -45,69 +46,69 @@ func TestWorkerDoneRequest(t *testing.T) {
 		// Add pending workflow run.
 		request := &track.AnalyzeRequest{}
 		request.GitRef = "refs/changes/88/508788/7"
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		run := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkflowRunResult{
 			ID:     1,
 			Parent: runKey,
 			State:  tricium.State_PENDING,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark workflow as launched.
-		So(workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
+		assert.Loosely(t, workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
 			RunId: request.ID,
-		}, workflowProvider), ShouldBeNil)
+		}, workflowProvider), should.BeNil)
 
 		// Mark worker as launched.
-		So(workerLaunched(ctx, &admin.WorkerLaunchedRequest{
+		assert.Loosely(t, workerLaunched(ctx, &admin.WorkerLaunchedRequest{
 			RunId:  request.ID,
 			Worker: simpleUbuntu,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark worker as done.
-		So(workerDone(ctx, &admin.WorkerDoneRequest{
+		assert.Loosely(t, workerDone(ctx, &admin.WorkerDoneRequest{
 			RunId:             request.ID,
 			Worker:            simpleUbuntu,
 			Provides:          tricium.Data_RESULTS,
 			State:             tricium.State_SUCCESS,
 			BuildbucketOutput: `{"comments": [{"message": "foo"}, {"message": "bar"}]}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		functionKey := ds.NewKey(ctx, "FunctionRun", simple, 0, runKey)
 
-		Convey("Marks worker as done", func() {
+		t.Run("Marks worker as done", func(t *ftt.Test) {
 			workerKey := ds.NewKey(ctx, "WorkerRun", simpleUbuntu, 0, functionKey)
 			wr := &track.WorkerRunResult{ID: 1, Parent: workerKey}
-			So(ds.Get(ctx, wr), ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_SUCCESS)
+			assert.Loosely(t, ds.Get(ctx, wr), should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_SUCCESS))
 		})
 
-		Convey("Marks function as done and adds no comments", func() {
+		t.Run("Marks function as done and adds no comments", func(t *ftt.Test) {
 			fr := &track.FunctionRunResult{ID: 1, Parent: functionKey}
-			So(ds.Get(ctx, fr), ShouldBeNil)
-			So(fr.State, ShouldEqual, tricium.State_SUCCESS)
+			assert.Loosely(t, ds.Get(ctx, fr), should.BeNil)
+			assert.Loosely(t, fr.State, should.Equal(tricium.State_SUCCESS))
 		})
 
-		Convey("Marks workflow as done and adds comments", func() {
+		t.Run("Marks workflow as done and adds comments", func(t *ftt.Test) {
 			wr := &track.WorkflowRunResult{ID: 1, Parent: runKey}
-			So(ds.Get(ctx, wr), ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_SUCCESS)
-			So(wr.NumComments, ShouldEqual, 2)
+			assert.Loosely(t, ds.Get(ctx, wr), should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_SUCCESS))
+			assert.Loosely(t, wr.NumComments, should.Equal(2))
 		})
 
-		Convey("Marks request as done", func() {
+		t.Run("Marks request as done", func(t *ftt.Test) {
 			ar := &track.AnalyzeRequestResult{ID: 1, Parent: requestKey}
-			So(ds.Get(ctx, ar), ShouldBeNil)
-			So(ar.State, ShouldEqual, tricium.State_SUCCESS)
+			assert.Loosely(t, ds.Get(ctx, ar), should.BeNil)
+			assert.Loosely(t, ar.State, should.Equal(tricium.State_SUCCESS))
 		})
 	})
 }
 
 func TestRecipeWorkerDoneRequest(t *testing.T) {
-	Convey("Worker done request with successful worker", t, func() {
+	ftt.Run("Worker done request with successful worker", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		simple := "Simple"
@@ -127,50 +128,50 @@ func TestRecipeWorkerDoneRequest(t *testing.T) {
 		// Add pending workflow run.
 		request := &track.AnalyzeRequest{}
 		request.GitRef = "refs/changes/88/508788/7"
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		run := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkflowRunResult{
 			ID:     1,
 			Parent: runKey,
 			State:  tricium.State_PENDING,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark workflow as launched.
-		So(workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
+		assert.Loosely(t, workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
 			RunId: request.ID,
-		}, workflowProvider), ShouldBeNil)
+		}, workflowProvider), should.BeNil)
 
 		// Mark worker as launched.
-		So(workerLaunched(ctx, &admin.WorkerLaunchedRequest{
+		assert.Loosely(t, workerLaunched(ctx, &admin.WorkerLaunchedRequest{
 			RunId:  request.ID,
 			Worker: simpleUbuntu,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark worker as done.
-		So(workerDone(ctx, &admin.WorkerDoneRequest{
+		assert.Loosely(t, workerDone(ctx, &admin.WorkerDoneRequest{
 			RunId:             request.ID,
 			Worker:            simpleUbuntu,
 			Provides:          tricium.Data_GIT_FILE_DETAILS,
 			State:             tricium.State_SUCCESS,
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		functionKey := ds.NewKey(ctx, "FunctionRun", simple, 0, runKey)
 
-		Convey("Marks worker as done", func() {
+		t.Run("Marks worker as done", func(t *ftt.Test) {
 			workerKey := ds.NewKey(ctx, "WorkerRun", simpleUbuntu, 0, functionKey)
 			wr := &track.WorkerRunResult{ID: 1, Parent: workerKey}
-			So(ds.Get(ctx, wr), ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_SUCCESS)
+			assert.Loosely(t, ds.Get(ctx, wr), should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_SUCCESS))
 		})
 	})
 }
 
 func TestAbortedWorkerDoneRequest(t *testing.T) {
-	Convey("Worker done request with an aborted worker", t, func() {
+	ftt.Run("Worker done request with an aborted worker", t, func(t *ftt.Test) {
 		// This test is similar to the case above, except that one of
 		// the workers is aborted, so the function is considered
 		// failed, and thus the workflow run is failed.
@@ -194,111 +195,111 @@ func TestAbortedWorkerDoneRequest(t *testing.T) {
 		// Add pending run entry.
 		request := &track.AnalyzeRequest{}
 		request.GitRef = "refs/changes/88/508788/7"
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		requestKey := ds.KeyForObj(ctx, request)
 		run := &track.WorkflowRun{ID: 1, Parent: requestKey}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		runKey := ds.KeyForObj(ctx, run)
-		So(ds.Put(ctx, &track.WorkflowRunResult{
+		assert.Loosely(t, ds.Put(ctx, &track.WorkflowRunResult{
 			ID:     1,
 			Parent: runKey,
 			State:  tricium.State_PENDING,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark workflow as launched.
-		So(workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
+		assert.Loosely(t, workflowLaunched(ctx, &admin.WorkflowLaunchedRequest{
 			RunId: request.ID,
-		}, workflowProvider), ShouldBeNil)
+		}, workflowProvider), should.BeNil)
 
 		// Mark worker as launched.
-		So(workerLaunched(ctx, &admin.WorkerLaunchedRequest{
+		assert.Loosely(t, workerLaunched(ctx, &admin.WorkerLaunchedRequest{
 			RunId:  request.ID,
 			Worker: simpleUbuntu,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		// Mark worker as aborted.
-		So(workerDone(ctx, &admin.WorkerDoneRequest{
+		assert.Loosely(t, workerDone(ctx, &admin.WorkerDoneRequest{
 			RunId:             request.ID,
 			Worker:            simpleUbuntu,
 			State:             tricium.State_ABORTED,
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 
 		functionKey := ds.NewKey(ctx, "FunctionRun", simple, 0, runKey)
 
-		Convey("WorkerRun is marked as aborted", func() {
+		t.Run("WorkerRun is marked as aborted", func(t *ftt.Test) {
 			workerKey := ds.NewKey(ctx, "WorkerRun", simpleUbuntu, 0, functionKey)
 			wr := &track.WorkerRunResult{ID: 1, Parent: workerKey}
-			So(ds.Get(ctx, wr), ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_ABORTED)
+			assert.Loosely(t, ds.Get(ctx, wr), should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_ABORTED))
 		})
 
-		Convey("FunctionRun is failed, with no comments", func() {
+		t.Run("FunctionRun is failed, with no comments", func(t *ftt.Test) {
 			fr := &track.FunctionRunResult{ID: 1, Parent: functionKey}
-			So(ds.Get(ctx, fr), ShouldBeNil)
-			So(fr.State, ShouldEqual, tricium.State_FAILURE)
+			assert.Loosely(t, ds.Get(ctx, fr), should.BeNil)
+			assert.Loosely(t, fr.State, should.Equal(tricium.State_FAILURE))
 		})
 
-		Convey("WorkflowRun is marked as failed", func() {
+		t.Run("WorkflowRun is marked as failed", func(t *ftt.Test) {
 			wr := &track.WorkflowRunResult{ID: 1, Parent: runKey}
-			So(ds.Get(ctx, wr), ShouldBeNil)
-			So(wr.State, ShouldEqual, tricium.State_FAILURE)
+			assert.Loosely(t, ds.Get(ctx, wr), should.BeNil)
+			assert.Loosely(t, wr.State, should.Equal(tricium.State_FAILURE))
 		})
 
-		Convey("AnalyzeRequest is marked as failed", func() {
+		t.Run("AnalyzeRequest is marked as failed", func(t *ftt.Test) {
 			ar := &track.AnalyzeRequestResult{ID: 1, Parent: requestKey}
-			So(ds.Get(ctx, ar), ShouldBeNil)
-			So(ar.State, ShouldEqual, tricium.State_FAILURE)
+			assert.Loosely(t, ds.Get(ctx, ar), should.BeNil)
+			assert.Loosely(t, ar.State, should.Equal(tricium.State_FAILURE))
 		})
 	})
 }
 
 func TestValidateWorkerDoneRequestRequest(t *testing.T) {
-	Convey("Request with all parts is valid", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Request with all parts is valid", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			RunId:             1234,
 			Worker:            "MyLint_Ubuntu",
 			Provides:          tricium.Data_RESULTS,
 			State:             tricium.State_SUCCESS,
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 	})
 
-	Convey("Specifying provides and state is optional", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Specifying provides and state is optional", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			RunId:             1234,
 			Worker:            "MyLint_Ubuntu",
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 	})
 
-	Convey("Request with no run ID is invalid", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Request with no run ID is invalid", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			Worker:            "MyLint_Ubuntu",
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldNotBeNil)
+		}), should.NotBeNil)
 	})
 
-	Convey("Request with no worker name invalid", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Request with no worker name invalid", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			RunId:             1234,
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldNotBeNil)
+		}), should.NotBeNil)
 	})
 
-	Convey("Request with no output is valid", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Request with no output is valid", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			RunId:  1234,
 			Worker: "MyLint_Ubuntu",
-		}), ShouldBeNil)
+		}), should.BeNil)
 	})
 
-	Convey("Providing just buildbucket output is OK", t, func() {
-		So(validateWorkerDoneRequest(&admin.WorkerDoneRequest{
+	ftt.Run("Providing just buildbucket output is OK", t, func(t *ftt.Test) {
+		assert.Loosely(t, validateWorkerDoneRequest(&admin.WorkerDoneRequest{
 			RunId:             1234,
 			Worker:            "MyLint_Ubuntu",
 			BuildbucketOutput: `{"comments": []}`,
-		}), ShouldBeNil)
+		}), should.BeNil)
 	})
 }
 
@@ -312,7 +313,7 @@ func TestCreateCommentSelection(t *testing.T) {
 		GerritProject: "my-project",
 		GerritChange:  "my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940",
 	}
-	Convey("createCommentSelection keeps unchanged lines if comment's ShowOnUnchangedLines is true", t, func() {
+	ftt.Run("createCommentSelection keeps unchanged lines if comment's ShowOnUnchangedLines is true", t, func(t *ftt.Test) {
 		commentJSON, err := (&jsonpb.Marshaler{}).MarshalToString(&tricium.Data_Comment{
 			Message:              "Not in Change",
 			Path:                 "dir/file.txt",
@@ -333,11 +334,11 @@ func TestCreateCommentSelection(t *testing.T) {
 			},
 		}
 		result, err := createCommentSelections(ctx, mock, &req, comments)
-		So(result, ShouldResemble, selections)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, result, should.Resemble(selections))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("createCommentSelection discards unchanged lines if comment's ShowOnUnchangedLines is false", t, func() {
+	ftt.Run("createCommentSelection discards unchanged lines if comment's ShowOnUnchangedLines is false", t, func(t *ftt.Test) {
 		commentJSON, err := (&jsonpb.Marshaler{}).MarshalToString(&tricium.Data_Comment{
 			Message:              "Not in Change",
 			Path:                 "dir/file.txt",
@@ -358,13 +359,13 @@ func TestCreateCommentSelection(t *testing.T) {
 			},
 		}
 		result, err := createCommentSelections(ctx, mock, &req, comments)
-		So(result, ShouldResemble, selections)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, result, should.Resemble(selections))
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestCreateAnalysisResults(t *testing.T) {
-	Convey("Default objects", t, func() {
+	ftt.Run("Default objects", t, func(t *ftt.Test) {
 		wres := track.WorkerRunResult{}
 		areq := track.AnalyzeRequest{}
 		ares := track.AnalyzeRequestResult{}
@@ -373,12 +374,12 @@ func TestCreateAnalysisResults(t *testing.T) {
 
 		areq.GitRef = "refs/changes/88/508788/102"
 		result, err := createAnalysisResults(&wres, &areq, &ares, comments, selections)
-		So(err, ShouldBeNil)
-		So(result, ShouldNotBeNil)
-		So(result.RevisionNumber, ShouldEqual, 102)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, result, should.NotBeNil)
+		assert.Loosely(t, result.RevisionNumber, should.Equal(102))
 	})
 
-	Convey("GitRef required", t, func() {
+	ftt.Run("GitRef required", t, func(t *ftt.Test) {
 		wres := track.WorkerRunResult{}
 		areq := track.AnalyzeRequest{}
 		ares := track.AnalyzeRequestResult{}
@@ -386,11 +387,11 @@ func TestCreateAnalysisResults(t *testing.T) {
 		selections := []*track.CommentSelection{}
 
 		result, err := createAnalysisResults(&wres, &areq, &ares, comments, selections)
-		So(err, ShouldNotBeNil)
-		So(result, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, result, should.BeNil)
 	})
 
-	Convey("All values", t, func() {
+	ftt.Run("All values", t, func(t *ftt.Test) {
 		wres := track.WorkerRunResult{}
 
 		areq := track.AnalyzeRequest{}
@@ -418,7 +419,7 @@ func TestCreateAnalysisResults(t *testing.T) {
 			StartLine: 2,
 			EndLine:   3,
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		comments := []*track.Comment{
 			{
 				UUID:         "1234",
@@ -467,83 +468,83 @@ func TestCreateAnalysisResults(t *testing.T) {
 		}
 
 		result, err := createAnalysisResults(&wres, &areq, &ares, comments, selections)
-		So(err, ShouldBeNil)
-		So(result, ShouldNotBeNil)
-		So(result.GerritRevision.Host, ShouldEqual, areq.GerritHost)
-		So(result.GerritRevision.Project, ShouldEqual, areq.Project)
-		So(result.GerritRevision.Change, ShouldEqual, areq.GerritChange)
-		So(result.GerritRevision.GitUrl, ShouldEqual, areq.GitURL)
-		So(result.GerritRevision.GitRef, ShouldEqual, areq.GitRef)
-		So(result.RevisionNumber, ShouldEqual, 7)
-		So(tutils.Timestamp(result.RequestedTime), ShouldEqual, areq.Received)
-		So(len(result.Files), ShouldEqual, len(areq.Files))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, result, should.NotBeNil)
+		assert.Loosely(t, result.GerritRevision.Host, should.Equal(areq.GerritHost))
+		assert.Loosely(t, result.GerritRevision.Project, should.Equal(areq.Project))
+		assert.Loosely(t, result.GerritRevision.Change, should.Equal(areq.GerritChange))
+		assert.Loosely(t, result.GerritRevision.GitUrl, should.Equal(areq.GitURL))
+		assert.Loosely(t, result.GerritRevision.GitRef, should.Equal(areq.GitRef))
+		assert.Loosely(t, result.RevisionNumber, should.Equal(7))
+		assert.Loosely(t, tutils.Timestamp(result.RequestedTime), should.Match(areq.Received))
+		assert.Loosely(t, len(result.Files), should.Equal(len(areq.Files)))
 		for i := 0; i < len(result.Files); i++ {
-			So(result.Files[i], ShouldResembleProto, &areq.Files[i])
+			assert.Loosely(t, result.Files[i], should.Resemble(&areq.Files[i]))
 		}
-		So(len(result.Comments), ShouldEqual, len(comments))
+		assert.Loosely(t, len(result.Comments), should.Equal(len(comments)))
 		for i, gcomment := range result.Comments {
 			tcomment := tricium.Data_Comment{}
 			err := jsonpb.UnmarshalString(string(comments[i].Comment), &tcomment)
-			So(err, ShouldBeNil)
-			So(&tcomment, ShouldResembleProto, gcomment.Comment)
-			So(gcomment.Analyzer, ShouldEqual, comments[i].Analyzer)
-			So(gcomment.CreatedTime, ShouldResembleProto, tutils.TimestampProto(comments[i].CreationTime))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, &tcomment, should.Resemble(gcomment.Comment))
+			assert.Loosely(t, gcomment.Analyzer, should.Equal(comments[i].Analyzer))
+			assert.Loosely(t, gcomment.CreatedTime, should.Resemble(tutils.TimestampProto(comments[i].CreationTime)))
 			platforms, _ := tricium.GetPlatforms(comments[i].Platforms)
-			So(gcomment.Platforms, ShouldResemble, platforms)
-			So(gcomment.Selected, ShouldEqual, selections[i].Included)
+			assert.Loosely(t, gcomment.Platforms, should.Resemble(platforms))
+			assert.Loosely(t, gcomment.Selected, should.Equal(selections[i].Included))
 		}
 	})
 }
 
 func TestCommentFetchingFunctions(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		// Add a request with no Gerrit details; it will not be fetched.
-		So(ds.Put(ctx, &track.AnalyzeRequest{ID: 11}), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{ID: 11}), should.BeNil)
 		// Add two requests for the same CL.
-		So(ds.Put(ctx, &track.AnalyzeRequest{
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{
 			ID:           22,
 			GitRef:       "refs/changes/99/99/1",
 			GerritHost:   "example.com",
 			GerritChange: "p~master~I2222",
-		}), ShouldBeNil)
-		So(ds.Put(ctx, &track.AnalyzeRequest{
+		}), should.BeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{
 			ID:           23,
 			GitRef:       "refs/changes/99/99/2",
 			GerritHost:   "example.com",
 			GerritChange: "p~master~I2222",
-		}), ShouldBeNil)
+		}), should.BeNil)
 		// And one more request with the same change ID but different host.
-		So(ds.Put(ctx, &track.AnalyzeRequest{
+		assert.Loosely(t, ds.Put(ctx, &track.AnalyzeRequest{
 			ID:           33,
 			GitRef:       "refs/changes/99/99/1",
 			GerritHost:   "other.test",
 			GerritChange: "p~master~I2222",
-		}), ShouldBeNil)
+		}), should.BeNil)
 
-		Convey("A non-existent change has no runs", func() {
+		t.Run("A non-existent change has no runs", func(t *ftt.Test) {
 			keys, err := fetchRequestKeysByChange(ctx, "none.test", "none~m~Iabcd")
-			So(len(keys), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("No runs match if there are no Gerrit details", func() {
+		t.Run("No runs match if there are no Gerrit details", func(t *ftt.Test) {
 			keys, err := fetchRequestKeysByChange(ctx, "none.test", "")
-			So(keys, ShouldBeNil)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, keys, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("Two keys are fetched for a change with two runs", func() {
+		t.Run("Two keys are fetched for a change with two runs", func(t *ftt.Test) {
 			keys, err := fetchRequestKeysByChange(ctx, "example.com", "p~master~I2222")
-			So(len(keys), ShouldEqual, 2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.Equal(2))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("One key is fetched for a change with one runs", func() {
+		t.Run("One key is fetched for a change with one runs", func(t *ftt.Test) {
 			keys, err := fetchRequestKeysByChange(ctx, "other.test", "p~master~I2222")
-			So(len(keys), ShouldEqual, 1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.Equal(1))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 		// In addition to the runs, add some comments and comment feedback.
@@ -554,71 +555,71 @@ func TestCommentFetchingFunctions(t *testing.T) {
 			"FunctionRun", "Foo", "WorkerRun", "Foo_UBUNTU")
 
 		c1 := &track.Comment{Parent: run22WorkerKey, Category: "Foo/C1"}
-		So(ds.Put(ctx, c1), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, c1), should.BeNil)
 		c1Key := ds.KeyForObj(ctx, c1)
-		So(ds.Put(ctx, &track.CommentFeedback{Parent: c1Key, ID: 1, NotUsefulReports: 1}), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentFeedback{Parent: c1Key, ID: 1, NotUsefulReports: 1}), should.BeNil)
 
 		c2 := &track.Comment{Parent: run22WorkerKey, Category: "Foo/C2"}
-		So(ds.Put(ctx, c2), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, c2), should.BeNil)
 		c2Key := ds.KeyForObj(ctx, c2)
-		So(ds.Put(ctx, &track.CommentFeedback{Parent: c2Key, ID: 1, NotUsefulReports: 2}), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentFeedback{Parent: c2Key, ID: 1, NotUsefulReports: 2}), should.BeNil)
 
 		c3 := &track.Comment{Parent: run22WorkerKey, Category: "Foo/C3"}
-		So(ds.Put(ctx, c3), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, c3), should.BeNil)
 		c3Key := ds.KeyForObj(ctx, c3)
-		So(ds.Put(ctx, &track.CommentFeedback{Parent: c3Key, ID: 1, NotUsefulReports: 0}), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentFeedback{Parent: c3Key, ID: 1, NotUsefulReports: 0}), should.BeNil)
 
 		run23WorkerKey := ds.MakeKey(
 			ctx, "AnalyzeRequest", 23, "WorkflowRun", 1,
 			"FunctionRun", "Foo", "WorkerRun", "Foo_UBUNTU")
 
 		c4 := &track.Comment{Parent: run23WorkerKey, Category: "Foo/C4"}
-		So(ds.Put(ctx, c4), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, c4), should.BeNil)
 		c4Key := ds.KeyForObj(ctx, c4)
-		So(ds.Put(ctx, &track.CommentFeedback{Parent: c4Key, ID: 1, NotUsefulReports: 1}), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, &track.CommentFeedback{Parent: c4Key, ID: 1, NotUsefulReports: 1}), should.BeNil)
 
-		Convey("No CommentFeedback keys fetched for empty input", func() {
+		t.Run("No CommentFeedback keys fetched for empty input", func(t *ftt.Test) {
 			keys, err := fetchAllCommentFeedback(ctx, nil)
-			So(len(keys), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("No CommentFeedback keys fetched for run with no comments", func() {
+		t.Run("No CommentFeedback keys fetched for run with no comments", func(t *ftt.Test) {
 			keys, err := fetchAllCommentFeedback(ctx, []*ds.Key{ds.MakeKey(ctx, "AnalyzeRequest", 33)})
-			So(len(keys), ShouldEqual, 0)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.BeZero)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Two CommentFeedback keys fetched for run with two comments", func() {
+		t.Run("Two CommentFeedback keys fetched for run with two comments", func(t *ftt.Test) {
 			keys, err := fetchAllCommentFeedback(ctx, []*ds.Key{ds.MakeKey(ctx, "AnalyzeRequest", 22)})
 			// Comments c1 and c2 have "not useful" feedback.
-			So(len(keys), ShouldEqual, 2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.Equal(2))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("One CommentFeedback key fetched for run with one comment", func() {
+		t.Run("One CommentFeedback key fetched for run with one comment", func(t *ftt.Test) {
 			keys, err := fetchAllCommentFeedback(ctx, []*ds.Key{ds.MakeKey(ctx, "AnalyzeRequest", 23)})
-			So(len(keys), ShouldEqual, 1)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.Equal(1))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Three CommentFeedback keys for both of those runs together", func() {
+		t.Run("Three CommentFeedback keys for both of those runs together", func(t *ftt.Test) {
 			keys, err := fetchAllCommentFeedback(ctx, []*ds.Key{
 				ds.MakeKey(ctx, "AnalyzeRequest", 22),
 				ds.MakeKey(ctx, "AnalyzeRequest", 23),
 			})
-			So(len(keys), ShouldEqual, 3)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, len(keys), should.Equal(3))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("suppressedCategories returns all not useful categories for all patchsets", func() {
+		t.Run("suppressedCategories returns all not useful categories for all patchsets", func(t *ftt.Test) {
 			categories := suppressedCategories(ctx, "example.com", "p~master~I2222")
-			So(categories, ShouldResemble, stringset.NewFromSlice("Foo/C1", "Foo/C2", "Foo/C4"))
+			assert.Loosely(t, categories, should.Resemble(stringset.NewFromSlice("Foo/C1", "Foo/C2", "Foo/C4")))
 		})
 
-		Convey("suppressedCategories returns an empty set for nonexistent CLs", func() {
+		t.Run("suppressedCategories returns an empty set for nonexistent CLs", func(t *ftt.Test) {
 			categories := suppressedCategories(ctx, "example.com", "p~master~I999")
-			So(categories, ShouldBeEmpty)
+			assert.Loosely(t, categories, should.BeEmpty)
 		})
 	})
 }
