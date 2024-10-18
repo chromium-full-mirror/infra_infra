@@ -9,10 +9,12 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/pubsub/v1"
 
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
@@ -43,67 +45,67 @@ var (
 )
 
 func TestDecodePubsubMessage(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
-		Convey("Decodes pubsub message without error", func() {
+		t.Run("Decodes pubsub message without error", func(t *ftt.Test) {
 			_, _, err := decodePubsubMessage(ctx, msg)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
 
 func TestEnqueueCollectRequest(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		Convey("Enqueued task shouldn't start until after delay time is up", func() {
-			So(enqueueCollectRequest(ctx, &admin.CollectRequest{}, 7*time.Minute), ShouldBeNil)
+		t.Run("Enqueued task shouldn't start until after delay time is up", func(t *ftt.Test) {
+			assert.Loosely(t, enqueueCollectRequest(ctx, &admin.CollectRequest{}, 7*time.Minute), should.BeNil)
 
 			task := tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]["5023444679101355902"]
 			// ETA is the earliest time that the task should execute; an ETA of now
 			// + delay means that the task should start after a delay. When ETA is set
 			// on the task, then Delay is unset.
-			So(task.ETA, ShouldEqual, clock.Now(ctx).Add(7*time.Minute))
-			So(task.Delay, ShouldEqual, time.Duration(0))
+			assert.Loosely(t, task.ETA, should.Match(clock.Now(ctx).Add(7*time.Minute)))
+			assert.Loosely(t, task.Delay, should.Match(time.Duration(0)))
 		})
 	})
 }
 
 func TestHandlePubSubMessage(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
-		Convey("Enqueues buildbucket collect task", func() {
-			Convey("Buildbucket old message", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+		t.Run("Enqueues buildbucket collect task", func(t *ftt.Test) {
+			t.Run("Buildbucket old message", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.BeZero)
 				received := &ReceivedPubSubMessage{ID: fmt.Sprintf("%d:%d", buildID, runID)}
-				So(ds.Get(ctx, received), ShouldEqual, ds.ErrNoSuchEntity)
+				assert.Loosely(t, ds.Get(ctx, received), should.Equal(ds.ErrNoSuchEntity))
 				err := handlePubSubMessage(ctx, msgBB)
-				So(err, ShouldBeNil)
-				So(ds.Get(ctx, received), ShouldBeNil)
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, ds.Get(ctx, received), should.BeNil)
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.Equal(1))
 			})
-			Convey("Buildbucket new message", func() {
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 0)
+			t.Run("Buildbucket new message", func(t *ftt.Test) {
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.BeZero)
 				received := &ReceivedPubSubMessage{ID: fmt.Sprintf("%d:%d", buildID, runID)}
-				So(ds.Get(ctx, received), ShouldEqual, ds.ErrNoSuchEntity)
+				assert.Loosely(t, ds.Get(ctx, received), should.Equal(ds.ErrNoSuchEntity))
 				err := handlePubSubMessage(ctx, msgBBV2)
-				So(err, ShouldBeNil)
-				So(ds.Get(ctx, received), ShouldBeNil)
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, ds.Get(ctx, received), should.BeNil)
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.Equal(1))
 			})
 		})
 
-		Convey("Avoids duplicate processing", func() {
-			Convey("Buildbucket old message", func() {
-				So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
-				So(handlePubSubMessage(ctx, msgBB), ShouldBeNil)
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+		t.Run("Avoids duplicate processing", func(t *ftt.Test) {
+			t.Run("Buildbucket old message", func(t *ftt.Test) {
+				assert.Loosely(t, handlePubSubMessage(ctx, msgBB), should.BeNil)
+				assert.Loosely(t, handlePubSubMessage(ctx, msgBB), should.BeNil)
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.Equal(1))
 			})
-			Convey("Buildbucket new message", func() {
-				So(handlePubSubMessage(ctx, msgBBV2), ShouldBeNil)
-				So(handlePubSubMessage(ctx, msgBBV2), ShouldBeNil)
-				So(len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), ShouldEqual, 1)
+			t.Run("Buildbucket new message", func(t *ftt.Test) {
+				assert.Loosely(t, handlePubSubMessage(ctx, msgBBV2), should.BeNil)
+				assert.Loosely(t, handlePubSubMessage(ctx, msgBBV2), should.BeNil)
+				assert.Loosely(t, len(tq.GetTestable(ctx).GetScheduledTasks()[common.DriverQueue]), should.Equal(1))
 			})
 		})
 	})
