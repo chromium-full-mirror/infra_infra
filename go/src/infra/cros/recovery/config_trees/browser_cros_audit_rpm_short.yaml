@@ -2102,6 +2102,7 @@ plans:
         - name: Verify RPM config ('sample_pass')
           conditions:
             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+            - name: Not a Chrome DUT ('dut_not_in_pool')
             - name: 'RPM set state: MISSING_CONFIG (''set_rpm_state'')'
             - name: RPM config present ('device_has_rpm_info')
           dependencies:

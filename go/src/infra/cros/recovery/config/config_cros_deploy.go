@@ -258,6 +258,9 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Devices deployed with servo in the pools required secure mode need to be able to be boot in recovery mode.",
 			},
+			Conditions: []string{
+				"Setup has servo info",
+			},
 			Dependencies: []string{
 				"Is servod running",
 				"Wait to be SSHable (normal boot)",

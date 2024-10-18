@@ -230,10 +230,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	switch tn {
 	case buildbucket.Recovery:
 		switch ds {
-		case tlw.DUTSetupType_CROS:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosRepairConfig(), nil
-		case tlw.DUTSetupType_CROS_BROWSER:
-			return config.CrosBrowserDUTRepairConfig(), nil
 		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationRepairConfig(), nil
 		case tlw.DUTSetupType_ANDROID:
@@ -248,10 +246,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	case buildbucket.DeepRecovery:
 		// No need to keep the configurations for deep recovery as the same as normal recovery.
 		switch ds {
-		case tlw.DUTSetupType_CROS:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosRepairWithDeepRepairConfig(), nil
-		case tlw.DUTSetupType_CROS_BROWSER:
-			return config.CrosBrowserDUTRepairConfig(), nil
 		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationRepairConfig(), nil
 		case tlw.DUTSetupType_ANDROID:
@@ -265,10 +261,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		}
 	case buildbucket.Deploy:
 		switch ds {
-		case tlw.DUTSetupType_CROS:
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:
 			return config.CrosDeployConfig(), nil
-		case tlw.DUTSetupType_CROS_BROWSER:
-			return config.CrosBrowserDUTDeployConfig(), nil
 		case tlw.DUTSetupType_LABSTATION:
 			return config.LabstationDeployConfig(), nil
 		case tlw.DUTSetupType_ANDROID:

@@ -3932,6 +3932,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is Chrome based",
+				"Not a Chrome DUT",
 				// If rpm info is not provided then we just want to set a state and skip verification.
 				"RPM set state: MISSING_CONFIG",
 				"RPM config present",
@@ -3942,6 +3943,16 @@ func crosRepairActions() map[string]*Action {
 				"Audit RPM config (without battery)",
 			},
 			ExecName: "sample_pass",
+		},
+		"Not a Chrome DUT": {
+			Docs: []string{
+				"The pool cannot check RPM due to error b/373752791.",
+			},
+			ExecName: "dut_not_in_pool",
+			ExecExtraArgs: []string{
+				"chrome",
+				"chromium",
+			},
 		},
 		"Is servod running": {
 			Docs: []string{
