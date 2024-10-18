@@ -57,6 +57,7 @@ func ParseInputs() (AbstractCommand, error) {
 	cmds := []AbstractCommand{
 		NewServerCommand(),
 		NewCLICommand(),
+		NewTestCommand(),
 	}
 
 	subcommand := os.Args[1]

@@ -16,7 +16,7 @@ type TestResultService interface {
 	Insert(testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error)
 	BatchInsert(ctx context.Context, invocationID string, request *ab_qa_atp.TestResultBatchInsertRequest) (*ab_qa_atp.TestResultBatchInsertResponse, error)
 	Update(resourceID int64, testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error)
-	List(ctx context.Context, testResultID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error)
 }
 
 // TestResultServiceImpl is the RPC implementation of TestResultService.
@@ -69,12 +69,12 @@ func (w *TestResultServiceImpl) Update(resourceID int64, testResult *ab_qa_atp.T
 }
 
 // List implementation for testResults.
-func (w *TestResultServiceImpl) List(ctx context.Context, testResultID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error) {
+func (w *TestResultServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
 
-	call := w.client.List().TestResultId(testResultID)
+	call := w.client.List().InvocationId(invocationID)
 	if options.PageToken != "" {
 		call = call.PageToken(options.PageToken)
 	}

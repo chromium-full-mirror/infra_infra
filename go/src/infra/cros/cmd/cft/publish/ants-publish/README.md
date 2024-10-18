@@ -47,3 +47,15 @@ Rpc succeeded with OK status
 Examples:
 1. input.textproto = http://go/paste/6585018561331200 (Please modify the aritifact_dir_path.path and gcs_path.path correctly)
 2. More examples are included in the [examples](http://cs/chromeos_public/src/platform/dev/src/chromiumos/test/publish/examples/) folder.
+
+### ants-publish (testing)
+
+This only allows us to read from Ants. Writing to Ants is restricted to service accounts and bots only and cannot be replicated locally. There is a way to impersonate a service account locally, but is currently not supported.
+
+```shell
+ ants-publish$ go build .
+ ants-publish$ ./ants-publish test -invocation-id "I123456" -workunit-id "WU123456" -testresult-id 1234
+```
+
+This will print out the details for invocation, workunit or test result accordingly. You can choose to get details for one or all three.
+If invocation id is not empty, along with invocation details, it will also print out all the work units and test results associated with that invocation.
