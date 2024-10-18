@@ -45,26 +45,26 @@ func TestUpdateDutState(t *testing.T) {
 			dutState1 := mockDutState("existing-dut-id")
 			resp, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp[0], should.Resemble(dutState1))
+			assert.Loosely(t, resp[0], should.Match(dutState1))
 
 			dutState1.Servo = chromeosLab.PeripheralState_BAD_RIBBON_CABLE
 			resp, err = UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp[0], should.Resemble(dutState1))
+			assert.Loosely(t, resp[0], should.Match(dutState1))
 
 			getRes, err := GetDutState(ctx, "existing-dut-id")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, getRes, should.Resemble(dutState1))
+			assert.Loosely(t, getRes, should.Match(dutState1))
 		})
 		t.Run("Update non-existing dut state", func(t *ftt.Test) {
 			dutState1 := mockDutState("non-existing-dut-id")
 			resp, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1})
-			assert.Loosely(t, resp[0], should.Resemble(dutState1))
+			assert.Loosely(t, resp[0], should.Match(dutState1))
 			assert.Loosely(t, err, should.BeNil)
 
 			getRes, err := GetDutState(ctx, "non-existing-dut-id")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, getRes, should.Resemble(dutState1))
+			assert.Loosely(t, getRes, should.Match(dutState1))
 		})
 		t.Run("Update dut state - invalid ID", func(t *ftt.Test) {
 			dutState1 := mockDutState("")
@@ -181,14 +181,14 @@ func TestGetDutStateACL(t *testing.T) {
 			resp, err := GetDutStateACL(userCtx, "dut-state-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutState1))
+			assert.Loosely(t, resp, should.Match(dutState1))
 			// 2nd dut-state of different realm
 			user2Ctx := mockUser(ctx, "name@chromium.org")
 			mockRealmPerms(user2Ctx, util.SatLabInternalUserRealm, util.ConfigurationsGet)
 			resp, err = GetDutStateACL(user2Ctx, "dut-state-2")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutState2))
+			assert.Loosely(t, resp, should.Match(dutState2))
 		})
 	})
 }
@@ -240,23 +240,23 @@ func TestListDutStatesACL(t *testing.T) {
 		t.Run("List DutStates - happy path with partial perms returns partial results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(somePermUserCtx, 2, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dutStates[:2]))
+			assert.Loosely(t, resp, should.Match(dutStates[:2]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListDutStatesACL(somePermUserCtx, 100, nextPageToken, nil, false)
 			assert.Loosely(t, err2, should.BeNil)
-			assert.Loosely(t, resp2, should.Resemble(dutStates[2:4]))
+			assert.Loosely(t, resp2, should.Match(dutStates[2:4]))
 			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
 		t.Run("List DutStates - happy path with all perms returns all results", func(t *ftt.Test) {
 			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 4, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dutStates[:4]))
+			assert.Loosely(t, resp, should.Match(dutStates[:4]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp2, nextPageToken2, err2 := ListDutStatesACL(allPermUserCtx, 100, nextPageToken, nil, false)
 			assert.Loosely(t, err2, should.BeNil)
-			assert.Loosely(t, resp2, should.Resemble(dutStates[4:]))
+			assert.Loosely(t, resp2, should.Match(dutStates[4:]))
 			assert.Loosely(t, nextPageToken2, should.BeEmpty)
 		})
 		t.Run("List DutStates - happy path with all perms and filters with no matches returns no results", func(t *ftt.Test) {

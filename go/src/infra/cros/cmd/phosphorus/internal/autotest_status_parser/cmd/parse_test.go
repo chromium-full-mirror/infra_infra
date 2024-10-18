@@ -30,7 +30,7 @@ func TestEmptyResultFile(t *testing.T) {
 		got := parseResultsFile(input)
 
 		want := []*skylab_test_runner.Result_Autotest_TestCase(nil)
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -50,7 +50,7 @@ END GOOD	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Pass", verdictPass, ""),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -66,7 +66,7 @@ END WARN	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Warn", verdictPass, "This is a warning.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -82,7 +82,7 @@ END FAIL	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail", verdictFail, "Something failed.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -102,7 +102,7 @@ END FAIL	Fail.suspend	Fail.suspend
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail.suspend", verdictFail, "ValueError: max() arg is an empty sequence\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -118,7 +118,7 @@ END ERROR	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Error", verdictError, "An error occured.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -134,7 +134,7 @@ END TEST_NA	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("TestNA", verdictNoVerdict, "The DUT is missing a necessary gadget.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -150,7 +150,7 @@ END WEIRD	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("WeirdStatus", verdictFail, ""),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -167,7 +167,7 @@ END GOOD	Ignored	Ignored
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("NamelessDir", verdictPass, ""),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -194,7 +194,7 @@ More logging that is ignored.
 			testCase("WithoutComments", verdictPass, ""),
 			testCase("WithComments", verdictPass, "This is a warning.\nThere's more to say about the warning.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -212,7 +212,7 @@ END FAIL	Ignored	Ignored
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Test-Name", verdictFail, "Not ignored.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -264,7 +264,7 @@ END FAIL	----	----
 				testCase("SubTest2", verdictPass, ""),
 				testCase("NestedTest", verdictFail, "A failure of the outer test.\n"),
 			}
-			assert.Loosely(t, got, should.Resemble(want))
+			assert.Loosely(t, got, should.Match(want))
 		})
 }
 
@@ -286,7 +286,7 @@ START	----	CrashedOuter
 				testCase("CrashedMiddle", verdictAbort, ""),
 				testCase("CrashedOuter", verdictAbort, ""),
 			}
-			assert.Loosely(t, got, should.Resemble(want))
+			assert.Loosely(t, got, should.Match(want))
 		})
 }
 
@@ -308,7 +308,7 @@ END ERROR	----	----
 				testCase("ActuallyPasses", verdictPass, "This test actually succeeds.\n"),
 				testCase("ActuallyFails", verdictError, ""),
 			}
-			assert.Loosely(t, got, should.Resemble(want))
+			assert.Loosely(t, got, should.Match(want))
 		})
 }
 
@@ -323,7 +323,7 @@ START	----	----
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("Fail", verdictAbort, ""),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -336,7 +336,7 @@ func TestExitedWithoutErrors(t *testing.T) {
 			// the second line is the exit status code.
 			input := "42\n0\n0"
 
-			assert.Loosely(t, exitedWithErrors(input), should.Resemble(false))
+			assert.Loosely(t, exitedWithErrors(input), should.Match(false))
 		})
 }
 
@@ -346,7 +346,7 @@ func TestExitedWithErrors(t *testing.T) {
 			// 256 = Exited with status 1.
 			input := "42\n256\n0"
 
-			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
+			assert.Loosely(t, exitedWithErrors(input), should.Match(true))
 		})
 }
 
@@ -365,7 +365,7 @@ END FAIL	----	ActuallyAbort
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("ActuallyAbort", verdictAbort, "Host did not return from reboot\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -386,7 +386,7 @@ END ERROR	cheets_CTS_P.internal.arm.CtsTheme	cheets_CTS_P.internal.arm.CtsTheme	
 		want := []*skylab_test_runner.Result_Autotest_TestCase{
 			testCase("cheets_CTS_P.internal.arm.CtsTheme", verdictAbort, "Autotest client terminated unexpectedly: DUT is pingable, SSHable and did NOT restart un-expectedly. We probably lost connectivity during the test.\n"),
 		}
-		assert.Loosely(t, got, should.Resemble(want))
+		assert.Loosely(t, got, should.Match(want))
 	})
 }
 
@@ -395,7 +395,7 @@ func TestFailedToParseExitCode(t *testing.T) {
 		t, func(t *ftt.Test) {
 			input := "42\nnot_an_integer\n0"
 
-			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
+			assert.Loosely(t, exitedWithErrors(input), should.Match(true))
 		})
 }
 
@@ -404,7 +404,7 @@ func TestMissingExitCode(t *testing.T) {
 		t, func(t *ftt.Test) {
 			input := "42"
 
-			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
+			assert.Loosely(t, exitedWithErrors(input), should.Match(true))
 		})
 }
 
@@ -413,7 +413,7 @@ func TestEmptyExitStatusFile(t *testing.T) {
 		t, func(t *ftt.Test) {
 			input := ""
 
-			assert.Loosely(t, exitedWithErrors(input), should.Resemble(true))
+			assert.Loosely(t, exitedWithErrors(input), should.Match(true))
 		})
 }
 

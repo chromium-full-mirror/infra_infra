@@ -49,7 +49,7 @@ func TestHTTPSChecker(t *testing.T) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, httpURL, results)
 		assert.Loosely(t, results.Comments, should.NotBeNil)
-		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, results.Comments[0], should.Match(&tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",
 			Message:   ("Nit: Replace http:// URLs with https://"),
 			Path:      httpURL,
@@ -64,7 +64,7 @@ func TestHTTPSChecker(t *testing.T) {
 		results := &tricium.Data_Results{}
 		checkHTTPS(baseDir, multipleHTTPURLs, results)
 		assert.Loosely(t, len(results.Comments), should.Equal(2))
-		assert.Loosely(t, results.Comments[1], should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, results.Comments[1], should.Match(&tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",
 			Message:   ("Nit: Replace http:// URLs with https://"),
 			Path:      multipleHTTPURLs,

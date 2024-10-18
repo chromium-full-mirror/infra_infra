@@ -31,9 +31,9 @@ func TestCreateActionWithClock(t *testing.T) {
 			Action: &kartepb.Action{},
 		})
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, action.Name[0:10], should.Resemble("zzzzUzzzzz"))
+		assert.Loosely(t, action.Name[0:10], should.Match("zzzzUzzzzz"))
 		action.Name = ""
-		assert.Loosely(t, action, should.Resemble(&kartepb.Action{
+		assert.Loosely(t, action, should.Match(&kartepb.Action{
 			CreateTime: scalars.ConvertTimeToTimestampPtr(time.Unix(10, 0)),
 			SealTime:   scalars.ConvertTimeToTimestampPtr(time.Unix(43210, 0)),
 		}))

@@ -46,7 +46,7 @@ func TestListChromePlatforms(t *testing.T) {
 		t.Run("ListChromePlatforms - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListChromePlatforms(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatforms))
+			assert.Loosely(t, resp, should.Match(chromePlatforms))
 		})
 	})
 }
@@ -61,7 +61,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 		t.Run("Delete chromePlatform by existing ID with machine reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateChromePlatform(ctx, chromePlatform1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 
 			chromeBrowserMachine1 := &ufspb.Machine{
 				Name: "machine-1",
@@ -73,7 +73,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			}
 			mresp, merr := registration.CreateMachine(ctx, chromeBrowserMachine1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(chromeBrowserMachine1))
+			assert.Loosely(t, mresp, should.Match(chromeBrowserMachine1))
 
 			err := DeleteChromePlatform(ctx, "chromePlatform-1")
 			assert.Loosely(t, err, should.NotBeNil)
@@ -82,12 +82,12 @@ func TestDeleteChromePlatform(t *testing.T) {
 			resp, cerr = configuration.GetChromePlatform(ctx, "chromePlatform-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 		})
 		t.Run("Delete chromePlatform by existing ID with KVM reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateChromePlatform(ctx, chromePlatform3)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform3))
+			assert.Loosely(t, resp, should.Match(chromePlatform3))
 
 			kvm1 := &ufspb.KVM{
 				Name:           "kvm-1",
@@ -95,7 +95,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			}
 			kresp, kerr := registration.CreateKVM(ctx, kvm1)
 			assert.Loosely(t, kerr, should.BeNil)
-			assert.Loosely(t, kresp, should.Resemble(kvm1))
+			assert.Loosely(t, kresp, should.Match(kvm1))
 
 			err := DeleteChromePlatform(ctx, "chromePlatform-3")
 			assert.Loosely(t, err, should.NotBeNil)
@@ -104,12 +104,12 @@ func TestDeleteChromePlatform(t *testing.T) {
 			resp, cerr = configuration.GetChromePlatform(ctx, "chromePlatform-3")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform3))
+			assert.Loosely(t, resp, should.Match(chromePlatform3))
 		})
 		t.Run("Delete chromePlatform successfully by existing ID without references", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateChromePlatform(ctx, chromePlatform2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
+			assert.Loosely(t, resp, should.Match(chromePlatform2))
 
 			err := DeleteChromePlatform(ctx, "chromePlatform-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -136,7 +136,7 @@ func TestUpdateChromePlatforms(t *testing.T) {
 			p2.Manufacturer = "non-fake"
 			newP, err := UpdateChromePlatform(ctx, p2, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, newP, should.Resemble(p2))
+			assert.Loosely(t, newP, should.Match(p2))
 		})
 
 		t.Run("happy path with updating manufacturer", func(t *ftt.Test) {
@@ -158,7 +158,7 @@ func TestUpdateChromePlatforms(t *testing.T) {
 			p2.Manufacturer = "dell"
 			newP, err := UpdateChromePlatform(ctx, p2, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, newP, should.Resemble(p2))
+			assert.Loosely(t, newP, should.Match(p2))
 
 			lse, err := inventory.GetMachineLSE(ctx, "platform-host")
 			assert.Loosely(t, err, should.BeNil)
@@ -183,7 +183,7 @@ func TestBatchGetChromePlatforms(t *testing.T) {
 			resp, err := configuration.BatchGetChromePlatforms(ctx, []string{"platform-batchGet-0", "platform-batchGet-1", "platform-batchGet-2", "platform-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(platforms))
+			assert.Loosely(t, resp, should.Match(platforms))
 		})
 		t.Run("Batch get chrome platforms  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetChromePlatforms(ctx, []string{"platform-batchGet-non-existing"})

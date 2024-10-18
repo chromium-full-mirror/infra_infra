@@ -135,7 +135,7 @@ func TestLookupFunction(t *testing.T) {
 	}
 
 	ftt.Run("Known function is known", t, func(t *ftt.Test) {
-		assert.Loosely(t, LookupFunction(functions, "Pylint"), should.Resemble(functions[0]))
+		assert.Loosely(t, LookupFunction(functions, "Pylint"), should.Match(functions[0]))
 	})
 
 	ftt.Run("Unknown function is unknown", t, func(t *ftt.Test) {

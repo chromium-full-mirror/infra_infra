@@ -149,7 +149,7 @@ func TestAddRecord(t *testing.T) {
 				assert.Loosely(t, r.Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 				updatedTime, _ := ptypes.Timestamp(req[i].GetUpdatedTime())
-				assert.Loosely(t, r.Entity.UpdatedTime, should.Resemble(updatedTime))
+				assert.Loosely(t, r.Entity.UpdatedTime, should.Match(updatedTime))
 			}
 		})
 		t.Run("Add record without hostname to datastore", func(t *ftt.Test) {
@@ -185,7 +185,7 @@ func TestGetRecord(t *testing.T) {
 			assert.Loosely(t, res[1].Err.Error(), should.ContainSubstring("datastore: no such entity"))
 
 			updatedTime, _ := ptypes.Timestamp(record1.CreatedTime)
-			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime))
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Match(updatedTime))
 		})
 		t.Run("Get record with empty id", func(t *ftt.Test) {
 			res := GetDeviceManualRepairRecords(ctx, []string{""})
@@ -335,7 +335,7 @@ func TestUpdateRecord(t *testing.T) {
 			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 			updatedTime1, _ := ptypes.Timestamp(record1.CreatedTime)
-			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime1))
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Match(updatedTime1))
 
 			// Update and check
 			reqUpdate := map[string]*invlibs.DeviceManualRepairRecord{rec1ID: record1Update}
@@ -350,7 +350,7 @@ func TestUpdateRecord(t *testing.T) {
 			assert.Loosely(t, res[0].Entity.RepairState, should.Equal("STATE_COMPLETED"))
 
 			updatedTime1, _ = ptypes.Timestamp(&timestamp.Timestamp{Seconds: 333, Nanos: 0})
-			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime1))
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Match(updatedTime1))
 		})
 		t.Run("Update non-existent record in datastore", func(t *ftt.Test) {
 			rec2ID, _ := GenerateRepairRecordID(record2.Hostname, record2.AssetTag, ptypes.TimestampString(record2.CreatedTime))
@@ -394,10 +394,10 @@ func TestUpdateRecord(t *testing.T) {
 			assert.Loosely(t, res[1].Entity.RepairState, should.Equal("STATE_NOT_STARTED"))
 
 			updatedTime3, _ := ptypes.Timestamp(&timestamp.Timestamp{Seconds: 333, Nanos: 0})
-			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Resemble(updatedTime3))
+			assert.Loosely(t, res[0].Entity.UpdatedTime, should.Match(updatedTime3))
 
 			updatedTime4, _ := ptypes.Timestamp(record4.CreatedTime)
-			assert.Loosely(t, res[1].Entity.UpdatedTime, should.Resemble(updatedTime4))
+			assert.Loosely(t, res[1].Entity.UpdatedTime, should.Match(updatedTime4))
 		})
 		t.Run("Update record without ID to datastore", func(t *ftt.Test) {
 			rec5ID, _ := GenerateRepairRecordID(record5.Hostname, record5.AssetTag, ptypes.TimestampString(record5.CreatedTime))

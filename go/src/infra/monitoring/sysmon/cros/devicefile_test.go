@@ -40,7 +40,7 @@ func TestLoadfile(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			f, err := loadfile(c, fileName)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, f, should.Resemble(deviceStatusFile{
+			assert.Loosely(t, f, should.Match(deviceStatusFile{
 				ContainerHostname: "b1_b2",
 				Timestamp:         1559855998.093489,
 				Status:            "online",

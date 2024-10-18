@@ -66,7 +66,7 @@ func TestReportNotUseful(t *testing.T) {
 			request := &tricium.ReportNotUsefulRequest{CommentId: commentID}
 			response, err := server.ReportNotUseful(ctx, request)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, response, should.Resemble(&tricium.ReportNotUsefulResponse{
+			assert.Loosely(t, response, should.Match(&tricium.ReportNotUsefulResponse{
 				Owner:                   "yiwzhang@google.com",
 				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
 				IssueTrackerComponentId: 1456522,
@@ -105,14 +105,14 @@ func TestReportNotUseful(t *testing.T) {
 			request := &tricium.ReportNotUsefulRequest{CommentId: commentID}
 			response, err := server.ReportNotUseful(ctx, request)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, response, should.Resemble(&tricium.ReportNotUsefulResponse{
+			assert.Loosely(t, response, should.Match(&tricium.ReportNotUsefulResponse{
 				Owner:                   "yiwzhang@google.com",
 				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
 				IssueTrackerComponentId: 1456522,
 			}))
 			response, err = server.ReportNotUseful(ctx, request)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, response, should.Resemble(&tricium.ReportNotUsefulResponse{
+			assert.Loosely(t, response, should.Match(&tricium.ReportNotUsefulResponse{
 				Owner:                   "yiwzhang@google.com",
 				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
 				IssueTrackerComponentId: 1456522,
@@ -136,7 +136,7 @@ func TestReportNotUseful(t *testing.T) {
 
 			response, err := server.ReportNotUseful(ctx, &tricium.ReportNotUsefulRequest{CommentId: commentID})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, response, should.Resemble(&tricium.ReportNotUsefulResponse{
+			assert.Loosely(t, response, should.Match(&tricium.ReportNotUsefulResponse{
 				Owner:                   "gbiv@chromium.org",
 				MonorailComponent:       "Infra>LUCI>BuildService>PreSubmit>Tricium",
 				IssueTrackerComponentId: 1456522,

@@ -540,7 +540,7 @@ func TestListHwidData(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(hds))
+			assert.Loosely(t, resp, should.Match(hds))
 		})
 
 		t.Run("ListHwidData - listing with pagination", func(t *ftt.Test) {
@@ -548,12 +548,12 @@ func TestListHwidData(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(hds[:3]))
+			assert.Loosely(t, resp, should.Match(hds[:3]))
 
 			resp, _, err = ListHwidData(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(hds[3:]))
+			assert.Loosely(t, resp, should.Match(hds[3:]))
 		})
 	})
 }

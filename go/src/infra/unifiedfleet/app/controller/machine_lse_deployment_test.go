@@ -38,7 +38,7 @@ func TestUpdateMachineLSEDeployment(t *testing.T) {
 
 			resGet, err := inventory.GetMachineLSEDeployment(ctx, "serial-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resGet, should.Resemble(resp))
+			assert.Loosely(t, resGet, should.Match(resp))
 		})
 
 		t.Run("Update MachineLSEDeployment for existing MachineLSEDeployment - happy path", func(t *ftt.Test) {
@@ -54,7 +54,7 @@ func TestUpdateMachineLSEDeployment(t *testing.T) {
 
 			resGet, err := inventory.GetMachineLSEDeployment(ctx, "serial-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resGet, should.Resemble(dr2))
+			assert.Loosely(t, resGet, should.Match(dr2))
 
 			// Verify change events
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machineLSEDeployments/serial-2")
@@ -143,18 +143,18 @@ func TestListMachineLSEDeployments(t *testing.T) {
 			resp, _, err := ListMachineLSEDeployments(ctx, 5, "", "host=host-0", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(1))
-			assert.Loosely(t, resp[0], should.Resemble(updatedDrs[0]))
+			assert.Loosely(t, resp[0], should.Match(updatedDrs[0]))
 
 			resp, _, err = ListMachineLSEDeployments(ctx, 5, "", "host=host-2", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(1))
-			assert.Loosely(t, resp[0], should.Resemble(updatedDrs[2]))
+			assert.Loosely(t, resp[0], should.Match(updatedDrs[2]))
 		})
 
 		t.Run("List MachineLSEDeployment - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEDeployments(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(updatedDrs))
+			assert.Loosely(t, resp, should.Match(updatedDrs))
 		})
 	})
 }

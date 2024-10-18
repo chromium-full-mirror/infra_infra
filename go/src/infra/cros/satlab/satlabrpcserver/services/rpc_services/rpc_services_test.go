@@ -985,7 +985,7 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 		}
 		resp, err := s.GetDutDetail(ctx, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&pb.GetDutDetailResponse{
+		assert.Loosely(t, resp, should.Match(&pb.GetDutDetailResponse{
 			BotId:      "test bot",
 			Dimensions: []*pb.StringListPair{},
 		}))
@@ -1029,7 +1029,7 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 		}
 		resp, err := s.ListDutTasks(ctx, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&pb.ListDutTasksResponse{
+		assert.Loosely(t, resp, should.Match(&pb.ListDutTasksResponse{
 			NextPageToken: "next_cursor",
 			Tasks: []*pb.Task{
 				{
@@ -1074,7 +1074,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 		}
 		resp, err := s.ListDutEvents(ctx, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&pb.ListDutEventsResponse{
+		assert.Loosely(t, resp, should.Match(&pb.ListDutEventsResponse{
 			NextPageToken: "next_cursor",
 			Events: []*pb.BotEvent{
 				{
@@ -2101,7 +2101,7 @@ func TestListTasksShouldSuccess(t *testing.T) {
 		mockSwarm.EXPECT().ListTasks(ctx, getTaskListReq(req)).Return(mockTaskResults, nil)
 		resp, err := s.ListJobs(ctx, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&pb.ListJobsResponse{
+		assert.Loosely(t, resp, should.Match(&pb.ListJobsResponse{
 			NextPageToken: expectedData.Cursor,
 			Jobs:          expectedData.Jobs,
 		}))
@@ -2326,7 +2326,7 @@ func TestListTasksWithChildTaskStatusShouldSuccess(t *testing.T) {
 
 		resp, err := s.ListJobs(ctx, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(&pb.ListJobsResponse{
+		assert.Loosely(t, resp, should.Match(&pb.ListJobsResponse{
 			NextPageToken: expectedData.Cursor,
 			Jobs:          expectedData.Jobs,
 		}))

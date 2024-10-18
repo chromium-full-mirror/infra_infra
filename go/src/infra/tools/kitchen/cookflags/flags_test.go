@@ -82,17 +82,17 @@ func TestFlags(t *testing.T) {
 						assert.Loosely(t, fs.Parse(tc.flags), should.ErrLike(tc.errParse))
 						if tc.errParse == nil {
 							if tc.errValidate == nil {
-								assert.Loosely(t, cf.Dump(), should.Resemble(tc.flags))
+								assert.Loosely(t, cf.Dump(), should.Match(tc.flags))
 								data, err := json.Marshal(cf)
 								assert.Loosely(t, err, should.BeNil)
 								cf2 := &CookFlags{}
 								assert.Loosely(t, json.Unmarshal(data, cf2), should.BeNil)
-								assert.Loosely(t, &cf, should.Resemble(cf2))
+								assert.Loosely(t, &cf, should.Match(cf2))
 							}
 							assert.Loosely(t, cf.Normalize(), should.ErrLike(tc.errValidate))
 							if tc.errValidate == nil {
 								cf.TempDir = r.Replace(cf.TempDir)
-								assert.Loosely(t, cf, should.Resemble(tc.cf))
+								assert.Loosely(t, cf, should.Match(tc.cf))
 							}
 						}
 					})

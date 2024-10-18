@@ -97,7 +97,7 @@ func TestGetState(t *testing.T) {
 			}
 			res, err := tf.Fleet.GetState(ctx, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(s))
+			assert.Loosely(t, res, should.Match(s))
 		})
 		t.Run("valid resource name, but not found", func(t *ftt.Test) {
 			res, err := tf.Fleet.GetState(ctx, &api.GetStateRequest{
@@ -321,7 +321,7 @@ func TestUpdateDutState(t *testing.T) {
 			lse, err := inventory.GetMachineLSE(osCtx, "rpc-dutstate-host3")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(), should.Equal("servo_v4_with_ccd_cr50"))
-			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.Resemble(topology))
+			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoTopology(), should.Match(topology))
 			assert.Loosely(t, lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), should.BeTrue)
 		})
 

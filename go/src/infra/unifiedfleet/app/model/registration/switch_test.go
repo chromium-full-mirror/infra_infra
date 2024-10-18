@@ -28,7 +28,7 @@ func TestCreateSwitch(t *testing.T) {
 		t.Run("Create new switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 		})
 		t.Run("Create existing switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
@@ -56,11 +56,11 @@ func TestUpdateSwitch(t *testing.T) {
 		t.Run("Update existing switch", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 
 			resp, err = UpdateSwitch(ctx, switch2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch2))
+			assert.Loosely(t, resp, should.Match(switch2))
 		})
 		t.Run("Update non-existing switch", func(t *ftt.Test) {
 			resp, err := UpdateSwitch(ctx, switch3)
@@ -85,10 +85,10 @@ func TestGetSwitch(t *testing.T) {
 		t.Run("Get switch by existing ID", func(t *ftt.Test) {
 			resp, err := CreateSwitch(ctx, switch1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 			resp, err = GetSwitch(ctx, "Switch-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 		})
 		t.Run("Get switch by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetSwitch(ctx, "switch-2")
@@ -129,7 +129,7 @@ func TestListSwitches(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switches))
+			assert.Loosely(t, resp, should.Match(switches))
 		})
 
 		t.Run("List switches - listing with pagination", func(t *ftt.Test) {
@@ -137,12 +137,12 @@ func TestListSwitches(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switches[:3]))
+			assert.Loosely(t, resp, should.Match(switches[:3]))
 
 			resp, _, err = ListSwitches(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switches[3:]))
+			assert.Loosely(t, resp, should.Match(switches[3:]))
 		})
 	})
 }
@@ -156,7 +156,7 @@ func TestDeleteSwitch(t *testing.T) {
 		t.Run("Delete switch successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateSwitch(ctx, switch2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch2))
+			assert.Loosely(t, resp, should.Match(switch2))
 
 			err := DeleteSwitch(ctx, "switch-2")
 			assert.Loosely(t, err, should.BeNil)

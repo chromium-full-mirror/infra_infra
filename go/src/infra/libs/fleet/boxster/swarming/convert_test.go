@@ -228,14 +228,14 @@ func TestGetLabelValues(t *testing.T) {
 			got, err := GetLabelValues("$.hw_design.id.value", &fc)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"Test"}))
+			assert.Loosely(t, got, should.Match([]string{"Test"}))
 		})
 
 		t.Run("get label values with a field path - multiple values", func(t *ftt.Test) {
 			got, err := GetLabelValues("$.hw_design.configs[:].hardware_features.camera.devices[:].ids[:]", &fc)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{
+			assert.Loosely(t, got, should.Match([]string{
 				"test-camera-id-1",
 				"test-camera-id-2",
 				"test-camera-id-3",
@@ -277,7 +277,7 @@ func TestGetLabelNames(t *testing.T) {
 			got, err := GetLabelNames(&da)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"attr-design", "attr-model", "label-model"}))
+			assert.Loosely(t, got, should.Match([]string{"attr-design", "attr-model", "label-model"}))
 		})
 
 		t.Run("get label names from a DutAttribute with no ID", func(t *ftt.Test) {
@@ -301,7 +301,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"label-1", "label-2"}))
+			assert.Loosely(t, got, should.Match([]string{"label-1", "label-2"}))
 		})
 
 		t.Run("get label names values from []interface{} - string not castable", func(t *ftt.Test) {
@@ -311,7 +311,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("cannot cast to string"))
-			assert.Loosely(t, got, should.Resemble([]string(nil)))
+			assert.Loosely(t, got, should.Match([]string(nil)))
 		})
 
 		t.Run("get label names values from struct - string not castable", func(t *ftt.Test) {
@@ -324,7 +324,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("cannot cast to string"))
-			assert.Loosely(t, got, should.Resemble([]string(nil)))
+			assert.Loosely(t, got, should.Match([]string(nil)))
 		})
 
 		t.Run("get label names values from []interface{} - boolean castable", func(t *ftt.Test) {
@@ -334,7 +334,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"true"}))
+			assert.Loosely(t, got, should.Match([]string{"true"}))
 		})
 
 		t.Run("get label names values from []interface{} - float64 castable", func(t *ftt.Test) {
@@ -344,7 +344,7 @@ func TestParseLabelValuesToArray(t *testing.T) {
 			got, err := ParseLabelValuesToArray(labelVals)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"1238764.987"}))
+			assert.Loosely(t, got, should.Match([]string{"1238764.987"}))
 		})
 	})
 }
@@ -368,7 +368,7 @@ func TestGetFlatConfigLabelValuesStr(t *testing.T) {
 			got, err := GetLabelValues("$.hw_design.id.value", &fc)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got, should.NotBeNil)
-			assert.Loosely(t, got, should.Resemble([]string{"Test"}))
+			assert.Loosely(t, got, should.Match([]string{"Test"}))
 		})
 	})
 }
@@ -450,7 +450,7 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			assert.Loosely(t, got, should.Resemble(Dimensions{
+			assert.Loosely(t, got, should.Match(Dimensions{
 				"attr-design": {"Test"},
 				"attr-model":  {"Test"},
 				"label-model": {"Test"},
@@ -465,7 +465,7 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			assert.Loosely(t, got, should.Resemble(Dimensions{
+			assert.Loosely(t, got, should.Match(Dimensions{
 				"label-model": {"Test"},
 			}))
 		})
@@ -481,7 +481,7 @@ func TestCombineDims(t *testing.T) {
 			}
 
 			got := CombineDims(d1, d2)
-			assert.Loosely(t, got, should.Resemble(Dimensions{
+			assert.Loosely(t, got, should.Match(Dimensions{
 				"attr-model":  {"Test"},
 				"label-model": {"Test2"},
 			}))

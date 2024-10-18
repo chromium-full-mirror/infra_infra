@@ -60,7 +60,7 @@ func TestEslintParsingFunctions(t *testing.T) {
 			}
 
 			results := readESLintOutput(strings.NewReader(output), "/x/y/in")
-			assert.Loosely(t, results, should.Resemble(expected))
+			assert.Loosely(t, results, should.Match(expected))
 		})
 
 		t.Run("ESLint message with no rule gives comment with no disable message", func(t *ftt.Test) {
@@ -76,7 +76,7 @@ func TestEslintParsingFunctions(t *testing.T) {
 						Message:  "Parser error, eslint could not continue",
 					},
 				}}
-			assert.Loosely(t, results, should.Resemble(expected))
+			assert.Loosely(t, results, should.Match(expected))
 		})
 	})
 }

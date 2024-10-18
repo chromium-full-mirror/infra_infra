@@ -39,7 +39,7 @@ func TestLogReader(t *testing.T) {
 			t.Run(`M`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||`)
-				assert.Loosely(t, actual, should.Resemble(commit{
+				assert.Loosely(t, actual, should.Match(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -55,7 +55,7 @@ func TestLogReader(t *testing.T) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file|:100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
 
-				assert.Loosely(t, actual, should.Resemble(commit{
+				assert.Loosely(t, actual, should.Match(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -74,7 +74,7 @@ func TestLogReader(t *testing.T) {
 			t.Run(`C`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 C|path/to/file|path/to/file2||`)
-				assert.Loosely(t, actual, should.Resemble(commit{
+				assert.Loosely(t, actual, should.Match(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -90,7 +90,7 @@ func TestLogReader(t *testing.T) {
 			t.Run(`R50`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 R50|path/to/file|path/to/file2||`)
-				assert.Loosely(t, actual, should.Resemble(commit{
+				assert.Loosely(t, actual, should.Match(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
 					Files: []fileChange{
@@ -106,7 +106,7 @@ func TestLogReader(t *testing.T) {
 			t.Run(`two parents`, func(t *ftt.Test) {
 				actual := parseOneCommit(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee 3a89a841f9d213cc273af75f085f52c2597a63d2
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||`)
-				assert.Loosely(t, actual, should.Resemble(commit{
+				assert.Loosely(t, actual, should.Match(commit{
 					Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 					ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee", "3a89a841f9d213cc273af75f085f52c2597a63d2"},
 					Files: []fileChange{
@@ -125,7 +125,7 @@ func TestLogReader(t *testing.T) {
 				actual := read(`a3dcd10d73c46ea826785d03b7aa35e294d0f12a 91b7cf4d4e8b259f7657b6149e3393b166a7aaee
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||3a89a841f9d213cc273af75f085f52c2597a63d2 5376d1941a55c6481fc568004d4836ffc2c332b9
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-				assert.Loosely(t, actual, should.Resemble([]commit{
+				assert.Loosely(t, actual, should.Match([]commit{
 					{
 						Hash:         "a3dcd10d73c46ea826785d03b7aa35e294d0f12a",
 						ParentHashes: []string{"91b7cf4d4e8b259f7657b6149e3393b166a7aaee"},
@@ -153,7 +153,7 @@ func TestLogReader(t *testing.T) {
 		t.Run(`empty commit`, func(t *ftt.Test) {
 			actual := read(`f71d633d037422e101edb573038b8e281f283d16 |2f1870f85324ed520077653a2c8a881e9052d96c f71d633d037422e101edb573038b8e281f283d16
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-			assert.Loosely(t, actual, should.Resemble([]commit{
+			assert.Loosely(t, actual, should.Match([]commit{
 				{
 					Hash: "f71d633d037422e101edb573038b8e281f283d16",
 				},
@@ -176,7 +176,7 @@ func TestLogReader(t *testing.T) {
 			actual := read("f71d633d037422e101edb573038b8e281f283d16 " + `
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file||2f1870f85324ed520077653a2c8a881e9052d96c f71d633d037422e101edb573038b8e281f283d16
 :100644 100644 8150c0c9b 8f04adce2 M|path/to/file2||`)
-			assert.Loosely(t, actual, should.Resemble([]commit{
+			assert.Loosely(t, actual, should.Match([]commit{
 				{
 					Hash: "f71d633d037422e101edb573038b8e281f283d16",
 					Files: []fileChange{

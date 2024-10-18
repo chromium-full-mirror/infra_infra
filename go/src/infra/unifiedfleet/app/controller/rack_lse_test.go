@@ -35,7 +35,7 @@ func TestCreateRackLSE(t *testing.T) {
 			}
 			mresp, merr := registration.CreateRack(ctx, rack1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(rack1))
+			assert.Loosely(t, mresp, should.Match(rack1))
 
 			rackLSE2 := &ufspb.RackLSE{
 				Name:  "racklse-2",
@@ -43,7 +43,7 @@ func TestCreateRackLSE(t *testing.T) {
 			}
 			resp, err := CreateRackLSE(ctx, rackLSE2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSE2))
+			assert.Loosely(t, resp, should.Match(rackLSE2))
 		})
 	})
 }

@@ -187,7 +187,7 @@ func TestListComponents(t *testing.T) {
 		request := &api.ListComponentsRequest{}
 		srv.ListComponents(ctx, request)
 
-		assert.Loosely(t, request, should.Resemble(mock.lastListReq))
+		assert.Loosely(t, request, should.Match(mock.lastListReq))
 	})
 }
 
@@ -220,7 +220,7 @@ func TestFetchMetrics(t *testing.T) {
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, mock.lastFetchReq, should.Resemble(request))
+			assert.Loosely(t, mock.lastFetchReq, should.Match(request))
 		})
 		t.Run("Missing dates", func(t *ftt.Test) {
 			request := &api.FetchTestMetricsRequest{
@@ -289,7 +289,7 @@ func TestFetchFileMetrics(t *testing.T) {
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, mock.lastFetchDirReq, should.Resemble(request))
+			assert.Loosely(t, mock.lastFetchDirReq, should.Match(request))
 		})
 		t.Run("Missing dates", func(t *ftt.Test) {
 			request := &api.FetchDirectoryMetricsRequest{
@@ -369,7 +369,7 @@ func TestGetCoverageSummary(t *testing.T) {
 			resp, err := srv.GetCoverageSummary(ctx, request)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, mock.lastGetCoverageSummaryReq, should.Resemble(request))
+			assert.Loosely(t, mock.lastGetCoverageSummaryReq, should.Match(request))
 		})
 		t.Run("Missing gitiles host", func(t *ftt.Test) {
 			req := request
@@ -575,7 +575,7 @@ func TestGetProjectDefaultConfig(t *testing.T) {
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, mock.lastGetProjectDefaultConfigReq, should.Resemble(request))
+			assert.Loosely(t, mock.lastGetProjectDefaultConfigReq, should.Match(request))
 		})
 		t.Run("Invalid argument Project", func(t *ftt.Test) {
 			request := &api.GetProjectDefaultConfigRequest{

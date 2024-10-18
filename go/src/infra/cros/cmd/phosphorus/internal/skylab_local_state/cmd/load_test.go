@@ -80,7 +80,7 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForAndroid(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		assert.Loosely(t, want, should.Resemble(got))
+		assert.Loosely(t, want, should.Match(got))
 	})
 }
 
@@ -164,7 +164,7 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		assert.Loosely(t, want, should.Resemble(got))
+		assert.Loosely(t, want, should.Match(got))
 	})
 }
 
@@ -245,7 +245,7 @@ func TestConvertChromeOsDeviceInfoToHostInfo(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		assert.Loosely(t, want, should.Resemble(got))
+		assert.Loosely(t, want, should.Match(got))
 	})
 }
 
@@ -316,7 +316,7 @@ func TestConvertAttachedDeviceInfoToHostInfo(t *testing.T) {
 		sort.Strings(got.Labels)
 		sort.Strings(want.Labels)
 
-		assert.Loosely(t, want, should.Resemble(got))
+		assert.Loosely(t, want, should.Match(got))
 	})
 }
 
@@ -358,7 +358,7 @@ func TestAddBotStateToHostInfo(t *testing.T) {
 			SerializerVersion: 1,
 		}
 
-		assert.Loosely(t, want, should.Resemble(hostInfo))
+		assert.Loosely(t, want, should.Match(hostInfo))
 	})
 }
 

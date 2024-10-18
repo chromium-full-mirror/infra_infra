@@ -36,7 +36,7 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			resp, err := CreateSchedulingUnit(ctx, su)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(su))
+			assert.Loosely(t, resp, should.Match(su))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -202,7 +202,7 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			su2.Tags = []string{"Apple"}
 			resp, _ := UpdateSchedulingUnit(ctx, su2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(su2))
+			assert.Loosely(t, resp, should.Match(su2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -380,7 +380,7 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			resp, _ := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses"}})
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
-			assert.Loosely(t, resp.GetMachineLSEs(), should.Resemble([]string{"dut-1", "dut-2"}))
+			assert.Loosely(t, resp.GetMachineLSEs(), should.Match([]string{"dut-1", "dut-2"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-7")
 			assert.Loosely(t, err, should.BeNil)
@@ -410,7 +410,7 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			resp, err := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses.remove"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
-			assert.Loosely(t, resp.GetMachineLSEs(), should.Resemble([]string{}))
+			assert.Loosely(t, resp.GetMachineLSEs(), should.Match([]string{}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-6")
 			assert.Loosely(t, err, should.BeNil)
@@ -437,7 +437,7 @@ func TestGetSchedulingUnit(t *testing.T) {
 		t.Run("Get SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
 			resp, _ := GetSchedulingUnit(ctx, "su-1")
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(su))
+			assert.Loosely(t, resp, should.Match(su))
 		})
 
 		t.Run("Get SchedulingUnit by non-existing ID", func(t *ftt.Test) {
@@ -511,13 +511,13 @@ func TestListSchedulingUnits(t *testing.T) {
 		t.Run("List SchedulingUnits - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListSchedulingUnits(ctx, 5, "", "pools=DUT_QUOTA", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(schedulingUnitsWithPools))
+			assert.Loosely(t, resp, should.Match(schedulingUnitsWithPools))
 		})
 
 		t.Run("ListSchedulingUnits - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListSchedulingUnits(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(schedulingUnits))
+			assert.Loosely(t, resp, should.Match(schedulingUnits))
 		})
 	})
 }

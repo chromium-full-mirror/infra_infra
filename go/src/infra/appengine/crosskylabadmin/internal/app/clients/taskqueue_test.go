@@ -38,8 +38,8 @@ func TestSuccessfulPushDuts(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/host1", "/internal/task/cros_repair/host2"}
 		expectedParams := []string{"botID=host1&expectedState=needs_repair&swarmingPool=pool-a", "botID=host2&expectedState=needs_repair&swarmingPool=pool-a"}
-		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
-		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
+		assert.Loosely(t, taskPaths, should.Match(expectedPaths))
+		assert.Loosely(t, taskParams, should.Match(expectedParams))
 	})
 }
 
@@ -64,8 +64,8 @@ func TestSuccessfulPushLabstations(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/labstation_repair/host1", "/internal/task/labstation_repair/host2"}
 		expectedParams := []string{"botID=host1&swarmingPool=my-pool2", "botID=host2&swarmingPool=my-pool2"}
-		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
-		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
+		assert.Loosely(t, taskPaths, should.Match(expectedPaths))
+		assert.Loosely(t, taskParams, should.Match(expectedParams))
 	})
 }
 
@@ -91,8 +91,8 @@ func TestSuccessfulPushAuditTasks(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/audit/host1/action1-action2", "/internal/task/audit/host2/action1-action2"}
 		expectedParams := []string{"actions=action1%2Caction2&botID=host1&swarmingPool=my-pool&taskname=Storage", "actions=action1%2Caction2&botID=host2&swarmingPool=my-pool&taskname=Storage"}
-		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
-		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
+		assert.Loosely(t, taskPaths, should.Match(expectedPaths))
+		assert.Loosely(t, taskParams, should.Match(expectedParams))
 	})
 }
 

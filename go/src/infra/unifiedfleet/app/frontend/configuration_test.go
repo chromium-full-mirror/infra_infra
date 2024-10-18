@@ -87,7 +87,7 @@ func TestCreateChromePlatform(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateChromePlatform(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 		})
 
 		t.Run("Create existing chromePlatform", func(t *ftt.Test) {
@@ -152,13 +152,13 @@ func TestUpdateChromePlatform(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateChromePlatform(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 			ureq := &ufsAPI.UpdateChromePlatformRequest{
 				ChromePlatform: chromePlatform2,
 			}
 			resp, err = tf.Fleet.UpdateChromePlatform(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
+			assert.Loosely(t, resp, should.Match(chromePlatform2))
 		})
 
 		t.Run("Update non-existing chromePlatform", func(t *ftt.Test) {
@@ -217,14 +217,14 @@ func TestGetChromePlatform(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateChromePlatform(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+		assert.Loosely(t, resp, should.Match(chromePlatform1))
 		t.Run("Get chromePlatform by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetChromePlatformRequest{
 				Name: util.AddPrefix(util.ChromePlatformCollection, "chromePlatform-1"),
 			}
 			resp, err := tf.Fleet.GetChromePlatform(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 		})
 		t.Run("Get chromePlatform by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetChromePlatformRequest{
@@ -285,7 +285,7 @@ func TestListChromePlatforms(t *testing.T) {
 			resp, err := tf.Fleet.ListChromePlatforms(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.ChromePlatforms, should.Resemble(chromePlatforms))
+			assert.Loosely(t, resp.ChromePlatforms, should.Match(chromePlatforms))
 		})
 
 		t.Run("ListChromePlatforms - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -313,7 +313,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateChromePlatform(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 
 			chromeBrowserMachine1 := &ufspb.Machine{
 				Name: util.AddPrefix(util.MachineCollection, "machine-1"),
@@ -325,7 +325,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			}
 			mresp, merr := registration.CreateMachine(tf.C, chromeBrowserMachine1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(chromeBrowserMachine1))
+			assert.Loosely(t, mresp, should.Match(chromeBrowserMachine1))
 
 			/* TODO(eshwarn) : Remove comment when kvm create/get is added
 			kvm1 := &ufspb.KVM{
@@ -354,7 +354,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			res, err := tf.Fleet.GetChromePlatform(tf.C, greq)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(chromePlatform1))
+			assert.Loosely(t, res, should.Match(chromePlatform1))
 		})
 
 		t.Run("Delete chromePlatform by existing ID without references", func(t *ftt.Test) {
@@ -365,7 +365,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateChromePlatform(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
+			assert.Loosely(t, resp, should.Match(chromePlatform2))
 
 			dreq := &ufsAPI.DeleteChromePlatformRequest{
 				Name: util.AddPrefix(util.ChromePlatformCollection, "chromePlatform-2"),
@@ -429,7 +429,7 @@ func TestCreateMachineLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateMachineLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		})
 
 		t.Run("Create existing machineLSEPrototype", func(t *ftt.Test) {
@@ -494,13 +494,13 @@ func TestUpdateMachineLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateMachineLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 			ureq := &ufsAPI.UpdateMachineLSEPrototypeRequest{
 				MachineLSEPrototype: machineLSEPrototype2,
 			}
 			resp, err = tf.Fleet.UpdateMachineLSEPrototype(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype2))
 		})
 
 		t.Run("Update non-existing machineLSEPrototype", func(t *ftt.Test) {
@@ -559,14 +559,14 @@ func TestGetMachineLSEPrototype(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateMachineLSEPrototype(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+		assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		t.Run("Get machineLSEPrototype by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEPrototypeRequest{
 				Name: util.AddPrefix(util.MachineLSEPrototypeCollection, "machineLSEPrototype-1"),
 			}
 			resp, err := tf.Fleet.GetMachineLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		})
 		t.Run("Get machineLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetMachineLSEPrototypeRequest{
@@ -627,7 +627,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 			resp, err := tf.Fleet.ListMachineLSEPrototypes(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.MachineLSEPrototypes, should.Resemble(machineLSEPrototypes))
+			assert.Loosely(t, resp.MachineLSEPrototypes, should.Match(machineLSEPrototypes))
 		})
 
 		t.Run("ListMachineLSEPrototypes - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -655,7 +655,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateMachineLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 
 			machineLSE1 := &ufspb.MachineLSE{
 				Name:                util.AddPrefix(util.MachineLSECollection, "machinelse-1"),
@@ -679,7 +679,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 			res, err := tf.Fleet.GetMachineLSEPrototype(tf.C, greq)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, res, should.Match(machineLSEPrototype1))
 		})
 
 		t.Run("Delete machineLSEPrototype by existing ID without references", func(t *ftt.Test) {
@@ -690,7 +690,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateMachineLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype2))
 
 			dreq := &ufsAPI.DeleteMachineLSEPrototypeRequest{
 				Name: util.AddPrefix(util.MachineLSEPrototypeCollection, "machineLSEPrototype-2"),
@@ -754,7 +754,7 @@ func TestCreateRackLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		})
 
 		t.Run("Create existing rackLSEPrototype", func(t *ftt.Test) {
@@ -819,13 +819,13 @@ func TestUpdateRackLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 			ureq := &ufsAPI.UpdateRackLSEPrototypeRequest{
 				RackLSEPrototype: rackLSEPrototype2,
 			}
 			resp, err = tf.Fleet.UpdateRackLSEPrototype(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype2))
 		})
 
 		t.Run("Update non-existing rackLSEPrototype", func(t *ftt.Test) {
@@ -884,14 +884,14 @@ func TestGetRackLSEPrototype(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateRackLSEPrototype(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+		assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		t.Run("Get rackLSEPrototype by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSEPrototypeRequest{
 				Name: util.AddPrefix(util.RackLSEPrototypeCollection, "rackLSEPrototype-1"),
 			}
 			resp, err := tf.Fleet.GetRackLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		})
 		t.Run("Get rackLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackLSEPrototypeRequest{
@@ -954,7 +954,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 			resp, err := tf.Fleet.ListRackLSEPrototypes(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.RackLSEPrototypes, should.Resemble(rackLSEPrototypes))
+			assert.Loosely(t, resp.RackLSEPrototypes, should.Match(rackLSEPrototypes))
 		})
 
 		t.Run("ListRackLSEPrototypes - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -982,7 +982,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 
 			rackLSE1 := &ufspb.RackLSE{
 				Name:             util.AddPrefix(util.RackLSECollection, "racklse-1"),
@@ -994,7 +994,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			}
 			mresp, merr := tf.Fleet.CreateRackLSE(tf.C, mreq)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(rackLSE1))
+			assert.Loosely(t, mresp, should.Match(rackLSE1))
 
 			dreq := &ufsAPI.DeleteRackLSEPrototypeRequest{
 				Name: util.AddPrefix(util.RackLSEPrototypeCollection, "rackLSEPrototype-1"),
@@ -1009,7 +1009,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			res, err := tf.Fleet.GetRackLSEPrototype(tf.C, greq)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, res, should.Match(rackLSEPrototype1))
 		})
 
 		t.Run("Delete rackLSEPrototype by existing ID without references", func(t *ftt.Test) {
@@ -1020,7 +1020,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRackLSEPrototype(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype2))
 
 			dreq := &ufsAPI.DeleteRackLSEPrototypeRequest{
 				Name: util.AddPrefix(util.RackLSEPrototypeCollection, "rackLSEPrototype-2"),
@@ -1085,7 +1085,7 @@ func TestCreateVlan(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateVlan(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 		})
 
 		t.Run("Create existing vlan", func(t *ftt.Test) {
@@ -1152,13 +1152,13 @@ func TestUpdateVlan(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateVlan(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 			ureq := &ufsAPI.UpdateVlanRequest{
 				Vlan: vlan2,
 			}
 			resp, err = tf.Fleet.UpdateVlan(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan2))
+			assert.Loosely(t, resp, should.Match(vlan2))
 		})
 
 		t.Run("Update non-existing vlan", func(t *ftt.Test) {
@@ -1218,14 +1218,14 @@ func TestGetVlan(t *testing.T) {
 		}
 		resp, err := tf.Fleet.CreateVlan(tf.C, req)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(vlan1))
+		assert.Loosely(t, resp, should.Match(vlan1))
 		t.Run("Get vlan by existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetVlanRequest{
 				Name: util.AddPrefix(util.VlanCollection, "vlan-1"),
 			}
 			resp, err := tf.Fleet.GetVlan(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 		})
 		t.Run("Get vlan by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetVlanRequest{
@@ -1286,7 +1286,7 @@ func TestListVlans(t *testing.T) {
 			resp, err := tf.Fleet.ListVlans(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Vlans, should.Resemble(vlans))
+			assert.Loosely(t, resp.Vlans, should.Match(vlans))
 		})
 
 		t.Run("ListVlans - page_size negative - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1374,7 +1374,7 @@ func TestDeleteVlan(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateVlan(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan2))
+			assert.Loosely(t, resp, should.Match(vlan2))
 
 			dreq := &ufsAPI.DeleteVlanRequest{
 				Name: util.AddPrefix(util.VlanCollection, "vlan-2"),

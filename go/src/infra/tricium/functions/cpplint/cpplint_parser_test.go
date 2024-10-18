@@ -66,7 +66,7 @@ func TestPylintParsingFunctions(t *testing.T) {
 
 			results := &tricium.Data_Results{}
 			scanCpplintOutput(bufio.NewScanner(strings.NewReader(output)), results)
-			assert.Loosely(t, results, should.Resemble(expected))
+			assert.Loosely(t, results, should.Match(expected))
 		})
 	})
 
@@ -74,7 +74,7 @@ func TestPylintParsingFunctions(t *testing.T) {
 
 		t.Run("Parsing valid line gives a comment", func(t *ftt.Test) {
 			line := "test.cc:148:  This is the helpful explanation  [readability/foo] [4]"
-			assert.Loosely(t, parseCpplintLine(line), should.Resemble(&tricium.Data_Comment{
+			assert.Loosely(t, parseCpplintLine(line), should.Match(&tricium.Data_Comment{
 				Category: "Cpplint/readability/foo",
 				Message: "This is the helpful explanation (confidence 4/5).\n" +
 					"To disable, add: // NOLINT(readability/foo)",
@@ -94,7 +94,7 @@ func TestPylintParsingFunctions(t *testing.T) {
 
 		t.Run("An extra note is added for include_what_you_use", func(t *ftt.Test) {
 			line := "test.cc:148:  Add #include <foo> for foo  [build/include_what_you_use] [4]"
-			assert.Loosely(t, parseCpplintLine(line), should.Resemble(&tricium.Data_Comment{
+			assert.Loosely(t, parseCpplintLine(line), should.Match(&tricium.Data_Comment{
 				Category: "Cpplint/build/include_what_you_use",
 				Message: ("Add #include <foo> for foo\n" +
 					"Note: This check is known to produce false positives, " +

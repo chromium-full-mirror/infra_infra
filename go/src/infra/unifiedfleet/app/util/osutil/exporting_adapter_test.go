@@ -1044,7 +1044,7 @@ func TestAdaptToV1DutSpec(t *testing.T) {
 			}
 			d, err := AdaptToV1DutSpec(&extDevboard, &labstationDevConfig)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, d.GetCommon().GetLabels().GetSelfServePools(), should.Resemble([]string{"devboard_main"}))
+			assert.Loosely(t, d.GetCommon().GetLabels().GetSelfServePools(), should.Match([]string{"devboard_main"}))
 			assert.Loosely(t, d.GetCommon().GetLabels().GetBoard(), should.Equal("andreiboard-devboard"))
 			assert.Loosely(t, d.GetCommon().GetLabels().GetModel(), should.Equal("andreiboard-devboard"))
 		})

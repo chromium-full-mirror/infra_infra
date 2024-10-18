@@ -117,7 +117,7 @@ func TestBuilder(t *testing.T) {
 				names[i] = f.Path
 				byName[f.Path] = f
 			}
-			assert.Loosely(t, names, should.Resemble([]string{
+			assert.Loosely(t, names, should.Match([]string{
 				"dir", "dir/f", "f1", "f2", "gocmd", "say_hi",
 			}))
 
@@ -159,7 +159,7 @@ func TestBuilder(t *testing.T) {
 			t.Run("GOPATH bundle", func(t *ftt.Test) {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_gopath.yaml"))
 
-				assert.Loosely(t, files, should.Resemble([]string{
+				assert.Loosely(t, files, should.Match([]string{
 					".cloudbuildhelper.json",
 					"_gopath/goenv",
 					"_gopath/src/example.com/another/another_a.go",
@@ -182,7 +182,7 @@ func TestBuilder(t *testing.T) {
 					"helloworld",
 				}))
 
-				assert.Loosely(t, byName["helloworld"], should.Resemble(&fileset.File{
+				assert.Loosely(t, byName["helloworld"], should.Match(&fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gopath/src/testpkg/helloworld",
 				}))
@@ -203,7 +203,7 @@ func TestBuilder(t *testing.T) {
 			t.Run("Modules bundle", func(t *ftt.Test) {
 				files, byName := buildBundle(filepath.FromSlash("testdata/src/testpkg/gaebundle_modules.yaml"))
 
-				assert.Loosely(t, files, should.Resemble([]string{
+				assert.Loosely(t, files, should.Match([]string{
 					".cloudbuildhelper.json",
 					"_gomod/go.mod",
 					"_gomod/goenv",
@@ -228,7 +228,7 @@ func TestBuilder(t *testing.T) {
 					"helloworld",
 				}))
 
-				assert.Loosely(t, byName["helloworld"], should.Resemble(&fileset.File{
+				assert.Loosely(t, byName["helloworld"], should.Match(&fileset.File{
 					Path:          "helloworld",
 					SymlinkTarget: "_gomod/helloworld",
 				}))

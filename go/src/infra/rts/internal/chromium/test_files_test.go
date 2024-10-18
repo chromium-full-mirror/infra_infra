@@ -50,6 +50,6 @@ func TestTestFileSet(t *testing.T) {
 			return nil
 		})
 
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 }

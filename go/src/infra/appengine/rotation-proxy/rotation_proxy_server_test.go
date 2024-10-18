@@ -92,7 +92,7 @@ func TestBatchUpdateRotations(t *testing.T) {
 		assert.Loosely(t, len(dsRotations), should.Equal(1))
 		diff := cmp.Diff(rotation1, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
 		assert.Loosely(t, diff, should.BeEmpty)
-		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Resemble(currentTime.Add(7*24*time.Hour)))
+		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Match(currentTime.Add(7*24*time.Hour)))
 	})
 
 	ftt.Run("batch update rotations should delete previous shifts", t, func(t *ftt.Test) {
@@ -121,7 +121,7 @@ func TestBatchUpdateRotations(t *testing.T) {
 		assert.Loosely(t, len(dsRotations), should.Equal(1))
 		diff := cmp.Diff(rotation1Updated, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
 		assert.Loosely(t, diff, should.BeEmpty)
-		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Resemble(currentTime.Add(7*24*time.Hour)))
+		assert.Loosely(t, dsRotations[0].ExpiryAt, should.Match(currentTime.Add(7*24*time.Hour)))
 	})
 }
 
@@ -285,17 +285,17 @@ func TestGetCurrentOncallEmails(t *testing.T) {
 		ctx, _ = testclock.UseTime(ctx, time.Unix(444, 0))
 		emails, err := getCurrentOncallEmails(ctx, "rotation")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, emails, should.Resemble([]string{"person3@google.com", "person4@google.com"}))
+		assert.Loosely(t, emails, should.Match([]string{"person3@google.com", "person4@google.com"}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(666, 0))
 		emails, err = getCurrentOncallEmails(ctx, "rotation")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, emails, should.Resemble([]string{}))
+		assert.Loosely(t, emails, should.Match([]string{}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(888, 0))
 		emails, err = getCurrentOncallEmails(ctx, "rotation")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, emails, should.Resemble([]string{"person5@google.com"}))
+		assert.Loosely(t, emails, should.Match([]string{"person5@google.com"}))
 
 		ctx, _ = testclock.UseTime(ctx, time.Unix(888, 0))
 		emails, err = getCurrentOncallEmails(ctx, "anotherrotation")

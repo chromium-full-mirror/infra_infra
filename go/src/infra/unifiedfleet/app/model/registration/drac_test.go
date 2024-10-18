@@ -34,7 +34,7 @@ func TestCreateDrac(t *testing.T) {
 		t.Run("Create new drac", func(t *ftt.Test) {
 			resp, err := CreateDrac(ctx, drac1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 		})
 		t.Run("Create existing drac", func(t *ftt.Test) {
 			resp, err := CreateDrac(ctx, drac1)
@@ -62,11 +62,11 @@ func TestUpdateDrac(t *testing.T) {
 		t.Run("Update existing drac", func(t *ftt.Test) {
 			resp, err := CreateDrac(ctx, drac1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 
 			resp, err = UpdateDrac(ctx, drac2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac2))
+			assert.Loosely(t, resp, should.Match(drac2))
 		})
 		t.Run("Update non-existing drac", func(t *ftt.Test) {
 			resp, err := UpdateDrac(ctx, drac3)
@@ -91,10 +91,10 @@ func TestGetDrac(t *testing.T) {
 		t.Run("Get drac by existing ID", func(t *ftt.Test) {
 			resp, err := CreateDrac(ctx, drac1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 			resp, err = GetDrac(ctx, "Drac-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 		})
 		t.Run("Get drac by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetDrac(ctx, "drac-2")
@@ -135,7 +135,7 @@ func TestListDracs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs))
+			assert.Loosely(t, resp, should.Match(dracs))
 		})
 
 		t.Run("List dracs - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListDracs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs[:3]))
+			assert.Loosely(t, resp, should.Match(dracs[:3]))
 
 			resp, _, err = ListDracs(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs[3:]))
+			assert.Loosely(t, resp, should.Match(dracs[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteDrac(t *testing.T) {
 		t.Run("Delete drac successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateDrac(ctx, drac2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac2))
+			assert.Loosely(t, resp, should.Match(drac2))
 
 			err := DeleteDrac(ctx, "drac-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -195,13 +195,13 @@ func TestBatchUpdateDracs(t *testing.T) {
 			drac1 := mockDrac(fmt.Sprintf("drac-%d", i))
 			resp, err := CreateDrac(ctx, drac1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 			dracs = append(dracs, resp)
 		}
 		t.Run("BatchUpdate all dracs", func(t *ftt.Test) {
 			resp, err := BatchUpdateDracs(ctx, dracs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs))
+			assert.Loosely(t, resp, should.Match(dracs))
 		})
 		t.Run("BatchUpdate existing and non-existing dracs", func(t *ftt.Test) {
 			Drac5 := mockDrac("")
@@ -230,7 +230,7 @@ func TestQueryDracByPropertyName(t *testing.T) {
 		}
 		resp, cerr := CreateDrac(ctx, drac1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(drac1))
+		assert.Loosely(t, resp, should.Match(drac1))
 
 		dracs := make([]*ufspb.Drac, 0, 1)
 		dracs = append(dracs, drac1)
@@ -240,7 +240,7 @@ func TestQueryDracByPropertyName(t *testing.T) {
 		t.Run("Query By existing Switch keysonly", func(t *ftt.Test) {
 			resp, err := QueryDracByPropertyName(ctx, "switch_id", "switch-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs1))
+			assert.Loosely(t, resp, should.Match(dracs1))
 		})
 		t.Run("Query By non-existing Switch", func(t *ftt.Test) {
 			resp, err := QueryDracByPropertyName(ctx, "switch_id", "switch-2", true)
@@ -250,7 +250,7 @@ func TestQueryDracByPropertyName(t *testing.T) {
 		t.Run("Query By existing Switch", func(t *ftt.Test) {
 			resp, err := QueryDracByPropertyName(ctx, "switch_id", "switch-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dracs))
+			assert.Loosely(t, resp, should.Match(dracs))
 		})
 	})
 }

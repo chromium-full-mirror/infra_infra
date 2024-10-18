@@ -119,7 +119,7 @@ func TestCache(t *testing.T) {
 			assert.Loosely(t, cache.Trim(ctx, 1), should.BeNil)
 
 			// Worked!
-			assert.Loosely(t, scan(), should.Resemble([]string{created[2]}))
+			assert.Loosely(t, scan(), should.Match([]string{created[2]}))
 		})
 	})
 }

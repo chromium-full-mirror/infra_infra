@@ -25,7 +25,7 @@ func TestParams(t *testing.T) {
 		}
 		ctx = WithParams(ctx, m)
 		copy := GetParamCopy(ctx)
-		assert.Loosely(t, m, should.Resemble(copy))
+		assert.Loosely(t, m, should.Match(copy))
 	})
 	ftt.Run("Read an existent key", t, func(t *ftt.Test) {
 		m := map[string]any{

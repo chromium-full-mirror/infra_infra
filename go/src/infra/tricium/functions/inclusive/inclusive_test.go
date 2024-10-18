@@ -34,7 +34,7 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, okPathNotOkSource), okPathNotOkSource, results)
 		assert.Loosely(t, results.Comments, should.NotBeNil)
-		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, results.Comments[0], should.Match(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      okPathNotOkSource,
@@ -60,7 +60,7 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, notOkPath), notOkPath, results)
 		assert.Loosely(t, results.Comments, should.NotBeNil)
-		assert.Loosely(t, results.Comments[0], should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, results.Comments[0], should.Match(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      notOkPath,
@@ -80,7 +80,7 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 				}},
 			}},
 		}))
-		assert.Loosely(t, results.Comments[1], should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, results.Comments[1], should.Match(&tricium.Data_Comment{
 			Category:  "InclusiveLanguageCheck/Warning",
 			Message:   commentText["blacklist"],
 			Path:      notOkPath,
@@ -106,7 +106,7 @@ func TestInclusiveLanguageChecker(t *testing.T) {
 		results := &tricium.Data_Results{}
 		checkInclusiveLanguage(filepath.Join(buildDir, nocheckSource), nocheckSource, results)
 		assert.Loosely(t, results.Comments, should.NotBeNil)
-		assert.Loosely(t, results.Comments, should.Resemble([]*tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.Match([]*tricium.Data_Comment{
 			{
 				Category:  "InclusiveLanguageCheck/Warning",
 				Message:   commentText["master"],

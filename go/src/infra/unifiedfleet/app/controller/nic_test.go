@@ -102,7 +102,7 @@ func TestCreateNic(t *testing.T) {
 			}
 			resp, err := CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			mresp, err := GetMachine(ctx, "machine-10")
 			assert.Loosely(t, err, should.BeNil)
@@ -146,7 +146,7 @@ func TestCreateNic(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			resp, err := CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-25")
 			assert.Loosely(t, err, should.BeNil)
@@ -193,7 +193,7 @@ func TestCreateNic(t *testing.T) {
 			}
 			resp, err := CreateNic(ctx, nic2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic2))
+			assert.Loosely(t, resp, should.Match(nic2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -345,7 +345,7 @@ func TestUpdateNic(t *testing.T) {
 			resp, err := UpdateNic(ctx, nic, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-3")
@@ -396,7 +396,7 @@ func TestUpdateNic(t *testing.T) {
 			}
 			resp, err := registration.CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_UNSPECIFIED))
+			assert.Loosely(t, resp.GetResourceState(), should.Match(ufspb.State_STATE_UNSPECIFIED))
 
 			nic1 := &ufspb.Nic{
 				Name:       "nic-7",
@@ -413,7 +413,7 @@ func TestUpdateNic(t *testing.T) {
 			assert.Loosely(t, resp.GetSwitchInterface().GetSwitch(), should.Match("switch-7"))
 			assert.Loosely(t, resp.GetSwitchInterface().GetPortName(), should.Equal("75"))
 			assert.Loosely(t, resp.GetMacAddress(), should.Match("efgh"))
-			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_NEEDS_REPAIR))
+			assert.Loosely(t, resp.GetResourceState(), should.Match(ufspb.State_STATE_NEEDS_REPAIR))
 		})
 
 		t.Run("Partial update - nic state", func(t *ftt.Test) {
@@ -431,7 +431,7 @@ func TestUpdateNic(t *testing.T) {
 			}
 			resp, err := registration.CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_UNSPECIFIED))
+			assert.Loosely(t, resp.GetResourceState(), should.Match(ufspb.State_STATE_UNSPECIFIED))
 
 			nic1 := &ufspb.Nic{
 				Name:          "nic-7.2",
@@ -444,7 +444,7 @@ func TestUpdateNic(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetMachine(), should.Match("machine-7.2"))
-			assert.Loosely(t, resp.GetResourceState(), should.Resemble(ufspb.State_STATE_NEEDS_REPAIR))
+			assert.Loosely(t, resp.GetResourceState(), should.Match(ufspb.State_STATE_NEEDS_REPAIR))
 		})
 
 		t.Run("Partial Update nic mac address and machine(same realm) - succeed", func(t *ftt.Test) {
@@ -702,7 +702,7 @@ func TestUpdateNic(t *testing.T) {
 			}
 			res, _ := UpdateNic(ctx, nic1, nil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(nic1))
+			assert.Loosely(t, res, should.Match(nic1))
 
 			// new machine's corresponding host has new dhcp record
 			dhcp, err = configuration.GetDHCPConfig(ctx, "lse-update-mac")
@@ -901,7 +901,7 @@ func TestUpdateNic(t *testing.T) {
 			resp, err := UpdateNic(ctx, nic, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 		})
 
 		t.Run("Partial Update nic with new machine(different realm with permission) - Pass", func(t *ftt.Test) {
@@ -977,7 +977,7 @@ func TestDeleteNic(t *testing.T) {
 			nic.Machine = "machine-1"
 			resp, err := registration.CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			err = DeleteNic(ctx, "nic-1")
@@ -1025,7 +1025,7 @@ func TestDeleteNic(t *testing.T) {
 
 			resp, err := registration.GetNic(ctx, "nic-ip")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 		})
 
 		t.Run("Delete nic - permission denied: same realm and no delete permission", func(t *ftt.Test) {
@@ -1040,7 +1040,7 @@ func TestDeleteNic(t *testing.T) {
 			nic.Machine = "machine-3"
 			resp, err := registration.CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsGet, util.AtlLabAdminRealm)
 			err = DeleteNic(ctx, "nic-3")
@@ -1060,7 +1060,7 @@ func TestDeleteNic(t *testing.T) {
 			nic.Machine = "machine-4"
 			resp, err := registration.CreateNic(ctx, nic)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsDelete, util.BrowserLabAdminRealm)
 			err = DeleteNic(ctx, "nic-4")
@@ -1096,13 +1096,13 @@ func TestListNics(t *testing.T) {
 		t.Run("List Nics - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListNics(ctx, 5, "", "switch=switch-12", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(nicsWithSwitch))
+			assert.Loosely(t, resp, should.Match(nicsWithSwitch))
 		})
 
 		t.Run("ListNics - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListNics(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(nics))
+			assert.Loosely(t, resp, should.Match(nics))
 		})
 	})
 }
@@ -1123,7 +1123,7 @@ func TestBatchGetNics(t *testing.T) {
 			resp, err := registration.BatchGetNics(ctx, []string{"nic-batchGet-0", "nic-batchGet-1", "nic-batchGet-2", "nic-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get nics  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetNics(ctx, []string{"nic-batchGet-non-existing"})

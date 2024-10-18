@@ -35,7 +35,7 @@ func TestCreateChromePlatform(t *testing.T) {
 		t.Run("Create new chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 		})
 		t.Run("Create existing chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
@@ -63,11 +63,11 @@ func TestUpdateChromePlatform(t *testing.T) {
 		t.Run("Update existing chromePlatform", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 
 			resp, err = UpdateChromePlatform(ctx, chromePlatform2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
+			assert.Loosely(t, resp, should.Match(chromePlatform2))
 		})
 		t.Run("Update non-existing chromePlatform", func(t *ftt.Test) {
 			resp, err := UpdateChromePlatform(ctx, chromePlatform3)
@@ -92,10 +92,10 @@ func TestGetChromePlatform(t *testing.T) {
 		t.Run("Get chromePlatform by existing ID", func(t *ftt.Test) {
 			resp, err := CreateChromePlatform(ctx, chromePlatform1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 			resp, err = GetChromePlatform(ctx, "ChromePlatform-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform1))
+			assert.Loosely(t, resp, should.Match(chromePlatform1))
 		})
 		t.Run("Get chromePlatform by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetChromePlatform(ctx, "chromePlatform-2")
@@ -136,7 +136,7 @@ func TestListChromePlatforms(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatforms))
+			assert.Loosely(t, resp, should.Match(chromePlatforms))
 		})
 
 		t.Run("List chromePlatforms - listing with pagination", func(t *ftt.Test) {
@@ -144,12 +144,12 @@ func TestListChromePlatforms(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatforms[:3]))
+			assert.Loosely(t, resp, should.Match(chromePlatforms[:3]))
 
 			resp, _, err = ListChromePlatforms(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatforms[3:]))
+			assert.Loosely(t, resp, should.Match(chromePlatforms[3:]))
 		})
 	})
 }
@@ -163,7 +163,7 @@ func TestDeleteChromePlatform(t *testing.T) {
 		t.Run("Delete chromePlatform successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateChromePlatform(ctx, chromePlatform2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromePlatform2))
+			assert.Loosely(t, resp, should.Match(chromePlatform2))
 
 			err := DeleteChromePlatform(ctx, "chromePlatform-2")
 			assert.Loosely(t, err, should.BeNil)

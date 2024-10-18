@@ -49,7 +49,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "FAKE-REF-DESIGN:2147483647":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CLAMSHELL))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,
@@ -65,7 +65,7 @@ func TestParseConfigBundle(t *testing.T) {
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CLAMSHELL))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,
@@ -79,7 +79,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "PROJECT-A:32":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CONVERTIBLE))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,
@@ -92,7 +92,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "PROJECT-B:33":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CONVERTIBLE))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,
@@ -105,7 +105,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "PROJECT-C:34":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CLAMSHELL))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,
@@ -118,7 +118,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "PROJECT-WL:64":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CHROMEBIT))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_AC_ONLY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
@@ -130,7 +130,7 @@ func TestParseConfigBundle(t *testing.T) {
 				case "PROJECT-U:75":
 					assert.Loosely(t, dc.GetFormFactor(), should.Equal(device.Config_FORM_FACTOR_CONVERTIBLE))
 					assert.Loosely(t, dc.GetPower(), should.Equal(device.Config_POWER_SUPPLY_BATTERY))
-					assert.Loosely(t, dc.GetHardwareFeatures(), should.Resemble([]device.Config_HardwareFeature{
+					assert.Loosely(t, dc.GetHardwareFeatures(), should.Match([]device.Config_HardwareFeature{
 						device.Config_HARDWARE_FEATURE_BLUETOOTH,
 						device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 						device.Config_HARDWARE_FEATURE_STYLUS,

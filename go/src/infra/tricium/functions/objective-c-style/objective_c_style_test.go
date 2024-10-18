@@ -42,7 +42,7 @@ func TestGetPrefix(t *testing.T) {
 	ftt.Run("Flags strong delegates", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badDelegate)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match([]*tricium.Data_Comment{
 
 			{
 				Category:  "ObjectiveCStyle/StrongDelegate",
@@ -170,7 +170,7 @@ func TestGetPrefix(t *testing.T) {
 	ftt.Run("Flags properties without explicit ownership", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badProperty)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match([]*tricium.Data_Comment{
 
 			{
 				Category:  "ObjectiveCStyle/ExplicitOwnership",
@@ -222,7 +222,7 @@ func TestGetPrefix(t *testing.T) {
 	ftt.Run("Flags functions have unnecessary get prefixes", t, func(t *ftt.Test) {
 		c := checkSourceFile("", badGet)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble([]*tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match([]*tricium.Data_Comment{
 			{
 				Category:  "ObjectiveCStyle/Get",
 				Message:   "The use of \"get\" is unnecessary, unless one or more values are returned indirectly. See: https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingMethods.html#:~:text=The%20use%20of%20%22get%22%20is%20unnecessary,%20unless%20one%20or%20more%20values%20are%20returned%20indirectly.",

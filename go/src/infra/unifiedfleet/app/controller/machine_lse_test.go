@@ -343,7 +343,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			})
 			assert.Loosely(t, err, should.BeNil)
 			machineLSE2.Nic = "eth0"
-			assert.Loosely(t, resp, should.Resemble(machineLSE2))
+			assert.Loosely(t, resp, should.Match(machineLSE2))
 			ip, err := configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "192.168.40.11"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, ip, should.HaveLength(1))
@@ -359,7 +359,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_SERVING))
 			vm, err := inventory.GetVM(ctx, "vm1-ip")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, vm, should.Resemble(vm1))
+			assert.Loosely(t, vm, should.Match(vm1))
 
 			// verify changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/machinelse-with-ip")
@@ -441,7 +441,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			}
 			resp, err := CreateMachineLSE(ctx, machineLSE2, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE2))
+			assert.Loosely(t, resp, should.Match(machineLSE2))
 			s, err := state.GetStateRecord(ctx, "hosts/machinelse-3")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
@@ -615,7 +615,7 @@ func TestCreateMachineLSELabstation(t *testing.T) {
 			resp, err := CreateMachineLSE(ctx, labstationMachinelse1, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(labstationMachinelse1))
+			assert.Loosely(t, resp, should.Match(labstationMachinelse1))
 			s, err := state.GetStateRecord(ctx, "hosts/RedLabstation-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
@@ -715,7 +715,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dutMachinelse3))
+			assert.Loosely(t, resp, should.Match(dutMachinelse3))
 
 			resp, _ = inventory.GetMachineLSE(ctx, "BlueLabstation-10")
 			assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos, should.HaveLength(2))
@@ -741,12 +741,12 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutMachinelse3))
+			assert.Loosely(t, resp, should.Match(dutMachinelse3))
 
 			dummyServos := []*chromeosLab.Servo{servo1, servo3}
 
 			resp, _ = inventory.GetMachineLSE(ctx, "BlueLabstation-10")
-			assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos, should.Resemble(dummyServos))
+			assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Servos, should.Match(dummyServos))
 
 			// Labstation host is not updated
 			_, err = state.GetStateRecord(ctx, "hosts/BlueLabstation-10")
@@ -797,7 +797,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dutMachinelse2))
+			assert.Loosely(t, resp, should.Match(dutMachinelse2))
 
 			resp, _ = inventory.GetMachineLSE(ctx, "BlueLabstation-17")
 			assert.Loosely(t, resp, should.NotBeNil)
@@ -807,7 +807,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, _ = inventory.GetMachineLSE(ctx, "BlueLabstation-18")
 			assert.Loosely(t, resp, should.NotBeNil)
 			servos = resp.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetServos()
-			assert.Loosely(t, servo2, should.Resemble(servos[0]))
+			assert.Loosely(t, servo2, should.Match(servos[0]))
 
 			// Labstation host is not updated
 			_, err = state.GetStateRecord(ctx, "hosts/BlueLabstation-17")
@@ -826,7 +826,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutMachinelse3))
+			assert.Loosely(t, resp, should.Match(dutMachinelse3))
 		})
 
 		t.Run("Update machineLSE DUT with Invalid Pool Names", func(t *ftt.Test) {
@@ -849,7 +849,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutMachinelse3))
+			assert.Loosely(t, resp, should.Match(dutMachinelse3))
 		})
 		t.Run("Update machineLSE DUT LogicalZone - DRILLZONE_SFO36 - Failure", func(t *ftt.Test) {
 			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-21")
@@ -868,7 +868,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)
-		assert.Loosely(t, resp, should.Resemble(dutMachinelse3))
+		assert.Loosely(t, resp, should.Match(dutMachinelse3))
 	})
 }
 
@@ -923,7 +923,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(labstationMachinelse2))
+			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
 
 			// No changes happened in this update
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/RedLabstation-11")
@@ -948,7 +948,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(labstationMachinelse2))
+			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
 		})
 
 		t.Run("Update machineLSE Labstation with invalid Pool Names", func(t *ftt.Test) {
@@ -990,7 +990,7 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(labstationMachinelse2))
+			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
 		})
 		t.Run("Update machineLSE Labstation LogicalZone - DRILLZONE_SFO36 - Failure", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
@@ -1486,7 +1486,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(labstationMachinelse2))
+			assert.Loosely(t, resp, should.Match(labstationMachinelse2))
 
 			// No changes happened in this update
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/RedLabstation-11")
@@ -1559,8 +1559,8 @@ func TestUpdateMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"tags"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"tag-1", "tag-2"}))
-			assert.Loosely(t, resp.GetMachines(), should.Resemble([]string{"machine-7"}))
+			assert.Loosely(t, resp.GetTags(), should.Match([]string{"tag-1", "tag-2"}))
+			assert.Loosely(t, resp.GetMachines(), should.Match([]string{"machine-7"}))
 		})
 
 		t.Run("Partially update machinelse virtual datacenter", func(t *ftt.Test) {
@@ -1656,7 +1656,7 @@ func TestUpdateMachineLSE(t *testing.T) {
 			}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetMachines(), should.Resemble([]string{"adm-1"}))
+			assert.Loosely(t, resp.GetMachines(), should.Match([]string{"adm-1"}))
 			assert.Loosely(t, resp.GetAttachedDeviceLse().GetOsVersion().GetValue(), should.Equal("test-os-2"))
 			assert.Loosely(t, resp.GetAttachedDeviceLse().GetAssociatedHostname(), should.Equal("adm-1"))
 			assert.Loosely(t, resp.GetAttachedDeviceLse().GetAssociatedHostPort(), should.Equal("test-port-2"))
@@ -1761,8 +1761,8 @@ func TestUpdateLabMeta(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v3"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v3"}))
 		})
 
 		t.Run("Update a OS machine lse - empty servo topology", func(t *ftt.Test) {
@@ -1790,8 +1790,8 @@ func TestUpdateLabMeta(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v3"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v3"}))
 		})
 
 		t.Run("Update a OS machine lse - two servo components", func(t *ftt.Test) {
@@ -1819,8 +1819,8 @@ func TestUpdateLabMeta(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v34"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v34"}))
 		})
 
 		t.Run("Update a OS machine lse - with three servo componments", func(t *ftt.Test) {
@@ -1849,8 +1849,8 @@ func TestUpdateLabMeta(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo_and_bar"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"foo", "fake"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"foo", "fake"}))
 		})
 
 		t.Run("Update a OS machine lse - with no servo_type", func(t *ftt.Test) {
@@ -1875,7 +1875,7 @@ func TestUpdateLabMeta(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.BeEmpty)
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
 			assert.Loosely(t, len(peri.Servo.GetServoComponent()), should.BeZero)
 		})
 	})
@@ -2002,8 +2002,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v3"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v3"}))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetHostname(), should.Equal(machineName+"-pcap"))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetState(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[1].GetHostname(), should.Equal(machineName+"-router"))
@@ -2078,8 +2078,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v4", "c2d2"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4", "c2d2"}))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetHostname(), should.Equal(machineName+"-router"))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetState(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[1].GetHostname(), should.Equal(machineName+"-pcap"))
@@ -2140,8 +2140,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v4"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4"}))
 		})
 		t.Run("Update a OS machine LSE - three servo components", func(t *ftt.Test) {
 			const machineName = "machine-labdata-6"
@@ -2169,8 +2169,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo_and_bar"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"v4", "v5"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"v4", "v5"}))
 		})
 		t.Run("Update a OS machine LSE with no servo_type", func(t *ftt.Test) {
 			const machineName = "machine-labdata-7"
@@ -2195,7 +2195,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type_with_foo_and_bar"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
 			assert.Loosely(t, len(peri.Servo.GetServoComponent()), should.BeZero)
 		})
 		t.Run("Update a OS machine LSE - wifi router state update, ResourceState update", func(t *ftt.Test) {
@@ -2245,7 +2245,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology))
 			assert.Loosely(t, len(peri.Servo.GetServoComponent()), should.BeZero)
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetHostname(), should.Equal(machineName+"-pcap"))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetState(), should.Equal(chromeosLab.PeripheralState_WORKING))
@@ -2276,8 +2276,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			peri = req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
 			assert.Loosely(t, peri.GetSmartUsbhub(), should.BeTrue)
 			assert.Loosely(t, peri.Servo.GetServoType(), should.Equal("fake-type"))
-			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Resemble(topology2))
-			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Resemble([]string{"hi"}))
+			assert.Loosely(t, peri.Servo.GetServoTopology(), should.Match(topology2))
+			assert.Loosely(t, peri.Servo.GetServoComponent(), should.Match([]string{"hi"}))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetHostname(), should.Equal(machineName+"-router"))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[0].GetState(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, peri.GetWifi().GetWifiRouters()[1].GetHostname(), should.Equal(machineName+"-pcap-new"))
@@ -3100,19 +3100,19 @@ func TestListMachineLSEs(t *testing.T) {
 		t.Run("List MachineLSEs - filter switch - happy path with filter", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEs(ctx, 5, "", "switch=switch-1", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEsWithProperties))
+			assert.Loosely(t, resp, should.Match(machineLSEsWithProperties))
 		})
 
 		t.Run("List MachineLSEs - filter hive - happy path with filter", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEs(ctx, 5, "", "hive=hive-1", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEsWithProperties))
+			assert.Loosely(t, resp, should.Match(machineLSEsWithProperties))
 		})
 
 		t.Run("ListMachineLSEs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachineLSEs(ctx, 5, "", "", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 
 		t.Run("List machineLSEs - list machine lses with free slots", func(t *ftt.Test) {
@@ -3163,7 +3163,7 @@ func TestBatchGetMachineLSEs(t *testing.T) {
 			resp, err := inventory.BatchGetMachineLSEs(ctx, []string{"lse-batchGet-0", "lse-batchGet-1", "lse-batchGet-2", "lse-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(lses))
+			assert.Loosely(t, resp, should.Match(lses))
 		})
 		t.Run("Batch get machine lses - missing id", func(t *ftt.Test) {
 			resp, err := inventory.BatchGetMachineLSEs(ctx, []string{"lse-batchGet-non-existing"})
@@ -3210,7 +3210,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := CreateMachineLSE(ctx, mlse, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(mlse))
+			assert.Loosely(t, resp, should.Match(mlse))
 		})
 
 		t.Run("CreateMachineLSE without permission - fail", func(t *ftt.Test) {
@@ -3300,7 +3300,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
+			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
 		})
 
 		t.Run("UpdateMachineLSE without permission - fail", func(t *ftt.Test) {
@@ -3355,7 +3355,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Machines, should.Resemble([]string{"machine-7.1"}))
+			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-7.1"}))
 		})
 
 		t.Run("UpdateMachineLSE(new machine and different realm) without permission - fail", func(t *ftt.Test) {
@@ -3425,7 +3425,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Machines, should.Resemble([]string{"machine-9.1"}))
+			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-9.1"}))
 		})
 
 		t.Run("Partial UpdateMachineLSE with permission - pass", func(t *ftt.Test) {
@@ -3449,7 +3449,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"tags"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
+			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
 		})
 
 		t.Run("Partial UpdateMachineLSE without permission - fail", func(t *ftt.Test) {
@@ -3504,7 +3504,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Machines, should.Resemble([]string{"machine-12.1"}))
+			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-12.1"}))
 		})
 
 		t.Run("Partial UpdateMachineLSE(new machine and different realm) without permission - fail", func(t *ftt.Test) {
@@ -3574,7 +3574,7 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			resp, err := UpdateMachineLSE(ctx, mlse, &field_mask.FieldMask{Paths: []string{"machines"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Machines, should.Resemble([]string{"machine-14.1"}))
+			assert.Loosely(t, resp.Machines, should.Match([]string{"machine-14.1"}))
 		})
 
 	})
@@ -3864,9 +3864,9 @@ func TestGetAttachedDeviceData(t *testing.T) {
 			resp, err := GetAttachedDeviceData(ctx, admlse)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(admlse))
-			assert.Loosely(t, resp.GetMachine(), should.Resemble(machine))
-			assert.Loosely(t, resp.GetDutState(), should.Resemble(dutState))
+			assert.Loosely(t, resp.GetLabConfig(), should.Match(admlse))
+			assert.Loosely(t, resp.GetMachine(), should.Match(machine))
+			assert.Loosely(t, resp.GetDutState(), should.Match(dutState))
 		})
 
 		t.Run("GetAttachedDeviceData - machine not found by hostname", func(t *ftt.Test) {
@@ -3877,7 +3877,7 @@ func TestGetAttachedDeviceData(t *testing.T) {
 			resp, err := GetAttachedDeviceData(ctx, admlse2)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(admlse2))
+			assert.Loosely(t, resp.GetLabConfig(), should.Match(admlse2))
 			assert.Loosely(t, resp.GetMachine(), should.BeNil)
 			assert.Loosely(t, resp.GetDutState(), should.BeNil)
 		})
@@ -3890,7 +3890,7 @@ func TestGetAttachedDeviceData(t *testing.T) {
 			resp, err := GetAttachedDeviceData(ctx, admlse3)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetLabConfig(), should.Resemble(admlse3))
+			assert.Loosely(t, resp.GetLabConfig(), should.Match(admlse3))
 			assert.Loosely(t, resp.GetMachine(), should.BeNil)
 			assert.Loosely(t, resp.GetDutState(), should.BeNil)
 		})
@@ -4136,10 +4136,10 @@ func TestGetMachineLSEBySerial(t *testing.T) {
 			}
 			resp, err := inventory.CreateMachineLSE(ctx, host)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(host))
+			assert.Loosely(t, resp, should.Match(host))
 			resp, err = GetMachineLSEBySerial(ctx, "e34a2b3c8c8e9f8acc", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(host))
+			assert.Loosely(t, resp, should.Match(host))
 		})
 	})
 }
@@ -4162,7 +4162,7 @@ func TestGetHostData(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f9acc", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, retMachine, should.Resemble(creMachine))
+			assert.Loosely(t, retMachine, should.Match(creMachine))
 		})
 		t.Run("GetHostData - Multiple machines with serial", func(t *ftt.Test) {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
@@ -4205,7 +4205,7 @@ func TestGetHostData(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f2acc", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, retMachine, should.Resemble(creMachine))
+			assert.Loosely(t, retMachine, should.Match(creMachine))
 		})
 		t.Run("GetHostData - Happy path", func(t *ftt.Test) {
 			creMachine := &ufspb.Machine{
@@ -4221,11 +4221,11 @@ func TestGetHostData(t *testing.T) {
 			}
 			resp, err := inventory.CreateMachineLSE(ctx, host)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(host))
+			assert.Loosely(t, resp, should.Match(host))
 			resp, retMachine, err := GetHostData(ctx, "e34a2b3c8c8e9f8acc", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(host))
-			assert.Loosely(t, retMachine, should.Resemble(creMachine))
+			assert.Loosely(t, resp, should.Match(host))
+			assert.Loosely(t, retMachine, should.Match(creMachine))
 		})
 	})
 }

@@ -33,13 +33,13 @@ func TestCommitcheck(t *testing.T) {
 		emptyResults := &tricium.Data_Results{}
 
 		checkForTest(good1, results)
-		assert.Loosely(t, results, should.Resemble(emptyResults))
+		assert.Loosely(t, results, should.Match(emptyResults))
 		checkForTest(good2, results)
-		assert.Loosely(t, results, should.Resemble(emptyResults))
+		assert.Loosely(t, results, should.Match(emptyResults))
 		checkForBug(good1, results)
-		assert.Loosely(t, results, should.Resemble(emptyResults))
+		assert.Loosely(t, results, should.Match(emptyResults))
 		checkForBug(good2, results)
-		assert.Loosely(t, results, should.Resemble(emptyResults))
+		assert.Loosely(t, results, should.Match(emptyResults))
 	})
 
 	ftt.Run("Leave comment when no TEST= or empty TEST= found", t, func(t *ftt.Test) {
@@ -55,7 +55,7 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range noTestStrings {
 			results := &tricium.Data_Results{}
 			checkForTest(s, results)
-			assert.Loosely(t, results, should.Resemble(expectedResults))
+			assert.Loosely(t, results, should.Match(expectedResults))
 		}
 	})
 
@@ -72,7 +72,7 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range noBugStrings {
 			results := &tricium.Data_Results{}
 			checkForBug(s, results)
-			assert.Loosely(t, results, should.Resemble(expectedResults))
+			assert.Loosely(t, results, should.Match(expectedResults))
 		}
 	})
 
@@ -89,7 +89,7 @@ func TestCommitcheck(t *testing.T) {
 		for _, s := range badBugStrings {
 			results := &tricium.Data_Results{}
 			checkForBug(s, results)
-			assert.Loosely(t, results, should.Resemble(expectedResults))
+			assert.Loosely(t, results, should.Match(expectedResults))
 		}
 	})
 }

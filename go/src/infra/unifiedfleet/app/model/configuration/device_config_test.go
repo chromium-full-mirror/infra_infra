@@ -75,23 +75,23 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		}
 		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfgs[0]}, constantRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfgs[0]}))
+		assert.Loosely(t, resp, should.Match([]*deviceconfig.Config{cfgs[0]}))
 		t.Run("That config is written to datastore", func(t *ftt.Test) {
 			cfg0, err := GetDeviceConfigACL(ctx, GetConfigID("board0", "model0", "variant0"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, cfg0, should.Resemble(cfgs[0]))
+			assert.Loosely(t, cfg0, should.Match(cfgs[0]))
 		})
 		t.Run("When both that config and another config is added", func(t *ftt.Test) {
 			resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfgs[0], cfgs[1]}, constantRealmAssigner)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfgs[0], cfgs[1]}))
+			assert.Loosely(t, resp, should.Match([]*deviceconfig.Config{cfgs[0], cfgs[1]}))
 			t.Run("Both configs are accessible", func(t *ftt.Test) {
 				cfg0, err := GetDeviceConfigACL(ctx, GetConfigID("board0", "model0", "variant0"))
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, cfg0, should.Resemble(cfgs[0]))
+				assert.Loosely(t, cfg0, should.Match(cfgs[0]))
 				cfg1, err := GetDeviceConfigACL(ctx, GetConfigID("board1", "model1", "variant1"))
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, cfg1, should.Resemble(cfgs[1]))
+				assert.Loosely(t, cfg1, should.Match(cfgs[1]))
 			})
 		})
 	})
@@ -115,7 +115,7 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		// note boardRealmAssigner
 		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg}, constantRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg}))
+		assert.Loosely(t, resp, should.Match([]*deviceconfig.Config{cfg}))
 		t.Run("Entity in datastore has correct realm", func(t *ftt.Test) {
 			entity := &DeviceConfigEntity{
 				ID: GetDeviceConfigIDStr(GetConfigID("board", "model", "variant")),
@@ -137,11 +137,11 @@ func TestGetDeviceConfig(t *testing.T) {
 	ftt.Run("When a config is added", t, func(t *ftt.Test) {
 		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg}, BoardModelRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg}))
+		assert.Loosely(t, resp, should.Match([]*deviceconfig.Config{cfg}))
 		t.Run("That config can be accessed", func(t *ftt.Test) {
 			cfg_resp, err := GetDeviceConfigACL(ctx, GetConfigID("board", "model", "variant"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, cfg_resp, should.Resemble(cfg))
+			assert.Loosely(t, cfg_resp, should.Match(cfg))
 		})
 		t.Run("Another config cannot be accessed", func(t *ftt.Test) {
 			cfg_resp, err := GetDeviceConfigACL(ctx, GetConfigID("board2", "model2", "variant2"))
@@ -176,26 +176,26 @@ func TestDeviceConfigsExist(t *testing.T) {
 	ftt.Run("When a config is added", t, func(t *ftt.Test) {
 		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfg, cfg1}, BoardModelRealmAssigner)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble([]*deviceconfig.Config{cfg, cfg1}))
+		assert.Loosely(t, resp, should.Match([]*deviceconfig.Config{cfg, cfg1}))
 		t.Run("DeviceConfigsExist should correctly report that config exists, and other config does not", func(t *ftt.Test) {
 			cfgIDs := []*deviceconfig.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("non", "existant", "config")}
 			exists, err := DeviceConfigsExistACL(ctx, cfgIDs)
 
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, exists, should.Resemble([]bool{true, false}))
+			assert.Loosely(t, exists, should.Match([]bool{true, false}))
 		})
 		t.Run("DeviceConfigsExist should only report that configs the user can see are returned", func(t *ftt.Test) {
 			cfgIDs := []*deviceconfig.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("board-hidden", "model-hidden", "variant")}
 			exists, err := DeviceConfigsExistACL(ctx, cfgIDs)
 
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, exists, should.Resemble([]bool{true, false}))
+			assert.Loosely(t, exists, should.Match([]bool{true, false}))
 
 			fullPermsCtx := grantRealmPerms(baseCtx, "chromeos:board-model", "chromeos:board-hidden-model-hidden")
 			exists, err = DeviceConfigsExistACL(fullPermsCtx, cfgIDs)
 
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, exists, should.Resemble([]bool{true, true}))
+			assert.Loosely(t, exists, should.Match([]bool{true, true}))
 		})
 	})
 }

@@ -69,7 +69,7 @@ func TestFetchRecentRequests(t *testing.T) {
 			})
 			rs, err := FetchRecentRequests(ctx, &mockConfigProvider{})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, rs, should.Resemble([]*AnalyzeRequest{request}))
+			assert.Loosely(t, rs, should.Match([]*AnalyzeRequest{request}))
 		})
 
 		t.Run("FetchRecentRequests other user", func(t *ftt.Test) {

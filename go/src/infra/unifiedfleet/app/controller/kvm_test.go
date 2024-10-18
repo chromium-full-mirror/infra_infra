@@ -98,7 +98,7 @@ func TestCreateKVM(t *testing.T) {
 			}
 			resp, err := CreateKVM(ctx, kvm2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm2))
+			assert.Loosely(t, resp, should.Match(kvm2))
 			s, err := state.GetStateRecord(ctx, "kvms/kvm-2")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
@@ -148,7 +148,7 @@ func TestCreateKVM(t *testing.T) {
 			}
 			resp, err := CreateKVM(ctx, kvm1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm1))
+			assert.Loosely(t, resp, should.Match(kvm1))
 
 			s, err := state.GetStateRecord(ctx, "kvms/kvm-20")
 			assert.Loosely(t, err, should.BeNil)
@@ -280,7 +280,7 @@ func TestUpdateKVM(t *testing.T) {
 			resp, err := UpdateKVM(ctx, kvm3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm3))
+			assert.Loosely(t, resp, should.Match(kvm3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "kvms/kvm-3")
 			assert.Loosely(t, err, should.BeNil)
@@ -319,7 +319,7 @@ func TestUpdateKVM(t *testing.T) {
 			resp, err := UpdateKVM(ctx, kvm1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm1))
+			assert.Loosely(t, resp, should.Match(kvm1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "kvms/kvm-5")
 			assert.Loosely(t, err, should.BeNil)
@@ -392,7 +392,7 @@ func TestUpdateKVM(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetChromePlatform(), should.Match("chromePlatform-8"))
 			assert.Loosely(t, resp.GetMacAddress(), should.Match("efgh"))
-			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"testkvm"}))
+			assert.Loosely(t, resp.GetTags(), should.Match([]string{"testkvm"}))
 		})
 
 		t.Run("Partial Update kvm mac address - duplicated mac address", func(t *ftt.Test) {
@@ -596,7 +596,7 @@ func TestUpdateKVM(t *testing.T) {
 			resp, err := UpdateKVM(ctx, kvm3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm3))
+			assert.Loosely(t, resp, should.Match(kvm3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "kvms/kvm-55")
 			assert.Loosely(t, err, should.BeNil)
@@ -792,7 +792,7 @@ func TestDeleteKVM(t *testing.T) {
 			resp, err := registration.GetKVM(ctx, "KVM-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "kvms/KVM-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -991,13 +991,13 @@ func TestListKVMs(t *testing.T) {
 		t.Run("List KVMs - filter chromeplatform - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListKVMs(ctx, 5, "", "platform=chromeplatform-12", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(kvmsWithChromeplatform))
+			assert.Loosely(t, resp, should.Match(kvmsWithChromeplatform))
 		})
 
 		t.Run("ListKVMs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListKVMs(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(kvms))
+			assert.Loosely(t, resp, should.Match(kvms))
 		})
 	})
 }
@@ -1017,7 +1017,7 @@ func TestBatchGetKVMs(t *testing.T) {
 			resp, err := registration.BatchGetKVM(ctx, []string{"kvm-batchGet-0", "kvm-batchGet-1", "kvm-batchGet-2", "kvm-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(kvms))
+			assert.Loosely(t, resp, should.Match(kvms))
 		})
 		t.Run("Batch get kvms - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetKVM(ctx, []string{"kvm-batchGet-non-existing"})

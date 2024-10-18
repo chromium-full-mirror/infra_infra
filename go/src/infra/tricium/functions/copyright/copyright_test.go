@@ -40,7 +40,7 @@ func TestCopyrightChecker(t *testing.T) {
 	ftt.Run("Finds an issue when copyright doesn't match expected pattern", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, badBsd)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match(&tricium.Data_Comment{
 			Category: "Copyright/Incorrect",
 			Message: ("Incorrect copyright statement.\n" +
 				"Use the following for BSD:\n" +
@@ -63,7 +63,7 @@ func TestCopyrightChecker(t *testing.T) {
 	ftt.Run("Makes a comment when there appears to be no copyright header", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, missing)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match(&tricium.Data_Comment{
 			Category: "Copyright/Missing",
 			Message: ("Missing copyright statement.\n" +
 				"Use the following for BSD:\n" +
@@ -86,7 +86,7 @@ func TestCopyrightChecker(t *testing.T) {
 	ftt.Run("Makes a comment when there is a copyright statement but the old style is used", t, func(t *ftt.Test) {
 		c := checkCopyright(baseDir, old)
 		assert.Loosely(t, c, should.NotBeNil)
-		assert.Loosely(t, c, should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, c, should.Match(&tricium.Data_Comment{
 			Category: "Copyright/OutOfDate",
 			Message: "Out of date copyright statement (omit the (c) to update).\n\n" +
 				"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers",

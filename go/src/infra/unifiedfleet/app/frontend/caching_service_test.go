@@ -42,7 +42,7 @@ func TestCreateCachingService(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateCachingService(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cs))
+			assert.Loosely(t, resp, should.Match(cs))
 		})
 
 		t.Run("Create new CachingService with nil entity", func(t *ftt.Test) {
@@ -128,7 +128,7 @@ func TestUpdateCachingService(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateCachingService(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(cs1))
+			assert.Loosely(t, resp, should.Match(cs1))
 		})
 
 		t.Run("Update CachingService - Invalid input nil", func(t *ftt.Test) {
@@ -205,7 +205,7 @@ func TestGetCachingService(t *testing.T) {
 			resp, _ := tf.Fleet.GetCachingService(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			assert.Loosely(t, resp, should.Resemble(cs))
+			assert.Loosely(t, resp, should.Match(cs))
 		})
 
 		t.Run("Get CachingService - Invalid input empty name", func(t *ftt.Test) {
@@ -303,7 +303,7 @@ func TestListCachingServices(t *testing.T) {
 			resp, err := tf.Fleet.ListCachingServices(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.CachingServices, should.Resemble(cachingServices))
+			assert.Loosely(t, resp.CachingServices, should.Match(cachingServices))
 		})
 
 		t.Run("ListCachingServices - filter format invalid format OR - error", func(t *ftt.Test) {

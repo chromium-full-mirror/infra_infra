@@ -138,7 +138,7 @@ func TestImportBotConfigs(t *testing.T) {
 			p, err := botResp.GetProto()
 			assert.Loosely(t, err, should.BeNil)
 			pm := p.(*ufspb.OwnershipData)
-			assert.Loosely(t, pm, should.Resemble(resp.Ownership))
+			assert.Loosely(t, pm, should.Match(resp.Ownership))
 
 			// Import Again, should not update the Asset
 			err = ImportBotConfigs(ctx)
@@ -147,7 +147,7 @@ func TestImportBotConfigs(t *testing.T) {
 			assert.Loosely(t, resp2, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
-			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Match(resp.GetUpdateTime()))
 		})
 	})
 }
@@ -257,8 +257,8 @@ func TestImportSecurityConfig(t *testing.T) {
 			p, err := botResp.GetProto()
 			assert.Loosely(t, err, should.BeNil)
 			pm := p.(*ufspb.OwnershipData)
-			assert.Loosely(t, pm, should.Resemble(resp.Ownership))
-			assert.Loosely(t, pm.GetPools(), should.Resemble([]string{"abc"}))
+			assert.Loosely(t, pm, should.Match(resp.Ownership))
+			assert.Loosely(t, pm.GetPools(), should.Match([]string{"abc"}))
 
 			// Update ownership and Import Again, should update the ownership to the original value
 			pm.Pools = []string{"dummy"}
@@ -277,7 +277,7 @@ func TestImportSecurityConfig(t *testing.T) {
 			assert.Loosely(t, resp2, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
-			assert.Loosely(t, resp2.Ownership, should.Resemble(resp.Ownership))
+			assert.Loosely(t, resp2.Ownership, should.Match(resp.Ownership))
 		})
 		t.Run("happy path - Bot ID Prefix", func(t *ftt.Test) {
 			ctx := encTestingContext()
@@ -329,7 +329,7 @@ func TestImportSecurityConfig(t *testing.T) {
 			assert.Loosely(t, resp2, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
-			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Match(resp.GetUpdateTime()))
 		})
 		t.Run("happy path - Bot ID Prefix for VM", func(t *ftt.Test) {
 			ctx := encTestingContext()
@@ -357,7 +357,7 @@ func TestImportSecurityConfig(t *testing.T) {
 			assert.Loosely(t, resp2, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp2.Ownership, should.NotBeNil)
-			assert.Loosely(t, resp2.GetUpdateTime(), should.Resemble(resp.GetUpdateTime()))
+			assert.Loosely(t, resp2.GetUpdateTime(), should.Match(resp.GetUpdateTime()))
 		})
 	})
 }
@@ -384,7 +384,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			assert.Loosely(t, resp.Ownership.SwarmingInstance, should.Equal("testSwarming"))
 			assert.Loosely(t, resp.Ownership.Customer, should.Equal("customer"))
 			assert.Loosely(t, resp.Ownership.SecurityLevel, should.Equal("trusted"))
-			assert.Loosely(t, resp.Ownership.Builders, should.Resemble([]string{"builder"}))
+			assert.Loosely(t, resp.Ownership.Builders, should.Match([]string{"builder"}))
 		})
 		t.Run("Does not update non existent bots", func(t *ftt.Test) {
 			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
@@ -447,7 +447,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			assert.Loosely(t, resp.Ownership.SwarmingInstance, should.Equal("testSwarming"))
 			assert.Loosely(t, resp.Ownership.Customer, should.Equal("customer"))
 			assert.Loosely(t, resp.Ownership.SecurityLevel, should.Equal("trusted"))
-			assert.Loosely(t, resp.Ownership.Builders, should.Resemble([]string{"builder"}))
+			assert.Loosely(t, resp.Ownership.Builders, should.Match([]string{"builder"}))
 
 			// Clear machine entry ownership data
 			registration.UpdateMachineOwnership(ctx, "test100-1", nil)
@@ -474,23 +474,23 @@ func TestParseBotIds(t *testing.T) {
 	ftt.Run("Parse ENC Bot Config", t, func(t *ftt.Test) {
 		t.Run("Parse comma separated and ranges", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,12}-483")
-			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483", "mac12-483"}))
+			assert.Loosely(t, ids, should.Match([]string{"mac9-483", "mac10-483", "mac11-483", "mac12-483"}))
 		})
 		t.Run("Parse multiple ranges", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,18..20}-483")
-			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483", "mac18-483", "mac19-483", "mac20-483"}))
+			assert.Loosely(t, ids, should.Match([]string{"mac9-483", "mac10-483", "mac11-483", "mac18-483", "mac19-483", "mac20-483"}))
 		})
 		t.Run("Parse invalid range - ignores invalid range", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,22..20}-483")
-			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483"}))
+			assert.Loosely(t, ids, should.Match([]string{"mac9-483", "mac10-483", "mac11-483"}))
 		})
 		t.Run("Parse mal formed range - ignores malformed range", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10..11,..20}-483")
-			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483", "mac11-483"}))
+			assert.Loosely(t, ids, should.Match([]string{"mac9-483", "mac10-483", "mac11-483"}))
 		})
 		t.Run("Parse non digit characters in range - ignores", func(t *ftt.Test) {
 			ids := parseBotIds("mac{9,10,11..a}-483")
-			assert.Loosely(t, ids, should.Resemble([]string{"mac9-483", "mac10-483"}))
+			assert.Loosely(t, ids, should.Match([]string{"mac9-483", "mac10-483"}))
 		})
 	})
 }

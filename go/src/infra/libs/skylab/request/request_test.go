@@ -47,7 +47,7 @@ func TestBuilderID(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, req, should.NotBeNil)
 			t.Run("then request should have a builder ID.", func(t *ftt.Test) {
-				assert.Loosely(t, req.Builder, should.Resemble(&id))
+				assert.Loosely(t, req.Builder, should.Match(&id))
 			})
 		})
 	})
@@ -98,7 +98,7 @@ func TestDimensionsBB(t *testing.T) {
 					},
 				}
 
-				assert.Loosely(t, sortBBDimensions(req.Dimensions), should.Resemble(sortBBDimensions(want)))
+				assert.Loosely(t, sortBBDimensions(req.Dimensions), should.Match(sortBBDimensions(want)))
 			})
 		})
 	})
@@ -155,7 +155,7 @@ func TestPropertiesBB(t *testing.T) {
 				err = jsonpb.UnmarshalString(s, &got)
 				assert.Loosely(t, err, should.BeNil)
 
-				assert.Loosely(t, &got, should.Resemble(&want))
+				assert.Loosely(t, &got, should.Match(&want))
 			})
 		})
 	})
@@ -242,7 +242,7 @@ func TestCFTPropertiesBB(t *testing.T) {
 				err = jsonpb.UnmarshalString(s, &got)
 				assert.Loosely(t, err, should.BeNil)
 
-				assert.Loosely(t, &got, should.Resemble(&want))
+				assert.Loosely(t, &got, should.Match(&want))
 			})
 		})
 	})
@@ -264,7 +264,7 @@ func TestExperimentsBB(t *testing.T) {
 					"chromeos.a.b": true,
 					"chromeos.c.d": true,
 				}
-				assert.Loosely(t, req.Experiments, should.Resemble(want))
+				assert.Loosely(t, req.Experiments, should.Match(want))
 			})
 		})
 	})
@@ -294,7 +294,7 @@ func TestTagsBB(t *testing.T) {
 					},
 				}
 
-				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Resemble(sortBBStringPairs(want)))
+				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Match(sortBBStringPairs(want)))
 			})
 		})
 	})
@@ -319,7 +319,7 @@ func TestGerritChangesBB(t *testing.T) {
 			assert.Loosely(t, req, should.NotBeNil)
 			t.Run("then request should have the correct Gerrit Changes", func(t *ftt.Test) {
 				assert.Loosely(t, req.GerritChanges, should.HaveLength(1))
-				assert.Loosely(t, req.GerritChanges, should.Resemble([]*buildbucket_pb.GerritChange{gc}))
+				assert.Loosely(t, req.GerritChanges, should.Match([]*buildbucket_pb.GerritChange{gc}))
 			})
 			t.Run("and the hide-in-gerrit tag", func(t *ftt.Test) {
 				assert.Loosely(t, req.Tags, should.HaveLength(3))
@@ -339,7 +339,7 @@ func TestGerritChangesBB(t *testing.T) {
 					},
 				}
 
-				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Resemble(sortBBStringPairs(want)))
+				assert.Loosely(t, sortBBStringPairs(req.Tags), should.Match(sortBBStringPairs(want)))
 			})
 		})
 	})
@@ -423,7 +423,7 @@ func TestResultsConfigBB(t *testing.T) {
 				err = jsonpb.UnmarshalString(s, &got)
 				assert.Loosely(t, err, should.BeNil)
 
-				assert.Loosely(t, &got, should.Resemble(&want))
+				assert.Loosely(t, &got, should.Match(&want))
 			})
 		})
 	})

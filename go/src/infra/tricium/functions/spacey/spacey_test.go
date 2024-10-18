@@ -18,7 +18,7 @@ import (
 
 func TestCheckSpaceMix(t *testing.T) {
 	ftt.Run("Finds tab + single space mix", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkSpaceMix("test.file", "\t code", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkSpaceMix("test.file", "\t code", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -58,7 +58,7 @@ func TestCheckSpaceMix(t *testing.T) {
 	})
 
 	ftt.Run("Finds tab + multiple space mix", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkSpaceMix("test.file", "\t  code", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkSpaceMix("test.file", "\t  code", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -98,7 +98,7 @@ func TestCheckSpaceMix(t *testing.T) {
 	})
 
 	ftt.Run("Finds space + tab mix", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkSpaceMix("test.file", " \tcode", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkSpaceMix("test.file", " \tcode", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -138,7 +138,7 @@ func TestCheckSpaceMix(t *testing.T) {
 	})
 
 	ftt.Run("Finds other whitespace mix", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkSpaceMix("test.file", "\t\v\f...", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkSpaceMix("test.file", "\t\v\f...", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/SpaceMix",
 			Message:   "Found mix of white space characters",
@@ -196,7 +196,7 @@ func TestCheckSpaceMix(t *testing.T) {
 
 func TestCheckTrailingSpace(t *testing.T) {
 	ftt.Run("Finds single trailing space", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkTrailingSpace("test.file", "code ", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkTrailingSpace("test.file", "code ", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/TrailingSpace",
 			Message:   "Found trailing space",
@@ -223,7 +223,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 	})
 
 	ftt.Run("Finds multiple trailing spaces", t, func(t *ftt.Test) {
-		assert.Loosely(t, checkTrailingSpace("test.file", "code  ", 1), should.Resemble(&tricium.Data_Comment{
+		assert.Loosely(t, checkTrailingSpace("test.file", "code  ", 1), should.Match(&tricium.Data_Comment{
 			Path:      "test.file",
 			Category:  "Spacey/TrailingSpace",
 			Message:   "Found trailing space",
@@ -258,7 +258,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 func TestCheckTrailingLines(t *testing.T) {
 	ftt.Run("Finds trailing lines at the end of a file", t, func(t *ftt.Test) {
 		assert.Loosely(t, analyzeFile(bufio.NewScanner(strings.NewReader("some code\nsome more code\n\n\n")),
-			"file.path"), should.Resemble([]*tricium.Data_Comment{
+			"file.path"), should.Match([]*tricium.Data_Comment{
 			{
 				Category:  "Spacey/TrailingLines",
 				Message:   "Found empty line(s) at the end of the file",
@@ -317,7 +317,7 @@ func TestMergingSimilarComments(t *testing.T) {
 		}}
 
 		organizedComments := organizeCommentsByCategory(inputComments)
-		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Resemble(expectedComments))
+		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Match(expectedComments))
 	})
 
 	ftt.Run("Keeps similar comments separate if their number of occurrences is below set limit", t, func(t *ftt.Test) {
@@ -343,6 +343,6 @@ func TestMergingSimilarComments(t *testing.T) {
 		}
 
 		organizedComments := organizeCommentsByCategory(inputComments)
-		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Resemble(inputComments))
+		assert.Loosely(t, mergeComments(organizedComments, "test.file"), should.Match(inputComments))
 	})
 }

@@ -28,6 +28,6 @@ func TestGetLastCheckedVMMacAddress(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		resp, err := GetServiceConfig(ctx)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, resp.LastCheckedVMMacAddress, should.Resemble("000000"))
+		assert.Loosely(t, resp.LastCheckedVMMacAddress, should.Match("000000"))
 	})
 }

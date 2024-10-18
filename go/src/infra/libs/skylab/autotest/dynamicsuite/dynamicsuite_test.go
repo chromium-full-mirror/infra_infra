@@ -41,7 +41,7 @@ func TestRequest(t *testing.T) {
 				"--pool", "pool",
 				"--suite_args_json", `{"args_dict_json":"{\"arg_1\":1,\"arg_2\":[\"v1\",\"v2\"]}"}`,
 			}
-			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Resemble(expected))
+			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Match(expected))
 		})
 	})
 }
@@ -74,7 +74,7 @@ func TestLegacyRequest(t *testing.T) {
 				"--pool", "pool",
 				"--suite_args_json", "{}",
 			}
-			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Resemble(expected))
+			assert.Loosely(t, req.TaskSlices[0].Properties.Command, should.Match(expected))
 		})
 	})
 }

@@ -119,6 +119,6 @@ func TestLocationTag(t *testing.T) {
 		}
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, tags, should.Resemble(expected))
+		assert.Loosely(t, tags, should.Match(expected))
 	})
 }

@@ -54,13 +54,13 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 		}
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("Analyzing simple file with one misspelling generates one comment", t, func(t *ftt.Test) {
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader("Updat the thing")), "", true, nil, results)
-		assert.Loosely(t, results, should.Resemble(&tricium.Data_Results{
+		assert.Loosely(t, results, should.Match(&tricium.Data_Results{
 			Comments: []*tricium.Data_Comment{
 				{
 					Path:      "",
@@ -111,7 +111,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 		fileContent := "TODO(nams): do someting\nFIXME(zuser): fix me\n"
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		assert.Loosely(t, results.Comments, should.Resemble([]*tricium.Data_Comment{
+		assert.Loosely(t, results.Comments, should.Match([]*tricium.Data_Comment{
 			{
 				Path:      "test.txt",
 				Message:   `"someting" is a possible misspelling of "something".`,
@@ -315,7 +315,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("One line with both types of comment patterns", t, func(t *ftt.Test) {
@@ -376,7 +376,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("Block comment across multiple lines", t, func(t *ftt.Test) {
@@ -437,7 +437,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("One line comment with // separating misspelled words", t, func(t *ftt.Test) {
@@ -522,7 +522,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("All words in a text file are analyzed", t, func(t *ftt.Test) {
@@ -596,7 +596,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.txt", true, cp[".txt"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("Analyzing HTML file generates appropriate comments", t, func(t *ftt.Test) {
@@ -633,7 +633,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.html", false, cp[".html"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("Same misspelling multiple times in one line", t, func(t *ftt.Test) {
@@ -694,7 +694,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 	})
 
 	ftt.Run("Words joined in camelcase should be checked individually", t, func(t *ftt.Test) {
@@ -731,7 +731,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 
 		results := &tricium.Data_Results{}
 		analyzeFile(bufio.NewScanner(strings.NewReader(fileContent)), "test.c", false, cp[".c"], results)
-		assert.Loosely(t, results, should.Resemble(expected))
+		assert.Loosely(t, results, should.Match(expected))
 
 		t.Run("unless the entire word is in the ignore list", func(t *ftt.Test) {
 			fileContent := "token WontFix is OK"
@@ -747,19 +747,19 @@ func TestGettingCommentFormat(t *testing.T) {
 	cp := loadCommentFormats()
 
 	ftt.Run("The appropriate comment formats are determined from the file extensions", t, func(t *ftt.Test) {
-		assert.Loosely(t, cp[".py"], should.Resemble(&commentFormat{
+		assert.Loosely(t, cp[".py"], should.Match(&commentFormat{
 			LineStart:  "#",
 			BlockStart: `"""`,
 			BlockEnd:   `"""`,
 		}))
 
-		assert.Loosely(t, cp[".c"], should.Resemble(&commentFormat{
+		assert.Loosely(t, cp[".c"], should.Match(&commentFormat{
 			LineStart:  "//",
 			BlockStart: `/*`,
 			BlockEnd:   `*/`,
 		}))
 
-		assert.Loosely(t, cp[".html"], should.Resemble(&commentFormat{
+		assert.Loosely(t, cp[".html"], should.Match(&commentFormat{
 			BlockStart: `<!--`,
 			BlockEnd:   `-->`,
 		}))

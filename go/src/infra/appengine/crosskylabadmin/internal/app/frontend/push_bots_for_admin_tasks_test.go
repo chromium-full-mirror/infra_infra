@@ -331,8 +331,8 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-a", "/internal/task/cros_repair/pool-cfg-bot-b"}
 		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-a&expectedState=needs_repair&swarmingPool=pool-cfg-a", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
-		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
-		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
+		assert.Loosely(t, taskPaths, should.Match(expectedPaths))
+		assert.Loosely(t, taskParams, should.Match(expectedParams))
 	})
 }
 
@@ -456,7 +456,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-b"}
 		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
-		assert.Loosely(t, taskPaths, should.Resemble(expectedPaths))
-		assert.Loosely(t, taskParams, should.Resemble(expectedParams))
+		assert.Loosely(t, taskPaths, should.Match(expectedPaths))
+		assert.Loosely(t, taskParams, should.Match(expectedParams))
 	})
 }

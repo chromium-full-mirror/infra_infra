@@ -31,7 +31,7 @@ func TestImportDHCPConfigs(t *testing.T) {
 			assert.Loosely(t, resp.Passed(), should.HaveLength(len(dhcps)))
 			getRes, _, err := ListDHCPConfigs(ctx, 100, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, getRes, should.Resemble(dhcps))
+			assert.Loosely(t, getRes, should.Match(dhcps))
 		})
 		t.Run("happy path also for importing existing dhcp configs", func(t *ftt.Test) {
 			dhcps1 := []*ufspb.DHCPConfig{

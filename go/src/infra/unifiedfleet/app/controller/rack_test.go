@@ -201,7 +201,7 @@ func TestUpdateRack(t *testing.T) {
 			resp, err := UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rack))
+			assert.Loosely(t, resp, should.Match(rack))
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "racks/rack-2")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(1))
@@ -282,7 +282,7 @@ func TestUpdateRack(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetCapacityRu(), should.Equal(100))
 			assert.Loosely(t, resp.GetBbnum(), should.Equal(255))
-			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"atl", "megarack"}))
+			assert.Loosely(t, resp.GetTags(), should.Match([]string{"atl", "megarack"}))
 		})
 
 		t.Run("Partial Update rack - invalid bbnum", func(t *ftt.Test) {
@@ -378,7 +378,7 @@ func TestUpdateRack(t *testing.T) {
 			})
 			resp, err := UpdateRack(ctx, rack, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rack))
+			assert.Loosely(t, resp, should.Match(rack))
 		})
 
 		t.Run("Update rack(realm name) - permission denied: different realm without permission", func(t *ftt.Test) {
@@ -430,7 +430,7 @@ func TestDeleteRack(t *testing.T) {
 			resp, err := registration.GetRack(ctx, "rack-3")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rack1))
+			assert.Loosely(t, resp, should.Match(rack1))
 
 			// No changes are recorded as the deletion fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-3")
@@ -689,12 +689,12 @@ func TestReplaceRack(t *testing.T) {
 			}
 			resp, err := ReplaceRack(ctx, oldRack1, newRack2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(newRack2))
+			assert.Loosely(t, resp, should.Match(newRack2))
 
 			rlse, err := inventory.GetRackLSE(ctx, "racklse-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, rlse, should.NotBeNil)
-			assert.Loosely(t, rlse.GetRacks(), should.Resemble([]string{"rack-0", "rack-50", "rack-100", "rack-7"}))
+			assert.Loosely(t, rlse.GetRacks(), should.Match([]string{"rack-0", "rack-50", "rack-100", "rack-7"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "racks/rack-4")
 			assert.Loosely(t, err, should.BeNil)
@@ -774,13 +774,13 @@ func TestListRacks(t *testing.T) {
 		t.Run("List Racks - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRacks(ctx, 5, "", "tag=tag-12", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(racksWithSwitch))
+			assert.Loosely(t, resp, should.Match(racksWithSwitch))
 		})
 
 		t.Run("ListRacks - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRacks(ctx, 5, "", "", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(racks))
+			assert.Loosely(t, resp, should.Match(racks))
 		})
 	})
 }
@@ -801,7 +801,7 @@ func TestBatchGetRacks(t *testing.T) {
 			resp, err := registration.BatchGetRacks(ctx, []string{"rack-batchGet-0", "rack-batchGet-1", "rack-batchGet-2", "rack-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get racks  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetRacks(ctx, []string{"rack-batchGet-non-existing"})

@@ -147,7 +147,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg2"
 					]
 				}`))
-				assert.Loosely(t, cmd, should.Resemble([]string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"}))
+				assert.Loosely(t, cmd, should.Match([]string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
 			t.Run("downloads depot_tools for dependent project", func(t *ftt.Test) {
@@ -238,7 +238,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg2"
 					]
 				}`))
-				assert.Loosely(t, cmd, should.Resemble([]string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"}))
+				assert.Loosely(t, cmd, should.Match([]string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
 			t.Run("downloads depot_tools for dependent project", func(t *ftt.Test) {

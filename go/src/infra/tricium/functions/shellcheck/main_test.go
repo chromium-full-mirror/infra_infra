@@ -73,7 +73,7 @@ func TestRun(t *testing.T) {
 		})
 
 		t.Run("Comments should have specific contents", func(t *ftt.Test) {
-			assert.Loosely(t, comments, should.Resemble([]map[string]interface{}{
+			assert.Loosely(t, comments, should.Match([]map[string]interface{}{
 				{
 					"category":  "ShellCheck/SC2034",
 					"message":   "warning: FLAGS_flag appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",

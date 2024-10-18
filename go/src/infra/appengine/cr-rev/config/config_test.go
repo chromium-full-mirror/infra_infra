@@ -69,7 +69,7 @@ func TestConfig(t *testing.T) {
 
 			cfg, err := Get(ctx)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, cfg, should.Resemble(&Config{
+			assert.Loosely(t, cfg, should.Match(&Config{
 				Hosts: []*Host{
 					{
 						Name: "chromium",

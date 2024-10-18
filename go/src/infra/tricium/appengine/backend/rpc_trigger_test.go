@@ -94,7 +94,7 @@ func TestHelperFunctions(t *testing.T) {
 			assert.Loosely(t, patch.GerritChange, should.Equal("my-project~master~I8473b95934b5732ac55d26311a706c9c2bde9940"))
 			assert.Loosely(t, patch.GerritCl, should.Equal("597"))
 			assert.Loosely(t, patch.GerritPatch, should.Equal("2"))
-			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 123, patch), should.Resemble([]string{
+			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 123, patch), should.Match([]string{
 				"function:Spacey",
 				"platform:UBUNTU",
 				"run_id:123",
@@ -113,8 +113,8 @@ func TestHelperFunctions(t *testing.T) {
 				GitilesHost:    "http://my-nongerrit.com/repo-url",
 				GitilesProject: "another-luci-config-project-id",
 			}
-			assert.Loosely(t, patch, should.Resemble(expected))
-			assert.Loosely(t, getTags(ctx, "Pylint_UBUNTU", 321, patch), should.Resemble([]string{
+			assert.Loosely(t, patch, should.Match(expected))
+			assert.Loosely(t, getTags(ctx, "Pylint_UBUNTU", 321, patch), should.Match([]string{
 				"function:Pylint",
 				"platform:UBUNTU",
 				"run_id:321",
@@ -124,8 +124,8 @@ func TestHelperFunctions(t *testing.T) {
 
 		t.Run("Tags omit Gerrit details if run not found", func(t *ftt.Test) {
 			patch := fetchPatchDetails(ctx, 789)
-			assert.Loosely(t, patch, should.Resemble(common.PatchDetails{}))
-			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 789, patch), should.Resemble([]string{
+			assert.Loosely(t, patch, should.Match(common.PatchDetails{}))
+			assert.Loosely(t, getTags(ctx, "Spacey_UBUNTU", 789, patch), should.Match([]string{
 				"function:Spacey",
 				"platform:UBUNTU",
 				"run_id:789",

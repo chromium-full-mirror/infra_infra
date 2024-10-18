@@ -35,21 +35,21 @@ func TestGitCommit(t *testing.T) {
 				CommitMessage: "foo\n\nbar:",
 			}
 			assert.Loosely(t, commit.GetFooters("Foo"), should.BeEmpty)
-			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{""}))
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Match([]string{""}))
 		})
 
 		t.Run("multiple values", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\nBar: 42\nBar: 43",
 			}
-			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{"43", "42"}))
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Match([]string{"43", "42"}))
 		})
 
 		t.Run("quoted values not extracted", func(t *ftt.Test) {
 			commit := &GitCommit{
 				CommitMessage: "foo\n\n> Bar: 42\nBar: 43",
 			}
-			assert.Loosely(t, commit.GetFooters("Bar"), should.Resemble([]string{"43"}))
+			assert.Loosely(t, commit.GetFooters("Bar"), should.Match([]string{"43"}))
 		})
 	})
 

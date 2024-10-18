@@ -35,19 +35,19 @@ func TestEnsureArgsValid(t *testing.T) {
 		args := strings.Split("go test -json infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, validArgs, should.Resemble(args))
+		assert.Loosely(t, validArgs, should.Match(args))
 	})
 	ftt.Run(`adds -json flag`, t, func(t *ftt.Test) {
 		args := strings.Split("go test infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, validArgs, should.Resemble(strings.Split("go test -json infra/tools/result_adapter", " ")))
+		assert.Loosely(t, validArgs, should.Match(strings.Split("go test -json infra/tools/result_adapter", " ")))
 	})
 	ftt.Run(`passes plausible command through as is`, t, func(t *ftt.Test) {
 		args := strings.Split("GOROOT/src/run.bash -json", " ")
 		plausibleArgs, err := r.ensureArgsValid(args)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, plausibleArgs, should.Resemble(args))
+		assert.Loosely(t, plausibleArgs, should.Match(args))
 	})
 	ftt.Run(`reports unlikely command`, t, func(t *ftt.Test) {
 		args := strings.Split("not_the_right_thing --at=all", " ")

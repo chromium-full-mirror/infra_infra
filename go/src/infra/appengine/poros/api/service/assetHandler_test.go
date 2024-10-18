@@ -61,9 +61,9 @@ func TestAssetCreateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{assetRequest.GetName(), assetRequest.GetDescription(), assetRequest.GetAssetType()}
 		get := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, response.GetAssetResources(), should.HaveLength(1))
-		assert.Loosely(t, response.GetAssetResources(), should.Resemble(assetResourcesToSave))
+		assert.Loosely(t, response.GetAssetResources(), should.Match(assetResourcesToSave))
 	})
 }
 
@@ -158,7 +158,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		want := []string{"Test Asset Name Updated", "Test Asset Description Updated", "active_directory_updated"}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 
 		//Retrieve the updated asset_resource to make sure the update goes through
 		assetResourceHanlder := &AssetResourceHandler{}
@@ -167,7 +167,7 @@ func TestAssetUpdateWithValidData(t *testing.T) {
 		readAssetResource, err := assetResourceHanlder.Get(ctx, req)
 		want = []string{"ResourceId Updated", "Alias Name Updated"}
 		get = []string{readAssetResource.GetResourceId(), readAssetResource.GetAliasName()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -299,7 +299,7 @@ func TestGetAssetWithValidData(t *testing.T) {
 
 		want := []string{response.GetAsset().GetName(), response.GetAsset().GetDescription(), response.GetAsset().GetAssetType()}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetAssetType()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -324,7 +324,7 @@ func TestListAssets(t *testing.T) {
 		want := []string{"Test Asset1", "Test Asset2"}
 		get := []string{assets[0].GetName(), assets[1].GetName()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -396,7 +396,7 @@ func TestDefaultResourcesWithActiveDirectory(t *testing.T) {
 		want := []string{"primary", "test1.com", "domain-controll", "Joe"}
 		get := []string{defaultResources[0].GetAliasName(), defaultResources[1].GetAliasName(), defaultResources[2].GetAliasName(), defaultResources[3].GetAliasName()}
 		assert.Loosely(t, defaultResources, should.HaveLength(4))
-		assert.Loosely(t, want, should.Resemble(get))
+		assert.Loosely(t, want, should.Match(get))
 	})
 }
 

@@ -105,7 +105,7 @@ func TestLeaseVM(t *testing.T) {
 			ins, err := vmLeaser.leaseVM(ctx, client, &vmlabpb.CreateVmInstanceRequest{
 				Config: &cfg,
 			})
-			assert.Loosely(t, ins, should.Resemble(&vmlabpb.VmInstance{
+			assert.Loosely(t, ins, should.Match(&vmlabpb.VmInstance{
 				Name: "vm-test-id",
 				Ssh: &vmlabpb.AddressPort{
 					Address: "1.2.3.4",
@@ -298,7 +298,7 @@ func TestListLeases(t *testing.T) {
 			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			assert.Loosely(t, ins, should.Resemble([]*vmlabpb.VmInstance{
+			assert.Loosely(t, ins, should.Match([]*vmlabpb.VmInstance{
 				{
 					Name: "vm-test-id",
 					Ssh: &vmlabpb.AddressPort{
@@ -345,7 +345,7 @@ func TestListLeases(t *testing.T) {
 			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
 				Config: &cfg,
 			})
-			assert.Loosely(t, ins, should.Resemble([]*vmlabpb.VmInstance{}))
+			assert.Loosely(t, ins, should.Match([]*vmlabpb.VmInstance{}))
 			assert.Loosely(t, err, should.BeNil)
 		})
 		t.Run("listLeases - error when listing", func(t *ftt.Test) {

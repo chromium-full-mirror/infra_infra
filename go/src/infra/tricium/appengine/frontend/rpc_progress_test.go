@@ -112,7 +112,7 @@ func TestProgress(t *testing.T) {
 			}
 			response, err := server.Progress(ctx, request)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, response, should.Resemble(&tricium.ProgressResponse{
+			assert.Loosely(t, response, should.Match(&tricium.ProgressResponse{
 				RunId: strconv.FormatInt(runID, 10),
 				State: tricium.State_SUCCESS,
 				FunctionProgress: []*tricium.FunctionProgress{
@@ -141,7 +141,7 @@ func TestProgress(t *testing.T) {
 				},
 			}
 			response, err := server.Progress(ctx, request)
-			assert.Loosely(t, response, should.Resemble(&tricium.ProgressResponse{}))
+			assert.Loosely(t, response, should.Match(&tricium.ProgressResponse{}))
 			assert.Loosely(t, err, should.BeNil)
 		})
 

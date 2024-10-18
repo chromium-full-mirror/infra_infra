@@ -134,7 +134,7 @@ func TestCreateProjectChunksMapping(t *testing.T) {
 		result := createMonorailProjectChunksMapping(bugs, 100)
 		assert.Loosely(t,
 			result,
-			should.Resemble(
+			should.Match(
 				map[string][][]string{
 					"project_1": {{"bug_1", "bug_3", "bug_5"}},
 					"project_2": {{"bug_2"}},
@@ -145,7 +145,7 @@ func TestCreateProjectChunksMapping(t *testing.T) {
 		result = createMonorailProjectChunksMapping(bugs, 2)
 		assert.Loosely(t,
 			result,
-			should.Resemble(
+			should.Match(
 				map[string][][]string{
 					"project_1": {{"bug_1", "bug_3"}, {"bug_5"}},
 					"project_2": {{"bug_2"}},
@@ -159,13 +159,13 @@ func TestBreakToChunk(t *testing.T) {
 	ftt.Run("Test break bug ids to chunk", t, func(t *ftt.Test) {
 		bugIDs := []string{"bug1", "bug2", "bug3", "bug4", "bug5"}
 		chunks := breakToChunks(bugIDs, 1)
-		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1"}, {"bug2"}, {"bug3"}, {"bug4"}, {"bug5"}}))
+		assert.Loosely(t, chunks, should.Match([][]string{{"bug1"}, {"bug2"}, {"bug3"}, {"bug4"}, {"bug5"}}))
 		chunks = breakToChunks(bugIDs, 3)
-		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3"}, {"bug4", "bug5"}}))
+		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3"}, {"bug4", "bug5"}}))
 		chunks = breakToChunks(bugIDs, 5)
-		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
+		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
 		chunks = breakToChunks(bugIDs, 6)
-		assert.Loosely(t, chunks, should.Resemble([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
+		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
 	})
 }
 
@@ -209,7 +209,7 @@ func TestMakeAnnotationResponse(t *testing.T) {
 			},
 		}
 		actual := makeAnnotationResponse(annotations, meta)
-		assert.Loosely(t, actual, should.Resemble(expected))
+		assert.Loosely(t, actual, should.Match(expected))
 	})
 }
 
@@ -326,7 +326,7 @@ func TestAnnotations(t *testing.T) {
 				rslt := []*model.Annotation{}
 				assert.Loosely(t, json.NewDecoder(strings.NewReader(body)).Decode(&rslt), should.BeNil)
 				assert.Loosely(t, rslt, should.HaveLength(1))
-				assert.Loosely(t, rslt[0], should.Resemble(ann))
+				assert.Loosely(t, rslt[0], should.Match(ann))
 			})
 
 			t.Run("basic annotation, alert no longer active", func(t *ftt.Test) {
@@ -430,7 +430,7 @@ func TestAnnotations(t *testing.T) {
 					assert.Loosely(t, w.Code, should.Equal(200))
 
 					assert.Loosely(t, datastoreGetAnnotation(c, ann), should.BeNil)
-					assert.Loosely(t, ann.Bugs, should.Resemble([]model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}}))
+					assert.Loosely(t, ann.Bugs, should.Match([]model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}}))
 				})
 			})
 

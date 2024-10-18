@@ -59,7 +59,7 @@ func TestCreateMachineLSE(t *testing.T) {
 		t.Run("Create new machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 		})
 		t.Run("Create existing machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
@@ -76,7 +76,7 @@ func TestCreateMachineLSE(t *testing.T) {
 		t.Run("Create machineLSE with ownership data - ownership is not saved", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE3Ownership)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE3Ownership))
+			assert.Loosely(t, resp, should.Match(machineLSE3Ownership))
 			assert.Loosely(t, resp.Ownership, should.BeNil)
 		})
 	})
@@ -94,11 +94,11 @@ func TestUpdateMachineLSE(t *testing.T) {
 		t.Run("Update existing machineLSE", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 
 			resp, err = UpdateMachineLSE(ctx, machineLSE2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE2))
+			assert.Loosely(t, resp, should.Match(machineLSE2))
 		})
 		t.Run("Update non-existing machineLSE", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSE(ctx, machineLSE3)
@@ -138,21 +138,21 @@ func TestUpdateMachineOwnership(t *testing.T) {
 		t.Run("Update existing machine with ownership data", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 
 			// Ownership data should be updated
 			resp, err = UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
+			assert.Loosely(t, resp.GetOwnership(), should.Match(ownershipData))
 
 			// Regular Update calls should not override ownership data
 			resp, err = UpdateMachineLSE(ctx, machineLSE2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE2))
+			assert.Loosely(t, resp, should.Match(machineLSE2))
 
 			resp, err = GetMachineLSE(ctx, "machineLSE-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
+			assert.Loosely(t, resp.GetOwnership(), should.Match(ownershipData))
 		})
 		t.Run("Update non-existing machine with ownership", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEOwnership(ctx, "dummy", ownershipData)
@@ -177,10 +177,10 @@ func TestGetMachineLSE(t *testing.T) {
 		t.Run("Get machineLSE by existing ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 			resp, err = GetMachineLSE(ctx, "machineLSE-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 		})
 		t.Run("Get machineLSE by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSE(ctx, "machineLSE-2")
@@ -253,7 +253,7 @@ func TestGetMachineLSEACL(t *testing.T) {
 			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 		})
 	})
 }
@@ -282,7 +282,7 @@ func TestListMachineLSEs(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 
 		t.Run("List machineLSEs - listing with pagination", func(t *ftt.Test) {
@@ -290,12 +290,12 @@ func TestListMachineLSEs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs[:3]))
+			assert.Loosely(t, resp, should.Match(machineLSEs[:3]))
 
 			resp, _, err = ListMachineLSEs(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs[3:]))
+			assert.Loosely(t, resp, should.Match(machineLSEs[3:]))
 		})
 	})
 }
@@ -374,7 +374,7 @@ func TestListMachineLSEsACL(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
-			assert.Loosely(t, resp, should.Resemble(browserMachineLSEs))
+			assert.Loosely(t, resp, should.Match(browserMachineLSEs))
 		})
 
 		t.Run("List machineLSEs ACLed - Happy path, two realms", func(t *ftt.Test) {
@@ -382,13 +382,13 @@ func TestListMachineLSEsACL(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
-			assert.Loosely(t, resp, should.Resemble(browserMachineLSEs))
+			assert.Loosely(t, resp, should.Match(browserMachineLSEs))
 			// Get the remaining machineLSEs
 			resp, nextPageToken, err = ListMachineLSEsACL(ctxSpider, 10, nextPageToken, nil, false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
-			assert.Loosely(t, resp, should.Resemble(acsMachineLSEs))
+			assert.Loosely(t, resp, should.Match(acsMachineLSEs))
 		})
 
 	})
@@ -420,7 +420,7 @@ func TestListMachineLSEsByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 
 		t.Run("List machines - Full listing with invalid prefix", func(t *ftt.Test) {
@@ -435,12 +435,12 @@ func TestListMachineLSEsByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs[:3]))
+			assert.Loosely(t, resp, should.Match(machineLSEs[:3]))
 
 			resp, _, err = ListMachineLSEsByIdPrefixSearch(ctx, 2, nextPageToken, "machineLSE-", false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs[3:]))
+			assert.Loosely(t, resp, should.Match(machineLSEs[3:]))
 		})
 	})
 }
@@ -458,7 +458,7 @@ func TestDeleteMachineLSE(t *testing.T) {
 		t.Run("Delete machineLSE by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 			err := DeleteMachineLSE(ctx, "machineLSE-1")
 			assert.Loosely(t, err, should.BeNil)
 			res, err := GetMachineLSE(ctx, "machineLSE-1")
@@ -479,12 +479,12 @@ func TestDeleteMachineLSE(t *testing.T) {
 		t.Run("Delete machineLSE - with ownershipdata", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSE(ctx, machineLSE2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE2))
+			assert.Loosely(t, resp, should.Match(machineLSE2))
 
 			// Ownership data should be updated
 			resp, err := UpdateMachineLSEOwnership(ctx, resp.Name, ownershipData)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.GetOwnership(), should.Resemble(ownershipData))
+			assert.Loosely(t, resp.GetOwnership(), should.Match(ownershipData))
 
 			err = DeleteMachineLSE(ctx, "machineLSE-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -506,13 +506,13 @@ func TestBatchUpdateMachineLSEs(t *testing.T) {
 			machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSE1))
+			assert.Loosely(t, resp, should.Match(machineLSE1))
 			machineLSEs = append(machineLSEs, resp)
 		}
 		t.Run("BatchUpdate all machineLSEs", func(t *ftt.Test) {
 			resp, err := BatchUpdateMachineLSEs(ctx, machineLSEs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 		t.Run("BatchUpdate existing and invalid machineLSEs", func(t *ftt.Test) {
 			machineLSE5 := mockMachineLSE("")
@@ -541,7 +541,7 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 		}
 		resp, cerr := CreateMachineLSE(ctx, machineLSE1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(machineLSE1))
+		assert.Loosely(t, resp, should.Match(machineLSE1))
 
 		machineLSEs := make([]*ufspb.MachineLSE, 0, 1)
 		machineLSEs = append(machineLSEs, machineLSE1)
@@ -551,7 +551,7 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 		t.Run("Query By existing Machine", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machine_ids", "machine-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 		t.Run("Query By non-existing Machine", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machine_ids", "machine-5", false)
@@ -561,7 +561,7 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 		t.Run("Query By existing MachineLsePrototype keysonly", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machinelse_prototype_id", "machineLsePrototype-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(dummymachineLSEs))
+			assert.Loosely(t, resp, should.Match(dummymachineLSEs))
 		})
 		t.Run("Query By non-existing MachineLsePrototype", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machinelse_prototype_id", "machineLsePrototype-2", true)
@@ -571,7 +571,7 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 		t.Run("Query By LogicalZone", func(t *ftt.Test) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "logical_zone", "LOGICAL_ZONE_DRILLZONE_SFO36", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 	})
 }
@@ -601,7 +601,7 @@ func TestListAllMachineLSEs(t *testing.T) {
 		t.Run("List all machineLSEs", func(t *ftt.Test) {
 			resp, _ := ListAllMachineLSEs(ctx, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEs))
+			assert.Loosely(t, resp, should.Match(machineLSEs))
 		})
 	})
 }

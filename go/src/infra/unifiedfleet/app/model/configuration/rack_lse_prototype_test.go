@@ -34,7 +34,7 @@ func TestCreateRackLSEPrototype(t *testing.T) {
 		t.Run("Create new rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		})
 		t.Run("Create existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
@@ -62,11 +62,11 @@ func TestUpdateRackLSEPrototype(t *testing.T) {
 		t.Run("Update existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 
 			resp, err = UpdateRackLSEPrototype(ctx, rackLSEPrototype2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype2))
 		})
 		t.Run("Update non-existing rackLSEPrototype", func(t *ftt.Test) {
 			resp, err := UpdateRackLSEPrototype(ctx, rackLSEPrototype3)
@@ -91,10 +91,10 @@ func TestGetRackLSEPrototype(t *testing.T) {
 		t.Run("Get rackLSEPrototype by existing ID", func(t *ftt.Test) {
 			resp, err := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 			resp, err = GetRackLSEPrototype(ctx, "RackLSEPrototype-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		})
 		t.Run("Get rackLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetRackLSEPrototype(ctx, "rackLSEPrototype-2")
@@ -135,7 +135,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototypes))
 		})
 
 		t.Run("List rackLSEPrototypes - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListRackLSEPrototypes(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes[:3]))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototypes[:3]))
 
 			resp, _, err = ListRackLSEPrototypes(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes[3:]))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototypes[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 		t.Run("Delete rackLSEPrototype successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateRackLSEPrototype(ctx, rackLSEPrototype2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype2))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-2")
 			assert.Loosely(t, err, should.BeNil)

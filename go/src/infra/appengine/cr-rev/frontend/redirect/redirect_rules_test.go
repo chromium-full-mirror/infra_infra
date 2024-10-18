@@ -127,21 +127,21 @@ func TestRedirects(t *testing.T) {
 			t.Run("release ", func(t *ftt.Test) {
 				url, commit, err := r.FindRedirectURL(ctx, "/1")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, commit, should.Resemble(commits[0]))
+				assert.Loosely(t, commit, should.Match(commits[0]))
 				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000000001"))
 			})
 
 			t.Run("trunk", func(t *ftt.Test) {
 				url, commit, err := r.FindRedirectURL(ctx, "/2")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, commit, should.Resemble(commits[1]))
+				assert.Loosely(t, commit, should.Match(commits[1]))
 				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000000002"))
 			})
 
 			t.Run("trunk src", func(t *ftt.Test) {
 				url, commit, err := r.FindRedirectURL(ctx, "/288197")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, commit, should.Resemble(commits[5]))
+				assert.Loosely(t, commit, should.Match(commits[5]))
 				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000288197"))
 			})
 
@@ -155,7 +155,7 @@ func TestRedirects(t *testing.T) {
 			t.Run("with mirror", func(t *ftt.Test) {
 				url, commit, err := r.FindRedirectURL(ctx, "/291560")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, commit, should.Resemble(commits[6]))
+				assert.Loosely(t, commit, should.Match(commits[6]))
 				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000291560"))
 			})
 
@@ -168,7 +168,7 @@ func TestRedirects(t *testing.T) {
 			t.Run("main branch", func(t *ftt.Test) {
 				url, commit, err := r.FindRedirectURL(ctx, "/291562")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, commit, should.Resemble(commits[9]))
+				assert.Loosely(t, commit, should.Match(commits[9]))
 				assert.Loosely(t, url, should.Equal("https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000291562"))
 			})
 
@@ -272,7 +272,7 @@ func TestRedirects(t *testing.T) {
 			url, commit, err := r.FindRedirectURL(
 				ctx, "/0000000000000000000000000000000000000000")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, commit, should.Resemble(commits[0]))
+			assert.Loosely(t, commit, should.Match(commits[0]))
 			assert.Loosely(t, url, should.Equal("https://foo.googlesource.com/bar/+/0000000000000000000000000000000000000000"))
 		})
 
@@ -280,7 +280,7 @@ func TestRedirects(t *testing.T) {
 			url, commit, err := r.FindRedirectURL(
 				ctx, "/0000000000000000000000000000000000000001")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, commit, should.Resemble(commits[2]))
+			assert.Loosely(t, commit, should.Match(commits[2]))
 			assert.Loosely(t, url, should.Equal("https://foo.googlesource.com/baz/+/0000000000000000000000000000000000000001"))
 		})
 
@@ -288,7 +288,7 @@ func TestRedirects(t *testing.T) {
 			url, commit, err := r.FindRedirectURL(
 				ctx, "/0000000000000000000000000000000000000002")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, commit, should.Resemble(commits[4]))
+			assert.Loosely(t, commit, should.Match(commits[4]))
 			assert.Loosely(t, url, should.Equal("https://foo.googlesource.com/baz/not/indexed/+/0000000000000000000000000000000000000002"))
 		})
 
@@ -296,7 +296,7 @@ func TestRedirects(t *testing.T) {
 			url, commit, err := r.FindRedirectURL(
 				ctx, "/0000000000000000000000000000000000000000/foo/bar")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, commit, should.Resemble(commits[0]))
+			assert.Loosely(t, commit, should.Match(commits[0]))
 			assert.Loosely(t, url, should.Equal("https://foo.googlesource.com/bar/+/0000000000000000000000000000000000000000/foo/bar"))
 		})
 

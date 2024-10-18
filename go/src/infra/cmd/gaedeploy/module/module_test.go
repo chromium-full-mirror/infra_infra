@@ -131,7 +131,7 @@ func TestModule(t *testing.T) {
 				"UNUSED_TOO":  "!!!",
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Resemble(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]interface{}{
 				"str_key1": "blah blah-1",
 				"str_key2": "blah 42",
 				"str_key3": "blah true",
@@ -140,7 +140,7 @@ func TestModule(t *testing.T) {
 				"bool_var": true,
 				"a bunch":  "zzz blah-1",
 			}))
-			assert.Loosely(t, consumed.ToSortedSlice(), should.Resemble([]string{
+			assert.Loosely(t, consumed.ToSortedSlice(), should.Match([]string{
 				"ANOTHER_VAR",
 				"BOOL_VAR",
 				"INT_VAR",
@@ -159,12 +159,12 @@ func TestModule(t *testing.T) {
 				"VAR2": "42",
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Resemble(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]interface{}{
 				"key1": "blah zzz",
 				"key2": "42",               // undeclared variables are assumed to be strings
 				"key3": "zzz ${UNDEFINED}", // totally ignores undefined variables
 			}))
-			assert.Loosely(t, consumed.ToSortedSlice(), should.Resemble([]string{
+			assert.Loosely(t, consumed.ToSortedSlice(), should.Match([]string{
 				"UNDEFINED",
 				"VAR1",
 				"VAR2",
@@ -188,7 +188,7 @@ func TestModule(t *testing.T) {
 			}
 			out, _, err := renderVars(v, "app-id", nil, map[string]string{"VAR": "zzz"})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, out, should.Resemble(map[string]interface{}{
+			assert.Loosely(t, out, should.Match(map[string]interface{}{
 				"top": "zzz",
 				"dict": map[interface{}]interface{}{
 					"deeper": map[interface{}]interface{}{

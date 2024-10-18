@@ -44,7 +44,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 		t.Run("ListRackLSEPrototypes - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRackLSEPrototypes(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototypes))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototypes))
 		})
 	})
 }
@@ -58,7 +58,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 		t.Run("Delete rackLSEPrototype by existing ID with racklse reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 
 			rackLSE1 := &ufspb.RackLSE{
 				Name:             "racklse-1",
@@ -66,7 +66,7 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			}
 			mresp, merr := inventory.CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(rackLSE1))
+			assert.Loosely(t, mresp, should.Match(rackLSE1))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-1")
 			assert.Loosely(t, err, should.NotBeNil)
@@ -75,12 +75,12 @@ func TestDeleteRackLSEPrototype(t *testing.T) {
 			resp, cerr = configuration.GetRackLSEPrototype(ctx, "rackLSEPrototype-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype1))
 		})
 		t.Run("Delete rackLSEPrototype successfully by existing ID without references", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rackLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(rackLSEPrototype2))
 
 			err := DeleteRackLSEPrototype(ctx, "rackLSEPrototype-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -109,7 +109,7 @@ func TestBatchGetRackLSEPrototypes(t *testing.T) {
 			resp, err := configuration.BatchGetRackLSEPrototypes(ctx, []string{"racklseprototype-batchGet-0", "racklseprototype-batchGet-1", "racklseprototype-batchGet-2", "racklseprototype-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get rack lse prototypes  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetRackLSEPrototypes(ctx, []string{"racklseprototype-batchGet-non-existing"})

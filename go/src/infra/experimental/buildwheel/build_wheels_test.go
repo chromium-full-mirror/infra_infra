@@ -134,7 +134,7 @@ func TestBuildWheelsLuciExe(t *testing.T) {
 				err = RunDockerBuild(ictx, param.args, state, param.executor)
 				state.End(err)
 
-				assert.That(t, bbpbUpdates[len(bbpbUpdates)-1], should.Resemble(param.expectedPb))
+				assert.That(t, bbpbUpdates[len(bbpbUpdates)-1], should.Match(param.expectedPb))
 
 				// Workaround to print error on test failure.
 				// Convey.SoMsg() seemed to only print the assertion diff.

@@ -218,7 +218,7 @@ func TestMachineRegistration(t *testing.T) {
 			}
 			m, err := MachineRegistration(ctx, machine)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, m, should.Resemble(machine))
+			assert.Loosely(t, m, should.Match(machine))
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-browser-duplicate2",
@@ -265,7 +265,7 @@ func TestMachineRegistration(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			m, err := MachineRegistration(ctx, machine)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, m, should.Resemble(machine))
+			assert.Loosely(t, m, should.Match(machine))
 			s, err := state.GetStateRecord(ctx, "machines/machine-browser-3")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
@@ -327,7 +327,7 @@ func TestMachineRegistration(t *testing.T) {
 			m, err := MachineRegistration(ctx, machine)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, m, should.NotBeNil)
-			assert.Loosely(t, m, should.Resemble(machine))
+			assert.Loosely(t, m, should.Match(machine))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-os-3")
 			assert.Loosely(t, err, should.BeNil)
@@ -497,7 +497,7 @@ func TestUpdateMachine(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err = UpdateMachine(ctx, machine, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machine))
+			assert.Loosely(t, resp, should.Match(machine))
 			lse, err := inventory.GetMachineLSE(ctx, "lse-update-zone")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, lse.GetZone(), should.Equal(ufspb.Zone_ZONE_CHROMEOS2.String()))
@@ -547,7 +547,7 @@ func TestUpdateMachine(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err := UpdateMachine(ctx, machine, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machine))
+			assert.Loosely(t, resp, should.Match(machine))
 		})
 
 		t.Run("Update machine serial number", func(t *ftt.Test) {
@@ -922,7 +922,7 @@ func TestUpdateMachine(t *testing.T) {
 			})
 			resp, err := UpdateMachine(ctx, machine, nil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machine))
+			assert.Loosely(t, resp, should.Match(machine))
 		})
 
 		t.Run("Update machine(realm name) - permission denied: different realm without permission", func(t *ftt.Test) {
@@ -1163,7 +1163,7 @@ func TestDeleteMachine(t *testing.T) {
 
 			resp, _ := registration.GetMachine(ctx, "machine-3")
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machine1))
+			assert.Loosely(t, resp, should.Match(machine1))
 
 			// No changes are recorded as the deletion fails
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-3")
@@ -1316,18 +1316,18 @@ func TestReplaceMachine(t *testing.T) {
 			}
 			mresp, merr := inventory.CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(machineLSE1))
+			assert.Loosely(t, mresp, should.Match(machineLSE1))
 
 			newMachine2 := &ufspb.Machine{
 				Name: "machine-100",
 			}
 			rresp, rerr := ReplaceMachine(ctx, oldMachine1, newMachine2)
 			assert.Loosely(t, rerr, should.BeNil)
-			assert.Loosely(t, rresp, should.Resemble(newMachine2))
+			assert.Loosely(t, rresp, should.Match(newMachine2))
 
 			mresp, merr = inventory.GetMachineLSE(ctx, "machinelse-1")
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp.GetMachines(), should.Resemble([]string{"machine-0", "machine-50", "machine-100", "machine-7"}))
+			assert.Loosely(t, mresp.GetMachines(), should.Match([]string{"machine-0", "machine-50", "machine-100", "machine-7"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-4")
 			assert.Loosely(t, err, should.BeNil)
@@ -1437,7 +1437,7 @@ func TestRenameMachine(t *testing.T) {
 			assert.Loosely(t, drac.GetMachine(), should.Equal("machine-202"))
 			host, err = inventory.GetMachineLSE(ctx, "machinelse-10")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, host.GetMachines(), should.Resemble([]string{"machine-202"}))
+			assert.Loosely(t, host.GetMachines(), should.Match([]string{"machine-202"}))
 			assert.Loosely(t, host.GetNic(), should.Match("machine-202:nic-10"))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "machines/machine-10")
@@ -1620,13 +1620,13 @@ func TestListMachines(t *testing.T) {
 		t.Run("List Machines - filter chromeplatform - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachines(ctx, 5, "", "platform=cp-12", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machinesWithChromeplatform))
+			assert.Loosely(t, resp, should.Match(machinesWithChromeplatform))
 		})
 
 		t.Run("ListMachines - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListMachines(ctx, 5, "", "", false, false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 	})
 }
@@ -1667,7 +1667,7 @@ func TestBatchGetMachines(t *testing.T) {
 			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-0", "machine-batchGet-1", "machine-batchGet-2", "machine-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get machines  - missing id", func(t *ftt.Test) {
 			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-non-existing"})

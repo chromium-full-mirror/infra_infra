@@ -33,7 +33,7 @@ func TestUpdateMachineLSEDeployment(t *testing.T) {
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md1})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(1))
-			assert.Loosely(t, resp[0], should.Resemble(md1))
+			assert.Loosely(t, resp[0], should.Match(md1))
 		})
 
 		t.Run("Update existing machineLSEDeployment", func(t *ftt.Test) {
@@ -46,7 +46,7 @@ func TestUpdateMachineLSEDeployment(t *testing.T) {
 			resp, err = UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{md2})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(1))
-			assert.Loosely(t, resp[0], should.Resemble(md2))
+			assert.Loosely(t, resp[0], should.Match(md2))
 		})
 
 		t.Run("Update machineLSEDeployment - invalid hostname", func(t *ftt.Test) {
@@ -67,10 +67,10 @@ func TestGetMachineLSEDeployment(t *testing.T) {
 		t.Run("Get machine deployment record by existing ID", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEDeployments(ctx, []*ufspb.MachineLSEDeployment{dr1})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp[0], should.Resemble(dr1))
+			assert.Loosely(t, resp[0], should.Match(dr1))
 			respDr, err := GetMachineLSEDeployment(ctx, "dr-get-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, respDr, should.Resemble(dr1))
+			assert.Loosely(t, respDr, should.Match(dr1))
 		})
 
 		t.Run("Get machine deployment record by non-existing ID", func(t *ftt.Test) {
@@ -102,7 +102,7 @@ func TestBatchGetMachineLSEDeployments(t *testing.T) {
 			resp, err := BatchGetMachineLSEDeployments(ctx, []string{"dr-batchGet-0", "dr-batchGet-1", "dr-batchGet-2", "dr-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(drs))
+			assert.Loosely(t, resp, should.Match(drs))
 		})
 
 		t.Run("Batch get machine lse deployments - missing id", func(t *ftt.Test) {
@@ -148,7 +148,7 @@ func TestListMachineLSEDeployments(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(updatedDrs))
+			assert.Loosely(t, resp, should.Match(updatedDrs))
 		})
 
 		t.Run("List machine lse deployment records - listing with pagination", func(t *ftt.Test) {
@@ -156,12 +156,12 @@ func TestListMachineLSEDeployments(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(updatedDrs[:3]))
+			assert.Loosely(t, resp, should.Match(updatedDrs[:3]))
 
 			resp, _, err = ListMachineLSEDeployments(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(updatedDrs[3:]))
+			assert.Loosely(t, resp, should.Match(updatedDrs[3:]))
 		})
 	})
 }

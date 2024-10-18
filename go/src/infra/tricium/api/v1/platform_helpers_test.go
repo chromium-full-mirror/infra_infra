@@ -26,13 +26,13 @@ func TestGetPlatforms(t *testing.T) {
 	ftt.Run("Platform: ANY", t, func(t *ftt.Test) {
 		values, err := GetPlatforms(PlatformBitPosToMask(Platform_ANY))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, values, should.Resemble([]Platform_Name{Platform_ANY}))
+		assert.Loosely(t, values, should.Match([]Platform_Name{Platform_ANY}))
 	})
 
 	ftt.Run("Platform: UBUNTU", t, func(t *ftt.Test) {
 		values, err := GetPlatforms(PlatformBitPosToMask(Platform_UBUNTU))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, values, should.Resemble([]Platform_Name{Platform_UBUNTU}))
+		assert.Loosely(t, values, should.Match([]Platform_Name{Platform_UBUNTU}))
 	})
 
 	ftt.Run("Platform: ANDROID|OSX|WINDOWS", t, func(t *ftt.Test) {
@@ -41,7 +41,7 @@ func TestGetPlatforms(t *testing.T) {
 				PlatformBitPosToMask(Platform_OSX) +
 				PlatformBitPosToMask(Platform_WINDOWS))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, values, should.Resemble([]Platform_Name{
+		assert.Loosely(t, values, should.Match([]Platform_Name{
 			Platform_ANDROID,
 			Platform_OSX,
 			Platform_WINDOWS,

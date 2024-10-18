@@ -151,7 +151,7 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 		assert.Loosely(t, oldDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
 		assert.Loosely(t, oldDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
 		assert.Loosely(t, oldDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
-		assert.Loosely(t, oldDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
+		assert.Loosely(t, oldDS.GetRepairRequests(), should.Match([]chromeosLab.DutState_RepairRequest{
 			chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
 		}))
 		return
@@ -190,7 +190,7 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
-			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Match([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
 			}))
 			// Verify changes
@@ -226,7 +226,7 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_BROKEN)) // only value to apply
 			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
-			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Match([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_PROVISION,
 			}))
 			// Verify changes
@@ -267,7 +267,7 @@ func TestUpdateDutStateWithMasks(t *testing.T) {
 			assert.Loosely(t, newDS.GetServo(), should.Equal(chromeosLab.PeripheralState_WORKING)) // only value to apply
 			assert.Loosely(t, newDS.GetChameleon(), should.Equal(chromeosLab.PeripheralState_WORKING))
 			assert.Loosely(t, newDS.GetStorageState(), should.Equal(chromeosLab.HardwareState_HARDWARE_ACCEPTABLE))
-			assert.Loosely(t, newDS.GetRepairRequests(), should.Resemble([]chromeosLab.DutState_RepairRequest{
+			assert.Loosely(t, newDS.GetRepairRequests(), should.Match([]chromeosLab.DutState_RepairRequest{
 				chromeosLab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY,
 				chromeosLab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE,
 			}))
@@ -354,7 +354,7 @@ func TestListDutStates(t *testing.T) {
 		t.Run("ListDutStates - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListDutStates(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(dutStates))
+			assert.Loosely(t, resp, should.Match(dutStates))
 		})
 	})
 }

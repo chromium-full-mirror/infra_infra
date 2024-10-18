@@ -150,7 +150,7 @@ func TestWriteConfigToDisk(t *testing.T) {
 				um := jsonpb.Unmarshaler{}
 				unmarshalErr := um.Unmarshal(f, got)
 				assert.Loosely(t, unmarshalErr, should.BeNil)
-				assert.Loosely(t, got, should.Resemble(want))
+				assert.Loosely(t, got, should.Match(want))
 			})
 		})
 	})

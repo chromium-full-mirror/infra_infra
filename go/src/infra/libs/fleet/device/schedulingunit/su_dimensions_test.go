@@ -22,12 +22,12 @@ import (
 func TestJoinSingleValueLabel(t *testing.T) {
 	ftt.Run("Test with no repeat labels", t, func(t *ftt.Test) {
 		l := []string{"eve", "nami", "coral"}
-		assert.Loosely(t, differentiateLabelValues(l), should.Resemble([]string{"eve", "nami", "coral"}))
+		assert.Loosely(t, differentiateLabelValues(l), should.Match([]string{"eve", "nami", "coral"}))
 	})
 
 	ftt.Run("Test with repeat labels", t, func(t *ftt.Test) {
 		l := []string{"nami", "coral", "nami", "nami"}
-		assert.Loosely(t, differentiateLabelValues(l), should.Resemble([]string{"nami", "coral", "nami_2", "nami_3"}))
+		assert.Loosely(t, differentiateLabelValues(l), should.Match([]string{"nami", "coral", "nami_2", "nami_3"}))
 	})
 }
 
@@ -53,11 +53,11 @@ func TestDutLabelValues(t *testing.T) {
 				"dut_state":   {"ready"},
 			},
 		}
-		assert.Loosely(t, dutLabelValues("dut_name", dims), should.Resemble([]string{"host1", "host2", "host3"}))
-		assert.Loosely(t, dutLabelValues("label-board", dims), should.Resemble([]string{"coral", "nami", "eve"}))
-		assert.Loosely(t, dutLabelValues("label-model", dims), should.Resemble([]string{"babytiger", "bard", "eve"}))
-		assert.Loosely(t, dutLabelValues("dut_state", dims), should.Resemble([]string{"ready", "repair_failed", "ready"}))
-		assert.Loosely(t, dutLabelValues("IM_NOT_EXIST", dims), should.Resemble([]string(nil)))
+		assert.Loosely(t, dutLabelValues("dut_name", dims), should.Match([]string{"host1", "host2", "host3"}))
+		assert.Loosely(t, dutLabelValues("label-board", dims), should.Match([]string{"coral", "nami", "eve"}))
+		assert.Loosely(t, dutLabelValues("label-model", dims), should.Match([]string{"babytiger", "bard", "eve"}))
+		assert.Loosely(t, dutLabelValues("dut_state", dims), should.Match([]string{"ready", "repair_failed", "ready"}))
+		assert.Loosely(t, dutLabelValues("IM_NOT_EXIST", dims), should.Match([]string(nil)))
 	})
 }
 
@@ -79,9 +79,9 @@ func TestLabelIntersection(t *testing.T) {
 				"label-foo":           {"common_value1", "common_value2", "common_value3", "special_value3"},
 			},
 		}
-		assert.Loosely(t, labelIntersection("label-device-stable", dims), should.Resemble([]string{"True"}))
-		assert.Loosely(t, labelIntersection("label-foo", dims), should.Resemble([]string{"common_value1", "common_value2", "common_value3"}))
-		assert.Loosely(t, labelIntersection("label-foo2", dims), should.Resemble([]string(nil)))
+		assert.Loosely(t, labelIntersection("label-device-stable", dims), should.Match([]string{"True"}))
+		assert.Loosely(t, labelIntersection("label-foo", dims), should.Match([]string{"common_value1", "common_value2", "common_value3"}))
+		assert.Loosely(t, labelIntersection("label-foo2", dims), should.Match([]string(nil)))
 	})
 }
 
@@ -158,7 +158,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 				"OPENWRT[Ubiquiti_Unifi_6_Lite]",
 			},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 
 	ftt.Run("Test with an empty scheduling unit.", t, func(t *ftt.Test) {
@@ -178,7 +178,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 
 	ftt.Run("Test with an scheduling unit that include non-stable device.", t, func(t *ftt.Test) {
@@ -225,7 +225,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 	ftt.Run("Test with a strict primary dut dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
@@ -276,7 +276,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 	ftt.Run("Test with a primary dut default dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
@@ -326,7 +326,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 	ftt.Run("Test with a default_plus_primary dimensions", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
@@ -377,7 +377,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 	ftt.Run("Test schedulingunit with wificell label.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
@@ -398,7 +398,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 	ftt.Run("Test schedulingunit with carrier label.", t, func(t *ftt.Test) {
 		su := &ufspb.SchedulingUnit{
@@ -421,7 +421,7 @@ func TestGetSchedulingUnitDimensions(t *testing.T) {
 			"label-peripheral_btpeer_state": {"NOT_APPLICABLE"},
 			"label-peripheral_wifi_state":   {"NOT_APPLICABLE"},
 		}
-		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitDimensions(su, dims), should.Match(expectedResult))
 	})
 }
 
@@ -435,7 +435,7 @@ func TestGetSchedulingUnitBotState(t *testing.T) {
 		expectedResult := map[string][]string{
 			"scheduling_unit_version_index": {"2021-05-07 11:54:36.225 UTC"},
 		}
-		assert.Loosely(t, GetSchedulingUnitBotState(su), should.Resemble(expectedResult))
+		assert.Loosely(t, GetSchedulingUnitBotState(su), should.Match(expectedResult))
 	})
 }
 

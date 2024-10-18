@@ -105,7 +105,7 @@ func TestLoadFile(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, st, should.Equal(status("good")))
 			var cpu float64 = 25
-			assert.Loosely(t, f, should.Resemble(deviceStatusFile{
+			assert.Loosely(t, f, should.Match(deviceStatusFile{
 				Devices: map[string]deviceStatus{
 					"02eccd9208ead9ab": {
 						Battery: battery{
@@ -156,7 +156,7 @@ func TestLoadFile(t *testing.T) {
 			f, st, _, err := loadFile(ctx, fileName)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, st, should.Equal(status("good")))
-			assert.Loosely(t, f, should.Resemble(deviceStatusFile{
+			assert.Loosely(t, f, should.Match(deviceStatusFile{
 				Devices: map[string]deviceStatus{
 					"02eccd9208ead9ab": {
 						State: "available",

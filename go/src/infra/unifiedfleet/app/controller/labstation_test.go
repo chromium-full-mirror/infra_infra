@@ -58,7 +58,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation2)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation2))
+			assert.Loosely(t, res, should.Match(labstation2))
 			labstation2 = mockLabstation("labstation-2", "")
 			// Attempt to delete machine. Should fail.
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("machines"))
@@ -74,7 +74,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			labstation3, err := GetMachineLSE(ctx, "labstation-2")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetMachines(), should.Resemble([]string{"machine-2"}))
+			assert.Loosely(t, labstation3.GetMachines(), should.Match([]string{"machine-2"}))
 		})
 		t.Run("UpdateLabstation - Delete machine", func(t *ftt.Test) {
 			// Reset a machine in maskless update.
@@ -92,7 +92,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation1 = mockLabstation("labstation-3", "")
 			// Attempt to delete the machine in maskless update. Should fail.
 			res, err = UpdateLabstation(ctx, labstation1, nil)
@@ -108,7 +108,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			labstation3, err := GetMachineLSE(ctx, "labstation-3")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetMachines(), should.Resemble([]string{"machine-3"}))
+			assert.Loosely(t, labstation3.GetMachines(), should.Match([]string{"machine-3"}))
 		})
 		t.Run("UpdateLabstation - Reset rpm using update mask", func(t *ftt.Test) {
 			// Delete rpm using update mask and setting rpm name to nil
@@ -131,7 +131,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			// rpm of labstation2 is nil by default.
 			labstation2 := mockLabstation("labstation-4", "machine-4")
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.host"))
@@ -178,7 +178,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation2 := mockLabstation("labstation-5", "machine-5")
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{PowerunitOutlet: ".A6"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.host", "labstation.rpm.outlet"))
@@ -226,7 +226,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			labstation3, err := GetMachineLSE(ctx, "labstation-5")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(), should.Resemble(&chromeosLab.OSRPM{
+			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(), should.Match(&chromeosLab.OSRPM{
 				PowerunitName:   "rpm-5",
 				PowerunitOutlet: ".A5",
 				PowerunitType:   chromeosLab.OSRPM_TYPE_SENTRY,
@@ -256,7 +256,7 @@ func TestUpdateLabstation(t *testing.T) {
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.pools"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Resemble([]string{"labstation_main"}))
+			assert.Loosely(t, res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Match([]string{"labstation_main"}))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-6")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(2))
@@ -268,7 +268,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(2))
 			labstation3, err := GetMachineLSE(ctx, "labstation-6")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Resemble([]string{"labstation_main"}))
+			assert.Loosely(t, labstation3.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools(), should.Match([]string{"labstation_main"}))
 			// Reset pools assigned to labstation.
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = nil
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.pools"))
@@ -362,13 +362,13 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation2 := mockLabstation("labstation-7", "machine-7")
 			// Add a tag to the labstation.
 			labstation2.Tags = []string{"decommission"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("tags"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res.GetTags(), should.Resemble([]string{"decommission"}))
+			assert.Loosely(t, res.GetTags(), should.Match([]string{"decommission"}))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-7")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
@@ -378,12 +378,12 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(2))
 			labstation3, err := GetMachineLSE(ctx, "labstation-7")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetTags(), should.Resemble([]string{"decommission"}))
+			assert.Loosely(t, labstation3.GetTags(), should.Match([]string{"decommission"}))
 			// Append another tag to the labstation.
 			labstation2.Tags = []string{"needs_replacement"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("tags"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res.GetTags(), should.Resemble([]string{"decommission", "needs_replacement"}))
+			assert.Loosely(t, res.GetTags(), should.Match([]string{"decommission", "needs_replacement"}))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-7")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
@@ -393,7 +393,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(3))
 			labstation3, err = GetMachineLSE(ctx, "labstation-7")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, labstation3.GetTags(), should.Resemble([]string{"decommission", "needs_replacement"}))
+			assert.Loosely(t, labstation3.GetTags(), should.Match([]string{"decommission", "needs_replacement"}))
 			// Clear all tags from the labstation.
 			labstation2.Tags = nil
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("tags"))
@@ -430,7 +430,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation2 := mockLabstation("labstation-8", "machine-8")
 			// Add a description  to the labstation.
 			labstation2.Description = "[12 Jan 2021] crbug.com/35007"
@@ -486,7 +486,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation2 := mockLabstation("labstation-9", "machine-9")
 			// Add a deployment ticket to the labstation.
 			labstation2.DeploymentTicket = "crbug.com/35007"
@@ -542,7 +542,7 @@ func TestUpdateLabstation(t *testing.T) {
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			assert.Loosely(t, res, should.Resemble(labstation1))
+			assert.Loosely(t, res, should.Match(labstation1))
 			labstation2 := mockLabstation("labstation-10", "machine-10")
 			// Set labstation state to serving.
 			labstation2.ResourceState = ufspb.State_STATE_SERVING

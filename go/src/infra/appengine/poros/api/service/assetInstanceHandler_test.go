@@ -56,7 +56,7 @@ func TestAssetInstanceCreateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{request.GetAssetId(), request.GetStatus()}
 		get := []string{model.GetAssetId(), model.GetStatus()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, model.CreatedAt.AsTime().Add(time.Hour*24*7), should.Match(model.DeleteAt.AsTime()))
 	})
 }
@@ -106,7 +106,7 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
 		get := []string{updatedEntity.GetAssetId(), updatedEntity.GetStatus()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, timestamp.Format(time.UnixDate), should.Equal(updatedEntity.DeleteAt.AsTime().Format(time.UnixDate)))
 
 		// Retrieve the updated AssetInstance and make sure that the values were correctly updated
@@ -116,7 +116,7 @@ func TestAssetInstanceUpdateWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		want = []string{"Test AssetId Updated", proto.DeploymentStatus_name[1]}
 		get = []string{readEntity.GetAssetId(), readEntity.GetStatus()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, timestamp.Format(time.UnixDate), should.Equal(readEntity.DeleteAt.AsTime().Format(time.UnixDate)))
 	})
 }
@@ -179,7 +179,7 @@ func TestGetAssetInstanceWithValidData(t *testing.T) {
 
 		want := []string{entity.GetAssetId(), entity.GetStatus()}
 		get := []string{readEntity.GetAssetId(), readEntity.GetStatus()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -203,11 +203,11 @@ func TestListAssetInstance(t *testing.T) {
 		want := []string{"Test AssetId1", "Test AssetId2"}
 		get := []string{asset_instances[0].GetAssetId(), asset_instances[1].GetAssetId()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		want = []string{"STATUS_PENDING", "STATUS_RUNNING"}
 		get = []string{asset_instances[0].GetStatus(), asset_instances[1].GetStatus()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -230,7 +230,7 @@ func TestTriggerDeployment_TypeAssetInstance(t *testing.T) {
 
 		want := []string{"Test AssetId", assetInstanceEntity.AssetInstanceId}
 		get := []string{triggerDeploymentResponse.AssetId, triggerDeploymentResponse.AssetInstanceId}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, triggerDeploymentResponse.ProjectId, should.NotBeEmpty)
 		assert.Loosely(t, triggerDeploymentResponse.ProjectPrefix, should.NotBeEmpty)
 	})
@@ -262,7 +262,7 @@ func TestTriggerDeployment_TypeAsset(t *testing.T) {
 
 		want := []string{asset.Asset.AssetId, assetInstance.AssetInstanceId}
 		get := []string{triggerDeploymentResponse.AssetId, triggerDeploymentResponse.AssetInstanceId}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, triggerDeploymentResponse.ProjectId, should.NotBeEmpty)
 		assert.Loosely(t, triggerDeploymentResponse.ProjectPrefix, should.NotBeEmpty)
 	})

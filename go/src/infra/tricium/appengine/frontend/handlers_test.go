@@ -47,7 +47,7 @@ func TestMainPageHandler(t *testing.T) {
 		t.Run("Constructing template args", func(t *ftt.Test) {
 			args, err := templateArgs(ctx, triciumtest.MakeGetRequest(nil))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, args, should.Resemble(map[string]interface{}{
+			assert.Loosely(t, args, should.Match(map[string]interface{}{
 				"AppVersion":  "testVersionID",
 				"IsAnonymous": false,
 				"LoginURL":    "http://fake.example.com/login?dest=%2Ftesting-path",

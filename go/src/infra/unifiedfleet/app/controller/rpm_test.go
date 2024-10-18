@@ -102,7 +102,7 @@ func TestCreateRPM(t *testing.T) {
 			}
 			resp, err := CreateRPM(ctx, rpm1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rpm1))
+			assert.Loosely(t, resp, should.Match(rpm1))
 
 			s, err := state.GetStateRecord(ctx, "rpms/rpm-20")
 			assert.Loosely(t, err, should.BeNil)
@@ -234,7 +234,7 @@ func TestUpdateRPM(t *testing.T) {
 			resp, err := UpdateRPM(ctx, rpm3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rpm3))
+			assert.Loosely(t, resp, should.Match(rpm3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "rpms/rpm-3")
 			assert.Loosely(t, err, should.BeNil)
@@ -273,7 +273,7 @@ func TestUpdateRPM(t *testing.T) {
 			resp, err := UpdateRPM(ctx, rpm1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rpm1))
+			assert.Loosely(t, resp, should.Match(rpm1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "rpms/rpm-5")
 			assert.Loosely(t, err, should.BeNil)
@@ -512,7 +512,7 @@ func TestUpdateRPM(t *testing.T) {
 			resp, err := UpdateRPM(ctx, rpm3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rpm3))
+			assert.Loosely(t, resp, should.Match(rpm3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "rpms/rpm-55")
 			assert.Loosely(t, err, should.BeNil)
@@ -708,7 +708,7 @@ func TestDeleteRPM(t *testing.T) {
 			resp, err := registration.GetRPM(ctx, "RPM-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(RPM1))
+			assert.Loosely(t, resp, should.Match(RPM1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "rpms/RPM-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -900,7 +900,7 @@ func TestListRPMs(t *testing.T) {
 		t.Run("ListRPMs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListRPMs(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rpms))
+			assert.Loosely(t, resp, should.Match(rpms))
 		})
 	})
 }
@@ -921,7 +921,7 @@ func TestBatchGetRPMs(t *testing.T) {
 			resp, err := registration.BatchGetRPMs(ctx, []string{"rpm-batchGet-0", "rpm-batchGet-1", "rpm-batchGet-2", "rpm-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get rpms  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetRPMs(ctx, []string{"rpm-batchGet-non-existing"})

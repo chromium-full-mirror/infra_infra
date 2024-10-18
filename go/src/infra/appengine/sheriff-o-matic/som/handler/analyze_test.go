@@ -210,7 +210,7 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 		err := attachLuciBisectionResults(c, bf, mockClient)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, should.BeNil)
-		assert.Loosely(t, bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[1].LUCIBisectionResult, should.Resemble(&step.LUCIBisectionTestAnalysis{
+		assert.Loosely(t, bf[0].Reason.Raw.(*analyzer.BqFailure).Tests[1].LUCIBisectionResult, should.Match(&step.LUCIBisectionTestAnalysis{
 			AnalysisID: "2",
 			Status:     bisectionpb.AnalysisStatus(3).String(),
 		}))
@@ -267,7 +267,7 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			err := attachLuciBisectionResults(c, bf, mockClient)
 			assert.Loosely(t, err, should.BeNil)
 			for i, b := range bf {
-				assert.Loosely(t, b.Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, should.Resemble(&step.LUCIBisectionTestAnalysis{
+				assert.Loosely(t, b.Reason.Raw.(*analyzer.BqFailure).Tests[0].LUCIBisectionResult, should.Match(&step.LUCIBisectionTestAnalysis{
 					AnalysisID: fmt.Sprint(i + 1),
 					Status:     bisectionpb.AnalysisStatus(3).String(),
 				}))

@@ -70,7 +70,7 @@ func TestTastConversions(t *testing.T) {
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, r.Cases[0], should.Resemble(TastCase{
+			assert.Loosely(t, r.Cases[0], should.Match(TastCase{
 				Name:         "lacros.Basic",
 				Contacts:     []string{"user1@google.com", "user2@google.com"},
 				BugComponent: "b:1234",
@@ -88,7 +88,7 @@ func TestTastConversions(t *testing.T) {
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, r.Cases[0].Errors[0], should.Resemble(TastError{
+			assert.Loosely(t, r.Cases[0].Errors[0], should.Match(TastError{
 				parseTime("2021-07-26T18:54:38.153491776Z"),
 				"Failed due to dummy error",
 				"dummy.go",
@@ -111,7 +111,7 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
+			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
 				TestId:   "tast.lacros.Basic",
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
@@ -239,7 +239,7 @@ func TestTastConversions(t *testing.T) {
 				},
 			}
 			assert.Loosely(t, got, should.HaveLength(2))
-			assert.Loosely(t, got, should.Resemble(expected))
+			assert.Loosely(t, got, should.Match(expected))
 		})
 		t.Run(`Skipped`, func(t *ftt.Test) {
 			jsonLine := genJSONLine(map[string]string{
@@ -253,7 +253,7 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
+			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    true,
 				Status:      pb.TestStatus_SKIP,
@@ -303,7 +303,7 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
+			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    false,
 				Status:      pb.TestStatus_SKIP,
@@ -358,8 +358,8 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0].Duration, should.Resemble(&duration.Duration{Seconds: 1}))
-			assert.Loosely(t, got[0], should.Resemble(&sinkpb.TestResult{
+			assert.Loosely(t, got[0].Duration, should.Match(&duration.Duration{Seconds: 1}))
+			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
 				Expected:    false,
 				Status:      pb.TestStatus_FAIL,
@@ -422,7 +422,7 @@ func TestTastConversions(t *testing.T) {
 
 			// Only 3 errors are stored while 1 error is truncated.
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0].FailureReason, should.Resemble(&pb.FailureReason{
+			assert.Loosely(t, got[0].FailureReason, should.Match(&pb.FailureReason{
 				PrimaryErrorMessage: maxErrorMessage,
 				Errors: []*pb.FailureReason_Error{
 					{Message: maxErrorMessage},

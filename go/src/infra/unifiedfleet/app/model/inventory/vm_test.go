@@ -49,7 +49,7 @@ func TestBatchUpdateVMs(t *testing.T) {
 		t.Run("BatchUpdate all vms", func(t *ftt.Test) {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1, vm2})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1, vm2}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm1, vm2}))
 		})
 		t.Run("BatchUpdate existing vms", func(t *ftt.Test) {
 			vm2.MacAddress = "123"
@@ -91,7 +91,7 @@ func TestUpdateVMOwnership(t *testing.T) {
 		t.Run("Update existing VM with ownership data", func(t *ftt.Test) {
 			resp, err := BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm1}))
 
 			// Ownership data should be updated
 			vmResp, err := UpdateVMOwnership(ctx, resp[0].Name, ownershipData)
@@ -102,7 +102,7 @@ func TestUpdateVMOwnership(t *testing.T) {
 			// Regular Update calls should not override ownership data
 			resp, err = BatchUpdateVMs(ctx, []*ufspb.VM{vm2})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm2}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm2}))
 
 			vmResp, err = GetVM(ctx, "vm-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -179,7 +179,7 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
-			assert.Loosely(t, resp, should.Resemble(vms))
+			assert.Loosely(t, resp, should.Match(vms))
 		})
 
 		t.Run("List vms - listing with pagination", func(t *ftt.Test) {
@@ -187,12 +187,12 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vms[:3]))
+			assert.Loosely(t, resp, should.Match(vms[:3]))
 
 			resp, _, err = ListVMs(ctx, 2, 2, nextPageToken, nil, false, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vms[3:]))
+			assert.Loosely(t, resp, should.Match(vms[3:]))
 		})
 	})
 	ftt.Run("ListVMs with Filters", t, func(t *ftt.Test) {
@@ -205,7 +205,7 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm1}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm1}))
 		})
 		t.Run("List vms - Filter by tags", func(t *ftt.Test) {
 			filterMap["tags"] = []interface{}{"tag-1"}
@@ -213,7 +213,7 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm2}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm2}))
 		})
 		t.Run("List vms - Filter by memory", func(t *ftt.Test) {
 			filterMap["memory"] = []interface{}{1234}
@@ -221,7 +221,7 @@ func TestListVMs(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.VM{vm3}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.VM{vm3}))
 		})
 	})
 }
@@ -262,7 +262,7 @@ func TestListVMsByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vms))
+			assert.Loosely(t, resp, should.Match(vms))
 		})
 
 		t.Run("List vms - Full listing with invalid prefix", func(t *ftt.Test) {
@@ -277,12 +277,12 @@ func TestListVMsByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vms[:3]))
+			assert.Loosely(t, resp, should.Match(vms[:3]))
 
 			resp, _, err = ListVMsByIdPrefixSearch(ctx, 2, 2, nextPageToken, "vm-", false, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vms[3:]))
+			assert.Loosely(t, resp, should.Match(vms[3:]))
 		})
 	})
 }
@@ -348,7 +348,7 @@ func TestQueryVMByPropertyName(t *testing.T) {
 			resp, err := QueryVMByPropertyName(ctx, "mac_address", "00:50:56:17:00:00", false)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(1))
-			assert.Loosely(t, resp[0], should.Resemble(vm1))
+			assert.Loosely(t, resp[0], should.Match(vm1))
 		})
 		t.Run("Query By non-existing mac address", func(t *ftt.Test) {
 			resp, err := QueryVMByPropertyName(ctx, "mac_address", "00:50:56:xx:yy:zz", false)

@@ -356,7 +356,7 @@ func TestUpdateVlan(t *testing.T) {
 			vlan2.ReservedIps = []string{"6.6.6.14"}
 			res, err := UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"reserved_ips"}})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, res.GetReservedIps(), should.Resemble([]string{"6.6.6.14"}))
+			assert.Loosely(t, res.GetReservedIps(), should.Match([]string{"6.6.6.14"}))
 			resIPs, err = configuration.QueryIPByPropertyName(ctx, map[string]string{"ipv4_str": "6.6.6.14"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resIPs, should.HaveLength(1))
@@ -552,7 +552,7 @@ func TestUpdateVlan(t *testing.T) {
 			resp, err := UpdateVlan(ctx, vlan2, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetZones(), should.Resemble(vlan2.Zones))
+			assert.Loosely(t, resp.GetZones(), should.Match(vlan2.Zones))
 		})
 
 		t.Run("Partial Update vlan(No/empty Zone): permission denied", func(t *ftt.Test) {
@@ -568,7 +568,7 @@ func TestUpdateVlan(t *testing.T) {
 			resp, err := UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"zones"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetZones(), should.Resemble([]ufspb.Zone(nil)))
+			assert.Loosely(t, resp.GetZones(), should.Match([]ufspb.Zone(nil)))
 		})
 
 		t.Run("Update vlan - partial update tags", func(t *ftt.Test) {
@@ -582,7 +582,7 @@ func TestUpdateVlan(t *testing.T) {
 			resp, err := UpdateVlan(ctx, vlan2, &field_mask.FieldMask{Paths: []string{"tags"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"tag-1", "tag-2"}))
+			assert.Loosely(t, resp.GetTags(), should.Match([]string{"tag-1", "tag-2"}))
 		})
 
 		t.Run("Update vlan - invalid IP Range", func(t *ftt.Test) {
@@ -642,7 +642,7 @@ func TestListVlans(t *testing.T) {
 		t.Run("ListVlans - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListVlans(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(vlans))
+			assert.Loosely(t, resp, should.Match(vlans))
 		})
 
 		t.Run("ListVlans - list by zones - happy path", func(t *ftt.Test) {
@@ -694,14 +694,14 @@ func TestDeleteVlan(t *testing.T) {
 		t.Run("Delete vlan by existing ID with machinelse reference", func(t *ftt.Test) {
 			resp, cerr := configuration.CreateVlan(ctx, vlan1)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 			machineLSE1 := &ufspb.MachineLSE{
 				Name: "machineLSE-1",
 				Vlan: "vlan-1",
 			}
 			mresp, merr := inventory.CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, merr, should.BeNil)
-			assert.Loosely(t, mresp, should.Resemble(machineLSE1))
+			assert.Loosely(t, mresp, should.Match(machineLSE1))
 
 			err := DeleteVlan(ctx, "vlan-1")
 			assert.Loosely(t, err, should.NotBeNil)
@@ -710,7 +710,7 @@ func TestDeleteVlan(t *testing.T) {
 			resp, cerr = configuration.GetVlan(ctx, "vlan-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 		})
 		t.Run("Delete vlan successfully with large numbers of IPs", func(t *ftt.Test) {
 			vlan2.VlanAddress = "192.168.16.0/24"
@@ -769,7 +769,7 @@ func TestBatchGetVlans(t *testing.T) {
 			resp, err := configuration.BatchGetVlans(ctx, []string{"vlan-batchGet-0", "vlan-batchGet-1", "vlan-batchGet-2", "vlan-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get vlans  - missing id", func(t *ftt.Test) {
 			resp, err := configuration.BatchGetVlans(ctx, []string{"vlan-batchGet-non-existing"})

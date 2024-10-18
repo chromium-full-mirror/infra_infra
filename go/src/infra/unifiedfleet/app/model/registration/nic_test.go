@@ -34,7 +34,7 @@ func TestCreateNic(t *testing.T) {
 		t.Run("Create new nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 		})
 		t.Run("Create existing nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
@@ -62,11 +62,11 @@ func TestUpdateNic(t *testing.T) {
 		t.Run("Update existing nic", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 
 			resp, err = UpdateNic(ctx, nic2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic2))
+			assert.Loosely(t, resp, should.Match(nic2))
 		})
 		t.Run("Update non-existing nic", func(t *ftt.Test) {
 			resp, err := UpdateNic(ctx, nic3)
@@ -91,10 +91,10 @@ func TestGetNic(t *testing.T) {
 		t.Run("Get nic by existing ID", func(t *ftt.Test) {
 			resp, err := CreateNic(ctx, nic1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 			resp, err = GetNic(ctx, "Nic-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 		})
 		t.Run("Get nic by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetNic(ctx, "nic-2")
@@ -135,7 +135,7 @@ func TestListNics(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics))
+			assert.Loosely(t, resp, should.Match(nics))
 		})
 
 		t.Run("List nics - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListNics(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics[:3]))
+			assert.Loosely(t, resp, should.Match(nics[:3]))
 
 			resp, _, err = ListNics(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics[3:]))
+			assert.Loosely(t, resp, should.Match(nics[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteNic(t *testing.T) {
 		t.Run("Delete nic successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateNic(ctx, nic2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic2))
+			assert.Loosely(t, resp, should.Match(nic2))
 
 			err := DeleteNic(ctx, "nic-2")
 			assert.Loosely(t, err, should.BeNil)
@@ -195,13 +195,13 @@ func TestBatchUpdateNics(t *testing.T) {
 			nic1 := mockNic(fmt.Sprintf("nic-%d", i))
 			resp, err := CreateNic(ctx, nic1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 			nics = append(nics, resp)
 		}
 		t.Run("BatchUpdate all nics", func(t *ftt.Test) {
 			resp, err := BatchUpdateNics(ctx, nics)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics))
+			assert.Loosely(t, resp, should.Match(nics))
 		})
 		t.Run("BatchUpdate existing and non-existing nics", func(t *ftt.Test) {
 			Nic5 := mockNic("")
@@ -230,7 +230,7 @@ func TestQueryNicByPropertyName(t *testing.T) {
 		}
 		resp, cerr := CreateNic(ctx, nic1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(nic1))
+		assert.Loosely(t, resp, should.Match(nic1))
 
 		nics := make([]*ufspb.Nic, 0, 1)
 		nics = append(nics, nic1)
@@ -240,7 +240,7 @@ func TestQueryNicByPropertyName(t *testing.T) {
 		t.Run("Query By existing Switch keysonly", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics1))
+			assert.Loosely(t, resp, should.Match(nics1))
 		})
 		t.Run("Query By non-existing Switch", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-2", true)
@@ -250,7 +250,7 @@ func TestQueryNicByPropertyName(t *testing.T) {
 		t.Run("Query By existing Switch", func(t *ftt.Test) {
 			resp, err := QueryNicByPropertyName(ctx, "switch_id", "switch-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nics))
+			assert.Loosely(t, resp, should.Match(nics))
 		})
 	})
 }

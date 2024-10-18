@@ -30,7 +30,7 @@ func TestGetUpdateMask(t *testing.T) {
 			"test-str-empty": "mask-str-empty",
 		}
 		mask := GetUpdateMask(f, paths)
-		assert.Loosely(t, mask.Paths, should.Resemble([]string{"mask-bool-true", "mask-str-exist"}))
+		assert.Loosely(t, mask.Paths, should.Match([]string{"mask-bool-true", "mask-str-exist"}))
 	})
 
 	ftt.Run("test flags - duplicated paths", t, func(t *ftt.Test) {
@@ -51,6 +51,6 @@ func TestGetUpdateMask(t *testing.T) {
 			"test-str-empty": "mask-str-empty",
 		}
 		mask := GetUpdateMask(f, paths)
-		assert.Loosely(t, mask.Paths, should.Resemble([]string{"mask-bool", "mask-str-exist"}))
+		assert.Loosely(t, mask.Paths, should.Match([]string{"mask-bool", "mask-str-exist"}))
 	})
 }

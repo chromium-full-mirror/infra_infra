@@ -36,7 +36,7 @@ func TestBatchUpdateIPs(t *testing.T) {
 		getRes, _, err := ListIPs(ctx, 10, "", nil, false)
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, getRes, should.Resemble(ips))
+		assert.Loosely(t, getRes, should.Match(ips))
 	})
 	ftt.Run("happy path - Updates multiple batches of IPs", t, func(t *ftt.Test) {
 		count := 700

@@ -41,7 +41,7 @@ func TestResourceCreateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{resourceRequest.GetName(), resourceRequest.GetDescription(), resourceRequest.GetType(), resourceRequest.GetImageProject(), resourceRequest.GetImageFamily()}
 		get := []string{model.GetName(), model.GetDescription(), model.GetType(), model.GetImageProject(), model.GetImageFamily()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		assert.Loosely(t, model.Deleted, should.Equal(false))
 	})
 }
@@ -148,7 +148,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "windows_system", "image-project-updated", "image-family-updated"}
 		get := []string{updatedEntity.GetName(), updatedEntity.GetDescription(), updatedEntity.GetType(), updatedEntity.GetOperatingSystem(), updatedEntity.GetImageProject(), updatedEntity.GetImageFamily()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 
 		// Retrieve the updated resource and make sure that the values were correctly updated
 		getRequest := &proto.GetResourceRequest{
@@ -157,7 +157,7 @@ func TestResourceUpdateWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		want = []string{"Test Resource Name Updated", "Test Resource description Updated", "ad_joined_machine", "windows_system", "image-project-updated", "image-family-updated"}
 		get = []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -351,7 +351,7 @@ func TestGetResourceWithValidData(t *testing.T) {
 
 		want := []string{entity.GetName(), entity.GetDescription(), entity.GetType(), entity.GetOperatingSystem(), entity.GetImageProject(), entity.GetImageFamily()}
 		get := []string{readEntity.GetName(), readEntity.GetDescription(), readEntity.GetType(), readEntity.GetOperatingSystem(), readEntity.GetImageProject(), readEntity.GetImageFamily()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -377,7 +377,7 @@ func TestListResources(t *testing.T) {
 		want := []string{"Test Resource1", "Test Resource2"}
 		get := []string{resources[0].GetName(), resources[1].GetName()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 

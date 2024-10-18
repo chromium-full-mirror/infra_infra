@@ -151,7 +151,7 @@ func TestCreateLiveAnnouncement(t *testing.T) {
 				StartTime:     testclock.TestRecentTimeUTC.Round(time.Microsecond),
 				PlatformNames: []string{"monorail", "som"},
 			}
-			assert.Loosely(t, expected, should.Resemble(announcement))
+			assert.Loosely(t, expected, should.Match(announcement))
 		})
 	})
 }
@@ -168,17 +168,17 @@ func TestSearchAnnouncements(t *testing.T) {
 		t.Run("get all live announcements", func(t *ftt.Test) {
 			anns, err := SearchAnnouncements(ctx, "", false, -1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{cowProto, chickenProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{cowProto, chickenProto}))
 		})
 		t.Run("get live announcements for house", func(t *ftt.Test) {
 			anns, err := SearchAnnouncements(ctx, "house", false, -1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{chickenProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{chickenProto}))
 		})
 		t.Run("get live announcements for barn", func(t *ftt.Test) {
 			anns, err := SearchAnnouncements(ctx, "barn", false, -1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{cowProto, chickenProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{cowProto, chickenProto}))
 		})
 	})
 	ftt.Run("SearchAnnouncements retired", t, func(t *ftt.Test) {
@@ -186,21 +186,21 @@ func TestSearchAnnouncements(t *testing.T) {
 		t.Run("get all retired announcements", func(t *ftt.Test) {
 			anns, err := SearchAnnouncements(ctx, "", true, -1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{foxProto, cowProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{foxProto, cowProto}))
 		})
 		t.Run("get limited and offset retired announcements", func(t *ftt.Test) {
 			retireAnnouncementTesting(ctx, chickenProto)
 			anns, err := SearchAnnouncements(ctx, "", true, 3, 1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{cowProto, chickenProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{cowProto, chickenProto}))
 			anns, err = SearchAnnouncements(ctx, "", true, 1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{foxProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{foxProto}))
 		})
 		t.Run("get retired announcements for field", func(t *ftt.Test) {
 			anns, err := SearchAnnouncements(ctx, "field", true, -1, -1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, anns, should.Resemble([]*dashpb.Announcement{cowProto}))
+			assert.Loosely(t, anns, should.Match([]*dashpb.Announcement{cowProto}))
 		})
 	})
 }
@@ -216,6 +216,6 @@ func TestRetireAnnouncement(t *testing.T) {
 		datastore.Get(ctx, announcement)
 		assert.Loosely(t, announcement.Retired, should.BeTrue)
 		assert.Loosely(t, announcement.Closer, should.Equal(closer))
-		assert.Loosely(t, announcement.EndTime, should.Resemble(recentTime))
+		assert.Loosely(t, announcement.EndTime, should.Match(recentTime))
 	})
 }

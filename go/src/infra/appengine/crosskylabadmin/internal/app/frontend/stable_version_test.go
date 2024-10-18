@@ -518,7 +518,7 @@ func TestGetAllBoardModels(t *testing.T) {
 		}), should.BeNil)
 		out, err := getAllBoardModels(ctx)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, out, should.Resemble(map[string]bool{
+		assert.Loosely(t, out, should.Match(map[string]bool{
 			"a": true,
 			"b": true,
 			"c": true,

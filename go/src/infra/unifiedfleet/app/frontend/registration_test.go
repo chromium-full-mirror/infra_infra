@@ -129,7 +129,7 @@ func TestMachineRegistration(t *testing.T) {
 			resp, err := tf.Fleet.MachineRegistration(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(machine))
+			assert.Loosely(t, resp, should.Match(machine))
 		})
 
 		t.Run("Register machine with nil machine", func(t *ftt.Test) {
@@ -262,7 +262,7 @@ func TestRackRegistration(t *testing.T) {
 			}
 			resp, _ := tf.Fleet.RackRegistration(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(rack))
+			assert.Loosely(t, resp, should.Match(rack))
 		})
 
 		t.Run("Register rack with nil rack", func(t *ftt.Test) {
@@ -440,7 +440,7 @@ func TestGetMachine(t *testing.T) {
 			resp, err := tf.Fleet.GetMachine(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
 			resp.Name = util.RemovePrefix(resp.Name)
-			assert.Loosely(t, resp, should.Resemble(chromeOSMachine1))
+			assert.Loosely(t, resp, should.Match(chromeOSMachine1))
 		})
 
 		t.Run("Get machine - Invalid input empty name", func(t *ftt.Test) {
@@ -494,7 +494,7 @@ func TestListMachines(t *testing.T) {
 			resp, err := tf.Fleet.ListMachines(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Machines, should.Resemble(machines))
+			assert.Loosely(t, resp.Machines, should.Match(machines))
 		})
 
 		t.Run("ListMachines - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -659,13 +659,13 @@ func TestGetRack(t *testing.T) {
 				Name: util.AddPrefix(util.RackCollection, "rack-1"),
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rack1))
+			assert.Loosely(t, resp, should.Match(rack1))
 
 			resp, err = tf.Fleet.GetRack(tf.C, &ufsAPI.GetRackRequest{
 				Name: util.AddPrefix(util.RackCollection, "RACK-1"),
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(rack1))
+			assert.Loosely(t, resp, should.Match(rack1))
 		})
 		t.Run("Get rack by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetRackRequest{
@@ -727,7 +727,7 @@ func TestListRacks(t *testing.T) {
 			resp, err := tf.Fleet.ListRacks(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Racks, should.Resemble(racks))
+			assert.Loosely(t, resp.Racks, should.Match(racks))
 		})
 
 		t.Run("ListRacks - filter format valid", func(t *ftt.Test) {
@@ -855,7 +855,7 @@ func TestCreateNic(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateNic(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic))
+			assert.Loosely(t, resp, should.Match(nic))
 		})
 
 		t.Run("Create new nic - Invalid input nil", func(t *ftt.Test) {
@@ -950,7 +950,7 @@ func TestUpdateNic(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateNic(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic2))
+			assert.Loosely(t, resp, should.Match(nic2))
 		})
 
 		t.Run("Update nic - Invalid input nil", func(t *ftt.Test) {
@@ -1021,7 +1021,7 @@ func TestGetNic(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetNic(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(nic1))
+			assert.Loosely(t, resp, should.Match(nic1))
 		})
 
 		t.Run("Get nic - Invalid input empty name", func(t *ftt.Test) {
@@ -1076,7 +1076,7 @@ func TestListNics(t *testing.T) {
 			resp, err := tf.Fleet.ListNics(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Nics, should.Resemble(nics))
+			assert.Loosely(t, resp.Nics, should.Match(nics))
 		})
 
 		t.Run("ListNics - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1180,7 +1180,7 @@ func TestCreateKVM(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateKVM(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 		})
 
 		t.Run("Create new KVM - Invalid input nil", func(t *ftt.Test) {
@@ -1275,7 +1275,7 @@ func TestUpdateKVM(t *testing.T) {
 			}
 			resp, err = tf.Fleet.UpdateKVM(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM2))
+			assert.Loosely(t, resp, should.Match(KVM2))
 		})
 
 		t.Run("Update KVM - Invalid input nil", func(t *ftt.Test) {
@@ -1345,7 +1345,7 @@ func TestGetKVM(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetKVM(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 		})
 		t.Run("Get KVM by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetKVMRequest{
@@ -1407,7 +1407,7 @@ func TestListKVMs(t *testing.T) {
 			resp, err := tf.Fleet.ListKVMs(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.KVMs, should.Resemble(KVMs))
+			assert.Loosely(t, resp.KVMs, should.Match(KVMs))
 		})
 
 		t.Run("ListKVMs - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1509,7 +1509,7 @@ func TestCreateRPM(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateRPM(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(RPM1))
+			assert.Loosely(t, resp, should.Match(RPM1))
 		})
 
 		t.Run("Create new RPM - Invalid input nil", func(t *ftt.Test) {
@@ -1572,7 +1572,7 @@ func TestUpdateRPM(t *testing.T) {
 			}
 			resp, err := tf.Fleet.UpdateRPM(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(RPM2))
+			assert.Loosely(t, resp, should.Match(RPM2))
 		})
 
 		t.Run("Update RPM - Invalid input nil", func(t *ftt.Test) {
@@ -1627,7 +1627,7 @@ func TestGetRPM(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetRPM(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(RPM1))
+			assert.Loosely(t, resp, should.Match(RPM1))
 		})
 		t.Run("Get RPM - Invalid input empty name", func(t *ftt.Test) {
 			req := &ufsAPI.GetRPMRequest{
@@ -1682,7 +1682,7 @@ func TestListRPMs(t *testing.T) {
 			resp, err := tf.Fleet.ListRPMs(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.RPMs, should.Resemble(RPMs))
+			assert.Loosely(t, resp.RPMs, should.Match(RPMs))
 		})
 
 		t.Run("ListRPMs - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -1792,7 +1792,7 @@ func TestCreateDrac(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateDrac(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac))
+			assert.Loosely(t, resp, should.Match(drac))
 
 			// Verify network settings
 			dhcp, err := configuration.GetDHCPConfig(ctx, "drac-1")
@@ -1898,7 +1898,7 @@ func TestUpdateDrac(t *testing.T) {
 			}
 			resp, err = tf.Fleet.UpdateDrac(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac2))
+			assert.Loosely(t, resp, should.Match(drac2))
 		})
 
 		t.Run("Update drac - Invalid input nil", func(t *ftt.Test) {
@@ -1970,7 +1970,7 @@ func TestGetDrac(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetDrac(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(drac1))
+			assert.Loosely(t, resp, should.Match(drac1))
 		})
 
 		t.Run("Get drac - Invalid input empty name", func(t *ftt.Test) {
@@ -2025,7 +2025,7 @@ func TestListDracs(t *testing.T) {
 			resp, err := tf.Fleet.ListDracs(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Dracs, should.Resemble(dracs))
+			assert.Loosely(t, resp.Dracs, should.Match(dracs))
 		})
 
 		t.Run("ListDracs - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -2098,7 +2098,7 @@ func TestCreateSwitch(t *testing.T) {
 			}
 			resp, err := tf.Fleet.CreateSwitch(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 		})
 
 		t.Run("Create new switch - Invalid input nil", func(t *ftt.Test) {
@@ -2179,7 +2179,7 @@ func TestUpdateSwitch(t *testing.T) {
 			}
 			resp, err = tf.Fleet.UpdateSwitch(tf.C, ureq)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch2))
+			assert.Loosely(t, resp, should.Match(switch2))
 		})
 
 		t.Run("Update switch - Invalid input nil", func(t *ftt.Test) {
@@ -2236,7 +2236,7 @@ func TestGetSwitch(t *testing.T) {
 			}
 			resp, err := tf.Fleet.GetSwitch(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 		})
 		t.Run("Get switch by non-existing ID", func(t *ftt.Test) {
 			req := &ufsAPI.GetSwitchRequest{
@@ -2298,7 +2298,7 @@ func TestListSwitches(t *testing.T) {
 			resp, err := tf.Fleet.ListSwitches(tf.C, req)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp.Switches, should.Resemble(switches))
+			assert.Loosely(t, resp.Switches, should.Match(switches))
 		})
 
 		t.Run("ListSwitches - filter format invalid format OR - error", func(t *ftt.Test) {
@@ -2429,11 +2429,11 @@ func TestCreateAsset(t *testing.T) {
 			rackResp, err := tf.Fleet.RackRegistration(tf.C, rackReq)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, rackResp, should.NotBeNil)
-			assert.Loosely(t, rackResp, should.Resemble(rack))
+			assert.Loosely(t, rackResp, should.Match(rack))
 			resp, err := tf.Fleet.CreateAsset(tf.C, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(asset))
+			assert.Loosely(t, resp, should.Match(asset))
 		})
 		t.Run("Create asset - invalid name", func(t *ftt.Test) {
 			asset := &ufspb.Asset{

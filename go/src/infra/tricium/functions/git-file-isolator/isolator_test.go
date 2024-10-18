@@ -17,7 +17,7 @@ func TestHelperFunctions(t *testing.T) {
 	ftt.Run("possibleGitattributesPaths lists all relevant paths", t, func(t *ftt.Test) {
 		assert.Loosely(t,
 			possibleGitattributesPaths([]string{"one/two/foo.c"}),
-			should.Resemble(
+			should.Match(
 				[]string{
 					".gitattributes",
 					"one/.gitattributes",
@@ -33,7 +33,7 @@ func TestHelperFunctions(t *testing.T) {
 				"one/two/foo.h",
 				"one/other/x.txt",
 			}),
-			should.Resemble(
+			should.Match(
 				[]string{
 					".gitattributes",
 					"one/.gitattributes",
@@ -44,15 +44,15 @@ func TestHelperFunctions(t *testing.T) {
 
 	ftt.Run("ancestorDirectories gives the union of all ancestor dir paths", t, func(t *ftt.Test) {
 		assert.Loosely(t, ancestorDirectories([]string{"a/b/c/foo.proto"}),
-			should.Resemble(
+			should.Match(
 				stringset.NewFromSlice("", "a", "a/b", "a/b/c")))
 		assert.Loosely(t, ancestorDirectories([]string{"a/b/c/foo.proto", "x/y/foo.c"}),
-			should.Resemble(
+			should.Match(
 				stringset.NewFromSlice("", "a", "a/b", "a/b/c", "x", "x/y")))
 	})
 
 	ftt.Run("splitNull splits null-separated and terminated strings", t, func(t *ftt.Test) {
-		assert.Loosely(t, splitNull("f 1\x00"), should.Resemble([]string{"f 1"}))
-		assert.Loosely(t, splitNull("f 1\x00f 2\x00"), should.Resemble([]string{"f 1", "f 2"}))
+		assert.Loosely(t, splitNull("f 1\x00"), should.Match([]string{"f 1"}))
+		assert.Loosely(t, splitNull("f 1\x00f 2\x00"), should.Match([]string{"f 1", "f 2"}))
 	})
 }

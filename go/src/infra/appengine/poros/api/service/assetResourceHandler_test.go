@@ -38,7 +38,7 @@ func TestAssetResourceCreateWithValidData(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		want := []string{assetResourceRequest.GetAssetId(), assetResourceRequest.GetResourceId(), assetResourceRequest.GetAliasName()}
 		get := []string{model.GetAssetId(), model.GetResourceId(), model.GetAliasName()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -102,7 +102,7 @@ func TestAssetResourceUpdateWithValidData(t *testing.T) {
 		readEntity, err := handler.Get(ctx, getRequest)
 		want := []string{"Test AssetId", "Test ResourceId Updated", "Test Alias Name Updated"}
 		get := []string{readEntity.GetAssetId(), readEntity.GetResourceId(), readEntity.GetAliasName()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -188,7 +188,7 @@ func TestGetAssetResourceWithValidData(t *testing.T) {
 
 		want := []string{entity.GetAssetResourceId(), entity.GetAssetId(), entity.GetResourceId(), entity.GetAliasName()}
 		get := []string{readEntity.GetAssetResourceId(), readEntity.GetAssetId(), readEntity.GetResourceId(), readEntity.GetAliasName()}
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }
 
@@ -211,14 +211,14 @@ func TestListAssetResources(t *testing.T) {
 		want := []string{"Test AssetId1", "Test AssetId2"}
 		get := []string{asset_resources[0].GetAssetId(), asset_resources[1].GetAssetId()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		want = []string{"Test ResourceId1", "Test ResourceId2"}
 		get = []string{asset_resources[0].GetResourceId(), asset_resources[1].GetResourceId()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 		want = []string{"Test AliasName1", "Test AliasName2"}
 		get = []string{asset_resources[0].GetAliasName(), asset_resources[1].GetAliasName()}
 		sort.Strings(get)
-		assert.Loosely(t, get, should.Resemble(want))
+		assert.Loosely(t, get, should.Match(want))
 	})
 }

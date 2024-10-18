@@ -108,7 +108,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 		results := &TestRunnerResult{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, results.Autotest.TestCases, should.Resemble(tc))
+		assert.Loosely(t, results.Autotest.TestCases, should.Match(tc))
 	})
 
 	ftt.Run(`ToProtos`, t, func(t *ftt.Test) {
@@ -195,7 +195,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 				},
 			}
 			assert.Loosely(t, testResults, should.HaveLength(5))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 		})
 
 		t.Run("test passes: CFT test run with CFT metadata", func(t *ftt.Test) {
@@ -351,7 +351,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 				},
 			}
 			assert.Loosely(t, testResults, should.HaveLength(5))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 		})
 
 		t.Run(`check the oversize failure reason`, func(t *ftt.Test) {
@@ -404,8 +404,8 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, testResults, should.HaveLength(1))
-			assert.Loosely(t, testResults[0].Status, should.Resemble(pb.TestStatus_SKIP))
-			assert.Loosely(t, testResults[0].Expected, should.Resemble(true))
+			assert.Loosely(t, testResults[0].Status, should.Match(pb.TestStatus_SKIP))
+			assert.Loosely(t, testResults[0].Expected, should.Match(true))
 		})
 
 		t.Run("When running one test case should upload all artifacts under that test", func(t *ftt.Test) {
@@ -435,7 +435,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, gotTestResults, should.HaveLength(1))
-			assert.Loosely(t, gotTestResults[0].GetArtifacts(), should.Resemble(wantArtifacts))
+			assert.Loosely(t, gotTestResults[0].GetArtifacts(), should.Match(wantArtifacts))
 		})
 
 		t.Run("Skips test artifacts upload when result dir is invalid", func(t *ftt.Test) {

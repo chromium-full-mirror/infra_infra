@@ -42,7 +42,7 @@ func TestFilterFiles(t *testing.T) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*.py")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, filtered, should.Resemble([]*Data_File{{Path: "x/y/z.py"}}))
+		assert.Loosely(t, filtered, should.Match([]*Data_File{{Path: "x/y/z.py"}}))
 	})
 
 	ftt.Run("Filter with one invalid pattern", t, func(t *ftt.Test) {
@@ -55,13 +55,13 @@ func TestFilterFiles(t *testing.T) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*.py", "*.txt")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, filtered, should.Resemble(files))
+		assert.Loosely(t, filtered, should.Match(files))
 	})
 
 	ftt.Run("Filter with two patterns that overlap", t, func(t *ftt.Test) {
 		files := []*Data_File{{Path: "x/y/z.py"}, {Path: "x/y/z.txt"}}
 		filtered, err := FilterFiles(files, "*", "*.txt")
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, filtered, should.Resemble(files))
+		assert.Loosely(t, filtered, should.Match(files))
 	})
 }

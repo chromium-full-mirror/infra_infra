@@ -34,7 +34,7 @@ func TestCreateVlan(t *testing.T) {
 		t.Run("Create new vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 		})
 		t.Run("Create existing vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
@@ -62,11 +62,11 @@ func TestUpdateVlan(t *testing.T) {
 		t.Run("Update existing vlan", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 
 			resp, err = UpdateVlan(ctx, vlan2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan2))
+			assert.Loosely(t, resp, should.Match(vlan2))
 		})
 		t.Run("Update non-existing vlan", func(t *ftt.Test) {
 			resp, err := UpdateVlan(ctx, vlan3)
@@ -91,10 +91,10 @@ func TestGetVlan(t *testing.T) {
 		t.Run("Get vlan by existing ID", func(t *ftt.Test) {
 			resp, err := CreateVlan(ctx, vlan1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 			resp, err = GetVlan(ctx, "Vlan-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan1))
+			assert.Loosely(t, resp, should.Match(vlan1))
 		})
 		t.Run("Get vlan by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetVlan(ctx, "vlan-2")
@@ -135,7 +135,7 @@ func TestListVlans(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlans))
+			assert.Loosely(t, resp, should.Match(vlans))
 		})
 
 		t.Run("List vlans - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListVlans(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlans[:3]))
+			assert.Loosely(t, resp, should.Match(vlans[:3]))
 
 			resp, _, err = ListVlans(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlans[3:]))
+			assert.Loosely(t, resp, should.Match(vlans[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteVlan(t *testing.T) {
 		t.Run("Delete vlan successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateVlan(ctx, vlan2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(vlan2))
+			assert.Loosely(t, resp, should.Match(vlan2))
 
 			err := DeleteVlan(ctx, "vlan-2")
 			assert.Loosely(t, err, should.BeNil)

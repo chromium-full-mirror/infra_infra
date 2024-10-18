@@ -360,7 +360,7 @@ func TestMain(t *testing.T) {
 					num, err := flushOldAnnotations(c)
 					assert.Loosely(t, err, should.BeNil)
 					assert.Loosely(t, num, should.BeZero)
-					assert.Loosely(t, getAllAnns(), should.Resemble([]*model.Annotation{ann}))
+					assert.Loosely(t, getAllAnns(), should.Match([]*model.Annotation{ann}))
 				})
 
 				ann.ModificationTime = cl.Now().Add(-(annotationExpiration + time.Hour))
@@ -371,7 +371,7 @@ func TestMain(t *testing.T) {
 					num, err := flushOldAnnotations(c)
 					assert.Loosely(t, err, should.BeNil)
 					assert.Loosely(t, num, should.Equal(1))
-					assert.Loosely(t, getAllAnns(), should.Resemble([]*model.Annotation{}))
+					assert.Loosely(t, getAllAnns(), should.Match([]*model.Annotation{}))
 				})
 
 				datastore.GetTestable(c).CatchupIndexes()
@@ -399,7 +399,7 @@ func TestMain(t *testing.T) {
 					num, err := flushOldAnnotations(c)
 					assert.Loosely(t, err, should.BeNil)
 					assert.Loosely(t, num, should.Equal(1))
-					assert.Loosely(t, getAllAnns(), should.Resemble(anns[:1]))
+					assert.Loosely(t, getAllAnns(), should.Match(anns[:1]))
 				})
 
 				t.Run("handler", func(t *ftt.Test) {

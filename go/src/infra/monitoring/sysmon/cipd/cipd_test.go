@@ -26,7 +26,7 @@ func TestListFiles(t *testing.T) {
 			err := ioutil.WriteFile(filepath.Join(path, "CIPD_VERSION.json"), []byte{}, 0644)
 			assert.Loosely(t, err, should.BeNil)
 
-			assert.Loosely(t, listCIPDVersionFiles(path), should.Resemble([]string{
+			assert.Loosely(t, listCIPDVersionFiles(path), should.Match([]string{
 				filepath.Join(path, "CIPD_VERSION.json"),
 			}))
 		})
@@ -35,7 +35,7 @@ func TestListFiles(t *testing.T) {
 			err := ioutil.WriteFile(filepath.Join(path, "foo.cipd_version"), []byte{}, 0644)
 			assert.Loosely(t, err, should.BeNil)
 
-			assert.Loosely(t, listCIPDVersionFiles(path), should.Resemble([]string{
+			assert.Loosely(t, listCIPDVersionFiles(path), should.Match([]string{
 				filepath.Join(path, "foo.cipd_version"),
 			}))
 		})
@@ -51,7 +51,7 @@ func TestListFiles(t *testing.T) {
 
 			f, err := readCIPDVersionFile(filepath.Join(path, "foo.cipd_version"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, f, should.Resemble(cipdpkg.VersionFile{
+			assert.Loosely(t, f, should.Match(cipdpkg.VersionFile{
 				PackageName: "Hello",
 				InstanceID:  "World",
 			}))
@@ -60,7 +60,7 @@ func TestListFiles(t *testing.T) {
 		t.Run("file doesn't exist", func(t *ftt.Test) {
 			f, err := readCIPDVersionFile(filepath.Join(path, "does not exist"))
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, f, should.Resemble(cipdpkg.VersionFile{}))
+			assert.Loosely(t, f, should.Match(cipdpkg.VersionFile{}))
 		})
 	})
 }

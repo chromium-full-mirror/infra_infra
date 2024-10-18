@@ -470,7 +470,7 @@ func TestImportPublicBoardsAndModels(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, entity.Board, should.Equal(LAUNCHED_BOARD_NO_MODELS))
 			assert.Loosely(t, len(entity.Models), should.Equal(1))
-			assert.Loosely(t, entity.Models, should.Resemble([]string{LAUNCHED_BOARD_NO_MODELS}))
+			assert.Loosely(t, entity.Models, should.Match([]string{LAUNCHED_BOARD_NO_MODELS}))
 			assert.Loosely(t, entity.BoardHasPrivateModels, should.BeFalse)
 		})
 	})

@@ -265,7 +265,7 @@ func TestExpectationStatement(t *testing.T) {
 				Modifiers:    []string{"Mac"},
 			}
 
-			assert.Loosely(t, es.ExpandModifiers(), should.Resemble([]string{"Mac", "retina", "mac10.9", "mac10.11", "mac10.12"}))
+			assert.Loosely(t, es.ExpandModifiers(), should.Match([]string{"Mac", "retina", "mac10.9", "mac10.11", "mac10.12"}))
 			assert.Loosely(t, es.ModifierMatch("Mac10.9"), should.Equal(true))
 		})
 

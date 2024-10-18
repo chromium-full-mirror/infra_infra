@@ -85,7 +85,7 @@ func TestGetAllHwidData(t *testing.T) {
 			resp, err := getAllHwidData(ctx)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(bqMsgs))
+			assert.Loosely(t, resp, should.Match(bqMsgs))
 		})
 	})
 }

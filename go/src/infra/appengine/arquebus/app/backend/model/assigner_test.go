@@ -132,7 +132,7 @@ func TestEnsureScheduledTasks(t *testing.T) {
 				newTask, existingTask := tasks[0], tasks[1]
 
 				assert.Loosely(t, newTask.Status, should.Equal(TaskStatus_Scheduled))
-				assert.Loosely(t, newTask.ExpectedStart, should.Resemble(cl.Now().Add(assigner.Interval)))
+				assert.Loosely(t, newTask.ExpectedStart, should.Match(cl.Now().Add(assigner.Interval)))
 				assert.Loosely(t, existingTask.Status, should.Equal(TaskStatus_Succeeded))
 			})
 

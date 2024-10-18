@@ -104,7 +104,7 @@ func TestCreateSwitch(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.BrowserLabAdminRealm)
 			resp, err := CreateSwitch(ctx, switch1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 
 			s, err := state.GetStateRecord(ctx, "switches/switch-25")
 			assert.Loosely(t, err, should.BeNil)
@@ -232,7 +232,7 @@ func TestUpdateSwitch(t *testing.T) {
 			resp, err := UpdateSwitch(ctx, switch3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(switch3))
+			assert.Loosely(t, resp, should.Match(switch3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "switches/switch-3")
 			assert.Loosely(t, err, should.BeNil)
@@ -270,7 +270,7 @@ func TestUpdateSwitch(t *testing.T) {
 			resp, err := UpdateSwitch(ctx, switch1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "switches/switch-5")
 			assert.Loosely(t, err, should.BeNil)
@@ -479,7 +479,7 @@ func TestUpdateSwitch(t *testing.T) {
 			resp, err := UpdateSwitch(ctx, switch3, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(switch3))
+			assert.Loosely(t, resp, should.Match(switch3))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "switches/switch-55")
 			assert.Loosely(t, err, should.BeNil)
@@ -666,7 +666,7 @@ func TestDeleteSwitch(t *testing.T) {
 			resp, err := registration.GetSwitch(ctx, "switch-1")
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(switch1))
+			assert.Loosely(t, resp, should.Match(switch1))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "switches/switch-1")
 			assert.Loosely(t, err, should.BeNil)
@@ -791,7 +791,7 @@ func TestListSwitches(t *testing.T) {
 		t.Run("ListSwitches - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListSwitches(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(switches))
+			assert.Loosely(t, resp, should.Match(switches))
 		})
 	})
 }
@@ -812,7 +812,7 @@ func TestBatchGetSwitches(t *testing.T) {
 			resp, err := registration.BatchGetSwitches(ctx, []string{"switch-batchGet-0", "switch-batchGet-1", "switch-batchGet-2", "switch-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get switches  - missing id", func(t *ftt.Test) {
 			resp, err := registration.BatchGetSwitches(ctx, []string{"switch-batchGet-non-existing"})

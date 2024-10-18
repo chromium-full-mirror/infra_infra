@@ -41,7 +41,7 @@ func TestNewDutStateFromHostInfo(t *testing.T) {
 			},
 		}
 
-		assert.Loosely(t, want, should.Resemble(state))
+		assert.Loosely(t, want, should.Match(state))
 	})
 }
 

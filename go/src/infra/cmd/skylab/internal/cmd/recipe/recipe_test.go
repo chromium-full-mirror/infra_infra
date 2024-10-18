@@ -199,8 +199,8 @@ func TestSchedulingParam(t *testing.T) {
 			t.Run(c.name, func(t *ftt.Test) {
 				s := toScheduling(c.inputPool, c.inputAccount, c.inputPriority)
 				t.Run("then scheduling parameters are correct.", func(t *ftt.Test) {
-					assert.Loosely(t, s.GetManagedPool(), should.Resemble(c.expectedManagedPool))
-					assert.Loosely(t, s.GetUnmanagedPool(), should.Resemble(c.expectedUnmanagedPool))
+					assert.Loosely(t, s.GetManagedPool(), should.Match(c.expectedManagedPool))
+					assert.Loosely(t, s.GetUnmanagedPool(), should.Match(c.expectedUnmanagedPool))
 					assert.Loosely(t, s.Priority, should.Equal(c.expectedPriority))
 					assert.Loosely(t, s.QsAccount, should.Equal(c.expectedAccount))
 				})

@@ -437,7 +437,7 @@ func TestUpdateVM(t *testing.T) {
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags", "memory"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetTags(), should.Resemble([]string{"tag-1", "tag-2"}))
+			assert.Loosely(t, resp.GetTags(), should.Match([]string{"tag-1", "tag-2"}))
 			assert.Loosely(t, resp.GetOsVersion().GetValue(), should.Equal("windows"))
 			assert.Loosely(t, resp.GetCpuCores(), should.Equal(16))
 			assert.Loosely(t, resp.GetMemory(), should.Equal(1000))
@@ -605,13 +605,13 @@ func TestListVMs(t *testing.T) {
 			resp, _, _ := ListVMs(ctx, 5, "", "vlan=vlan-1", false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.HaveLength(2))
-			assert.Loosely(t, ufsAPI.ParseResources(resp, "Name"), should.Resemble([]string{"vm-list-1", "vm-list-3"}))
+			assert.Loosely(t, ufsAPI.ParseResources(resp, "Name"), should.Match([]string{"vm-list-1", "vm-list-3"}))
 		})
 
 		t.Run("List VMs - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListVMs(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(vms))
+			assert.Loosely(t, resp, should.Match(vms))
 		})
 		t.Run("List VMs - multiple filters", func(t *ftt.Test) {
 			resp, _, err := ListVMs(ctx, 5, "", "vlan=vlan-2 & state=deployed_testing & zone=atlanta", false)
@@ -645,7 +645,7 @@ func TestBatchGetVMs(t *testing.T) {
 			resp, err := inventory.BatchGetVMs(ctx, []string{"vm-batchGet-0", "vm-batchGet-1", "vm-batchGet-2", "vm-batchGet-3"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(4))
-			assert.Loosely(t, resp, should.Resemble(entities))
+			assert.Loosely(t, resp, should.Match(entities))
 		})
 		t.Run("Batch get vms  - missing id", func(t *ftt.Test) {
 			resp, err := inventory.BatchGetVMs(ctx, []string{"vm-batchGet-non-existing"})
@@ -706,7 +706,7 @@ func TestRealmPermissionForVM(t *testing.T) {
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
 			resp, _ := CreateVM(ctx, vm1, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(vm1))
+			assert.Loosely(t, resp, should.Match(vm1))
 		})
 
 		t.Run("CreateVM without permission - fail", func(t *ftt.Test) {
@@ -760,7 +760,7 @@ func TestRealmPermissionForVM(t *testing.T) {
 			resp, err := UpdateVM(ctx, vm1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
+			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
 		})
 
 		t.Run("UpdateVM without permission - fail", func(t *ftt.Test) {
@@ -845,7 +845,7 @@ func TestRealmPermissionForVM(t *testing.T) {
 			resp, err := UpdateVM(ctx, vm1, &field_mask.FieldMask{Paths: []string{"tags"}})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.Tags, should.Resemble([]string{"Dell"}))
+			assert.Loosely(t, resp.Tags, should.Match([]string{"Dell"}))
 		})
 
 		t.Run("Partial UpdateVM without permission - fail", func(t *ftt.Test) {

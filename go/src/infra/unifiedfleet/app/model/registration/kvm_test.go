@@ -34,7 +34,7 @@ func TestCreateKVM(t *testing.T) {
 		t.Run("Create new KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 		})
 		t.Run("Create existing KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
@@ -62,11 +62,11 @@ func TestUpdateKVM(t *testing.T) {
 		t.Run("Update existing KVM", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 
 			resp, err = UpdateKVM(ctx, KVM2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM2))
+			assert.Loosely(t, resp, should.Match(KVM2))
 		})
 		t.Run("Update non-existing KVM", func(t *ftt.Test) {
 			resp, err := UpdateKVM(ctx, KVM3)
@@ -91,10 +91,10 @@ func TestGetKVM(t *testing.T) {
 		t.Run("Get KVM by existing ID", func(t *ftt.Test) {
 			resp, err := CreateKVM(ctx, KVM1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 			resp, err = GetKVM(ctx, "KVM-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM1))
+			assert.Loosely(t, resp, should.Match(KVM1))
 		})
 		t.Run("Get KVM by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetKVM(ctx, "KVM-2")
@@ -135,7 +135,7 @@ func TestListKVMs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVMs))
+			assert.Loosely(t, resp, should.Match(KVMs))
 		})
 
 		t.Run("List KVMs - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListKVMs(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVMs[:3]))
+			assert.Loosely(t, resp, should.Match(KVMs[:3]))
 
 			resp, _, err = ListKVMs(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVMs[3:]))
+			assert.Loosely(t, resp, should.Match(KVMs[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteKVM(t *testing.T) {
 		t.Run("Delete KVM successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateKVM(ctx, KVM4)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(KVM4))
+			assert.Loosely(t, resp, should.Match(KVM4))
 
 			err := DeleteKVM(ctx, "KVM-4")
 			assert.Loosely(t, err, should.BeNil)
@@ -196,13 +196,13 @@ func TestBatchUpdateKVMs(t *testing.T) {
 			kvm1.ChromePlatform = "chromePlatform-1"
 			resp, err := CreateKVM(ctx, kvm1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvm1))
+			assert.Loosely(t, resp, should.Match(kvm1))
 			kvms = append(kvms, resp)
 		}
 		t.Run("BatchUpdate all kvms", func(t *ftt.Test) {
 			resp, err := BatchUpdateKVMs(ctx, kvms)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvms))
+			assert.Loosely(t, resp, should.Match(kvms))
 		})
 		t.Run("BatchUpdate existing and non-existing kvms", func(t *ftt.Test) {
 			KVM5 := mockKVM("")
@@ -227,7 +227,7 @@ func TestQueryKVMByPropertyName(t *testing.T) {
 		kvm1.ChromePlatform = "chromePlatform-1"
 		resp, cerr := CreateKVM(ctx, kvm1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(kvm1))
+		assert.Loosely(t, resp, should.Match(kvm1))
 
 		kvms := make([]*ufspb.KVM, 0, 1)
 		kvms = append(kvms, kvm1)
@@ -237,7 +237,7 @@ func TestQueryKVMByPropertyName(t *testing.T) {
 		t.Run("Query By existing ChromePlatform keysonly", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvms1))
+			assert.Loosely(t, resp, should.Match(kvms1))
 		})
 		t.Run("Query By non-existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-2", true)
@@ -247,7 +247,7 @@ func TestQueryKVMByPropertyName(t *testing.T) {
 		t.Run("Query By existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryKVMByPropertyName(ctx, "chrome_platform_id", "chromePlatform-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(kvms))
+			assert.Loosely(t, resp, should.Match(kvms))
 		})
 	})
 }

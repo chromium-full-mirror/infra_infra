@@ -156,7 +156,7 @@ func TestPylintParsing(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assert.Loosely(t, comments, should.Resemble(expected))
+			assert.Loosely(t, comments, should.Match(expected))
 		})
 	})
 

@@ -346,11 +346,11 @@ func TestGetMachineACL(t *testing.T) {
 			resp, err := GetMachineACL(ctxSuperuser, "chromeos-asset-zone4")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(chromeOSMachineZone4))
+			assert.Loosely(t, resp, should.Match(chromeOSMachineZone4))
 			resp, err = GetMachineACL(ctxSuperuser, "chromeos-asset-zone5")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(chromeOSMachineZone5))
+			assert.Loosely(t, resp, should.Match(chromeOSMachineZone5))
 		})
 		t.Run("User only sees realm they should access", func(t *ftt.Test) {
 			resp, err := GetMachineACL(ctxACSLab, "chromeos-asset-zone4")
@@ -359,7 +359,7 @@ func TestGetMachineACL(t *testing.T) {
 			resp, err = GetMachineACL(ctxACSLab, "chromeos-asset-zone5")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(chromeOSMachineZone5))
+			assert.Loosely(t, resp, should.Match(chromeOSMachineZone5))
 		})
 		t.Run("User with no realms sees nothing", func(t *ftt.Test) {
 			resp, err := GetMachineACL(ctxNoPerms, "chromeos-asset-zone4")
@@ -418,7 +418,7 @@ func TestBatchGetMachineACL(t *testing.T) {
 			resp, err := BatchGetMachinesACL(ctxSuperuser, []string{"chromeos-asset-zone4", "chromeos-asset-zone5"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.Machine{chromeOSMachineZone4, chromeOSMachineZone5}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.Machine{chromeOSMachineZone4, chromeOSMachineZone5}))
 		})
 		t.Run("User only sees realm they should access", func(t *ftt.Test) {
 			resp, err := BatchGetMachinesACL(ctxACSLab, []string{"chromeos-asset-zone4", "chromeos-asset-zone5"})
@@ -427,7 +427,7 @@ func TestBatchGetMachineACL(t *testing.T) {
 			resp, err = BatchGetMachinesACL(ctxACSLab, []string{"chromeos-asset-zone5"})
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.Machine{chromeOSMachineZone5}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.Machine{chromeOSMachineZone5}))
 		})
 		t.Run("User with no realms sees nothing", func(t *ftt.Test) {
 			resp, err := BatchGetMachinesACL(ctxNoPerms, []string{"chromeos-asset-zone4", "chromeos-asset-zone5"})
@@ -461,7 +461,7 @@ func TestListMachines(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 
 		t.Run("List machines - listing with pagination", func(t *ftt.Test) {
@@ -469,12 +469,12 @@ func TestListMachines(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[:3]))
+			assert.Loosely(t, resp, should.Match(machines[:3]))
 
 			resp, _, err = ListMachines(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[3:]))
+			assert.Loosely(t, resp, should.Match(machines[3:]))
 		})
 	})
 }
@@ -534,12 +534,12 @@ func TestListMachinesACL(t *testing.T) {
 			// test pagination
 			resp, nextPageToken, err := ListMachinesACL(ctxACSLab, 3, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[0:3]))
+			assert.Loosely(t, resp, should.Match(machines[0:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListMachinesACL(ctxACSLab, 100, nextPageToken, nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[3:10]))
+			assert.Loosely(t, resp, should.Match(machines[3:10]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 
 		})
@@ -547,12 +547,12 @@ func TestListMachinesACL(t *testing.T) {
 			// test pagination
 			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[0:3]))
+			assert.Loosely(t, resp, should.Match(machines[0:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, nil, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[3:20]))
+			assert.Loosely(t, resp, should.Match(machines[3:20]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 
 		})
@@ -560,12 +560,12 @@ func TestListMachinesACL(t *testing.T) {
 			// test pagination
 			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[0:3]))
+			assert.Loosely(t, resp, should.Match(machines[0:3]))
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 
 			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[3:10]))
+			assert.Loosely(t, resp, should.Match(machines[3:10]))
 			assert.Loosely(t, nextPageToken, should.BeEmpty)
 		})
 		t.Run("List machines - happy path, filter out all machines", func(t *ftt.Test) {
@@ -603,7 +603,7 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 
 		t.Run("List machines - Full listing with invalid prefix", func(t *ftt.Test) {
@@ -618,12 +618,12 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[:3]))
+			assert.Loosely(t, resp, should.Match(machines[:3]))
 
 			resp, _, err = ListMachinesByIdPrefixSearch(ctx, 2, nextPageToken, "chromeos-", false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines[3:]))
+			assert.Loosely(t, resp, should.Match(machines[3:]))
 		})
 	})
 }
@@ -689,13 +689,13 @@ func TestBatchUpdateMachines(t *testing.T) {
 			chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(chromeOSMachine1))
+			assert.Loosely(t, resp, should.Match(chromeOSMachine1))
 			machines = append(machines, resp)
 		}
 		t.Run("BatchUpdate all machines", func(t *ftt.Test) {
 			resp, err := BatchUpdateMachines(ctx, machines)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 		t.Run("BatchUpdate existing and non-existing machines", func(t *ftt.Test) {
 			chromeOSMachine5 := mockChromeOSMachine("", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
@@ -732,7 +732,7 @@ func TestQueryMachineByPropertyName(t *testing.T) {
 		}
 		resp, cerr := CreateMachine(ctx, machine1)
 		assert.Loosely(t, cerr, should.BeNil)
-		assert.Loosely(t, resp, should.Resemble(machine1))
+		assert.Loosely(t, resp, should.Match(machine1))
 
 		machines := make([]*ufspb.Machine, 0, 1)
 		machines = append(machines, dummyMachine)
@@ -742,7 +742,7 @@ func TestQueryMachineByPropertyName(t *testing.T) {
 		t.Run("Query By existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "chrome_platform_id", "chromePlatform-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 		t.Run("Query By non-existing ChromePlatform", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "chrome_platform_id", "chromePlatform-2", true)
@@ -752,7 +752,7 @@ func TestQueryMachineByPropertyName(t *testing.T) {
 		t.Run("Query By existing rpm", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "rpm_id", "rpm-1", false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines1))
+			assert.Loosely(t, resp, should.Match(machines1))
 		})
 		t.Run("Query By non-existing rpm", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "rpm_id", "rpm-2", false)
@@ -762,7 +762,7 @@ func TestQueryMachineByPropertyName(t *testing.T) {
 		t.Run("Query By existing kvm", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "kvm_id", "kvm-1", true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machines))
+			assert.Loosely(t, resp, should.Match(machines))
 		})
 		t.Run("Query By non-existing kvm", func(t *ftt.Test) {
 			resp, err := QueryMachineByPropertyName(ctx, "kvm_id", "kvm-2", true)

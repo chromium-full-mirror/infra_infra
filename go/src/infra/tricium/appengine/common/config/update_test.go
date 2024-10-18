@@ -153,7 +153,7 @@ func TestUpdateConfigs(t *testing.T) {
 
 			revs, err := getStoredProjectConfigRevisions(ctx)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, revs, should.Resemble(map[string]string{
+			assert.Loosely(t, revs, should.Match(map[string]string{
 				"infra":      "ac092d7b6d2c54346ac4ba0027580dbf31183abe",
 				"playground": "59673f3521611145fd45e35a2d9e8e2051e7de53",
 			}))
@@ -178,7 +178,7 @@ func TestUpdateConfigs(t *testing.T) {
 
 			revs, err := getStoredProjectConfigRevisions(ctx)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, revs, should.Resemble(map[string]string{
+			assert.Loosely(t, revs, should.Match(map[string]string{
 				"infra":       "old-version",
 				"old-project": "abcd",
 			}))
@@ -190,7 +190,7 @@ func TestUpdateConfigs(t *testing.T) {
 
 			revs, err = getStoredProjectConfigRevisions(ctx)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, revs, should.Resemble(map[string]string{
+			assert.Loosely(t, revs, should.Match(map[string]string{
 				"infra":      "ac092d7b6d2c54346ac4ba0027580dbf31183abe",
 				"playground": "59673f3521611145fd45e35a2d9e8e2051e7de53",
 			}))

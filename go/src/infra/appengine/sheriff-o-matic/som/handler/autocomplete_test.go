@@ -38,33 +38,33 @@ func TestAutocompleter(t *testing.T) {
 			res := ac.query("a")
 
 			assert.Loosely(t, res, should.NotBeEmpty)
-			assert.Loosely(t, res, should.Resemble([]string{"abc", "abcd"}))
+			assert.Loosely(t, res, should.Match([]string{"abc", "abcd"}))
 		})
 
 		t.Run("multi-char prefix", func(t *ftt.Test) {
 			res := ac.query("ab")
 
 			assert.Loosely(t, res, should.NotBeEmpty)
-			assert.Loosely(t, res, should.Resemble([]string{"abc", "abcd"}))
+			assert.Loosely(t, res, should.Match([]string{"abc", "abcd"}))
 		})
 
 		t.Run("multi-char suffix", func(t *ftt.Test) {
 			res := ac.query("cd")
 
 			assert.Loosely(t, res, should.NotBeEmpty)
-			assert.Loosely(t, res, should.Resemble([]string{"bcd", "abcd"}))
+			assert.Loosely(t, res, should.Match([]string{"bcd", "abcd"}))
 		})
 
 		t.Run("mid-string match", func(t *ftt.Test) {
 			res := ac.query("bc")
 
 			assert.Loosely(t, res, should.NotBeEmpty)
-			assert.Loosely(t, res, should.Resemble([]string{"abc", "bcd", "abcd"}))
+			assert.Loosely(t, res, should.Match([]string{"abc", "bcd", "abcd"}))
 
 			res = ac.query("ghi")
 
 			assert.Loosely(t, res, should.NotBeEmpty)
-			assert.Loosely(t, res, should.Resemble([]string{"fghij"}))
+			assert.Loosely(t, res, should.Match([]string{"fghij"}))
 		})
 
 		t.Run("no match", func(t *ftt.Test) {

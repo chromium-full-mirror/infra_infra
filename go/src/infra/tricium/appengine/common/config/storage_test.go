@@ -24,7 +24,7 @@ func TestConfigStorage(t *testing.T) {
 			assert.Loosely(t, setProjectConfig(ctx, "my-project", "version", config), should.BeNil)
 			result, err := getProjectConfig(ctx, "my-project")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, result, should.Resemble(config))
+			assert.Loosely(t, result, should.Match(config))
 		})
 
 		t.Run("Set, get, delete multiple project configs", func(t *ftt.Test) {

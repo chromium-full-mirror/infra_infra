@@ -33,7 +33,7 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			su := mockSchedulingUnit("SU-X")
 			resp, err := CreateSchedulingUnit(ctx, su)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(su))
+			assert.Loosely(t, resp, should.Match(su))
 		})
 		t.Run("Create existing SchedulingUnit", func(t *ftt.Test) {
 			su1 := mockSchedulingUnit("SU-Y")
@@ -56,7 +56,7 @@ func TestBatchUpdateSchedulingUnits(t *testing.T) {
 			su := mockSchedulingUnit("SU-A")
 			resp, err := BatchUpdateSchedulingUnits(ctx, []*ufspb.SchedulingUnit{su})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp[0], should.Resemble(su))
+			assert.Loosely(t, resp[0], should.Match(su))
 		})
 	})
 }
@@ -92,7 +92,7 @@ func TestQuerySchedulingUnitByPropertyNames(t *testing.T) {
 		t.Run("Query By existing MachineLSE", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": "dut-1"}, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.SchedulingUnit{schedulingUnit1}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.SchedulingUnit{schedulingUnit1}))
 		})
 		t.Run("Query By non-existing MachineLSE", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": "dut-4"}, false)
@@ -102,17 +102,17 @@ func TestQuerySchedulingUnitByPropertyNames(t *testing.T) {
 		t.Run("Query By existing pools and tags", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "tags": "tags-3"}, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(schedulingUnits))
+			assert.Loosely(t, resp, should.Match(schedulingUnits))
 		})
 		t.Run("Query By existing pools and MachineLSEs", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "machinelses": "dut-2"}, false)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble([]*ufspb.SchedulingUnit{schedulingUnit2}))
+			assert.Loosely(t, resp, should.Match([]*ufspb.SchedulingUnit{schedulingUnit2}))
 		})
 		t.Run("Query By existing pools and tags by keysonly", func(t *ftt.Test) {
 			resp, err := QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"pools": "pool-3", "tags": "tags-3"}, true)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(keysOnlySchedulingUnits))
+			assert.Loosely(t, resp, should.Match(keysOnlySchedulingUnits))
 		})
 	})
 }
@@ -125,10 +125,10 @@ func TestGetSchedulingUnit(t *testing.T) {
 		t.Run("Get SchedulingUnit by existing name/ID", func(t *ftt.Test) {
 			resp, err := CreateSchedulingUnit(ctx, su1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(su1))
+			assert.Loosely(t, resp, should.Match(su1))
 			resp, err = GetSchedulingUnit(ctx, "su-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(su1))
+			assert.Loosely(t, resp, should.Match(su1))
 		})
 		t.Run("Get SchedulingUnit by non-existing name/ID", func(t *ftt.Test) {
 			resp, err := GetSchedulingUnit(ctx, "su-2")
@@ -198,7 +198,7 @@ func TestListSchedulingUnits(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(SchedulingUnits))
+			assert.Loosely(t, resp, should.Match(SchedulingUnits))
 		})
 
 		t.Run("List SchedulingUnits - listing with pagination", func(t *ftt.Test) {
@@ -206,12 +206,12 @@ func TestListSchedulingUnits(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(SchedulingUnits[:3]))
+			assert.Loosely(t, resp, should.Match(SchedulingUnits[:3]))
 
 			resp, _, err = ListSchedulingUnits(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(SchedulingUnits[3:]))
+			assert.Loosely(t, resp, should.Match(SchedulingUnits[3:]))
 		})
 	})
 }

@@ -19,8 +19,8 @@ func TestGosecWrapper(t *testing.T) {
 
 	ftt.Run("Test min function", t, func(t *ftt.Test) {
 		assert.Loosely(t, min(3, 4), should.Match(3))
-		assert.Loosely(t, min(-1, 4), should.Resemble(-1))
-		assert.Loosely(t, min(-3, -4), should.Resemble(-4))
+		assert.Loosely(t, min(-1, 4), should.Match(-1))
+		assert.Loosely(t, min(-3, -4), should.Match(-4))
 		assert.Loosely(t, min(0, 0), should.BeZero)
 	})
 
@@ -39,9 +39,9 @@ func TestGosecWrapper(t *testing.T) {
 			110, 157, 73, 217, 74, 91, 117, 141, 251, 137, 228, 144, 93, 155, 215,
 			152, 226, 0, 255, 83, 42, 178, 23, 140, 77, 241, 151, 53, 67, 141, 116, 1}
 
-		assert.Loosely(t, hashIssue(&issue), should.Resemble(expected))
+		assert.Loosely(t, hashIssue(&issue), should.Match(expected))
 		// Assert x = y -> f(x) = f(y)
-		assert.Loosely(t, hashIssue(&issue), should.Resemble(hashIssue(&other)))
+		assert.Loosely(t, hashIssue(&issue), should.Match(hashIssue(&other)))
 	})
 
 	ftt.Run("Test postProcess function", t, func(t *ftt.Test) {

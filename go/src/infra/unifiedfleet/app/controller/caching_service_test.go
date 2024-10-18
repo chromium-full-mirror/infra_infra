@@ -37,7 +37,7 @@ func TestCreateCachingService(t *testing.T) {
 			resp, err := CreateCachingService(ctx, cs)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(cs))
+			assert.Loosely(t, resp, should.Match(cs))
 
 			s, err := state.GetStateRecord(ctx, "cachingservices/127.0.0.1")
 			assert.Loosely(t, err, should.BeNil)
@@ -89,7 +89,7 @@ func TestUpdateCachingService(t *testing.T) {
 			cs2.Port = 25653
 			resp, _ := UpdateCachingService(ctx, cs2, nil)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(cs2))
+			assert.Loosely(t, resp, should.Match(cs2))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "cachingservices/127.0.0.1")
 			assert.Loosely(t, err, should.BeNil)
@@ -161,7 +161,7 @@ func TestGetCachingService(t *testing.T) {
 		t.Run("Get CachingService by existing ID - happy path", func(t *ftt.Test) {
 			resp, _ := GetCachingService(ctx, "127.0.0.1")
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(cs))
+			assert.Loosely(t, resp, should.Match(cs))
 		})
 
 		t.Run("Get CachingService by non-existing ID", func(t *ftt.Test) {
@@ -238,13 +238,13 @@ func TestListCachingServices(t *testing.T) {
 		t.Run("List CachingServices - filter switch - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListCachingServices(ctx, 5, "", "state=serving", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(cachingServicesWithState))
+			assert.Loosely(t, resp, should.Match(cachingServicesWithState))
 		})
 
 		t.Run("ListCachingServices - Full listing - happy path", func(t *ftt.Test) {
 			resp, _, _ := ListCachingServices(ctx, 5, "", "", false)
 			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp, should.Resemble(cachingServices))
+			assert.Loosely(t, resp, should.Match(cachingServices))
 		})
 	})
 }

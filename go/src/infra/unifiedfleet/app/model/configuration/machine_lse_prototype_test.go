@@ -34,7 +34,7 @@ func TestCreateMachineLSEPrototype(t *testing.T) {
 		t.Run("Create new machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		})
 		t.Run("Create existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
@@ -62,11 +62,11 @@ func TestUpdateMachineLSEPrototype(t *testing.T) {
 		t.Run("Update existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 
 			resp, err = UpdateMachineLSEPrototype(ctx, machineLSEPrototype2)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype2))
 		})
 		t.Run("Update non-existing machineLSEPrototype", func(t *ftt.Test) {
 			resp, err := UpdateMachineLSEPrototype(ctx, machineLSEPrototype3)
@@ -91,10 +91,10 @@ func TestGetMachineLSEPrototype(t *testing.T) {
 		t.Run("Get machineLSEPrototype by existing ID", func(t *ftt.Test) {
 			resp, err := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 			resp, err = GetMachineLSEPrototype(ctx, "MachineLSEPrototype-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype1))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype1))
 		})
 		t.Run("Get machineLSEPrototype by non-existing ID", func(t *ftt.Test) {
 			resp, err := GetMachineLSEPrototype(ctx, "machineLSEPrototype-2")
@@ -135,7 +135,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototypes))
 		})
 
 		t.Run("List machineLSEPrototypes - listing with pagination", func(t *ftt.Test) {
@@ -143,12 +143,12 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, nextPageToken, should.NotBeEmpty)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes[:3]))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototypes[:3]))
 
 			resp, _, err = ListMachineLSEPrototypes(ctx, 2, nextPageToken, nil, false)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototypes[3:]))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototypes[3:]))
 		})
 	})
 }
@@ -162,7 +162,7 @@ func TestDeleteMachineLSEPrototype(t *testing.T) {
 		t.Run("Delete machineLSEPrototype successfully by existing ID", func(t *ftt.Test) {
 			resp, cerr := CreateMachineLSEPrototype(ctx, machineLSEPrototype2)
 			assert.Loosely(t, cerr, should.BeNil)
-			assert.Loosely(t, resp, should.Resemble(machineLSEPrototype2))
+			assert.Loosely(t, resp, should.Match(machineLSEPrototype2))
 
 			err := DeleteMachineLSEPrototype(ctx, "machineLSEPrototype-2")
 			assert.Loosely(t, err, should.BeNil)

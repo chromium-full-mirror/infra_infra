@@ -106,7 +106,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 			}
 			sort.Strings(repairPaths)
 			sort.Strings(expectedPaths)
-			assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
+			assert.Loosely(t, repairPaths, should.Match(expectedPaths))
 		}
 		tf, validate := newTestFixture(t)
 		defer validate()
@@ -222,7 +222,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 			}
 			sort.Strings(repairPaths)
 			sort.Strings(expectedPaths)
-			assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
+			assert.Loosely(t, repairPaths, should.Match(expectedPaths))
 		}
 		tf, validate := newTestFixture(t)
 		defer validate()
@@ -286,7 +286,7 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		expectedPaths := []string{
 			"/internal/task/labstation_repair/lab_2",
 		}
-		assert.Loosely(t, repairPaths, should.Resemble(expectedPaths))
+		assert.Loosely(t, repairPaths, should.Match(expectedPaths))
 	})
 
 	ftt.Run("Handling empty bots", t, func(t *ftt.Test) {
