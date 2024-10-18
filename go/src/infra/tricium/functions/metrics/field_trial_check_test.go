@@ -9,12 +9,13 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	tricium "infra/tricium/api/v1"
 )
 
-func analyzeJSONTestFile(t *testing.T, filePath string) []*tricium.Data_Comment {
+func analyzeJSONTestFile(t testing.TB, filePath string) []*tricium.Data_Comment {
 	// Mock current time for testing
 	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
@@ -23,31 +24,31 @@ func analyzeJSONTestFile(t *testing.T, filePath string) []*tricium.Data_Comment 
 }
 
 func TestConfigCheck(t *testing.T) {
-	Convey("Analyze Config JSON file with no errors: one experiment", t, func() {
+	ftt.Run("Analyze Config JSON file with no errors: one experiment", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/one_experiment.json")
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze Config JSON file with no errors: many configs one experiment", t, func() {
+	ftt.Run("Analyze Config JSON file with no errors: many configs one experiment", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/many_configs_one_exp.json")
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze Config JSON file with warning: many experiments", t, func() {
+	ftt.Run("Analyze Config JSON file with warning: many experiments", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/many_experiments.json")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  category + "/Experiments",
 				Message:   fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
 				StartLine: 7,
 				Path:      "configs/many_experiments.json",
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze Config JSON file with two warnings: many configs many experiments", t, func() {
+	ftt.Run("Analyze Config JSON file with two warnings: many configs many experiments", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/many_configs_many_exp.json")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  category + "/Experiments",
 				Message:   fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
@@ -60,6 +61,6 @@ func TestConfigCheck(t *testing.T) {
 				StartLine: 26,
 				Path:      "configs/many_configs_many_exp.json",
 			},
-		})
+		}))
 	})
 }
