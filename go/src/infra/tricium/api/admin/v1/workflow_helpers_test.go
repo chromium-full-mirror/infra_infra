@@ -7,13 +7,14 @@ package admin
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/tricium/api/v1"
 )
 
 func TestGetNext(t *testing.T) {
-	Convey("Workflow with single worker, returns no successors", t, func() {
+	ftt.Run("Workflow with single worker, returns no successors", t, func(t *ftt.Test) {
 		cw := "Single"
 		wf := &Workflow{
 			Workers: []*Worker{
@@ -23,10 +24,10 @@ func TestGetNext(t *testing.T) {
 			},
 		}
 		sw := wf.GetNext(cw)
-		So(sw, ShouldBeNil)
+		assert.Loosely(t, sw, should.BeNil)
 	})
 
-	Convey("Workflow with succeeding workers, returns successors", t, func() {
+	ftt.Run("Workflow with succeeding workers, returns successors", t, func(t *ftt.Test) {
 		cw := "First"
 		s := "Next1"
 		s2 := "Next2"
@@ -48,15 +49,15 @@ func TestGetNext(t *testing.T) {
 			},
 		}
 		sw := wf.GetNext(cw)
-		So(sw, ShouldNotBeNil)
-		So(len(sw), ShouldEqual, 2)
-		So(sw[0], ShouldEqual, s)
-		So(sw[1], ShouldEqual, s2)
+		assert.Loosely(t, sw, should.NotBeNil)
+		assert.Loosely(t, len(sw), should.Equal(2))
+		assert.Loosely(t, sw[0], should.Equal(s))
+		assert.Loosely(t, sw[1], should.Equal(s2))
 	})
 }
 
 func TestGetWithDescendants(t *testing.T) {
-	Convey("Workflow with single worker, returns worker", t, func() {
+	ftt.Run("Workflow with single worker, returns worker", t, func(t *ftt.Test) {
 		cw := "Single"
 		wf := &Workflow{
 			Workers: []*Worker{
@@ -66,15 +67,15 @@ func TestGetWithDescendants(t *testing.T) {
 			},
 		}
 		sw := wf.GetWithDescendants(cw)
-		So(len(sw), ShouldEqual, 1)
-		So(sw[0], ShouldEqual, cw)
+		assert.Loosely(t, len(sw), should.Equal(1))
+		assert.Loosely(t, sw[0], should.Equal(cw))
 	})
 
-	Convey("Workflow with descending workers, returns worker with descendants", t, func() {
+	ftt.Run("Workflow with descending workers, returns worker with descendants", t, func(t *ftt.Test) {
 		cw := "First"
 		s := "Next1"
 		s2 := "Next2"
-		t := "Next1Next1"
+		t1 := "Next1Next1"
 		t2 := "Next1Next2"
 		wf := &Workflow{
 			Workers: []*Worker{
@@ -88,22 +89,22 @@ func TestGetWithDescendants(t *testing.T) {
 				{
 					Name: s,
 					Next: []string{
-						t,
+						t1,
 						t2,
 					},
 				},
 				{Name: s2},
-				{Name: t},
+				{Name: t1},
 				{Name: t2},
 			},
 		}
 		sw := wf.GetWithDescendants(cw)
-		So(sw, ShouldResemble, []string{cw, s, t, t2, s2})
+		assert.Loosely(t, sw, should.Resemble([]string{cw, s, t1, t2, s2}))
 	})
 }
 
 func TestRootWorkers(t *testing.T) {
-	Convey("Workflow with no root workers, returns no root workers", t, func() {
+	ftt.Run("Workflow with no root workers, returns no root workers", t, func(t *ftt.Test) {
 		cw := "First"
 		wf := &Workflow{
 			Workers: []*Worker{
@@ -113,9 +114,9 @@ func TestRootWorkers(t *testing.T) {
 			},
 		}
 		rw := wf.RootWorkers()
-		So(rw, ShouldBeNil)
+		assert.Loosely(t, rw, should.BeNil)
 	})
-	Convey("Workflow with root workers, returns root workers", t, func() {
+	ftt.Run("Workflow with root workers, returns root workers", t, func(t *ftt.Test) {
 		w := "First"
 		w2 := "Second"
 		w3 := "Third"
@@ -136,10 +137,10 @@ func TestRootWorkers(t *testing.T) {
 			},
 		}
 		rw := wf.RootWorkers()
-		So(rw, ShouldNotBeNil)
-		So(len(rw), ShouldEqual, 2)
-		So(rw[0], ShouldEqual, w)
-		So(rw[1], ShouldEqual, w3)
+		assert.Loosely(t, rw, should.NotBeNil)
+		assert.Loosely(t, len(rw), should.Equal(2))
+		assert.Loosely(t, rw[0], should.Equal(w))
+		assert.Loosely(t, rw[1], should.Equal(w3))
 	})
 
 }
