@@ -12,9 +12,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -25,7 +26,7 @@ const (
 	enumsPath  = "testdata/src/enums/enums.xml"
 )
 
-func analyzeHistogramTestFileAll(t *testing.T, filePath, patch, prevDir string) ([]*tricium.Data_Comment, stringset.Set, stringset.Set) {
+func analyzeHistogramTestFileAll(t testing.TB, filePath, patch, prevDir string) ([]*tricium.Data_Comment, stringset.Set, stringset.Set) {
 	// now mocks the current time for testing.
 	now = func() time.Time { return time.Date(2019, time.September, 18, 0, 0, 0, 0, time.UTC) }
 	// getMilestoneDate is a function that mocks getting the milestone date from server.
@@ -72,12 +73,12 @@ func analyzeHistogramTestFileAll(t *testing.T, filePath, patch, prevDir string) 
 	return analyzeHistogramFile(f, filePath, prevDir, filesChanged, singletonEnums)
 }
 
-func analyzeHistogramTestFile(t *testing.T, filePath, patch, prevDir string) []*tricium.Data_Comment {
+func analyzeHistogramTestFile(t testing.TB, filePath, patch, prevDir string) []*tricium.Data_Comment {
 	comments, _, _ := analyzeHistogramTestFileAll(t, filePath, patch, prevDir)
 	return comments
 }
 
-func analyzeHistogramSuffixesTestFile(t *testing.T, filePath, patch string) []*tricium.Data_Comment {
+func analyzeHistogramSuffixesTestFile(t testing.TB, filePath, patch string) []*tricium.Data_Comment {
 	filesChanged, err := getDiffsPerFile([]string{filePath}, patch)
 	if err != nil {
 		t.Errorf("Failed to get diffs per file for %s: %v", filePath, err)
@@ -103,19 +104,19 @@ func TestHistogramsCheck(t *testing.T) {
 
 	// ENUM tests
 
-	Convey("Analyze XML file with no errors: single element enum with baseline", t, func() {
+	ftt.Run("Analyze XML file with no errors: single element enum with baseline", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "enums/enum_tests/single_element_baseline.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with no errors: multi element enum no baseline", t, func() {
+	ftt.Run("Analyze XML file with no errors: multi element enum no baseline", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "enums/enum_tests/multi_element_no_baseline.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with error: single element enum with no baseline", t, func() {
+	ftt.Run("Analyze XML file with error: single element enum with no baseline", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "enums/enum_tests/single_element_no_baseline.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Enums",
 				Message:              singleElementEnumWarning,
@@ -126,24 +127,24 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "enums/enum_tests/single_element_no_baseline.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// EXPIRY tests
 
-	Convey("Analyze XML file with no errors: good expiry date", t, func() {
+	ftt.Run("Analyze XML file with no errors: good expiry date", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/good_date.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with no errors: good expiry date, expiry on new line", t, func() {
+	ftt.Run("Analyze XML file with no errors: good expiry date, expiry on new line", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/expiry_new_line.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with no expiry", t, func() {
+	ftt.Run("Analyze XML file with no expiry", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/no_expiry.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              noExpiryError,
@@ -152,12 +153,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/no_expiry.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry of never", t, func() {
+	ftt.Run("Analyze XML file with expiry of never", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/never_expiry_with_comment.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              neverExpiryInfo,
@@ -168,12 +169,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/never_expiry_with_comment.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry of never and no comment", t, func() {
+	ftt.Run("Analyze XML file with expiry of never and no comment", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/never_expiry_no_comment.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              neverExpiryError,
@@ -184,12 +185,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/never_expiry_no_comment.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry of never and no comment, expiry on new line", t, func() {
+	ftt.Run("Analyze XML file with expiry of never and no comment, expiry on new line", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/never_expiry_new_line.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              neverExpiryError,
@@ -200,12 +201,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/never_expiry_new_line.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry in over one year", t, func() {
+	ftt.Run("Analyze XML file with expiry in over one year", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/over_year_expiry.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              farExpiryWarning,
@@ -216,12 +217,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/over_year_expiry.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry in past", t, func() {
+	ftt.Run("Analyze XML file with expiry in past", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/past_expiry.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              pastExpiryWarning,
@@ -232,12 +233,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/past_expiry.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with badly formatted expiry", t, func() {
+	ftt.Run("Analyze XML file with badly formatted expiry", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/unformatted_expiry.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              badExpiryError,
@@ -248,12 +249,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/unformatted_expiry.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with reviving an already expired date", t, func() {
+	ftt.Run("Analyze XML file with reviving an already expired date", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/good_date.xml", "prevdata/tricium_date_data_discontinuity.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              dataDiscontinuityWarning,
@@ -264,19 +265,19 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/good_date.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// EXPIRY MILESTONE tests
 
-	Convey("Analyze XML file with no errors: good milestone expiry", t, func() {
+	ftt.Run("Analyze XML file with no errors: good milestone expiry", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/good_milestone.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Simulate failure in fetching milestone data from server", t, func() {
+	ftt.Run("Simulate failure in fetching milestone data from server", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/milestone_fetch_failed.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              milestoneFailure,
@@ -287,12 +288,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/milestone_fetch_failed.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry in over one year: milestone", t, func() {
+	ftt.Run("Analyze XML file with expiry in over one year: milestone", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/over_year_milestone.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              farExpiryWarning,
@@ -303,12 +304,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/over_year_milestone.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry in over one year: 3-number milestone", t, func() {
+	ftt.Run("Analyze XML file with expiry in over one year: 3-number milestone", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/over_year_milestone_3.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              farExpiryWarning,
@@ -319,12 +320,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/over_year_milestone_3.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with expiry in past: milestone", t, func() {
+	ftt.Run("Analyze XML file with expiry in past: milestone", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/past_milestone.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              pastExpiryWarning,
@@ -335,12 +336,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/past_milestone.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with badly formatted expiry: similar to milestone", t, func() {
+	ftt.Run("Analyze XML file with badly formatted expiry: similar to milestone", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/unformatted_milestone.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              badExpiryError,
@@ -351,12 +352,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/unformatted_milestone.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with reviving an already expired milestone", t, func() {
+	ftt.Run("Analyze XML file with reviving an already expired milestone", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "expiry/milestone/good_milestone.xml", "prevdata/tricium_milestone_data_discontinuity.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Expiry",
 				Message:              dataDiscontinuityWarning,
@@ -367,24 +368,24 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "expiry/milestone/good_milestone.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// OWNER tests
 
-	Convey("Analyze XML file with no errors: both owners individuals", t, func() {
+	ftt.Run("Analyze XML file with no errors: both owners individuals", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/good_individuals.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with no errors: owner in <variants>", t, func() {
+	ftt.Run("Analyze XML file with no errors: owner in <variants>", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/variants_one_owner.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with error: only one owner", t, func() {
+	ftt.Run("Analyze XML file with error: only one owner", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/one_owner.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              oneOwnerError,
@@ -393,12 +394,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/one_owner.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with error: no owners", t, func() {
+	ftt.Run("Analyze XML file with error: no owners", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/no_owners.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              oneOwnerError,
@@ -407,12 +408,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/no_owners.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with error: first owner is team", t, func() {
+	ftt.Run("Analyze XML file with error: first owner is team", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/first_team_owner.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              firstOwnerTeamError,
@@ -421,12 +422,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/first_team_owner.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with error: first owner is OWNERS file", t, func() {
+	ftt.Run("Analyze XML file with error: first owner is OWNERS file", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/first_owner_file.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              firstOwnerTeamError,
@@ -435,12 +436,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/first_owner_file.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with error: first owner is team, only one owner", t, func() {
+	ftt.Run("Analyze XML file with error: first owner is team, only one owner", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/first_team_one_owner.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              oneOwnerTeamError,
@@ -449,12 +450,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/first_team_one_owner.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with error: first owner is OWNERS file, only one owner", t, func() {
+	ftt.Run("Analyze XML file with error: first owner is OWNERS file, only one owner", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "owners/first_file_one_owner.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Owners",
 				Message:              oneOwnerTeamError,
@@ -463,29 +464,29 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "owners/first_file_one_owner.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// UNITS tests
 
-	Convey("Analyze XML file no errors, units of microseconds, all users", t, func() {
+	ftt.Run("Analyze XML file no errors, units of microseconds, all users", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/microseconds_all_users.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of microseconds, high-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of microseconds, high-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/microseconds_high_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of microseconds, low-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of microseconds, low-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/microseconds_low_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with error: units of microseconds, bad summary", t, func() {
+	ftt.Run("Analyze XML file with error: units of microseconds, bad summary", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/microseconds_bad_summary.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Units",
 				Message:              unitsHighResolutionWarning,
@@ -496,27 +497,27 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "units/microseconds_bad_summary.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file no errors, units of us, all users", t, func() {
+	ftt.Run("Analyze XML file no errors, units of us, all users", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/us_all_users.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of us, high-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of us, high-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/us_high_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of us, low-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of us, low-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/us_low_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with error: units of us, bad summary", t, func() {
+	ftt.Run("Analyze XML file with error: units of us, bad summary", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/us_bad_summary.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Units",
 				Message:              unitsHighResolutionWarning,
@@ -527,27 +528,27 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "units/us_bad_summary.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file no errors, units of usec, all users", t, func() {
+	ftt.Run("Analyze XML file no errors, units of usec, all users", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/usec_all_users.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of usec, high-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of usec, high-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/usec_high_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file no errors, units of usec, low-resolution", t, func() {
+	ftt.Run("Analyze XML file no errors, units of usec, low-resolution", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/usec_low_res.xml", patchPath, inputDir)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with error: units of usec, bad summary", t, func() {
+	ftt.Run("Analyze XML file with error: units of usec, bad summary", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "units/usec_bad_summary.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Units",
 				Message:              unitsHighResolutionWarning,
@@ -558,13 +559,13 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "units/usec_bad_summary.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// HISTOGRAM_SUFFIXES_LIST tests
-	Convey("Analyze histogram suffixes file, update an existing <histogram_suffixes>", t, func() {
+	ftt.Run("Analyze histogram suffixes file, update an existing <histogram_suffixes>", t, func(t *ftt.Test) {
 		results := analyzeHistogramSuffixesTestFile(t, "suffixes/histogram_suffixes_list.xml", "prevdata/add_new_suffix_diff.patch")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Suffixes",
 				Message:              SuffixesDeprecationWarning,
@@ -573,120 +574,120 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "suffixes/histogram_suffixes_list.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// ADDED AND REMOVED HISTOGRAM tests
 
-	Convey("Analyze XML file with no histogram added or removed: only owner line deleted", t, func() {
+	ftt.Run("Analyze XML file with no histogram added or removed: only owner line deleted", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t, "rm/remove_owner_line.xml",
 			"prevdata/tricium_owner_line_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldBeEmpty)
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.BeEmpty)
+		assert.Loosely(t, removedHistograms, should.BeEmpty)
 	})
 
-	Convey("Analyze XML file with no histogram added or removed: only attribute changed", t, func() {
+	ftt.Run("Analyze XML file with no histogram added or removed: only attribute changed", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/change_attribute.xml", "prevdata/tricium_attribute_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldBeEmpty)
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.BeEmpty)
+		assert.Loosely(t, removedHistograms, should.BeEmpty)
 	})
 
-	Convey("Analyze XML file with histogram(s) removed", t, func() {
+	ftt.Run("Analyze XML file with histogram(s) removed", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram2"}...))
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.BeEmpty)
+		assert.Loosely(t, removedHistograms, should.Resemble(stringset.NewFromSlice([]string{"Test.Histogram2"}...)))
 	})
 
-	Convey("Analyze XML file with patterned histogram(s) removed", t, func() {
+	ftt.Run("Analyze XML file with patterned histogram(s) removed", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/remove_patterned_histogram.xml", "prevdata/tricium_remove_patterned_histogram_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldResemble, stringset.NewFromSlice(
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.BeEmpty)
+		assert.Loosely(t, removedHistograms, should.Resemble(stringset.NewFromSlice(
 			[]string{"TestDragon.Histogram2.Bulbasaur", "TestDragon.Histogram2.Charizard",
-				"TestFlying.Histogram2.Bulbasaur", "TestFlying.Histogram2.Charizard"}...))
+				"TestFlying.Histogram2.Bulbasaur", "TestFlying.Histogram2.Charizard"}...)))
 	})
 
-	Convey("Analyze XML file with <variants> modified to remove a variant", t, func() {
+	ftt.Run("Analyze XML file with <variants> modified to remove a variant", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldResemble, stringset.NewFromSlice(
-			[]string{"TestDragon.Histogram2.Charizard", "TestFlying.Histogram2.Charizard"}...))
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.BeEmpty)
+		assert.Loosely(t, removedHistograms, should.Resemble(stringset.NewFromSlice(
+			[]string{"TestDragon.Histogram2.Charizard", "TestFlying.Histogram2.Charizard"}...)))
 	})
 
-	Convey("Analyze XML file with histogram(s) added and removed", t, func() {
+	ftt.Run("Analyze XML file with histogram(s) added and removed", t, func(t *ftt.Test) {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/add_remove_histogram.xml", "prevdata/tricium_patterned_histogram_diff.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram99"}...))
-		So(removedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram2"}...))
+		assert.Loosely(t, comments, should.BeNil)
+		assert.Loosely(t, addedHistograms, should.Resemble(stringset.NewFromSlice([]string{"Test.Histogram99"}...)))
+		assert.Loosely(t, removedHistograms, should.Resemble(stringset.NewFromSlice([]string{"Test.Histogram2"}...)))
 	})
 
 	// COMMIT MESSAGE tests
 
-	Convey("Analyze commit message with no error: no histogram removed and no obsoletion tag added", t, func() {
+	ftt.Run("Analyze commit message with no error: no histogram removed and no obsoletion tag added", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(emptyHistogramSet, emptyHistogramSet, false)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze commit message with no error: histograms removed and a CL-level obsoletion tag added", t, func() {
+	ftt.Run("Analyze commit message with no error: histograms removed and a CL-level obsoletion tag added", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(emptyHistogramSet, stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), true)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze commit message with no error: histograms removed and histogram specific obsoletion tags added", t, func() {
+	ftt.Run("Analyze commit message with no error: histograms removed and histogram specific obsoletion tags added", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...),
 			stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), false)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze commit message with no error: histograms removed and a CL-level and a histogram specific obsoletion tag added", t, func() {
+	ftt.Run("Analyze commit message with no error: histograms removed and a CL-level and a histogram specific obsoletion tag added", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
 			stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), true)
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze commit message with a CL-level obsoletion message tag added but no histogram removed", t, func() {
+	ftt.Run("Analyze commit message with a CL-level obsoletion message tag added but no histogram removed", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(emptyHistogramSet, emptyHistogramSet, true)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category: category + "/Obsolete",
 				Message:  globalObsoletionMessageError,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze commit message with a histogram specific obsoletion message tag added but no histogram removed", t, func() {
+	ftt.Run("Analyze commit message with a histogram specific obsoletion message tag added but no histogram removed", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...), emptyHistogramSet, false)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category: category + "/Obsolete",
 				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze commit message with a histogram removed without an obsoletion message tag", t, func() {
+	ftt.Run("Analyze commit message with a histogram removed without an obsoletion message tag", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(emptyHistogramSet, stringset.NewFromSlice([]string{"Test.Histogram"}...), false)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category: category + "/Obsolete",
 				Message:  fmt.Sprintf(removedHistogramInfo, "Test.Histogram"),
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze commit message with a histogram specific obsoletion message tag added with a typo", t, func() {
+	ftt.Run("Analyze commit message with a histogram specific obsoletion message tag added with a typo", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
 			stringset.NewFromSlice([]string{"Test.Histogram2"}...), false)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category: category + "/Obsolete",
 				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
@@ -695,31 +696,31 @@ func TestHistogramsCheck(t *testing.T) {
 				Category: category + "/Obsolete",
 				Message:  fmt.Sprintf(removedHistogramInfo, "Test.Histogram2"),
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze commit message with a histogram specific obsoletion message tag added with a typo "+
-		"and a CL-level obsoletion message tag added", t, func() {
+	ftt.Run("Analyze commit message with a histogram specific obsoletion message tag added with a typo "+
+		"and a CL-level obsoletion message tag added", t, func(t *ftt.Test) {
 		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
 			stringset.NewFromSlice([]string{"Test.Histogram2", "Test.Histogram3"}...), true)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category: category + "/Obsolete",
 				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
 			},
-		})
+		}))
 	})
 
 	// ADDED NAMESPACE tests
 
-	Convey("Analyze XML file with no error: added histogram with same namespace", t, func() {
+	ftt.Run("Analyze XML file with no error: added histogram with same namespace", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "namespace/same_namespace.xml", "prevdata/tricium_same_namespace.patch", "prevdata/src")
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Analyze XML file with warning: added namespace", t, func() {
+	ftt.Run("Analyze XML file with warning: added namespace", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "namespace/add_namespace.xml", "prevdata/tricium_namespace_diff.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Namespace",
 				Message:              fmt.Sprintf(addedNamespaceWarning, "Test2"),
@@ -728,14 +729,14 @@ func TestHistogramsCheck(t *testing.T) {
 				EndLine:              8,
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 	// DEPRECATED NAMESPACE tests
 
-	Convey("Analyze XML file with added histogram with a deprecated namespace>", t, func() {
+	ftt.Run("Analyze XML file with added histogram with a deprecated namespace>", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "namespace/add_deprecated_namespace.xml", patchPath, inputDir)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Namespace",
 				Message:              osxNamespaceDeprecationError,
@@ -744,12 +745,12 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "namespace/add_deprecated_namespace.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
-	Convey("Analyze XML file with a change in a histogram with a deprecated namespace>", t, func() {
+	ftt.Run("Analyze XML file with a change in a histogram with a deprecated namespace>", t, func(t *ftt.Test) {
 		results := analyzeHistogramTestFile(t, "namespace/change_deprecated_namespace.xml", "prevdata/change_deprecated_namespace.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:             category + "/Namespace",
 				Message:              osxNamespaceDeprecationError,
@@ -758,7 +759,7 @@ func TestHistogramsCheck(t *testing.T) {
 				Path:                 "namespace/change_deprecated_namespace.xml",
 				ShowOnUnchangedLines: true,
 			},
-		})
+		}))
 	})
 
 }
