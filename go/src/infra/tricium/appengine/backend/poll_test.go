@@ -14,12 +14,14 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 	gr "golang.org/x/build/gerrit"
 
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/server/auth"
@@ -106,7 +108,7 @@ func numEnqueuedAnalyzeRequests(ctx context.Context) int {
 }
 
 func TestPollAllProjectsBehavior(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		cp := &mockConfigProvider{
@@ -169,25 +171,25 @@ func TestPollAllProjectsBehavior(t *testing.T) {
 			},
 		}
 
-		Convey("Poll puts a poll project request in the task queue for each project", func() {
-			So(poll(ctx, cp), ShouldBeNil)
+		t.Run("Poll puts a poll project request in the task queue for each project", func(t *ftt.Test) {
+			assert.Loosely(t, poll(ctx, cp), should.BeNil)
 			tasks := tq.GetTestable(ctx).GetScheduledTasks()[common.PollProjectQueue]
 			var projects []string
 			for _, task := range tasks {
 				request := &admin.PollProjectRequest{}
-				So(proto.Unmarshal(task.Payload, request), ShouldBeNil)
+				assert.Loosely(t, proto.Unmarshal(task.Payload, request), should.BeNil)
 				projects = append(projects, request.Project)
 			}
 			sort.Strings(projects)
 			// Note that chromium-m87 is not polled.
-			So(projects, ShouldResemble, []string{"a-project", "b-project", "chromium"})
+			assert.Loosely(t, projects, should.Resemble([]string{"a-project", "b-project", "chromium"}))
 		})
 	})
 }
 
 func TestPollProjectBasicBehavior(t *testing.T) {
 
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		now := time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -223,52 +225,52 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 			},
 		}
 		projects, err := cp.GetAllProjectConfigs(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		gerritProjects := []*tricium.GerritProject{
 			projects["infra"].Repos[0].GetGerritProject(),
 			projects["infra"].Repos[1].GetGerritProject(),
 		}
 
-		Convey("First poll, no changes", func() {
+		t.Run("First poll, no changes", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Creates tracking entries for Gerrit projects", func() {
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Creates tracking entries for Gerrit projects", func(t *ftt.Test) {
 				for _, gd := range gerritProjects {
 					p := &Project{ID: gerritProjectID(gd.Host, gd.Project)}
-					So(ds.Get(ctx, p), ShouldBeNil)
+					assert.Loosely(t, ds.Get(ctx, p), should.BeNil)
 				}
 			})
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("Second poll, no changes", func() {
+		t.Run("Second poll, no changes", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			// Store last poll timestamps from first poll.
 			lastPolls := make(map[string]time.Time)
 			for _, gd := range gerritProjects {
 				p := &Project{ID: gerritProjectID(gd.Host, gd.Project)}
-				So(ds.Get(ctx, p), ShouldBeNil)
+				assert.Loosely(t, ds.Get(ctx, p), should.BeNil)
 				lastPolls[p.ID] = p.LastPoll
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Does not update timestamp of last poll", func() {
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Does not update timestamp of last poll", func(t *ftt.Test) {
 				for _, gd := range gerritProjects {
 					p := &Project{ID: gerritProjectID(gd.Host, gd.Project)}
-					So(ds.Get(ctx, p), ShouldBeNil)
-					t, _ := lastPolls[p.ID]
-					So(t.Equal(p.LastPoll), ShouldBeTrue)
+					assert.Loosely(t, ds.Get(ctx, p), should.BeNil)
+					tm, _ := lastPolls[p.ID]
+					assert.Loosely(t, tm.Equal(p.LastPoll), should.BeTrue)
 				}
 			})
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("First poll, with changes", func() {
+		t.Run("First poll, with changes", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := clock.Now(ctx)
 			// Fill up with one change per project.
@@ -281,13 +283,13 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					},
 				})
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("Second poll, with new changes adding files", func() {
+		t.Run("Second poll, with new changes adding files", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			// Fill up with one change per project.
@@ -311,46 +313,46 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					},
 				})
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Updates last poll timestamp to last change timestamp", func() {
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Updates last poll timestamp to last change timestamp", func(t *ftt.Test) {
 				for _, gd := range gerritProjects {
 					p := &Project{ID: gerritProjectID(gd.Host, gd.Project)}
-					So(ds.Get(ctx, p), ShouldBeNil)
-					So(lastChangeTs.Equal(p.LastPoll), ShouldBeTrue)
+					assert.Loosely(t, ds.Get(ctx, p), should.BeNil)
+					assert.Loosely(t, lastChangeTs.Equal(p.LastPoll), should.BeTrue)
 				}
 			})
-			Convey("Enqueues analyze requests for each repo in the project", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, len(gerritProjects))
+			t.Run("Enqueues analyze requests for each repo in the project", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(len(gerritProjects)))
 				tasks := tq.GetTestable(ctx).GetScheduledTasks()[common.AnalyzeQueue]
 				var projects []string
 				var repos []string
 				for _, task := range tasks {
 					ar := &tricium.AnalyzeRequest{}
-					So(proto.Unmarshal(task.Payload, ar), ShouldBeNil)
+					assert.Loosely(t, proto.Unmarshal(task.Payload, ar), should.BeNil)
 					projects = append(projects, ar.Project)
 					repos = append(repos, ar.GetGerritRevision().GitUrl)
 				}
-				So(projects, ShouldResemble, []string{"infra", "infra"})
+				assert.Loosely(t, projects, should.Resemble([]string{"infra", "infra"}))
 				sort.Strings(repos)
-				So(repos, ShouldResemble, []string{
+				assert.Loosely(t, repos, should.Resemble([]string{
 					"https://repo-host.com/infra",
 					"https://repo-host.com/playground",
-				})
+				}))
 
 			})
-			Convey("Adds change tracking entities", func() {
+			t.Run("Adds change tracking entities", func(t *ftt.Test) {
 				for _, gd := range gerritProjects {
-					So(ds.Get(ctx, &Change{
+					assert.Loosely(t, ds.Get(ctx, &Change{
 						ID:     fmt.Sprintf("%s~branch~Ideadc0de", url.PathEscape(gd.Project)),
 						Parent: ds.NewKey(ctx, "GerritProject", gerritProjectID(gd.Host, gd.Project), 0, nil),
-					}), ShouldBeNil)
+					}), should.BeNil)
 				}
 			})
 		})
 
-		Convey("Poll with changes that include deleted and binary files", func() {
+		t.Run("Poll with changes that include deleted and binary files", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			// Fill up with one change per project.
@@ -378,12 +380,12 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					},
 				})
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Enqueued analyze requests do not include deleted files", func() {
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Enqueued analyze requests do not include deleted files", func(t *ftt.Test) {
 				tasks := tq.GetTestable(ctx).GetScheduledTasks()[common.AnalyzeQueue]
-				So(len(tasks), ShouldEqual, len(gerritProjects))
+				assert.Loosely(t, len(tasks), should.Equal(len(gerritProjects)))
 				for _, task := range tasks {
 					ar := &tricium.AnalyzeRequest{}
 					err := proto.Unmarshal(task.Payload, ar)
@@ -393,8 +395,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					sort.Slice(ar.Files, func(i, j int) bool {
 						return ar.Files[i].Path < ar.Files[j].Path
 					})
-					So(err, ShouldBeNil)
-					So(ar.Files, ShouldResemble, []*tricium.Data_File{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, ar.Files, should.Resemble([]*tricium.Data_File{
 						{
 							Path:     "binary.png",
 							IsBinary: true,
@@ -405,12 +407,12 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 							IsBinary: false,
 							Status:   tricium.Data_MODIFIED,
 						},
-					})
+					}))
 				}
 			})
 		})
 
-		Convey("Poll when there is a change with no files", func() {
+		t.Run("Poll when there is a change with no files", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			// Fill up with one change per project.
@@ -434,15 +436,15 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					},
 				})
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("Poll when the current revision is has no code change.", func() {
+		t.Run("Poll when the current revision is has no code change.", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			// Fill up with one change per project.
@@ -471,18 +473,18 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 					},
 				})
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("Poll with many changes, so paging is used", func() {
+		t.Run("Poll with many changes, so paging is used", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			// The first poll stores the timestamp.
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
 
 			// Fill up each project with multiple changes.
@@ -515,19 +517,19 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				api.addChanges(gd.Host, gd.Project, changes)
 
 			}
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 
-			Convey("Enqueues analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, len(gerritProjects)*numChanges)
+			t.Run("Enqueues analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(len(gerritProjects)*numChanges))
 			})
 
-			Convey("Adds change tracking entities", func() {
+			t.Run("Adds change tracking entities", func(t *ftt.Test) {
 				for _, gd := range gerritProjects {
 					for i := 0; i < numChanges; i++ {
-						So(ds.Get(ctx, &Change{
+						assert.Loosely(t, ds.Get(ctx, &Change{
 							ID:     fmt.Sprintf("%s~%s~%s%d", url.PathEscape(gd.Project), branch, changeIDFooter, i),
 							Parent: ds.NewKey(ctx, "GerritProject", gerritProjectID(gd.Host, gd.Project), 0, nil),
-						}), ShouldBeNil)
+						}), should.BeNil)
 					}
 				}
 			})
@@ -577,80 +579,80 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 		}
 	}
 
-	Convey("Private helper functions behave as expected", t, func() {
+	ftt.Run("Private helper functions behave as expected", t, func(t *ftt.Test) {
 
-		Convey("A summary-only message with a colon is not a footer", func() {
-			So(len(extractFooterFlags("Tag: something\n")), ShouldEqual, 0)
+		t.Run("A summary-only message with a colon is not a footer", func(t *ftt.Test) {
+			assert.Loosely(t, len(extractFooterFlags("Tag: something\n")), should.BeZero)
 		})
 
-		Convey("Footer keys are converted to title-case, values are unmodified", func() {
-			So(extractFooterFlags("summary\n\nkey-name: yEs\n"),
-				ShouldResemble, map[string]string{"Key-Name": "yEs"})
+		t.Run("Footer keys are converted to title-case, values are unmodified", func(t *ftt.Test) {
+			assert.Loosely(t, extractFooterFlags("summary\n\nkey-name: yEs\n"),
+				should.Resemble(map[string]string{"Key-Name": "yEs"}))
 		})
 
-		Convey("There can be non-flag lines in the footer paragraph", func() {
-			So(extractFooterFlags("summary\n\nkey-name: yEs\nnot a flag\n"),
-				ShouldResemble, map[string]string{"Key-Name": "yEs"})
+		t.Run("There can be non-flag lines in the footer paragraph", func(t *ftt.Test) {
+			assert.Loosely(t, extractFooterFlags("summary\n\nkey-name: yEs\nnot a flag\n"),
+				should.Resemble(map[string]string{"Key-Name": "yEs"}))
 		})
 
-		Convey("http and https are not used as keys", func() {
-			So(extractFooterFlags("summary\n\nkey-name: yEs\nhttps://example.com\n"),
-				ShouldResemble, map[string]string{"Key-Name": "yEs"})
-			So(extractFooterFlags("summary\n\nkey-name: yEs\nhttp://example.com\n"),
-				ShouldResemble, map[string]string{"Key-Name": "yEs"})
+		t.Run("http and https are not used as keys", func(t *ftt.Test) {
+			assert.Loosely(t, extractFooterFlags("summary\n\nkey-name: yEs\nhttps://example.com\n"),
+				should.Resemble(map[string]string{"Key-Name": "yEs"}))
+			assert.Loosely(t, extractFooterFlags("summary\n\nkey-name: yEs\nhttp://example.com\n"),
+				should.Resemble(map[string]string{"Key-Name": "yEs"}))
 			// Only some URL schemas are treated specially; others are treated as keys.
-			So(extractFooterFlags("summary\n\nkey-name: yEs\nfoo://example.com\n"),
-				ShouldResemble, map[string]string{"Key-Name": "yEs", "Foo": "//example.com"})
+			assert.Loosely(t, extractFooterFlags("summary\n\nkey-name: yEs\nfoo://example.com\n"),
+				should.Resemble(map[string]string{"Key-Name": "yEs", "Foo": "//example.com"}))
 		})
 
-		Convey("Footer flags can be extracted with newline at end", func() {
-			So(extractFooterFlags("Summary\n\none: A\nTWO: bee\nThree: sea\n"),
-				ShouldResemble, map[string]string{
+		t.Run("Footer flags can be extracted with newline at end", func(t *ftt.Test) {
+			assert.Loosely(t, extractFooterFlags("Summary\n\none: A\nTWO: bee\nThree: sea\n"),
+				should.Resemble(map[string]string{
 					"One":   "A",
 					"Two":   "bee",
 					"Three": "sea",
-				})
+				}))
 		})
 
-		Convey("Footer flags can be extracted with no newline at end", func() {
-			So(extractFooterFlags("Summary\n\none: A\nTWO: bee\nThree: sea"),
-				ShouldResemble, map[string]string{
+		t.Run("Footer flags can be extracted with no newline at end", func(t *ftt.Test) {
+			assert.Loosely(t, extractFooterFlags("Summary\n\none: A\nTWO: bee\nThree: sea"),
+				should.Resemble(map[string]string{
 					"One":   "A",
 					"Two":   "bee",
 					"Three": "sea",
-				})
+				}))
 		})
 
-		Convey("Commit message with no flags has no skip command", func() {
-			So(hasSkipCommand(&gr.RevisionInfo{
+		t.Run("Commit message with no flags has no skip command", func(t *ftt.Test) {
+			assert.Loosely(t, hasSkipCommand(&gr.RevisionInfo{
 				Commit: &gr.CommitInfo{Message: "one two three"},
-			}), ShouldBeFalse)
+			}), should.BeFalse)
 		})
 
-		Convey("Commit message with skip flag has skip command", func() {
-			So(hasSkipCommand(&gr.RevisionInfo{
+		t.Run("Commit message with skip flag has skip command", func(t *ftt.Test) {
+			assert.Loosely(t, hasSkipCommand(&gr.RevisionInfo{
 				Commit: &gr.CommitInfo{Message: "Summary line\n\nTricium: Skip\nChange-Id: I01234\n"},
-			}), ShouldBeTrue)
+			}), should.BeTrue)
 		})
 
-		Convey("no, none, skip, disable and false are all 'skip' values", func() {
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: no")), ShouldBeTrue)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: none")), ShouldBeTrue)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: skip")), ShouldBeTrue)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: disable")), ShouldBeTrue)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: false")), ShouldBeTrue)
+		t.Run("no, none, skip, disable and false are all 'skip' values", func(t *ftt.Test) {
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: no")), should.BeTrue)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: none")), should.BeTrue)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: skip")), should.BeTrue)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: disable")), should.BeTrue)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: false")), should.BeTrue)
 		})
 
-		Convey("Other values are not 'skip' values", func() {
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: foo")), ShouldBeFalse)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: yes")), ShouldBeFalse)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: affirmative")), ShouldBeFalse)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: indeed")), ShouldBeFalse)
-			So(hasSkipCommand(mkRevInfo("Summary\n\nTricium: enable")), ShouldBeFalse)
+		t.Run("Other values are not 'skip' values", func(t *ftt.Test) {
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: foo")), should.BeFalse)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: yes")), should.BeFalse)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: affirmative")), should.BeFalse)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: indeed")), should.BeFalse)
+			assert.Loosely(t, hasSkipCommand(mkRevInfo("Summary\n\nTricium: enable")), should.BeFalse)
 		})
 	})
 
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		now := time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -686,14 +688,14 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 			},
 		}
 		projects, err := cp.GetAllProjectConfigs(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		gerritProjects := []*tricium.GerritProject{
 			projects["infra"].Repos[0].GetGerritProject(),
 			projects["infra"].Repos[1].GetGerritProject(),
 		}
 
-		Convey("Poll when changes have Tricium: disable description flag", func() {
+		t.Run("Poll when changes have Tricium: disable description flag", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := clock.Now(ctx)
 
@@ -703,15 +705,15 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 						gd.Project, lastChangeTs, mkRevInfoMap("Summary\n\nTricium: skip")))
 			}
 
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("No analyze requests are queued, all are skipped", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("No analyze requests are queued, all are skipped", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("Poll when only one of the two changes have Tricium: disable flag", func() {
+		t.Run("Poll when only one of the two changes have Tricium: disable flag", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := clock.Now(ctx)
 			// Add a skipped change and non-skipped change in each project.
@@ -724,11 +726,11 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 					mkChangeInfo(gd.Project, lastChangeTs, mkRevInfoMap("Summary:\n\nTricium: disable\n")))
 			}
 
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, "infra", api, cp), ShouldBeNil)
-			Convey("Keeps non-skipped changes, one per project", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, len(gerritProjects))
+			assert.Loosely(t, pollProject(ctx, "infra", api, cp), should.BeNil)
+			t.Run("Keeps non-skipped changes, one per project", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(len(gerritProjects)))
 			})
 		})
 	})
@@ -736,7 +738,7 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 
 func TestPollProjectWhitelistBehavior(t *testing.T) {
 
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		var (
@@ -787,7 +789,7 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 		}
 
 		projects, err := cp.GetAllProjectConfigs(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		var gerritProjects []*tricium.GerritProject
 		for _, pc := range projects {
@@ -798,7 +800,7 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 			}
 		}
 
-		Convey("No whitelisted groups means all changes are analyzed", func() {
+		t.Run("No whitelisted groups means all changes are analyzed", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -818,15 +820,15 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "whitelisteduser@example.com"},
 				},
 			})
-			So(pollProject(ctx, noWhitelistProject, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, noWhitelistProject, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, noWhitelistProject, api, cp), ShouldBeNil)
-			Convey("Enqueues an analyze request", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			assert.Loosely(t, pollProject(ctx, noWhitelistProject, api, cp), should.BeNil)
+			t.Run("Enqueues an analyze request", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(1))
 			})
 		})
 
-		Convey("Poll with a change by a whitelisted user", func() {
+		t.Run("Poll with a change by a whitelisted user", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -847,15 +849,15 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "whitelisteduser@example.com"},
 				},
 			})
-			So(pollProject(ctx, whitelistProject, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, whitelistProject, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, whitelistProject, api, cp), ShouldBeNil)
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			assert.Loosely(t, pollProject(ctx, whitelistProject, api, cp), should.BeNil)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(1))
 			})
 		})
 
-		Convey("Poll with a change by an unwhitelisted user", func() {
+		t.Run("Poll with a change by an unwhitelisted user", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTs := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -876,11 +878,11 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "somebody-else@example.com"},
 				},
 			})
-			So(pollProject(ctx, whitelistProject, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, whitelistProject, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, whitelistProject, api, cp), ShouldBeNil)
-			Convey("Does not enqueue analyze requests", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, whitelistProject, api, cp), should.BeNil)
+			t.Run("Does not enqueue analyze requests", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 	})
@@ -888,7 +890,7 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 
 func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 
 		var (
@@ -935,7 +937,7 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 			},
 		}
 
-		Convey("A non-rework change in a rework-only project", func() {
+		t.Run("A non-rework change in a rework-only project", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTS := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -955,15 +957,15 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "user@example.com"},
 				},
 			})
-			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, noAllRevisionsKinds, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
-			Convey("Enqueues an analyze request", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 0)
+			assert.Loosely(t, pollProject(ctx, noAllRevisionsKinds, api, cp), should.BeNil)
+			t.Run("Enqueues an analyze request", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.BeZero)
 			})
 		})
 
-		Convey("A rework change in a rework-only project", func() {
+		t.Run("A rework change in a rework-only project", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTS := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -983,15 +985,15 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "user@example.com"},
 				},
 			})
-			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, noAllRevisionsKinds, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, noAllRevisionsKinds, api, cp), ShouldBeNil)
-			Convey("Enqueues an analyze request", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			assert.Loosely(t, pollProject(ctx, noAllRevisionsKinds, api, cp), should.BeNil)
+			t.Run("Enqueues an analyze request", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(1))
 			})
 		})
 
-		Convey("A non-rework change in an any kind project", func() {
+		t.Run("A non-rework change in an any kind project", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTS := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -1011,15 +1013,15 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "user@example.com"},
 				},
 			})
-			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, allRevisionsKinds, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
-			Convey("Enqueues an analyze request", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			assert.Loosely(t, pollProject(ctx, allRevisionsKinds, api, cp), should.BeNil)
+			t.Run("Enqueues an analyze request", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(1))
 			})
 		})
 
-		Convey("A rework change in an any kind project", func() {
+		t.Run("A rework change in an any kind project", func(t *ftt.Test) {
 			api := &mockPollRestAPI{}
 			lastChangeTS := tc.Now().UTC()
 			revisions := map[string]gr.RevisionInfo{
@@ -1039,11 +1041,11 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 					Owner:           &gr.AccountInfo{Email: "user@example.com"},
 				},
 			})
-			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
+			assert.Loosely(t, pollProject(ctx, allRevisionsKinds, api, cp), should.BeNil)
 			tc.Add(time.Second)
-			So(pollProject(ctx, allRevisionsKinds, api, cp), ShouldBeNil)
-			Convey("Enqueues an analyze request", func() {
-				So(numEnqueuedAnalyzeRequests(ctx), ShouldEqual, 1)
+			assert.Loosely(t, pollProject(ctx, allRevisionsKinds, api, cp), should.BeNil)
+			t.Run("Enqueues an analyze request", func(t *ftt.Test) {
+				assert.Loosely(t, numEnqueuedAnalyzeRequests(ctx), should.Equal(1))
 			})
 		})
 	})
@@ -1052,16 +1054,16 @@ func TestPollProjectAllRevisionKindsBehavior(t *testing.T) {
 func TestStatusCode(t *testing.T) {
 	ctx := triciumtest.Context()
 
-	Convey("Valid codes", t, func() {
-		So(statusFromCode(ctx, "A"), ShouldEqual, tricium.Data_ADDED)
-		So(statusFromCode(ctx, "D"), ShouldEqual, tricium.Data_DELETED)
-		So(statusFromCode(ctx, "R"), ShouldEqual, tricium.Data_RENAMED)
-		So(statusFromCode(ctx, "C"), ShouldEqual, tricium.Data_COPIED)
-		So(statusFromCode(ctx, "W"), ShouldEqual, tricium.Data_REWRITTEN)
-		So(statusFromCode(ctx, "M"), ShouldEqual, tricium.Data_MODIFIED)
+	ftt.Run("Valid codes", t, func(t *ftt.Test) {
+		assert.Loosely(t, statusFromCode(ctx, "A"), should.Equal(tricium.Data_ADDED))
+		assert.Loosely(t, statusFromCode(ctx, "D"), should.Equal(tricium.Data_DELETED))
+		assert.Loosely(t, statusFromCode(ctx, "R"), should.Equal(tricium.Data_RENAMED))
+		assert.Loosely(t, statusFromCode(ctx, "C"), should.Equal(tricium.Data_COPIED))
+		assert.Loosely(t, statusFromCode(ctx, "W"), should.Equal(tricium.Data_REWRITTEN))
+		assert.Loosely(t, statusFromCode(ctx, "M"), should.Equal(tricium.Data_MODIFIED))
 	})
 
-	Convey("Unknown status means modified", t, func() {
-		So(statusFromCode(ctx, "X"), ShouldEqual, tricium.Data_MODIFIED)
+	ftt.Run("Unknown status means modified", t, func(t *ftt.Test) {
+		assert.Loosely(t, statusFromCode(ctx, "X"), should.Equal(tricium.Data_MODIFIED))
 	})
 }
