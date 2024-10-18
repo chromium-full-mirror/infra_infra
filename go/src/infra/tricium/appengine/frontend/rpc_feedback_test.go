@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	"infra/tricium/api/v1"
@@ -21,7 +23,7 @@ import (
 )
 
 func TestFeedback(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		now := time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC)
 		ctx, tc := testclock.UseTime(ctx, now)
@@ -47,16 +49,16 @@ func TestFeedback(t *testing.T) {
 		category2 := "Spacey/TrailingSpace"
 		platform := tricium.Platform_UBUNTU
 		request := &track.AnalyzeRequest{}
-		So(ds.Put(ctx, request), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, request), should.BeNil)
 		run := &track.WorkflowRun{ID: 1, Parent: ds.KeyForObj(ctx, request)}
-		So(ds.Put(ctx, run), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, run), should.BeNil)
 		functionRun := &track.FunctionRun{ID: functionName, Parent: ds.KeyForObj(ctx, run)}
-		So(ds.Put(ctx, functionRun), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, functionRun), should.BeNil)
 		worker := &track.WorkerRun{
 			ID:     fmt.Sprintf("%s_%s", functionName, platform),
 			Parent: ds.KeyForObj(ctx, functionRun),
 		}
-		So(ds.Put(ctx, worker), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, worker), should.BeNil)
 		comment1 := &track.Comment{
 			UUID:         commentID1,
 			Parent:       ds.KeyForObj(ctx, worker),
@@ -65,19 +67,19 @@ func TestFeedback(t *testing.T) {
 			Category:     category1,
 			CreationTime: ctime1,
 		}
-		So(ds.Put(ctx, comment1), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, comment1), should.BeNil)
 		feedback1 := &track.CommentFeedback{
 			ID:               1,
 			Parent:           ds.KeyForObj(ctx, comment1),
 			NotUsefulReports: 2,
 		}
-		So(ds.Put(ctx, feedback1), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, feedback1), should.BeNil)
 		selection1 := &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comment1),
 			Included: true,
 		}
-		So(ds.Put(ctx, selection1), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, selection1), should.BeNil)
 		comment2 := &track.Comment{
 			UUID:         commentID2,
 			Parent:       ds.KeyForObj(ctx, worker),
@@ -86,89 +88,89 @@ func TestFeedback(t *testing.T) {
 			Category:     category2,
 			CreationTime: ctime2,
 		}
-		So(ds.Put(ctx, comment2), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, comment2), should.BeNil)
 		feedback2 := &track.CommentFeedback{
 			ID:               1,
 			Parent:           ds.KeyForObj(ctx, comment2),
 			NotUsefulReports: 1,
 		}
-		So(ds.Put(ctx, feedback2), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, feedback2), should.BeNil)
 		selection2 := &track.CommentSelection{
 			ID:       1,
 			Parent:   ds.KeyForObj(ctx, comment2),
 			Included: true,
 		}
-		So(ds.Put(ctx, selection2), ShouldBeNil)
+		assert.Loosely(t, ds.Put(ctx, selection2), should.BeNil)
 
-		Convey("Feedback request for unknown category", func() {
+		t.Run("Feedback request for unknown category", func(t *ftt.Test) {
 			st, et, _ := parseTimeRange(ctx, nil, nil)
 			count, reports, err := feedback(ctx, "Hello", st, et)
-			So(err, ShouldBeNil)
-			So(count, ShouldEqual, 0)
-			So(reports, ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, count, should.BeZero)
+			assert.Loosely(t, reports, should.BeZero)
 		})
 
-		Convey("Feedback request for known analyzer name", func() {
+		t.Run("Feedback request for known analyzer name", func(t *ftt.Test) {
 			st, et, _ := parseTimeRange(ctx, nil, nil)
 			count, reports, err := feedback(ctx, functionName, st, et)
-			So(err, ShouldBeNil)
-			So(count, ShouldEqual, 2)
-			So(reports, ShouldEqual, 3)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, count, should.Equal(2))
+			assert.Loosely(t, reports, should.Equal(3))
 		})
 
-		Convey("Feedback request for time period", func() {
+		t.Run("Feedback request for time period", func(t *ftt.Test) {
 			count, reports, err := feedback(ctx, functionName, stime, etime)
-			So(err, ShouldBeNil)
-			So(count, ShouldEqual, 1)
-			So(reports, ShouldEqual, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, count, should.Equal(1))
+			assert.Loosely(t, reports, should.Equal(1))
 		})
 
-		Convey("Feedback request for subcategory", func() {
+		t.Run("Feedback request for subcategory", func(t *ftt.Test) {
 			st, et, _ := parseTimeRange(ctx, nil, nil)
 			count, reports, err := feedback(ctx, category1, st, et)
-			So(err, ShouldBeNil)
-			So(count, ShouldEqual, 1)
-			So(reports, ShouldEqual, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, count, should.Equal(1))
+			assert.Loosely(t, reports, should.Equal(2))
 		})
 	})
 }
 
 func TestParseTimeRange(t *testing.T) {
-	Convey("Test Environment", t, func() {
+	ftt.Run("Test Environment", t, func(t *ftt.Test) {
 		ctx := triciumtest.Context()
 		epoch := time.Unix(0, 0).UTC()
 		now := time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC)
 		ctx, _ = testclock.UseTime(ctx, now)
 
-		Convey("No start or end specified", func() {
+		t.Run("No start or end specified", func(t *ftt.Test) {
 			st, et, err := parseTimeRange(ctx, nil, nil)
-			So(st, ShouldEqual, epoch)
-			So(et, ShouldEqual, now)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, st, should.Match(epoch))
+			assert.Loosely(t, et, should.Match(now))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Both start and end time specified", func() {
+		t.Run("Both start and end time specified", func(t *ftt.Test) {
 			start := time.Date(2016, 11, 5, 0, 0, 0, 0, time.UTC)
 			end := time.Date(2016, 11, 8, 0, 0, 0, 0, time.UTC)
 			startTimestamp, err := ptypes.TimestampProto(start)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			endTimestamp, err := ptypes.TimestampProto(end)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			st, et, err := parseTimeRange(ctx, startTimestamp, endTimestamp)
-			So(err, ShouldBeNil)
-			So(st, ShouldEqual, start)
-			So(et, ShouldEqual, end)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, st, should.Match(start))
+			assert.Loosely(t, et, should.Match(end))
 		})
 
-		Convey("Reversed time", func() {
+		t.Run("Reversed time", func(t *ftt.Test) {
 			start := time.Date(2016, 11, 8, 0, 0, 0, 0, time.UTC)
 			end := time.Date(2016, 11, 5, 0, 0, 0, 0, time.UTC)
 			startTimestamp, err := ptypes.TimestampProto(start)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			endTimestamp, err := ptypes.TimestampProto(end)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, _, err = parseTimeRange(ctx, startTimestamp, endTimestamp)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
