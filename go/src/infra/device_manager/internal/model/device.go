@@ -22,7 +22,7 @@ import (
 	"infra/device_manager/internal/database"
 )
 
-// ErrDeviceNotFound defines a custom error when a Device is not found.
+// Error types for Device model operations
 var (
 	ErrDeviceNotFound      = errors.New("device not found")
 	ErrDeviceAlreadyLeased = errors.New("device already leased")
@@ -531,8 +531,15 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 				last_notification_time;`
 	)
 
+	// Put quotes around IDs and prepopulate errors
+	var deviceIDsQuoted []string
+	for _, deviceID := range deviceIDs {
+		updateErrs[deviceID] = ErrDeviceAlreadyLeased
+		deviceIDsQuoted = append(deviceIDsQuoted, fmt.Sprintf("'%s'", deviceID))
+	}
+
 	logging.Debugf(ctx, "UpdateDeviceToLeased: update statement: %s\n with Devices %+v", query, deviceIDs)
-	query = fmt.Sprintf(query, strings.Join(deviceIDs, ", "))
+	query = fmt.Sprintf(query, strings.Join(deviceIDsQuoted, ", "))
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
@@ -574,7 +581,6 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 			updatedDevice.LastNotificationTime = lastNotificationTime.Time
 		}
 
-		updateErrs[updatedDevice.DutID] = ErrDeviceAlreadyLeased
 		if err != nil {
 			logging.Errorf(ctx, "UpdateDeviceToLeased: failed to update Device to DB: %w", err)
 			var pgErr *pgconn.PgError

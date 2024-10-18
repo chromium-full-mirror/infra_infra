@@ -19,6 +19,11 @@ import (
 	"infra/device_manager/internal/database"
 )
 
+// Error types for DeviceLeaseRecord model operations
+var (
+	ErrLeaseIdemKeyAlreadyExists = errors.New("idempotency key for lease on Device already used")
+)
+
 // DeviceLeaseRecordData is used to pass data to the HTML template.
 type DeviceLeaseRecordData struct {
 	Records []DeviceLeaseRecord
@@ -160,7 +165,7 @@ func BulkCreateDeviceLeaseRecords(ctx context.Context, tx *sql.Tx, records []Dev
 				last_updated_time;`
 	)
 
-	// Populate temporary table.
+	// Populate temporary table and errors.
 	var (
 		valueStrings []string
 		valueArgs    []interface{}
@@ -182,6 +187,7 @@ func BulkCreateDeviceLeaseRecords(ctx context.Context, tx *sql.Tx, records []Dev
 			r.OwnerID,
 			leaseDurs[i],
 		)
+		createErrs[r.DutID] = ErrLeaseIdemKeyAlreadyExists
 	}
 
 	if len(valueStrings) == 0 {
