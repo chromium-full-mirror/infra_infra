@@ -6,11 +6,12 @@ package git
 
 import (
 	"bufio"
+	"strings"
+	"testing"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"strings"
-	"testing"
 )
 
 func TestLogReader(t *testing.T) {
