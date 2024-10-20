@@ -9,12 +9,13 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/tricium/api/v1"
 )
 
-func analyzeTestFile(t *testing.T, name string) []*tricium.Data_Comment {
+func analyzeTestFile(t testing.TB, name string) []*tricium.Data_Comment {
 	f, err := os.Open("test/src/" + name)
 	if err != nil {
 		t.Errorf("Failed to open %s: %v", name, err)
@@ -33,30 +34,30 @@ const (
 )
 
 func TestMojomCommentator(t *testing.T) {
-	Convey("Analyze file with lots of mojom syntax and no errors", t, func() {
+	ftt.Run("Analyze file with lots of mojom syntax and no errors", t, func(t *ftt.Test) {
 		results := analyzeTestFile(t, "good.mojom")
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Commented out interfaces do not count", t, func() {
+	ftt.Run("Commented out interfaces do not count", t, func(t *ftt.Test) {
 		results := analyzeTestFile(t, "commented_out.mojom")
-		So(results, ShouldBeNil)
+		assert.Loosely(t, results, should.BeNil)
 	})
 
-	Convey("Missing a method comment on an otherwise-commeneted interface", t, func() {
+	ftt.Run("Missing a method comment on an otherwise-commeneted interface", t, func(t *ftt.Test) {
 		results := analyzeTestFile(t, "partial_comments.mojom")
-		So(results, ShouldResemble, []*tricium.Data_Comment{{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{{
 			Category:  "MojomCommentator/method",
 			Message:   methodError,
 			StartLine: 7,
 			Path:      "partial_comments.mojom",
-		}})
+		}}))
 	})
 
-	Convey("Missing comments on multiple interfaces and methods", t, func() {
+	ftt.Run("Missing comments on multiple interfaces and methods", t, func(t *ftt.Test) {
 		path := "bad.mojom"
 		results := analyzeTestFile(t, path)
-		So(results, ShouldResemble, []*tricium.Data_Comment{
+		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
 			{
 				Category:  "MojomCommentator/interface",
 				Message:   `Interface "Foo"` + interfaceErrorFragment,
@@ -105,6 +106,6 @@ func TestMojomCommentator(t *testing.T) {
 				StartLine: 32,
 				Path:      path,
 			},
-		})
+		}))
 	})
 }
