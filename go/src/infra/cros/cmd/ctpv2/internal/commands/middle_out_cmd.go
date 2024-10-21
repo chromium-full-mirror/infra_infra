@@ -49,6 +49,7 @@ type MiddleOutRequestCmd struct {
 
 const (
 	TautoTastPrefix = "tauto.tast"
+	NO_DEVICES_INT  = math.MinInt32 + 1
 )
 
 // ExtractDependencies (Boiler plate)
@@ -426,7 +427,10 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 
 		solverData.finalAssignments[selectedDevice] = append(solverData.finalAssignments[selectedDevice], shardedtc)
 
-		solverData.flatHWUUIDMap[selectedDevice].labLoading.value-- // Reduce the # of open devices by 1.
+		// Only decrement real devices.
+		if solverData.flatHWUUIDMap[selectedDevice].labLoading.value > NO_DEVICES_INT {
+			solverData.flatHWUUIDMap[selectedDevice].labLoading.value--
+		}
 		// If the shard is not full, mark it as such.
 		if len(shardedtc) != solverData.cfg.maxInShard {
 			solverData.flatHWUUIDMap[selectedDevice].numInCurrentShard += len(shardedtc)
@@ -669,7 +673,6 @@ func shard(alltests []string, maxInShard int) (shards [][]string) {
 		}
 		shards = append(shards, tests)
 	}
-
 	return shards
 }
 
@@ -685,13 +688,6 @@ func getHarness(t string) string {
 		return "unknown"
 	}
 	return v[0]
-}
-
-// TODO (azrahman@; integrate with swarming API)
-func labAvalability(*api.HWRequirements) int {
-	// returns the number of devices which can meet the requirement.
-	// will need to include pool
-	return -1
 }
 
 // Will add the amount of devices in the lab to each of the HW items.
@@ -755,7 +751,20 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 				}
 
-				hwInfoInput.labLoading = &loading{value: int(botCount)}
+				// When there are no devices we want to set the max negative amount
+				// thus when we "fill" a device up which has 1 to few DUTs, we still will create a queue
+				// on the real device, and not a device which DNE.
+				if int(botCount) == 0 {
+					// The +1 is needed so that when we distribute tasks (which is checked vs minInt32)
+					// We will still ""assign"" a device; to later be rejected.
+					// Without this clause the tests with no devices would likely be silently rejected;
+					// which while functionally the same, it would be a rough UX for tests to be silently dropped.
+					hwInfoInput.labLoading = &loading{value: NO_DEVICES_INT}
+				} else {
+					hwInfoInput.labLoading = &loading{value: int(botCount)}
+				}
+
+				// Note: This field is reserved for the `bot_params_rejected` check.
 				hwInfoInput.labDevices = totalBotCount
 				hwInfoInput.dimsExcludingReady = dimsExcludingReady
 				logging.Infof(ctx, "Found for lab devices: %v", botCount)
@@ -999,13 +1008,14 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 		}
 
 		// Only assign it into a shard if there is actually devices.
-		// There are cases where a test requires a device which doesn't exist (to later be rejected)
-		// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
-		// into the shard; resulting in those tests being skipped.
-		// Instead, when we put the `0` check, we will not put the test in the shard; and grab a different (existing) device.
-		if (solverData.flatHWUUIDMap[device].numInCurrentShard+numTests <= solverData.cfg.maxInShard) && solverData.flatHWUUIDMap[device].labLoading.value > 0 {
-			selectedDevice = device
-			return selectedDevice, true
+		if solverData.flatHWUUIDMap[device].labLoading.value > NO_DEVICES_INT {
+			// There are cases where a test requires a device which doesn't exist (to later be rejected)
+			// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
+			// into the shard; resulting in those tests being skipped.
+			if solverData.flatHWUUIDMap[device].numInCurrentShard+numTests <= solverData.cfg.maxInShard {
+				selectedDevice = device
+				return selectedDevice, true
+			}
 		}
 	}
 
@@ -1017,7 +1027,6 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 			selectedDevice = device
 		}
 	}
-
 	return selectedDevice, false
 }
 

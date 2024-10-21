@@ -1618,3 +1618,38 @@ type allowedAssignment struct {
 	hw   *api.HWRequirements
 	nwHw *api.SchedulingUnitOptions
 }
+
+// // Intentionally commented out. This is a helpful method for debugging e2e flow.
+// func parseTestPlan(source string) *pb.InternalTestplan {
+// 	unmarshalOptions := protojson.UnmarshalOptions{
+// 		AllowPartial:   false,
+// 		DiscardUnknown: false,
+// 	}
+// 	testPlan := pb.InternalTestplan{}
+// 	err := unmarshalOptions.Unmarshal([]byte(source), &testPlan)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return &testPlan
+// }
+
+// // Intentionally commented out. This is a helpful method for debugging e2e flow.
+// func TestExecute(t *testing.T) {
+// 	data, err := ioutil.ReadFile("test.json")
+// 	if err != nil {
+// 		fmt.Println("Error reading file:", err)
+// 		return
+// 	}
+
+// 	jsonString := string(data)
+// 	testPlan := parseTestPlan(jsonString)
+
+// 	cfg := distroCfg{
+// 		maxInShard:      150,
+// 		pool:            "wificell",
+// 		isUnitTest:      true,
+// 		unitTestDevices: 1,
+// 	}
+// 	req, err := middleOut(makeCtx(), testPlan, cfg)
+
+// }
