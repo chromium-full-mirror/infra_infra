@@ -97,6 +97,16 @@ npm unlink -g
 If you are not yet ready to use the published version, you can skip step
 2 and just run step 3, which reset the version to the one you had before linking.
 
+### Integrating the component with your project (Without Linking)
+
+Alternatively, you can utilize [npm local paths](https://docs.npmjs.com/cli/v10/configuring-npm/package-json#local-paths) to test local changes against your project.
+
+e.g. directly install the library in your project's top level directory:
+
+```
+npm install -S /usr/local/google/home/$USER/cr/infra/crdx/packages/log-viewer
+```
+
 ### Technical guidelines for development
 
 1. All components must be extracted in the top directory, except for sub components.

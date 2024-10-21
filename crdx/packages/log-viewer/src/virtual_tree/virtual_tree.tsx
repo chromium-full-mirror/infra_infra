@@ -382,7 +382,8 @@ export function VirtualTree<T extends TreeNodeData>({
         behavior: 'auto',
       });
     }
-  }, [openTreeDataList, searchActiveIndex, scrollToggle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchActiveIndex, scrollToggle]);
 
   /**
    * Updates the search state every time the search pattern is updated. The

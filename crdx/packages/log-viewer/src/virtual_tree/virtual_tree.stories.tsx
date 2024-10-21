@@ -5,7 +5,7 @@
 import { Box } from '@mui/material';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { TreeNodeData } from './types';
+import { SearchOptions, TreeNodeData } from './types';
 import { VirtualTree } from './virtual_tree';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
@@ -103,8 +103,37 @@ const treeData: TreeNodeData[] = [
   },
 ];
 
+const treeNodeWithSize = (
+  parentCount: number,
+  childCount: number,
+): TreeNodeData[] => [
+  {
+    id: 1,
+    name: 'root1',
+    children: Array.from(Array(parentCount).keys()).map((parentId) => ({
+      id: parentId + 2,
+      name: `dir${parentId + 1}`,
+      children: Array.from(Array(childCount).keys()).map((childId) => ({
+        id: parentId * childCount + childId + parentCount + 2,
+        name: `leafNode${parentId * childCount + childId + 1}`,
+        children: [],
+      })),
+    })),
+  },
+];
+
+const searchOptions: SearchOptions = { pattern: 'dir' };
+
 export const Base: Story = {
   args: {
     root: treeData,
+  },
+};
+
+export const VirtualTreeWithActiveSearchIndex: Story = {
+  args: {
+    root: treeNodeWithSize(5, 10),
+    searchOptions,
+    searchActiveIndex: 3,
   },
 };
