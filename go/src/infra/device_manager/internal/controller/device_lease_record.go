@@ -25,6 +25,11 @@ import (
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
+// ExpirerOpts struct holds configuration options for the Expirer service
+type ExpirerOpts struct {
+	ExpirationWorkersN *int
+}
+
 // LeaseDevice leases a device specified by the request.
 //
 // The function executes as a transaction. It attempts to create a lease record
@@ -454,4 +459,9 @@ func CheckExtensionIdempotency(ctx context.Context, db *sql.DB, idemKey string) 
 		}, nil
 	}
 	return &api.ExtendLeaseResponse{}, nil
+}
+
+// ExpireLeases marks expired leases as released and released Devices in the DB.
+func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
+	return nil
 }

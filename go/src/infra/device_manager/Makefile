@@ -45,6 +45,7 @@ cover:
 build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o device-lease-service $(PROJECT_PATH)/cmd/device_lease_service
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o notifier-service $(PROJECT_PATH)/cmd/notifier_service
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o expirer-service $(PROJECT_PATH)/cmd/expirer_service
 
 # Run service locally as a binary
 .PHONY: dev
@@ -79,6 +80,13 @@ docker-notifier: build-docker-compose
 	CURRENT_UID="$(id -u):$(id -g)" \
 	docker compose -f docker-compose.dev.yml up \
 	notifier_service
+
+# Run Docker expirer service locally using Docker Compose
+.PHONY: docker-expirer
+docker-expirer: build-docker-compose
+	CURRENT_UID="$(id -u):$(id -g)" \
+	docker compose -f docker-compose.dev.yml up \
+	expirer_service
 
 # Run Docker Postgres db locally using Docker Compose
 .PHONY: docker-db
