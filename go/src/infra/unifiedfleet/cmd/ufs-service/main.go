@@ -38,10 +38,15 @@ import (
 // flag to control erroring out if namespace is not provided
 const rejectCallforNamespace = false
 
-func main() {
-	modules := []module.Module{
+// Modules returns the modules used by UFS.
+func Modules() []module.Module {
+	return []module.Module{
 		gaeemulation.NewModuleFromFlags(),
 	}
+}
+
+func main() {
+	modules := Modules()
 
 	cfgLoader := config.Loader{}
 	cfgLoader.RegisterFlags(flag.CommandLine)
