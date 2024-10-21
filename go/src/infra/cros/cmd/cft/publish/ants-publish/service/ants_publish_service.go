@@ -15,9 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
+	"github.com/pkg/errors"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 
@@ -37,77 +35,16 @@ type AntsPublishService struct {
 	invocation *ab_prod.Invocation
 }
 
-func defaultResults() []*api.CrosTestResponse_GivenTestResult {
-	r := []*api.CrosTestResponse_GivenTestResult{
-		{
-			ParentTest: "CtsAccelerationTestCases",
-			ChildTestCaseResults: []*api.TestCaseResult{
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.HardwareAccelerationTest#testIsHardwareAccelerated"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12456},
-				},
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.HardwareAccelerationTest#testNotAttachedView"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
-				},
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.SoftwareAccelerationTest#testIsHardwareAccelerated"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
-				},
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.SoftwareAccelerationTest#testNotAttachedView"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
-				},
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.WindowFlagHardwareAccelerationTest#testIsHardwareAccelerated"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
-				},
-				{
-					TestCaseId:  &api.TestCase_Id{Value: "android.acceleration.cts.WindowFlagHardwareAccelerationTest#testNotAttachedView"},
-					Verdict:     &api.TestCaseResult_Pass_{},
-					TestHarness: &api.TestHarness{TestHarnessType: &api.TestHarness_Tradefed_{}},
-					Duration:    &durationpb.Duration{Seconds: 0},
-					StartTime:   &timestamppb.Timestamp{Seconds: 12556},
-				},
-			},
-		},
-	}
-
-	return r
-}
-
 // NewAntsPublishService creates a new publish service to interact with Ants.
 func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsPublishService, error) {
 	m, err := unpackMetadata(req)
 	if err = validateAntsPublishRequest(req); err != nil {
-		log.Print(req)
-		//return nil, err
+		return nil, err
 	}
 
 	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB)
 	if err != nil {
 		return nil, err
-	}
-
-	r := req.GetTestResponse().GetGivenTestResults()
-	if len(r) == 0 {
-		r = defaultResults()
-		log.Printf("Using default results for testing: %v", r)
 	}
 
 	inv, err := s.InvocationService.Get(m.AntsInvocationId)
@@ -117,7 +54,7 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 
 	return &AntsPublishService{
 		metadata:   m,
-		results:    r,
+		results:    req.GetTestResponse().GetGivenTestResults(),
 		service:    s,
 		invocation: inv,
 	}, nil
@@ -305,13 +242,13 @@ func antsTestStatus(result *api.TestCaseResult) string {
 }
 
 func validateAntsPublishRequest(req *api.PublishRequest) error {
-	if len(req.GetTestResponse().GetTestCaseResults()) == 0 && len(req.GetTestResponse().GetGivenTestResults()) == 0 {
-		return fmt.Errorf("no test responses found")
+	if len(req.GetTestResponse().GetGivenTestResults()) == 0 {
+		return fmt.Errorf("no given test results to upload.")
 	}
 
 	m, err := unpackMetadata(req)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "could not unpack metadata")
 	}
 
 	if m.GetAntsInvocationId() == "" {
