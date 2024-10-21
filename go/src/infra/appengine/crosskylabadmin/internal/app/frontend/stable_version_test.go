@@ -277,7 +277,7 @@ func TestGetStableVersion(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp.CrosVersion, should.Equal("xxx-labstation-cros-version"))
 		assert.Loosely(t, resp.FaftVersion, should.BeEmpty)
-		assert.Loosely(t, resp.FirmwareVersion, should.BeEmpty) // not expected as faft version is empty.
+		assert.Loosely(t, resp.FirmwareVersion, should.Equal("xxx-labstation-firmware-version"))
 		assert.Loosely(t, resp.ServoCrosVersion, should.BeEmpty)
 		assert.Loosely(t, resp.Reason, should.ContainSubstring("looked up non-satlab device hostname"))
 	})

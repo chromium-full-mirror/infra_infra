@@ -284,15 +284,15 @@ func getStableVersionImplNoHostname(ctx context.Context, buildTarget string, mod
 		return nil, errors.Annotate(err, "get stable version by board/model").Err()
 	}
 	logging.Infof(ctx, "Got cros version %q from datastore", out.CrosVersion)
-	out.FaftVersion, err = dssv.GetFaftStableVersion(ctx, buildTarget, model)
+	out.FirmwareVersion, err = dssv.GetFirmwareStableVersion(ctx, buildTarget, model)
 	if err != nil {
-		logging.Infof(ctx, "faft version not found: %w", err)
+		logging.Infof(ctx, "firmware version does not exist: %w", err)
 	} else {
-		// Fw image path expected only if evrsion is present.
-		logging.Infof(ctx, "Got faft version %q from datastore", out.FaftVersion)
-		out.FirmwareVersion, err = dssv.GetFirmwareStableVersion(ctx, buildTarget, model)
+		// Fw image path expected only if firmware version is present.
+		logging.Infof(ctx, "Got firmware version %q from datastore", out.FirmwareVersion)
+		out.FaftVersion, err = dssv.GetFaftStableVersion(ctx, buildTarget, model)
 		if err != nil {
-			logging.Infof(ctx, "firmware version does not exist: %w", err)
+			logging.Infof(ctx, "faft version not found: %w", err)
 		}
 	}
 	return out, nil
