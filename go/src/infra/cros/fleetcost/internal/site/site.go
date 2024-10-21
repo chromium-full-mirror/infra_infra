@@ -56,5 +56,5 @@ func SecretsDir() string {
 	return filepath.Join(configDir, progName, "auth")
 }
 
-// DefaultAuthScopes is the default scopes for shivas login
+// DefaultAuthScopes is the default scopes for fleetcost login
 var DefaultAuthScopes = []string{auth.OAuthScopeEmail, "https://www.googleapis.com/auth/spreadsheets"}
