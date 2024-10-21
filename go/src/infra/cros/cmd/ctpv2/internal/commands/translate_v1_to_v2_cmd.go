@@ -7,11 +7,15 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
@@ -165,6 +169,19 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	if cmd.CtpV2Request != nil && len(cmd.CtpV2Request.GetRequests()) > 0 {
 		step.SetSummaryMarkdown("V2 request already set so skipping translation...")
 
+		// populate reqs
+		for _, ctpReq := range cmd.CtpV2Request.GetRequests() {
+			// do ATP msg to ctp request translation
+			if ctpReq.GetEncodedAtpTestJobMsg() != "" {
+				// if atp encoded test job msg is present, then decode it & construct CTP req from it
+				err = cmd.constructCtpReqFromEncodedTestJobMsg(ctx, ctpReq)
+				if err != nil {
+					logging.Infof(ctx, "err while constructing ctp req from encoded atp test job msg: %s", err.Error())
+					return err
+				}
+			}
+		}
+
 		// If the current run is an AL run then pull the ATP details out of the
 		// request arguments.
 		if parentWUID, invocationID := getATPDeps(cmd.CtpV2Request); parentWUID != "" && invocationID != "" {
@@ -238,6 +255,226 @@ func createBoardModelVariantKeyForRequest(req *test_platform.Request) string {
 	variant := common_builders.GetVariant(req.GetParams().GetSoftwareDependencies())
 
 	return common.ConstructKey(board, model, variant)
+}
+
+func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.Context, ctpReq *api.CTPRequest) error {
+	var err error
+	step, ctx := build.StartStep(ctx, "Ctp Req From TestJobMsg")
+	defer func() { step.End(err) }()
+	common.WriteStringToStepLog(ctx, step, ctpReq.GetEncodedAtpTestJobMsg(), "received encoded atp test job msg")
+
+	// Decode the Base64 string
+	testJobMsg, err := common.DecodeTestJobMsg(ctx, ctpReq.GetEncodedAtpTestJobMsg())
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "successfully decoded test job msg!")
+	common.WriteAnyObjectToStepLog(ctx, step, testJobMsg, "decoded atp test job msg")
+
+	// populate the fields from received atp test job msg
+	populateCtpRequest(ctpReq, testJobMsg)
+
+	common.WriteProtoToStepLog(ctx, step, ctpReq, "populated_ctp_req")
+
+	return nil
+}
+
+func populateCtpRequest(ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage) {
+	ctpReq.SuiteRequest = buildSuiteRequest(testJobMsg)
+	ctpReq.ScheduleTargets = buildScheduleTargets(testJobMsg)
+	ctpReq.SchedulerInfo = buildSchedulerInfo(testJobMsg)
+	ctpReq.Pool = getSchedulingPool(testJobMsg)
+	ctpReq.KarbonFilters = getKarbonFilters()
+	ctpReq.RunDynamic = true
+}
+
+func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
+	// Default values
+	suiteName := "adhoc"
+	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
+	antsInvId := ""
+	antsWuId := ""
+	buildEnv := ""
+	totalShards := 0
+	retryCount := 0
+	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
+	maxInShard := 10
+	dddSuite := false
+
+	// build related
+	buildId := ""
+	branch := ""
+	buildFlavor := ""
+	buildType := ""
+	buildTarget := ""
+
+	extraBuildId := ""
+	extraBranch := ""
+	extraBuildFlavor := ""
+	extraBuildType := ""
+	extraBuildTarget := ""
+
+	if testJobMsg.Test != nil {
+		suiteName = testJobMsg.Test.Name
+		for _, arg := range testJobMsg.Test.Args {
+			if arg.Key == "tag_include_list" {
+				testCaseTagCriteria.Tags = append(testCaseTagCriteria.Tags, arg.Values...)
+			} else if arg.Key == "tag_exclude_list" {
+				testCaseTagCriteria.TagExcludes = append(testCaseTagCriteria.TagExcludes, arg.Values...)
+			} else if arg.Key == "test_names_include_list" {
+				testCaseTagCriteria.TestNames = append(testCaseTagCriteria.TestNames, arg.Values...)
+			} else if arg.Key == "test_names_exclude_list" {
+				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
+			}
+		}
+
+		totalShards = int(testJobMsg.Test.Shards)
+		retryCount = int(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
+	}
+
+	for _, data := range testJobMsg.PluginData {
+		if data.Key == "ants_invocation_id" {
+			antsInvId = data.Values[0] // if the key is present, there should be only one value
+		} else if data.Key == "ants_work_unit_id" {
+			antsWuId = data.Values[0] // if the key is present, there should be only one value
+		}
+	}
+
+	for _, option := range testJobMsg.RunnerOptions {
+		if option.Key == "build_environment" {
+			buildEnv = option.Values[0] // if the key is present, there should be only one value
+		}
+	}
+
+	if testJobMsg.Build != nil {
+		buildId = testJobMsg.Build.BuildId
+		branch = testJobMsg.Build.Branch
+		buildFlavor = testJobMsg.Build.BuildFlavor
+		buildTarget = testJobMsg.Build.BuildTarget
+		buildType = testJobMsg.Build.BuildType
+	}
+
+	if len(testJobMsg.ExtraBuilds) != 0 {
+		extraBuild := testJobMsg.ExtraBuilds[0] // TODO (azrahman): add multiple extra build support
+
+		extraBuildId = extraBuild.BuildId
+		extraBranch = extraBuild.Branch
+		extraBuildFlavor = extraBuild.BuildFlavor
+		extraBuildTarget = extraBuild.BuildTarget
+		extraBuildType = extraBuild.BuildType
+	}
+
+	executionMetadata := &api.ExecutionMetadata{
+		Args: []*api.Arg{
+			{Flag: "ants_invocation_id", Value: antsInvId},
+			{Flag: "ants_work_unit_id", Value: antsWuId},
+			{Flag: "android_build_environment", Value: buildEnv},
+			{Flag: "branch", Value: branch},
+			{Flag: "build_flavor", Value: buildFlavor},
+			{Flag: "build_id", Value: buildId},
+			{Flag: "build_target", Value: buildTarget},
+			{Flag: "build_type", Value: buildType},
+			{Flag: "extra_branch", Value: extraBranch},
+			{Flag: "extra_build_flavor", Value: extraBuildFlavor},
+			{Flag: "extra_build", Value: extraBuildId},
+			{Flag: "extra_target", Value: extraBuildTarget},
+			{Flag: "extra_build_type", Value: extraBuildType},
+		},
+	}
+	testSuite := &api.TestSuite{
+		Name:              suiteName,
+		Spec:              &api.TestSuite_TestCaseTagCriteria_{TestCaseTagCriteria: testCaseTagCriteria},
+		ExecutionMetadata: executionMetadata,
+		TotalShards:       int64(totalShards)}
+
+	return &api.SuiteRequest{
+		SuiteRequest:    &api.SuiteRequest_TestSuite{TestSuite: testSuite},
+		MaximumDuration: maxDuration,
+		MaxInShard:      int64(maxInShard),
+		DddSuite:        dddSuite,
+		RetryCount:      int64(retryCount)}
+}
+
+func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTargets {
+	primaryBoard := ""
+	primaryModel := ""
+	swarmingDims := []string{} // TODO: (azrahman): add swarming dims support
+
+	// TODO (azrahman/TSE): remove this after making sure ctp,tr runs without Cros version; check rdb upload as well.
+	crosBuild := "brya-release/R131-16063.0.0"
+	crosBuildGcsBucket := "chromeos-image-archive"
+	crosGcsPath := fmt.Sprintf("gs://%s/%s", crosBuildGcsBucket, crosBuild) // for the container fetching to work properly
+	buildType := "ATP"
+
+	if testJobMsg.TestBench != nil {
+		for _, attr := range testJobMsg.TestBench.Attributes {
+			kv := strings.Split(attr, "=")
+			if len(kv) == 2 { // needs to be exactly 2
+				key := kv[0]
+				value := kv[1]
+				if key == "models" { // TODO(azrahman): expand it to multiple models
+					primaryModel = value
+				}
+			}
+		}
+
+		primaryBoard = testJobMsg.TestBench.RunTarget
+	}
+
+	hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: primaryModel, SwarmingDimensions: swarmingDims}}}
+	swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: crosGcsPath, KeyValues: []*api.KeyValue{{Key: "chromeos_build", Value: crosBuild}, {Key: "chromeos_build_gcs_bucket", Value: crosBuildGcsBucket}}}}}
+	targets := &api.Targets{HwTarget: hwTarget, SwTarget: swTarget}
+	return []*api.ScheduleTargets{{Targets: []*api.Targets{targets}}}
+}
+
+func getKarbonFilters() []*api.CTPFilter {
+	return []*api.CTPFilter{
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "al-provision-filter",
+				},
+			},
+		},
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "foil-filter",
+				},
+				BinaryArgs: []string{"-test-path", "us-docker.pkg.dev/cros-registry/test-services/foil-test@sha256:3a4e8079fe9e183a364b4b53e53233d6e9c9532b49cded2b5ac315dac7b36579"}, // TODO (azrahman): update this after landing cros-test changes
+			},
+		},
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "test-finder",
+				},
+			},
+		},
+	}
+}
+
+func buildSchedulerInfo(testJobMsg *common.TestJobMessage) *api.SchedulerInfo {
+	return &api.SchedulerInfo{Scheduler: api.SchedulerInfo_SCHEDUKE}
+}
+
+func getSchedulingPool(testJobMsg *common.TestJobMessage) string {
+	pool := ""
+
+	if testJobMsg.TestBench != nil {
+		for _, attr := range testJobMsg.TestBench.Attributes {
+			kv := strings.Split(attr, "=")
+			if len(kv) == 2 { // needs to be exactly 2
+				key := kv[0]
+				value := kv[1]
+				if key == "pool" {
+					pool = value
+				}
+			}
+		}
+	}
+
+	return pool
 }
 
 // NewTranslateV1toV2Cmd returns a new TranslateV1ToV2Cmd

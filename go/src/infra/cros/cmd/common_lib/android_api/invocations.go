@@ -6,7 +6,7 @@ package androidapi
 import (
 	"context"
 
-	atsqa "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	atsqa "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // InvocationService handles API calls related to invocations.

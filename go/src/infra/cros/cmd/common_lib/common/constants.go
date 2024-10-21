@@ -81,6 +81,7 @@ const (
 const (
 	ATPSupportedTimeFormat         = "2006-01-02T15:04:05.000000"
 	ATPSwitcherProjectIDAlpha      = "google.com:atp-switcher-alpha"
+	ATPSwitcherProjectIDProd       = "google.com:atp-switcher"
 	ATPSwitcherTestJobEventTopicID = "test_job_event"
 )
 

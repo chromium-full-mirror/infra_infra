@@ -7,25 +7,25 @@ package androidapi
 import (
 	"context"
 
-	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // TestResultService handles API calls related to testResults.
 type TestResultService interface {
-	Get(resourceID int64) (*ab_qa_atp.TestResult, error)
-	Insert(testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error)
-	BatchInsert(ctx context.Context, invocationID string, request *ab_qa_atp.TestResultBatchInsertRequest) (*ab_qa_atp.TestResultBatchInsertResponse, error)
-	Update(resourceID int64, testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error)
+	Get(resourceID int64) (*ab_prod.TestResult, error)
+	Insert(testResult *ab_prod.TestResult) (*ab_prod.TestResult, error)
+	BatchInsert(ctx context.Context, invocationID string, request *ab_prod.TestResultBatchInsertRequest) (*ab_prod.TestResultBatchInsertResponse, error)
+	Update(resourceID int64, testResult *ab_prod.TestResult) (*ab_prod.TestResult, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.TestResultListResponse, error)
 }
 
 // TestResultServiceImpl is the RPC implementation of TestResultService.
 type TestResultServiceImpl struct {
-	client *ab_qa_atp.TestresultService
+	client *ab_prod.TestresultService
 }
 
 // Get implementation for testResults.
-func (w *TestResultServiceImpl) Get(resourceID int64) (*ab_qa_atp.TestResult, error) {
+func (w *TestResultServiceImpl) Get(resourceID int64) (*ab_prod.TestResult, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -36,7 +36,7 @@ func (w *TestResultServiceImpl) Get(resourceID int64) (*ab_qa_atp.TestResult, er
 }
 
 // Insert implementation for testResults.
-func (w *TestResultServiceImpl) Insert(testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error) {
+func (w *TestResultServiceImpl) Insert(testResult *ab_prod.TestResult) (*ab_prod.TestResult, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -47,7 +47,7 @@ func (w *TestResultServiceImpl) Insert(testResult *ab_qa_atp.TestResult) (*ab_qa
 }
 
 // BatchInsert implementation for testResults.
-func (w *TestResultServiceImpl) BatchInsert(ctx context.Context, invocationID string, request *ab_qa_atp.TestResultBatchInsertRequest) (*ab_qa_atp.TestResultBatchInsertResponse, error) {
+func (w *TestResultServiceImpl) BatchInsert(ctx context.Context, invocationID string, request *ab_prod.TestResultBatchInsertRequest) (*ab_prod.TestResultBatchInsertResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -58,7 +58,7 @@ func (w *TestResultServiceImpl) BatchInsert(ctx context.Context, invocationID st
 }
 
 // Update implementation for testResults.
-func (w *TestResultServiceImpl) Update(resourceID int64, testResult *ab_qa_atp.TestResult) (*ab_qa_atp.TestResult, error) {
+func (w *TestResultServiceImpl) Update(resourceID int64, testResult *ab_prod.TestResult) (*ab_prod.TestResult, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -69,7 +69,7 @@ func (w *TestResultServiceImpl) Update(resourceID int64, testResult *ab_qa_atp.T
 }
 
 // List implementation for testResults.
-func (w *TestResultServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.TestResultListResponse, error) {
+func (w *TestResultServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.TestResultListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}

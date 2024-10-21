@@ -250,16 +250,24 @@ func executeFiltersInLuciBuild(
 	if isReqFromATP(req) {
 		buildIdStr := strconv.FormatInt(buildState.Build().Id, 10)
 		// TODO (azrahman:atp): infer this from the new test job field; create a deep copy for current state
-		inputTestJob := &common.TestJobMessage{Id: buildIdStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
-		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIdStr, TestJob: inputTestJob, State: "QUEUED", Type: "STATE_CHANGED", ResultLinks: []string{"hello link", "this is crazy"}}
+		inputTestJobMsg, err := common.DecodeTestJobMsg(ctx, req.GetEncodedAtpTestJobMsg())
+		if err != nil {
+			inputTestJobMsg = &common.TestJobMessage{Id: buildIdStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
+		} else {
+			inputTestJobMsg.TestJobState = "QUEUED"
+			inputTestJobMsg.StartTimestamp = buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)
+		}
+
+		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIdStr, TestJob: inputTestJobMsg, State: "QUEUED", Type: "STATE_CHANGED"}
 		// create pubsub client
 		// Create client
-		client, err := pubsub.NewClient(ctx, common.ATPSwitcherProjectIDAlpha)
+		// TODO (azrahman:atp): choose project id based on ctp env
+		client, err := pubsub.NewClient(ctx, common.ATPSwitcherProjectIDProd)
 		if err != nil {
-			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDAlpha, err)
+			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDProd, err)
 		}
 		defer client.Close()
-		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJob, CurrentTestJob: inputTestJob, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees}
+		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJobMsg, CurrentTestJob: inputTestJobMsg, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees}
 	} else {
 		alStateInfo = nil
 	}

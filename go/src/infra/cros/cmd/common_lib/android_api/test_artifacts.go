@@ -8,7 +8,7 @@ import (
 	"context"
 	"io"
 
-	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	ab_qa_atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // TestArtifactsService handles API calls related to testResults.

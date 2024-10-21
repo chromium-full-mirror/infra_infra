@@ -7,25 +7,25 @@ package androidapi
 import (
 	"context"
 
-	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // WorkUnitService handles API calls related to workunits.
 type WorkUnitService interface {
-	Get(resourceID string) (*ab_qa_atp.WorkUnit, error)
-	Insert(workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
-	Update(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
-	Patch(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.WorkUnitListResponse, error)
+	Get(resourceID string) (*ab_prod.WorkUnit, error)
+	Insert(workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error)
+	Update(resourceID string, workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error)
+	Patch(resourceID string, workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.WorkUnitListResponse, error)
 }
 
 // WorkUnitServiceImpl is the RPC implementation of WorkUnitService.
 type WorkUnitServiceImpl struct {
-	client *ab_qa_atp.WorkunitService
+	client *ab_prod.WorkunitService
 }
 
 // Get implementation for workunits.
-func (w *WorkUnitServiceImpl) Get(resourceID string) (*ab_qa_atp.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Get(resourceID string) (*ab_prod.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -36,7 +36,7 @@ func (w *WorkUnitServiceImpl) Get(resourceID string) (*ab_qa_atp.WorkUnit, error
 }
 
 // Insert implementation for workunits.
-func (w *WorkUnitServiceImpl) Insert(workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Insert(workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -47,7 +47,7 @@ func (w *WorkUnitServiceImpl) Insert(workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.W
 }
 
 // Update implementation for workunits.
-func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -58,7 +58,7 @@ func (w *WorkUnitServiceImpl) Update(resourceID string, workunit *ab_qa_atp.Work
 }
 
 // Patch implementation for workunits.
-func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *ab_qa_atp.WorkUnit) (*ab_qa_atp.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *ab_prod.WorkUnit) (*ab_prod.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -69,7 +69,7 @@ func (w *WorkUnitServiceImpl) Patch(resourceID string, workunit *ab_qa_atp.WorkU
 }
 
 // List implementation for workunits.
-func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_qa_atp.WorkUnitListResponse, error) {
+func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.WorkUnitListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -88,8 +88,8 @@ func (w *WorkUnitServiceImpl) List(ctx context.Context, invocationID string, opt
 }
 
 // NewWorkUnit is a helper function to generate a new WorkUnit.
-func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childShardNumber, childAttemptNumber int) *ab_qa_atp.WorkUnit {
-	return &ab_qa_atp.WorkUnit{
+func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childShardNumber, childAttemptNumber int) *ab_prod.WorkUnit {
+	return &ab_prod.WorkUnit{
 		InvocationId:       invocationID,
 		ParentId:           parentWUId,
 		Name:               name,

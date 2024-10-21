@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"sort"
 
-	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // WULayer is and enum signifying what WU layer type the node represents
@@ -45,7 +45,7 @@ const (
 // access of the tree limited to the exposed functions.
 type WorkUnitNode struct {
 	// workUnit contains the actual ATP Work Unit of the node.
-	workUnit *ab_qa_atp.WorkUnit
+	workUnit *ab_prod.WorkUnit
 
 	// layer describes the which stage in the tree this work unit represents
 	layer WULayer
@@ -63,11 +63,11 @@ type WorkUnitNode struct {
 	Service WorkUnitService
 }
 
-func (w *WorkUnitNode) GetWorkUnit() *ab_qa_atp.WorkUnit {
+func (w *WorkUnitNode) GetWorkUnit() *ab_prod.WorkUnit {
 	return w.workUnit
 }
 
-func (w *WorkUnitNode) SetWorkUnit(newWU *ab_qa_atp.WorkUnit) {
+func (w *WorkUnitNode) SetWorkUnit(newWU *ab_prod.WorkUnit) {
 	w.workUnit = newWU
 }
 

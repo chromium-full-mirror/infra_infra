@@ -10,6 +10,7 @@ import (
 	"compress/zlib"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
@@ -464,4 +465,21 @@ func FindDirWithPrefix(dirPath, prefix string) (string, error) {
 		return "", fmt.Errorf("no directory with prefix '%s' found", prefix)
 	}
 	return foundDir, nil
+}
+
+func DecodeTestJobMsg(ctx context.Context, encodedMsg string) (*TestJobMessage, error) {
+	// Decode the Base64 string
+	decoded, err := base64.StdEncoding.DecodeString(encodedMsg)
+	if err != nil {
+		logging.Infof(ctx, "err while decoding: %s", err.Error())
+		return nil, err
+	}
+
+	// Unmarshal the JSON data into a TestJobMessage
+	var testJobMsg TestJobMessage
+	if err := json.Unmarshal(decoded, &testJobMsg); err != nil {
+		logging.Infof(ctx, "err while unmarshalling: %s", err.Error())
+		return nil, err
+	}
+	return &testJobMsg, nil
 }

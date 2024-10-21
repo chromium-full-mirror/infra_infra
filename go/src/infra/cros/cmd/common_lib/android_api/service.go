@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/api/option"
 
-	ab_qa_atp "infra/cros/cmd/common_lib/ants-qa/androidbuildinternal/v3_qa_atp"
+	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 const (
@@ -64,7 +64,7 @@ func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
 		opts = append(opts, option.WithQuotaProject(quotaProject))
 	}
 
-	client, err := ab_qa_atp.NewService(ctx, opts...)
+	client, err := ab_prod.NewService(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
