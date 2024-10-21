@@ -36,9 +36,16 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 	info.GetDut().ProvisionedInfo.CrosVersion = osVersion
 
 	// Apply new UFS dut_state VersionInfo.
-	// TODO: Refactor ProvisionedInfo related execs to propoerly handle Android based devices.
-	info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_CHROMEOS
+	if info.GetChromeos().GetIsAndroidBased() {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_ANDROID
+	} else if info.GetChromeos() != nil {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_CHROMEOS
+	} else {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_UNKNOWN
+	}
 	info.GetDut().GetVersionInfo().Os = osVersion
+	info.GetDut().GetVersionInfo().RwFirmware = ""
+	info.GetDut().GetVersionInfo().RoFirmware = ""
 
 	argsMap := info.GetActionArgs(ctx)
 	if argsMap.AsBool(ctx, "update_job_repo_url", false) {
@@ -62,7 +69,13 @@ func resetProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 		CrosVersion: "",
 		JobRepoUrl:  "",
 	}
-	info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_UNKNOWN
+	if info.GetChromeos().GetIsAndroidBased() {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_ANDROID
+	} else if info.GetChromeos() != nil {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_CHROMEOS
+	} else {
+		info.GetDut().GetVersionInfo().OsType = tlw.VersionInfo_UNKNOWN
+	}
 	info.GetDut().GetVersionInfo().Os = ""
 	info.GetDut().GetVersionInfo().RwFirmware = ""
 	info.GetDut().GetVersionInfo().RoFirmware = ""
