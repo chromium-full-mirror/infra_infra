@@ -161,7 +161,14 @@ func executeHwTests(
 	metadataKey := req.GetPrimaryDut().GetContainerMetadataKey()
 	metadataMap, ok := metadataContainers[metadataKey]
 	if !ok {
-		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", metadataKey)
+		// Loop through the map to get the first value
+		for _, firstValue := range metadataContainers {
+			metadataMap = firstValue
+			break
+		}
+		if metadataMap == nil {
+			return nil, fmt.Errorf("container metadata is empty")
+		}
 	}
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
@@ -253,7 +260,14 @@ func executeHwTestsV2(
 	metadataKey := req.GetParams().GetContainerMetadataKey()
 	metadataMap, ok := metadataContainers[metadataKey]
 	if !ok {
-		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", metadataKey)
+		// Loop through the map to get the first value
+		for _, firstValue := range metadataContainers {
+			metadataMap = firstValue
+			break
+		}
+		if metadataMap == nil {
+			return nil, fmt.Errorf("container metadata is empty")
+		}
 	}
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
