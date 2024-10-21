@@ -153,13 +153,56 @@ func TestArtifactMetadata(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := aps.artifactMetadata(tc.path)
-
 			if got.Name != tc.wantName {
 				t.Errorf("Unexpected name. want %s got %s", tc.wantName, got.Name)
 			}
 
 			if !slices.Contains(tc.wantTypes, got.ContentType) {
 				t.Errorf("Unexpected content type. want %s got %s", tc.wantTypes, got.ContentType)
+			}
+		})
+	}
+}
+
+func TestArtifactType(t *testing.T) {
+	testCases := []struct {
+		name     string
+		path     string
+		wantType string
+	}{
+		{
+			name:     "logcat",
+			path:     "device_logcat_setup_satlab-0wgatfqi22088039.txt",
+			wantType: "logcat",
+		},
+		{
+			name:     "adblog",
+			path:     "host_adb_log-0wgatfqi22088039.txt",
+			wantType: "adb log",
+		},
+		{
+			name:     "hostlog",
+			path:     "end_host_log-0wgatfqi22088039.txt",
+			wantType: "host log",
+		},
+		{
+			name:     "perfetto",
+			path:     "invocation-tract_perfetto-trace.gz",
+			wantType: "perfetto",
+		},
+		{
+			name:     "xml",
+			path:     "tf_result.xml.gz",
+			wantType: "xml",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			gotType := artifactType(tc.path)
+
+			if gotType != tc.wantType {
+				t.Errorf("Unexpected artifact type. want %s got %s", tc.wantType, gotType)
 			}
 		})
 	}

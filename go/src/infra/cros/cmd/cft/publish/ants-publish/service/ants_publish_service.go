@@ -37,8 +37,12 @@ type AntsPublishService struct {
 
 // NewAntsPublishService creates a new publish service to interact with Ants.
 func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsPublishService, error) {
+	if err := validateAntsPublishRequest(req); err != nil {
+		return nil, err
+	}
+
 	m, err := unpackMetadata(req)
-	if err = validateAntsPublishRequest(req); err != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -218,7 +222,25 @@ func (aps *AntsPublishService) artifactMetadata(path string) *ab_prod.BuildArtif
 		InvocationId: aps.metadata.AntsInvocationId,
 		WorkUnitId:   aps.metadata.ParentWorkUnitId,
 		ContentType:  contentType,
+		ArtifactType: artifactType(filename),
 	}
+}
+
+// artifactType gets the artifact type for the given file
+func artifactType(path string) string {
+	if strings.Contains(path, "device_logcat") {
+		return "logcat"
+	} else if strings.Contains(path, "adb_log") {
+		return "adb log"
+	} else if strings.Contains(path, "host_log") {
+		return "host log"
+	} else if strings.Contains(path, "perfetto") {
+		return "perfetto"
+	} else if strings.Contains(path, "xml") {
+		return "xml"
+	}
+
+	return ""
 }
 
 func antsTestStatus(result *api.TestCaseResult) string {
@@ -243,7 +265,7 @@ func antsTestStatus(result *api.TestCaseResult) string {
 
 func validateAntsPublishRequest(req *api.PublishRequest) error {
 	if len(req.GetTestResponse().GetGivenTestResults()) == 0 {
-		return fmt.Errorf("no given test results to upload.")
+		return fmt.Errorf("no given test results to upload")
 	}
 
 	m, err := unpackMetadata(req)
