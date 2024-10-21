@@ -10,7 +10,7 @@ import six
 
 from google.appengine.api import taskqueue
 from google.protobuf.json_format import Parse
-
+from google.protobuf.json_format import ParseError
 from go.chromium.org.luci.buildbucket.proto import notification_pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2
 
@@ -33,24 +33,26 @@ class CompletedBuildPubsubIngestor(BaseHandler):
       envelope = self.request.get_json(force=True)
       # See the list of available 'attributes' at https://bit.ly/47fCmXC
       version = envelope['message']['attributes'].get('version')
-      if version and version != 'v2':
-        logging.info('Ignoring versions other than v2')
+      if version != 'v2':
+        build_id = envelope['message']['attributes']['build_id']
+        logging.error(
+            'Ignoring versions other than v2. Received version %s for build %s',
+            version, build_id)
         return
-      if not version or version == 'v2':
-        result = Parse(
-            base64.b64decode(envelope['message']['data']),
-            notification_pb2.BuildsV2PubSub(),
-            ignore_unknown_fields=True)
-        build_id = result.build.id
-        status = result.build.status
-        if (status
-            & common_pb2.Status.ENDED_MASK == common_pb2.Status.ENDED_MASK):
-          # We don't need to check if the build is accessible, as in the v2 we
-          # add configuration so that we only receive the builds we care about,
-          # instead of everything.
-          _HandlePossibleCodeCoverageBuild(int(build_id))
+      result = Parse(
+          base64.b64decode(envelope['message']['data']),
+          notification_pb2.BuildsV2PubSub(),
+          ignore_unknown_fields=True)
+      build_id = result.build.id
+      status = result.build.status
+      if (status
+          & common_pb2.Status.ENDED_MASK == common_pb2.Status.ENDED_MASK):
+        # We don't need to check if the build is accessible, as in the v2 we
+        # add configuration so that we only receive the builds we care about,
+        # instead of everything.
+        _HandlePossibleCodeCoverageBuild(int(build_id))
 
-    except (ValueError, KeyError) as e:
+    except (ValueError, KeyError, ParseError) as e:
       # Ignore requests with invalid message.
       logging.debug('build_id: %r', build_id)
       logging.error('Unexpected PubSub message format: %s', six.text_type(e))
