@@ -9235,6 +9235,23 @@ wheel: <
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 
+### 2024.9.13
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytype/${vpython_platform}"
+  version: "version:2024.9.13"
+>
+```
+
+
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+
 ## **pytz**
 
 ### 2018.4
