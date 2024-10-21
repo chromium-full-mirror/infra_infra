@@ -1,0 +1,21 @@
+# Automatically builds the container for the Device Manager Expirer service
+# that will be deployed to Cloud Run.
+#
+# To test this config run:
+#    cloudbuildhelper build expirer-service.yaml
+#
+# For more information see:
+#    https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/images/#testing-changes-locally
+
+name: device-manager/expirer-service
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/device_manager/cmd/expirer_service/docker/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/device_manager
+
+build:
+  - go_binary: infra/device_manager/cmd/expirer_service
+    dest: ${contextdir}/expirer-service
