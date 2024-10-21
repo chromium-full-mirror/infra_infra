@@ -18,8 +18,10 @@ import (
 )
 
 type FoilRequestUpdater struct {
-	TestPath    string
-	FilterTests bool
+	TestPath       string
+	GcsPublishPath string
+	RdbPublishPath string
+	FilterTests    bool
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
@@ -33,6 +35,14 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 	}
 
 	ru.TestPath, err = processContainerPath(ctx, dockerKeyFile, ru.TestPath, "foil-test")
+	if err != nil {
+		return req, err
+	}
+	ru.GcsPublishPath, err = processContainerPath(ctx, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
+	if err != nil {
+		return req, err
+	}
+	ru.RdbPublishPath, err = processContainerPath(ctx, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
 	if err != nil {
 		return req, err
 	}
@@ -65,6 +75,8 @@ func main() {
 	requestUpdater := &FoilRequestUpdater{}
 	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
 	fs.StringVar(&requestUpdater.TestPath, "test-path", common.LabelProd, "SHA256 value for test container")
+	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", common.LabelProd, "SHA256 value for gcs publish container")
+	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", common.LabelProd, "SHA256 value for rdb publish container")
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 
 	err := server.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")

@@ -20,6 +20,8 @@ import (
 
 func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) error {
 	modifyTestRequest(req, updater, log)
+	modifyPublishPath(common.RdbPublish, req, updater, log)
+	modifyPublishPath(common.GcsPublish, req, updater, log)
 	filterOutFaultyTests(req, updater, log)
 	removePostProcess(req, log)
 	modifyRdbPublishRequest(req, log)
@@ -52,6 +54,35 @@ func modifyTestRequest(req *api.InternalTestplan, updater *FoilRequestUpdater, l
 		structpb.NewStringValue("adb-network"),
 		map[string]string{
 			"orderedContainerRequests.0.network": "value",
+		},
+	)
+
+	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+	if err != nil {
+		log.Printf("Error while modifying test request, %s", err)
+	}
+}
+
+func modifyPublishPath(publishType string, req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) {
+	var publishPath string
+	switch publishType {
+	case common.RdbPublish:
+		publishPath = updater.RdbPublishPath
+	case common.GcsPublish:
+		publishPath = updater.GcsPublishPath
+	default:
+		return
+	}
+
+	if publishPath == "" {
+		return
+	}
+
+	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(publishType))
+	generator.AddModification(
+		structpb.NewStringValue(publishPath),
+		map[string]string{
+			"orderedContainerRequests.0.containerImagePath": "value",
 		},
 	)
 
