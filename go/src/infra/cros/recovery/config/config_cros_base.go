@@ -64,10 +64,7 @@ func crosBaseActions() map[string]*Action {
 				// Always first stop in case somethine left out from last run.
 				"Stop ADB container",
 			},
-			ExecName: "ctr_start_adb_container",
-			ExecExtraArgs: []string{
-				"container_tag:paris-prod",
-			},
+			ExecName:               "ctr_start_adb_container",
 			AllowFailAfterRecovery: true,
 		},
 		"Is not cloudbot": {
