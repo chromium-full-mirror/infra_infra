@@ -1,2 +1,2 @@
-jamesfeister@google.com
-srinivashegde@google.com
+# ChromeOS Test Results Platform Team
+include chromiumos/owners:v1:/infra/OWNERS.ctrp
