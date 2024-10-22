@@ -72,4 +72,10 @@ var (
 		nil,
 		field.Bool("success"),
 	)
+	fetchNlyteBigQueryDataTick = metric.NewCounter(
+		"chromeos/ufs/dumper/sync_nlyte_bigquery_data",
+		"getNlyteBigQueryData hourly attempt",
+		nil,
+		field.Bool("success"),
+	)
 )

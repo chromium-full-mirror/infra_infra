@@ -173,6 +173,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      indexDutStates,
 	},
+	{
+		// Sync Nlyte device information
+		Name:     "ufs.nlyte_devices.sync",
+		Time:     1 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      fetchNlyteBigQueryData,
+	},
 }
 
 // InitServer initializes a cron server.
