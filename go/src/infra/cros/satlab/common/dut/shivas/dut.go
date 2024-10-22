@@ -5,11 +5,13 @@
 package shivas
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
@@ -31,13 +33,13 @@ type DUT struct {
 }
 
 // CheckAndAdd adds a DUT if it does not already exist.
-func (d *DUT) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
-	exists, err := d.check(executor, w)
+func (d *DUT) CheckAndAdd(ctx context.Context, executor executor.IExecCommander, w io.Writer) (bool, error) {
+	exists, err := d.check(ctx, executor, w)
 	if err != nil {
 		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return false, d.add(executor, w)
+		return false, d.add(ctx, executor, w)
 	} else {
 		fmt.Fprintf(w, "DUT already added\n\n")
 	}
@@ -45,7 +47,7 @@ func (d *DUT) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, 
 }
 
 // Check checks for the existnce of a UFS DUT.
-func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error) {
+func (d *DUT) check(ctx context.Context, executor executor.IExecCommander, w io.Writer) (bool, error) {
 	flags := map[string][]string{
 		"namespace": {d.Namespace},
 		"zone":      {d.Zone},
@@ -66,8 +68,10 @@ func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error)
 	stdout, err := executor.Output(command)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to check DUT exists: %s", err.Error())
 		return false, errors.Annotate(e.HandleExitError(err), "add dut").Err()
 	}
+	logging.Infof(ctx, "checking DUT exists successful: %s", string(stdout))
 
 	// if DUT not found, shivas returns output in stderr, and stdout is empty.
 	exists := (len(stdout) != 0)
@@ -76,7 +80,7 @@ func (d *DUT) check(executor executor.IExecCommander, w io.Writer) (bool, error)
 }
 
 // Add a DUT to UFS.
-func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
+func (d *DUT) add(ctx context.Context, executor executor.IExecCommander, w io.Writer) error {
 	fmt.Fprintf(w, "Adding DUT\n")
 
 	flags := make(map[string][]string)
@@ -106,6 +110,12 @@ func (d *DUT) add(executor executor.IExecCommander, w io.Writer) error {
 
 	command := exec.Command(args[0], args[1:]...)
 	out, err := executor.CombinedOutput(command)
+
+	if err != nil {
+		logging.Errorf(ctx, "failed to add DUT: %s", err.Error())
+	} else {
+		logging.Infof(ctx, "adding DUT successful: %s", string(out))
+	}
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 

@@ -5,11 +5,13 @@
 package shivas
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
@@ -26,13 +28,13 @@ type Rack struct {
 }
 
 // CheckAndAdd runs check and then update if the item does not exist.
-func (r *Rack) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
-	exists, err := r.exists(executor, w)
+func (r *Rack) CheckAndAdd(ctx context.Context, executor executor.IExecCommander, w io.Writer) (bool, error) {
+	exists, err := r.exists(ctx, executor, w)
 	if err != nil {
 		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return false, r.add(executor, w)
+		return false, r.add(ctx, executor, w)
 	} else {
 		fmt.Fprintf(w, "Rack already added\n\n")
 	}
@@ -41,7 +43,7 @@ func (r *Rack) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool,
 
 // check checks if a rack exists.
 // For now does so based on whether `shivas get rack` errors :(
-func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists bool, err error) {
+func (r *Rack) exists(ctx context.Context, executor executor.IExecCommander, w io.Writer) (exists bool, err error) {
 	flags := map[string][]string{
 		"namespace": {r.Namespace},
 	}
@@ -60,8 +62,10 @@ func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists boo
 	stdout, err := executor.Output(cmd)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to check rack exists: %s", err.Error())
 		return false, errors.Annotate(e.HandleExitError(err), "add rack").Err()
 	}
+	logging.Infof(ctx, "checking rack exists successful: %s", string(stdout))
 
 	// if rack not found, shivas returns output in stderr, and stdout is empty.
 	exists = (len(stdout) != 0)
@@ -70,7 +74,7 @@ func (r *Rack) exists(executor executor.IExecCommander, w io.Writer) (exists boo
 }
 
 // add adds a rack unconditionally to UFS.
-func (r *Rack) add(executor executor.IExecCommander, w io.Writer) error {
+func (r *Rack) add(ctx context.Context, executor executor.IExecCommander, w io.Writer) error {
 	flags := map[string][]string{
 		// TODO(gregorynisbet): Default to OS for everything.
 		"namespace": {r.Namespace},
@@ -88,6 +92,12 @@ func (r *Rack) add(executor executor.IExecCommander, w io.Writer) error {
 
 	command := exec.Command(args[0], args[1:]...)
 	out, err := executor.CombinedOutput(command)
+
+	if err != nil {
+		logging.Errorf(ctx, "failed to add rack: %s", err.Error())
+	} else {
+		logging.Infof(ctx, "adding rack successful: %s", string(out))
+	}
 
 	fmt.Fprintln(w, misc.TrimOutput(out))
 

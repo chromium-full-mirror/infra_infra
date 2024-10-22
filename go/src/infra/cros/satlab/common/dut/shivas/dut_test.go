@@ -5,6 +5,7 @@
 package shivas
 
 import (
+	"context"
 	"os"
 	"os/exec"
 	"testing"
@@ -60,7 +61,7 @@ func TestDUT_add(t *testing.T) {
 				Rack:       "rack",
 				ShivasArgs: map[string][]string{"pools": {"swimming"}},
 			}
-			err := d.add(commander, os.Stdout)
+			err := d.add(context.Background(), commander, os.Stdout)
 			if err != nil {
 				t.Errorf("unexpected err: %s", err)
 			}

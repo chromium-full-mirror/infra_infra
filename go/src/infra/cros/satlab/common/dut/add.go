@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/dut/shivas"
@@ -222,15 +223,18 @@ func (c *AddDUT) TriggerRun(
 		if shouldCreateStableVersion(c.Board, c.Model) {
 			service, err := build_service.New(ctx)
 			if err != nil {
+				logging.Errorf(ctx, "failed to set up new Moblab API build connector: %s", err.Error())
 				return errors.Annotate(err, "new Moblab API").Err()
 			}
 			recoveryVersion, err := service.FindMostStableBuildByBoardAndModel(ctx, c.Board, c.Model)
 			if err != nil {
+				logging.Errorf(ctx, "failed to find the most stable build: %s", err.Error())
 				return errors.Annotate(err, "find most stable build").Err()
 			}
 
 			err = misc.StageAndWriteLocalStableVersion(ctx, service, recoveryVersion)
 			if err != nil {
+				logging.Errorf(ctx, "failed to write local stable version: %s", err.Error())
 				return errors.Annotate(err, "stage and write local stable version").Err()
 			}
 		}
@@ -250,6 +254,7 @@ func (c *AddDUT) TriggerRun(
 			c.Address,
 		)
 		if updateErr != nil {
+			logging.Errorf(ctx, "failed to update DNS: %s", err.Error())
 			return errors.Annotate(updateErr, "add dut").Err()
 		}
 
@@ -278,7 +283,7 @@ func (c *AddDUT) TriggerRun(
 		Name:      c.qualifiedRack,
 		Namespace: c.Namespace,
 		Zone:      c.Zone,
-	}).CheckAndAdd(executor, writer)
+	}).CheckAndAdd(ctx, executor, writer)
 
 	if err != nil {
 		return err
@@ -292,7 +297,7 @@ func (c *AddDUT) TriggerRun(
 		Board:     c.Board,
 		Namespace: c.Namespace,
 		Type:      c.AssetType,
-	}).CheckAndAdd(executor, writer)
+	}).CheckAndAdd(ctx, executor, writer)
 
 	if err != nil {
 		return err
@@ -305,7 +310,7 @@ func (c *AddDUT) TriggerRun(
 		Rack:       c.qualifiedRack,
 		Servo:      c.qualifiedServo,
 		ShivasArgs: makeAddShivasFlags(c),
-	}).CheckAndAdd(executor, writer)
+	}).CheckAndAdd(ctx, executor, writer)
 
 	if err != nil {
 		return err

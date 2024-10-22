@@ -5,11 +5,13 @@
 package shivas
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
@@ -30,13 +32,13 @@ type Asset struct {
 }
 
 // CheckAndAdd adds the asset if it does not already exist.
-func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool, error) {
-	exists, err := a.exists(executor, w)
+func (a *Asset) CheckAndAdd(ctx context.Context, executor executor.IExecCommander, w io.Writer) (bool, error) {
+	exists, err := a.exists(ctx, executor, w)
 	if err != nil {
 		return false, errors.Annotate(err, "check and update").Err()
 	}
 	if !exists {
-		return false, a.add(executor, w)
+		return false, a.add(ctx, executor, w)
 	} else {
 		fmt.Fprintf(w, "Asset already added\n\n")
 	}
@@ -45,7 +47,7 @@ func (a *Asset) CheckAndAdd(executor executor.IExecCommander, w io.Writer) (bool
 
 // exists checks for the existence of the UFS asset.
 // For now does so based on whether `shivas get asset` has stdout :(
-func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, error) {
+func (a *Asset) exists(ctx context.Context, executor executor.IExecCommander, w io.Writer) (bool, error) {
 	flags := map[string][]string{
 		"rack":      {a.Rack},
 		"zone":      {a.Zone},
@@ -70,8 +72,10 @@ func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, err
 	stdout, err := executor.Output(command)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to check that asset exists: %s", err.Error())
 		return false, errors.Annotate(e.HandleExitError(err), "add asset").Err()
 	}
+	logging.Infof(ctx, "asset check successful: %s", string(stdout))
 
 	// if asset not found, shivas returns output in stderr, stdout is empty.
 	exists := (len(stdout) != 0)
@@ -80,7 +84,7 @@ func (a *Asset) exists(executor executor.IExecCommander, w io.Writer) (bool, err
 }
 
 // Add adds an asset unconditionally to UFS.
-func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
+func (a *Asset) add(ctx context.Context, executor executor.IExecCommander, w io.Writer) error {
 	// Add the asset.
 	fmt.Fprintf(w, "Adding asset\n")
 	flags := map[string][]string{
@@ -102,6 +106,13 @@ func (a *Asset) add(executor executor.IExecCommander, w io.Writer) error {
 
 	command := exec.Command(args[0], args[1:]...)
 	out, err := executor.CombinedOutput(command)
+
+	if err != nil {
+		logging.Errorf(ctx, "failed to add asset: %s", err.Error())
+	} else {
+		logging.Infof(ctx, "adding asset successful: %s", string(out))
+	}
+
 	fmt.Fprintln(w, misc.TrimOutput(out))
 
 	return e.HandleExitError(err)

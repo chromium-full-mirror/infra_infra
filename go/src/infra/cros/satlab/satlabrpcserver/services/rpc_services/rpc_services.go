@@ -1131,6 +1131,7 @@ func (s *SatlabRpcServiceServer) AddDuts(ctx context.Context, in *pb.AddDutsRequ
 			// There are two results in the command output.
 			// The first one is a success. Another one has failed.
 			out := buf.String()
+			logging.Infof(ctx, "add DUT result\n========\n%s\n========\n", out)
 			rows := strings.Split(out, "\n")
 			// If it deployed failed, The output
 			// will contain the message `Failed to add DUT...`
