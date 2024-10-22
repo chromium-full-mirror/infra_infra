@@ -11,10 +11,11 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -37,7 +38,7 @@ func TestCacheServerExecutor_StartCacheServerLocalhost(t *testing.T) {
 		return cmd
 	}
 
-	Convey("StartCacheServer success", t, func() {
+	ftt.Run("StartCacheServer success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := buildCacheServerExecutor()
 		cmd := getCmd(exec)
@@ -49,7 +50,7 @@ func TestCacheServerExecutor_StartCacheServerLocalhost(t *testing.T) {
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(err, ShouldBeNil)
-		So(cmd.CacheServerAddress.Address, ShouldNotEqual, "localhost")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.CacheServerAddress.Address, should.NotEqual("localhost"))
 	})
 }

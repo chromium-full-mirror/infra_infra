@@ -8,12 +8,14 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	api "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -24,7 +26,7 @@ import (
 
 func TestAndroidCompanionDutServiceStartCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -33,13 +35,13 @@ func TestAndroidCompanionDutServiceStartCmd_UnsupportedSK(t *testing.T) {
 		exec := executors.NewAndroidDutExecutor(cont)
 		cmd := commands.NewAndroidCompanionDutServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAndroidCompanionDutServiceStartCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -48,13 +50,13 @@ func TestAndroidCompanionDutServiceStartCmd_MissingDeps(t *testing.T) {
 		exec := executors.NewAndroidDutExecutor(cont)
 		cmd := commands.NewAndroidCompanionDutServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAndroidCompanionDutServiceStartCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -63,14 +65,14 @@ func TestAndroidCompanionDutServiceStartCmd_UpdateSK(t *testing.T) {
 		exec := executors.NewAndroidDutExecutor(cont)
 		cmd := commands.NewAndroidCompanionDutServiceStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestAndroidCompanionDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("AndroidCompanionDutServiceStartCmd extract deps", t, func() {
+	ftt.Run("AndroidCompanionDutServiceStartCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		dutTopo := &labapi.DutTopology{
 			Duts: []*labapi.Dut{
@@ -140,13 +142,13 @@ func TestAndroidCompanionDutServiceStartCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestAndroidCompanionDutServiceStartCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
-	Convey("AndroidCompanionDutServiceStartCmd update SK", t, func() {
+	ftt.Run("AndroidCompanionDutServiceStartCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{HostName: "DUT-1234"}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -158,7 +160,7 @@ func TestAndroidCompanionDutServiceStartCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.AndroidDutServerAddress, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.AndroidDutServerAddress, should.NotBeNil)
 	})
 }

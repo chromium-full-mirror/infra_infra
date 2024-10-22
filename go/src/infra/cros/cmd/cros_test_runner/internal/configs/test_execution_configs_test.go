@@ -8,11 +8,13 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_configs"
@@ -22,7 +24,7 @@ import (
 
 func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported test execution config type", t, func() {
+	ftt.Run("Unsupported test execution config type", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -32,13 +34,13 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTrv2ExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.GenerateConfig(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGenerateConfig_SupportedConfig(t *testing.T) {
 	t.Parallel()
-	Convey("Supported test execution config type", t, func() {
+	ftt.Run("Supported test execution config type", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -48,13 +50,13 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.GenerateConfig(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 	t.Parallel()
-	Convey("Execute without generating configs", t, func() {
+	ftt.Run("Execute without generating configs", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -64,13 +66,13 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.Execute(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 	t.Parallel()
-	Convey("Execute hw tests with failure", t, func() {
+	ftt.Run("Execute hw tests with failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -82,17 +84,17 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 
 		// Generate configs first
 		err := testExecConfig.GenerateConfig(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Execute configs
 		err = testExecConfig.Execute(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 	t.Parallel()
-	Convey("Execute hw tests successfully", t, func() {
+	ftt.Run("Execute hw tests successfully", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -112,13 +114,13 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 
 		// Execute configs
 		err := testExecConfig.Execute(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestIsAndroidProvisionRequired(t *testing.T) {
 	t.Parallel()
-	Convey("Execute hw tests successfully", t, func() {
+	ftt.Run("Execute hw tests successfully", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -134,10 +136,10 @@ func TestIsAndroidProvisionRequired(t *testing.T) {
 		}
 		testExecConfig := NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 
-		So(testExecConfig.isAndroidProvisioningRequired(ctx), ShouldEqual, false)
+		assert.Loosely(t, testExecConfig.isAndroidProvisioningRequired(ctx), should.Equal(false))
 		sk.CftTestRequest.CompanionDuts = getAndroidCompanionDuts()
 		testExecConfig = NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
-		So(testExecConfig.isAndroidProvisioningRequired(ctx), ShouldEqual, true)
+		assert.Loosely(t, testExecConfig.isAndroidProvisioningRequired(ctx), should.Equal(true))
 	})
 }
 

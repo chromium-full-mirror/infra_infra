@@ -9,8 +9,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -20,7 +21,7 @@ import (
 
 func TestTkoPublishPublishCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -34,14 +35,14 @@ func TestTkoPublishPublishCmd_UnsupportedSK(t *testing.T) {
 			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestTkoPublishPublishCmd_MissingDeps(t *testing.T) {
 	t.Setenv("SWARMING_TASK_ID", "")
 
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -55,13 +56,13 @@ func TestTkoPublishPublishCmd_MissingDeps(t *testing.T) {
 			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestTkoPublishPublishCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -75,7 +76,7 @@ func TestTkoPublishPublishCmd_UpdateSK(t *testing.T) {
 			executors.CrosTkoPublishExecutorType)
 		cmd := commands.NewTkoPublishUploadCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
@@ -83,7 +84,7 @@ func TestTkoPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	wantSwarmingTaskId := "123456789abcdef0"
 	t.Setenv("SWARMING_TASK_ID", wantSwarmingTaskId)
 
-	Convey("ProvisionStartCmd extract deps", t, func() {
+	ftt.Run("ProvisionStartCmd extract deps", t, func(t *ftt.Test) {
 
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
@@ -100,8 +101,8 @@ func TestTkoPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.TkoJobName, ShouldEqual, fmt.Sprintf("swarming-%s", wantSwarmingTaskId))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.TkoJobName, should.Equal(fmt.Sprintf("swarming-%s", wantSwarmingTaskId)))
 
 	})
 

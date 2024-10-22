@@ -8,10 +8,11 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -23,7 +24,7 @@ import (
 
 func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -32,9 +33,9 @@ func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {
 		cmd := commands.NewVMProvisionLeaseCmd(exec)
 		sk := &data.HwTestStateKeeper{}
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
-	Convey("No deps - name", t, func() {
+	ftt.Run("No deps - name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -43,9 +44,9 @@ func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {
 		cmd := commands.NewVMProvisionLeaseCmd(exec)
 		sk := &data.HwTestStateKeeper{DutVmGceImage: &vmlabapi.GceImage{Project: "project"}}
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
-	Convey("No deps - project", t, func() {
+	ftt.Run("No deps - project", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -54,13 +55,13 @@ func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {
 		cmd := commands.NewVMProvisionLeaseCmd(exec)
 		sk := &data.HwTestStateKeeper{DutVmGceImage: &vmlabapi.GceImage{Name: "name"}}
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestVMProvisionLeaseCmd_Updates(t *testing.T) {
 	t.Parallel()
-	Convey("No updates", t, func() {
+	ftt.Run("No updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -79,7 +80,7 @@ func TestVMProvisionLeaseCmd_Updates(t *testing.T) {
 			},
 		}
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutTopology, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutTopology, should.NotBeNil)
 	})
 }

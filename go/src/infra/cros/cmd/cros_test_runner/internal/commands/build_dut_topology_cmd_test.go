@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -19,26 +20,26 @@ import (
 
 func TestBuildDutTopologyCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewBuildDutTopologyCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestBuildDutTopologyCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewBuildDutTopologyCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.DutTopology, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.DutTopology, should.BeNil)
 	})
 }
 
@@ -49,7 +50,7 @@ func TestBuildDutTopologyCmd_ExtractDepsSuccess(t *testing.T) {
 	dutSshAddress := &labapi.IpEndpoint{Address: "dutssh", Port: 1234}
 	cacheServerAddress := &labapi.IpEndpoint{Address: "cacheserver", Port: 4321}
 
-	Convey("BuildInputValidationCmd extract deps", t, func() {
+	ftt.Run("BuildInputValidationCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{Args: &data.LocalArgs{BuildBoard: board}, DutSshAddress: dutSshAddress, DutCacheServerAddress: cacheServerAddress}
 		exec := executors.NewInvServiceExecutor("")
@@ -57,10 +58,10 @@ func TestBuildDutTopologyCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.Board, ShouldEqual, board)
-		So(cmd.DutSshAddress, ShouldEqual, dutSshAddress)
-		So(cmd.CacheServerAddress, ShouldEqual, cacheServerAddress)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.Board, should.Equal(board))
+		assert.Loosely(t, cmd.DutSshAddress, should.Equal(dutSshAddress))
+		assert.Loosely(t, cmd.CacheServerAddress, should.Equal(cacheServerAddress))
 	})
 }
 
@@ -71,7 +72,7 @@ func TestBuildDutTopologyCmd_UpdateSKSuccess(t *testing.T) {
 	dutSshAddress := &labapi.IpEndpoint{Address: "dutssh", Port: 1234}
 	cacheServerAddress := &labapi.IpEndpoint{Address: "cacheserver", Port: 4321}
 
-	Convey("BuildInputValidationCmd update SK", t, func() {
+	ftt.Run("BuildInputValidationCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{Args: &data.LocalArgs{BuildBoard: board}, DutSshAddress: dutSshAddress, DutCacheServerAddress: cacheServerAddress}
 		exec := executors.NewInvServiceExecutor("")
@@ -80,7 +81,7 @@ func TestBuildDutTopologyCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutTopology, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutTopology, should.NotBeNil)
 	})
 }

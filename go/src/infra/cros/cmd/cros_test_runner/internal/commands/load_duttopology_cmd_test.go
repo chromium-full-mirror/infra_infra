@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -20,37 +21,37 @@ import (
 
 func TestLoadDutTopologyCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewLoadDutTopologyCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestLoadDutTopologyCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewLoadDutTopologyCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestLoadDutTopologyCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewLoadDutTopologyCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
@@ -59,7 +60,7 @@ func TestLoadDutTopologyCmd_ExtractDepsSuccess(t *testing.T) {
 
 	hostName := "DUT-1234"
 
-	Convey("BuildInputValidationCmd extract deps", t, func() {
+	ftt.Run("BuildInputValidationCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{HostName: hostName}
 		exec := executors.NewInvServiceExecutor("")
@@ -67,14 +68,14 @@ func TestLoadDutTopologyCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.HostName, ShouldEqual, hostName)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.HostName, should.Equal(hostName))
 	})
 }
 
 func TestLoadDutTopologyCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
-	Convey("BuildInputValidationCmd update SK", t, func() {
+	ftt.Run("BuildInputValidationCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			HostName:    "DUT-1234",
@@ -86,7 +87,7 @@ func TestLoadDutTopologyCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutTopology, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutTopology, should.NotBeNil)
 	})
 }

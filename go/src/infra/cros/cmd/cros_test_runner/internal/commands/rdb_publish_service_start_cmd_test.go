@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -19,7 +20,7 @@ import (
 
 func TestRdbPublishStartCmd(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no deps", t, func() {
+	ftt.Run("Cmd with no deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -33,11 +34,11 @@ func TestRdbPublishStartCmd(t *testing.T) {
 			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.RdbPublishSrcDir, ShouldBeEmpty)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.RdbPublishSrcDir, should.BeEmpty)
 	})
 
-	Convey("Cmd deps", t, func() {
+	ftt.Run("Cmd deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rdbPublishSrcDir := "rdb_publish_src_dir"
 		sk := &data.HwTestStateKeeper{RdbPublishSrcDir: rdbPublishSrcDir}
@@ -49,14 +50,14 @@ func TestRdbPublishStartCmd(t *testing.T) {
 		cmd := commands.NewRdbPublishServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
 
-		So(err, ShouldBeNil)
-		So(cmd.RdbPublishSrcDir, ShouldEqual, rdbPublishSrcDir)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.RdbPublishSrcDir, should.Equal(rdbPublishSrcDir))
 	})
 }
 
 func TestRdbPublishStartCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -68,6 +69,6 @@ func TestRdbPublishStartCmd_UpdateSK(t *testing.T) {
 		exec := executors.NewCrosPublishExecutor(cont, executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishServiceStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

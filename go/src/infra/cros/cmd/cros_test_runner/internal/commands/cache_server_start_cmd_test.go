@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -21,7 +22,7 @@ import (
 
 func TestCacheServerStartCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{Args: &data.LocalArgs{}}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -30,14 +31,14 @@ func TestCacheServerStartCmd_UpdateSK(t *testing.T) {
 		exec := executors.NewCacheServerExecutor(cont)
 		cmd := commands.NewCacheServerStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestCacheServerStartCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("CacheServerStartCmd extract deps", t, func() {
+	ftt.Run("CacheServerStartCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{Args: &data.LocalArgs{}}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -48,13 +49,13 @@ func TestCacheServerStartCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestCacheServerStartCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
-	Convey("CacheServerStartCmd update SK", t, func() {
+	ftt.Run("CacheServerStartCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{Args: &data.LocalArgs{}}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -66,7 +67,7 @@ func TestCacheServerStartCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.CacheServerAddress, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.CacheServerAddress, should.NotBeNil)
 	})
 }

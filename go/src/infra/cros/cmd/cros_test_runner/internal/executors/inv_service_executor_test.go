@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/metadata"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -35,19 +37,19 @@ func TestInvServiceStart(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Inventory service start with an already established connection", t, func() {
+	ftt.Run("Inventory service start with an already established connection", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		exec.InventoryServiceClient = mocked_services.NewMockInventoryServiceClient(ctrl)
 		err := exec.Start(ctx, exec.InventoryServiceAddress)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Inventory service start with empty server address", t, func() {
+	ftt.Run("Inventory service start with empty server address", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		err := exec.Start(ctx, "")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -56,19 +58,19 @@ func TestInvServiceStop(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Inventory service stop with no established server", t, func() {
+	ftt.Run("Inventory service stop with no established server", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		err := exec.Stop(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Inventory service stop with no grpc connection", t, func() {
+	ftt.Run("Inventory service stop with no grpc connection", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		exec.InventoryServiceClient = mocked_services.NewMockInventoryServiceClient(ctrl)
 		err := exec.Stop(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -78,23 +80,23 @@ func TestInvServiceGetDutTopology(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	hostName := "DUT-1234"
 
-	Convey("GetDutTopology with empty host name", t, func() {
+	ftt.Run("GetDutTopology with empty host name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		dutTopology, err := exec.GetDUTTopology(ctx, "")
-		So(dutTopology, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, dutTopology, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("GetDutTopology with no service client", t, func() {
+	ftt.Run("GetDutTopology with no service client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		dutTopology, err := exec.GetDUTTopology(ctx, hostName)
-		So(dutTopology, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, dutTopology, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("GetDutTopology_Success", t, func() {
+	ftt.Run("GetDutTopology_Success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		mockInvServiceClient := mocked_services.NewMockInventoryServiceClient(ctrl)
@@ -105,11 +107,11 @@ func TestInvServiceGetDutTopology(t *testing.T) {
 		getMockedGetDutTopology(mockInvServiceClient, hostName).Return(mockInvServiceGDTClient, nil)
 
 		dutTopology, err := exec.GetDUTTopology(ctx, hostName)
-		So(dutTopology, ShouldNotBeNil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, dutTopology, should.NotBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("GetDutTopology_grpc_failure", t, func() {
+	ftt.Run("GetDutTopology_grpc_failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		mockInvServiceClient := mocked_services.NewMockInventoryServiceClient(ctrl)
@@ -118,11 +120,11 @@ func TestInvServiceGetDutTopology(t *testing.T) {
 		getMockedGetDutTopology(mockInvServiceClient, hostName).Return(nil, fmt.Errorf("some error"))
 
 		dutTopology, err := exec.GetDUTTopology(ctx, hostName)
-		So(dutTopology, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, dutTopology, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("GetDutTopology_grpc_response_failure", t, func() {
+	ftt.Run("GetDutTopology_grpc_response_failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		mockInvServiceClient := mocked_services.NewMockInventoryServiceClient(ctrl)
@@ -133,8 +135,8 @@ func TestInvServiceGetDutTopology(t *testing.T) {
 		getMockedGetDutTopology(mockInvServiceClient, hostName).Return(mockInvServiceGDTClient, nil)
 
 		dutTopology, err := exec.GetDUTTopology(ctx, hostName)
-		So(dutTopology, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, dutTopology, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -143,37 +145,37 @@ func TestInvServiceExecuteCommand(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Inventory service unsupported cmd execution error", t, func() {
+	ftt.Run("Inventory service unsupported cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		err := exec.ExecuteCommand(ctx, NewUnsupportedCmd())
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Inventory service start cmd execution error", t, func() {
+	ftt.Run("Inventory service start cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		exec.InventoryServiceAddress = ""
 		startCmd := commands.NewInvServiceStartCmd(exec)
 		err := exec.ExecuteCommand(ctx, startCmd)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Inventory service load dut topology cmd execution error", t, func() {
+	ftt.Run("Inventory service load dut topology cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		loadDuttopologyCmd := commands.NewLoadDutTopologyCmd(exec)
 		err := exec.ExecuteCommand(ctx, loadDuttopologyCmd)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Inventory service stop cmd execution error", t, func() {
+	ftt.Run("Inventory service stop cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := NewInvServiceExecutor("")
 		exec.InventoryServiceClient = mocked_services.NewMockInventoryServiceClient(ctrl)
 		stopCmd := commands.NewInvServiceStopCmd(exec)
 		err := exec.ExecuteCommand(ctx, stopCmd)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 

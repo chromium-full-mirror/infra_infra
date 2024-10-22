@@ -10,10 +10,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -26,37 +28,37 @@ func TestDutServiceStart(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Dut service start with no cache server address", t, func() {
+	ftt.Run("Dut service start with no cache server address", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.Start(ctx, nil, nil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Dut service start with no dut ssh address", t, func() {
+	ftt.Run("Dut service start with no dut ssh address", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.Start(ctx, &labapi.IpEndpoint{}, nil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Dut service start without starting ctr", t, func() {
+	ftt.Run("Dut service start without starting ctr", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Dut service start process container fails", t, func() {
+	ftt.Run("Dut service start process container fails", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -66,10 +68,10 @@ func TestDutServiceStart(t *testing.T) {
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Dut service start process address fails", t, func() {
+	ftt.Run("Dut service start process address fails", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -87,31 +89,31 @@ func TestDutServiceStart(t *testing.T) {
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.Start(ctx, &labapi.IpEndpoint{}, &labapi.IpEndpoint{})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutServiceExecuteCommand(t *testing.T) {
 	t.Parallel()
 
-	Convey("Dut service unsupported cmd execution error", t, func() {
+	ftt.Run("Dut service unsupported cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.ExecuteCommand(ctx, NewUnsupportedCmd())
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Dut service start cmd process container execution error", t, func() {
+	ftt.Run("Dut service start cmd process container execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosDutTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosDutExecutor(cont)
 		err := exec.ExecuteCommand(ctx, commands.NewDutServiceStartCmd(exec))
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 

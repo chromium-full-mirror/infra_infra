@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
@@ -39,14 +40,14 @@ func TestCrosDutVmExecutor_GetImage(t *testing.T) {
 		return cmd
 	}
 
-	Convey("GetImage success", t, func() {
+	ftt.Run("GetImage success", t, func(t *ftt.Test) {
 		expected := &vmlabapi.GceImage{Name: "image-1", Project: "project-1"}
 		ctx := context.Background()
 		exec := buildCrosDutVmExecutor()
 		exec.ImageApi = &mockImageApi{
 			getImage: func(builderPath string, wait bool) (*vmlabapi.GceImage, error) {
-				So(builderPath, ShouldEqual, "betty/R101")
-				So(wait, ShouldBeTrue)
+				assert.Loosely(t, builderPath, should.Equal("betty/R101"))
+				assert.Loosely(t, wait, should.BeTrue)
 				return expected, nil
 			},
 		}
@@ -54,11 +55,11 @@ func TestCrosDutVmExecutor_GetImage(t *testing.T) {
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(cmd.DutVmGceImage, ShouldResemble, expected)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, cmd.DutVmGceImage, should.Resemble(expected))
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("GetImage error", t, func() {
+	ftt.Run("GetImage error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := buildCrosDutVmExecutor()
 		exec.ImageApi = &mockImageApi{
@@ -70,8 +71,8 @@ func TestCrosDutVmExecutor_GetImage(t *testing.T) {
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(cmd.DutVmGceImage, ShouldBeNil)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, cmd.DutVmGceImage, should.BeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -99,25 +100,25 @@ func TestCrosDutVmExecutor_StartCrosDut(t *testing.T) {
 		return cmd
 	}
 
-	Convey("StartCrosDut success", t, func() {
+	ftt.Run("StartCrosDut success", t, func(t *ftt.Test) {
 		expected := &labapi.IpEndpoint{Address: "localhost", Port: 44355}
 		ctx := context.Background()
 		exec := buildCrosDutVmExecutor()
 		cmd := getCmd(exec)
 		exec.Container = &mockContainerApi{
 			process: func(ctx context.Context, template *api.Template) (string, error) {
-				So(template, ShouldNotBeNil)
+				assert.Loosely(t, template, should.NotBeNil)
 				return "localhost:44355", nil
 			},
 		}
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(err, ShouldBeNil)
-		So(cmd.DutServerAddress, ShouldResemble, expected)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.DutServerAddress, should.Resemble(expected))
 	})
 
-	Convey("StartCrosDut error", t, func() {
+	ftt.Run("StartCrosDut error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		exec := buildCrosDutVmExecutor()
 		exec.Container = &mockContainerApi{
@@ -129,7 +130,7 @@ func TestCrosDutVmExecutor_StartCrosDut(t *testing.T) {
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 

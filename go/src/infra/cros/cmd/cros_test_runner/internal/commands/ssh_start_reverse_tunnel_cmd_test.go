@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -19,26 +20,26 @@ import (
 
 func TestSshStartReverseTunnelCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		exec := executors.NewSshTunnelExecutor()
 		cmd := commands.NewSshStartReverseTunnelCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestSshStartReverseTunnelCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{}
 		exec := executors.NewSshTunnelExecutor()
 		cmd := commands.NewSshStartReverseTunnelCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutCacheServerAddress, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutCacheServerAddress, should.BeNil)
 	})
 }
 
@@ -48,7 +49,7 @@ func TestSshStartReverseTunnelCmd_ExtractDepsSuccess(t *testing.T) {
 	hostname := "DUT1234"
 	cacheServerAddress := &labapi.IpEndpoint{Address: "cacheserver", Port: 4321}
 
-	Convey("SshStartReverseTunnelCmd extract deps", t, func() {
+	ftt.Run("SshStartReverseTunnelCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{HwTestStateKeeper: data.HwTestStateKeeper{HostName: hostname}, CacheServerAddress: cacheServerAddress}
 		exec := executors.NewSshTunnelExecutor()
@@ -56,9 +57,9 @@ func TestSshStartReverseTunnelCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.HostName, ShouldEqual, hostname)
-		So(cmd.CacheServerPort, ShouldEqual, cacheServerAddress.Port)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.HostName, should.Equal(hostname))
+		assert.Loosely(t, cmd.CacheServerPort, should.Equal(cacheServerAddress.Port))
 	})
 }
 
@@ -68,7 +69,7 @@ func TestSshStartReverseTunnelCmd_UpdateSKSuccess(t *testing.T) {
 	hostname := "DUT1234"
 	cacheServerAddress := &labapi.IpEndpoint{Address: "cacheserver", Port: 4321}
 
-	Convey("SshStartReverseTunnelCmd update SK", t, func() {
+	ftt.Run("SshStartReverseTunnelCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{HwTestStateKeeper: data.HwTestStateKeeper{HostName: hostname}, CacheServerAddress: cacheServerAddress}
 		exec := executors.NewSshTunnelExecutor()
@@ -77,7 +78,7 @@ func TestSshStartReverseTunnelCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutCacheServerAddress, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutCacheServerAddress, should.NotBeNil)
 	})
 }

@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -17,26 +18,26 @@ import (
 
 func TestSshStartTunnelCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		exec := executors.NewSshTunnelExecutor()
 		cmd := commands.NewSshStartTunnelCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestSshStartTunnelCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{}
 		exec := executors.NewSshTunnelExecutor()
 		cmd := commands.NewSshStartTunnelCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutSshAddress, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutSshAddress, should.BeNil)
 	})
 }
 
@@ -45,7 +46,7 @@ func TestSshStartTunnelCmd_ExtractDepsSuccess(t *testing.T) {
 
 	hostname := "DUT1234"
 
-	Convey("SshStartTunnelCmd extract deps", t, func() {
+	ftt.Run("SshStartTunnelCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{HwTestStateKeeper: data.HwTestStateKeeper{HostName: hostname}}
 		exec := executors.NewSshTunnelExecutor()
@@ -53,8 +54,8 @@ func TestSshStartTunnelCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.HostName, ShouldEqual, hostname)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.HostName, should.Equal(hostname))
 	})
 }
 
@@ -63,7 +64,7 @@ func TestSshStartTunnelCmd_UpdateSKSuccess(t *testing.T) {
 
 	hostname := "DUT1234"
 
-	Convey("SshStartTunnelCmd update SK", t, func() {
+	ftt.Run("SshStartTunnelCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.LocalTestStateKeeper{HwTestStateKeeper: data.HwTestStateKeeper{HostName: hostname}}
 		exec := executors.NewSshTunnelExecutor()
@@ -72,7 +73,7 @@ func TestSshStartTunnelCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutSshAddress, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutSshAddress, should.NotBeNil)
 	})
 }

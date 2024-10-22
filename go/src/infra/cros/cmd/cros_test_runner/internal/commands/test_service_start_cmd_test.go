@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -19,7 +20,7 @@ import (
 
 func TestTestServiceStartCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -28,13 +29,13 @@ func TestTestServiceStartCmd_NoDeps(t *testing.T) {
 		cmd := commands.NewTestServiceStartCmd(exec)
 		sk := &data.HwTestStateKeeper{}
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestTestServiceStartCmd_NoUpdates(t *testing.T) {
 	t.Parallel()
-	Convey("No updates", t, func() {
+	ftt.Run("No updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -43,6 +44,6 @@ func TestTestServiceStartCmd_NoUpdates(t *testing.T) {
 		cmd := commands.NewTestServiceStartCmd(exec)
 		sk := &data.HwTestStateKeeper{}
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

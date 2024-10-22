@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -29,29 +30,29 @@ func buildDutVmGetImageCmdForTest() *commands.DutVmGetImageCmd {
 
 func TestDutVmGetImageCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		cmd := buildDutVmGetImageCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutVmGetImageCmd_MissingDepsBuild(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps name", t, func() {
+	ftt.Run("Cmd missing deps name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: &skylab_test_runner.CFTTestRequest{}}
 		cmd := buildDutVmGetImageCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutVmGetImageCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd extract deps success", t, func() {
+	ftt.Run("Cmd extract deps success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		keyVals := make(map[string]string, 0)
 		keyVals["build"] = "betty/R101"
@@ -60,14 +61,14 @@ func TestDutVmGetImageCmd_ExtractDepsSuccess(t *testing.T) {
 		}}
 		cmd := buildDutVmGetImageCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.DutVmGceImage, ShouldEqual, sk.DutVmGceImage)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.DutVmGceImage, should.Equal(sk.DutVmGceImage))
 	})
 }
 
 func TestDutVmGetImageCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd update SK", t, func() {
+	ftt.Run("Cmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			DutVm: nil,
@@ -79,7 +80,7 @@ func TestDutVmGetImageCmd_UpdateSK(t *testing.T) {
 		}
 
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutVmGceImage, ShouldEqual, cmd.DutVmGceImage)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutVmGceImage, should.Equal(cmd.DutVmGceImage))
 	})
 }

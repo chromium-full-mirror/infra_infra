@@ -8,11 +8,12 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/containers"
@@ -24,7 +25,7 @@ import (
 
 func TestProvisionInstallCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -33,13 +34,13 @@ func TestProvisionInstallCmd_UnsupportedSK(t *testing.T) {
 		exec := executors.NewCrosProvisionExecutor(cont)
 		cmd := commands.NewProvisionInstallCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestProvisionInstallCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -48,13 +49,13 @@ func TestProvisionInstallCmd_MissingDeps(t *testing.T) {
 		exec := executors.NewCrosProvisionExecutor(cont)
 		cmd := commands.NewProvisionInstallCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -63,10 +64,10 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		exec := executors.NewCrosProvisionExecutor(cont)
 		cmd := commands.NewProvisionInstallCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("Cmd with updates", t, func() {
+	ftt.Run("Cmd with updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantProvisionResp := &api.InstallResponse{Status: api.InstallResponse_STATUS_SUCCESS}
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
@@ -78,15 +79,15 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		cmd := commands.NewProvisionInstallCmd(exec)
 		cmd.ProvisionResp = wantProvisionResp
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.ProvisionResponses[common.NewPrimaryDeviceIdentifier().Id][0], ShouldEqual, wantProvisionResp)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.ProvisionResponses[common.NewPrimaryDeviceIdentifier().Id][0], should.Equal(wantProvisionResp))
 	})
 }
 
 func TestProvisionInstallCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("ProvisionInstallCmd extract deps", t, func() {
+	ftt.Run("ProvisionInstallCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
@@ -107,6 +108,6 @@ func TestProvisionInstallCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

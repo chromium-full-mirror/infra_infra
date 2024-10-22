@@ -10,7 +10,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -22,17 +24,17 @@ func TestAndroidProvisionServiceStart(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Android provision service start fails without starting ctr", t, func() {
+	ftt.Run("Android provision service start fails without starting ctr", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewGenericProvisionTemplatedContainer("android-provision", "container/image/path", ctr)
 		exec := NewAndroidProvisionExecutor(cont)
 		err := exec.Start(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Android provision service start fails on failing StartTemplatedContainer", t, func() {
+	ftt.Run("Android provision service start fails on failing StartTemplatedContainer", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -42,6 +44,6 @@ func TestAndroidProvisionServiceStart(t *testing.T) {
 		cont := containers.NewGenericProvisionTemplatedContainer("android-provision", "container/image/path", ctr)
 		exec := NewAndroidProvisionExecutor(cont)
 		err := exec.Start(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }

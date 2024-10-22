@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -17,24 +18,24 @@ import (
 
 func TestInvServiceStartCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewInvServiceStartCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestInvServiceStartCmd_NoUpdates(t *testing.T) {
 	t.Parallel()
-	Convey("No updates", t, func() {
+	ftt.Run("No updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		exec := executors.NewInvServiceExecutor("")
 		cmd := commands.NewInvServiceStartCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

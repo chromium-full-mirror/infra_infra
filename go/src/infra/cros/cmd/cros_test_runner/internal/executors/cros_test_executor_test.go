@@ -10,12 +10,14 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -28,17 +30,17 @@ func TestTestServiceStart(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Test service start without starting ctr", t, func() {
+	ftt.Run("Test service start without starting ctr", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		err := exec.Start(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Test service start process container fails", t, func() {
+	ftt.Run("Test service start process container fails", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -48,7 +50,7 @@ func TestTestServiceStart(t *testing.T) {
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		err := exec.Start(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -57,29 +59,29 @@ func TestTestServiceExecuteTests(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("Test service test execution with nil request", t, func() {
+	ftt.Run("Test service test execution with nil request", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		resp, err := exec.ExecuteTests(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("Test service test execution with no established client", t, func() {
+	ftt.Run("Test service test execution with no established client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("Test service test execution with run tests error", t, func() {
+	ftt.Run("Test service test execution with run tests error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -89,11 +91,11 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		exec.CrosTestServiceClient = mocked_client
 		getMockedExecuteTests(mocked_client).Return(nil, fmt.Errorf("some_error"))
 		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("Test service test execution with lro process failure", t, func() {
+	ftt.Run("Test service test execution with lro process failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -103,11 +105,11 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		exec.CrosTestServiceClient = mocked_client
 		getMockedExecuteTests(mocked_client).Return(nil, nil)
 		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("Test service test execution success", t, func() {
+	ftt.Run("Test service test execution success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -125,43 +127,43 @@ func TestTestServiceExecuteTests(t *testing.T) {
 		},
 			nil)
 		resp, err := exec.ExecuteTests(ctx, &testapi.CrosTestRequest{})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(proto.Equal(resp, wantResp), ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
+		assert.Loosely(t, proto.Equal(resp, wantResp), should.BeTrue)
 	})
 }
 
 func TestTestServiceExecuteCommand(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test service unsupported cmd execution error", t, func() {
+	ftt.Run("Test service unsupported cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		err := exec.ExecuteCommand(ctx, NewUnsupportedCmd())
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Test service start cmd execution error", t, func() {
+	ftt.Run("Test service start cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		err := exec.ExecuteCommand(ctx, commands.NewTestServiceStartCmd(exec))
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("Test service test execution cmd execution error", t, func() {
+	ftt.Run("Test service test execution cmd execution error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
 		exec := NewCrosTestExecutor(cont)
 		err := exec.ExecuteCommand(ctx, commands.NewTestsExecutionCmd(exec))
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 

@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -17,40 +18,40 @@ import (
 
 func TestParseEnvInfoCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		cmd := commands.NewParseEnvInfoCmd()
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestParseEnvInfoCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		cmd := commands.NewParseEnvInfoCmd()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestParseEnvInfoCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with updates", t, func() {
+	ftt.Run("Cmd with updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		cmd := commands.NewParseEnvInfoCmd()
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestParseEnvInfoCmd_Execute(t *testing.T) {
 	hostName := "DUT-1234"
-	Convey("ParseEnvInfoCmd execute", t, func() {
+	ftt.Run("ParseEnvInfoCmd execute", t, func(t *ftt.Test) {
 		// Set proper env
 		t.Setenv("SWARMING_BOT_ID", hostName)
 		ctx := context.Background()
@@ -60,17 +61,17 @@ func TestParseEnvInfoCmd_Execute(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Execute cmd
 		err = cmd.Execute(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Update SK
 		err = cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Check if SK data updated
-		So(sk.HostName, ShouldEqual, hostName)
+		assert.Loosely(t, sk.HostName, should.Equal(hostName))
 	})
 }

@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -19,7 +20,7 @@ import (
 
 func TestGcsPublishPublishCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -33,13 +34,13 @@ func TestGcsPublishPublishCmd_UnsupportedSK(t *testing.T) {
 			executors.CrosGcsPublishExecutorType)
 		cmd := commands.NewGcsPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGcsPublishPublishCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -53,13 +54,13 @@ func TestGcsPublishPublishCmd_MissingDeps(t *testing.T) {
 			executors.CrosGcsPublishExecutorType)
 		cmd := commands.NewGcsPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGcsPublishPublishCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -73,14 +74,14 @@ func TestGcsPublishPublishCmd_UpdateSK(t *testing.T) {
 			executors.CrosGcsPublishExecutorType)
 		cmd := commands.NewGcsPublishUploadCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("ProvisionStartCmd extract deps", t, func() {
+	ftt.Run("ProvisionStartCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantGcsURL := "gs://gcs/url"
 		sk := &data.HwTestStateKeeper{GcsURL: wantGcsURL}
@@ -97,7 +98,7 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.GcsURL, ShouldEqual, wantGcsURL)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.GcsURL, should.Equal(wantGcsURL))
 	})
 }

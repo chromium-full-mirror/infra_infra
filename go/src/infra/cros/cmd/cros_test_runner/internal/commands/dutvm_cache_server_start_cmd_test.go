@@ -8,10 +8,11 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -29,31 +30,31 @@ func buildDutVmCacheServerStartCmdForTest() *commands.DutVmCacheServerStartCmd {
 
 func TestDutVmCacheServerStartCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		cmd := buildDutVmCacheServerStartCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutVmCacheServerStartCmd_MissingDepsPrimaryDut(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps primary dut", t, func() {
+	ftt.Run("Cmd missing deps primary dut", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			DutTopology: &labapi.DutTopology{},
 		}
 		cmd := buildDutVmCacheServerStartCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutVmCacheServerStartCmd_MissingDepsSsh(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps primary dut", t, func() {
+	ftt.Run("Cmd missing deps primary dut", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		duts := []*labapi.Dut{{
 			Id: &labapi.Dut_Id{Value: "VM"},
@@ -70,13 +71,13 @@ func TestDutVmCacheServerStartCmd_MissingDepsSsh(t *testing.T) {
 		}
 		cmd := buildDutVmCacheServerStartCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestDutVmCacheServerStartCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd extract deps success", t, func() {
+	ftt.Run("Cmd extract deps success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		duts := []*labapi.Dut{{
 			Id: &labapi.Dut_Id{Value: "VM"},
@@ -98,14 +99,14 @@ func TestDutVmCacheServerStartCmd_ExtractDepsSuccess(t *testing.T) {
 		}
 		cmd := buildDutVmCacheServerStartCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.DutTopology, ShouldEqual, sk.DutTopology)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.DutTopology, should.Equal(sk.DutTopology))
 	})
 }
 
 func TestDutVmCacheServerStartCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd update SK", t, func() {
+	ftt.Run("Cmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		duts := []*labapi.Dut{{
 			Id: &labapi.Dut_Id{Value: "VM"},
@@ -132,14 +133,14 @@ func TestDutVmCacheServerStartCmd_UpdateSK(t *testing.T) {
 		}
 
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutTopology.Duts[0].CacheServer.Address, ShouldEqual, cmd.CacheServerAddress)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutTopology.Duts[0].CacheServer.Address, should.Equal(cmd.CacheServerAddress))
 	})
 }
 
 func TestDutVmCacheServerStartCmd_UpdateSKMissingDutTopology(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd update SK Missing Deps", t, func() {
+	ftt.Run("Cmd update SK Missing Deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			DutTopology: nil,
@@ -151,7 +152,7 @@ func TestDutVmCacheServerStartCmd_UpdateSKMissingDutTopology(t *testing.T) {
 		}
 
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.DutTopology, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.DutTopology, should.BeNil)
 	})
 }
