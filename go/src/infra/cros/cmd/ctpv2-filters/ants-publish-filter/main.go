@@ -10,15 +10,54 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"infra/cros/cmd/common_lib/common"
 )
 
 type ANTSPublishUpdater struct {
-	PublishPath string
+	PublishPath  string
+	InvocationID string
+	WorkUnitID   string
+	AccountID    string
+}
+
+func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *metadata.PublishAntsMetadata {
+	publishMetadata := &metadata.PublishAntsMetadata{}
+
+	if apu.InvocationID == "" {
+		publishMetadata.AntsInvocationId = getSuiteExecutionMetadataFlag(req, "ants_invocation_id")
+	} else {
+		publishMetadata.AntsInvocationId = apu.InvocationID
+	}
+
+	if apu.WorkUnitID == "" {
+		publishMetadata.ParentWorkUnitId = getSuiteExecutionMetadataFlag(req, "ants_work_unit_id")
+	} else {
+		publishMetadata.ParentWorkUnitId = apu.WorkUnitID
+	}
+
+	if apu.AccountID == "" {
+		internalAccountID := "1"
+		publishMetadata.AccountId = internalAccountID
+	} else {
+		publishMetadata.AccountId = apu.AccountID
+	}
+
+	return publishMetadata
+}
+
+func getSuiteExecutionMetadataFlag(req *api.InternalTestplan, flag string) string {
+	for _, arg := range req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs() {
+		if strings.EqualFold(arg.GetFlag(), flag) {
+			return arg.GetValue()
+		}
+	}
+	return ""
 }
 
 func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
@@ -35,11 +74,11 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		return req, err
 	}
 
-	if err := GenerateDynamicUpdates(req, apu, log); err != nil {
-		log.Printf("Error while generating dynamic updates, %s", err)
+	if err := GeneratePublishTask(req, apu); err != nil {
+		log.Printf("Error while generating publish task, %s", err)
 		return req, err
 	}
-	log.Println("Finished generating dyanmic updates.")
+	log.Println("Finished generating publish task.")
 
 	return req, nil
 }
@@ -65,12 +104,13 @@ func processContainerPath(ctx context.Context, creds, path, firestoreName string
 func main() {
 	publishRequestUpdater := &ANTSPublishUpdater{}
 
-	//  Hello!
 	fs := flag.NewFlagSet("Run ants publish filter", flag.ExitOnError)
 	fs.StringVar(&publishRequestUpdater.PublishPath, "publish-path", common.LabelProd, "SHA256 value for testing publish container")
-	log.Printf("publishRequestUpdater %+v", publishRequestUpdater)
+	fs.StringVar(&publishRequestUpdater.InvocationID, "invocation-id", common.LabelProd, "ants invocation id")
+	fs.StringVar(&publishRequestUpdater.WorkUnitID, "workunit-id", common.LabelProd, "parent workunit id")
+	fs.StringVar(&publishRequestUpdater.AccountID, "account-id", common.LabelProd, "account id")
 
-	//  Do we have any cli options to handle?
+	log.Printf("publishRequestUpdater %+v", publishRequestUpdater)
 
 	//  Start the server
 	err := server.ServerWithFlagSet(fs, publishRequestUpdater.executor, "request-updater")

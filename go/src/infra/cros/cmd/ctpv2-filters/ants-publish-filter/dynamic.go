@@ -5,12 +5,10 @@ package main
 
 import (
 	"log"
-	"strings"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
@@ -18,14 +16,7 @@ import (
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 )
 
-func GenerateDynamicUpdates(req *testapi.InternalTestplan, apu *ANTSPublishUpdater, log *log.Logger) error {
-	modifyAntsPublishRequest(req, apu, log)
-	return nil
-}
-
-func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpdater, log *log.Logger) {
-	log.Println("Modifying ants publish request")
-
+func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater) error {
 	antsContainerBuilder := builders.NewContainerBuilder(
 		"ants-publish",      //  ContainerID
 		"",                  //  ContainerImageKey
@@ -33,38 +24,24 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 		"/tmp/ants-publish", //  ContainerArtifactDir
 		"ants-publish server -port 0",
 	)
+
 	//  Add test artifacts directory for container.
 	antsContainerBuilder.DynamicDeps = append(antsContainerBuilder.DynamicDeps,
 		&testapi.DynamicDep{
 			Key:   "generic.additionalVolumes",
 			Value: "FMT=${env-TEMPDIR}:/tmp/artifacts",
-		})
+		},
+	)
 
-	publishMetadata := &metadata.PublishAntsMetadata{
-		AntsInvocationId: getSuiteExecutionMetadataFlag(req, "ants_invocation_id"),
-		ParentWorkUnitId: getSuiteExecutionMetadataFlag(req, "ants_work_unit_id"),
-	}
+	publishMetadata := apu.antsPublishMetadata(req)
 	log.Printf("publishMetadata %+v", publishMetadata)
-	publishRequestMetadata := &anypb.Any{}
 
+	publishRequestMetadata := &anypb.Any{}
 	if err := publishRequestMetadata.MarshalFrom(publishMetadata); err != nil {
 		log.Printf("Failed to marshal request, %s", err)
 	}
 
-	dynamicDeps := []*testapi.DynamicDep{
-		{
-			Key:   dynamic_common.ServiceAddress,
-			Value: antsContainerBuilder.ContainerId,
-		},
-		{
-			Key:   "publishRequest.metadata.accountId",
-			Value: "account-id",
-		},
-		{
-			Key:   "publishRequest.testResponse",
-			Value: "cros-test_runTests",
-		},
-	}
+	dynamicDepsDefinition := defineDynamicDeps(antsContainerBuilder)
 	dynamicIdentifier := "ants-publish"
 
 	generator := generators.NewInsertGenerator()
@@ -79,7 +56,7 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 					PublishRequest: &testapi.PublishRequest{
 						Metadata: publishRequestMetadata,
 					},
-					DynamicDeps:       dynamicDeps,
+					DynamicDeps:       dynamicDepsDefinition,
 					DynamicIdentifier: dynamicIdentifier,
 				},
 			},
@@ -91,13 +68,24 @@ func modifyAntsPublishRequest(req *testapi.InternalTestplan, apu *ANTSPublishUpd
 	if err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
 	}
+
+	return nil
 }
 
-func getSuiteExecutionMetadataFlag(req *testapi.InternalTestplan, flag string) string {
-	for _, arg := range req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs() {
-		if strings.EqualFold(arg.GetFlag(), flag) {
-			return arg.GetValue()
-		}
+func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*testapi.DynamicDep {
+	dynamicDeps := []*testapi.DynamicDep{
+		{
+			Key:   dynamic_common.ServiceAddress,
+			Value: antsContainerBuilder.ContainerId,
+		},
+		{
+			Key:   "publishRequest.testResponse",
+			Value: "cros-test_runTests",
+		},
+		{
+			Key:   "publishRequest.metadata.accountId",
+			Value: "account-id",
+		},
 	}
-	return ""
+	return dynamicDeps
 }
