@@ -208,6 +208,7 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 	if testInvocation != nil {
 		tags = AppendTags(tags, "is_cft_run", strconv.FormatBool(testInvocation.IsCftRun))
 		tags = AppendTags(tags, "is_trv2_run", strconv.FormatBool(testInvocation.IsTrv2Run))
+		tags = AppendTags(tags, "is_3d_run", strconv.FormatBool(testInvocation.Is_3DRun))
 
 		dutTopology := testInvocation.GetDutTopology()
 		if dutTopology != nil {
