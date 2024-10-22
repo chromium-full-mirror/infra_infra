@@ -11,9 +11,10 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // MockSession mocks a series of command invocations.
@@ -91,65 +92,65 @@ func useMockCmd(ctx context.Context, s *MockSession) context.Context {
 func TestExec(t *testing.T) {
 	t.Parallel()
 
-	Convey("External command execution works", t, func() {
+	ftt.Run("External command execution works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("CommandContext uses RealCmd by default", func() {
+		t.Run("CommandContext uses RealCmd by default", func(t *ftt.Test) {
 			_, ok := CommandContext(context.Background(), "test-exe", "arg1", "arg2").(*RealCmd)
-			So(ok, ShouldBeTrue)
+			assert.Loosely(t, ok, should.BeTrue)
 		})
 
-		Convey("CommandContext works", func() {
+		t.Run("CommandContext works", func(t *ftt.Test) {
 			cmd, ok := CommandContext(ctx, "test-exe", "arg1", "arg2").(*MockCmd)
-			So(ok, ShouldBeTrue)
-			So(cmd.Executable, ShouldEqual, "test-exe")
-			So(cmd.Args, ShouldResemble, []string{"arg1", "arg2"})
+			assert.Loosely(t, ok, should.BeTrue)
+			assert.Loosely(t, cmd.Executable, should.Equal("test-exe"))
+			assert.Loosely(t, cmd.Args, should.Resemble([]string{"arg1", "arg2"}))
 		})
 
-		Convey("RunCommand works for succeeding command", func() {
+		t.Run("RunCommand works for succeeding command", func(t *ftt.Test) {
 			err := RunCommand(ctx, "test-run", "arg")
-			So(err, ShouldBeNil)
-			So(s.Calls[0].Executable, ShouldEqual, "test-run")
-			So(s.Calls[0].Args, ShouldResemble, []string{"arg"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("test-run"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{"arg"}))
 		})
 
-		Convey("RunCommand works for failing command", func() {
+		t.Run("RunCommand works for failing command", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("test error").Err()}
 			err := RunCommand(ctx, "bad-cmd")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("RunWithStdin works", func() {
+		t.Run("RunWithStdin works", func(t *ftt.Test) {
 			err := RunWithStdin(ctx, "test input", "test-exec")
-			So(err, ShouldBeNil)
-			So(s.Calls[0].ConsumedStdin, ShouldEqual, "test input")
-			So(s.Calls[0].Executable, ShouldEqual, "test-exec")
-			So(s.Calls[0].Args, ShouldResemble, []string(nil))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls[0].ConsumedStdin, should.Equal("test input"))
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("test-exec"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string(nil)))
 		})
 
-		Convey("RunOutput works", func() {
+		t.Run("RunOutput works", func(t *ftt.Test) {
 			s.ReturnOutput = []string{"test output 1", "out2"}
 			out, err := RunOutput(ctx, "cmd1", "b1", "b2")
-			So(err, ShouldBeNil)
-			So(out, ShouldEqual, "test output 1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, out, should.Equal("test output 1"))
 
 			out, err = RunOutput(ctx, "cmd2", "c1", "c2")
-			So(err, ShouldBeNil)
-			So(out, ShouldEqual, "out2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, out, should.Equal("out2"))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cmd1")
-			So(s.Calls[1].Executable, ShouldEqual, "cmd2")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cmd1"))
+			assert.Loosely(t, s.Calls[1].Executable, should.Equal("cmd2"))
 
-			So(s.Calls[0].Args, ShouldResemble, []string{"b1", "b2"})
-			So(s.Calls[1].Args, ShouldResemble, []string{"c1", "c2"})
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{"b1", "b2"}))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{"c1", "c2"}))
 		})
 
-		Convey("RunOutput works for failing command", func() {
+		t.Run("RunOutput works for failing command", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("test error").Err()}
 			s.ReturnOutput = []string{"test output"}
 			_, err := RunOutput(ctx, "output-cmd", "b1", "b2")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }

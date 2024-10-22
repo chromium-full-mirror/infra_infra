@@ -6,9 +6,10 @@ package main
 
 import (
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 // TestDefaultGitRetryRegexps test expected strings against the resulting regexp
@@ -16,7 +17,7 @@ import (
 func TestDefaultGitRetryRegexps(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Default Git retry regexps match expected lines`, t, func() {
+	ftt.Run(`Default Git retry regexps match expected lines`, t, func(t *ftt.Test) {
 		for _, line := range []string{
 			`!   [remote rejected] (error in hook) $TRAILING_CONTENT`,
 			`!   [remote rejected] (failed to lock) $TRAILING_CONTENT`,
@@ -60,18 +61,18 @@ func TestDefaultGitRetryRegexps(t *testing.T) {
 			`fatal: fetch-pack: pack downloaded from $URI does not match expected hash $HASH`,
 			`error: https://fuchsia.googlesource.com/a/fuchsia did not send all necessary objects`,
 		} {
-			Convey(fmt.Sprintf(`Matches line: %q`, line), func() {
-				So(DefaultGitRetryRegexp.MatchString(line), ShouldBeTrue)
+			t.Run(fmt.Sprintf(`Matches line: %q`, line), func(t *ftt.Test) {
+				assert.Loosely(t, DefaultGitRetryRegexp.MatchString(line), should.BeTrue)
 			})
 		}
 	})
 
-	Convey(`Default Git retry regexps match not expected lines`, t, func() {
+	ftt.Run(`Default Git retry regexps match not expected lines`, t, func(t *ftt.Test) {
 		for _, line := range []string{
 			`error: /b/s/w/ir/cache/git/chromium.googlesource.com-external-gitlab.com-wg1-jpeg--xl did not send all necessary objects`,
 		} {
-			Convey(fmt.Sprintf(`Matches line: %q`, line), func() {
-				So(DefaultGitRetryRegexp.MatchString(line), ShouldBeFalse)
+			t.Run(fmt.Sprintf(`Matches line: %q`, line), func(t *ftt.Test) {
+				assert.Loosely(t, DefaultGitRetryRegexp.MatchString(line), should.BeFalse)
 			})
 		}
 	})

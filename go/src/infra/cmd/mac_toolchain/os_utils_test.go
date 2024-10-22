@@ -8,59 +8,60 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestParseOSVersion(t *testing.T) {
 	t.Parallel()
 
-	Convey("check isMacOS13OrLater works", t, func() {
+	ftt.Run("check isMacOS13OrLater works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("check a version that is greater than 13", func() {
+		t.Run("check a version that is greater than 13", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.0.1",
 			}
 			os13OrLater, err := isMacOS13OrLater(ctx)
-			So(err, ShouldBeNil)
-			So(os13OrLater, ShouldEqual, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, os13OrLater, should.Equal(true))
 		})
 
-		Convey("check a version that is equal to 13", func() {
+		t.Run("check a version that is equal to 13", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.0.0",
 			}
 			os13OrLater, err := isMacOS13OrLater(ctx)
-			So(err, ShouldBeNil)
-			So(os13OrLater, ShouldEqual, true)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, os13OrLater, should.Equal(true))
 		})
 
-		Convey("check a version that less than 13", func() {
+		t.Run("check a version that less than 13", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.1.2",
 			}
 			os13OrLater, err := isMacOS13OrLater(ctx)
-			So(err, ShouldBeNil)
-			So(os13OrLater, ShouldEqual, false)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
 
-		Convey("invalid output should return false", func() {
+		t.Run("invalid output should return false", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"invalid",
 			}
 			os13OrLater, err := isMacOS13OrLater(ctx)
-			So(err, ShouldNotBeNil)
-			So(os13OrLater, ShouldEqual, false)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
 
-		Convey("error output should return false", func() {
+		t.Run("error output should return false", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("random Error").Err()}
 			os13OrLater, err := isMacOS13OrLater(ctx)
-			So(err, ShouldNotBeNil)
-			So(os13OrLater, ShouldEqual, false)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
 	})
 }
