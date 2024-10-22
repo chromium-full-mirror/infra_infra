@@ -168,6 +168,17 @@ CIPD_PACKAGE_BUILDERS = {
         'windows-386',  # ~40 sec
         'windows-arm64',  # not timed
     ],
+
+    # Experimental builders to test new VMs. Copies of corresponding non-exp
+    # builders.
+    'infra-packager-linux-64-exp': [
+        'native',
+    ],
+    'infra-packager-win-64-exp': [
+        'native',
+        'windows-386',
+        'windows-arm64',
+    ],
 }
 
 INFRA_INTERNAL_REPO = 'https://chrome-internal.googlesource.com/infra/infra_internal'
