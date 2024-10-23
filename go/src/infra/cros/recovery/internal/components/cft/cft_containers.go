@@ -11,7 +11,8 @@ import (
 
 // NetworkName generates predicable name for custom Docker network.
 func NetworkName(dut *tlw.Dut) string {
-	return "network-" + dut.Name
+	// Only use one network for all containers.
+	return "adb-network"
 }
 
 // ADBName generates predicable container name for ADB container.
