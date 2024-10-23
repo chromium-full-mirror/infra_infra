@@ -6,7 +6,10 @@ package integrationtest
 
 import (
 	"context"
+	"fmt"
 	"testing"
+
+	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -16,10 +19,8 @@ import (
 	"infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
 )
 
-// TestNothing just loads the server and the command line application.
-//
-// Future CLs will make this test actually do something.
-func TestNothing(t *testing.T) {
+// TestPing tests the ping RPC.
+func TestPing(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
@@ -31,5 +32,9 @@ func TestNothing(t *testing.T) {
 	assert.That(t, err, should.ErrLike(nil))
 	assert.Loosely(t, testServer, should.NotBeNil)
 
-	_ = clilib.Application()
+	cli := clilib.Application()
+
+	exitCode := subcommands.Run(cli, []string{"ping", "-local", fmt.Sprintf("-address=%s", testServer.HTTPAddr())})
+
+	assert.That(t, exitCode, should.Equal(0))
 }

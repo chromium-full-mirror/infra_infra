@@ -12,6 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
+
+	"infra/fleetconsole/internal/commands"
 )
 
 // Application returns the consoleadmin command line application.
@@ -24,6 +26,7 @@ func Application() *cli.Application {
 		},
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
+			commands.PingCommand,
 		},
 	}
 }
