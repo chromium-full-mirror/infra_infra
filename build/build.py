@@ -1284,7 +1284,6 @@ def run(
     cipd_platform,
     go_workspace,
     module_map,
-    builder,
     package_def_dir,
     package_out_dir,
     package_def_files,
@@ -1302,7 +1301,6 @@ def run(
     cipd_platform: a CIPD platform to build for or "" to auto-detect.
     go_workspace: path to 'infra/go' or 'infra_internal/go'.
     module_map: a dict "go package prefix => directory with main module".
-    builder: name of CI buildbot builder that invoked the script.
     package_def_dir: path to build/packages dir to search for *.yaml.
     package_out_dir: where to put built packages.
     package_def_files: names of *.yaml files in package_def_dir or [] for all.
@@ -1392,10 +1390,7 @@ def run(
   if upload:
     print('Service URL: %s' % service_url)
     print()
-  if builder:
-    print('Package definition files to process on %s:' % builder)
-  else:
-    print('Package definition files to process:')
+  print('Package definition files to process:')
   for pkg_def in packages_to_visit:
     print('  %s' % pkg_def.name)
   if not packages_to_visit:
@@ -1565,9 +1560,6 @@ def main(args):
       help='go package prefix = directory containing go.mod.',
   )
   parser.add_argument(
-      '--builder', metavar='NAME', type=str,
-      help='Name of the CI buildbot builder that invokes this script.')
-  parser.add_argument(
       '--service-url', metavar='URL', dest='service_url',
       default=PACKAGE_REPO_SERVICE,
       help='URL of the package repository service to use')
@@ -1593,7 +1585,6 @@ def main(args):
       args.cipd_platform,
       args.go_workspace,
       module_map,
-      args.builder,
       args.package_definition_dir,
       args.package_out_dir,
       [n + '.yaml' if not n.endswith('.yaml') else n for n in args.yamls],
