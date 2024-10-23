@@ -14,6 +14,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
+	artifact "go.chromium.org/chromiumos/config/go/test/artifact"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"infra/cros/cmd/common_lib/common"
@@ -27,7 +29,13 @@ type ANTSPublishUpdater struct {
 }
 
 func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *metadata.PublishAntsMetadata {
-	publishMetadata := &metadata.PublishAntsMetadata{}
+	publishMetadata := &metadata.PublishAntsMetadata{
+		PrimaryExecutionInfo: &artifact.ExecutionInfo{
+			DutInfo: &artifact.DutInfo{
+				Dut: &labapi.Dut{},
+			},
+		},
+	}
 
 	if apu.InvocationID == "" {
 		publishMetadata.AntsInvocationId = getSuiteExecutionMetadataFlag(req, "ants_invocation_id")
@@ -74,7 +82,7 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		return req, err
 	}
 
-	if err := GeneratePublishTask(req, apu); err != nil {
+	if err := GeneratePublishTask(req, apu, log); err != nil {
 		log.Printf("Error while generating publish task, %s", err)
 		return req, err
 	}

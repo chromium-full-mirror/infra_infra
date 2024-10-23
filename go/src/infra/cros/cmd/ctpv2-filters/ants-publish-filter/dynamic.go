@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 )
 
-func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater) error {
+func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater, log *log.Logger) error {
 	antsContainerBuilder := builders.NewContainerBuilder(
 		"ants-publish",      //  ContainerID
 		"",                  //  ContainerImageKey
@@ -40,8 +40,10 @@ func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater)
 	if err := publishRequestMetadata.MarshalFrom(publishMetadata); err != nil {
 		log.Printf("Failed to marshal request, %s", err)
 	}
+	log.Printf("publishRequestMetadata: %+v", publishRequestMetadata)
 
 	dynamicDepsDefinition := defineDynamicDeps(antsContainerBuilder)
+	log.Printf("dynamicDepsDefinition: %+v", dynamicDepsDefinition)
 	dynamicIdentifier := "ants-publish"
 
 	generator := generators.NewInsertGenerator()
@@ -85,6 +87,14 @@ func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*testa
 		{
 			Key:   "publishRequest.metadata.accountId",
 			Value: "account-id",
+		},
+		{
+			Key:   "publishRequest.metadata.luciInvocationId",
+			Value: "invocation-id",
+		},
+		{
+			Key:   "publishRequest.metadata.primaryExecutionInfo.dutInfo.dut",
+			Value: "device_primary.dut",
 		},
 	}
 	return dynamicDeps
