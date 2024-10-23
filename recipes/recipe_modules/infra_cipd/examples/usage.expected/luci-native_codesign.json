@@ -3,8 +3,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/assume/infra/build/build.py",
-      "--builder",
-      "native",
+      "--cipd-platform",
+      "mac-amd64",
       "--signing-identity",
       "AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX"
     ],
@@ -20,7 +20,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd mac-amd64: build"
   },
   {
     "cmd": [
@@ -39,18 +39,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - test packages integrity"
+    "name": "cipd mac-amd64: test"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/assume/infra/build/build.py",
+      "--cipd-platform",
+      "mac-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "native",
       "--tags",
       "luci_build:ci/native/5",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -68,7 +68,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd mac-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",

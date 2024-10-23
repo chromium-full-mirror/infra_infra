@@ -202,8 +202,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
-      "--builder",
-      "infra-internal-packager-linux-64"
+      "--cipd-platform",
+      "linux-amd64"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
@@ -234,18 +234,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd linux-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
+      "--cipd-platform",
+      "linux-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-internal-packager-linux-64",
       "--tags",
       "luci_build:prod/infra-internal-packager-linux-64/123",
       "git_repository:https://chrome-internal.googlesource.com/infra/infra_internal",
@@ -280,7 +280,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd linux-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -302,14 +302,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
-      "--builder",
-      "infra-internal-packager-linux-64"
+      "--cipd-platform",
+      "linux-arm64"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
-      "GOARCH": "arm",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -336,18 +334,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm]cipd - build packages"
+    "name": "cipd linux-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
+      "--cipd-platform",
+      "linux-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-internal-packager-linux-64",
       "--tags",
       "luci_build:prod/infra-internal-packager-linux-64/123",
       "git_repository:https://chrome-internal.googlesource.com/infra/infra_internal",
@@ -355,9 +353,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
-      "GOARCH": "arm",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -384,7 +380,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm]cipd - upload packages",
+    "name": "cipd linux-arm64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -406,14 +402,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
-      "--builder",
-      "infra-internal-packager-linux-64"
+      "--cipd-platform",
+      "linux-armv6l"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -440,18 +434,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm64]cipd - build packages"
+    "name": "cipd linux-armv6l: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
+      "--cipd-platform",
+      "linux-armv6l",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-internal-packager-linux-64",
       "--tags",
       "luci_build:prod/infra-internal-packager-linux-64/123",
       "git_repository:https://chrome-internal.googlesource.com/infra/infra_internal",
@@ -459,9 +453,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -488,7 +480,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm64]cipd - upload packages",
+    "name": "cipd linux-armv6l: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",

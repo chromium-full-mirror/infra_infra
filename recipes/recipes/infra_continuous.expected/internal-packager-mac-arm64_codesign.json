@@ -314,8 +314,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
-      "--builder",
-      "infra-internal-packager-mac-arm64",
+      "--cipd-platform",
+      "mac-arm64",
       "--signing-identity",
       "AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX"
     ],
@@ -348,18 +348,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd mac-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
+      "--cipd-platform",
+      "mac-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-internal-packager-mac-arm64",
       "--tags",
       "luci_build:prod/infra-internal-packager-mac-arm64/123",
       "git_repository:https://chrome-internal.googlesource.com/infra/infra_internal",
@@ -394,7 +394,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd mac-arm64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",

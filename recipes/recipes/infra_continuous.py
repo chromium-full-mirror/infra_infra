@@ -28,77 +28,84 @@ DEPS = [
 ]
 
 
-# Mapping from a builder name to a list of GOOS-GOARCH variants it should build
-# CIPD packages for. 'native' means "do not cross-compile, build for the host
-# platform". Targeting 'native' will also usually build non-go based packages.
+# Mapping from a builder name to a list of CIPD platforms it should build
+# packages for.
 #
-# Additionally, a variant may have a sequence of options appended to it,
-# separated by colons. e.g. 'VARIANT:option:option'. Currently the supported
+# See https://pkg.go.dev/go.chromium.org/luci/cipd/client/cipd/ensure for the
+# list of supported CIPD platforms.
+#
+# Additionally, a value may have a sequence of options appended to it,
+# separated by colons. e.g. 'VALUE:option:option'. Currently the supported
 # options are:
-#   * 'test' - Run the tests. By default no tests are run.
+#   * 'test' - Run CIPD package tests. By default no package tests are run.
 #   * 'legacy' - Switch the builder that builds this variant to use go "legacy"
-#     Go version 1.15.* instead of the "bleeding_edge" version. This is
-#     primarily needed by builders targeting OSX amd64 that need to produce
-#     binaries that can run on OSX 10.10 and OSX 10.11. What exact versions
-#     correspond to "legacy" and "bleeding_edge" is defined in bootstrap.py in
-#     infra.git. Note that this option applies to the entire builder (not only
-#     the individual build variant).
+#     Go version instead of the "bleeding_edge" version. This was primarily
+#     needed by builders targeting OSX amd64 that need to produce binaries that
+#     can run on OSX 10.10 and OSX 10.11. What exact versions correspond to
+#     "legacy" and "bleeding_edge" is defined in bootstrap.py in infra.git. Note
+#     that this option applies to the entire builder (not only the individual
+#     CIPD platforms).
 #
-# If the builder is not in this set, or the list of GOOS-GOARCH for it is empty,
-# it won't be used for building CIPD packages.
+# If the builder is not in this set, or the list of CIPD platforms for it is
+# empty, it won't be used for building CIPD packages.
 #
 # Only builders named '*-packager-*' builders will actually upload CIPD
 # packages, while '*-continuous-*' builders merely verify that CIPD packages can
 # be built.
 #
+# Note this is a **subset** of builders that use infra_continuous recipe. Other
+# builders not mentioned here just don't build CIPD packages at all (they just
+# run post-submit tests).
+#
 # TODO(iannucci): make packager role explicit with `package=cipd_prefix` option.
 # TODO(iannucci): remove this dict and put this all configuration as explicit
 #    property inputs to the recipe :)
 CIPD_PACKAGE_BUILDERS = {
-    # bionic-64 is the primary builder for linux-amd64, and the rest just
-    # cross-compile to different platforms (to speed up the overall cycle time
-    # by doing stuff in parallel).
-    'infra-continuous-bionic-64': [
-        'native:test',
-    ],
+    # infra-continuous-* builders just build infra.git CIPD packages without
+    # uploading them anywhere. They run immediately after CL lands and just
+    # confirm all CIPD package YAMLs are valid, cross-compilation works, etc.
+    # Variants with ":test" also run post-packaging tests. This ":test" has
+    # nothing to do with regular post-submit tests: continuous builders always
+    # run them.
     'infra-continuous-jammy-64': [
+        'linux-amd64:test',
         'linux-arm64',
     ],
-
-    # 10.13 is the primary builder for darwin-amd64.
-    'infra-continuous-mac-10.13-64': ['native:test:legacy',],
-    'infra-continuous-mac-10.14-64': [],
-    'infra-continuous-mac-10.15-64': ['darwin-arm64',],
-
-    # Windows 64 bit builder runs and tests for both 64 && 32 bit.
     'infra-continuous-win10-64': [
-        'native:test',
-        'windows-386:test',
-        'windows-arm64',  # cross compiled, so don't run tests.
+        'windows-386',
+        'windows-amd64:test',
+        'windows-arm64',
     ],
-    'infra-continuous-win11-64': [
-        'native:test',
-        'windows-386:test',
+    'infra-continuous-mac-10.13-64': [
+        'mac-amd64:test',
+    ],
+    'infra-continuous-mac-10.15-64': [
+        'mac-arm64',
     ],
 
-    # Internal builders, they use exact same recipe.
-    'infra-internal-continuous-bionic-64': [
-       'native:test',
+    # infra-internal-continuous-* just build infra_internal.git packages without
+    # uploading them. The same deal as infra-continuous-*, but for the internal
+    # repo.
+    'infra-internal-continuous-linux-64': [
+       'linux-amd64:test',
        'linux-arm64',
     ],
     'infra-internal-continuous-win-64': [
-        'native:test',
-        'windows-386:test',
-        'windows-arm64',  # cross compiled, so don't run tests.
+        'windows-386',
+        'windows-amd64:test',
+        'windows-arm64',
     ],
-    'infra-internal-continuous-mac-11-64': ['native:test:legacy',],
+    'infra-internal-continuous-mac-11-64': [
+        'mac-amd64:test',
+    ],
 
-    # Builders that upload CIPD packages.
-    #
-    # In comments is approximate runtime for building and testing packages, per
-    # platform (as of Feb 23 2021). We try to balance xc1 and xc2.
+    # infra-packager-* builders build and upload infra.git production CIPD
+    # packages. They do not run any tests. 'xc' stands for "cross-compilation".
+    # Various CIPD platforms are spread across multiple builders in effort to
+    # balance the load across them (to make them all finish at approximately the
+    # same time).
     'infra-packager-linux-64': [
-        'native',  # ~120 sec
+        'linux-amd64',
     ],
     'infra-packager-linux-xc1': [
         'dragonfly-amd64',
@@ -107,9 +114,9 @@ CIPD_PACKAGE_BUILDERS = {
         'freebsd-arm64',
         'freebsd-riscv64',
         'illumos-amd64',
-        'linux-386',  # ~60 sec
-        'linux-arm',  # ~60 sec
-        'linux-arm64',  # ~60 sec
+        'linux-386',
+        'linux-arm64',
+        'linux-armv6l',
         'openbsd-386',
         'openbsd-amd64',
         'openbsd-arm64',
@@ -118,65 +125,65 @@ CIPD_PACKAGE_BUILDERS = {
         'solaris-amd64',
     ],
     'infra-packager-linux-xc2': [
-        'aix-ppc64',  # ~5 sec
+        'aix-ppc64',
         'linux-loong64',
         'linux-mips',
-        'linux-mips64',  # ~40 sec
-        'linux-mips64le',  # ~40 sec
-        'linux-mipsle',  # ~40 sec
-        'linux-ppc64',  # ~40 sec
-        'linux-ppc64le',  # ~40 sec
-        'linux-riscv64',  # ~5 sec
-        'linux-s390x',  # ~40 sec
+        'linux-mips64',
+        'linux-mips64le',
+        'linux-mipsle',
+        'linux-ppc64',
+        'linux-ppc64le',
+        'linux-riscv64',
+        'linux-s390x',
         'netbsd-386',
         'netbsd-amd64',
-        'netbsd-arm',
         'netbsd-arm64',
-    ],
-    'infra-packager-mac-64': [
-        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
-        # on Mac.
-        'native:legacy',  # ~150 sec
-    ],
-    'infra-packager-mac-arm64': [
-        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
-        # on Mac.
-        'native',  # ~150 sec
+        'netbsd-armv6l',
     ],
     'infra-packager-win-64': [
-        'native',  # ~60 sec
-        'windows-386',  # ~100 sec
-        'windows-arm64',  # not timed
+        'windows-386',
+        'windows-amd64',
+        'windows-arm64',
     ],
-    'infra-internal-packager-linux-64': [
-        'native',  # ~60 sec
-        'linux-arm',  # ~30 sec
-        'linux-arm64',  # ~30 sec
+    # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+    # on Mac.
+    'infra-packager-mac-64': [
+        'mac-amd64',
     ],
-    'infra-internal-packager-mac-64': [
-        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
-        # on Mac.
-        'native:legacy',  # ~40 sec
-    ],
-    'infra-internal-packager-mac-arm64': [
-        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
-        # on Mac.
-        'native',  # ~40 sec
-    ],
-    'infra-internal-packager-win-64': [
-        'native',  # ~60 sec
-        'windows-386',  # ~40 sec
-        'windows-arm64',  # not timed
+    'infra-packager-mac-arm64': [
+        'mac-arm64',
     ],
 
-    # Experimental builders to test new VMs. Copies of corresponding non-exp
-    # builders.
+    # infra-internal-packager-* builders build and upload infra_internal.git
+    # production CIPD packages. The same deal as infra-packager-*, but for the
+    # internal repo.
+    'infra-internal-packager-linux-64': [
+        'linux-amd64',
+        'linux-arm64',
+        'linux-armv6l',
+    ],
+    'infra-internal-packager-win-64': [
+        'windows-386',
+        'windows-amd64',
+        'windows-arm64',
+    ],
+    # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+    # on Mac.
+    'infra-internal-packager-mac-64': [
+        'mac-amd64',
+    ],
+    'infra-internal-packager-mac-arm64': [
+        'mac-arm64',
+    ],
+
+    # Temporary experimental builders to test new VMs. Copies of corresponding
+    # non-exp builders.
     'infra-packager-linux-64-exp': [
-        'native',
+        'linux-amd64',
     ],
     'infra-packager-win-64-exp': [
-        'native',
         'windows-386',
+        'windows-amd64',
         'windows-arm64',
     ],
 }
@@ -216,7 +223,7 @@ def RunSteps(api):
   # Use the latest bleeding edge version of Go unless asked for the legacy one.
   go_version_variant = 'bleeding_edge'
   for variant in CIPD_PACKAGE_BUILDERS.get(buildername, []):
-    if 'legacy' in variant.split(':'):
+    if 'legacy' in variant.split(':'):  # pragma: no cover
       go_version_variant = 'legacy'
       break
 
@@ -255,29 +262,29 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
             ]))
 
     fails = []
-    for plat in CIPD_PACKAGE_BUILDERS.get(buildername, []):
+
+    for plat in sort_variants(CIPD_PACKAGE_BUILDERS.get(buildername, [])):
       options = plat.split(':')
       plat = options.pop(0)
 
       # Mac packages can only be produced by a mac builder.
-      if 'darwin-' in plat and is_packager and not api.platform.is_mac:
+      if plat.startswith('mac-') and is_packager and not api.platform.is_mac:
         api.step.empty(
-            "Invalid package configuration",
+            'Invalid package configuration',
             status=api.step.EXCEPTION,
             step_text=(
-              "Mac packages require codesign and can not run on %s."
+              'Mac packages require codesign and can not run on %s.'
               % (api.platform.name,)
             ),
         )
 
-      if plat == 'native':
-        goos, goarch = None, None
-      else:
-        goos, goarch = plat.split('-', 1)
-
       try:
-        with api.infra_cipd.context(
-            checkout.path / project_name, goos, goarch):
+        # TODO(vadimsh): Upload packages asynchronously in parallel. When
+        # building for multiple platforms it should be possible to build stuff
+        # and upload stuff in parallel, since these activities do not interfere
+        # with one another (unlike e.g. building stuff for multiple platforms in
+        # parallel).
+        with api.infra_cipd.context(checkout.path / project_name, plat):
           if api.platform.is_mac:
             api.infra_cipd.build(api.properties.get('signing_identity'))
           else:
@@ -299,6 +306,28 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
     summary.append('Failed to build some CIPD packages for platform(s):')
     summary.extend('  * %s' % f for f in fails)
   return RawResult(status=status, summary_markdown='\n'.join(summary))
+
+
+def sort_variants(p):
+  """Sorts a list of CIPD build variants by "most interesting first".
+
+  So that we don't spend time waiting for some exotic platform to build first
+  before we discover that e.g. amd64 is broken.
+  """
+  def score(variant):
+    options = variant.split(':')
+    plat = options.pop(0)
+    score = 0
+    if plat.startswith(('linux-', 'windows-', 'mac-')):
+      score += 500
+    if plat.endswith('-amd64'):
+      score += 100
+    if plat.endswith('-arm64'):
+      score += 50
+    if 'test' in options:
+      score += 1000
+    return score
+  return sorted(p, key=score, reverse=True)
 
 
 def run_python_tests(api, checkout, project_name):
@@ -345,7 +374,7 @@ def GenTests(api):
   # We put it here so that ALL tests have a consistent view of
   # CIPD_PACKAGE_BUILDERS.
   CIPD_PACKAGE_BUILDERS['infra-packager-TEST-linux-xcMac'] = [
-    'darwin-arm64',
+    'mac-arm64',
   ]
 
   def test(name,
@@ -409,7 +438,7 @@ def GenTests(api):
   yield (
       test('packager-cipd-fail', 'infra-packager-linux-xc1', INFRA_REPO,
            'infra', 'prod', 'linux', status='FAILURE') +
-      api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1))
+      api.step_data('cipd linux-armv6l: build', retcode=1))
 
   yield test('cross-packager-mac-fail', 'infra-packager-TEST-linux-xcMac',
              INFRA_REPO, 'infra', 'prod', 'linux', status='INFRA_FAILURE')

@@ -202,14 +202,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "linux-arm64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "dragonfly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -236,18 +234,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:dragonfly GOARCH:amd64]cipd - build packages"
+    "name": "cipd linux-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "linux-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -255,9 +253,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "dragonfly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -284,7 +280,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:dragonfly GOARCH:amd64]cipd - upload packages",
+    "name": "cipd linux-arm64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -306,14 +302,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "linux-386"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -340,18 +334,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:freebsd GOARCH:386]cipd - build packages"
+    "name": "cipd linux-386: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "linux-386",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -359,9 +353,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -388,7 +380,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:freebsd GOARCH:386]cipd - upload packages",
+    "name": "cipd linux-386: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -410,14 +402,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "linux-armv6l"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -444,527 +434,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:freebsd GOARCH:amd64]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-rebuild",
-      "--upload",
-      "--json-output",
-      "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
-      "--tags",
-      "luci_build:prod/infra-packager-linux-xc1/123",
-      "git_repository:https://chromium.googlesource.com/infra/infra",
-      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "amd64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:freebsd GOARCH:amd64]cipd - upload packages",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "arm64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:freebsd GOARCH:arm64]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-rebuild",
-      "--upload",
-      "--json-output",
-      "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
-      "--tags",
-      "luci_build:prod/infra-packager-linux-xc1/123",
-      "git_repository:https://chromium.googlesource.com/infra/infra",
-      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "arm64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:freebsd GOARCH:arm64]cipd - upload packages",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "riscv64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:freebsd GOARCH:riscv64]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-rebuild",
-      "--upload",
-      "--json-output",
-      "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
-      "--tags",
-      "luci_build:prod/infra-packager-linux-xc1/123",
-      "git_repository:https://chromium.googlesource.com/infra/infra",
-      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "riscv64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "freebsd",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:freebsd GOARCH:riscv64]cipd - upload packages",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "amd64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "illumos",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:illumos GOARCH:amd64]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-rebuild",
-      "--upload",
-      "--json-output",
-      "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
-      "--tags",
-      "luci_build:prod/infra-packager-linux-xc1/123",
-      "git_repository:https://chromium.googlesource.com/infra/infra",
-      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "amd64",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "illumos",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:illumos GOARCH:amd64]cipd - upload packages",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "386",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:linux GOARCH:386]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--no-rebuild",
-      "--upload",
-      "--json-output",
-      "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
-      "--tags",
-      "luci_build:prod/infra-packager-linux-xc1/123",
-      "git_repository:https://chromium.googlesource.com/infra/infra",
-      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "386",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:linux GOARCH:386]cipd - upload packages",
-    "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@    {@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      },@@@",
-      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
-      "@@@STEP_LOG_LINE@json.output@    }@@@",
-      "@@@STEP_LOG_LINE@json.output@  ]@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@",
-      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra",
-    "env": {
-      "GOARCH": "arm",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:prod"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:linux GOARCH:arm]cipd - build packages",
+    "name": "cipd linux-armv6l: build",
     "~followup_annotations": [
       "@@@STEP_FAILURE@@@"
     ]
@@ -973,14 +443,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "dragonfly-amd64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1007,18 +475,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm64]cipd - build packages"
+    "name": "cipd dragonfly-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "dragonfly-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1026,9 +494,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "linux",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1055,7 +521,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:linux GOARCH:arm64]cipd - upload packages",
+    "name": "cipd dragonfly-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1077,14 +543,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "freebsd-amd64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1111,18 +575,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:386]cipd - build packages"
+    "name": "cipd freebsd-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1130,9 +594,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1159,7 +621,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:386]cipd - upload packages",
+    "name": "cipd freebsd-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1181,14 +643,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "illumos-amd64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1215,18 +675,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:amd64]cipd - build packages"
+    "name": "cipd illumos-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "illumos-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1234,9 +694,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1263,7 +721,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:amd64]cipd - upload packages",
+    "name": "cipd illumos-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1285,14 +743,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "openbsd-amd64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1319,18 +775,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:arm64]cipd - build packages"
+    "name": "cipd openbsd-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1338,9 +794,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1367,7 +821,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:arm64]cipd - upload packages",
+    "name": "cipd openbsd-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1389,14 +843,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "solaris-amd64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "ppc64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1423,18 +875,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:ppc64]cipd - build packages"
+    "name": "cipd solaris-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "solaris-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1442,9 +894,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "ppc64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1471,7 +921,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:ppc64]cipd - upload packages",
+    "name": "cipd solaris-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1493,14 +943,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "freebsd-arm64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "riscv64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1527,18 +975,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:riscv64]cipd - build packages"
+    "name": "cipd freebsd-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1546,9 +994,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "riscv64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "openbsd",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1575,7 +1021,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:openbsd GOARCH:riscv64]cipd - upload packages",
+    "name": "cipd freebsd-arm64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1597,14 +1043,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-linux-xc1"
+      "--cipd-platform",
+      "openbsd-arm64"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "solaris",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1631,18 +1075,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:solaris GOARCH:amd64]cipd - build packages"
+    "name": "cipd openbsd-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-linux-xc1",
       "--tags",
       "luci_build:prod/infra-packager-linux-xc1/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -1650,9 +1094,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
-      "GOARCH": "amd64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "solaris",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -1679,7 +1121,507 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:solaris GOARCH:amd64]cipd - upload packages",
+    "name": "cipd openbsd-arm64: upload",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-386"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd freebsd-386: build"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-386",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--tags",
+      "luci_build:prod/infra-packager-linux-xc1/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd freebsd-386: upload",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-riscv64"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd freebsd-riscv64: build"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "freebsd-riscv64",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--tags",
+      "luci_build:prod/infra-packager-linux-xc1/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd freebsd-riscv64: upload",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-386"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-386: build"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-386",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--tags",
+      "luci_build:prod/infra-packager-linux-xc1/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-386: upload",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-ppc64"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-ppc64: build"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-ppc64",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--tags",
+      "luci_build:prod/infra-packager-linux-xc1/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-ppc64: upload",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"succeeded\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"info\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"abcdefabcdef63ad814cd1dfffe2fcfc9f81299c\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/some_tool/os-bitness\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"pkg_def_name\": \"some_tool\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@infra/tools/some_tool/os-bitness abcdefabcdef63ad814cd1dfffe2fcfc9f81299c@http://example.com/not-implemented-yet@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-riscv64"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-riscv64: build"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "openbsd-riscv64",
+      "--no-rebuild",
+      "--upload",
+      "--json-output",
+      "/path/to/tmp/json",
+      "--tags",
+      "luci_build:prod/infra-packager-linux-xc1/123",
+      "git_repository:https://chromium.googlesource.com/infra/infra",
+      "git_revision:2d72510e447ab60a9728aeea2362d8be2cbd7789"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd openbsd-riscv64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -1700,7 +1642,7 @@
   {
     "failure": {
       "failure": {},
-      "humanReason": "Failed to build some CIPD packages for platform(s):\n  * linux-arm"
+      "humanReason": "Failed to build some CIPD packages for platform(s):\n  * linux-armv6l"
     },
     "name": "$result"
   }

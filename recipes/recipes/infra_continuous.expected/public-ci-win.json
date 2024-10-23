@@ -312,8 +312,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-continuous-win10-64"
+      "--cipd-platform",
+      "windows-amd64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -344,7 +344,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd windows-amd64: build"
   },
   {
     "cmd": [
@@ -380,20 +380,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - test packages integrity"
+    "name": "cipd windows-amd64: test"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-continuous-win10-64"
+      "--cipd-platform",
+      "windows-arm64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -420,58 +418,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:386]cipd - build packages"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "[CACHE]\\builder\\infra\\build\\test_packages.py"
-    ],
-    "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
-    "env": {
-      "GOARCH": "386",
-      "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
-      "GOROOT": "[CACHE]\\builder\\golang\\go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]\\builder\\golang\\go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]\\builder\\infra\\go\\bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "[GOOS:windows GOARCH:386]cipd - test packages integrity"
+    "name": "cipd windows-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-continuous-win10-64"
+      "--cipd-platform",
+      "windows-386"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -498,7 +456,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:arm64]cipd - build packages"
+    "name": "cipd windows-386: build"
   },
   {
     "name": "$result"

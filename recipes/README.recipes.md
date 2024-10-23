@@ -557,7 +557,7 @@ Allowed values for <deps_name> are:
 These deps names are based what's found in infra/infra_superproject/DEPS
 ### *recipe_modules* / [infra\_cipd](/recipes/recipe_modules/infra_cipd)
 
-[DEPS](/recipes/recipe_modules/infra_cipd/__init__.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/infra_cipd/__init__.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
 #### **class [InfraCIPDApi](/recipes/recipe_modules/infra_cipd/api.py#11)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
@@ -568,31 +568,30 @@ Essentially a shim around scripts in
 https://chromium.googlesource.com/infra/infra.git/+/main/build/
 and its internal counterpart.
 
-&mdash; **def [build](/recipes/recipe_modules/infra_cipd/api.py#63)(self, sign_id=None):**
+&mdash; **def [build](/recipes/recipe_modules/infra_cipd/api.py#57)(self, sign_id=None):**
 
 Builds packages.
 
-&emsp; **@contextlib.contextmanager**<br>&mdash; **def [context](/recipes/recipe_modules/infra_cipd/api.py#23)(self, path_to_repo, goos=None, goarch=None):**
+&emsp; **@contextlib.contextmanager**<br>&mdash; **def [context](/recipes/recipe_modules/infra_cipd/api.py#24)(self, path_to_repo, cipd_platform):**
 
 Sets context building CIPD packages.
 
 Arguments:
   path_to_repo (path): path infra or infra_internal repo root dir.
     Expects to find `build/build.py` inside provided dir.
-  goos, goarch (str): allows for setting GOOS and GOARCH
-    for cross-compiling Go code.
+  cipd_platform (str): the target CIPD platform to build packages for.
 
 Doesn't support nesting.
 
-&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#114)(self, git_repo_url, revision):**
+&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#106)(self, git_repo_url, revision):**
 
 Returns tags to be attached to uploaded CIPD packages.
 
-&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#79)(self):**
+&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#72)(self):**
 
 Tests previously built packages integrity.
 
-&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#86)(self, tags, step_test_data=None):**
+&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#79)(self, tags, step_test_data=None):**
 
 Uploads previously built packages.
 ### *recipe_modules* / [omahaproxy](/recipes/recipe_modules/omahaproxy)
@@ -1734,13 +1733,20 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 [DEPS](/recipes/recipes/infra_continuous.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [infra\_cipd](#recipe_modules-infra_cipd), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#196)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#203)(api):**
 
-&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#237)(api, checkout, buildername, project_name, repo_url, rev):**
+&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#244)(api, checkout, buildername, project_name, repo_url, rev):**
 
-&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#304)(api, checkout, project_name):**
+&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#333)(api, checkout, project_name):**
 
-&mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_continuous.py#188)(api, builder_name):**
+&mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_continuous.py#195)(api, builder_name):**
+
+&mdash; **def [sort\_variants](/recipes/recipes/infra_continuous.py#311)(p):**
+
+Sorts a list of CIPD build variants by "most interesting first".
+
+So that we don't spend time waiting for some exotic platform to build first
+before we discover that e.g. amd64 is broken.
 ### *recipes* / [infra\_frontend\_tester](/recipes/recipes/infra_frontend_tester.py)
 
 [DEPS](/recipes/recipes/infra_frontend_tester.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]

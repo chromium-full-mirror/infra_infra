@@ -130,7 +130,7 @@
       "DEPOT_TOOLS_REPORT_BUILD": "infra/prod/infra-packager-mac-64/8945511751514863184",
       "GOFLAGS": "-mod=readonly",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "legacy"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
     },
     "env_suffixes": {
       "PATH": [
@@ -273,7 +273,7 @@
     "env": {
       "GOFLAGS": "-mod=readonly",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "legacy"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
     },
     "infra_step": true,
     "luci_context": {
@@ -314,8 +314,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
-      "--builder",
-      "infra-packager-mac-64",
+      "--cipd-platform",
+      "mac-amd64",
       "--signing-identity",
       "AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX"
     ],
@@ -324,7 +324,7 @@
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "legacy"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
     },
     "env_prefixes": {
       "PATH": [
@@ -348,18 +348,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd mac-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/infra/build/build.py",
+      "--cipd-platform",
+      "mac-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-mac-64",
       "--tags",
       "luci_build:prod/infra-packager-mac-64/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -370,7 +370,7 @@
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "legacy"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
     },
     "env_prefixes": {
       "PATH": [
@@ -394,7 +394,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd mac-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",

@@ -3,8 +3,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]/builder/assume/infra/build/build.py",
-      "--builder",
-      "native"
+      "--cipd-platform",
+      "linux-amd64"
     ],
     "luci_context": {
       "realm": {
@@ -18,7 +18,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd linux-amd64: build"
   },
   {
     "cmd": [
@@ -37,20 +37,20 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - test packages integrity"
+    "name": "cipd linux-amd64: test"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]/builder/assume/infra/build/build.py",
+      "--cipd-platform",
+      "linux-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "native",
       "--tags",
-      "luci_build:ci/native/5",
+      "luci_build:ci/cross/5",
       "git_repository:https://chromium.googlesource.com/infra/infra",
       "git_revision:deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
     ],
@@ -66,7 +66,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd linux-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",

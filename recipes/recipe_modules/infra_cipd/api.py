@@ -18,68 +18,61 @@ class InfraCIPDApi(recipe_api.RecipeApi):
 
   def __init__(self, **kwargs):
     super(InfraCIPDApi, self).__init__(**kwargs)
-    self._cur_ctx = None  # (path_to_repo, name_prefix)
+    self._path_to_repo = None
+    self._cipd_platform = None
 
   @contextlib.contextmanager
-  def context(self, path_to_repo, goos=None, goarch=None):
+  def context(self, path_to_repo, cipd_platform):
     """Sets context building CIPD packages.
 
     Arguments:
       path_to_repo (path): path infra or infra_internal repo root dir.
         Expects to find `build/build.py` inside provided dir.
-      goos, goarch (str): allows for setting GOOS and GOARCH
-        for cross-compiling Go code.
+      cipd_platform (str): the target CIPD platform to build packages for.
 
     Doesn't support nesting.
     """
-    if self._cur_ctx is not None:  # pragma: no cover
+    if self._path_to_repo is not None:  # pragma: no cover
       raise ValueError('Nesting contexts not allowed')
-    if bool(goos) != bool(goarch):  # pragma: no cover
-      raise ValueError('GOOS and GOARCH must be either both set or both unset')
-
-    env, name_prefix = None, ''
-    if goos and goarch:
-      env = {'GOOS': goos, 'GOARCH': goarch}
-      name_prefix ='[GOOS:%s GOARCH:%s]' % (goos, goarch)
-    self._cur_ctx = (path_to_repo, name_prefix)
+    self._path_to_repo = path_to_repo
+    self._cipd_platform = cipd_platform
     try:
-      with self.m.context(env=env):
-        yield
+      yield
     finally:
-      self._cur_ctx = None
+      self._path_to_repo = None
+      self._cipd_platform = None
 
   @property
   def _ctx_path_to_repo(self):
-    if self._cur_ctx is None:  # pragma: no cover
+    if self._path_to_repo is None:  # pragma: no cover
       raise Exception('must be run under infra_cipd.context')
-    return self._cur_ctx[0]
+    return self._path_to_repo
 
   @property
-  def _ctx_name_prefix(self):
-    if self._cur_ctx is None:  # pragma: no cover
+  def _ctx_cipd_platform(self):
+    if self._cipd_platform is None:  # pragma: no cover
       raise Exception('must be run under infra_cipd.context')
-    return self._cur_ctx[1]
+    return self._cipd_platform
 
   def build(self, sign_id=None):
     """Builds packages."""
     args = [
         'vpython3',
         self._ctx_path_to_repo / 'build' / 'build.py',
-        '--builder',
-        self.m.buildbucket.builder_name,
+        '--cipd-platform', self._ctx_cipd_platform,
     ]
     if sign_id:
       args.extend(['--signing-identity', sign_id])
 
     return self.m.step(
-        self._ctx_name_prefix + 'cipd - build packages',
+        'cipd %s: build' % self._ctx_cipd_platform,
         args,
     )
 
   def test(self):
     """Tests previously built packages integrity."""
     return self.m.step(
-        self._ctx_name_prefix+'cipd - test packages integrity',
+        'cipd %s: test' % self._ctx_cipd_platform,
         ['vpython3', self._ctx_path_to_repo / 'build' / 'test_packages.py'],
     )
 
@@ -88,16 +81,15 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     args = [
       'vpython3',
       self._ctx_path_to_repo / 'build' / 'build.py',
+      '--cipd-platform', self._ctx_cipd_platform,
       '--no-rebuild',
       '--upload',
       '--json-output', self.m.json.output(),
-      '--builder', self.m.buildbucket.builder_name,
       '--tags',
-    ]
-    args.extend(tags)
+    ] + list(tags)
     try:
       return self.m.step(
-          self._ctx_name_prefix+'cipd - upload packages',
+          'cipd %s: upload' % self._ctx_cipd_platform,
           args,
           step_test_data=step_test_data or self.test_api.example_upload,
       )

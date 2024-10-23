@@ -225,8 +225,8 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-packager-win-64"
+      "--cipd-platform",
+      "windows-amd64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
@@ -257,18 +257,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - build packages"
+    "name": "cipd windows-amd64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
+      "--cipd-platform",
+      "windows-amd64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-win-64",
       "--tags",
       "luci_build:prod/infra-packager-win-64/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -303,7 +303,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "cipd - upload packages",
+    "name": "cipd windows-amd64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -325,14 +325,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-packager-win-64"
+      "--cipd-platform",
+      "windows-arm64"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -359,18 +357,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:386]cipd - build packages"
+    "name": "cipd windows-arm64: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
+      "--cipd-platform",
+      "windows-arm64",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-win-64",
       "--tags",
       "luci_build:prod/infra-packager-win-64/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -378,9 +376,7 @@
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "386",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -407,7 +403,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:386]cipd - upload packages",
+    "name": "cipd windows-arm64: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
@@ -429,14 +425,12 @@
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
-      "--builder",
-      "infra-packager-win-64"
+      "--cipd-platform",
+      "windows-386"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -463,18 +457,18 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:arm64]cipd - build packages"
+    "name": "cipd windows-386: build"
   },
   {
     "cmd": [
       "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py",
+      "--cipd-platform",
+      "windows-386",
       "--no-rebuild",
       "--upload",
       "--json-output",
       "/path/to/tmp/json",
-      "--builder",
-      "infra-packager-win-64",
       "--tags",
       "luci_build:prod/infra-packager-win-64/123",
       "git_repository:https://chromium.googlesource.com/infra/infra",
@@ -482,9 +476,7 @@
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
     "env": {
-      "GOARCH": "arm64",
       "GOFLAGS": "-mod=readonly",
-      "GOOS": "windows",
       "GOROOT": "[CACHE]\\builder\\golang\\go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
@@ -511,7 +503,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "[GOOS:windows GOARCH:arm64]cipd - upload packages",
+    "name": "cipd windows-386: upload",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"failed\": [],@@@",
