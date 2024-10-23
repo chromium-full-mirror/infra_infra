@@ -1733,15 +1733,15 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 [DEPS](/recipes/recipes/infra_continuous.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [infra\_cipd](#recipe_modules-infra_cipd), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/defer][recipe_engine/recipe_modules/defer], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#203)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#205)(api):**
 
-&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#244)(api, checkout, buildername, project_name, repo_url, rev):**
+&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#246)(api, checkout, buildername, project_name, repo_url, rev):**
 
-&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#333)(api, checkout, project_name):**
+&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#335)(api, checkout, project_name):**
 
-&mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_continuous.py#195)(api, builder_name):**
+&mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_continuous.py#197)(api, builder_name):**
 
-&mdash; **def [sort\_variants](/recipes/recipes/infra_continuous.py#311)(p):**
+&mdash; **def [sort\_variants](/recipes/recipes/infra_continuous.py#313)(p):**
 
 Sorts a list of CIPD build variants by "most interesting first".
 
