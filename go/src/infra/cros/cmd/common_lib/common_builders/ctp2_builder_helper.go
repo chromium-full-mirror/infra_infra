@@ -278,7 +278,7 @@ func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *tes
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
 	if dryRun {
 		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
-	} else if runWithQs {
+	} else if runWithQs || isVmlabPoolReq(v1) {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 
@@ -295,6 +295,11 @@ func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *tes
 		Scheduler: scheduler,
 		QsAccount: v1.GetParams().GetScheduling().GetQsAccount(),
 	}
+}
+
+// isVmlabPoolReq checks if the request is for vmlab pool
+func isVmlabPoolReq(v1 *test_platform.Request) bool {
+	return v1.GetParams().GetScheduling().GetUnmanagedPool() == "vmlab"
 }
 
 // buildSuiteRequest converts a v1 ctp request into a SuiteRequest.
