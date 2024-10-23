@@ -5955,6 +5955,25 @@ wheel: <
 
 * *universal*
 
+## **msgspec**
+
+### 0.18.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/msgspec/${vpython_platform}"
+  version: "version:0.18.6"
+>
+```
+
+
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+
 ## **multidict**
 
 ### 6.0.2
@@ -8025,6 +8044,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pycnite-py3"
   version: "version:2023.10.11"
+>
+```
+
+
+* *universal*
+
+### 2024.07.31
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pycnite-py3"
+  version: "version:2024.07.31"
 >
 ```
 

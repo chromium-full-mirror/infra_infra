@@ -891,6 +891,20 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'msgspec',
+            '0.18.6',
+            packaged=(),
+            only_plat=[
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'mac-x64-py3.8',
+                'mac-x64-py3.11',
+                'mac-arm64-py3.8',
+                'mac-arm64-py3.11',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'multidict',
             '6.0.2',
             packaged=(),
@@ -2365,6 +2379,7 @@ SPECS.update({
         Universal('pyasn1_modules', '0.2.8'),
         Universal('pyasn1_modules', '0.3.0'),
         Universal('pycnite', '2023.10.11', pyversions=['py3']),
+        Universal('pycnite', '2024.07.31', pyversions=['py3']),
         Universal('pycodestyle', '2.10.0'),
         Universal('pycparser', '2.21'),
         Universal('pyelftools', '0.29'),
