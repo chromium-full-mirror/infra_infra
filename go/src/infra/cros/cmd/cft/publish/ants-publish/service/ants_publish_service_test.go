@@ -9,11 +9,18 @@ import (
 	"slices"
 	"testing"
 
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
+	"go.chromium.org/chromiumos/config/go/test/artifact"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestAntsStatus(t *testing.T) {
@@ -203,6 +210,92 @@ func TestArtifactType(t *testing.T) {
 
 			if gotType != tc.wantType {
 				t.Errorf("Unexpected artifact type. want %s got %s", tc.wantType, gotType)
+			}
+		})
+	}
+}
+
+func TestInvocationProperties(t *testing.T) {
+	testCases := []struct {
+		name      string
+		dut       *labapi.Dut
+		luciInvID string
+		wantProps []*ab_prod.Property
+	}{
+		{
+			name: "dutOnly",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+					},
+				},
+			},
+			wantProps: []*ab_prod.Property{
+				{Name: "board", Value: "brya"},
+				{Name: "model", Value: "mithrax"},
+			},
+		},
+		{
+			name: "AndroiddutOnly",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Android_{
+					Android: &labapi.Dut_Android{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+					},
+				},
+			},
+			wantProps: []*ab_prod.Property{
+				{Name: "board", Value: "brya"},
+				{Name: "model", Value: "mithrax"},
+			},
+		},
+		{
+			name:      "dutAndLuci",
+			luciInvID: "test-inv",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+					},
+				},
+			},
+			wantProps: []*ab_prod.Property{
+				{Name: "board", Value: "brya"},
+				{Name: "model", Value: "mithrax"},
+				{Name: "luci-invocation-id", Value: "test-inv"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			aps := &AntsPublishService{
+				metadata: &metadata.PublishAntsMetadata{
+					AntsInvocationId: "I123",
+					ParentWorkUnitId: "WU1",
+					LuciInvocationId: tc.luciInvID,
+					PrimaryExecutionInfo: &artifact.ExecutionInfo{
+						DutInfo: &artifact.DutInfo{Dut: tc.dut},
+					},
+				},
+			}
+			got, err := aps.invocationProperties()
+			if err != nil {
+				t.Errorf("error calling invocation properties: %q", err)
+			}
+
+			if diff := cmp.Diff(tc.wantProps, got, protocmp.Transform()); diff != "" {
+				t.Errorf("Unexpected diff: diff: %s", diff)
 			}
 		})
 	}

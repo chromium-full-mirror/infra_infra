@@ -18,6 +18,7 @@ import (
 	"github.com/pkg/errors"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
 	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
@@ -166,7 +167,51 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		return err
 	}
 	log.Printf("BatchInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
-	// Return nil error response to indicate success.
+
+	return aps.uploadInvocationProperties()
+}
+
+func (aps *AntsPublishService) invocationProperties() ([]*ab_prod.Property, error) {
+	var props []*ab_prod.Property
+	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
+
+	var model *labapi.DutModel
+	switch dutInfo.GetDut().GetDutType().(type) {
+	case *labapi.Dut_Android_:
+		model = dutInfo.GetDut().GetAndroid().GetDutModel()
+	case *labapi.Dut_Chromeos:
+		model = dutInfo.GetDut().GetChromeos().GetDutModel()
+	default:
+		return nil, fmt.Errorf("unsupported dut type")
+	}
+
+	props = append(props, &ab_prod.Property{Name: "board", Value: model.GetBuildTarget()})
+	props = append(props, &ab_prod.Property{Name: "model", Value: model.GetModelName()})
+
+	for k, v := range dutInfo.GetTags() {
+		props = append(props, &ab_prod.Property{Name: k, Value: v})
+	}
+
+	if aps.metadata.GetLuciInvocationId() != "" {
+		props = append(props, &ab_prod.Property{Name: "luci-invocation-id", Value: aps.metadata.GetLuciInvocationId()})
+	}
+
+	return props, nil
+}
+
+func (aps *AntsPublishService) uploadInvocationProperties() error {
+	props, err := aps.invocationProperties()
+	if err != nil {
+		return err
+	}
+
+	aps.invocation.Properties = append(aps.invocation.Properties, props...)
+	inv, err := aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
+	if err != nil {
+		return err
+	}
+
+	aps.invocation = inv
 	return nil
 }
 
