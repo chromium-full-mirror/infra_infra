@@ -40,7 +40,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 )
 
-var ioProps = build.RegisterSplitProperty[*steps.CTPv2BinaryBuildInput, *steps.CTPv2BinaryBuildOutput]("")
+var inputProps = build.RegisterInputProperty[*steps.CTPv2BinaryBuildInput]("")
+var outputProps = build.RegisterOutputProperty[map[string]string]("ctpv2/sub-build")
 
 var ctrInputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
 var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtpv2InputPropertyName)
@@ -51,7 +52,7 @@ var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](com
 func LuciBuildExecution() {
 	build.Main(
 		func(ctx context.Context, args []string, st *build.State) error {
-			input := ioProps.GetInput(ctx)
+			input := inputProps.GetInput(ctx)
 
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 			logging.Infof(ctx, "have input %v", input)
@@ -72,7 +73,7 @@ func LuciBuildExecution() {
 				resp.ErrorSummaryMarkdown = err.Error()
 			}
 
-			ioProps.SetOutput(ctx, resp)
+			outputProps.SetOutput(ctx, map[string]string{"compressed_responses": resp.CompressedResponses})
 			return err
 		},
 	)

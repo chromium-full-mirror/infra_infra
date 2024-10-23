@@ -622,11 +622,17 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			// TODO(b/372507028): Pass this in rather than create a new one each time
 			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT)
 			if err != nil {
-				return err
+				logging.Infof(ctx, "err while creating android build service: %s", err)
+				return setTopLevelError(ctx, step, result, resultsChan, err)
 			}
 			newWU, err := service.WorkUnitService.Patch(attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit())
 			if err != nil {
-				return err
+				logging.Infof(ctx, "err while patching workunit: %s", err)
+				// TODO (julio): make the wu code led friendly for closed invocation
+				// fail only for real run
+				if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
+					return setTopLevelError(ctx, step, result, resultsChan, err)
+				}
 			}
 			attemptNode.SetWorkUnit(newWU)
 		}
@@ -635,17 +641,20 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		// SuiteLimits.
 		suiteLimited, slErr := suitelimits.ExceededLimit(cmd.RequestKey, target)
 		if slErr != nil {
-			return slErr
+			logging.Infof(ctx, "suite limit exceed error: %s", slErr)
+			return setTopLevelError(ctx, step, result, resultsChan, slErr)
 		}
 
 		slExempt, slErr := suitelimits.HasExemption(cmd.RequestKey, target)
 		if slErr != nil {
-			return slErr
+			logging.Infof(ctx, "suite limit exemption check error: %s", slErr)
+			return setTopLevelError(ctx, step, result, resultsChan, slErr)
 		}
 		if suiteLimited && !slExempt {
 			totalDUTHours, slErr := suitelimits.GetTotalDUTHours(cmd.RequestKey, target)
 			if slErr != nil {
-				return slErr
+				logging.Infof(ctx, "err while getting total dut hours: %s", slErr)
+				return setTopLevelError(ctx, step, result, resultsChan, slErr)
 			}
 
 			common.WriteAnyObjectToStepLog(ctx, step, fmt.Sprintf("total DUT hour runtime: %.2f", totalDUTHours.Hours()), "SUITE EXECUTION TIME LIMIT EXCEEDED")

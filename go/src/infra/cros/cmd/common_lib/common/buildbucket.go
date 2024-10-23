@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/luci/auth"
@@ -61,4 +62,8 @@ func TestRunnerBuilderID(conf *config.Config) *buildbucketpb.BuilderID {
 // BBUrl returns the Buildbucket URL of the task.
 func BBUrl(builderID *buildbucketpb.BuilderID, bbId int64) string {
 	return fmt.Sprintf("https://ci.chromium.org/p/%s/builders/%s/%s/b%d", builderID.Project, builderID.Bucket, builderID.Builder, bbId)
+}
+
+func IsLedRun(builderID *buildbucketpb.BuilderID) bool {
+	return strings.Contains(builderID.Bucket, "shadow")
 }
