@@ -285,7 +285,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
           if 'test' in options:
             api.infra_cipd.test()
           if is_packager:
-            if api.runtime.is_experimental:
+            if api.runtime.is_experimental or buildername.endswith('-exp'):
               api.step('no CIPD package upload in experimental mode', cmd=None)
             else:
               api.infra_cipd.upload(api.infra_cipd.tags(repo_url, rev))
