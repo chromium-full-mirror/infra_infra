@@ -14,6 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -737,6 +739,50 @@ func Test_ctpRunLauncher_ctpBuilder(t *testing.T) {
 				TestRunnerBuildTags: map[string]string{
 					"crosfleet-tool": "test",
 					"label-test":     "sample-test",
+				},
+			},
+		},
+		{
+			"minimalAL",
+			ctpRunLauncher{
+				mainArgsTag: "sample-test",
+				printer:     common.CLIPrinter{},
+				cmdName:     "test",
+				bbClient:    buildbucket.NewClientForTesting(&buildbucketpb.BuilderID{Project: "test"}),
+				testPlan: &test_platform.Request_TestPlan{
+					Suite: []*test_platform.Request_Suite{{Name: "AL.test"}},
+				},
+				cliFlags: &testCommonFlags{},
+			},
+			"model",
+			&builder.CTPBuilder{
+				CTPBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+					"user_agent":     "crosfleet",
+				},
+				BuilderID: &buildbucketpb.BuilderID{Project: "test"},
+				Model:     "model",
+				Properties: map[string]interface{}{
+					"$chromeos/service_version": map[string]interface{}{
+						// Convert to protoreflect.ProtoMessage for easier type comparison.
+						"version": (&test_platform.ServiceVersion{
+							CrosfleetTool: 4,
+						}).ProtoReflect().Interface(),
+					},
+				},
+				TestPlan: &test_platform.Request_TestPlan{
+					Suite: []*test_platform.Request_Suite{{Name: "AL.test"}},
+				},
+				TestRunnerBuildTags: map[string]string{
+					"crosfleet-tool": "test",
+					"label-test":     "sample-test",
+				},
+				UserDefinedFilters: []*api.CTPFilter{
+					{ContainerInfo: &api.ContainerInfo{Container: &buildapi.ContainerImageInfo{Name: "al-provision-filter"}}},
+					{ContainerInfo: &api.ContainerInfo{Container: &buildapi.ContainerImageInfo{Name: "foil-filter"}}},
+					{ContainerInfo: &api.ContainerInfo{Container: &buildapi.ContainerImageInfo{Name: "test-finder"}}},
+					{ContainerInfo: &api.ContainerInfo{Container: &buildapi.ContainerImageInfo{Name: "ants-publish-filter"}}},
 				},
 			},
 		},

@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package common
 
 import (
@@ -5,6 +9,8 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -12,7 +18,11 @@ import (
 
 // CmpOpts enables comparisons of the listed protos with unexported fields.
 var CmpOpts = cmpopts.IgnoreUnexported(
+	api.ContainerInfo{},
+	api.CTPFilter{},
+	buildapi.ContainerImageInfo{},
 	buildbucketpb.Build{},
+	buildbucketpb.BuilderID{},
 	buildbucketpb.RequestedDimension{},
 	buildbucketpb.StringPair{},
 	chromiumos.BuildTarget{},
@@ -33,8 +43,8 @@ var CmpOpts = cmpopts.IgnoreUnexported(
 	test_platform.Request_Params_Retry{},
 	test_platform.Request_Params_Metadata{},
 	test_platform.Request_Params_Time{},
+	test_platform.Request_Suite{},
 	test_platform.ServiceVersion{},
 	structpb.ListValue{},
 	structpb.Struct{},
-	structpb.Value{},
-	buildbucketpb.BuilderID{})
+	structpb.Value{})

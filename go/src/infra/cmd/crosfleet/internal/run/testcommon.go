@@ -459,7 +459,14 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 						},
 					},
 				}
-				filters = append(filters, alProvisionFilter, foilFilter, alTestFinder)
+				antsPublishFilter := &api.CTPFilter{
+					ContainerInfo: &api.ContainerInfo{
+						Container: &buildapi.ContainerImageInfo{
+							Name: "ants-publish-filter",
+						},
+					},
+				}
+				filters = append(filters, alProvisionFilter, foilFilter, alTestFinder, antsPublishFilter)
 				break
 			}
 		}
