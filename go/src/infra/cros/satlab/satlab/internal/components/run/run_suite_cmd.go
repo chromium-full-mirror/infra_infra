@@ -56,25 +56,29 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		tests = append(tests, c.test)
 	}
 	r := &common_run.Run{
-		Image:         c.image,
-		Model:         c.model,
-		Board:         c.board,
-		Milestone:     c.milestone,
-		Build:         c.build,
-		Pool:          c.pool,
-		Suite:         c.suite,
-		Tests:         tests,
-		Testplan:      c.testplan,
-		TestplanLocal: c.testplanLocal,
-		Harness:       c.harness,
-		TestArgs:      c.testArgs,
-		SatlabId:      c.satlabId,
-		CFT:           c.cft,
-		TRV2:          c.trv2,
-		DynamicTRV2:   c.dynamicTrv2,
-		Local:         c.local,
-		TimeoutMins:   c.timeoutMins,
-		AddedDims:     c.addedDims,
+		Image:            c.image,
+		Model:            c.model,
+		Board:            c.board,
+		Milestone:        c.milestone,
+		Build:            c.build,
+		Pool:             c.pool,
+		Suite:            c.suite,
+		Tests:            tests,
+		Testplan:         c.testplan,
+		TestplanLocal:    c.testplanLocal,
+		Harness:          c.harness,
+		TestArgs:         c.testArgs,
+		SatlabId:         c.satlabId,
+		CFT:              c.cft,
+		TRV2:             c.trv2,
+		DynamicTRV2:      c.dynamicTrv2,
+		Local:            c.local,
+		TimeoutMins:      c.timeoutMins,
+		AddedDims:        c.addedDims,
+		TagIncludes:      c.tagIncludes,
+		TagExcludes:      c.tagExcludes,
+		TestNameIncludes: c.testNameIncludes,
+		TestNameExcludes: c.testNameExcludes,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	fmt.Printf("\n-- BUILD LINK --\n%s\n\n", buildLink)
@@ -102,10 +106,13 @@ func (c *run) validateArgs() error {
 		return errors.Reason("-harness is required for cft test runs").Err()
 	}
 	if !c.cft && c.trv2 {
-		return errors.Reason("-cft is required for test runs v2").Err()
+		return errors.Reason("-cft is required for test runner v2").Err()
 	}
 	if !c.cft && c.dynamicTrv2 {
-		return errors.Reason("-cft is required for dynamic test runs v2").Err()
+		return errors.Reason("-cft is required for dynamic test runner v2").Err()
+	}
+	if c.suite == "" && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
+		return errors.Reason("-tags-includes/-tags-excludes/-test-name-includes/-test-name-excludes can run only with -suite").Err()
 	}
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()

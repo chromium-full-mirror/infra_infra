@@ -64,10 +64,14 @@ type Run struct {
 	SatlabId      string
 	CFT           bool
 	// TRV2 determines whether we will use Test Runner V2
-	TRV2        bool
-	DynamicTRV2 bool
-	Local       bool
-	TimeoutMins int
+	TRV2             bool
+	DynamicTRV2      bool
+	Local            bool
+	TimeoutMins      int
+	TagIncludes      []string
+	TagExcludes      []string
+	TestNameIncludes []string
+	TestNameExcludes []string
 	// Runs with Ctpv2 and Quota Scheduler if true and CFT is true
 	RunCtpv2WithQs bool
 	// If true, only runs the tests that have not passed
@@ -363,6 +367,14 @@ func (c *Run) createTestPlan() (*satlabrpcserver.CftMixTestplan, error) {
 
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
+		if len(c.TagIncludes) > 0 || len(c.TagExcludes) > 0 || len(c.TestNameIncludes) > 0 || len(c.TestNameExcludes) > 0 {
+			tp.TagCriteria = &api.TestSuite_TestCaseTagCriteria{
+				Tags:             c.TagIncludes,
+				TagExcludes:      c.TagExcludes,
+				TestNames:        c.TestNameIncludes,
+				TestNameExcludes: c.TestNameExcludes,
+			}
+		}
 		if c.CFT {
 			return &satlabrpcserver.CftMixTestplan{Cft: tp}, nil
 		} else {
@@ -430,8 +442,8 @@ func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, board st
 	return nil
 }
 
-// / ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
-// / return an error.
+// ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
+// return an error.
 func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, error) {
 	ctpBuild, err := bbClient.ScheduleCTPBuild(ctx)
 	if err != nil {

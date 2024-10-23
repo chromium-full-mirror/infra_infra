@@ -95,6 +95,66 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // tagIncludes not with -suite
+				runFlags: runFlags{
+					test:        "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					dynamicTrv2: true,
+					tagIncludes: []string{"group:pasit"}},
+			},
+		},
+		{
+			&run{ // tagExcludes not with suite
+				runFlags: runFlags{
+					test:        "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					dynamicTrv2: true,
+					tagExcludes: []string{"group:pasit"}},
+			},
+		},
+		{
+			&run{ // testNameIncludes not with suite
+				runFlags: runFlags{
+					test:             "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:            "zork",
+					model:            "gumboz",
+					milestone:        "111",
+					build:            "15329.6.0",
+					satlabId:         "satlab-0wgatfqi21118003",
+					pool:             "pool",
+					harness:          "tast",
+					dynamicTrv2:      true,
+					testNameIncludes: []string{"tast.example.Pass"}},
+			},
+		},
+		{
+			&run{ // testNameExcludes not with suite
+				runFlags: runFlags{
+					test:             "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:            "zork",
+					model:            "gumboz",
+					milestone:        "111",
+					build:            "15329.6.0",
+					satlabId:         "satlab-0wgatfqi21118003",
+					pool:             "pool",
+					harness:          "tast",
+					dynamicTrv2:      true,
+					testNameExcludes: []string{"tast.example.Pass"}},
+			},
+		},
+		{
 			&run{ // no board
 				runFlags: runFlags{
 					suite:     "rlz",

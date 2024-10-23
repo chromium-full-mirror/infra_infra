@@ -7,6 +7,8 @@ package run
 import (
 	"github.com/maruel/subcommands"
 
+	luciflag "go.chromium.org/luci/common/flag"
+
 	"infra/cros/satlab/satlab/internal/flagx"
 )
 
@@ -14,26 +16,30 @@ import (
 type runFlags struct {
 	subcommands.CommandRunBase
 
-	image         string
-	model         string
-	board         string
-	milestone     string
-	build         string
-	pool          string
-	suite         string
-	test          string
-	testplan      string
-	testplanLocal string
-	harness       string
-	testArgs      string
-	satlabId      string
-	cft           bool
-	trv2          bool
-	dynamicTrv2   bool
-	local         bool
-	maxTimeout    bool
-	timeoutMins   int
-	addedDims     map[string]string
+	image            string
+	model            string
+	board            string
+	milestone        string
+	build            string
+	pool             string
+	suite            string
+	test             string
+	testplan         string
+	testplanLocal    string
+	harness          string
+	testArgs         string
+	satlabId         string
+	cft              bool
+	trv2             bool
+	dynamicTrv2      bool
+	local            bool
+	maxTimeout       bool
+	timeoutMins      int
+	tagIncludes      []string
+	tagExcludes      []string
+	testNameIncludes []string
+	testNameExcludes []string
+	addedDims        map[string]string
 }
 
 // registerRunFlags registers the test execution flags.
@@ -59,5 +65,9 @@ func registerRunFlags(c *run) {
 	c.Flags.BoolVar(&c.local, "local", false, "whether to execute tests on local satlab")
 	c.Flags.IntVar(&c.timeoutMins, "timeout-mins", 0, "how many minutes to time build out after")
 	c.Flags.BoolVar(&c.maxTimeout, "max-timeout", false, "DEPRECATED: Use `-timeout-mins` instead")
+	c.Flags.Var(luciflag.CommaList(&c.tagIncludes), "tag-includes", "list of comma separated tags to choose tests, all tags MUST match (exactly, no regex/wildcard) with tests (use only with -suite)")
+	c.Flags.Var(luciflag.CommaList(&c.tagExcludes), "tag-excludes", "list of comma separated tags to exclude tests tagged with any of tag (match exactly, no regex/wildcard) (use only with -suite)")
+	c.Flags.Var(luciflag.CommaList(&c.testNameIncludes), "test-name-includes", "list of comma separated test names to run, all names MUST match with tests (regex/wildcard allowed) (use only with -suite)")
+	c.Flags.Var(luciflag.CommaList(&c.testNameExcludes), "test-name-excludes", "list of comma separated test names to exclude from run (regex/wildcard allowed) (use only with -suite)")
 	c.Flags.Var(flagx.MapToFlagValue(&c.addedDims), "dims", "Additional scheduling dimension in format key=val or key:val; may be specified multiple times.")
 }
