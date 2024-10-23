@@ -25,7 +25,7 @@ func TestPrepareTestResponse_NilTestCaseResults(t *testing.T) {
 
 	// Verify that the returned response is not nil.
 	if res == nil {
-		t.Errorf("Expected non-nil response, got nil")
+		t.Fatalf("Expected non-nil response, got nil")
 	}
 
 	// Verify that the TestCaseResults has the testCase.
