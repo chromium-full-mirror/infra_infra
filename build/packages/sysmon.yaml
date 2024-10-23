@@ -11,8 +11,8 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_build_environ:
-  CGO_ENABLED:
-    darwin: 1  # gopsutil does not fully work without cgo
+  cgo:
+    mac: 1  # gopsutil does not fully work without cgo
 go_packages:
   - infra/monitoring/sysmon/cmd/sysmon
 root: ../../go/bin

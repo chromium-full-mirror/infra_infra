@@ -27,62 +27,57 @@ disabled: false
 # Set to false to not update the 'latest' CIPD ref.
 update_latest_ref: false
 
-# Optional filter with a list of CIPD platform suffixes for which to build this
-# package. If not specified, will be built only for the host platform. Note that
-# this is a filter: whenever build.py script is invoked with some GOOS and
-# GOARCH, it looks at this list to decide whether to build the package or not.
-# The list of platforms we attempt to build for is thus outside of build.py
-# control: it is specified by whoever calls build.py (see infra_continuous.py
-# recipe).
+# Filter with a list of CIPD platform suffixes for which to build this package:
+# whenever build.py script is invoked with some `--cipd-platform` flag, it looks
+# at this list to decide whether to build the package or not. The list of
+# platforms to attempt to build for is thus outside of build.py control: it is
+# specified by whoever calls build.py (see infra_continuous.py recipe).
+#
+# See https://pkg.go.dev/go.chromium.org/luci/cipd/client/cipd/ensure for the
+# list of supported values here and how they map to Go build environment flags.
+#
+# If your package is platform agnostic (and doesn't really use ".../${platform}"
+# package name suffix), just specify some single platform (usually
+# "linux-amd64") to make sure there's a builder that builds this package.
 platforms:
-  - android-amd64
-  - android-armv6l
-  - linux-386
   - linux-amd64
-  - linux-arm64
-  - linux-armv6l
-  - linux-mipsle
-  - linux-mips64
-  - linux-mips64le
-  - linux-ppc64
-  - linux-ppc64le
-  - linux-s390x
-  - mac-amd64
-  - windows-386
-  - windows-amd64
-  - windows-arm64
+  ...
 
 # Optional list of go packages to 'go install' before zipping this package.
+#
+# Go binaries will be built under the build environment (GOOS, GOARCH, GOARM)
+# set based on the `--cipd-platform` flag.
 go_packages:
   - go.chromium.org/luci/cipd/client/cmd/cipd
   - ...
 
-# Environment variables to set when building go code. Only CGO_ENABLED is
-# recognized currently.
+# Additional Go build environment to use when building go code.
 go_build_environ:
   # If given, sets CGO_ENABLED env var to this value. Defaults to 0 if missing
   # (i.e. cgo is disabled by default).
   #
-  # Note that it is also possible to specify this on per-target GOOS basis, by
-  # using a dictionary as a value, e.g. {'darwin': 1, 'windows': 0, 'linux': 0}.
-  CGO_ENABLED:
-    darwin: 1
+  # Note that it is also possible to specify this on per CIPD platform basis,
+  # by using a dictionary as a value. Keys are either CIPD OSs or CIPD
+  # platforms.
+  cgo:
+    mac: 1  # enable on all Mac archs
+    windows-amd64: 1  # enable only on amd64 Windows
 
-  # If given, attach the flags to the go build command.
+  # If given, attach `-race` flag to the go build command.
   #
-  # Note that it is also possible to specify this on per-target GOOS basis, by
-  # using a dictionary as a value, e.g. {'darwin': 1, 'windows': 0, 'linux': 0}.
+  # Note that it is also possible to specify this on per CIPD platform basis,
+  # by using a dictionary as a value, similar to the `cgo` above.
   #
   # The flag will only be attached to the go build command if:
-  #   * the flag is given;
-  #   * it is supported on the platform:
+  #   * the value is set to 1
+  #   * `-race` is supported on the target platform:
   #     * As of Aug 2022, it is only supported on
-  #       * linux/amd64
-  #       * freebsd/amd64
-  #       * darwin/amd64
-  #       * windows/amd64
-  #       * linux/ppc64le
-  #       * linux/arm64 (only for 48-bit VMA)
+  #       * linux-amd64
+  #       * freebsd-amd64
+  #       * mac-amd64
+  #       * windows-amd64
+  #       * linux-ppc64le
+  #       * linux-arm64 (only for 48-bit VMA)
   #   * CGO is enabled.
   race: 0
 
@@ -263,17 +258,23 @@ uploading them.
 Cross compilation of Go code
 ----------------------------
 
-`build.py` script recognizes `GOOS` and `GOARCH` environment variables used to
-specify a target platform when cross-compiling Go code. When it detects them, it
-builds only Go packages that have the target CIPD platform specified in the
-`platforms` list in the package definition YAML. It also changes the meaning of
-`${platform}` and `${exe_suffix}` to match the values for the target platform.
+If `--cipd-platform` is given, `build.py` sets up matching `GOOS`, `GOARCH`,
+`GOARM` etc. environment variables, overriding any existing values. This enables
+Go code cross-compilation for the target platform. This is what usually happens
+on CI builders.
 
-Built packages have `+${platform}` suffix in file names and coexist with native
-package in build output directory. When uploading packages (via `build.py
---no-rebuild --upload`), `GOOS` and `GOARCH` are used to figure out what flavor
-of built packages to pick (what `+${platform}` to search for).
+If `--cipd-platform` is not set, its value will be derived based on existing
+`GOOS`, `GOARCH`, `GOARM`, etc. env vars in the environment (if any). If they
+aren't set, `--cipd-platform` will be derived based on the host environment.
+This is what usually happens when running `build.py` locally to test stuff.
+
+Built packages have `+${platform}` suffix in file names and coexist with
+host-native package in build output directory. When uploading packages (via
+`build.py --no-rebuild --upload`), the same `--cipd-platform` logic is used to
+figure out what flavor of built packages to pick (i.e. what `+${platform}`
+suffix to filter built packages on).
 
 Cross compiling toolset doesn't include C compiler, so the binaries are built in
-`CGO_ENABLED=0` mode, meaning some stdlib functions that depend on libc are not
-working or working differently compared to natively built executables.
+`CGO_ENABLED=0` mode by default, meaning some stdlib functions that depend on
+libc are not working or working differently compared to natively built
+executables.

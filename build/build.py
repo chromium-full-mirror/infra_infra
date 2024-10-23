@@ -3,21 +3,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""This script rebuilds Python & Go universes of infra.git multiverse and
-invokes CIPD client to package and upload chunks of it to the CIPD repository as
-individual packages.
+"""This script builds Go binaries and invokes CIPD client to package and upload
+them to the CIPD repository.
 
 See build/packages/*.yaml for definition of packages and README.md for more
 details.
 """
-
-from __future__ import print_function
 
 import argparse
 import collections
 import contextlib
 import copy
 import errno
+import functools
 import glob
 import hashlib
 import json
@@ -32,52 +30,107 @@ import tempfile
 
 import yaml
 
-PY2 = sys.version[0] == '2'
-
 # Root of infra.git repository.
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Where to upload packages to by default.
 PACKAGE_REPO_SERVICE = 'https://chrome-infra-packages.appspot.com'
 
-# Hash algorithm to use for calculating instance IDs.
-HASH_ALGO = 'sha256'
+# Mapping of CIPD arch strings to Go build env vars.
+#
+# See https://pkg.go.dev/go.chromium.org/luci/cipd/client/cipd/ensure.
+CIPD_ARCHS = {
+    '386': {
+        'GOARCH': '386',
+        'GO386': 'sse2'
+    },
+    'amd64': {
+        'GOARCH': 'amd64',
+        'GOAMD64': 'v1'
+    },
+    'arm64': {
+        'GOARCH': 'arm64'
+    },
+    'armv6l': {
+        'GOARCH': 'arm',
+        'GOARM': '6'
+    },
+    'armv7l': {
+        'GOARCH': 'arm',
+        'GOARM': '7'
+    },
+    'loong64': {
+        'GOARCH': 'loong64'
+    },
+    'mips': {
+        'GOARCH': 'mips',
+        'GOMIPS': 'hardfloat'
+    },
+    'mips64': {
+        'GOARCH': 'mips64',
+        'GOMIPS64': 'hardfloat'
+    },
+    'mips64le': {
+        'GOARCH': 'mips64le',
+        'GOMIPS64': 'hardfloat'
+    },
+    'mipsle': {
+        'GOARCH': 'mipsle',
+        'GOMIPS': 'hardfloat'
+    },
+    'ppc64': {
+        'GOARCH': 'ppc64',
+        'GOPPC64': 'power8'
+    },
+    'ppc64le': {
+        'GOARCH': 'ppc64le',
+        'GOPPC64': 'power8'
+    },
+    'riscv64': {
+        'GOARCH': 'riscv64'
+    },
+    's390x': {
+        'GOARCH': 's390x'
+    },
+}
 
-# True if running on Windows.
-IS_WINDOWS = sys.platform == 'win32'
+# Default values for some existing GO{ARCH} vars taken from
+# https://github.com/golang/go/blob/master/src/cmd/dist/build.go
+#
+# This simplifies some code below. This also indirectly used to know what env
+# vars affect the build.
+#
+# Note that GOARM has no predefined default value (it depends on the host
+# environment) and we always require it to be set explicitly since we don't want
+# our arm32 builds to depend on specifics of a particular builder machine.
+GO_ARCH_DEFAULTS = {
+    'GO386': 'sse2',
+    'GOAMD64': 'v1',
+    'GOARM': None,
+    'GOMIPS': 'hardfloat',
+    'GOMIPS64': 'hardfloat',
+    'GOPPC64': 'power8',
+}
 
-# .exe on Windows.
-EXE_SUFFIX = '.exe' if IS_WINDOWS else ''
+# Go env vars potentially affecting the build (at least the ones we care about).
+GO_BUILD_ENV_VARS = [
+    'GOOS', 'GOARCH', 'CGO_ENABLED', 'CGO_CFLAGS', 'CGO_LDFLAGS'
+] + list(GO_ARCH_DEFAULTS)
 
-# All GOARCHs we are willing to cross-compile for.
-KNOWN_GOARCHS = frozenset([
-    '386',
-    'amd64',
-    'arm',
-    'arm64',
-    'loong64',
-    'mips',
-    'mips64',
-    'mips64le',
-    'mipsle',
-    'ppc64',
-    'ppc64le',
-    'riscv64',
-    's390x',
-])
-
-# All platforms support 'go build -race'.
+# All CIPD platforms that support 'go build -race'.
 RACE_SUPPORTED_PLATFORMS = frozenset([
-    'linux-amd64',
     'freebsd-amd64',
-    'darwin-amd64',
-    'windows-amd64',
-    'linux-ppc64le',
+    'linux-amd64',
     'linux-arm64',
+    'linux-ppc64le',
+    'mac-amd64',
+    'windows-amd64',
 ])
 
 # A package prefix => cwd to use when building this package.
-MODULE_MAP = {
+#
+# Can be extended via `--map-go-module` command line flag.
+DEFAULT_MODULE_MAP = {
     # The luci-go module is checked out separately, use its go.mod.
     'go.chromium.org/luci/':
         os.path.join(ROOT, 'go', 'src', 'go.chromium.org', 'luci'),
@@ -89,17 +142,32 @@ MODULE_MAP = {
         os.path.join(ROOT, 'go', 'src', 'infra')
 }
 
-if PY2:
-  def check_output(*args, **kwargs):
-    return subprocess.check_output(*args, **kwargs)
-else:
-  def check_output(*args, **kwargs):
-    return subprocess.check_output(*args, text=True, **kwargs)
+
+def check_output(*args, **kwargs):
+  return subprocess.check_output(*args, text=True, **kwargs)
+
+
+# This can be replaced with functools.cache once we are on Py 3.9
+def cache(f):
+  value = []
+
+  @functools.wraps(f)
+  def wrapper():
+    if not value:
+      value.append(f())
+    return value[0]
+
+  return wrapper
+
 
 class PackageDefException(Exception):
   """Raised if a package definition is invalid."""
   def __init__(self, path, msg):
     super(PackageDefException, self).__init__('%s: %s' % (path, msg))
+
+
+class UnsupportedException(Exception):
+  """Raised if some combination of parameters is not supported."""
 
 
 class BuildException(Exception):
@@ -128,6 +196,11 @@ class PackageDef(collections.namedtuple(
     return os.path.splitext(os.path.basename(self.path))[0]
 
   @property
+  def platforms(self):
+    """Returns a list of CIPD platforms to build the package for."""
+    return self.pkg_def.get('platforms') or []
+
+  @property
   def disabled(self):
     """Returns True if the package should be excluded from the build."""
     return self.pkg_def.get('disabled', False)
@@ -144,15 +217,42 @@ class PackageDef(collections.namedtuple(
     """Returns a list of Go packages that must be installed for this package."""
     return self.pkg_def.get('go_packages') or []
 
-  def cgo_enabled(self, target_goos):
+  def go_build_environ_key(self, key, cipd_platform):
+    """Looks up a key in "go_build_environ" recognizing per-platform values."""
+    val = self.pkg_def.get('go_build_environ', {}).get(key)
+
+    # Legacy key name for "cgo".
+    if val is None and key == 'cgo':
+      val = self.pkg_def.get('go_build_environ', {}).get('CGO_ENABLED')
+      if val:
+        print('DEPRECATED: replace "CGO_ENABLED" with "cgo" in %s' % self.path)
+
+    if not isinstance(val, dict):
+      return val
+
+    # Per-platform setting.
+    if cipd_platform in val:
+      return val[cipd_platform]
+
+    # Per-OS setting.
+    for k, v in val.items():
+      if cipd_platform.startswith('%s-' % k):
+        return v
+      # Support 'darwin' GOOS as a legacy value for 'mac' CIPD OS.
+      if k == 'darwin':
+        print('DEPRECATED: replace "darwin" with "mac" in %s' % self.path)
+      if k == 'darwin' and cipd_platform.startswith('mac-'):
+        return v
+
+    # No setting found for the platform.
+    return None
+
+  def cgo_enabled(self, cipd_platform):
     """True if the package needs cgo, False to disable it.
 
     By default cgo is disabled.
     """
-    val = self.pkg_def.get('go_build_environ', {}).get('CGO_ENABLED')
-    if isinstance(val, dict):
-      val = val.get(target_goos)
-    return bool(val)
+    return bool(self.go_build_environ_key('cgo', cipd_platform))
 
   @property
   def pkg_root(self):
@@ -162,55 +262,40 @@ class PackageDef(collections.namedtuple(
       return root
     return os.path.abspath(os.path.join(os.path.dirname(self.path), root))
 
-  def with_race(self, target_goos, target_goarch):
+  def with_race(self, cipd_platform):
     """Returns True if should build with `-race` flag.
 
     To build with race:
-      - race should be enabled on the target_goos or in general;
-      - cgo should be enabled on target_goos;
-      - target_goos should be one of the supported platforms.
+      - race should be enabled on the cipd_platform or in general;
+      - cgo should be enabled on cipd_platform;
+      - cipd_platform should be one of the supported platforms.
     """
-    val = self.pkg_def.get('go_build_environ', {}).get('race')
-    if isinstance(val, dict):
-      val = val.get(target_goos)
-
+    val = self.go_build_environ_key('race', cipd_platform)
     if not val:
       return False
 
-    cgo_enabled = self.cgo_enabled(target_goos)
+    cgo_enabled = self.cgo_enabled(cipd_platform)
     if not cgo_enabled:
       print(
           'go build -race cannot be enabled because CGO is not enabled on %s' %
-          target_goos)
+          cipd_platform)
       return False
 
-    platform = '%s-%s' % (target_goos, target_goarch)
-    if platform in RACE_SUPPORTED_PLATFORMS:
+    if cipd_platform in RACE_SUPPORTED_PLATFORMS:
       return True
-    print('go build -race is not supported on %s' % platform)
+    print('go build -race is not supported on %s' % cipd_platform)
     return False
 
   def validate(self):
     """Raises PackageDefException if the package definition looks invalid."""
+    if not self.platforms:
+      raise PackageDefException(
+          self.path,
+          'At least one platform should be specified in "platforms" section.')
     for var_name in self.pkg_def.get('go_build_environ', {}):
-      if var_name not in ['CGO_ENABLED', 'race']:
+      if var_name not in ['CGO_ENABLED', 'cgo', 'race']:
         raise PackageDefException(
-            self.path,
-            'Only "CGO_ENABLED" and "race" is supported in "go_build_environ" '
-            'currently'
-        )
-
-  def should_visit(self):
-    """Returns True if package targets the current platform."""
-    # If the package doesn't have 'platforms' set, assume it doesn't want to be
-    # cross-compiled, and supports only native host platform or it's platform
-    # independent. Otherwise build it only if the target of the compilation is
-    # declared as supported. Note that these are CIPD-flavored platform strings
-    # (e.g. "mac-amd64"), exactly like they appear in CIPD package names.
-    platforms = self.pkg_def.get('platforms')
-    if not platforms:
-      return not is_cross_compiling()
-    return get_package_vars()['platform'] in platforms
+            self.path, 'Unsupported go_build_environ key %s' % var_name)
 
   def preprocess(self, build_root, pkg_vars, cipd_exe, sign_id=None):
     """Parses the definition and filters/extends it before passing to CIPD.
@@ -347,59 +432,42 @@ class PackageDef(collections.namedtuple(
         self.pkg_def.get('package'), pkg_vars, replace_sep=False)
     return on_change_tags, pkg_path
 
-# Carries modifications for go-related env vars and cwd.
-#
-# If a field has value None, it will be popped from the environment in
-# 'apply_to_environ'.
+
 class GoEnviron(
-    collections.namedtuple(
-        'GoEnviron', ['GOOS', 'GOARCH', 'CGO_ENABLED', 'cwd', 'with_race'])):
+    collections.namedtuple('GoEnviron',
+                           ['cipd_platform', 'cgo_enabled', 'with_race', 'cwd'])
+):
+  """Defines the Go build environment (at least the part we care about)."""
 
   @staticmethod
-  def host_native():
-    """Returns GoEnviron that instructs Go to not cross-compile."""
+  def new(cipd_platform):
+    """Prepares to compile for the given target CIPD platform."""
     return GoEnviron(
-        GOOS=None,
-        GOARCH=None,
-        CGO_ENABLED=None,
-        cwd=os.getcwd(),
+        cipd_platform=cipd_platform,
+        cgo_enabled=False,
         with_race=False,
+        cwd=os.getcwd(),
     )
 
-  @staticmethod
-  def from_environ():
-    """Reads GoEnviron from the current os.environ.
-
-    If CGO_ENABLED is not given, picks the default based on whether we are
-    cross-compiling or not. cgo is disabled by default when cross-compiling.
-    """
-    cgo = os.environ.get('CGO_ENABLED')
-    if cgo is None:
-      cgo = not os.environ.get('GOOS')
-    else:
-      cgo = cgo == '1'
-    return GoEnviron(
-        GOOS=os.environ.get('GOOS'),
-        GOARCH=os.environ.get('GOARCH'),
-        CGO_ENABLED=cgo,
-        cwd=os.getcwd(),
-        with_race=False,
-    )
-
-  def apply_to_environ(self):
+  def apply(self):
     """Applies GoEnviron to the current os.environ and cwd."""
-    if self.GOOS is not None:
-      os.environ['GOOS'] = self.GOOS
-    else:
-      os.environ.pop('GOOS', None)
-    if self.GOARCH is not None:
-      os.environ['GOARCH'] = self.GOARCH
-    else:
-      os.environ.pop('GOARCH', None)
-    if self.CGO_ENABLED is not None:
-      os.environ['CGO_ENABLED'] = '1' if self.CGO_ENABLED else '0'
-    else:
-      os.environ.pop('CGO_ENABLED', None)
+    for k in GO_BUILD_ENV_VARS:
+      os.environ.pop(k, None)
+    os.environ.update(cipd_platform_to_go_env(self.cipd_platform))
+    os.environ['CGO_ENABLED'] = '1' if self.cgo_enabled else '0'
+
+    # Make sure we target our minimum supported macOS version.
+    if self.cgo_enabled and self.cipd_platform.startswith('mac-'):
+      if self.cipd_platform.endswith('amd64'):
+        min_os_version = '10.13'
+      else:
+        min_os_version = '11.0'
+      # Preserve default `-O2 -g` values for these flags, and add
+      # `-mmacosx-version-min`.
+      flags = '-O2 -g -mmacosx-version-min=%s' % min_os_version
+      os.environ['CGO_CFLAGS'] = flags
+      os.environ['CGO_LDFLAGS'] = flags
+
     if self.cwd is not None:
       os.chdir(self.cwd)
 
@@ -505,15 +573,6 @@ def create_mac_bundle(pkg_root, bundle_def):
   }
 
 
-def is_cross_compiling():
-  """Returns True if using GOOS or GOARCH env vars.
-
-  We also check at the start of the script that if one of them is used, then
-  the other is specified as well.
-  """
-  return bool(os.environ.get('GOOS')) or bool(os.environ.get('GOARCH'))
-
-
 def get_env_dot_py():
   if os.environ.get('GOOS') == 'android':
     return 'mobile_env.py'
@@ -530,7 +589,7 @@ def find_cipd():
       candidate = base + ext
       if os.path.isfile(candidate):
         return candidate
-  return 'cipd' + EXE_SUFFIX
+  return 'cipd' + ('.exe' if sys.platform == 'win32' else '')
 
 
 def run_cipd(cipd_exe, cmd, args):
@@ -583,9 +642,7 @@ def print_go_step_title(title):
   go_mod = None
   if os.environ.get('GO111MODULE') != 'off' and os.path.exists('go.mod'):
     go_mod = os.path.abspath('go.mod')
-  go_vars = [(k, os.environ[k])
-             for k in ('GOOS', 'GOARCH', 'GOARM', 'CGO_ENABLED')
-             if k in os.environ]
+  go_vars = [(k, os.environ[k]) for k in GO_BUILD_ENV_VARS if k in os.environ]
   if go_vars or go_mod:
     title += '\n' + '-' * 80
   if go_mod:
@@ -605,28 +662,11 @@ def workspace_env(go_environ):
   orig_cwd = os.getcwd()
   orig_environ = os.environ.copy()
 
-  # Change os.environ and cwd.
-  go_environ.apply_to_environ()
+  go_environ.apply()
 
-  plat = get_package_vars()['platform']
-
-  # Make sure we build ARMv6 code even if the host is ARMv7. See the comment in
-  # get_host_package_vars for reasons why. Also explicitly set GOARM to 6 when
-  # cross-compiling (it should be '6' in this case by default anyway).
-  if plat.endswith('-armv6l'):
-    os.environ['GOARM'] = '6'
-  else:
-    os.environ.pop('GOARM', None)
-
-  # Make sure we target our minimum supported macOS version.
-  if plat.startswith('mac-'):
-    if plat.endswith('amd64'):
-      min_os_version = '10.13'
-    else:
-      min_os_version = '11.0'
-    min_os_version_flag = '-mmacosx-version-min=%s' % min_os_version
-    os.environ['CGO_CFLAGS'] = min_os_version_flag
-    os.environ['CGO_LDFLAGS'] = min_os_version_flag
+  # Do not install tools from tools.go, they are used only during development.
+  # This saves a bit of time.
+  os.environ['INFRA_GO_SKIP_TOOLS_INSTALL'] = '1'
 
   try:
     yield
@@ -647,7 +687,7 @@ def bootstrap_go_toolset(go_workspace):
   Used to verify that our platform detection in get_host_package_vars() matches
   the Go toolset being used.
   """
-  with workspace_env(GoEnviron.host_native()):
+  with workspace_env(GoEnviron.new(get_host_cipd_platform())):
     print_go_step_title('Making sure Go toolset is installed')
     # env.py does the actual job of bootstrapping if the toolset is missing.
     output = check_output(
@@ -789,28 +829,23 @@ def find_main_module(module_map, pkg):
   return list(matches)[0]
 
 
-def build_go_code(go_workspace, module_map, pkg_defs):
+def build_go_code(go_workspace, cipd_platform, module_map, pkg_defs):
   """Builds and installs all Go packages used by the given PackageDefs.
 
-  Understands GOOS and GOARCH and uses slightly different build strategy when
-  cross-compiling. In the end <go_workspace>/bin will have all built binaries,
-  and only them (regardless of whether we are cross-compiling or not).
+  In the end <go_workspace>/bin will have all built binaries, and only them
+  (regardless of whether we are cross-compiling or not).
 
   Args:
     go_workspace: path to 'infra/go' or 'infra_internal/go'.
+    cipd_platform: target CIPD platform to build for.
     module_map: a dict "go package prefix => directory with main module".
     pkg_defs: list of PackageDef objects that define what to build.
   """
   # Exclude all disabled packages.
   pkg_defs = [p for p in pkg_defs if not p.disabled]
 
-  # Whatever GOOS, GOARCH, etc were passed from outside. They are set when
-  # cross-compiling.
-  default_environ = GoEnviron.from_environ()
-
-  # The OS we compiling for (defaulting to the host OS).
-  target_goos = default_environ.GOOS or get_host_goos()
-  target_goarch = default_environ.GOARCH or get_host_goarch()
+  # Values for GOOS, GOARCH, etc. based on the target platform.
+  base_environ = GoEnviron.new(cipd_platform)
 
   # Grab a set of all go packages we need to build and install into GOBIN,
   # figuring out a go environment (and cwd) they want.
@@ -820,14 +855,16 @@ def build_go_code(go_workspace, module_map, pkg_defs):
   bin_name_to_pkg = {}
 
   # The name of the binary we will produce from this go package.
+  exe_suffix = get_package_vars(cipd_platform)['exe_suffix']
+
   def binary_name(go_pkg):
-    return go_pkg[go_pkg.rfind('/') + 1:] + EXE_SUFFIX
+    return go_pkg[go_pkg.rfind('/') + 1:] + exe_suffix
 
   for pkg_def in pkg_defs:
-    pkg_env = default_environ
+    pkg_env = base_environ
     pkg_env = pkg_env._replace(
-        with_race=pkg_def.with_race(target_goos, target_goarch),
-        CGO_ENABLED=pkg_def.cgo_enabled(target_goos))
+        cgo_enabled=pkg_def.cgo_enabled(cipd_platform),
+        with_race=pkg_def.with_race(cipd_platform))
     for name in pkg_def.go_packages:
       pkg_env = pkg_env._replace(cwd=find_main_module(module_map, name))
       if name in go_packages and go_packages[name] != pkg_env:
@@ -857,7 +894,7 @@ def build_go_code(go_workspace, module_map, pkg_defs):
     # Make sure there are no stale files in the workspace.
     run_go_clean(go_workspace, pkg_env, to_install)
 
-    if not is_cross_compiling():
+    if cipd_platform == get_host_cipd_platform():
       # If not cross-compiling, build all Go code in a single "go install" step,
       # it's faster that way. We can't do that when cross-compiling, since
       # 'go install' isn't supposed to be used for cross-compilation and the
@@ -916,88 +953,59 @@ def read_yaml(path):
     return yaml.safe_load(f)
 
 
-def get_package_vars():
-  """Returns a dict with variables that describe the package target environment.
+def cipd_platform_to_go_env(platform):
+  """Given e.g. linux-armv7l returns {GOOS: linux, GOARCH: arm, GOARM: 7}."""
+  parts = platform.split('-')
+  if len(parts) != 2:
+    raise UnsupportedException('Bad CIPD platform: %s' % platform)
+  os, arch = parts
+  env = {'GOOS': 'darwin' if os == 'mac' else os}
+  if arch not in CIPD_ARCHS:
+    raise UnsupportedException('Unrecognized CIPD architecture: %s' % arch)
+  env.update(CIPD_ARCHS[arch])
+  return env
 
-  Variables can be referenced in the package definition YAML as
-  ${variable_name}. It allows to reuse exact same definition file for similar
-  packages (e.g. packages with same cross platform binary, but for different
-  platforms).
 
-  If running in cross-compilation mode, uses GOOS and GOARCH to figure out the
-  target platform instead of examining the host environment.
+def go_env_to_cipd_platform(env):
+  """Given GOOS, GOARCH, etc. env vars returns the corresponding CIPD platform.
+
+  At least GOOS, GOARCH must be present in the environment. Keys not related to
+  Go are simply ignored.
+
+  Raises UnsupportedException if this combination doesn't match any supported
+  CIPD architecture.
   """
-  if is_cross_compiling():
-    return get_target_package_vars()
-  return get_host_package_vars()
+  assert 'GOOS' in env and 'GOARCH' in env, env
+  os = 'mac' if env['GOOS'] == 'darwin' else env['GOOS']
+
+  # GOARM is a special case, since it has no default value in "go build".
+  if env['GOARCH'] == 'arm' and 'GOARM' not in env:
+    raise UnsupportedException('GOARM is required when GOARCH=arm')
+
+  # Fill in `env` with default values for various go arch env vars. Do the same
+  # for possible CIPD_ARCH values. Then find a direct match between given go env
+  # and one of CIPD_ARCH envs. This takes care of handling cases when the caller
+  # explicitly sets an already default value of some env var. Or if they set it
+  # to something we don't yet support.
+  def normalized(env):
+    keys = ['GOARCH'] + list(GO_ARCH_DEFAULTS)
+    return sorted(
+        '%s=%s' % (k, env.get(k, GO_ARCH_DEFAULTS.get(k, ''))) for k in keys)
+
+  got = normalized(env)
+  for arch, varz in CIPD_ARCHS.items():
+    if got == normalized(varz):
+      return '%s-%s' % (os, arch)
+  raise UnsupportedException('Unsupported Go build configuration: %s' % got)
 
 
-def get_target_package_vars():
-  """Returns a dict with variables that describe cross-compilation target env.
+@cache
+def get_host_cipd_platform():
+  """Derives CIPD platform of the host running this script.
 
-  Examines os.environ for GOOS, GOARCH and GOARM.
-
-  The returned dict contains only 'platform' and 'exe_suffix' entries.
+  This completely ignores GOOS, GOARCH, GOARM, etc. It just looks at the host
+  OS and platform using Python.
   """
-  assert is_cross_compiling()
-  goos = os.environ['GOOS']
-  goarch = os.environ['GOARCH']
-
-  if goarch not in KNOWN_GOARCHS:
-    raise BuildException('Unsupported GOARCH %s' % goarch)
-
-  # There are many ARMs, pick the concrete instruction set. 'v6' is the default,
-  # don't try to support other variants for now. Note that 'GOARM' doesn't apply
-  # to 'arm64' arch.
-  #
-  # See:
-  #   https://golang.org/doc/install/source#environment
-  #   https://github.com/golang/go/wiki/GoArm
-  if goarch == 'arm':
-    goarm = os.environ.get('GOARM', '6')
-    if goarm != '6':
-      raise BuildException('Unsupported GOARM value %s' % goarm)
-    arch = 'armv6l'
-  else:
-    arch = goarch
-
-  # We use 'mac' instead of 'darwin'.
-  if goos == 'darwin':
-    goos = 'mac'
-
-  return {
-      'exe_suffix': '.exe' if goos == 'windows' else '',
-      'platform': '%s-%s' % (goos, arch),
-  }
-
-
-def get_linux_host_arch():
-  """Returns: The Linux host architecture, or None if it could not be resolved.
-  """
-  try:
-    # Query "dpkg" to identify the userspace architecture.
-    return check_output(['dpkg', '--print-architecture']).strip()
-  except OSError:
-    # This Linux distribution doesn't use "dpkg".
-    return None
-
-
-def get_host_package_vars():
-  """Returns a dict with variables that describe the current host environment.
-
-  The returned platform may not match the machine environment exactly, but it is
-  compatible with it.
-
-  For example, on ARMv7 machines we claim that we are in fact running ARMv6
-  (which is subset of ARMv7), since we don't really care about v7 over v6
-  difference and want to reduce the variability in supported architectures
-  instead.
-
-  Similarly, if running on 64-bit Linux with 32-bit user space (based on python
-  interpreter bitness), we claim that machine is 32-bit, since most 32-bit Linux
-  Chrome Infra bots are in fact running 64-bit kernels with 32-bit userlands.
-  """
-  # linux, mac or windows.
   platform_variant = {
       'darwin': 'mac',
       'linux': 'linux',
@@ -1015,7 +1023,8 @@ def get_host_package_vars():
   sys_arch = sys_arch or platform.machine()
   sys_arch_lower = sys_arch.lower()
 
-  # amd64, 386, etc.
+  # A set of architectures that we expect can be building packages. This doesn't
+  # need to cover all CIPD architectures.
   platform_arch = {
       'amd64': 'amd64',
       'i386': '386',
@@ -1025,9 +1034,7 @@ def get_host_package_vars():
       'arm64': 'arm64',
       'armv6l': 'armv6l',
       'armv7l': 'armv6l',  # we prefer to use older instruction set for builds
-  }.get(sys_arch_lower)
-  if not platform_arch:
-    raise ValueError('Unknown machine arch: %s' % sys_arch)
+  }.get(sys_arch_lower, sys_arch_lower)
 
   # Most 32-bit Linux Chrome Infra bots are in fact running 64-bit kernel with
   # 32-bit userland. Detect this case (based on bitness of the python
@@ -1037,31 +1044,51 @@ def get_host_package_vars():
       sys.maxsize == (2 ** 31) - 1):
     platform_arch = '386'
 
+  # E.g. 'linux-amd64'.
+  return '%s-%s' % (platform_variant, platform_arch)
+
+
+def get_linux_host_arch():
+  """The Linux host architecture, or None if it could not be resolved."""
+  try:
+    # Query "dpkg" to identify the userspace architecture.
+    return check_output(['dpkg', '--print-architecture']).strip()
+  except OSError:
+    # This Linux distribution doesn't use "dpkg".
+    return None
+
+
+def get_cipd_platform_from_env():
+  """Returns CIPD platform to use by default in this build invocation.
+
+  This is used if `--cipd-platform` is unset (usually when running the build
+  script locally to test stuff). It looks at `GOOS`, `GOARCH` etc and also at
+  the host CIPD platform.
+
+  Note this runs before `go` is in PATH, so it can't just ask `go env`.
+  """
+  # Merge explicitly set GO* env vars with ones that are based on the host.
+  # This allows e.g. setting only GOARCH=... to do cross compilation into this
+  # arch for the host OS.
+  merged = os.environ.copy()
+  for k, v in cipd_platform_to_go_env(get_host_cipd_platform()).items():
+    if not merged.get(k):
+      merged[k] = v
+  return go_env_to_cipd_platform(merged)
+
+
+def get_package_vars(cipd_platform):
+  """Returns a dict with variables that describe the package target environment.
+
+  Variables can be referenced in the package definition YAML as
+  ${variable_name}. It allows to reuse exact same definition file for similar
+  packages (e.g. packages with same cross platform binary, but for different
+  platforms).
+  """
   return {
-      # e.g. '.exe' or ''.
-      'exe_suffix': EXE_SUFFIX,
-      # e.g. 'linux-amd64'
-      'platform': '%s-%s' % (platform_variant, platform_arch),
+      'exe_suffix': '.exe' if cipd_platform.startswith('windows-') else '',
+      'platform': cipd_platform,
   }
-
-
-def get_host_goos():
-  """Returns GOOS value matching the host that builds the package."""
-  goos = {
-      'darwin': 'darwin',
-      'linux': 'linux',
-      'linux2': 'linux',
-      'win32': 'windows',
-  }.get(sys.platform)
-  if not goos:
-    raise ValueError('Unknown OS: %s' % sys.platform)
-  return goos
-
-
-def get_host_goarch():
-  """Returns GOARCH value matching the host that builds the package."""
-  host_vars = get_host_package_vars()
-  return host_vars['platform'].split('-')[1]
 
 
 def is_targeting_windows(pkg_vars):
@@ -1114,7 +1141,6 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
     for k, v in sorted(package_vars.items()):
       args.extend(['-pkg-var', '%s:%s' % (k, v)])
     args.extend(['-out', out_file])
-    args.extend(['-hash-algo', HASH_ALGO])
     exit_code, json_output = run_cipd(cipd_exe, 'pkg-build', args)
     if exit_code:
       print()
@@ -1156,7 +1182,6 @@ def upload_pkg(cipd_exe, pkg_file, service_url, tags, update_latest_ref,
     args.extend(['-ref', 'latest'])
   if service_account:
     args.extend(['-service-account-json', service_account])
-  args.extend(['-hash-algo', HASH_ALGO])
   args.append(pkg_file)
   exit_code, json_output = run_cipd(cipd_exe, 'pkg-register', args)
   if exit_code:
@@ -1244,23 +1269,21 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
     raise TagException('Failed to tag the CIPD package, see logs')
 
 
-def get_build_out_file(package_out_dir, pkg_def):
+def get_build_out_file(package_out_dir, pkg_def, out_files_sfx):
   """Returns a path where to put built *.cipd package file.
 
   Args:
     package_out_dir: root directory where to put *.cipd files.
     pkg_def: instance of PackageDef being built.
+    out_files_sfx: a suffix to append to the filename.
   """
-  # When cross-compiling, append a suffix to package file name to indicate that
-  # it's for foreign platform.
-  sfx = ''
-  if is_cross_compiling():
-    sfx = '+' + get_target_package_vars()['platform']
-  return os.path.join(package_out_dir, pkg_def.name + sfx + '.cipd')
+  return os.path.join(package_out_dir, pkg_def.name + out_files_sfx + '.cipd')
 
 
 def run(
+    cipd_platform,
     go_workspace,
+    module_map,
     builder,
     package_def_dir,
     package_out_dir,
@@ -1276,7 +1299,9 @@ def run(
   """Rebuilds python and Go universes and CIPD packages.
 
   Args:
+    cipd_platform: a CIPD platform to build for or "" to auto-detect.
     go_workspace: path to 'infra/go' or 'infra_internal/go'.
+    module_map: a dict "go package prefix => directory with main module".
     builder: name of CI buildbot builder that invoked the script.
     package_def_dir: path to build/packages dir to search for *.yaml.
     package_out_dir: where to put built packages.
@@ -1294,37 +1319,61 @@ def run(
   """
   assert build or upload, 'Both build and upload are False, nothing to do'
 
-  # We need both GOOS and GOARCH or none.
-  if is_cross_compiling():
-    if not os.environ.get('GOOS') or not os.environ.get('GOARCH'):
-      print('When cross-compiling both GOOS and GOARCH environment variables '
-            'must be set.', file=sys.stderr)
-      return 1
-    if os.environ.get('GOARM', '6') != '6':
-      print('Only GOARM=6 is supported for now.', file=sys.stderr)
-      return 1
+  # If --cipd-platform is unset, derived it based on the host and environ. Check
+  # all involved platforms are actually supported.
+  try:
+    cipd_platform = cipd_platform or get_cipd_platform_from_env()
+    _ = cipd_platform_to_go_env(cipd_platform)
+    _ = cipd_platform_to_go_env(get_host_cipd_platform())
+  except UnsupportedException as exc:
+    print(exc, file=sys.stderr)
+    return 1
 
-  # Load all package definitions and pick ones we want to build (based on
-  # whether we are cross-compiling or not).
+  # If cross-compiling, append a suffix to the *.cipd files stored in the output
+  # directory. That way we can store many different variants of the same package
+  # there.
+  out_files_sfx = ''
+  if cipd_platform != get_host_cipd_platform():
+    out_files_sfx = '+' + cipd_platform
+
+  # Load all package definitions.
   try:
     defs = enumerate_packages(package_def_dir, package_def_files)
   except PackageDefException as exc:
     print(exc, file=sys.stderr)
     return 1
-  packages_to_visit = [p for p in defs if p.should_visit()]
+
+  # Pick ones we want to build based on the CIPD platform. Log when skipping
+  # some explicitly requested packages.
+  packages_to_visit = []
+  for p in defs:
+    if cipd_platform in p.platforms:
+      packages_to_visit.append(p)
+    elif package_def_files:
+      print('Skipping %s since it doesn\'t list %s in its "platforms" '
+            'section in the YAML.' % (p.name, cipd_platform))
+
+  # Fail if was given an explicit list of packages to build (usually just one),
+  # but they all were filtered out.
+  if package_def_files and not packages_to_visit:
+    print(
+        'None of the requested packages match CIPD platform %s, adjust their '
+        '"platforms" section in the YAML if necessary.' % cipd_platform,
+        file=sys.stderr)
+    return 1
 
   # Make sure we have a Go toolset and it matches the host platform we detected
-  # in get_host_package_vars(). Otherwise we may end up uploading wrong binaries
-  # under host platform CIPD package suffix. It's important on Linux with 64-bit
-  # kernel and 32-bit userland (we must use 32-bit Go in that case, even if
-  # 64-bit Go works too).
+  # in get_host_cipd_platform() as an extra check that the environment looks
+  # good. In theory we can use any toolset, since we are going to be setting all
+  # GOOS, GOARCH etc env vars explicitly, enabling cross-compilation, but an
+  # extra check won't hurt.
   go_env, go_ver = bootstrap_go_toolset(go_workspace)
-  host_vars = get_host_package_vars()
-  expected_arch = host_vars['platform'].split('-')[1]
-  if go_env['GOHOSTARCH'] != expected_arch:
+  expected_host_env = cipd_platform_to_go_env(get_host_cipd_platform())
+  if go_env['GOHOSTARCH'] != expected_host_env['GOARCH']:
     print(
         'Go toolset GOHOSTARCH (%s) doesn\'t match expected architecture (%s)' %
-        (go_env['GOHOSTARCH'], expected_arch), file=sys.stderr)
+        (go_env['GOHOSTARCH'], expected_host_env['GOARCH']),
+        file=sys.stderr)
     return 1
 
   # Append tags related to the build host. They are especially important when
@@ -1332,10 +1381,14 @@ def run(
   # platform in the package name with value of 'build_host_platform' tag.
   tags = list(tags)
   tags.append('build_host_hostname:' + socket.gethostname().split('.')[0])
-  tags.append('build_host_platform:' + host_vars['platform'])
+  tags.append('build_host_platform:' + get_host_cipd_platform())
   tags.append('go_version:' + go_ver)
 
   print_title('Overview')
+  print('CIPD platform:')
+  print('  target = %s' % cipd_platform)
+  print('  host = %s' % get_host_cipd_platform())
+  print()
   if upload:
     print('Service URL: %s' % service_url)
     print()
@@ -1347,12 +1400,12 @@ def run(
     print('  %s' % pkg_def.name)
   if not packages_to_visit:
     print('  <none>')
-    print()
+  print()
   print('Variables to pass to CIPD:')
-  package_vars = get_package_vars()
+  package_vars = get_package_vars(cipd_platform)
   for k, v in sorted(package_vars.items()):
     print('  %s = %s' % (k, v))
-  if upload and tags:
+  if upload:
     print()
     print('Tags to attach to uploaded packages:')
     for tag in sorted(tags):
@@ -1376,7 +1429,7 @@ def run(
       os.makedirs(package_out_dir)
     cleaned = False
     for pkg_def in packages_to_visit:
-      out_file = get_build_out_file(package_out_dir, pkg_def)
+      out_file = get_build_out_file(package_out_dir, pkg_def, out_files_sfx)
       if os.path.exists(out_file):
         print('Removing stale %s' % os.path.basename(out_file))
         os.remove(out_file)
@@ -1386,7 +1439,7 @@ def run(
 
   # Build the world.
   if build:
-    build_infra(go_workspace, packages_to_visit)
+    build_go_code(go_workspace, cipd_platform, module_map, packages_to_visit)
 
   # Package it.
   failed = []
@@ -1395,7 +1448,7 @@ def run(
     if pkg_def.disabled:
       print_title('Skipping building disabled %s' % pkg_def.name)
       continue
-    out_file = get_build_out_file(package_out_dir, pkg_def)
+    out_file = get_build_out_file(package_out_dir, pkg_def, out_files_sfx)
     try:
       info = None
       if build:
@@ -1457,25 +1510,17 @@ def run(
   return 1 if failed else 0
 
 
-def build_infra(go_workspace, pkg_defs):
-  """Builds infra.git multiverse.
-
-  Args:
-    pkg_defs: list of PackageDef instances for packages being built.
-  """
-  # Build all necessary go binaries.
-  build_go_code(go_workspace, MODULE_MAP, pkg_defs)
-
-
-def main(
-    args,
-    go_workspace=os.path.join(ROOT, 'go'),
-    package_def_dir=os.path.join(ROOT, 'build', 'packages'),
-    package_out_dir=os.path.join(ROOT, 'build', 'out')):
+def main(args):
   parser = argparse.ArgumentParser(description='Builds infra CIPD packages')
   parser.add_argument(
       'yamls', metavar='YAML', type=str, nargs='*',
       help='name of a file in build/packages/* with the package definition')
+  parser.add_argument(
+      '--cipd-platform',
+      metavar='CIPD_PLATFORM',
+      help=('CIPD platform to build packages for (if unset, derived from '
+            'the environment)'),
+  )
   parser.add_argument(
       '--signing-identity',
       metavar='IDENTITY',
@@ -1484,26 +1529,36 @@ def main(
       help='Signing identity used for mac codesign. '
       'Use adhoc sign if not provided.')
   parser.add_argument(
-      '--upload',  action='store_true', dest='upload', default=False,
+      '--upload',
+      action='store_true',
+      dest='upload',
+      default=False,
       help='upload packages into the repository')
   parser.add_argument(
-      '--no-rebuild',  action='store_false', dest='build', default=True,
+      '--no-rebuild',
+      action='store_false',
+      dest='build',
+      default=True,
       help='when used with --upload means upload existing *.cipd files')
   parser.add_argument(
-      '--go-workspace', metavar='PATH', default=go_workspace,
+      '--go-workspace',
+      metavar='PATH',
+      default=os.path.join(ROOT, 'go'),
       help='points at either infra.git/go or infra_internal.git/go.',
   )
   parser.add_argument(
-      '--package-definition-dir', metavar='PATH', default=package_def_dir,
-      help=(
-        'points at either infra.git/build/packages or '
-        'infra_internal.git/build/packages.'),
+      '--package-definition-dir',
+      metavar='PATH',
+      default=os.path.join(ROOT, 'build', 'packages'),
+      help=('points at either infra.git/build/packages or '
+            'infra_internal.git/build/packages.'),
   )
   parser.add_argument(
-      '--package-out-dir', metavar='PATH', default=package_out_dir,
-      help=(
-        'points at either infra.git/build/out or '
-        'infra_internal.git/build/out.'),
+      '--package-out-dir',
+      metavar='PATH',
+      default=os.path.join(ROOT, 'build', 'out'),
+      help=('points at either infra.git/build/out or '
+            'infra_internal.git/build/out.'),
   )
   parser.add_argument(
       '--map-go-module', metavar='MOD=PATH', action='append',
@@ -1529,12 +1584,15 @@ def main(
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
 
+  module_map = DEFAULT_MODULE_MAP.copy()
   for mapping in (args.map_go_module or ()):
     mod, path = mapping.split('=')
-    MODULE_MAP[mod] = path
+    module_map[mod] = path
 
   return run(
+      args.cipd_platform,
       args.go_workspace,
+      module_map,
       args.builder,
       args.package_definition_dir,
       args.package_out_dir,
