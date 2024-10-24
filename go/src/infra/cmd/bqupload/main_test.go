@@ -15,19 +15,30 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/google/go-cmp/cmp"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/registry"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/comparison"
+	"go.chromium.org/luci/common/testing/truth/failure"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
+
+func init() {
+	registry.RegisterCmpOption(cmp.AllowUnexported(tableRow{}))
+}
 
 type savedValue struct {
 	insertID string
 	row      map[string]bigquery.Value
 }
 
-func value(insertID, jsonVal string) savedValue {
+func value(t testing.TB, insertID, jsonVal string) savedValue {
+	t.Helper()
 	v := savedValue{insertID: insertID}
-	So(json.Unmarshal([]byte(jsonVal), &v.row), ShouldBeNil)
+	assert.Loosely(t, json.Unmarshal([]byte(jsonVal), &v.row), should.BeNil, truth.LineContext())
 	return v
 }
 
@@ -56,27 +67,27 @@ func doReadInput(data string, jsonList bool, extraColumns string) ([]savedValue,
 func TestReadInput(t *testing.T) {
 	t.Parallel()
 
-	Convey("Empty", t, func() {
+	ftt.Run("Empty", t, func(t *ftt.Test) {
 		vals, err := doReadInput("", false, "")
-		So(err, ShouldBeNil)
-		So(vals, ShouldHaveLength, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.HaveLength(0))
 	})
 
-	Convey("Whitespace only", t, func() {
+	ftt.Run("Whitespace only", t, func(t *ftt.Test) {
 		vals, err := doReadInput("\n  \n\n  \n  ", false, "")
-		So(err, ShouldBeNil)
-		So(vals, ShouldHaveLength, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.HaveLength(0))
 	})
 
-	Convey("One line", t, func() {
+	ftt.Run("One line", t, func(t *ftt.Test) {
 		vals, err := doReadInput(`{"k": "v"}`, false, "")
-		So(err, ShouldBeNil)
-		So(vals, ShouldResemble, []savedValue{
-			value("seed:0", `{"k": "v"}`),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k": "v"}`),
+		}))
 	})
 
-	Convey("A bunch of lines (with spaces)", t, func() {
+	ftt.Run("A bunch of lines (with spaces)", t, func(t *ftt.Test) {
 		vals, err := doReadInput(`
 			{"k": "v1"}
 
@@ -84,74 +95,74 @@ func TestReadInput(t *testing.T) {
 			{"k": "v3"}
 
 		`, false, "")
-		So(err, ShouldBeNil)
-		So(vals, ShouldResemble, []savedValue{
-			value("seed:0", `{"k": "v1"}`),
-			value("seed:1", `{"k": "v2"}`),
-			value("seed:2", `{"k": "v3"}`),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k": "v1"}`),
+			value(t, "seed:1", `{"k": "v2"}`),
+			value(t, "seed:2", `{"k": "v3"}`),
+		}))
 	})
 
-	Convey("Broken line", t, func() {
+	ftt.Run("Broken line", t, func(t *ftt.Test) {
 		_, err := doReadInput(`
 			{"k": "v1"}
 
 			{"k": "v2
 			{"k": "v2"}
 		`, false, "")
-		So(err, ShouldErrLike, `bad input line 4: bad JSON - unexpected end of JSON input`)
+		assert.Loosely(t, err, should.ErrLike(`bad input line 4: bad JSON - unexpected end of JSON input`))
 	})
 
-	Convey("JSON List", t, func() {
+	ftt.Run("JSON List", t, func(t *ftt.Test) {
 		out, err := doReadInput(`[
 			{"k": "v1"},
 			{"k": "v2"},
 			{"k": "v2"}
 		]`, true, "")
-		So(err, ShouldBeNil)
-		So(out, ShouldResemble, []savedValue{
-			value("seed:0", `{"k": "v1"}`),
-			value("seed:1", `{"k": "v2"}`),
-			value("seed:2", `{"k": "v2"}`),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k": "v1"}`),
+			value(t, "seed:1", `{"k": "v2"}`),
+			value(t, "seed:2", `{"k": "v2"}`),
+		}))
 	})
 
-	Convey("JSON List (with extra columns)", t, func() {
+	ftt.Run("JSON List (with extra columns)", t, func(t *ftt.Test) {
 		out, err := doReadInput(`[
 			{"k1": "v1", "k3": "v1"},
 			{"k1": "v2"},
 			{"k1": "v2", "k4":"v5"}
 		]`, true, `{"k1": "v3", "k3": "v4"}`)
-		So(err, ShouldBeNil)
-		So(out, ShouldResemble, []savedValue{
-			value("seed:0", `{"k1": "v3", "k3": "v4"}`),
-			value("seed:1", `{"k1": "v3", "k3": "v4"}`),
-			value("seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k1": "v3", "k3": "v4"}`),
+			value(t, "seed:1", `{"k1": "v3", "k3": "v4"}`),
+			value(t, "seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
+		}))
 	})
 
-	Convey("lines (with extra columns)", t, func() {
+	ftt.Run("lines (with extra columns)", t, func(t *ftt.Test) {
 		out, err := doReadInput(`
 			{"k1": "v1", "k3": "v1"}
 			{"k1": "v2"}
 			{"k1": "v2", "k4":"v5"}
 		`, false, `{"k1": "v3", "k3": "v4"}`)
-		So(err, ShouldBeNil)
-		So(out, ShouldResemble, []savedValue{
-			value("seed:0", `{"k1": "v3", "k3": "v4"}`),
-			value("seed:1", `{"k1": "v3", "k3": "v4"}`),
-			value("seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k1": "v3", "k3": "v4"}`),
+			value(t, "seed:1", `{"k1": "v3", "k3": "v4"}`),
+			value(t, "seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
+		}))
 	})
 
-	Convey("Huge line", t, func() {
+	ftt.Run("Huge line", t, func(t *ftt.Test) {
 		// Note: this breaks bufio.Scanner with "token too long" error.
 		huge := fmt.Sprintf(`{"k": %q}`, strings.Repeat("x", 100000))
 		vals, err := doReadInput(huge, false, "")
-		So(err, ShouldBeNil)
-		So(vals, ShouldResemble, []savedValue{
-			value("seed:0", huge),
-		})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.Resemble([]savedValue{
+			value(t, "seed:0", huge),
+		}))
 	})
 }
 
@@ -188,7 +199,7 @@ func TestDoInsert(t *testing.T) {
 
 	opts := uploadOpts{batchSize: 3}
 
-	Convey("One batch", t, func() {
+	ftt.Run("One batch", t, func(t *ftt.Test) {
 		rows := []*tableRow{
 			{insertID: "1"},
 			{insertID: "2"},
@@ -196,11 +207,11 @@ func TestDoInsert(t *testing.T) {
 		}
 		var ins fakeInserter
 		err := doInsert(ctx, io.Discard, &opts, &ins, rows)
-		So(err, ShouldBeNil)
-		So(ins.calls, shouldResembleUnsorted, [][]*tableRow{rows})
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ins.calls, shouldMatchUnsorted([][]*tableRow{rows}))
 	})
 
-	Convey("Multiple batches", t, func() {
+	ftt.Run("Multiple batches", t, func(t *ftt.Test) {
 		rows := []*tableRow{
 			{insertID: "1"},
 			{insertID: "2"},
@@ -212,15 +223,15 @@ func TestDoInsert(t *testing.T) {
 		}
 		var ins fakeInserter
 		err := doInsert(ctx, io.Discard, &opts, &ins, rows)
-		So(err, ShouldBeNil)
-		So(ins.calls, shouldResembleUnsorted, [][]*tableRow{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ins.calls, shouldMatchUnsorted([][]*tableRow{
 			rows[0:3],
 			rows[3:6],
 			rows[6:7],
-		})
+		}))
 	})
 
-	Convey("Multiple batches with failures", t, func() {
+	ftt.Run("Multiple batches with failures", t, func(t *ftt.Test) {
 		rows := []*tableRow{
 			{insertID: "1"},
 			{insertID: "2"},
@@ -239,26 +250,31 @@ func TestDoInsert(t *testing.T) {
 		sort.Slice(multiErr, func(i, j int) bool {
 			return multiErr[i].InsertID < multiErr[j].InsertID
 		})
-		So(err, ShouldResemble, bigquery.PutMultiError{
+		assert.Loosely(t, err, should.Resemble(bigquery.PutMultiError{
 			bigquery.RowInsertionError{InsertID: "1"},
 			bigquery.RowInsertionError{InsertID: "5"},
-		})
-		So(ins.calls, shouldResembleUnsorted, [][]*tableRow{
+		}))
+		assert.Loosely(t, ins.calls, shouldMatchUnsorted([][]*tableRow{
 			rows[0:3],
 			rows[3:6],
 			rows[6:7],
-		})
+		}))
 	})
 }
 
-// shouldResembleUnsorted is like ShouldResemble, but operates on [][]*tableRow
+// shouldMatchUnsorted is like should.Match, but operates on [][]*tableRow
 // and ignores the ordering of the `actual` slice, since the ordering doesn't
 // matter as long as all rows are uploaded. The `expected` slice must already be
 // sorted by insert ID.
-func shouldResembleUnsorted(actual interface{}, expected ...interface{}) string {
-	actualRows := actual.([][]*tableRow)
-	sort.Slice(actualRows, func(i, j int) bool {
-		return actualRows[i][0].insertID < actualRows[j][0].insertID
-	})
-	return ShouldResemble(actualRows, expected...)
+func shouldMatchUnsorted(expected [][]*tableRow) comparison.Func[[][]*tableRow] {
+	return func(actual [][]*tableRow) *failure.Summary {
+		sort.Slice(actual, func(i, j int) bool {
+			return actual[i][0].insertID < actual[j][0].insertID
+		})
+		ret := should.Match(expected)(actual)
+		if ret != nil {
+			ret.Comparison.Name = "shouldMatchUnsorted"
+		}
+		return ret
+	}
 }
