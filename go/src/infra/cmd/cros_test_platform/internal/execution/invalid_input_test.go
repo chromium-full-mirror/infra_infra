@@ -13,18 +13,20 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 )
 
 func TestLaunchForNonExistentBot(t *testing.T) {
-	Convey("In an execution with one invocation but not bots", t, func() {
+	ftt.Run("In an execution with one invocation but not bots", t, func(t *ftt.Test) {
 		trc := &trservice.CallCountingClientWrapper{
 			Client: trservice.NewBotsAwareFakeClient(),
 		}
@@ -51,31 +53,31 @@ func TestLaunchForNonExistentBot(t *testing.T) {
 			},
 			"",
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		resp := extractSingleResponse(resps)
+		resp := extractSingleResponse(t, resps)
 
-		Convey("then task result is complete with unspecified verdict.", func() {
-			So(resp.TaskResults, ShouldHaveLength, 1)
+		t.Run("then task result is complete with unspecified verdict.", func(t *ftt.Test) {
+			assert.Loosely(t, resp.TaskResults, should.HaveLength(1))
 			tr := resp.TaskResults[0]
-			So(tr.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_REJECTED)
-			So(tr.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_UNSPECIFIED)
-			So(tr.RejectedTaskDimensions, ShouldContainKey, "freeform-key")
-			So(tr.RejectedDimensions[1].Key, ShouldEqual, "freeform-key")
+			assert.Loosely(t, tr.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_REJECTED))
+			assert.Loosely(t, tr.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_UNSPECIFIED))
+			assert.Loosely(t, tr.RejectedTaskDimensions, should.ContainKey("freeform-key"))
+			assert.Loosely(t, tr.RejectedDimensions[1].Key, should.Equal("freeform-key"))
 		})
-		Convey("and overall result is complete with failed verdict.", func() {
-			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_FAILED)
+		t.Run("and overall result is complete with failed verdict.", func(t *ftt.Test) {
+			assert.Loosely(t, resp.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+			assert.Loosely(t, resp.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_FAILED))
 		})
-		Convey("and no skylab tasks are created.", func() {
-			So(trc.CallCounts.LaunchTask, ShouldEqual, 0)
-			So(trc.CallCounts.FetchResults, ShouldEqual, 0)
+		t.Run("and no skylab tasks are created.", func(t *ftt.Test) {
+			assert.Loosely(t, trc.CallCounts.LaunchTask, should.BeZero)
+			assert.Loosely(t, trc.CallCounts.FetchResults, should.BeZero)
 		})
 	})
 }
 
 func TestRequestShouldNotSetBothQSAccountAndPriority(t *testing.T) {
-	Convey("Given a client test with both quota account and priority set", t, func() {
+	ftt.Run("Given a client test with both quota account and priority set", t, func(t *ftt.Test) {
 		params := basicParams()
 		params.Scheduling = &test_platform.Request_Params_Scheduling{
 			Pool: &test_platform.Request_Params_Scheduling_UnmanagedPool{
@@ -84,8 +86,8 @@ func TestRequestShouldNotSetBothQSAccountAndPriority(t *testing.T) {
 			QsAccount: "foo-account",
 			Priority:  50,
 		}
-		Convey("The test should end up with a panic.", func() {
-			So(
+		t.Run("The test should end up with a panic.", func(t *ftt.Test) {
+			assert.Loosely(t,
 				func() {
 					runWithParams(
 						context.Background(),
@@ -97,15 +99,14 @@ func TestRequestShouldNotSetBothQSAccountAndPriority(t *testing.T) {
 						"",
 					)
 				},
-				ShouldPanic,
-			)
+				should.Panic)
 		})
 	})
 }
 
 func TestIncompatibleDependencies(t *testing.T) {
 
-	Convey("In testing context", t, func() {
+	ftt.Run("In testing context", t, func(t *ftt.Test) {
 		cases := []struct {
 			Tag    string
 			Params *test_platform.Request_Params
@@ -142,7 +143,7 @@ func TestIncompatibleDependencies(t *testing.T) {
 		}
 
 		for _, c := range cases {
-			Convey(fmt.Sprintf("with %s", c.Tag), func() {
+			t.Run(fmt.Sprintf("with %s", c.Tag), func(t *ftt.Test) {
 				trClient := &trservice.CallCountingClientWrapper{
 					Client: trservice.StubClient{},
 				}
@@ -153,23 +154,23 @@ func TestIncompatibleDependencies(t *testing.T) {
 					c.Invs,
 					"",
 				)
-				So(err, ShouldBeNil)
-				resp := extractSingleResponse(resps)
+				assert.Loosely(t, err, should.BeNil)
+				resp := extractSingleResponse(t, resps)
 
-				Convey("then task result is rejected with unspecified verdict.", func() {
-					So(resp.TaskResults, ShouldHaveLength, 1)
+				t.Run("then task result is rejected with unspecified verdict.", func(t *ftt.Test) {
+					assert.Loosely(t, resp.TaskResults, should.HaveLength(1))
 					tr := resp.TaskResults[0]
-					So(tr.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_REJECTED)
-					So(tr.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_UNSPECIFIED)
+					assert.Loosely(t, tr.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_REJECTED))
+					assert.Loosely(t, tr.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_UNSPECIFIED))
 
 				})
-				Convey("and overall result is complete with failed verdict.", func() {
-					So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-					So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_FAILED)
+				t.Run("and overall result is complete with failed verdict.", func(t *ftt.Test) {
+					assert.Loosely(t, resp.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+					assert.Loosely(t, resp.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_FAILED))
 				})
-				Convey("and no skylab swarming tasks are created.", func() {
-					So(trClient.CallCounts.LaunchTask, ShouldEqual, 0)
-					So(trClient.CallCounts.FetchResults, ShouldEqual, 0)
+				t.Run("and no skylab swarming tasks are created.", func(t *ftt.Test) {
+					assert.Loosely(t, trClient.CallCounts.LaunchTask, should.BeZero)
+					assert.Loosely(t, trClient.CallCounts.FetchResults, should.BeZero)
 				})
 			})
 		}

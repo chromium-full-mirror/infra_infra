@@ -9,13 +9,13 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 	"infra/libs/skylab/request"
@@ -35,8 +35,8 @@ func (g *fakeArgsGenerator) CheckConsistency() error {
 }
 
 func TestResultBeforeRefresh(t *testing.T) {
-	Convey("Give a single task that has not be Refresh()ed", t, func() {
-		t, err := NewBuild(
+	ftt.Run("Give a single task that has not be Refresh()ed", t, func(t *ftt.Test) {
+		tsk, err := NewBuild(
 			context.Background(),
 			trservice.StubClient{},
 			&fakeArgsGenerator{
@@ -48,24 +48,24 @@ func TestResultBeforeRefresh(t *testing.T) {
 			},
 			nil,
 		)
-		So(err, ShouldBeNil)
-		Convey("Result() returns known values and reasonable defaults", func() {
-			r := t.Result()
-			So(r.Name, ShouldEqual, "foo-task")
-			So(r.State, ShouldNotBeNil)
-			So(r.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_PENDING)
-			So(r.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_UNSPECIFIED)
-			So(r.LogUrl, ShouldBeEmpty)
-			So(r.LogData, ShouldBeNil)
-			So(r.TestCases, ShouldHaveLength, 0)
-			So(r.PrejobSteps, ShouldHaveLength, 0)
+		assert.Loosely(t, err, should.BeNil)
+		t.Run("Result() returns known values and reasonable defaults", func(t *ftt.Test) {
+			r := tsk.Result()
+			assert.Loosely(t, r.Name, should.Equal("foo-task"))
+			assert.Loosely(t, r.State, should.NotBeNil)
+			assert.Loosely(t, r.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_PENDING))
+			assert.Loosely(t, r.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_UNSPECIFIED))
+			assert.Loosely(t, r.LogUrl, should.BeEmpty)
+			assert.Loosely(t, r.LogData, should.BeNil)
+			assert.Loosely(t, r.TestCases, should.HaveLength(0))
+			assert.Loosely(t, r.PrejobSteps, should.HaveLength(0))
 		})
 	})
 }
 
 // Test that autotest results for a single completed task map correctly.
 func TestSingleAutotestTaskResults(t *testing.T) {
-	Convey("Given a single task's autotest results", t, func() {
+	ftt.Run("Given a single task's autotest results", t, func(t *ftt.Test) {
 		cases := []struct {
 			description   string
 			result        *skylab_test_runner.Result_Autotest
@@ -215,15 +215,15 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.description, func() {
-				Convey("then task results are correctly converted to verdict.", func() {
+			t.Run(c.description, func(t *ftt.Test) {
+				t.Run("then task results are correctly converted to verdict.", func(t *ftt.Test) {
 					result := callTaskResult(c.result, nil)
-					So(result, ShouldNotBeNil)
-					So(result.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-					So(result.State.Verdict, ShouldEqual, c.expectVerdict)
-					So(result.LogData, ShouldNotBeNil)
+					assert.Loosely(t, result, should.NotBeNil)
+					assert.Loosely(t, result.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+					assert.Loosely(t, result.State.Verdict, should.Equal(c.expectVerdict))
+					assert.Loosely(t, result.LogData, should.NotBeNil)
 					if result.LogData != nil {
-						So(result.LogData.GsUrl, ShouldEqual, "gs://some-url")
+						assert.Loosely(t, result.LogData.GsUrl, should.Equal("gs://some-url"))
 					}
 				})
 			})
@@ -232,7 +232,7 @@ func TestSingleAutotestTaskResults(t *testing.T) {
 }
 
 func TestPrejobSteps(t *testing.T) {
-	Convey("Given a single task's prejob steps", t, func() {
+	ftt.Run("Given a single task's prejob steps", t, func(t *ftt.Test) {
 		cases := []struct {
 			description     string
 			result          *skylab_test_runner.Result_Prejob
@@ -304,8 +304,8 @@ func TestPrejobSteps(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.description, func() {
-				Convey("then prejob steps are reported correctly.", func() {
+			t.Run(c.description, func(t *ftt.Test) {
+				t.Run("then prejob steps are reported correctly.", func(t *ftt.Test) {
 					result := callTaskResult(nil, c.result)
 					sort.SliceStable(result.PrejobSteps, func(i, j int) bool {
 						return result.PrejobSteps[i].Name < result.PrejobSteps[j].Name
@@ -313,7 +313,7 @@ func TestPrejobSteps(t *testing.T) {
 					sort.SliceStable(c.expectTestCases, func(i, j int) bool {
 						return c.expectTestCases[i].Name < c.expectTestCases[j].Name
 					})
-					So(result.PrejobSteps, ShouldResembleProto, c.expectTestCases)
+					assert.Loosely(t, result.PrejobSteps, should.Resemble(c.expectTestCases))
 				})
 			})
 		}
@@ -321,7 +321,7 @@ func TestPrejobSteps(t *testing.T) {
 }
 
 func TestAutotestTestCases(t *testing.T) {
-	Convey("Given a single task's autotest results", t, func() {
+	ftt.Run("Given a single task's autotest results", t, func(t *ftt.Test) {
 		cases := []struct {
 			description     string
 			result          *skylab_test_runner.Result_Autotest
@@ -402,8 +402,8 @@ func TestAutotestTestCases(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.description, func() {
-				Convey("then test cases are reported correctly.", func() {
+			t.Run(c.description, func(t *ftt.Test) {
+				t.Run("then test cases are reported correctly.", func(t *ftt.Test) {
 					result := callTaskResult(c.result, nil)
 					sort.SliceStable(result.TestCases, func(i, j int) bool {
 						return result.TestCases[i].Name < result.TestCases[j].Name
@@ -411,7 +411,7 @@ func TestAutotestTestCases(t *testing.T) {
 					sort.SliceStable(c.expectTestCases, func(i, j int) bool {
 						return c.expectTestCases[i].Name < c.expectTestCases[j].Name
 					})
-					So(result.TestCases, ShouldResembleProto, c.expectTestCases)
+					assert.Loosely(t, result.TestCases, should.Resemble(c.expectTestCases))
 				})
 			})
 		}

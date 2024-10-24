@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
@@ -36,6 +35,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
 	"infra/cmd/cros_test_platform/internal/execution"
@@ -45,8 +48,8 @@ import (
 )
 
 func TestLaunchAndWaitTest(t *testing.T) {
-	Convey("Given two enumerated test", t, func() {
-		Convey("when running a skylab execution", func() {
+	ftt.Run("Given two enumerated test", t, func(t *ftt.Test) {
+		t.Run("when running a skylab execution", func(t *ftt.Test) {
 			trClient := &trservice.CallCountingClientWrapper{
 				Client: trservice.StubClient{},
 			}
@@ -58,18 +61,18 @@ func TestLaunchAndWaitTest(t *testing.T) {
 					clientTestInvocation("", ""),
 				},
 			)
-			So(err, ShouldBeNil)
-			resp := extractSingleResponse(resps)
+			assert.Loosely(t, err, should.BeNil)
+			resp := extractSingleResponse(t, resps)
 
-			Convey("then results for all tests are reflected.", func() {
-				So(resp.TaskResults, ShouldHaveLength, 2)
+			t.Run("then results for all tests are reflected.", func(t *ftt.Test) {
+				assert.Loosely(t, resp.TaskResults, should.HaveLength(2))
 				for _, tr := range resp.TaskResults {
-					So(tr.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
+					assert.Loosely(t, tr.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
 				}
 			})
-			Convey("then the expected number of external test_runner calls are made.", func() {
-				So(trClient.CallCounts.LaunchTask, ShouldEqual, 2)
-				So(trClient.CallCounts.FetchResults, ShouldEqual, 2)
+			t.Run("then the expected number of external test_runner calls are made.", func(t *ftt.Test) {
+				assert.Loosely(t, trClient.CallCounts.LaunchTask, should.Equal(2))
+				assert.Loosely(t, trClient.CallCounts.FetchResults, should.Equal(2))
 			})
 		})
 	})
@@ -81,7 +84,7 @@ func TestLaunchAndWaitTest(t *testing.T) {
 //
 // For detailed tests on the handling of autotest test results, see results_test.go.
 func TestTaskStates(t *testing.T) {
-	Convey("Given a single test", t, func() {
+	ftt.Run("Given a single test", t, func(t *ftt.Test) {
 		cases := []struct {
 			description   string
 			lifeCycle     test_platform.TaskState_LifeCycle
@@ -104,7 +107,7 @@ func TestTaskStates(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.description, func() {
+			t.Run(c.description, func(t *ftt.Test) {
 				resps, err := runWithDefaults(
 					context.Background(),
 					trservice.NewStubClientWithCannedIncompleteTasks(c.lifeCycle),
@@ -112,13 +115,13 @@ func TestTaskStates(t *testing.T) {
 						clientTestInvocation("", ""),
 					},
 				)
-				So(err, ShouldBeNil)
-				resp := extractSingleResponse(resps)
+				assert.Loosely(t, err, should.BeNil)
+				resp := extractSingleResponse(t, resps)
 
-				Convey("then the task state is correct.", func() {
-					So(resp.TaskResults, ShouldHaveLength, 1)
-					So(resp.TaskResults[0].State.LifeCycle, ShouldEqual, c.lifeCycle)
-					So(resp.TaskResults[0].State.Verdict, ShouldResemble, c.expectVerdict)
+				t.Run("then the task state is correct.", func(t *ftt.Test) {
+					assert.Loosely(t, resp.TaskResults, should.HaveLength(1))
+					assert.Loosely(t, resp.TaskResults[0].State.LifeCycle, should.Equal(c.lifeCycle))
+					assert.Loosely(t, resp.TaskResults[0].State.Verdict, should.Resemble(c.expectVerdict))
 				})
 			})
 		}
@@ -126,15 +129,15 @@ func TestTaskStates(t *testing.T) {
 }
 
 func TestLaunchTaskError(t *testing.T) {
-	Convey("Error in creating test_runner builds is surfaced correctly", t, func() {
+	ftt.Run("Error in creating test_runner builds is surfaced correctly", t, func(t *ftt.Test) {
 		_, err := runWithDefaults(
 			context.Background(),
 			errorProneLaunchTaskClient{},
 			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
 		)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldContainSubstring, "new task")
-		So(err.Error(), ShouldContainSubstring, "simulated error from fake client")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err.Error(), should.ContainSubstring("new task"))
+		assert.Loosely(t, err.Error(), should.ContainSubstring("simulated error from fake client"))
 	})
 }
 
@@ -148,15 +151,15 @@ func (c errorProneLaunchTaskClient) LaunchTask(ctx context.Context, args *reques
 }
 
 func TestFetchResultsError(t *testing.T) {
-	Convey("Error in fetching test_runner results is surfaced correctly", t, func() {
+	ftt.Run("Error in fetching test_runner results is surfaced correctly", t, func(t *ftt.Test) {
 		_, err := runWithDefaults(
 			context.Background(),
 			errorProneFetchResultsClient{},
 			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
 		)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldContainSubstring, "tick for task")
-		So(err.Error(), ShouldContainSubstring, "simulated error from fake client")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err.Error(), should.ContainSubstring("tick for task"))
+		assert.Loosely(t, err.Error(), should.ContainSubstring("simulated error from fake client"))
 	})
 }
 
@@ -170,7 +173,7 @@ func (c errorProneFetchResultsClient) FetchResults(context.Context, trservice.Ta
 }
 
 func TestTaskURL(t *testing.T) {
-	Convey("Given a single enumerated test running to completion, its task URL is propagated correctly.", t, func() {
+	ftt.Run("Given a single enumerated test running to completion, its task URL is propagated correctly.", t, func(t *ftt.Test) {
 		resps, err := runWithDefaults(
 			context.Background(),
 			stubTestRunnerClientWithCannedURL{
@@ -181,10 +184,10 @@ func TestTaskURL(t *testing.T) {
 				clientTestInvocation("", ""),
 			},
 		)
-		So(err, ShouldBeNil)
-		resp := extractSingleResponse(resps)
-		So(resp.TaskResults, ShouldHaveLength, 1)
-		So(resp.TaskResults[0].TaskUrl, ShouldEqual, "foo-url")
+		assert.Loosely(t, err, should.BeNil)
+		resp := extractSingleResponse(t, resps)
+		assert.Loosely(t, resp.TaskResults, should.HaveLength(1))
+		assert.Loosely(t, resp.TaskResults[0].TaskUrl, should.Equal("foo-url"))
 	})
 }
 
@@ -204,15 +207,15 @@ func (c fleetPolicyFailureClient) CheckFleetTestsPolicy(ctx context.Context, req
 }
 
 func TestCheckFleetPolicyError(t *testing.T) {
-	Convey("Error in Fleet Policy fails the run", t, func() {
+	ftt.Run("Error in Fleet Policy fails the run", t, func(t *ftt.Test) {
 		responses, err := runWithDefaults(
 			context.Background(),
 			fleetPolicyFailureClient{},
 			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
 		)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldContainSubstring, ufsapi.TestStatus_NOT_A_PUBLIC_BOARD.String())
-		So(responses, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, err.Error(), should.ContainSubstring(ufsapi.TestStatus_NOT_A_PUBLIC_BOARD.String()))
+		assert.Loosely(t, responses, should.BeNil)
 	})
 }
 
@@ -231,15 +234,15 @@ func (c fleetPolicyValidClient) CheckFleetTestsPolicy(ctx context.Context, req *
 }
 
 func TestCheckFleetPolicyValid(t *testing.T) {
-	Convey("Valid Fleet Policy continues normal test run flow", t, func() {
+	ftt.Run("Valid Fleet Policy continues normal test run flow", t, func(t *ftt.Test) {
 		responses, err := runWithDefaults(
 			context.Background(),
 			fleetPolicyValidClient{},
 			[]*steps.EnumerationResponse_AutotestInvocation{clientTestInvocation("", "")},
 		)
-		So(err, ShouldBeNil)
-		So(responses, ShouldNotBeNil)
-		So(len(responses), ShouldEqual, 1)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, responses, should.NotBeNil)
+		assert.Loosely(t, len(responses), should.Equal(1))
 	})
 }
 
@@ -269,7 +272,7 @@ func TestCheckFleetPolicyValid(t *testing.T) {
 // 		wg.Wait()
 // 		So(gerr, ShouldBeNil)
 
-// 		resp := extractSingleResponse(gresps)
+// 		resp := extractSingleResponse(t, gresps)
 // 		So(resp, ShouldNotBeNil)
 // 		So(resp.TaskResults, ShouldHaveLength, 1)
 // 		So(resp.TaskResults[0].State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_RUNNING)
@@ -277,19 +280,19 @@ func TestCheckFleetPolicyValid(t *testing.T) {
 // }
 
 func TestEnumerationResponseWithRetries(t *testing.T) {
-	Convey("Given a request with retry enabled", t, func() {
+	ftt.Run("Given a request with retry enabled", t, func(t *ftt.Test) {
 		ctx := setFakeTimeWithImmediateTimeout(context.Background())
 		params := basicParams()
 		params.Retry = &test_platform.Request_Params_Retry{
 			Allow: true,
 		}
-		Convey("and two tests that always fail and retry limit", func() {
+		t.Run("and two tests that always fail and retry limit", func(t *ftt.Test) {
 			invs := invocationsWithServerTests("name1", "name2")
 			for _, inv := range invs {
 				inv.Test.AllowRetries = true
 				inv.Test.MaxRetries = 2
 			}
-			Convey("for skylab execution", func() {
+			t.Run("for skylab execution", func(t *ftt.Test) {
 				resps, err := runWithParams(
 					ctx,
 					trservice.NewStubClientWithFailedTasks(),
@@ -297,28 +300,28 @@ func TestEnumerationResponseWithRetries(t *testing.T) {
 					invs,
 					"",
 				)
-				So(err, ShouldBeNil)
-				resp := extractSingleResponse(resps)
-				Convey("response should contain two enumerated results", func() {
-					So(resp.ConsolidatedResults, ShouldHaveLength, 2)
+				assert.Loosely(t, err, should.BeNil)
+				resp := extractSingleResponse(t, resps)
+				t.Run("response should contain two enumerated results", func(t *ftt.Test) {
+					assert.Loosely(t, resp.ConsolidatedResults, should.HaveLength(2))
 				})
 
 				for i, er := range resp.ConsolidatedResults {
-					Convey(fmt.Sprintf("%dst enumerated result should contain 3 attempts of a single test", i), func() {
+					t.Run(fmt.Sprintf("%dst enumerated result should contain 3 attempts of a single test", i), func(t *ftt.Test) {
 						as := er.GetAttempts()
 						n := as[0].Name
 						for _, a := range as {
-							So(a.Name, ShouldEqual, n)
+							assert.Loosely(t, a.Name, should.Equal(n))
 						}
 					})
 				}
-				Convey("both tests' results should be enumerated", func() {
+				t.Run("both tests' results should be enumerated", func(t *ftt.Test) {
 					names := make([]string, 2)
 					for i := range resp.ConsolidatedResults {
 						names[i] = resp.ConsolidatedResults[i].Attempts[0].Name
 					}
 					sort.Strings(names)
-					So(names, ShouldResemble, []string{"name1", "name2"})
+					assert.Loosely(t, names, should.Resemble([]string{"name1", "name2"}))
 				})
 			})
 		})
@@ -326,7 +329,7 @@ func TestEnumerationResponseWithRetries(t *testing.T) {
 }
 
 func TestRetries(t *testing.T) {
-	Convey("Given a test with", t, func() {
+	ftt.Run("Given a test with", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx, ts := testclock.UseTime(ctx, time.Now())
 		// Setup testclock to immediately advance whenever timer is set; this
@@ -538,7 +541,7 @@ func TestRetries(t *testing.T) {
 			},
 		}
 		for _, c := range cases {
-			Convey(c.name, func() {
+			t.Run(c.name, func(t *ftt.Test) {
 				params.Retry = c.retryParams
 				for _, inv := range c.invocations {
 					inv.Test.AllowRetries = c.testAllowRetry
@@ -550,31 +553,31 @@ func TestRetries(t *testing.T) {
 					Client: c.trClient,
 				}
 				resps, err := runWithParams(ctx, trClient, params, c.invocations, "")
-				So(err, ShouldBeNil)
-				resp := extractSingleResponse(resps)
+				assert.Loosely(t, err, should.BeNil)
+				resp := extractSingleResponse(t, resps)
 
-				Convey("then the launched task count should be correct.", func() {
+				t.Run("then the launched task count should be correct.", func(t *ftt.Test) {
 					// Each test is tried at least once.
 					attemptCount := len(c.invocations) + c.expectedRetryCount
-					So(resp.TaskResults, ShouldHaveLength, attemptCount)
+					assert.Loosely(t, resp.TaskResults, should.HaveLength(attemptCount))
 				})
-				Convey("then task (name, attempt) should be unique.", func() {
+				t.Run("then task (name, attempt) should be unique.", func(t *ftt.Test) {
 					s := make(stringset.Set)
 					for _, res := range resp.TaskResults {
 						s.Add(fmt.Sprintf("%s__%d", res.Name, res.Attempt))
 					}
-					So(s, ShouldHaveLength, len(resp.TaskResults))
+					assert.Loosely(t, s, should.HaveLength(len(resp.TaskResults)))
 				})
 
-				Convey("then the build verdict should be correct.", func() {
-					So(resp.State.Verdict, ShouldEqual, c.expectedSummaryVerdict)
+				t.Run("then the build verdict should be correct.", func(t *ftt.Test) {
+					assert.Loosely(t, resp.State.Verdict, should.Equal(c.expectedSummaryVerdict))
 				})
-				Convey("then the log output should match the retry.", func() {
+				t.Run("then the log output should match the retry.", func(t *ftt.Test) {
 					if len(c.expectedLogShouldContain) > 0 {
-						So(loggerInfo(ml), ShouldContainSubstring, c.expectedLogShouldContain)
+						assert.Loosely(t, loggerInfo(ml), should.ContainSubstring(c.expectedLogShouldContain))
 					}
 					if len(c.expectedLogShouldNotContain) > 0 {
-						So(loggerInfo(ml), ShouldNotContainSubstring, c.expectedLogShouldNotContain)
+						assert.Loosely(t, loggerInfo(ml), should.NotContainSubstring(c.expectedLogShouldNotContain))
 					}
 				})
 			})
@@ -583,7 +586,7 @@ func TestRetries(t *testing.T) {
 }
 
 func TestResponseVerdict(t *testing.T) {
-	Convey("Given a client test", t, func() {
+	ftt.Run("Given a client test", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
@@ -595,7 +598,7 @@ func TestResponseVerdict(t *testing.T) {
 			ts.Add(2 * d)
 		})
 
-		Convey("when the test passed, response verdict is correct.", func() {
+		t.Run("when the test passed, response verdict is correct.", func(t *ftt.Test) {
 			resps, err := runWithDefaults(
 				ctx,
 				trservice.NewStubClientWithSuccessfulTasks(),
@@ -603,13 +606,13 @@ func TestResponseVerdict(t *testing.T) {
 					serverTestInvocation("name1", ""),
 				},
 			)
-			So(err, ShouldBeNil)
-			resp := extractSingleResponse(resps)
-			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_PASSED)
+			assert.Loosely(t, err, should.BeNil)
+			resp := extractSingleResponse(t, resps)
+			assert.Loosely(t, resp.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+			assert.Loosely(t, resp.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_PASSED))
 		})
 
-		Convey("when the test failed, response verdict is correct.", func() {
+		t.Run("when the test failed, response verdict is correct.", func(t *ftt.Test) {
 			resps, err := runWithDefaults(
 				ctx,
 				trservice.NewStubClientWithFailedTasks(),
@@ -617,13 +620,14 @@ func TestResponseVerdict(t *testing.T) {
 					serverTestInvocation("name1", ""),
 				},
 			)
-			So(err, ShouldBeNil)
-			resp := extractSingleResponse(resps)
-			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_COMPLETED)
-			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_FAILED)
+			assert.Loosely(t, err, should.BeNil)
+			resp := extractSingleResponse(t, resps)
+			assert.Loosely(t, resp.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_COMPLETED))
+			assert.Loosely(t, resp.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_FAILED))
 		})
 
-		SkipConvey("when execution is aborted (e.g., timeout), response verdict is correct.", func() {
+		t.Run("when execution is aborted (e.g., timeout), response verdict is correct.", func(t *ftt.Test) {
+			t.Skip("crbug.com/187777891")
 			wg := sync.WaitGroup{}
 			wg.Add(1)
 			var resps map[string]*steps.ExecuteResponse
@@ -641,10 +645,10 @@ func TestResponseVerdict(t *testing.T) {
 
 			cancel()
 			wg.Wait()
-			So(err, ShouldBeNil)
-			resp := extractSingleResponse(resps)
-			So(resp.State.LifeCycle, ShouldEqual, test_platform.TaskState_LIFE_CYCLE_ABORTED)
-			So(resp.State.Verdict, ShouldEqual, test_platform.TaskState_VERDICT_FAILED)
+			assert.Loosely(t, err, should.BeNil)
+			resp := extractSingleResponse(t, resps)
+			assert.Loosely(t, resp.State.LifeCycle, should.Equal(test_platform.TaskState_LIFE_CYCLE_ABORTED))
+			assert.Loosely(t, resp.State.Verdict, should.Equal(test_platform.TaskState_VERDICT_FAILED))
 		})
 	})
 }
@@ -762,10 +766,11 @@ func setFakeTimeWithImmediateTimeout(ctx context.Context) context.Context {
 	return ctx
 }
 
-func extractSingleResponse(resps map[string]*steps.ExecuteResponse) *steps.ExecuteResponse {
-	So(resps, ShouldHaveLength, 1)
+func extractSingleResponse(t testing.TB, resps map[string]*steps.ExecuteResponse) *steps.ExecuteResponse {
+	t.Helper()
+	assert.Loosely(t, resps, should.HaveLength(1), truth.LineContext())
 	for _, resp := range resps {
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, resp, should.NotBeNil, truth.LineContext())
 		return resp
 	}
 	panic("unreachable")
@@ -784,8 +789,8 @@ func loggerInfo(ml memlogger.MemLogger) string {
 // TestSwarmingPool tests whether swarming pool is correctly passed to the
 // ValidateArgs, LaunchTask functions
 func TestSwarmingPool(t *testing.T) {
-	Convey("Given test", t, func() {
-		Convey("when running a skylab execution", func() {
+	ftt.Run("Given test", t, func(t *ftt.Test) {
+		t.Run("when running a skylab execution", func(t *ftt.Test) {
 			trClient := &trservice.ArgsCollectingClientWrapper{
 				Client: trservice.StubClient{},
 			}
@@ -798,13 +803,13 @@ func TestSwarmingPool(t *testing.T) {
 				"OtherPool",
 			)
 
-			So(err, ShouldBeNil)
-			extractSingleResponse(resps)
-			So(len(trClient.Calls.ValidateArgs), ShouldEqual, 1)
-			So(trClient.Calls.ValidateArgs[0].Args.SwarmingPool, ShouldEqual, "OtherPool")
+			assert.Loosely(t, err, should.BeNil)
+			extractSingleResponse(t, resps)
+			assert.Loosely(t, len(trClient.Calls.ValidateArgs), should.Equal(1))
+			assert.Loosely(t, trClient.Calls.ValidateArgs[0].Args.SwarmingPool, should.Equal("OtherPool"))
 			// we dont actually (explicitly) use this dimension when scheduling
 			// tests; pool automatically added based on the bb builder
-			So(len(trClient.Calls.LaunchTask), ShouldEqual, 1)
+			assert.Loosely(t, len(trClient.Calls.LaunchTask), should.Equal(1))
 		})
 	})
 }

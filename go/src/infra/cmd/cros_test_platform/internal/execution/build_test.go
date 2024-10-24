@@ -18,13 +18,16 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
 	"infra/cmd/cros_test_platform/internal/execution"
@@ -33,7 +36,7 @@ import (
 )
 
 func TestFinalBuildForSingleInvocation(t *testing.T) {
-	Convey("For a run with one request with one invocation", t, func() {
+	ftt.Run("For a run with one request with one invocation", t, func(t *ftt.Test) {
 		ba := newBuildAccumulator()
 		_, err := runWithBuildAccumulator(
 			context.Background(),
@@ -55,24 +58,24 @@ func TestFinalBuildForSingleInvocation(t *testing.T) {
 				},
 			},
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		b := ba.GetLatestBuild()
-		So(b, ShouldNotBeNil)
-		So(b.GetSteps(), ShouldHaveLength, 2)
+		assert.Loosely(t, b, should.NotBeNil)
+		assert.Loosely(t, b.GetSteps(), should.HaveLength(2))
 
 		rs := stepForRequest(b, "request-with-single-invocation")
-		So(rs, ShouldNotBeNil)
+		assert.Loosely(t, rs, should.NotBeNil)
 
 		is := stepForInvocation(b, "first-invocation")
-		So(is, ShouldNotBeNil)
-		So(is.Name, ShouldContainSubstring, "request-with-single-invocation")
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		assert.Loosely(t, is, should.NotBeNil)
+		assert.Loosely(t, is.Name, should.ContainSubstring("request-with-single-invocation"))
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
 	})
 }
 
 func TestFinalBuildForTwoInvocations(t *testing.T) {
-	Convey("For a run with one request with two invocations", t, func() {
+	ftt.Run("For a run with one request with two invocations", t, func(t *ftt.Test) {
 		ba := newBuildAccumulator()
 		_, err := runWithBuildAccumulator(
 			context.Background(),
@@ -95,29 +98,29 @@ func TestFinalBuildForTwoInvocations(t *testing.T) {
 				},
 			},
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		b := ba.GetLatestBuild()
-		So(b, ShouldNotBeNil)
-		So(b.GetSteps(), ShouldHaveLength, 3)
+		assert.Loosely(t, b, should.NotBeNil)
+		assert.Loosely(t, b.GetSteps(), should.HaveLength(3))
 
 		rs := stepForRequest(b, "request-with-two-invocations")
-		So(rs, ShouldNotBeNil)
+		assert.Loosely(t, rs, should.NotBeNil)
 
 		is := stepForInvocation(b, "first-invocation")
-		So(is, ShouldNotBeNil)
-		So(is.Name, ShouldContainSubstring, "request-with-two-invocations")
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		assert.Loosely(t, is, should.NotBeNil)
+		assert.Loosely(t, is.Name, should.ContainSubstring("request-with-two-invocations"))
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
 
 		is = stepForInvocation(b, "second-invocation")
-		So(is, ShouldNotBeNil)
-		So(is.Name, ShouldContainSubstring, "request-with-two-invocations")
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		assert.Loosely(t, is, should.NotBeNil)
+		assert.Loosely(t, is.Name, should.ContainSubstring("request-with-two-invocations"))
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
 	})
 }
 
 func TestFinalBuildForTwoRequests(t *testing.T) {
-	Convey("For a run with two requests with one invocation each", t, func() {
+	ftt.Run("For a run with two requests with one invocation each", t, func(t *ftt.Test) {
 		ba := newBuildAccumulator()
 		_, err := runWithBuildAccumulator(
 			context.Background(),
@@ -147,30 +150,30 @@ func TestFinalBuildForTwoRequests(t *testing.T) {
 				},
 			},
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		b := ba.GetLatestBuild()
-		So(b, ShouldNotBeNil)
-		So(b.GetSteps(), ShouldHaveLength, 4)
+		assert.Loosely(t, b, should.NotBeNil)
+		assert.Loosely(t, b.GetSteps(), should.HaveLength(4))
 
 		rs := stepForRequest(b, "first-request")
-		So(rs, ShouldNotBeNil)
+		assert.Loosely(t, rs, should.NotBeNil)
 		is := stepForInvocation(b, "first-request-invocation")
-		So(is, ShouldNotBeNil)
-		So(is.Name, ShouldContainSubstring, "first-request")
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		assert.Loosely(t, is, should.NotBeNil)
+		assert.Loosely(t, is.Name, should.ContainSubstring("first-request"))
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
 
 		rs = stepForRequest(b, "second-request")
-		So(rs, ShouldNotBeNil)
+		assert.Loosely(t, rs, should.NotBeNil)
 		is = stepForInvocation(b, "second-request-invocation")
-		So(is, ShouldNotBeNil)
-		So(is.Name, ShouldContainSubstring, "second-request")
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		assert.Loosely(t, is, should.NotBeNil)
+		assert.Loosely(t, is.Name, should.ContainSubstring("second-request"))
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
 	})
 }
 
 func TestFinalBuildForSingleInvocationWithRetries(t *testing.T) {
-	Convey("For a run with one request with one invocation that needs 1 retry", t, func() {
+	ftt.Run("For a run with one request with one invocation that needs 1 retry", t, func(t *ftt.Test) {
 		params := basicParams()
 		params.Retry = &test_platform.Request_Params_Retry{
 			Allow: true,
@@ -199,22 +202,22 @@ func TestFinalBuildForSingleInvocationWithRetries(t *testing.T) {
 			ba,
 			req,
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		b := ba.GetLatestBuild()
-		So(b, ShouldNotBeNil)
-		So(b.GetSteps(), ShouldHaveLength, 2)
+		assert.Loosely(t, b, should.NotBeNil)
+		assert.Loosely(t, b.GetSteps(), should.HaveLength(2))
 
 		is := stepForInvocation(b, "failing-invocation")
-		So(is, ShouldNotBeNil)
+		assert.Loosely(t, is, should.NotBeNil)
 
-		markdownContainsURL(is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
-		markdownContainsURL(is.GetSummaryMarkdown(), "1", exampleTestRunnerURL)
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "latest attempt", exampleTestRunnerURL)
+		markdownContainsURL(t, is.GetSummaryMarkdown(), "1", exampleTestRunnerURL)
 	})
 }
 
 func TestBuildUpdatesWithRetries(t *testing.T) {
-	Convey("Compared to a run without retries", t, func() {
+	ftt.Run("Compared to a run without retries", t, func(t *ftt.Test) {
 		inv := clientTestInvocation("failing-invocation", "")
 		inv.Test.AllowRetries = true
 		e := &steps.EnumerationResponse{
@@ -239,11 +242,11 @@ func TestBuildUpdatesWithRetries(t *testing.T) {
 			ba,
 			req,
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		noRetryUpdateCount := len(ba.Sent)
 		_ = noRetryUpdateCount
 
-		Convey("a run with a retry should send more updates", func() {
+		t.Run("a run with a retry should send more updates", func(t *ftt.Test) {
 			params := basicParams()
 			params.Retry = &test_platform.Request_Params_Retry{
 				Allow: true,
@@ -268,10 +271,10 @@ func TestBuildUpdatesWithRetries(t *testing.T) {
 				ba,
 				req,
 			)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			oneRetryUpdateCount := len(ba.Sent)
 
-			So(oneRetryUpdateCount, ShouldBeGreaterThan, noRetryUpdateCount)
+			assert.Loosely(t, oneRetryUpdateCount, should.BeGreaterThan(noRetryUpdateCount))
 		})
 	})
 }
@@ -295,26 +298,26 @@ func (c nonTransientBBErrorClient) FetchResults(context.Context, trservice.TaskR
 }
 
 func TestRefreshWithTransientBuildBuckerError(t *testing.T) {
-	Convey("For a refresh call with build bucket errors", t, func() {
+	ftt.Run("For a refresh call with build bucket errors", t, func(t *ftt.Test) {
 		err := testrunner.NewBuildForTesting("task1", "url1").Refresh(
 			context.Background(),
 			transientBBErrorClient{},
 		)
 		// Test that the error is swallowed because BuildBucketTransientFailure is
 		// true.
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestRefreshWithNonTransientBuildBuckerError(t *testing.T) {
-	Convey("For a refresh call without build bucket errors", t, func() {
+	ftt.Run("For a refresh call without build bucket errors", t, func(t *ftt.Test) {
 		err := testrunner.NewBuildForTesting("task1", "url1").Refresh(
 			context.Background(),
 			nonTransientBBErrorClient{},
 		)
 		// Test that the error is swallowed because BuildBucketTransientFailure is
 		// true.
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -421,6 +424,7 @@ func isInvocationStep(name string) bool {
 	return invocationStepRe.Match([]byte(name))
 }
 
-func markdownContainsURL(md string, target string, url string) {
-	So(md, ShouldContainSubstring, fmt.Sprintf("[%s](%s)", target, url))
+func markdownContainsURL(t testing.TB, md string, target string, url string) {
+	t.Helper()
+	assert.Loosely(t, md, should.ContainSubstring(fmt.Sprintf("[%s](%s)", target, url)), truth.LineContext())
 }

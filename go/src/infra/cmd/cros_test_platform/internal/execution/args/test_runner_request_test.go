@@ -12,17 +12,20 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
 
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 )
 
-func defaultTest(tests map[string]*skylab_test_runner.Request_Test) *skylab_test_runner.Request_Test {
-	So(tests["original_test"], ShouldNotBeNil)
+func defaultTest(t testing.TB, tests map[string]*skylab_test_runner.Request_Test) *skylab_test_runner.Request_Test {
+	assert.Loosely(t, tests["original_test"], should.NotBeNil, truth.LineContext())
 	return tests["original_test"]
 }
 
@@ -93,128 +96,128 @@ func TestSoftwareDependencies(t *testing.T) {
 }
 
 func TestClientTest(t *testing.T) {
-	Convey("Given a client test", t, func() {
+	ftt.Run("Given a client test", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		var inv steps.EnumerationResponse_AutotestInvocation
 		setExecutionEnvironment(&inv, buildapi.AutotestTest_EXECUTION_ENVIRONMENT_CLIENT)
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: &inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			test := defaultTest(got.Tests)
-			So(err, ShouldBeNil)
-			Convey("it should be marked as such.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().IsClientTest, ShouldEqual, true)
+			test := defaultTest(t, got.Tests)
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("it should be marked as such.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().IsClientTest, should.Equal(true))
 			})
 		})
 	})
 }
 
 func TestServerTest(t *testing.T) {
-	Convey("Given a server test", t, func() {
+	ftt.Run("Given a server test", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		var inv steps.EnumerationResponse_AutotestInvocation
 		setExecutionEnvironment(&inv, buildapi.AutotestTest_EXECUTION_ENVIRONMENT_SERVER)
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: &inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			test := defaultTest(got.Tests)
-			So(err, ShouldBeNil)
-			Convey("it should be marked as such.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().IsClientTest, ShouldEqual, false)
+			test := defaultTest(t, got.Tests)
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("it should be marked as such.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().IsClientTest, should.Equal(false))
 			})
 		})
 	})
 }
 
 func TestUnspecifiedTestEnvironment(t *testing.T) {
-	Convey("Given a test that does not specify an environment", t, func() {
+	ftt.Run("Given a test that does not specify an environment", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		var inv steps.EnumerationResponse_AutotestInvocation
 		setTestName(&inv, "foo-test")
-		Convey("the test runner request generation fails.", func() {
+		t.Run("the test runner request generation fails.", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: &inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			_, err := g.testRunnerRequest(ctx)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
 
 func TestTestName(t *testing.T) {
-	Convey("Given a test", t, func() {
+	ftt.Run("Given a test", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestName(inv, "foo-test")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the test name is populated correctly.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Name, ShouldEqual, "foo-test")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the test name is populated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Name, should.Equal("foo-test"))
 			})
 		})
 	})
 }
 
 func TestTestArgs(t *testing.T) {
-	Convey("Given a request that specifies test args", t, func() {
+	ftt.Run("Given a request that specifies test args", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestArgs(inv, "foo=bar baz=qux")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the test args are propagated correctly.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().TestArgs, ShouldEqual, "foo=bar baz=qux")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the test args are propagated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().TestArgs, should.Equal("foo=bar baz=qux"))
 			})
 		})
 	})
 }
 
 func TestParamsTestArgs(t *testing.T) {
-	Convey("Given a request that specifies additional test args", t, func() {
+	ftt.Run("Given a request that specifies additional test args", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestArgs(inv, "foo=bar baz=qux")
 		var params test_platform.Request_Params
 		setParamsTestArgs(&params, "waldo", "fred")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &params,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the test args are propagated correctly.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().TestArgs, ShouldEqual, "foo=bar baz=qux waldo=fred")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the test args are propagated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().TestArgs, should.Equal("foo=bar baz=qux waldo=fred"))
 			})
 		})
 	})
@@ -222,241 +225,241 @@ func TestParamsTestArgs(t *testing.T) {
 
 // TODO(b/200273237): Remove test case once experiment has concluded.
 func TestParamsTestArgsResultdbSettings(t *testing.T) {
-	Convey("Given a request that specifies resultdb_settings as an additional test arg", t, func() {
+	ftt.Run("Given a request that specifies resultdb_settings as an additional test arg", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestArgs(inv, "foo=bar baz=qux")
 		var params test_platform.Request_Params
 		setParamsTestArgs(&params, "resultdb_settings", "abc")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &params,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the resultdb_settings are only propogated when the experiment is on.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().TestArgs, ShouldEqual, "foo=bar baz=qux")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the resultdb_settings are only propogated when the experiment is on.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().TestArgs, should.Equal("foo=bar baz=qux"))
 				g.Experiments = append(g.Experiments, "chromeos.cros_test_platform.add_resultdb_settings")
 				got, err = g.testRunnerRequest(ctx)
-				test = defaultTest(got.Tests)
-				So(test.GetAutotest().TestArgs, ShouldEqual, "foo=bar baz=qux resultdb_settings=abc")
+				test = defaultTest(t, got.Tests)
+				assert.Loosely(t, test.GetAutotest().TestArgs, should.Equal("foo=bar baz=qux resultdb_settings=abc"))
 			})
 		})
 	})
 }
 
 func TestTestLevelKeyval(t *testing.T) {
-	Convey("Given a keyval inside the test invocation", t, func() {
+	ftt.Run("Given a keyval inside the test invocation", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestKeyval(inv, "key", "test-value")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the keyval is propagated.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["key"], ShouldEqual, "test-value")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the keyval is propagated.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["key"], should.Equal("test-value"))
 			})
 		})
 	})
 }
 
 func TestRequestLevelKeyval(t *testing.T) {
-	Convey("Given request-wide keyval", t, func() {
+	ftt.Run("Given request-wide keyval", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestKeyval(inv, "key", "test-value")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the keyval is propagated.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["key"], ShouldEqual, "test-value")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the keyval is propagated.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["key"], should.Equal("test-value"))
 			})
 		})
 	})
 }
 
 func TestKeyvalOverride(t *testing.T) {
-	Convey("Given keyvals with the same key in the invocation and request", t, func() {
+	ftt.Run("Given keyvals with the same key in the invocation and request", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestKeyval(inv, "ambiguous-key", "test-value")
 		var params test_platform.Request_Params
 		setRequestKeyval(&params, "ambiguous-key", "request-value")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &params,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the keyval from the request takes precedence.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["ambiguous-key"], ShouldEqual, "request-value")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the keyval from the request takes precedence.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["ambiguous-key"], should.Equal("request-value"))
 			})
 		})
 	})
 }
 
 func TestConstructedDisplayName(t *testing.T) {
-	Convey("Given a request does not specify a display name", t, func() {
+	ftt.Run("Given a request does not specify a display name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestName(inv, "foo-name")
 		var params test_platform.Request_Params
 		setBuild(&params, "foo-build")
 		setRequestKeyval(&params, "suite", "foo-suite")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &params,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the display name is generated correctly.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().DisplayName, ShouldEqual, "foo-build/foo-suite/foo-name")
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["label"], ShouldEqual, "foo-build/foo-suite/foo-name")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the display name is generated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().DisplayName, should.Equal("foo-build/foo-suite/foo-name"))
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["label"], should.Equal("foo-build/foo-suite/foo-name"))
 			})
 		})
 	})
 }
 
 func TestExplicitDisplayName(t *testing.T) {
-	Convey("Given a request that specifies a display name", t, func() {
+	ftt.Run("Given a request that specifies a display name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		inv := basicInvocation()
 		setTestName(inv, "basic-name")
 		setDisplayName(inv, "fancy-name")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: inv,
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the display name is propagated correctly.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().DisplayName, ShouldEqual, "fancy-name")
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["label"], ShouldEqual, "fancy-name")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the display name is propagated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().DisplayName, should.Equal("fancy-name"))
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["label"], should.Equal("fancy-name"))
 			})
 		})
 	})
 }
 
 func TestParentIDKeyval(t *testing.T) {
-	Convey("Given parent task ID", t, func() {
+	ftt.Run("Given parent task ID", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation:   basicInvocation(),
 				Params:       &test_platform.Request_Params{},
 				ParentTaskID: "foo-id",
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the corresponding keyval is populated.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["parent_job_id"], ShouldEqual, "foo-id")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the corresponding keyval is populated.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["parent_job_id"], should.Equal("foo-id"))
 			})
 		})
 	})
 }
 
 func TestBuildKeyval(t *testing.T) {
-	Convey("Given a build", t, func() {
+	ftt.Run("Given a build", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		var params test_platform.Request_Params
 		setBuild(&params, "foo-build")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: basicInvocation(),
 				Params:     &params,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			test := defaultTest(got.Tests)
-			Convey("the corresponding keyval is populated.", func() {
-				So(test, ShouldNotBeNil)
-				So(test.GetAutotest(), ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals, ShouldNotBeNil)
-				So(test.GetAutotest().Keyvals["build"], ShouldEqual, "foo-build")
+			assert.Loosely(t, err, should.BeNil)
+			test := defaultTest(t, got.Tests)
+			t.Run("the corresponding keyval is populated.", func(t *ftt.Test) {
+				assert.Loosely(t, test, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest(), should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals, should.NotBeNil)
+				assert.Loosely(t, test.GetAutotest().Keyvals["build"], should.Equal("foo-build"))
 			})
 		})
 	})
 }
 
 func TestDeadline(t *testing.T) {
-	Convey("Given a request that specifies a deadline", t, func() {
+	ftt.Run("Given a request that specifies a deadline", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ts, _ := time.Parse(time.RFC3339, "2020-02-27T12:47:42Z")
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: basicInvocation(),
 				Params:     &test_platform.Request_Params{},
 				Deadline:   ts,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the deadline is set correctly.", func() {
-				So(ptypes.TimestampString(got.Deadline), ShouldEqual, "2020-02-27T12:47:42Z")
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("the deadline is set correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, ptypes.TimestampString(got.Deadline), should.Equal("2020-02-27T12:47:42Z"))
 			})
 		})
 	})
 }
 
 func TestNoDeadline(t *testing.T) {
-	Convey("Given a request that does not specify a deadline", t, func() {
+	ftt.Run("Given a request that does not specify a deadline", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation: basicInvocation(),
 				Params:     &test_platform.Request_Params{},
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the deadline should not be set.", func() {
-				So(got.Deadline, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("the deadline should not be set.", func(t *ftt.Test) {
+				assert.Loosely(t, got.Deadline, should.BeNil)
 			})
 		})
 	})
 }
 
 func TestParentUID(t *testing.T) {
-	Convey("Given a parent UID", t, func() {
+	ftt.Run("Given a parent UID", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation:       basicInvocation(),
 				Params:           &test_platform.Request_Params{},
@@ -464,27 +467,27 @@ func TestParentUID(t *testing.T) {
 				ParentRequestUID: "foo-uid",
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the parent UID is propagated correctly.", func() {
-				So(got.ParentRequestUid, ShouldEqual, "foo-uid")
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("the parent UID is propagated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, got.ParentRequestUid, should.Equal("foo-uid"))
 			})
 		})
 	})
 }
 
 func TestParentBuildID(t *testing.T) {
-	Convey("Given a parent UID", t, func() {
+	ftt.Run("Given a parent UID", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		Convey("when generating a test runner request", func() {
+		t.Run("when generating a test runner request", func(t *ftt.Test) {
 			g := Generator{
 				Invocation:    basicInvocation(),
 				Params:        &test_platform.Request_Params{},
 				ParentBuildID: 43,
 			}
 			got, err := g.testRunnerRequest(ctx)
-			So(err, ShouldBeNil)
-			Convey("the parent build ID is propagated correctly.", func() {
-				So(got.ParentBuildId, ShouldEqual, 43)
+			assert.Loosely(t, err, should.BeNil)
+			t.Run("the parent build ID is propagated correctly.", func(t *ftt.Test) {
+				assert.Loosely(t, got.ParentBuildId, should.Equal(43))
 			})
 		})
 	})
