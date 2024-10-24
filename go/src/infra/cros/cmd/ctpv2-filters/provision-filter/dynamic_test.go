@@ -8,13 +8,15 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	. "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
 	. "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	. "infra/cros/cmd/ctpv2-filters/provision-filter"
 )
@@ -27,119 +29,124 @@ const (
 )
 
 func TestDynamic(t *testing.T) {
-	Convey("Legacy", t, func() {
+	ftt.Run("Legacy", t, func(t *ftt.Test) {
 		req := getMockInternalTestPlan(getMockTargetRequirements(3), nil)
 
 		err := GenerateDynamicInfo(req)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		dynamicUpdates := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
-		So(dynamicUpdates, ShouldHaveLength, 1)
-		validateProvisionRequest(dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(1))
+		validateProvisionRequest(t, dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
 
 		targetReqs := req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements()
-		So(targetReqs, ShouldHaveLength, 3)
+		assert.Loosely(t, targetReqs, should.HaveLength(3))
 		for _, targetReq := range targetReqs {
 			hwDef := targetReq.GetHwRequirements().GetHwDefinition()
-			So(hwDef, ShouldHaveLength, 1)
+			assert.Loosely(t, hwDef, should.HaveLength(1))
 			lookup := hwDef[0].DynamicUpdateLookupTable
-			validateLookupTable(lookup, LegacyPrimary, 0)
+			validateLookupTable(t, lookup, LegacyPrimary, 0)
 		}
 	})
 
-	Convey("Single dut (non-legacy)", t, func() {
+	ftt.Run("Single dut (non-legacy)", t, func(t *ftt.Test) {
 		req := getMockInternalTestPlan(nil, getMockSchedulingUnits(3, 0))
 
 		err := GenerateDynamicInfo(req)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		dynamicUpdates := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
-		So(dynamicUpdates, ShouldHaveLength, 1)
-		validateProvisionRequest(dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(1))
+		validateProvisionRequest(t, dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
 
 		units := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()
-		So(units, ShouldHaveLength, 3)
+		assert.Loosely(t, units, should.HaveLength(3))
 		for _, unit := range units {
 			lookup := unit.DynamicUpdateLookupTable
-			validateLookupTable(lookup, MultiPrimary, 0)
+			validateLookupTable(t, lookup, MultiPrimary, 0)
 
-			So(unit.CompanionTargets, ShouldHaveLength, 0)
+			assert.Loosely(t, unit.CompanionTargets, should.HaveLength(0))
 		}
 	})
 
-	Convey("Multi dut", t, func() {
+	ftt.Run("Multi dut", t, func(t *ftt.Test) {
 		req := getMockInternalTestPlan(nil, getMockSchedulingUnits(3, 2))
 
 		err := GenerateDynamicInfo(req)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		dynamicUpdates := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
-		So(dynamicUpdates, ShouldHaveLength, 3)
-		validateProvisionRequest(dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
-		validateProvisionRequest(dynamicUpdates[1], NewCompanionDeviceIdentifier(Board.WithIndex(1).AsPlaceholder()).Id, InstallPath.WithIndex(1).AsPlaceholder())
-		validateProvisionRequest(dynamicUpdates[2], NewCompanionDeviceIdentifier(Board.WithIndex(2).AsPlaceholder()).Id, InstallPath.WithIndex(2).AsPlaceholder())
+		assert.Loosely(t, dynamicUpdates, should.HaveLength(3))
+		validateProvisionRequest(t, dynamicUpdates[0], NewPrimaryDeviceIdentifier().Id, InstallPath.AsPlaceholder())
+		validateProvisionRequest(t, dynamicUpdates[1], NewCompanionDeviceIdentifier(Board.WithIndex(1).AsPlaceholder()).Id, InstallPath.WithIndex(1).AsPlaceholder())
+		validateProvisionRequest(t, dynamicUpdates[2], NewCompanionDeviceIdentifier(Board.WithIndex(2).AsPlaceholder()).Id, InstallPath.WithIndex(2).AsPlaceholder())
 
 		units := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()
-		So(units, ShouldHaveLength, 3)
+		assert.Loosely(t, units, should.HaveLength(3))
 		for _, unit := range units {
 			lookup := unit.DynamicUpdateLookupTable
-			validateLookupTable(lookup, MultiPrimary, 0)
+			validateLookupTable(t, lookup, MultiPrimary, 0)
 
-			So(unit.CompanionTargets, ShouldHaveLength, 2)
+			assert.Loosely(t, unit.CompanionTargets, should.HaveLength(2))
 			for i := range unit.CompanionTargets {
 				board := fmt.Sprintf("%s_%d", MultiCompanion, i)
-				validateLookupTable(lookup, board, i+1)
+				validateLookupTable(t, lookup, board, i+1)
 			}
 		}
 	})
 }
 
-func validateLookupTable(lookup map[string]string, board string, idx int) {
-	So(lookup[Board.WithIndex(idx).AsKey()], ShouldEqual, board)
-	So(lookup[InstallPath.WithIndex(idx).AsKey()], ShouldEqual, board+MockRNum)
+func validateLookupTable(t testing.TB, lookup map[string]string, board string, idx int) {
+	t.Helper()
+	assert.Loosely(t, lookup[Board.WithIndex(idx).AsKey()], should.Equal(board), truth.LineContext())
+	assert.Loosely(t, lookup[InstallPath.WithIndex(idx).AsKey()], should.Equal(board+MockRNum), truth.LineContext())
 }
 
-func validateProvisionRequest(update *api.UserDefinedDynamicUpdate, expectedDeviceId, expectedInstallPath string) {
+func validateProvisionRequest(t testing.TB, update *api.UserDefinedDynamicUpdate, expectedDeviceId, expectedInstallPath string) {
+	t.Helper()
+
 	deviceId := DeviceIdentifierFromString(expectedDeviceId)
 
 	insert := update.GetUpdateAction().GetInsert()
-	So(insert, ShouldNotBeNil)
-	So(insert.GetTask(), ShouldNotBeNil)
+	assert.Loosely(t, insert, should.NotBeNil, truth.LineContext())
+	assert.Loosely(t, insert.GetTask(), should.NotBeNil, truth.LineContext())
 
 	provisionTask := insert.GetTask().GetProvision()
-	So(provisionTask, ShouldNotBeNil)
-	So(provisionTask.Target, ShouldEqual, expectedDeviceId)
+	assert.Loosely(t, provisionTask, should.NotBeNil, truth.LineContext())
+	assert.Loosely(t, provisionTask.Target, should.Equal(expectedDeviceId), truth.LineContext())
 
 	// Check DynamicDeps.
 	deps := provisionTask.GetDynamicDeps()
-	So(deps, ShouldNotBeNil)
-	validateDependencyKeyValue(deps, "startupRequest.dut", deviceId.GetDevice("dut"))
-	validateDependencyKeyValue(deps, "startupRequest.dutServer", deviceId.GetCrosDutServer())
+	assert.Loosely(t, deps, should.NotBeNil, truth.LineContext())
+	validateDependencyKeyValue(t, deps, "startupRequest.dut", deviceId.GetDevice("dut"))
+	validateDependencyKeyValue(t, deps, "startupRequest.dutServer", deviceId.GetCrosDutServer())
 
 	// Check InstallRequest.
 	installRequest := provisionTask.GetInstallRequest()
-	So(installRequest, ShouldNotBeNil)
+	assert.Loosely(t, installRequest, should.NotBeNil, truth.LineContext())
 
 	imagePath := installRequest.GetImagePath()
-	So(imagePath, ShouldNotBeNil)
-	So(imagePath.Path, ShouldEqual, expectedInstallPath)
+	assert.Loosely(t, imagePath, should.NotBeNil, truth.LineContext())
+	assert.Loosely(t, imagePath.Path, should.Equal(expectedInstallPath), truth.LineContext())
 
 	// Check containers.
 	containers := insert.GetTask().GetOrderedContainerRequests()
-	So(containers, ShouldHaveLength, 3)
+	assert.Loosely(t, containers, should.HaveLength(3), truth.LineContext())
 }
 
-func validateDependencyKeyValue(deps []*api.DynamicDep, key, expectedValue string) {
+func validateDependencyKeyValue(t testing.TB, deps []*api.DynamicDep, key, expectedValue string) {
+	t.Helper()
+
 	found := false
 	for _, dep := range deps {
 		if dep.Key == key {
 			found = true
-			So(dep.Value, ShouldEqual, expectedValue)
+			assert.Loosely(t, dep.Value, should.Equal(expectedValue), truth.LineContext())
 			break
 		}
 	}
 
-	So(found, ShouldBeTrue)
+	assert.Loosely(t, found, should.BeTrue, truth.LineContext())
 }
 
 func getMockInternalTestPlan(targetRequirements []*api.TargetRequirements, schedulingUnits []*api.SchedulingUnit) *api.InternalTestplan {
