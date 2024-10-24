@@ -67,6 +67,7 @@ type DynamicTrv2Builder struct {
 	CompanionDuts        []*labapi.DutModel
 	Keyvals              map[string]string
 	OrderedTaskBuilders  []DynamicTaskBuilder
+	CredentialsFile      string
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
@@ -90,7 +91,7 @@ func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context) (*api.CrosT
 
 	return &api.CrosTestRunnerDynamicRequest{
 		StartRequest: builder.buildStartRequest(),
-		Params:       builder.buildParams(),
+		Params:       builder.buildParams(ctx),
 		OrderedTasks: orderedTasks,
 	}, nil
 }
@@ -106,9 +107,9 @@ func (builder *DynamicTrv2Builder) buildStartRequest() *api.CrosTestRunnerDynami
 }
 
 // buildParams constructs the CrosTestRunnerParams.
-func (builder *DynamicTrv2Builder) buildParams() *api.CrosTestRunnerParams {
+func (builder *DynamicTrv2Builder) buildParams(ctx context.Context) *api.CrosTestRunnerParams {
 	return &api.CrosTestRunnerParams{
-		ContainerMetadata:    PatchContainerMetadata(builder.ContainerMetadata, builder.BuildString),
+		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile),
 		ContainerMetadataKey: builder.ContainerMetadataKey,
 		Keyvals:              builder.Keyvals,
 		PrimaryDut:           builder.PrimaryDut,

@@ -126,7 +126,7 @@ func validateProvisionRequest(update *api.UserDefinedDynamicUpdate, expectedDevi
 
 	// Check containers.
 	containers := insert.GetTask().GetOrderedContainerRequests()
-	So(containers, ShouldHaveLength, 2)
+	So(containers, ShouldHaveLength, 3)
 }
 
 func validateDependencyKeyValue(deps []*api.DynamicDep, key, expectedValue string) {

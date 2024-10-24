@@ -5,6 +5,7 @@
 package common_builders
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -21,6 +22,14 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"infra/cros/cmd/common_lib/common"
+)
+
+var (
+	PullFromFirestore = []string{
+		common.CrosDut,
+		common.CrosProvision,
+		common.ServoNexus,
+	}
 )
 
 // buildDynamicRequest constructs the base DynamicTrv2Builder for DynamicTrv2FromCft.
@@ -523,7 +532,7 @@ func AppendPublishTask(
 
 // PatchContainerMetadata loops through each container info and applies patches
 // to certain containers based on the build version.
-func PatchContainerMetadata(metadata *buildapi.ContainerMetadata, buildStr string) *buildapi.ContainerMetadata {
+func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds string) *buildapi.ContainerMetadata {
 	containerMaps := map[string]*buildapi.ContainerImageMap{}
 	buildNumber := ExtractBuildRNumber(buildStr)
 
@@ -537,6 +546,15 @@ func PatchContainerMetadata(metadata *buildapi.ContainerMetadata, buildStr strin
 			// R#'s < 124 will be missing cros-fw-provision.
 			// Provide hard-coded sha256 for backwards compatibility.
 			common.AddTestServiceContainerToImages(containers, "cros-fw-provision", common.DefaultCrosFwProvisionSha)
+		}
+
+		for _, firestoreDocName := range PullFromFirestore {
+			// TODO(cdelagarza): replace `LabelProd` with string pulled from input.
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, creds, common.LabelProd, firestoreDocName)
+			common.LogWarningIfErr(ctx, err)
+			if containerInfo != nil {
+				containers[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()
+			}
 		}
 
 		containerMaps[metadataKey] = &buildapi.ContainerImageMap{

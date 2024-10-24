@@ -98,6 +98,7 @@ const (
 	GcsPublish       = "gcs-publish"
 	CpconPublish     = "cpcon-publish"
 	PostProcess      = "post-process"
+	ServoNexus       = "servo-nexus"
 
 	// Device base identifiers.
 	Primary   = "primary"

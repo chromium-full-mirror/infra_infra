@@ -27,6 +27,7 @@ const (
 // ALProvisionRequestUpdater struct stores
 type ALProvisionRequestUpdater struct {
 	ProvisionPath string
+	ServoPath     string
 
 	LatestBuildsByBoard map[string]int
 }
@@ -77,6 +78,7 @@ func main() {
 	}
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
 	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", common.LabelProd, "SHA256 value for provision container")
+	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
 	err := server.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
 	if err != nil {
 		os.Exit(2)

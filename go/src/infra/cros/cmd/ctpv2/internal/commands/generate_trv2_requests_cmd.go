@@ -38,6 +38,7 @@ type GenerateTrv2RequestsCmd struct {
 	InternalTestPlan *api.InternalTestplan
 	Config           *config.Config
 	RequestKey       string
+	CredentialsFile  string
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -127,6 +128,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
 	}
 
+	cmd.CredentialsFile = sk.DockerKeyFile
 	cmd.RequestKey = sk.RequestKey
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.MiddledOutResp = sk.MiddledOutResp
@@ -287,6 +289,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		dynamicRun:           cmd.DynamicRun,
 		schedUnitMetadataMap: cmd.schedulingUnitsMetadataMap,
 		config:               cmd.Config,
+		credentialsFile:      cmd.CredentialsFile,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)

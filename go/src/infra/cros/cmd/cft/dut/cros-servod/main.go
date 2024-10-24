@@ -11,7 +11,7 @@ package main
 import (
 	"os"
 
-	"go.chromium.org/chromiumos/test/servod/cmd/cros-servod/cli"
+	"infra/cros/cmd/cft/dut/cros-servod/cli"
 )
 
 func main() {

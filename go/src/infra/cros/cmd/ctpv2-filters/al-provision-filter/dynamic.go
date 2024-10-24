@@ -32,16 +32,24 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		return
 	}
 
+	servodId := dynamic_common.NewTaskIdentifier(common.ServoNexus).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
 	taskID := dynamic_common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
 	generator := generators.NewModifyGenerator(
 		dynamic_common.FindByDynamicIdentifier(
 			taskID.Id))
 
+	servodContainerBuilder := dynamic_builders.NewContainerBuilder(
+		servodId.Id, "", updater.ServoPath,
+		"/tmp/servod", "cros-servod server -server_port 0",
+	)
 	provisionContainerBuilder := dynamic_builders.NewContainerBuilder(
 		taskID.Id, common.CrosProvision, updater.ProvisionPath,
 		"/tmp/provisionservice", "foil-provision server -port 0")
 
 	containers := []*api.ContainerRequest{}
+	servodContainer := servodContainerBuilder.Build()
+	servodContainer.Network = "adb-network"
+	containers = append(containers, servodContainer)
 	container := provisionContainerBuilder.Build()
 	container.Network = "adb-network"
 	containers = append(containers, container)

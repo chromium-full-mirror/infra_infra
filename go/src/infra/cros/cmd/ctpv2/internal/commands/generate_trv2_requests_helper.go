@@ -71,6 +71,7 @@ type TrV2ReqHelper struct {
 	build                *build.State
 	schedUnitMetadataMap map[string][]*testapi.SchedulingUnit
 	config               *config.Config
+	credentialsFile      string
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -687,6 +688,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		ParentRequestUid:     trHelper.parentRequestUID,
 		GcsArtifactPath:      trHelper.primaryTarget.gcsArtifactPath,
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
+		CredentialsFile:      trHelper.credentialsFile,
 		BuildString:          trHelper.builderStr,
 		Deadline:             timestamppb.New(deadline),
 		TestSuites:           testSuites,
@@ -787,7 +789,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		ParentBuildId:                trHelper.currBBID,
 		PrimaryDut:                   primaryDut,
 		CompanionDuts:                companionDuts,
-		ContainerMetadata:            containerMetadata,
+		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile),
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
 		AutotestKeyvals:              keyvals,
