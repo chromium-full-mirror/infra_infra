@@ -98,8 +98,9 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 		},
 		dynamic_common.AppendTaskWrapper(dynamic_common.FindLast(testapi.FocalTaskFinder_PUBLISH)))
 
-	dynamicUpdates := req.SuiteInfo.SuiteMetadata.DynamicUpdates
-	return dynamic_updates.AppendUserDefinedDynamicUpdates(&dynamicUpdates, generator.Generate)
+	// The dynamic updates are passed by reference and need the full path.
+	// Do not use another var or substitution here.
+	return dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 }
 
 func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*testapi.DynamicDep {
