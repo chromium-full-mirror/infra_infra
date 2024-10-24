@@ -5,19 +5,20 @@
 package monorail
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMonorail(t *testing.T) {
 	t.Parallel()
 
-	Convey("Monorail", t, func() {
-		Convey("IssueURL", func() {
+	ftt.Run("Monorail", t, func(t *ftt.Test) {
+		t.Run("IssueURL", func(t *ftt.Test) {
 			expected := "https://bugs.chromium.org/p/chromium/issues/detail?id=123"
 			actual := IssueURL("bugs.chromium.org", "chromium", 123)
-			So(actual, ShouldEqual, expected)
+			assert.Loosely(t, actual, should.Equal(expected))
 		})
 	})
 }

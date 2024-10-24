@@ -13,19 +13,19 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/retry/transient"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestEndpointsInsertIssue(t *testing.T) {
 	t.Parallel()
 
-	Convey("Endpoints client: InsertIssue", t, func() {
+	ftt.Run("Endpoints client: InsertIssue", t, func(t *ftt.Test) {
 		ctx := context.Background()
 
-		Convey("Insert issue request succeeds", func(c C) {
+		t.Run("Insert issue request succeeds", func(t *ftt.Test) {
 			req := &InsertIssueRequest{
 				Issue: &Issue{
 					Summary:     "Write tests for monorail client",
@@ -48,26 +48,26 @@ func TestEndpointsInsertIssue(t *testing.T) {
 
 			var insertIssueServer *httptest.Server
 			insertIssueServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				c.So(r.URL.String(), ShouldEqual, "/projects/chromium/issues?sendEmail=false")
+				assert.Loosely(t, r.URL.String(), should.Equal("/projects/chromium/issues?sendEmail=false"))
 
 				actualReq := &Issue{}
 				err := json.NewDecoder(r.Body).Decode(actualReq)
-				c.So(err, ShouldBeNil)
-				c.So(actualReq, ShouldResemble, req.Issue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, actualReq, should.Resemble(req.Issue))
 
 				err = json.NewEncoder(w).Encode(res.Issue)
-				c.So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}))
 			defer insertIssueServer.Close()
 
 			httpClient := &http.Client{Timeout: time.Second}
 			client := NewEndpointsClient(httpClient, insertIssueServer.URL)
 			actualRes, err := client.InsertIssue(ctx, req)
-			So(err, ShouldBeNil)
-			So(actualRes, ShouldResemble, res)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actualRes, should.Resemble(res))
 		})
 
-		Convey("Insert issue with invalid request", func(c C) {
+		t.Run("Insert issue with invalid request", func(t *ftt.Test) {
 			req := &InsertIssueRequest{
 				Issue: &Issue{
 					Summary: "Write tests for monorail client",
@@ -80,10 +80,10 @@ func TestEndpointsInsertIssue(t *testing.T) {
 			httpClient := &http.Client{Timeout: time.Second}
 			client := NewEndpointsClient(httpClient, "https://example.com")
 			_, err := client.InsertIssue(ctx, req)
-			So(err, ShouldErrLike, "no projectId")
+			assert.Loosely(t, err, should.ErrLike("no projectId"))
 		})
 
-		Convey("Insert comment request", func(c C) {
+		t.Run("Insert comment request", func(t *ftt.Test) {
 			req := &InsertCommentRequest{
 				Issue: &IssueRef{
 					ProjectId: "chromium",
@@ -108,46 +108,46 @@ func TestEndpointsInsertIssue(t *testing.T) {
 
 			client := NewEndpointsClient(nil, server.URL)
 
-			Convey("Succeeds", func() {
+			t.Run("Succeeds", func(t *ftt.Test) {
 				handler = func(w http.ResponseWriter, r *http.Request) {
 					actualReq := &InsertCommentRequest_Comment{}
 					err := json.NewDecoder(r.Body).Decode(actualReq)
-					c.So(err, ShouldBeNil)
-					c.So(actualReq, ShouldResemble, req.Comment)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, actualReq, should.Resemble(req.Comment))
 
 					fmt.Fprint(w, "{}")
 				}
 
 				_, err := client.InsertComment(ctx, req)
-				So(err, ShouldBeNil)
-				c.So(actualURL, ShouldEqual, "/projects/chromium/issues/1/comments?")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, actualURL, should.Equal("/projects/chromium/issues/1/comments?"))
 			})
 
-			Convey("SendEmail", func() {
+			t.Run("SendEmail", func(t *ftt.Test) {
 				req.SendEmail = true
 				handler = func(w http.ResponseWriter, r *http.Request) {
 					fmt.Fprint(w, "{}")
 				}
 
 				_, err := client.InsertComment(ctx, req)
-				So(err, ShouldBeNil)
-				c.So(actualURL, ShouldEqual, "/projects/chromium/issues/1/comments?sendEmail=true")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, actualURL, should.Equal("/projects/chromium/issues/1/comments?sendEmail=true"))
 			})
 
-			Convey("Transient error", func(c C) {
+			t.Run("Transient error", func(t *ftt.Test) {
 				test := func(status int) {
 					handler = func(w http.ResponseWriter, r *http.Request) {
 						w.WriteHeader(status)
 					}
 
 					_, err := client.InsertComment(ctx, req)
-					So(err, ShouldNotBeNil)
-					So(transient.Tag.In(err), ShouldBeTrue)
+					assert.Loosely(t, err, should.NotBeNil)
+					assert.Loosely(t, transient.Tag.In(err), should.BeTrue)
 				}
-				Convey("With HTTP 404", func() {
+				t.Run("With HTTP 404", func(t *ftt.Test) {
 					test(404)
 				})
-				Convey("With HTTP 503", func() {
+				t.Run("With HTTP 503", func(t *ftt.Test) {
 					test(503)
 				})
 			})
@@ -158,15 +158,15 @@ func TestEndpointsInsertIssue(t *testing.T) {
 func TestEndpointsListComments(t *testing.T) {
 	t.Parallel()
 
-	Convey("Endpoints client: ListComments", t, func() {
+	ftt.Run("Endpoints client: ListComments", t, func(t *ftt.Test) {
 		ctx := context.Background()
 
-		Convey("succeeds", func(c C) {
+		t.Run("succeeds", func(t *ftt.Test) {
 			req := &ListCommentsRequest{Issue: &IssueRef{IssueId: 859707, ProjectId: "chromium"}}
 
 			var srv *httptest.Server
 			srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				c.So(r.URL.String(), ShouldEqual, "/projects/chromium/issues/859707/comments?startIndex=0")
+				assert.Loosely(t, r.URL.String(), should.Equal("/projects/chromium/issues/859707/comments?startIndex=0"))
 				_, err := w.Write([]byte(`{
 					"items": [
 						{
@@ -198,14 +198,14 @@ func TestEndpointsListComments(t *testing.T) {
 					 "totalResults": 2,
 					 "etag": "\"se1Lh8IyiCDwsGaF9fqPeVscq_I/rYRAvt40qdVXvtOjNLeqW1ZMUjA\""
 				}`))
-				c.So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}))
 			defer srv.Close()
 
 			client := NewEndpointsClient(&http.Client{Timeout: time.Second}, srv.URL)
 			res, err := client.ListComments(ctx, req)
-			So(err, ShouldBeNil)
-			So(res, ShouldResembleProto, &ListCommentsResponse{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(&ListCommentsResponse{
 				TotalResults: 2,
 				Items: []*Comment{
 					{
@@ -227,7 +227,7 @@ func TestEndpointsListComments(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 	})
 }
