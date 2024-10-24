@@ -13,12 +13,13 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/appengine/gaetesting"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	api "infra/appengine/cros/lab_inventory/api/v1"
@@ -29,14 +30,14 @@ import (
 )
 
 type testFixture struct {
-	T *testing.T
+	T testing.TB
 	C context.Context
 
 	Inventory          *InventoryServerImpl
 	DecoratedInventory *api.DecoratedInventory
 }
 
-func newTestFixtureWithContext(ctx context.Context, t *testing.T) (testFixture, func()) {
+func newTestFixtureWithContext(ctx context.Context, t testing.TB) (testFixture, func()) {
 	tf := testFixture{T: t, C: ctx}
 	mc := gomock.NewController(t)
 
@@ -72,7 +73,7 @@ type devcfgEntity struct {
 func TestDeviceConfigsExists(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test exists device config in datastore", t, func() {
+	ftt.Run("Test exists device config in datastore", t, func(t *ftt.Test) {
 		ctx := testingContext()
 		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
@@ -84,9 +85,9 @@ func TestDeviceConfigsExists(t *testing.T) {
 				DevConfig: []byte("bad data"),
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("Happy path", func() {
+		t.Run("Happy path", func(t *ftt.Test) {
 			resp, err := tf.Inventory.DeviceConfigsExists(ctx, &api.DeviceConfigsExistsRequest{
 				ConfigIds: []*device.ConfigId{
 					{
@@ -101,12 +102,12 @@ func TestDeviceConfigsExists(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(resp.Exists[0], ShouldBeTrue)
-			So(resp.Exists[1], ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Exists[0], should.BeTrue)
+			assert.Loosely(t, resp.Exists[1], should.BeTrue)
 		})
 
-		Convey("check for nonexisting data", func() {
+		t.Run("check for nonexisting data", func(t *ftt.Test) {
 			resp, err := tf.Inventory.DeviceConfigsExists(ctx, &api.DeviceConfigsExistsRequest{
 				ConfigIds: []*device.ConfigId{
 					{
@@ -116,11 +117,11 @@ func TestDeviceConfigsExists(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(resp.Exists[0], ShouldBeFalse)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Exists[0], should.BeFalse)
 		})
 
-		Convey("check for existing and nonexisting data", func() {
+		t.Run("check for existing and nonexisting data", func(t *ftt.Test) {
 			resp, err := tf.Inventory.DeviceConfigsExists(ctx, &api.DeviceConfigsExistsRequest{
 				ConfigIds: []*device.ConfigId{
 					{
@@ -135,9 +136,9 @@ func TestDeviceConfigsExists(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
-			So(resp.Exists[0], ShouldBeFalse)
-			So(resp.Exists[1], ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.Exists[0], should.BeFalse)
+			assert.Loosely(t, resp.Exists[1], should.BeTrue)
 		})
 	})
 }
@@ -239,42 +240,42 @@ func TestGetDeviceManualRepairRecord(t *testing.T) {
 	// Set up records in datastore
 	datastore.AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Test get device manual repair records", t, func() {
-		Convey("Get record using single hostname", func() {
+	ftt.Run("Test get device manual repair records", t, func(t *ftt.Test) {
+		t.Run("Get record using single hostname", func(t *ftt.Test) {
 			req := &api.GetDeviceManualRepairRecordRequest{
 				Hostname: "chromeos-getRecords-aa",
 			}
 			resp, err := tf.Inventory.GetDeviceManualRepairRecord(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp.DeviceRepairRecord, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.DeviceRepairRecord, should.NotBeNil)
 		})
-		Convey("Get first record when hostname has multiple active records", func() {
+		t.Run("Get first record when hostname has multiple active records", func(t *ftt.Test) {
 			req := &api.GetDeviceManualRepairRecordRequest{
 				Hostname: "chromeos-getRecords-bb",
 			}
 			resp, err := tf.Inventory.GetDeviceManualRepairRecord(tf.C, req)
-			So(resp.DeviceRepairRecord, ShouldNotBeNil)
-			So(resp.DeviceRepairRecord.GetAssetTag(), ShouldEqual, "getRecords-222")
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "More than one active record found")
+			assert.Loosely(t, resp.DeviceRepairRecord, should.NotBeNil)
+			assert.Loosely(t, resp.DeviceRepairRecord.GetAssetTag(), should.Equal("getRecords-222"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("More than one active record found"))
 		})
-		Convey("Get record using non-existent hostname", func() {
+		t.Run("Get record using non-existent hostname", func(t *ftt.Test) {
 			req := &api.GetDeviceManualRepairRecordRequest{
 				Hostname: "chromeos-getRecords-cc",
 			}
 			resp, err := tf.Inventory.GetDeviceManualRepairRecord(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "No record found")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("No record found"))
 		})
-		Convey("Get record using empty hostname", func() {
+		t.Run("Get record using empty hostname", func(t *ftt.Test) {
 			req := &api.GetDeviceManualRepairRecordRequest{
 				Hostname: "",
 			}
 			resp, err := tf.Inventory.GetDeviceManualRepairRecord(tf.C, req)
-			So(resp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "No record found")
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("No record found"))
 		})
 	})
 }
@@ -292,44 +293,44 @@ func TestCreateDeviceManualRepairRecord(t *testing.T) {
 	record2 := mockDeviceManualRepairRecord("", "", 1, false)
 
 	// Set up records in datastore
-	Convey("Test add devices using an empty datastore", t, func() {
-		Convey("Add single record", func() {
+	ftt.Run("Test add devices using an empty datastore", t, func(t *ftt.Test) {
+		t.Run("Add single record", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record1.Hostname}
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record1}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Check added record
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-aa")
-			So(getRes[0].Record.GetAssetTag(), ShouldEqual, "n/a")
-			So(getRes[0].Record.GetCreatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 1, Nanos: 0})
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-aa"))
+			assert.Loosely(t, getRes[0].Record.GetAssetTag(), should.Equal("n/a"))
+			assert.Loosely(t, getRes[0].Record.GetCreatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 1, Nanos: 0}))
 		})
-		Convey("Add single record without hostname", func() {
+		t.Run("Add single record without hostname", func(t *ftt.Test) {
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record2}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Hostname cannot be empty")
+			assert.Loosely(t, rsp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Hostname cannot be empty"))
 
 			// No record should be added
 			propFilter := map[string]string{"hostname": record2.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 0)
+			assert.Loosely(t, getRes, should.HaveLength(0))
 		})
-		Convey("Add single record to a host with an open record", func() {
+		t.Run("Add single record to a host with an open record", func(t *ftt.Test) {
 			// Check existing record
 			propFilter := map[string]string{"hostname": record1.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-aa")
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-aa"))
 
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record1}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp, ShouldBeNil)
-			So(err.Error(), ShouldContainSubstring, "A record already exists for host chromeos-createRecords-aa")
+			assert.Loosely(t, rsp, should.BeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("A record already exists for host chromeos-createRecords-aa"))
 		})
 	})
 
@@ -339,7 +340,7 @@ func TestCreateDeviceManualRepairRecord(t *testing.T) {
 	record5 := mockDeviceManualRepairRecord("", "", 1, false)
 	record6 := mockDeviceManualRepairRecord("chromeos-createRecords-ee", "", 1, true)
 
-	Convey("Test add devices using an non-empty datastore", t, func() {
+	ftt.Run("Test add devices using an non-empty datastore", t, func(t *ftt.Test) {
 		dut1 := mockDut("chromeos-createRecords-bb", "mockDutAssetTag-111", "labstation1")
 		dut2 := mockDut("chromeos-createRecords-cc", "", "labstation1")
 		dut3 := mockDut("chromeos-createRecords-ee", "mockDutAssetTag-222", "labstation1")
@@ -355,56 +356,56 @@ func TestCreateDeviceManualRepairRecord(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		Convey("Add single record", func() {
+		t.Run("Add single record", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record3.Hostname}
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record3}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Check added record
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-bb")
-			So(getRes[0].Record.GetAssetTag(), ShouldEqual, "mockDutAssetTag-111")
-			So(getRes[0].Record.GetCreatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 1, Nanos: 0})
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-bb"))
+			assert.Loosely(t, getRes[0].Record.GetAssetTag(), should.Equal("mockDutAssetTag-111"))
+			assert.Loosely(t, getRes[0].Record.GetCreatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 1, Nanos: 0}))
 		})
-		Convey("Add single record using dut without asset tag", func() {
+		t.Run("Add single record using dut without asset tag", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record4.Hostname}
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record4}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Asset tag should be uuid generated for dut
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-cc")
-			So(getRes[0].Record.GetAssetTag(), ShouldNotEqual, "")
-			So(getRes[0].Record.GetAssetTag(), ShouldNotEqual, "n/a")
-			So(getRes[0].Record.GetCreatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 1, Nanos: 0})
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-cc"))
+			assert.Loosely(t, getRes[0].Record.GetAssetTag(), should.NotEqual(""))
+			assert.Loosely(t, getRes[0].Record.GetAssetTag(), should.NotEqual("n/a"))
+			assert.Loosely(t, getRes[0].Record.GetCreatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 1, Nanos: 0}))
 		})
-		Convey("Add single record with no hostname", func() {
+		t.Run("Add single record with no hostname", func(t *ftt.Test) {
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record5}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "Hostname cannot be empty")
+			assert.Loosely(t, rsp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Hostname cannot be empty"))
 		})
-		Convey("Add single record with completed repair state", func() {
+		t.Run("Add single record with completed repair state", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record6.Hostname}
 			req := &api.CreateDeviceManualRepairRecordRequest{DeviceRepairRecord: record6}
 			rsp, err := tf.Inventory.CreateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Completed time should be same as created
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-ee")
-			So(getRes[0].Record.GetAssetTag(), ShouldEqual, "mockDutAssetTag-222")
-			So(getRes[0].Record.GetCreatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 1, Nanos: 0})
-			So(getRes[0].Record.GetCreatedTime(), ShouldResembleProto, getRes[0].Record.GetCompletedTime())
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-ee"))
+			assert.Loosely(t, getRes[0].Record.GetAssetTag(), should.Equal("mockDutAssetTag-222"))
+			assert.Loosely(t, getRes[0].Record.GetCreatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 1, Nanos: 0}))
+			assert.Loosely(t, getRes[0].Record.GetCreatedTime(), should.Resemble(getRes[0].Record.GetCompletedTime()))
 		})
 	})
 }
@@ -430,8 +431,8 @@ func TestUpdateDeviceManualRepairRecord(t *testing.T) {
 	records := []*invlibs.DeviceManualRepairRecord{record1, record2, record3}
 	datastore.AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Test update devices using an non-empty datastore", t, func() {
-		Convey("Update single record with completed repair state", func() {
+	ftt.Run("Test update devices using an non-empty datastore", t, func(t *ftt.Test) {
+		t.Run("Update single record with completed repair state", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record1.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
 			req := &api.UpdateDeviceManualRepairRecordRequest{
@@ -439,35 +440,35 @@ func TestUpdateDeviceManualRepairRecord(t *testing.T) {
 				DeviceRepairRecord: record1Complete,
 			}
 			rsp, err := tf.Inventory.UpdateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Check updated record
 			getRes, err = datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-updateRecords-aa")
-			So(getRes[0].Record.GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_COMPLETED)
-			So(getRes[0].Record.GetUpdatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 222, Nanos: 0})
-			So(getRes[0].Record.GetUpdatedTime(), ShouldResembleProto, getRes[0].Record.GetCompletedTime())
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-updateRecords-aa"))
+			assert.Loosely(t, getRes[0].Record.GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_COMPLETED))
+			assert.Loosely(t, getRes[0].Record.GetUpdatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 222, Nanos: 0}))
+			assert.Loosely(t, getRes[0].Record.GetUpdatedTime(), should.Resemble(getRes[0].Record.GetCompletedTime()))
 		})
-		Convey("Update single record with no id", func() {
+		t.Run("Update single record with no id", func(t *ftt.Test) {
 			req := &api.UpdateDeviceManualRepairRecordRequest{
 				Id:                 "",
 				DeviceRepairRecord: record2Complete,
 			}
 			rsp, err := tf.Inventory.UpdateDeviceManualRepairRecord(tf.C, req)
-			So(rsp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "ID cannot be empty")
+			assert.Loosely(t, rsp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("ID cannot be empty"))
 
 			// Check updated record and make sure it is unchanged
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, map[string]string{"hostname": record2.Hostname}, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-updateRecords-bb")
-			So(getRes[0].Record.GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS)
-			So(getRes[0].Record.GetUpdatedTime(), ShouldResembleProto, &timestamp.Timestamp{Seconds: 222, Nanos: 0})
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-updateRecords-bb"))
+			assert.Loosely(t, getRes[0].Record.GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS))
+			assert.Loosely(t, getRes[0].Record.GetUpdatedTime(), should.Resemble(&timestamp.Timestamp{Seconds: 222, Nanos: 0}))
 		})
-		Convey("Update single record", func() {
+		t.Run("Update single record", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record3.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
 			record3Update.TimeTaken = 20
@@ -476,31 +477,31 @@ func TestUpdateDeviceManualRepairRecord(t *testing.T) {
 				DeviceRepairRecord: record3Update,
 			}
 			rsp, err := tf.Inventory.UpdateDeviceManualRepairRecord(tf.C, req)
-			So(rsp.String(), ShouldEqual, "")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, rsp.String(), should.BeEmpty)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Check updated record and make sure fields are changed properly
 			getRes, err = datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-updateRecords-cc")
-			So(getRes[0].Record.GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS)
-			So(getRes[0].Record.GetTimeTaken(), ShouldEqual, 20)
-			So(getRes[0].Record.GetUpdatedTime(), ShouldNotResemble, &timestamp.Timestamp{Seconds: 222, Nanos: 0})
-			So(getRes[0].Record.GetCompletedTime(), ShouldResembleProto, &timestamp.Timestamp{Seconds: 444, Nanos: 0})
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-updateRecords-cc"))
+			assert.Loosely(t, getRes[0].Record.GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS))
+			assert.Loosely(t, getRes[0].Record.GetTimeTaken(), should.Equal(20))
+			assert.Loosely(t, getRes[0].Record.GetUpdatedTime(), should.NotResemble(&timestamp.Timestamp{Seconds: 222, Nanos: 0}))
+			assert.Loosely(t, getRes[0].Record.GetCompletedTime(), should.Resemble(&timestamp.Timestamp{Seconds: 444, Nanos: 0}))
 		})
-		Convey("Update single non-existent record", func() {
+		t.Run("Update single non-existent record", func(t *ftt.Test) {
 			propFilter := map[string]string{"hostname": record4.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 0)
+			assert.Loosely(t, getRes, should.HaveLength(0))
 
 			req := &api.UpdateDeviceManualRepairRecordRequest{
 				Id:                 "test-id",
 				DeviceRepairRecord: record4,
 			}
 			rsp, err := tf.Inventory.UpdateDeviceManualRepairRecord(tf.C, req)
-			So(rsp, ShouldBeNil)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "No open record exists for host chromeos-updateRecords-dd")
+			assert.Loosely(t, rsp, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("No open record exists for host chromeos-updateRecords-dd"))
 		})
 	})
 }
@@ -523,8 +524,8 @@ func TestListManualRepairRecords(t *testing.T) {
 	// Set up records in datastore
 	datastore.AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Test list device manual repair records", t, func() {
-		Convey("List records using hostname and asset tag", func() {
+	ftt.Run("Test list device manual repair records", t, func(t *ftt.Test) {
+		t.Run("List records using hostname and asset tag", func(t *ftt.Test) {
 			req := &api.ListManualRepairRecordsRequest{
 				Hostname: "chromeos-getRecords-aa",
 				AssetTag: "getRecords-111",
@@ -532,17 +533,17 @@ func TestListManualRepairRecords(t *testing.T) {
 			}
 			resp, err := tf.Inventory.ListManualRepairRecords(tf.C, req)
 
-			So(err, ShouldBeNil)
-			So(resp.RepairRecords, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 2)
-			So(resp.RepairRecords[0].GetHostname(), ShouldEqual, "chromeos-getRecords-aa")
-			So(resp.RepairRecords[0].GetAssetTag(), ShouldEqual, "getRecords-111")
-			So(resp.RepairRecords[0].GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS)
-			So(resp.RepairRecords[1].GetHostname(), ShouldEqual, "chromeos-getRecords-aa")
-			So(resp.RepairRecords[1].GetAssetTag(), ShouldEqual, "getRecords-111")
-			So(resp.RepairRecords[1].GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_COMPLETED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RepairRecords, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, resp.RepairRecords[0].GetHostname(), should.Equal("chromeos-getRecords-aa"))
+			assert.Loosely(t, resp.RepairRecords[0].GetAssetTag(), should.Equal("getRecords-111"))
+			assert.Loosely(t, resp.RepairRecords[0].GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS))
+			assert.Loosely(t, resp.RepairRecords[1].GetHostname(), should.Equal("chromeos-getRecords-aa"))
+			assert.Loosely(t, resp.RepairRecords[1].GetAssetTag(), should.Equal("getRecords-111"))
+			assert.Loosely(t, resp.RepairRecords[1].GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_COMPLETED))
 		})
-		Convey("List records using hostname and asset tag with offset", func() {
+		t.Run("List records using hostname and asset tag with offset", func(t *ftt.Test) {
 			req := &api.ListManualRepairRecordsRequest{
 				Hostname: "chromeos-getRecords-aa",
 				AssetTag: "getRecords-111",
@@ -551,14 +552,14 @@ func TestListManualRepairRecords(t *testing.T) {
 			}
 			resp, err := tf.Inventory.ListManualRepairRecords(tf.C, req)
 
-			So(err, ShouldBeNil)
-			So(resp.RepairRecords, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 1)
-			So(resp.RepairRecords[0].GetHostname(), ShouldEqual, "chromeos-getRecords-aa")
-			So(resp.RepairRecords[0].GetAssetTag(), ShouldEqual, "getRecords-111")
-			So(resp.RepairRecords[0].GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_COMPLETED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RepairRecords, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, resp.RepairRecords[0].GetHostname(), should.Equal("chromeos-getRecords-aa"))
+			assert.Loosely(t, resp.RepairRecords[0].GetAssetTag(), should.Equal("getRecords-111"))
+			assert.Loosely(t, resp.RepairRecords[0].GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_COMPLETED))
 		})
-		Convey("List records using all filters", func() {
+		t.Run("List records using all filters", func(t *ftt.Test) {
 			req := &api.ListManualRepairRecordsRequest{
 				Hostname:    "chromeos-getRecords-aa",
 				AssetTag:    "getRecords-111",
@@ -568,14 +569,14 @@ func TestListManualRepairRecords(t *testing.T) {
 			}
 			resp, err := tf.Inventory.ListManualRepairRecords(tf.C, req)
 
-			So(err, ShouldBeNil)
-			So(resp.RepairRecords, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 1)
-			So(resp.RepairRecords[0].GetHostname(), ShouldEqual, "chromeos-getRecords-aa")
-			So(resp.RepairRecords[0].GetAssetTag(), ShouldEqual, "getRecords-111")
-			So(resp.RepairRecords[0].GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_COMPLETED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RepairRecords, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, resp.RepairRecords[0].GetHostname(), should.Equal("chromeos-getRecords-aa"))
+			assert.Loosely(t, resp.RepairRecords[0].GetAssetTag(), should.Equal("getRecords-111"))
+			assert.Loosely(t, resp.RepairRecords[0].GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_COMPLETED))
 		})
-		Convey("List records using hostname and asset tag with limit 1", func() {
+		t.Run("List records using hostname and asset tag with limit 1", func(t *ftt.Test) {
 			req := &api.ListManualRepairRecordsRequest{
 				Hostname: "chromeos-getRecords-aa",
 				AssetTag: "getRecords-111",
@@ -583,14 +584,14 @@ func TestListManualRepairRecords(t *testing.T) {
 			}
 			resp, err := tf.Inventory.ListManualRepairRecords(tf.C, req)
 
-			So(err, ShouldBeNil)
-			So(resp.RepairRecords, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 1)
-			So(resp.RepairRecords[0].GetHostname(), ShouldEqual, "chromeos-getRecords-aa")
-			So(resp.RepairRecords[0].GetAssetTag(), ShouldEqual, "getRecords-111")
-			So(resp.RepairRecords[0].GetRepairState(), ShouldEqual, invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.RepairRecords, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, resp.RepairRecords[0].GetHostname(), should.Equal("chromeos-getRecords-aa"))
+			assert.Loosely(t, resp.RepairRecords[0].GetAssetTag(), should.Equal("getRecords-111"))
+			assert.Loosely(t, resp.RepairRecords[0].GetRepairState(), should.Equal(invlibs.DeviceManualRepairRecord_STATE_IN_PROGRESS))
 		})
-		Convey("List records that do not exist", func() {
+		t.Run("List records that do not exist", func(t *ftt.Test) {
 			req := &api.ListManualRepairRecordsRequest{
 				Hostname: "chromeos-getRecords-bb",
 				AssetTag: "getRecords-111",
@@ -598,9 +599,9 @@ func TestListManualRepairRecords(t *testing.T) {
 			}
 			resp, err := tf.Inventory.ListManualRepairRecords(tf.C, req)
 
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(0))
 		})
 	})
 }
@@ -622,8 +623,8 @@ func TestBatchGetManualRepairRecords(t *testing.T) {
 	// Set up records in datastore
 	datastore.AddDeviceManualRepairRecords(ctx, records)
 
-	Convey("Test batch get manual repair records", t, func() {
-		Convey("Get record using multiple hostnames", func() {
+	ftt.Run("Test batch get manual repair records", t, func(t *ftt.Test) {
+		t.Run("Get record using multiple hostnames", func(t *ftt.Test) {
 			req := &api.BatchGetManualRepairRecordsRequest{
 				Hostnames: []string{
 					"chromeos-getRecords-xx",
@@ -631,32 +632,32 @@ func TestBatchGetManualRepairRecords(t *testing.T) {
 				},
 			}
 			resp, err := tf.Inventory.BatchGetManualRepairRecords(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 2)
-			So(resp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(resp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(resp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-getRecords-xx")
-			So(resp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-getRecords-xx")
-			So(resp.RepairRecords[1].ErrorMsg, ShouldBeEmpty)
-			So(resp.RepairRecords[1].RepairRecord, ShouldNotBeNil)
-			So(resp.RepairRecords[1].RepairRecord.Hostname, ShouldEqual, "chromeos-getRecords-yy")
-			So(resp.RepairRecords[1].Hostname, ShouldEqual, "chromeos-getRecords-yy")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, resp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, resp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-getRecords-xx"))
+			assert.Loosely(t, resp.RepairRecords[0].Hostname, should.Equal("chromeos-getRecords-xx"))
+			assert.Loosely(t, resp.RepairRecords[1].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, resp.RepairRecords[1].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords[1].RepairRecord.Hostname, should.Equal("chromeos-getRecords-yy"))
+			assert.Loosely(t, resp.RepairRecords[1].Hostname, should.Equal("chromeos-getRecords-yy"))
 		})
-		Convey("Get first record when hostname has multiple active records", func() {
+		t.Run("Get first record when hostname has multiple active records", func(t *ftt.Test) {
 			req := &api.BatchGetManualRepairRecordsRequest{
 				Hostnames: []string{
 					"chromeos-getRecords-zz",
 				},
 			}
 			resp, err := tf.Inventory.BatchGetManualRepairRecords(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 1)
-			So(resp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-getRecords-zz")
-			So(resp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-getRecords-zz")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, resp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-getRecords-zz"))
+			assert.Loosely(t, resp.RepairRecords[0].Hostname, should.Equal("chromeos-getRecords-zz"))
 		})
-		Convey("Get record using a non-existent hostname", func() {
+		t.Run("Get record using a non-existent hostname", func(t *ftt.Test) {
 			req := &api.BatchGetManualRepairRecordsRequest{
 				Hostnames: []string{
 					"chromeos-getRecords-xx",
@@ -664,16 +665,16 @@ func TestBatchGetManualRepairRecords(t *testing.T) {
 				},
 			}
 			resp, err := tf.Inventory.BatchGetManualRepairRecords(tf.C, req)
-			So(err, ShouldBeNil)
-			So(resp, ShouldNotBeNil)
-			So(resp.RepairRecords, ShouldHaveLength, 2)
-			So(resp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(resp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(resp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-getRecords-xx")
-			So(resp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-getRecords-xx")
-			So(resp.RepairRecords[1].ErrorMsg, ShouldContainSubstring, "No record found")
-			So(resp.RepairRecords[1].RepairRecord, ShouldBeNil)
-			So(resp.RepairRecords[1].Hostname, ShouldEqual, "chromeos-getRecords-cc")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, resp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, resp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, resp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-getRecords-xx"))
+			assert.Loosely(t, resp.RepairRecords[0].Hostname, should.Equal("chromeos-getRecords-xx"))
+			assert.Loosely(t, resp.RepairRecords[1].ErrorMsg, should.ContainSubstring("No record found"))
+			assert.Loosely(t, resp.RepairRecords[1].RepairRecord, should.BeNil)
+			assert.Loosely(t, resp.RepairRecords[1].Hostname, should.Equal("chromeos-getRecords-cc"))
 		})
 	})
 }
@@ -694,19 +695,19 @@ func TestBatchCreateManualRepairRecords(t *testing.T) {
 	record5 := mockDeviceManualRepairRecord("", "", 1, false)
 
 	// Set up records in datastore
-	Convey("Test add devices using an empty datastore", t, func() {
-		Convey("Add single record", func() {
+	ftt.Run("Test add devices using an empty datastore", t, func(t *ftt.Test) {
+		t.Run("Add single record", func(t *ftt.Test) {
 			createReq := &api.BatchCreateManualRepairRecordsRequest{
 				RepairRecords: []*invlibs.DeviceManualRepairRecord{record1},
 			}
 			createRsp, err := tf.Inventory.BatchCreateManualRepairRecords(tf.C, createReq)
-			So(err, ShouldBeNil)
-			So(createRsp, ShouldNotBeNil)
-			So(createRsp.RepairRecords, ShouldHaveLength, 1)
-			So(createRsp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(createRsp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(createRsp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-zz")
-			So(createRsp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-createRecords-zz")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, createRsp, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, createRsp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-createRecords-zz"))
+			assert.Loosely(t, createRsp.RepairRecords[0].Hostname, should.Equal("chromeos-createRecords-zz"))
 
 			// Check added record
 			getReq := &api.BatchGetManualRepairRecordsRequest{
@@ -715,30 +716,30 @@ func TestBatchCreateManualRepairRecords(t *testing.T) {
 				},
 			}
 			getRsp, err := tf.Inventory.BatchGetManualRepairRecords(tf.C, getReq)
-			So(err, ShouldBeNil)
-			So(getRsp, ShouldNotBeNil)
-			So(getRsp.RepairRecords, ShouldHaveLength, 1)
-			So(getRsp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(getRsp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(getRsp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-zz")
-			So(getRsp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-createRecords-zz")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, getRsp, should.NotBeNil)
+			assert.Loosely(t, getRsp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, getRsp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, getRsp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, getRsp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-createRecords-zz"))
+			assert.Loosely(t, getRsp.RepairRecords[0].Hostname, should.Equal("chromeos-createRecords-zz"))
 		})
-		Convey("Add multiple records", func() {
+		t.Run("Add multiple records", func(t *ftt.Test) {
 			createReq := &api.BatchCreateManualRepairRecordsRequest{
 				RepairRecords: []*invlibs.DeviceManualRepairRecord{record2, record3},
 			}
 			createRsp, err := tf.Inventory.BatchCreateManualRepairRecords(tf.C, createReq)
-			So(err, ShouldBeNil)
-			So(createRsp, ShouldNotBeNil)
-			So(createRsp.RepairRecords, ShouldHaveLength, 2)
-			So(createRsp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(createRsp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(createRsp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-xx")
-			So(createRsp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-createRecords-xx")
-			So(createRsp.RepairRecords[1].ErrorMsg, ShouldBeEmpty)
-			So(createRsp.RepairRecords[1].RepairRecord, ShouldNotBeNil)
-			So(createRsp.RepairRecords[1].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-yy")
-			So(createRsp.RepairRecords[1].Hostname, ShouldEqual, "chromeos-createRecords-yy")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, createRsp, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, createRsp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-createRecords-xx"))
+			assert.Loosely(t, createRsp.RepairRecords[0].Hostname, should.Equal("chromeos-createRecords-xx"))
+			assert.Loosely(t, createRsp.RepairRecords[1].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, createRsp.RepairRecords[1].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords[1].RepairRecord.Hostname, should.Equal("chromeos-createRecords-yy"))
+			assert.Loosely(t, createRsp.RepairRecords[1].Hostname, should.Equal("chromeos-createRecords-yy"))
 
 			// Check added record
 			getReq := &api.BatchGetManualRepairRecordsRequest{
@@ -748,55 +749,55 @@ func TestBatchCreateManualRepairRecords(t *testing.T) {
 				},
 			}
 			getRsp, err := tf.Inventory.BatchGetManualRepairRecords(tf.C, getReq)
-			So(err, ShouldBeNil)
-			So(getRsp, ShouldNotBeNil)
-			So(getRsp.RepairRecords, ShouldHaveLength, 2)
-			So(getRsp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(getRsp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(getRsp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-yy")
-			So(getRsp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-createRecords-yy")
-			So(getRsp.RepairRecords[1].ErrorMsg, ShouldBeEmpty)
-			So(getRsp.RepairRecords[1].RepairRecord, ShouldNotBeNil)
-			So(getRsp.RepairRecords[1].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-xx")
-			So(getRsp.RepairRecords[1].Hostname, ShouldEqual, "chromeos-createRecords-xx")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, getRsp, should.NotBeNil)
+			assert.Loosely(t, getRsp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, getRsp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, getRsp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, getRsp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-createRecords-yy"))
+			assert.Loosely(t, getRsp.RepairRecords[0].Hostname, should.Equal("chromeos-createRecords-yy"))
+			assert.Loosely(t, getRsp.RepairRecords[1].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, getRsp.RepairRecords[1].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, getRsp.RepairRecords[1].RepairRecord.Hostname, should.Equal("chromeos-createRecords-xx"))
+			assert.Loosely(t, getRsp.RepairRecords[1].Hostname, should.Equal("chromeos-createRecords-xx"))
 		})
-		Convey("Add multiple records; one with an open record", func() {
+		t.Run("Add multiple records; one with an open record", func(t *ftt.Test) {
 			// Check existing record
 			propFilter := map[string]string{"hostname": record1.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 1)
-			So(getRes[0].Record.GetHostname(), ShouldEqual, "chromeos-createRecords-zz")
+			assert.Loosely(t, getRes, should.HaveLength(1))
+			assert.Loosely(t, getRes[0].Record.GetHostname(), should.Equal("chromeos-createRecords-zz"))
 
 			createReq := &api.BatchCreateManualRepairRecordsRequest{
 				RepairRecords: []*invlibs.DeviceManualRepairRecord{record1, record4},
 			}
 			createRsp, err := tf.Inventory.BatchCreateManualRepairRecords(tf.C, createReq)
-			So(err, ShouldBeNil)
-			So(createRsp, ShouldNotBeNil)
-			So(createRsp.RepairRecords, ShouldHaveLength, 2)
-			So(createRsp.RepairRecords[0].ErrorMsg, ShouldBeEmpty)
-			So(createRsp.RepairRecords[0].RepairRecord, ShouldNotBeNil)
-			So(createRsp.RepairRecords[0].RepairRecord.Hostname, ShouldEqual, "chromeos-createRecords-ww")
-			So(createRsp.RepairRecords[0].Hostname, ShouldEqual, "chromeos-createRecords-ww")
-			So(createRsp.RepairRecords[1].ErrorMsg, ShouldContainSubstring, "A record already exists for host chromeos-createRecords-zz")
-			So(createRsp.RepairRecords[1].RepairRecord, ShouldBeNil)
-			So(createRsp.RepairRecords[1].Hostname, ShouldEqual, "chromeos-createRecords-zz")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, createRsp, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords, should.HaveLength(2))
+			assert.Loosely(t, createRsp.RepairRecords[0].ErrorMsg, should.BeEmpty)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords[0].RepairRecord.Hostname, should.Equal("chromeos-createRecords-ww"))
+			assert.Loosely(t, createRsp.RepairRecords[0].Hostname, should.Equal("chromeos-createRecords-ww"))
+			assert.Loosely(t, createRsp.RepairRecords[1].ErrorMsg, should.ContainSubstring("A record already exists for host chromeos-createRecords-zz"))
+			assert.Loosely(t, createRsp.RepairRecords[1].RepairRecord, should.BeNil)
+			assert.Loosely(t, createRsp.RepairRecords[1].Hostname, should.Equal("chromeos-createRecords-zz"))
 		})
-		Convey("Add single record without hostname", func() {
+		t.Run("Add single record without hostname", func(t *ftt.Test) {
 			createReq := &api.BatchCreateManualRepairRecordsRequest{
 				RepairRecords: []*invlibs.DeviceManualRepairRecord{record5},
 			}
 			createRsp, err := tf.Inventory.BatchCreateManualRepairRecords(tf.C, createReq)
-			So(err, ShouldBeNil)
-			So(createRsp, ShouldNotBeNil)
-			So(createRsp.RepairRecords, ShouldHaveLength, 1)
-			So(createRsp.RepairRecords[0].ErrorMsg, ShouldContainSubstring, "Hostname cannot be empty")
-			So(createRsp.RepairRecords[0].Hostname, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, createRsp, should.NotBeNil)
+			assert.Loosely(t, createRsp.RepairRecords, should.HaveLength(1))
+			assert.Loosely(t, createRsp.RepairRecords[0].ErrorMsg, should.ContainSubstring("Hostname cannot be empty"))
+			assert.Loosely(t, createRsp.RepairRecords[0].Hostname, should.BeEmpty)
 
 			// No record should be added
 			propFilter := map[string]string{"hostname": record5.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
-			So(getRes, ShouldHaveLength, 0)
+			assert.Loosely(t, getRes, should.HaveLength(0))
 		})
 	})
 }
@@ -827,7 +828,7 @@ func mockDevCfgEntity(devCfg *device.Config) (*devcfgEntity, error) {
 func TestListDeviceConfigs(t *testing.T) {
 	t.Parallel()
 
-	Convey("When device configs exist in datastore", t, func() {
+	ftt.Run("When device configs exist in datastore", t, func(t *ftt.Test) {
 		ctx := gaetesting.TestingContext()
 		ds.GetTestable(ctx).Consistent(true)
 		tf, validate := newTestFixtureWithContext(ctx, t)
@@ -835,31 +836,31 @@ func TestListDeviceConfigs(t *testing.T) {
 
 		devCfg1 := mockDevCfg("board1", "model1", "variant1")
 		cfgEntity1, err := mockDevCfgEntity(devCfg1)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		devCfg2 := mockDevCfg("board2", "model2", "variant2")
 		cfgEntity2, err := mockDevCfgEntity(devCfg2)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = ds.Put(ctx, []devcfgEntity{
 			*cfgEntity1,
 			*cfgEntity2,
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		Convey("ListDeviceConfigs should return all configs", func() {
+		t.Run("ListDeviceConfigs should return all configs", func(t *ftt.Test) {
 			expected := &api.ListDeviceConfigsResponse{
 				DeviceConfigs: []*device.Config{devCfg1, devCfg2},
 			}
 			resp2, err := tf.Inventory.ListDeviceConfigs(ctx, &api.ListDeviceConfigsRequest{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			if resp2 != nil {
 				sort.Slice(resp2.DeviceConfigs, func(i int, j int) bool {
 					// Id field is unique for device configs in real life, so we can use it to sort.
 					return resp2.DeviceConfigs[i].GetId().String() < resp2.DeviceConfigs[j].GetId().String()
 				})
 			}
-			So(resp2, ShouldResembleProto, expected)
+			assert.Loosely(t, resp2, should.Resemble(expected))
 		})
 	})
 }
