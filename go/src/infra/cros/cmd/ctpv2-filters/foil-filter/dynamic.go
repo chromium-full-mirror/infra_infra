@@ -105,10 +105,12 @@ func modifyRdbPublishRequest(req *api.InternalTestplan, log *log.Logger) {
 			"publish.dynamicDeps": "",
 		},
 	)
+	// Remove sources from metadata, not currently supported
+	// on android gcs paths.
 	generator.AddModification(
 		&api.DynamicDep{
-			Key:   "publishRequest.metadata.sources.gsPath",
-			Value: fmt.Sprintf("FMT=%s", dynamic_common.SetPlaceholder("crosInstallPath")+"/metadata/sources.jsonpb"),
+			Key:   "publishRequest.metadata.sources",
+			Value: "NIL",
 		},
 		map[string]string{
 			"publish.dynamicDeps": "",

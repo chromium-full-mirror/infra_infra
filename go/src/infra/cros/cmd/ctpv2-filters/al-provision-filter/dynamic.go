@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
@@ -87,6 +88,13 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		log.Printf("scheduling Units found nil")
 	}
 	for _, su := range schedulingUnits {
+		gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
+		if strings.HasPrefix(gcsPath, "android-build") {
+			su.DynamicUpdateLookupTable["installPath"] = gcsPath
+			continue
+		}
+
+		// Look up latest for board as not provided in gcs path.
 		board, ok := su.GetDynamicUpdateLookupTable()["board"]
 		if !ok {
 			log.Printf("board not found")
@@ -109,7 +117,6 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 			"android-build/build_explorer/artifacts_list/%s/%s/%s-ota-%s.zip",
 			strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
 		log.Printf("InstallPath value: %s", installPath)
-		su.DynamicUpdateLookupTable["crosInstallPath"] = su.DynamicUpdateLookupTable["installPath"]
 		su.DynamicUpdateLookupTable["installPath"] = installPath
 	}
 

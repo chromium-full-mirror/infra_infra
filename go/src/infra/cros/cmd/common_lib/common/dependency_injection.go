@@ -67,6 +67,8 @@ func (storage *InjectableStorage) Get(key string) (interface{}, error) {
 		return fmtHandler(storage, strings.TrimPrefix(key, "FMT=")), nil
 	case AnyRegex.MatchString(key):
 		return anyHandler(storage, key)
+	case key == "NIL":
+		return nil, nil
 
 	default:
 		return stepThroughInterface(storage.Injectables, split_key)
