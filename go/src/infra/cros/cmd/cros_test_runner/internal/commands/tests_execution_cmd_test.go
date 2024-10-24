@@ -8,12 +8,13 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/containers"
@@ -25,7 +26,7 @@ import (
 
 func TestTestsExecutionCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -34,13 +35,13 @@ func TestTestsExecutionCmd_UnsupportedSK(t *testing.T) {
 		cmd := commands.NewTestsExecutionCmd(exec)
 		sk := &UnsupportedStateKeeper{}
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestTestsExecutionCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -49,13 +50,13 @@ func TestTestsExecutionCmd_MissingDeps(t *testing.T) {
 		exec := executors.NewCrosTestExecutor(cont)
 		cmd := commands.NewTestsExecutionCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestTestsExecutionCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -64,14 +65,14 @@ func TestTestsExecutionCmd_UpdateSK(t *testing.T) {
 		exec := executors.NewCrosTestExecutor(cont)
 		cmd := commands.NewTestsExecutionCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestsExecutionCmd extract deps", t, func() {
+	ftt.Run("TestsExecutionCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
@@ -91,14 +92,14 @@ func TestTestsExecutionCmd_ExtractDepsSuccess(t *testing.T) {
 		cmd := commands.NewTestsExecutionCmd(exec)
 
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestsExecutionCmd update SK", t, func() {
+	ftt.Run("TestsExecutionCmd update SK", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{
 			Injectables: common.NewInjectableStorage(),
@@ -122,11 +123,11 @@ func TestTestsExecutionCmd_UpdateSKSuccess(t *testing.T) {
 
 		// Update SK
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.TestResponses, ShouldNotBeNil)
-		So(sk.TkoPublishSrcDir, ShouldNotBeNil)
-		So(sk.TestResultForRdb, ShouldNotBeNil)
-		So(sk.TestResponses, ShouldEqual, wantTestResp)
-		So(sk.TkoPublishSrcDir, ShouldEqual, wantTkoPublishSrcDir)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.TestResponses, should.NotBeNil)
+		assert.Loosely(t, sk.TkoPublishSrcDir, should.NotEqual(""))
+		assert.Loosely(t, sk.TestResultForRdb, should.NotBeNil)
+		assert.Loosely(t, sk.TestResponses, should.Equal(wantTestResp))
+		assert.Loosely(t, sk.TkoPublishSrcDir, should.Equal(wantTkoPublishSrcDir))
 	})
 }

@@ -8,25 +8,33 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/registry"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/cros_test_runner/data"
 )
 
+func init() {
+	registry.RegisterCmpOption(cmp.AllowUnexported(common_configs.CommandExecutorPairedConfig{}))
+}
+
 func TestGenerateHwConfigs(t *testing.T) {
-	Convey("GenerateHwConfigs", t, func() {
+	ftt.Run("GenerateHwConfigs", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		hwConfigs := GenerateHwConfigs(ctx, nil, nil, false)
 
-		So(hwConfigs, ShouldNotBeNil)
-		So(hwConfigs.MainConfigs, ShouldNotBeNil)
-		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
+		assert.Loosely(t, hwConfigs, should.NotBeNil)
+		assert.Loosely(t, hwConfigs.MainConfigs, should.NotBeNil)
+		assert.Loosely(t, len(hwConfigs.MainConfigs), should.BeGreaterThan(0))
 	})
 
-	Convey("GenerateHwConfigs with CrosTestRunnerRequest", t, func() {
+	ftt.Run("GenerateHwConfigs with CrosTestRunnerRequest", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		req := &api.CrosTestRunnerDynamicRequest{
 			OrderedTasks: []*api.CrosTestRunnerDynamicRequest_Task{
@@ -44,48 +52,48 @@ func TestGenerateHwConfigs(t *testing.T) {
 		}
 		hwConfigs := GenerateHwConfigs(ctx, nil, req, false)
 
-		So(hwConfigs, ShouldNotBeNil)
-		So(hwConfigs.MainConfigs, ShouldNotBeNil)
-		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
-		So(hwConfigs.MainConfigs, ShouldContain, GenericProvision_GenericProvisionExecutor)
+		assert.Loosely(t, hwConfigs, should.NotBeNil)
+		assert.Loosely(t, hwConfigs.MainConfigs, should.NotBeNil)
+		assert.Loosely(t, len(hwConfigs.MainConfigs), should.BeGreaterThan(0))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(GenericProvision_GenericProvisionExecutor))
 	})
 
-	Convey("hwConfigsForPlatform for VM", t, func() {
+	ftt.Run("hwConfigsForPlatform for VM", t, func(t *ftt.Test) {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce, false)
 
-		So(hwConfigs.MainConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true))
-		So(hwConfigs.MainConfigs, ShouldNotContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldNotContain, UpdateDutState_NoExecutor.WithRequired(true))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true)))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.NotContain(DutServerStart_CrosDutExecutor))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.NotContain(UpdateDutState_NoExecutor.WithRequired(true)))
 	})
 
-	Convey("hwConfigsForPlatform for HW", t, func() {
+	ftt.Run("hwConfigsForPlatform for HW", t, func(t *ftt.Test) {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone, false)
 
-		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
-		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor.WithRequired(true))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(DutServerStart_CrosDutExecutor))
+		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(UpdateDutState_NoExecutor.WithRequired(true)))
 	})
 }
 
 func TestGeneratePreLocalConfigs(t *testing.T) {
-	Convey("GeneratePreLocalConfigs", t, func() {
+	ftt.Run("GeneratePreLocalConfigs", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		preLocalConfigs := GeneratePreLocalConfigs(ctx)
 
-		So(preLocalConfigs, ShouldNotBeNil)
-		So(preLocalConfigs.MainConfigs, ShouldNotBeNil)
-		So(len(preLocalConfigs.MainConfigs), ShouldBeGreaterThan, 0)
+		assert.Loosely(t, preLocalConfigs, should.NotBeNil)
+		assert.Loosely(t, preLocalConfigs.MainConfigs, should.NotBeNil)
+		assert.Loosely(t, len(preLocalConfigs.MainConfigs), should.BeGreaterThan(0))
 	})
 }
 
 func TestGenerateLocalConfigs(t *testing.T) {
-	Convey("GenerateLocalConfigs", t, func() {
+	ftt.Run("GenerateLocalConfigs", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		localConfigs := GenerateLocalConfigs(ctx, &data.LocalTestStateKeeper{Args: &data.LocalArgs{}})
 
-		So(localConfigs, ShouldNotBeNil)
-		So(localConfigs.MainConfigs, ShouldNotBeNil)
-		So(localConfigs.CleanupConfigs, ShouldNotBeNil)
-		So(len(localConfigs.MainConfigs), ShouldBeGreaterThan, 0)
-		So(len(localConfigs.CleanupConfigs), ShouldBeGreaterThan, 0)
+		assert.Loosely(t, localConfigs, should.NotBeNil)
+		assert.Loosely(t, localConfigs.MainConfigs, should.NotBeNil)
+		assert.Loosely(t, localConfigs.CleanupConfigs, should.NotBeNil)
+		assert.Loosely(t, len(localConfigs.MainConfigs), should.BeGreaterThan(0))
+		assert.Loosely(t, len(localConfigs.CleanupConfigs), should.BeGreaterThan(0))
 	})
 }

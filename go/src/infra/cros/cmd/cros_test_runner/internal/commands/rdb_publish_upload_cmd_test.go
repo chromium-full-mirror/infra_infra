@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	_go "go.chromium.org/chromiumos/config/go"
@@ -25,7 +24,9 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -43,7 +44,7 @@ func parseTime(s string) time.Time {
 
 func TestRdbPublishPublishCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -57,13 +58,13 @@ func TestRdbPublishPublishCmd_UnsupportedSK(t *testing.T) {
 			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestRdbPublishPublishCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -77,13 +78,13 @@ func TestRdbPublishPublishCmd_MissingDeps(t *testing.T) {
 			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestRdbPublishPublishCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -97,13 +98,13 @@ func TestRdbPublishPublishCmd_UpdateSK(t *testing.T) {
 			executors.CrosRdbPublishExecutorType)
 		cmd := commands.NewRdbPublishUploadCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 	t.Parallel()
-	Convey("With CFT Test Request", t, func() {
+	ftt.Run("With CFT Test Request", t, func(t *ftt.Test) {
 		request := &skylab_test_runner.CFTTestRequest{
 			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 				ProvisionState: &api.ProvisionState{
@@ -120,33 +121,33 @@ func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 			GsPath:            "gs://some-bucket/builder/build-12345/metadata/sources.jsonpb",
 			IsDeploymentDirty: false,
 		}
-		Convey("Base case", func() {
+		t.Run("Base case", func(t *ftt.Test) {
 			sources, err := commands.SourcesFromCFTTestRequest(request)
-			So(err, ShouldBeNil)
-			So(sources, ShouldResembleProto, expectedSources)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sources, should.Resemble(expectedSources))
 		})
-		Convey("Invalid input", func() {
-			Convey("No gs:// prefix", func() {
+		t.Run("Invalid input", func(t *ftt.Test) {
+			t.Run("No gs:// prefix", func(t *ftt.Test) {
 				request.PrimaryDut.ProvisionState.SystemImage.SystemImagePath.Path = "/a/b/c"
 				_, err := commands.SourcesFromCFTTestRequest(request)
-				So(err, ShouldErrLike, "system_image_path.path: must start with gs://")
+				assert.Loosely(t, err, should.ErrLike("system_image_path.path: must start with gs://"))
 			})
-			Convey("Trailing slash", func() {
+			t.Run("Trailing slash", func(t *ftt.Test) {
 				request.PrimaryDut.ProvisionState.SystemImage.SystemImagePath.Path = "gs://some-bucket/builder/build-12345/"
 				_, err := commands.SourcesFromCFTTestRequest(request)
-				So(err, ShouldErrLike, "system_image_path.path: must not have trailing '/'")
+				assert.Loosely(t, err, should.ErrLike("system_image_path.path: must not have trailing '/'"))
 			})
 		})
-		Convey("Local testing", func() {
+		t.Run("Local testing", func(t *ftt.Test) {
 			request.PrimaryDut.ProvisionState.SystemImage.SystemImagePath = &_go.StoragePath{
 				HostType: _go.StoragePath_LOCAL,
 				Path:     "/builds/build-12345",
 			}
 			sources, err := commands.SourcesFromCFTTestRequest(request)
-			So(err, ShouldBeNil)
-			So(sources, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sources, should.BeNil)
 		})
-		Convey("Lacros testing", func() {
+		t.Run("Lacros testing", func(t *ftt.Test) {
 			request.PrimaryDut.ProvisionState.Packages = []*api.ProvisionState_Package{
 				{
 					PortagePackage: &buildapi.Portage_Package{},
@@ -155,18 +156,18 @@ func TestRdbPublishPublishCmd_ExtractSources(t *testing.T) {
 			expectedSources.IsDeploymentDirty = true
 
 			sources, err := commands.SourcesFromCFTTestRequest(request)
-			So(err, ShouldBeNil)
-			So(sources, ShouldResembleProto, expectedSources)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sources, should.Resemble(expectedSources))
 		})
-		Convey("Firmware testing", func() {
+		t.Run("Firmware testing", func(t *ftt.Test) {
 			request.PrimaryDut.ProvisionState.Firmware = &buildapi.FirmwareConfig{
 				MainRoPayload: &buildapi.FirmwarePayload{},
 			}
 			expectedSources.IsDeploymentDirty = true
 
 			sources, err := commands.SourcesFromCFTTestRequest(request)
-			So(err, ShouldBeNil)
-			So(sources, ShouldResembleProto, expectedSources)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sources, should.Resemble(expectedSources))
 		})
 	})
 }
@@ -186,7 +187,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		executors.CrosRdbPublishExecutorType)
 	cmd := commands.NewRdbPublishUploadCmd(exec)
 
-	Convey("Populate TestResultForRdb with full info", t, func() {
+	ftt.Run("Populate TestResultForRdb with full info", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		createTime := timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z"))
 		startedTime := timestamppb.New(parseTime("2022-09-07T20:53:33.983328614Z"))
@@ -497,11 +498,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err = cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.TestResultForRdb, should.Resemble(wantTestResult))
 	})
 
-	Convey("Populate TestResultForRdb with board type based on builder name", t, func() {
+	ftt.Run("Populate TestResultForRdb with board type based on builder name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		createTime := timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z"))
 		startedTime := timestamppb.New(parseTime("2022-09-07T20:53:33.983328614Z"))
@@ -707,11 +708,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err = cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.TestResultForRdb, should.Resemble(wantTestResult))
 	})
 
-	Convey("Populate TestResultForRdb for multi-dut testing", t, func() {
+	ftt.Run("Populate TestResultForRdb for multi-dut testing", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		createTime := timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z"))
 		startedTime := timestamppb.New(parseTime("2022-09-07T20:53:33.983328614Z"))
@@ -1076,11 +1077,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err = cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.TestResultForRdb, should.Resemble(wantTestResult))
 	})
 
-	Convey("Populate ancestor buildbucket ids from buildbucket tags", t, func() {
+	ftt.Run("Populate ancestor buildbucket ids from buildbucket tags", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantTestResult := &artifactpb.TestResult{
 			TestInvocation: &artifactpb.TestInvocation{
@@ -1208,11 +1209,11 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err = cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.TestResultForRdb, ShouldResembleProto, wantTestResult)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.TestResultForRdb, should.Resemble(wantTestResult))
 	})
 
-	Convey("ProvisionStartCmd extract deps with TestResultForRdb", t, func() {
+	ftt.Run("ProvisionStartCmd extract deps with TestResultForRdb", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
 		wantTesthausURL := "www.testhaus.com"
@@ -1243,17 +1244,17 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
-		So(cmd.TesthausURL, ShouldEqual, wantTesthausURL)
-		So(cmd.Sources, ShouldResembleProto, &metadata.PublishRdbMetadata_Sources{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.CurrentInvocationId, should.Equal(wantInvId))
+		assert.Loosely(t, cmd.TesthausURL, should.Equal(wantTesthausURL))
+		assert.Loosely(t, cmd.Sources, should.Resemble(&metadata.PublishRdbMetadata_Sources{
 			GsPath:            "gs://some-bucket/builder/build-12345/metadata/sources.jsonpb",
 			IsDeploymentDirty: false,
-		})
-		So(cmd.BaseVariant, ShouldEqual, wantBaseVariant)
+		}))
+		assert.Loosely(t, cmd.BaseVariant, should.Match(wantBaseVariant))
 	})
 
-	Convey("ProvisionStartCmd extract deps without TestResultForRdb", t, func() {
+	ftt.Run("ProvisionStartCmd extract deps without TestResultForRdb", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
 		wantTesthausURL := "www.testhaus.com"
@@ -1276,9 +1277,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
-		So(cmd.TesthausURL, ShouldEqual, wantTesthausURL)
-		So(cmd.BaseVariant, ShouldEqual, wantBaseVariant)
-		So(err, ShouldErrLike, "missing dependency: BuildState")
+		assert.Loosely(t, cmd.CurrentInvocationId, should.Equal(wantInvId))
+		assert.Loosely(t, cmd.TesthausURL, should.Equal(wantTesthausURL))
+		assert.Loosely(t, cmd.BaseVariant, should.Match(wantBaseVariant))
+		assert.Loosely(t, err, should.ErrLike("missing dependency: BuildState"))
 	})
 }

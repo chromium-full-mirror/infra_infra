@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -18,29 +19,29 @@ import (
 
 func TestUpdateContainerImagesLocallyCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		cmd := commands.NewUpdateContainerImagesLocallyCmd()
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestUpdateContainerImagesLocallyCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.PreLocalTestStateKeeper{Args: &data.LocalArgs{}}
 		cmd := commands.NewUpdateContainerImagesLocallyCmd()
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestUpdateContainerImagesLocallyCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with updates", t, func() {
+	ftt.Run("Cmd with updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.PreLocalTestStateKeeper{}
 		cmd := commands.NewUpdateContainerImagesLocallyCmd()
@@ -50,7 +51,7 @@ func TestUpdateContainerImagesLocallyCmd_UpdateSK(t *testing.T) {
 			},
 		}
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
-		So(sk.ContainerImages, ShouldEqual, cmd.Containers)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, sk.ContainerImages, should.Match(cmd.Containers))
 	})
 }
