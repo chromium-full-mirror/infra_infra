@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/cr-rev/common"
@@ -40,30 +41,30 @@ func TestLeaser(t *testing.T) {
 
 		return ctx, newLeaser(repo)
 	}
-	Convey("Lease", t, func() {
-		Convey("non existing lock", func() {
+	ftt.Run("Lease", t, func(t *ftt.Test) {
+		t.Run("non existing lock", func(t *ftt.Test) {
 			ctx, leaser := prepareEnvironment()
 			err := leaser.refreshLease(ctx)
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike(datastore.ErrNoSuchEntity))
 		})
 
-		Convey("valid renew", func() {
+		t.Run("valid renew", func(t *ftt.Test) {
 			ctx, leaser := prepareEnvironment()
 			err := leaser.acquireLease(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = leaser.refreshLease(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("lock claimed by another process", func() {
+		t.Run("lock claimed by another process", func(t *ftt.Test) {
 			ctx, leaser := prepareEnvironment()
 			err := leaser.acquireLease(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Override lock
 			datastore.Put(ctx, doc)
 			err = leaser.refreshLease(ctx)
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("some other process claimed the lock"))
 		})
 	})
 }

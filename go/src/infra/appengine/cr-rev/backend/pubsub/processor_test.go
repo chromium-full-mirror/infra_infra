@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/proto/git"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/cr-rev/backend/gitiles"
@@ -43,25 +44,25 @@ func TestPubsubProcessor(t *testing.T) {
 		},
 	}
 	processor := Processor(host)
-	Convey("invalid event name", t, func() {
+	ftt.Run("invalid event name", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "invalid/name",
 		}
 		err := processor(ctx, m)
-		So(err, ShouldBeError)
+		assert.Loosely(t, err, should.ErrLike("Invalid repository format"))
 	})
 
-	Convey("skip not indexed", t, func() {
+	ftt.Run("skip not indexed", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/not-indexed",
 		}
 		// We don't expect any gitiles calls, therefore we are not
 		// setting gitiles fake to return anything.
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("non update events", t, func() {
+	ftt.Run("non update events", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/bar",
 			Event: &SourceRepoEvent_CreateRepoEvent_{
@@ -71,10 +72,10 @@ func TestPubsubProcessor(t *testing.T) {
 		// We don't expect any gitiles calls, therefore we are not
 		// setting gitiles fake to return anything.
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("valid events", t, func() {
+	ftt.Run("valid events", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/bar",
 			Event: &SourceRepoEvent_RefUpdateEvent_{
@@ -116,16 +117,16 @@ func TestPubsubProcessor(t *testing.T) {
 		c.SetRepository("bar", nil, commits)
 		ctx := gitiles.SetClient(ctx, c)
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		datastoreCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit").Eq("Repository", "bar")
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, 1)
-		So(datastoreCommits[0].CommitHash, ShouldEqual, "000000000000000000000000000000000000000F")
+		assert.Loosely(t, len(datastoreCommits), should.Equal(1))
+		assert.Loosely(t, datastoreCommits[0].CommitHash, should.Equal("000000000000000000000000000000000000000F"))
 	})
 
-	Convey("respect include/exclude refs", t, func() {
+	ftt.Run("respect include/exclude refs", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/custom-refs",
 			Event: &SourceRepoEvent_RefUpdateEvent_{
@@ -173,16 +174,16 @@ func TestPubsubProcessor(t *testing.T) {
 		c.SetRepository("custom-refs", nil, commits)
 		ctx := gitiles.SetClient(ctx, c)
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		datastoreCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit").Eq("Repository", "custom-refs")
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, 1)
-		So(datastoreCommits[0].CommitHash, ShouldEqual, "000000000000000000000000000000000000000D")
+		assert.Loosely(t, len(datastoreCommits), should.Equal(1))
+		assert.Loosely(t, datastoreCommits[0].CommitHash, should.Equal("000000000000000000000000000000000000000D"))
 	})
 
-	Convey("create ref", t, func() {
+	ftt.Run("create ref", t, func(t *ftt.Test) {
 		n := 2001
 		commits := make([]*git.Commit, n, n)
 		for i := 0; i < n; i++ {
@@ -211,28 +212,28 @@ func TestPubsubProcessor(t *testing.T) {
 			},
 		}
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		datastoreCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit").Eq("Repository", "createref")
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, n)
+		assert.Loosely(t, len(datastoreCommits), should.Equal(n))
 
 		// 3 Gitiles Log calls (2001..1001, 1001..1, 1..0)
-		So(len(c.GetCallLogs()), ShouldEqual, 3)
+		assert.Loosely(t, len(c.GetCallLogs()), should.Equal(3))
 
 		// Re-run indexing, we expect only one call to gitiles
 		err = processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		datastoreCommits = []*models.Commit{}
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, n)
+		assert.Loosely(t, len(datastoreCommits), should.Equal(n))
 
-		So(len(c.GetCallLogs()), ShouldEqual, 4)
+		assert.Loosely(t, len(c.GetCallLogs()), should.Equal(4))
 	})
 
-	Convey("ignore deleted branch", t, func() {
+	ftt.Run("ignore deleted branch", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/deleted_branch",
 			Event: &SourceRepoEvent_RefUpdateEvent_{
@@ -261,15 +262,15 @@ func TestPubsubProcessor(t *testing.T) {
 		c.SetRepository("deleted_branch", nil, commits)
 		ctx := gitiles.SetClient(ctx, c)
 		err := processor(ctx, m)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		datastoreCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit").Eq("Repository", "deleted_branch")
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, 0)
+		assert.Loosely(t, len(datastoreCommits), should.BeZero)
 	})
 
-	Convey("move forward with errors", t, func() {
+	ftt.Run("move forward with errors", t, func(t *ftt.Test) {
 		m := &SourceRepoEvent{
 			Name: "projects/foo/repos/partial_error",
 			Event: &SourceRepoEvent_RefUpdateEvent_{
@@ -302,11 +303,11 @@ func TestPubsubProcessor(t *testing.T) {
 		c.SetRepository("partial_error", nil, commits)
 		ctx := gitiles.SetClient(ctx, c)
 		err := processor(ctx, m)
-		So(err, ShouldBeError)
+		assert.Loosely(t, err, should.ErrLike("not found"))
 
 		datastoreCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit").Eq("Repository", "partial_error")
 		datastore.GetAll(ctx, q, &datastoreCommits)
-		So(len(datastoreCommits), ShouldEqual, 1)
+		assert.Loosely(t, len(datastoreCommits), should.Equal(1))
 	})
 }

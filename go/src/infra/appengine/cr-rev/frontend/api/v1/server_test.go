@@ -3,11 +3,13 @@ package api
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/cr-rev/frontend/redirect"
@@ -48,108 +50,108 @@ func TestServer(t *testing.T) {
 	}
 	datastore.Put(ctx, commits)
 
-	Convey("redirect", t, func() {
-		Convey("empty request", func() {
+	ftt.Run("redirect", t, func(t *ftt.Test) {
+		t.Run("empty request", func(t *ftt.Test) {
 			_, err := s.Redirect(ctx, &RedirectRequest{})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
-		Convey("matching path found", func() {
+		t.Run("matching path found", func(t *ftt.Test) {
 			resp, err := s.Redirect(ctx, &RedirectRequest{
 				Query: "/1",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expected := &RedirectResponse{
 				GitHash:     "0000000000000000000000000000000000000001",
 				Host:        "chromium",
 				Repository:  "chromium/src",
 				RedirectUrl: "https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000000001",
 			}
-			So(resp, ShouldResemble, expected)
+			assert.Loosely(t, resp, should.Resemble(expected))
 		})
-		Convey("not chromium/src", func() {
+		t.Run("not chromium/src", func(t *ftt.Test) {
 			_, err := s.Redirect(ctx, &RedirectRequest{
 				Query: "/3",
 			})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
 	})
 
-	Convey("Numbering", t, func() {
-		Convey("empty request", func() {
+	ftt.Run("Numbering", t, func(t *ftt.Test) {
+		t.Run("empty request", func(t *ftt.Test) {
 			_, err := s.Numbering(ctx, &NumberingRequest{})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
-		Convey("not found", func() {
+		t.Run("not found", func(t *ftt.Test) {
 			_, err := s.Numbering(ctx, &NumberingRequest{
 				PositionNumber: 3,
 				Host:           "chromium",
 				Repository:     "chromium/src",
 				PositionRef:    "svn://svn.chromium.org/chrome",
 			})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
-		Convey("chromium/src", func() {
+		t.Run("chromium/src", func(t *ftt.Test) {
 			resp, err := s.Numbering(ctx, &NumberingRequest{
 				PositionNumber: 1,
 				Host:           "chromium",
 				Repository:     "chromium/src",
 				PositionRef:    "svn://svn.chromium.org/chrome",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expected := &NumberingResponse{
 				GitHash:        "0000000000000000000000000000000000000001",
 				PositionNumber: 1,
 				Host:           "chromium",
 				Repository:     "chromium/src",
 			}
-			So(resp, ShouldResemble, expected)
+			assert.Loosely(t, resp, should.Resemble(expected))
 		})
-		Convey("arbitrary repository", func() {
+		t.Run("arbitrary repository", func(t *ftt.Test) {
 			resp, err := s.Numbering(ctx, &NumberingRequest{
 				PositionNumber: 3,
 				Host:           "chromium",
 				Repository:     "foo",
 				PositionRef:    "refs/heads/main",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expected := &NumberingResponse{
 				GitHash:        "0000000000000000000000000000000000000003",
 				PositionNumber: 3,
 				Host:           "chromium",
 				Repository:     "foo",
 			}
-			So(resp, ShouldResemble, expected)
+			assert.Loosely(t, resp, should.Resemble(expected))
 		})
 	})
 
-	Convey("Commit", t, func() {
-		Convey("empty request", func() {
+	ftt.Run("Commit", t, func(t *ftt.Test) {
+		t.Run("empty request", func(t *ftt.Test) {
 			_, err := s.Commit(ctx, &CommitRequest{})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
-		Convey("not found", func() {
+		t.Run("not found", func(t *ftt.Test) {
 			_, err := s.Commit(ctx, &CommitRequest{
 				GitHash: "0000000000000000000000000000000000000000",
 			})
-			So(err, ShouldBeError)
+			assert.Loosely(t, err, should.ErrLike("empty result"))
 			s, _ := status.FromError(err)
-			So(s.Code(), ShouldEqual, codes.NotFound)
+			assert.Loosely(t, s.Code(), should.Equal(codes.NotFound))
 		})
-		Convey("chromium/src", func() {
+		t.Run("chromium/src", func(t *ftt.Test) {
 			resp, err := s.Commit(ctx, &CommitRequest{
 				GitHash: "0000000000000000000000000000000000000001",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expected := &CommitResponse{
 				GitHash:        "0000000000000000000000000000000000000001",
 				PositionNumber: 1,
@@ -157,7 +159,7 @@ func TestServer(t *testing.T) {
 				Repository:     "chromium/src",
 				RedirectUrl:    "https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000000001",
 			}
-			So(resp, ShouldResemble, expected)
+			assert.Loosely(t, resp, should.Resemble(expected))
 		})
 	})
 }

@@ -10,13 +10,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/proto/git"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/cr-rev/backend/gitiles"
@@ -57,36 +58,36 @@ func TestGitilesImporter(t *testing.T) {
 		dsCommits := []*models.Commit{}
 		q := datastore.NewQuery("Commit")
 		datastore.GetAll(ctx, q, &dsCommits)
-		So(len(dsCommits), ShouldEqual, expected)
+		assert.Loosely(t, len(dsCommits), should.Equal(expected))
 		return dsCommits
 	}
 
-	Convey("non existing repository", t, func() {
+	ftt.Run("non existing repository", t, func(t *ftt.Test) {
 		ctx, _, importer := prepareEnvironment()
 		err := importer.Run(ctx)
-		So(err, ShouldBeError)
-		So(err.Error(), ShouldEqual, "Repository not found")
+		assert.Loosely(t, err, should.ErrLike("Repository not found"))
+		assert.Loosely(t, err.Error(), should.Equal("Repository not found"))
 		// Datastore should not have lock anymore, and should unset last run
 		datastore.Get(ctx, doc)
-		So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-		So(doc.FullScanLastRun, ShouldEqual, time.Time{})
+		assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+		assert.Loosely(t, doc.FullScanLastRun, should.Match(time.Time{}))
 	})
 
-	Convey("existing repository", t, func() {
-		Convey("empty repository", func() {
+	ftt.Run("existing repository", t, func(t *ftt.Test) {
+		t.Run("empty repository", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			client.SetRepository("bar", map[string]string{}, []*git.Commit{})
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Datastore should not have lock anymore, and last run should be set
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 		})
 
-		Convey("empty default branch", func() {
+		t.Run("empty default branch", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			refs := map[string]string{
@@ -95,15 +96,15 @@ func TestGitilesImporter(t *testing.T) {
 			commits := []*git.Commit{}
 			client.SetRepository("bar", refs, commits)
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			// Datastore should not have lock anymore, and last run should be set
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 			assertCommitDocuments(ctx, 0)
 		})
 
-		Convey("one commit, two branches", func() {
+		t.Run("one commit, two branches", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			refs := map[string]string{
@@ -122,17 +123,17 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 			}
 			client.SetRepository("bar", refs, commits)
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 			docs := assertCommitDocuments(ctx, 1)
-			So(docs[0].PositionRef, ShouldEqual, "refs/heads/main")
-			So(docs[0].PositionNumber, ShouldEqual, 1)
+			assert.Loosely(t, docs[0].PositionRef, should.Equal("refs/heads/main"))
+			assert.Loosely(t, docs[0].PositionNumber, should.Equal(1))
 		})
 
-		Convey("not indexed branch", func() {
+		t.Run("not indexed branch", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			refs := map[string]string{
@@ -150,15 +151,15 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 			}
 			client.SetRepository("bar", refs, commits)
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 			assertCommitDocuments(ctx, 2)
 		})
 
-		Convey("diverged branches", func() {
+		t.Run("diverged branches", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			refs := map[string]string{
@@ -176,15 +177,15 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 			}
 			client.SetRepository("bar", refs, commits)
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 			assertCommitDocuments(ctx, 5)
 		})
 
-		Convey("Log commit caching", func() {
+		t.Run("Log commit caching", func(t *ftt.Test) {
 			ctx, client, importer := prepareEnvironment()
 
 			// Require two Log pages for each branch
@@ -203,17 +204,17 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 			}
 			client.SetRepository("bar", refs, commits)
 			err := importer.Run(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			datastore.Get(ctx, doc)
-			So(doc.FullScanLeaseStartTime, ShouldEqual, time.Time{})
-			So(doc.FullScanLastRun, ShouldEqual, clock.Get(ctx).Now().UTC().Round(time.Millisecond))
+			assert.Loosely(t, doc.FullScanLeaseStartTime, should.Match(time.Time{}))
+			assert.Loosely(t, doc.FullScanLastRun, should.Match(clock.Get(ctx).Now().UTC().Round(time.Millisecond)))
 			assertCommitDocuments(ctx, gitilesLogPageSize+2)
 			// We expect 4 calls.
 			// One is for listing all refs and their revisions.
 			// Very first indexed branch should make two calls to
 			// Gitiles, and the last should make only one.
-			So(len(client.GetCallLogs()), ShouldEqual, 4)
+			assert.Loosely(t, len(client.GetCallLogs()), should.Equal(4))
 		})
 	})
 }
