@@ -20,7 +20,9 @@ import (
 	"time"
 
 	v1 "github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/proto"
 
 	kpb "infra/cmd/package_index/kythe/proto"
@@ -37,7 +39,7 @@ func TestPackageIndexUnix(t *testing.T) {
 	// of the tests as they reuse many structs among test runs.
 	// t.Parallel()
 
-	Convey("Package index unix", t, func() {
+	ftt.Run("Package index unix", t, func(t *ftt.Test) {
 		// Setup.
 		chanSize := 10
 		numRoutines := 2
@@ -98,7 +100,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		Convey("Parse and process GN/clang targets", func() {
+		t.Run("Parse and process GN/clang targets", func(t *ftt.Test) {
 			// Parse existing kzips.
 			existingKzipChannel := make(chan string, chanSize)
 			go func() {
@@ -211,10 +213,10 @@ func TestPackageIndexUnix(t *testing.T) {
 			}()
 			writeWg.Wait()
 
-			Convey("Kzip contains files and units for GN/clang targets and existing kzips", func() {
+			t.Run("Kzip contains files and units for GN/clang targets and existing kzips", func(t *ftt.Test) {
 				// Check kzip exists.
 				_, err = os.Stat(outputPath)
-				So(err, ShouldEqual, nil)
+				assert.Loosely(t, err, should.BeNil)
 
 				r, err := zip.OpenReader(outputPath)
 				if err != nil {
@@ -226,7 +228,7 @@ func TestPackageIndexUnix(t *testing.T) {
 				var unitInfo []*zip.File
 				var dataInfo []*zip.File
 				for _, zipInfo := range r.File {
-					So(strings.Contains(zipInfo.Name, "\\"), ShouldBeFalse)
+					assert.Loosely(t, strings.Contains(zipInfo.Name, "\\"), should.BeFalse)
 					if strings.Contains(zipInfo.Name, "pbunits") && zipInfo.Name != "root/pbunits/" {
 						unitInfo = append(unitInfo, zipInfo)
 					} else if strings.Contains(zipInfo.Name, "files") && zipInfo.Name != "root/files/" {
@@ -236,7 +238,7 @@ func TestPackageIndexUnix(t *testing.T) {
 
 				// Check generated data files match expected.
 				files, _ := ioutil.ReadDir(filepath.Join(testDir, "files.expected"))
-				So(len(dataInfo), ShouldEqual, len(files))
+				assert.Loosely(t, len(dataInfo), should.Equal(len(files)))
 
 				for _, file := range dataInfo {
 					rcData, err := file.Open()
@@ -257,11 +259,11 @@ func TestPackageIndexUnix(t *testing.T) {
 						t.Fatal(err)
 					}
 
-					So(dataContentOut, ShouldResemble, dataContentExpected)
+					assert.Loosely(t, dataContentOut, should.Resemble(dataContentExpected))
 				}
 
 				// Check generated unit protos match expected.
-				So(len(unitInfo), ShouldEqual, len(unitMap))
+				assert.Loosely(t, len(unitInfo), should.Equal(len(unitMap)))
 				for _, file := range unitInfo {
 					rcUnit, err := file.Open()
 					if err != nil {
@@ -282,8 +284,8 @@ func TestPackageIndexUnix(t *testing.T) {
 					}
 					unitOut := indexedCompilationOut.GetUnit()
 
-					So(unitOut.String(), ShouldResemble,
-						unitMap[unitKey{unitOut.GetVName().GetCorpus(), unitOut.GetSourceFile()[0]}])
+					assert.Loosely(t, unitOut.String(), should.Resemble(
+						unitMap[unitKey{unitOut.GetVName().GetCorpus(), unitOut.GetSourceFile()[0]}]))
 				}
 			})
 		})

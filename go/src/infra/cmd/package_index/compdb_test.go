@@ -10,7 +10,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	kpb "infra/cmd/package_index/kythe/proto"
@@ -26,7 +28,7 @@ func TestGetClangUtil(t *testing.T) {
 		filepathsFn: filepath.Join(cwd, "package_index_testdata",
 			"input", "src", "out", "Debug", "gen", "main.pb.h"),
 	}
-	Convey("linux", t, func() {
+	ftt.Run("linux", t, func(t *ftt.Test) {
 		cu, err := getClangUnit(
 			context.Background(),
 			clangInfo,
@@ -36,19 +38,19 @@ func TestGetClangUtil(t *testing.T) {
 			"linux",
 			"",
 			&FileHashMap{})
-		So(err, ShouldBeNil)
-		So(cu, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cu, should.NotBeNil)
 
 		details := &kpb.BuildDetails{
 			BuildConfig: "linux",
 		}
 		detail, _ := anypb.New(details)
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
-		So(cu.Argument, ShouldResemble,
+		assert.Loosely(t, cu.Argument, should.Resemble(
 			[]string{"clang++", "bar", "baz",
-				"-DKYTHE_IS_RUNNING=1", "-w"})
+				"-DKYTHE_IS_RUNNING=1", "-w"}))
 	})
-	Convey("linux-arm64", t, func() {
+	ftt.Run("linux-arm64", t, func(t *ftt.Test) {
 		cu, err := getClangUnit(
 			context.Background(),
 			clangInfo,
@@ -58,20 +60,20 @@ func TestGetClangUtil(t *testing.T) {
 			"linux",
 			"arm64",
 			&FileHashMap{})
-		So(err, ShouldBeNil)
-		So(cu, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cu, should.NotBeNil)
 
 		details := &kpb.BuildDetails{
 			BuildConfig: "linux",
 		}
 		detail, _ := anypb.New(details)
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
-		So(cu.Argument, ShouldResemble,
+		assert.Loosely(t, cu.Argument, should.Resemble(
 			[]string{"clang++", "bar", "baz",
 				"-target", "arm64",
-				"-DKYTHE_IS_RUNNING=1", "-w"})
+				"-DKYTHE_IS_RUNNING=1", "-w"}))
 	})
-	Convey("mac", t, func() {
+	ftt.Run("mac", t, func(t *ftt.Test) {
 		cu, err := getClangUnit(
 			context.Background(),
 			clangInfo,
@@ -81,17 +83,17 @@ func TestGetClangUtil(t *testing.T) {
 			"mac",
 			"",
 			&FileHashMap{})
-		So(err, ShouldBeNil)
-		So(cu, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cu, should.NotBeNil)
 
 		details := &kpb.BuildDetails{
 			BuildConfig: "linux",
 		}
 		detail, _ := anypb.New(details)
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
-		So(cu.Argument, ShouldResemble,
+		assert.Loosely(t, cu.Argument, should.Resemble(
 			[]string{"clang++", "bar", "baz",
 				"-target", "x86_64-apple-darwin20.6.0",
-				"-DKYTHE_IS_RUNNING=1", "-w"})
+				"-DKYTHE_IS_RUNNING=1", "-w"}))
 	})
 }

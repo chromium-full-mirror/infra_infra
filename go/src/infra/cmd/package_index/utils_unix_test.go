@@ -8,19 +8,20 @@
 package main
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestConvertPathSlashesUnix(t *testing.T) {
 	t.Parallel()
-	Convey("Convert path with forward slashes", t, func() {
+	ftt.Run("Convert path with forward slashes", t, func(t *ftt.Test) {
 		p := "\\test\\path\\"
 
-		Convey("On Unix", func() {
-			Convey("The path should be the same", func() {
-				So(convertPathToForwardSlashes(p), ShouldEqual, p)
+		t.Run("On Unix", func(t *ftt.Test) {
+			t.Run("The path should be the same", func(t *ftt.Test) {
+				assert.Loosely(t, convertPathToForwardSlashes(p), should.Equal(p))
 			})
 		})
 	})
