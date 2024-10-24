@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	grpcStatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -17,7 +16,9 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
 	bb "infra/chromium/compilator_watcher/internal/bb"
@@ -71,7 +72,7 @@ func getBuildsWithSteps(
 func TestLuciEXEMain(t *testing.T) {
 	t.Parallel()
 
-	Convey("luciEXEMain", t, func() {
+	ftt.Run("luciEXEMain", t, func(t *ftt.Test) {
 		now := time.Date(2021, 01, 01, 00, 00, 00, 00, time.UTC)
 		ctx, clk := testclock.UseTime(context.Background(), now)
 
@@ -143,29 +144,29 @@ func TestLuciEXEMain(t *testing.T) {
 
 		userArgs := []string{"-compilator-id", "12345", "-end-step-tag", fakeTagName}
 
-		Convey("fails if userArgs is empty", func() {
+		t.Run("fails if userArgs is empty", func(t *ftt.Test) {
 			var userArgs []string
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
 			expectedErrText := "compilator-id is required"
-			So(err, ShouldErrLike, expectedErrText)
-			So(
+			assert.Loosely(t, err, should.ErrLike(expectedErrText))
+			assert.Loosely(t,
 				input.SummaryMarkdown,
-				ShouldResemble,
-				"Error while running compilator_watcher: "+expectedErrText)
+				should.Resemble(
+					"Error while running compilator_watcher: "+expectedErrText))
 		})
-		Convey("fails if userArgs is missing compilator build ID", func() {
+		t.Run("fails if userArgs is missing compilator build ID", func(t *ftt.Test) {
 			userArgs := []string{""}
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
 			expectedErrText := "compilator-id is required"
-			So(err, ShouldErrLike, expectedErrText)
-			So(
+			assert.Loosely(t, err, should.ErrLike(expectedErrText))
+			assert.Loosely(t,
 				input.SummaryMarkdown,
-				ShouldResemble,
-				"Error while running compilator_watcher: "+expectedErrText)
+				should.Resemble(
+					"Error while running compilator_watcher: "+expectedErrText))
 		})
-		Convey("copies compilator build failure status and summary", func() {
+		t.Run("copies compilator build failure status and summary", func(t *ftt.Test) {
 			compBuild := &buildbucket_pb.Build{
 				Status:          buildbucket_pb.Status_FAILURE,
 				Id:              12345,
@@ -180,13 +181,13 @@ func TestLuciEXEMain(t *testing.T) {
 				[]bb.FakeGetBuildResponse{{Build: compBuild}})
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
-			So(err, ShouldBeNil)
-			So(input.Status, ShouldResemble, buildbucket_pb.Status_FAILURE)
-			So(input.SummaryMarkdown, ShouldResemble, "Compile failure")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_FAILURE))
+			assert.Loosely(t, input.SummaryMarkdown, should.Match("Compile failure"))
 
 		})
 
-		Convey("copies compilator output properties", func() {
+		t.Run("copies compilator output properties", func(t *ftt.Test) {
 			expectedSubBuildOutputProps := copyPropertiesStruct(genericCompBuildOutputPropsWSwarming)
 
 			compBuild := &buildbucket_pb.Build{
@@ -207,16 +208,15 @@ func TestLuciEXEMain(t *testing.T) {
 
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
-			So(err, ShouldBeNil)
-			So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.GetOutput(), should.Resemble(&buildbucket_pb.Build_Output{
 				Properties:    expectedSubBuildOutputProps,
 				GitilesCommit: genericGitilesCommit,
-			})
+			}))
 		})
 
-		// TODO(crbug/1507700): Re-enable when flakiness is fixed.
-		// This test fails on ci/infra-continuous-mac-10.14-64
-		SkipConvey("cancel context sets status to CANCELED and returns no err", func() {
+		t.Run("cancel context sets status to CANCELED and returns no err", func(t *ftt.Test) {
+			t.Skip("TODO(crbug/1507700): Re-enable when flakiness is fixed. This test fails on ci/infra-continuous-mac-10.14-64.")
 			compBuild := &buildbucket_pb.Build{
 				Status:          buildbucket_pb.Status_CANCELED,
 				Id:              12345,
@@ -241,11 +241,11 @@ func TestLuciEXEMain(t *testing.T) {
 			cancel()
 			err := <-errC
 
-			So(err, ShouldBeNil)
-			So(input.Status, ShouldResemble, buildbucket_pb.Status_CANCELED)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_CANCELED))
 		})
 
-		Convey("sets input Status to SUCCESS when compilator build is still running", func() {
+		t.Run("sets input Status to SUCCESS when compilator build is still running", func(t *ftt.Test) {
 			userArgs := []string{"-compilator-id", "12345", "-end-step-tag", fakeTagName}
 			expectedSubBuildOutputProps := copyPropertiesStruct(genericCompBuildOutputPropsWSwarming)
 
@@ -265,15 +265,15 @@ func TestLuciEXEMain(t *testing.T) {
 				[]bb.FakeGetBuildResponse{{Build: compBuild}})
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
-			So(err, ShouldBeNil)
-			So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
-			So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
+			assert.Loosely(t, input.GetOutput(), should.Resemble(&buildbucket_pb.Build_Output{
 				Properties:    expectedSubBuildOutputProps,
 				GitilesCommit: genericGitilesCommit,
-			})
+			}))
 		})
 
-		Convey("copies over compilator build status when no end step tag", func() {
+		t.Run("copies over compilator build status when no end step tag", func(t *ftt.Test) {
 			userArgs := []string{"-compilator-id", "12345", "-start-step-tag", fakeTagName}
 			compBuild := &buildbucket_pb.Build{
 				Status:          buildbucket_pb.Status_FAILURE,
@@ -291,11 +291,11 @@ func TestLuciEXEMain(t *testing.T) {
 				[]bb.FakeGetBuildResponse{{Build: compBuild}})
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
-			So(err, ShouldBeNil)
-			So(input.Status, ShouldResemble, buildbucket_pb.Status_FAILURE)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_FAILURE))
 		})
 
-		Convey("exits after compilator build successfully ends", func() {
+		t.Run("exits after compilator build successfully ends", func(t *ftt.Test) {
 			expectedSubBuildOutputProps := copyPropertiesStruct(genericCompBuildOutputPropsNoSwarming)
 
 			compBuild := &buildbucket_pb.Build{
@@ -313,16 +313,16 @@ func TestLuciEXEMain(t *testing.T) {
 				[]bb.FakeGetBuildResponse{{Build: compBuild}})
 			err := luciEXEMain(ctx, input, userArgs, sender)
 
-			So(err, ShouldBeNil)
-			So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
 
-			So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
+			assert.Loosely(t, input.GetOutput(), should.Resemble(&buildbucket_pb.Build_Output{
 				Properties:    expectedSubBuildOutputProps,
 				GitilesCommit: genericGitilesCommit,
-			})
+			}))
 		})
 
-		Convey("updates last step even if step name is the same", func() {
+		t.Run("updates last step even if step name is the same", func(t *ftt.Test) {
 			compBuilds := []bb.FakeGetBuildResponse{
 				{Build: getBuildsWithSteps([]stepNameStatusTags{
 					{
@@ -351,7 +351,7 @@ func TestLuciEXEMain(t *testing.T) {
 				compBuilds)
 			userArgs := []string{"-compilator-id", "12345"}
 			err := luciEXEMain(ctx, input, userArgs, sender)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			expectedSteps := getSteps([]stepNameStatusTags{
 				{
 					stepName: "lookup GN args",
@@ -362,10 +362,10 @@ func TestLuciEXEMain(t *testing.T) {
 					status:   buildbucket_pb.Status_SUCCESS,
 				},
 			})
-			So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+			assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 		})
 
-		Convey("copies correct Steps", func() {
+		t.Run("copies correct Steps", func(t *ftt.Test) {
 			compBuilds := []bb.FakeGetBuildResponse{
 				{Build: getBuildsWithSteps([]stepNameStatusTags{
 					{
@@ -467,11 +467,11 @@ func TestLuciEXEMain(t *testing.T) {
 				bb.FakeBuildsContextKey,
 				compBuilds)
 
-			Convey("with end-step-tag", func() {
+			t.Run("with end-step-tag", func(t *ftt.Test) {
 				userArgs := []string{"-compilator-id", "12345", "-end-step-tag", fakeTagName}
 				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldBeNil)
-				So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
 				expectedSteps := getSteps([]stepNameStatusTags{
 					{
 						stepName: "setup_build",
@@ -508,14 +508,14 @@ func TestLuciEXEMain(t *testing.T) {
 						},
 					},
 				})
-				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+				assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 
 			})
-			Convey("with start-step-tag", func() {
+			t.Run("with start-step-tag", func(t *ftt.Test) {
 				userArgs := []string{"-compilator-id", "12345", "-start-step-tag", fakeTagName}
 				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldBeNil)
-				So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
 				expectedSteps := getSteps([]stepNameStatusTags{
 					{
 						stepName: fakeTaggedStep,
@@ -546,15 +546,15 @@ func TestLuciEXEMain(t *testing.T) {
 						status:   buildbucket_pb.Status_SUCCESS,
 					},
 				})
-				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+				assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 
 			})
 
-			Convey("with both start-step-tag and end-step-tag", func() {
+			t.Run("with both start-step-tag and end-step-tag", func(t *ftt.Test) {
 				userArgs := []string{"-compilator-id", "12345", "-start-step-tag", fakeTagName, "-end-step-tag", "other_fake_tag_name"}
 				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldBeNil)
-				So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
 				expectedSteps := getSteps([]stepNameStatusTags{
 					{
 						stepName: fakeTaggedStep,
@@ -577,15 +577,15 @@ func TestLuciEXEMain(t *testing.T) {
 						},
 					},
 				})
-				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+				assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 
 			})
 
-			Convey("with neither start-step-tag nor end-step-tag", func() {
+			t.Run("with neither start-step-tag nor end-step-tag", func(t *ftt.Test) {
 				userArgs := []string{"-compilator-id", "12345"}
 				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldBeNil)
-				So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.Status, should.Resemble(buildbucket_pb.Status_SUCCESS))
 				expectedSteps := getSteps([]stepNameStatusTags{
 					{
 						stepName: "setup_build",
@@ -640,11 +640,11 @@ func TestLuciEXEMain(t *testing.T) {
 						status:   buildbucket_pb.Status_SUCCESS,
 					},
 				})
-				So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+				assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 
 			})
 
-			Convey("sets InfraFailure with summary for timeout", func() {
+			t.Run("sets InfraFailure with summary for timeout", func(t *ftt.Test) {
 				// Force luciexe to timeout right after first build is retrieved in copySteps()
 				userArgs = []string{
 					"-compilator-id",
@@ -672,15 +672,15 @@ func TestLuciEXEMain(t *testing.T) {
 					compBuilds)
 
 				err := luciEXEMain(ctx, input, userArgs, sender)
-				So(err, ShouldNotBeNil)
-				So(exe.InfraErrorTag.In(err), ShouldBeTrue)
-				So(input.SummaryMarkdown, ShouldResemble, "Error while running compilator_watcher: Timeout waiting for compilator build")
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, exe.InfraErrorTag.In(err), should.BeTrue)
+				assert.Loosely(t, input.SummaryMarkdown, should.Match("Error while running compilator_watcher: Timeout waiting for compilator build"))
 			})
 
-			Convey("handles timeouts from GetBuild", func() {
+			t.Run("handles timeouts from GetBuild", func(t *ftt.Test) {
 				userArgs := []string{"-compilator-id", "12345"}
 
-				Convey("by allowing up to max N consecutive errs", func() {
+				t.Run("by allowing up to max N consecutive errs", func(t *ftt.Test) {
 					compBuilds := []bb.FakeGetBuildResponse{
 						{Build: getBuildsWithSteps([]stepNameStatusTags{
 							{
@@ -702,17 +702,17 @@ func TestLuciEXEMain(t *testing.T) {
 						bb.FakeBuildsContextKey,
 						compBuilds)
 					err := luciEXEMain(ctx, input, userArgs, sender)
-					So(err, ShouldBeNil)
+					assert.Loosely(t, err, should.BeNil)
 					expectedSteps := getSteps([]stepNameStatusTags{
 						{
 							stepName: "report builders",
 							status:   buildbucket_pb.Status_FAILURE,
 						},
 					})
-					So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+					assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 
 				})
-				Convey("and raising err if the num of consecutive errs exceeds max number", func() {
+				t.Run("and raising err if the num of consecutive errs exceeds max number", func(t *ftt.Test) {
 					compBuilds := []bb.FakeGetBuildResponse{
 						{Build: getBuildsWithSteps([]stepNameStatusTags{
 							{
@@ -730,10 +730,10 @@ func TestLuciEXEMain(t *testing.T) {
 						bb.FakeBuildsContextKey,
 						compBuilds)
 					err := luciEXEMain(ctx, input, userArgs, sender)
-					So(err, ShouldNotBeNil)
-					So(err, ShouldErrLike, "rpc error: code = DeadlineExceeded desc = Gateway Timeout")
+					assert.Loosely(t, err, should.NotBeNil)
+					assert.Loosely(t, err, should.ErrLike("rpc error: code = DeadlineExceeded desc = Gateway Timeout"))
 				})
-				Convey("and errs need to be consecutive", func() {
+				t.Run("and errs need to be consecutive", func(t *ftt.Test) {
 					compBuilds := []bb.FakeGetBuildResponse{
 						{Err: grpcStatus.Error(codes.DeadlineExceeded, "Gateway Timeout")},
 						{Err: grpcStatus.Error(codes.DeadlineExceeded, "Gateway Timeout")},
@@ -757,14 +757,14 @@ func TestLuciEXEMain(t *testing.T) {
 						bb.FakeBuildsContextKey,
 						compBuilds)
 					err := luciEXEMain(ctx, input, userArgs, sender)
-					So(err, ShouldBeNil)
+					assert.Loosely(t, err, should.BeNil)
 					expectedSteps := getSteps([]stepNameStatusTags{
 						{
 							stepName: "report builders",
 							status:   buildbucket_pb.Status_FAILURE,
 						},
 					})
-					So(input.GetSteps(), ShouldResembleProto, expectedSteps)
+					assert.Loosely(t, input.GetSteps(), should.Resemble(expectedSteps))
 				})
 			})
 		})

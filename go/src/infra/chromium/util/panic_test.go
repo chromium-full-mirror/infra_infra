@@ -6,29 +6,28 @@ package util
 
 import (
 	"errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"os/exec"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestPanicIf(t *testing.T) {
 	t.Parallel()
 
-	Convey("PanicIf", t, func() {
+	ftt.Run("PanicIf", t, func(t *ftt.Test) {
 
-		Convey("does not panic on false", func() {
+		t.Run("does not panic on false", func(t *ftt.Test) {
 			f := func() { PanicIf(false, "test message") }
 
-			So(f, ShouldNotPanic)
+			assert.Loosely(t, f, should.NotPanic)
 		})
 
-		Convey("panics on true", func() {
+		t.Run("panics on true", func(t *ftt.Test) {
 			f := func() { PanicIf(true, "test message: %s", "foo") }
 
-			So(f, ShouldPanicLike, "test message: foo")
+			assert.Loosely(t, f, should.PanicLike("test message: foo"))
 		})
 
 	})
@@ -37,30 +36,30 @@ func TestPanicIf(t *testing.T) {
 func TestPanicOnError(t *testing.T) {
 	t.Parallel()
 
-	Convey("PanicOnError", t, func() {
+	ftt.Run("PanicOnError", t, func(t *ftt.Test) {
 
-		Convey("does not panic with no error", func() {
+		t.Run("does not panic with no error", func(t *ftt.Test) {
 			var err error
 
 			f := func() { PanicOnError(err) }
 
-			So(f, ShouldNotPanic)
+			assert.Loosely(t, f, should.NotPanic)
 		})
 
-		Convey("panics on error", func() {
+		t.Run("panics on error", func(t *ftt.Test) {
 			err := errors.New("test error")
 
 			f := func() { PanicOnError(err) }
 
-			So(f, ShouldPanicLike, "test error")
+			assert.Loosely(t, f, should.PanicLike("test error"))
 		})
 
-		Convey("includes stderr for exec.ExitError", func() {
+		t.Run("includes stderr for exec.ExitError", func(t *ftt.Test) {
 			err := &exec.ExitError{Stderr: []byte("test stderr")}
 
 			f := func() { PanicOnError(err) }
 
-			So(f, ShouldPanicLike, "test stderr")
+			assert.Loosely(t, f, should.PanicLike("test stderr"))
 		})
 
 	})
