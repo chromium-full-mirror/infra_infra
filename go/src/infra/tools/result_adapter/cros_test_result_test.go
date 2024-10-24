@@ -12,14 +12,15 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	configpb "go.chromium.org/chromiumos/config/go"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -159,20 +160,20 @@ func TestCrosTestResultConversions(t *testing.T) {
 		},
 	}
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		results := &CrosTestResult{}
 		err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-		So(err, ShouldBeNil)
-		So(results.TestResult, ShouldResembleProto, testResult)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, results.TestResult, should.Resemble(testResult))
 	})
 
-	Convey(`ToProtos works`, t, func() {
-		Convey("Basic", func() {
+	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
+		t.Run("Basic", func(t *ftt.Test) {
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -229,17 +230,17 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 			for i, tr := range expected {
 				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 
-			So(testResults, ShouldHaveLength, 2)
-			So(testResults, ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.HaveLength(2))
+			assert.Loosely(t, testResults, should.Resemble(expected))
 			for _, tr := range testResults {
-				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
 		})
 
-		Convey("Uploads test artifacts when result dir is provided", func() {
+		t.Run("Uploads test artifacts when result dir is provided", func(t *ftt.Test) {
 			artBaseDir := filepath.Join("test_data", "cros_test_result", "artifacts")
 			artName1 := "test_artifact_1.txt"
 			artName2 := "test_artifact_2.txt"
@@ -262,24 +263,24 @@ func TestCrosTestResultConversions(t *testing.T) {
 			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
 			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			gotTestResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
-			So(gotTestResults, ShouldHaveLength, testCount)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotTestResults, should.HaveLength(testCount))
 
 			gotArtifacts := make([]map[string]*sinkpb.Artifact, 0, testCount)
 			for _, tr := range gotTestResults {
 				gotArtifacts = append(gotArtifacts, tr.GetArtifacts())
 			}
-			So(gotArtifacts, ShouldResemble, wantArtifacts)
+			assert.Loosely(t, gotArtifacts, should.Resemble(wantArtifacts))
 		})
 
-		Convey("Skips test artifacts upload when result dir is invalid", func() {
+		t.Run("Skips test artifacts upload when result dir is invalid", func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
 			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Update the test case result dir to an invalid path
 			for _, tr := range results.TestResult.TestRuns {
@@ -287,20 +288,20 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			gotTestResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
-			So(gotTestResults, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gotTestResults, should.HaveLength(2))
 			for _, tr := range gotTestResults {
-				So(tr.GetArtifacts(), ShouldBeEmpty)
+				assert.Loosely(t, tr.GetArtifacts(), should.BeEmpty)
 			}
 		})
 
-		Convey(`Check expected skip and unexpected skip tests`, func() {
+		t.Run(`Check expected skip and unexpected skip tests`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(skippedTestResultFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -333,22 +334,22 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 			for i, tr := range expected {
 				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 
-			So(testResults, ShouldHaveLength, 2)
-			So(testResults, ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.HaveLength(2))
+			assert.Loosely(t, testResults, should.Resemble(expected))
 			for _, tr := range testResults {
-				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
 		})
-		Convey(`Warning results`, func() {
+		t.Run(`Warning results`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(warnTestResultFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -365,21 +366,21 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 			for i, tr := range expected {
 				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 
-			So(testResults, ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.Resemble(expected))
 			for _, tr := range testResults {
-				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
 		})
-		Convey(`Failed results`, func() {
+		t.Run(`Failed results`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(failedTestResultFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -414,22 +415,22 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 			for i, tr := range expected {
 				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 
-			So(testResults, ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.Resemble(expected))
 			for _, tr := range testResults {
-				So(tr.GetProperties().GetFields(), ShouldNotBeEmpty)
+				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
 		})
 
-		Convey(`Check the full list of tags`, func() {
+		t.Run(`Check the full list of tags`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(fullTestResultFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -531,20 +532,20 @@ func TestCrosTestResultConversions(t *testing.T) {
 				},
 			}
 			err = PopulateProperties(expected[0], results.TestResult.TestRuns[0])
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults, ShouldResembleProto, expected)
-			So(testResults[0].GetProperties().GetFields(), ShouldNotBeEmpty)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults[0].GetProperties().GetFields(), should.NotBeEmpty)
 		})
 
-		Convey(`Check multi DUT testing`, func() {
+		t.Run(`Check multi DUT testing`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(multiDUTTestResultFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -578,14 +579,14 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			err = PopulateProperties(expected[0], results.TestResult.TestRuns[0])
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults, ShouldResembleProto, expected)
-			So(testResults[0].GetProperties().GetFields(), ShouldNotBeEmpty)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults[0].GetProperties().GetFields(), should.NotBeEmpty)
 		})
 
-		Convey(`Check with missing test id`, func() {
+		t.Run(`Check with missing test id`, func(t *ftt.Test) {
 			// There are 3 test cases in the test file. The first test case has
 			// both id and name while the second one only has the name. The
 			// third one doesn't have id and name, so it would throw an error
@@ -594,18 +595,18 @@ func TestCrosTestResultConversions(t *testing.T) {
 			testResultsJSON := ReadJSONFileToString(missingTestIdFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			_, err = results.ToProtos(ctx)
-			So(err, ShouldErrLike, "testId is unspecified due to the missing id in test case")
+			assert.Loosely(t, err, should.ErrLike("testId is unspecified due to the missing id in test case"))
 		})
 
-		Convey(`Truncate reason field when stored in the properties of test result`, func() {
+		t.Run(`Truncate reason field when stored in the properties of test result`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(warnTestResultWithLongReasonFile)
 			results := &CrosTestResult{}
 			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -622,16 +623,16 @@ func TestCrosTestResultConversions(t *testing.T) {
 
 			for i, tr := range expected {
 				err := PopulateProperties(tr, results.TestResult.TestRuns[i])
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 
-			So(testResults, ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.Resemble(expected))
 			for _, tr := range testResults {
-				So(tr.GetProperties().
+				assert.Loosely(t, tr.GetProperties().
 					GetFields()["testCaseInfo"].GetStructValue().
 					GetFields()["testCaseResult"].GetStructValue().
 					GetFields()["reason"].GetStringValue(),
-					ShouldHaveLength, 1024)
+					should.HaveLength(1024))
 			}
 		})
 	})

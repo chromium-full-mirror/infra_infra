@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 )
@@ -20,7 +20,7 @@ func TestSingleConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		str := `{
 				"failures": [
 					"Failed to run content_shell."
@@ -30,38 +30,38 @@ func TestSingleConversions(t *testing.T) {
 
 		results := &SingleResult{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
-		So(err, ShouldBeNil)
-		So(results.Failures, ShouldResemble, []string{"Failed to run content_shell."})
-		So(results.Valid, ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, results.Failures, should.Resemble([]string{"Failed to run content_shell."}))
+		assert.Loosely(t, results.Valid, should.BeTrue)
 	})
 
-	Convey(`ToProtos`, t, func() {
-		Convey("test passes", func() {
+	ftt.Run(`ToProtos`, t, func(t *ftt.Test) {
+		t.Run("test passes", func(t *ftt.Test) {
 			results := &SingleResult{
 				Failures: []string{},
 				Valid:    true,
 			}
 
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
 				TestId:   "",
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
 			}
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults[0], ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults[0], should.Resemble(expected))
 		})
 
-		Convey("test fails", func() {
+		t.Run("test fails", func(t *ftt.Test) {
 			results := &SingleResult{
 				Failures: []string{"Failed to run content_shell."},
 				Valid:    true,
 			}
 
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
 				TestId:      "",
@@ -69,26 +69,26 @@ func TestSingleConversions(t *testing.T) {
 				Status:      pb.TestStatus_FAIL,
 				SummaryHtml: "<pre>Failed to run content_shell.</pre>",
 			}
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults[0], ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults[0], should.Resemble(expected))
 		})
 
-		Convey("test result invalid", func() {
+		t.Run("test result invalid", func(t *ftt.Test) {
 			results := &SingleResult{
 				Failures: []string{},
 				Valid:    false,
 			}
 
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := &sinkpb.TestResult{
 				TestId:   "",
 				Expected: false,
 				Status:   pb.TestStatus_ABORT,
 			}
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults[0], ShouldResembleProto, expected)
+			assert.Loosely(t, testResults, should.HaveLength(1))
+			assert.Loosely(t, testResults[0], should.Resemble(expected))
 		})
 	})
 }

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -22,7 +22,7 @@ func TestGTestJsonConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		str := `{
 				"testsuites": [
 					{
@@ -66,8 +66,8 @@ func TestGTestJsonConversions(t *testing.T) {
 
 		results := &GTestJsonResults{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
-		So(err, ShouldBeNil)
-		So(results.TestSuites, ShouldResemble, []*GTestJsonTestSuites{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, results.TestSuites, should.Resemble([]*GTestJsonTestSuites{
 			{
 				TestSuite: []*GTestJsonTestSuite{
 					{
@@ -106,35 +106,35 @@ func TestGTestJsonConversions(t *testing.T) {
 					},
 				},
 			},
-		})
+		}))
 	})
 
-	Convey("convertTestResult", t, func() {
+	ftt.Run("convertTestResult", t, func(t *ftt.Test) {
 		convert := func(result *GTestJsonTestSuite) *sinkpb.TestResult {
 			r := &GTestJsonResults{}
 			buf := &bytes.Buffer{}
 			tr, err := r.convertTestResult(ctx, buf, "testId", result)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return tr
 		}
 
-		Convey("SUPPRESSED", func() {
+		t.Run("SUPPRESSED", func(t *ftt.Test) {
 			tr := convert(&GTestJsonTestSuite{Result: "SUPPRESSED"})
-			So(tr.Status, ShouldEqual, pb.TestStatus_SKIP)
-			So(tr.Expected, ShouldBeTrue)
+			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_SKIP))
+			assert.Loosely(t, tr.Expected, should.BeTrue)
 		})
 
-		Convey("Duration", func() {
+		t.Run("Duration", func(t *ftt.Test) {
 			tr := convert(&GTestJsonTestSuite{
 				Result: "COMPLETED",
 				Time:   "1s",
 			})
-			So(tr.Duration.GetSeconds(), ShouldEqual, 1)
-			So(tr.Duration.GetNanos(), ShouldEqual, 0)
+			assert.Loosely(t, tr.Duration.GetSeconds(), should.Equal(1))
+			assert.Loosely(t, tr.Duration.GetNanos(), should.BeZero)
 		})
 
-		Convey("failure reason", func() {
-			Convey("first failure takes precedence", func() {
+		t.Run("failure reason", func(t *ftt.Test) {
+			t.Run("first failure takes precedence", func(t *ftt.Test) {
 				tr := convert(&GTestJsonTestSuite{
 					Result: "COMPLETED",
 					Failures: []*GTestJsonFailures{
@@ -146,26 +146,26 @@ func TestGTestJsonConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: `This is a failure message.`,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `This is a failure message.`},
 						},
-					})
+					}))
 			})
-			Convey("empty", func() {
+			t.Run("empty", func(t *ftt.Test) {
 				tr := convert(&GTestJsonTestSuite{
 					Result:   "COMPLETED",
 					Failures: []*GTestJsonFailures{},
 				})
-				So(tr.FailureReason, ShouldBeNil)
+				assert.Loosely(t, tr.FailureReason, should.BeNil)
 			})
 		})
 	})
 
-	Convey(`ToProtos`, t, func() {
-		Convey("Works", func() {
+	ftt.Run(`ToProtos`, t, func(t *ftt.Test) {
+		t.Run("Works", func(t *ftt.Test) {
 			results := &GTestJsonResults{
 				TestSuites: []*GTestJsonTestSuites{
 					{
@@ -205,7 +205,7 @@ func TestGTestJsonConversions(t *testing.T) {
 			}
 
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				{
@@ -266,9 +266,9 @@ func TestGTestJsonConversions(t *testing.T) {
 					},
 				},
 			}
-			So(testResults, ShouldHaveLength, len(expected))
+			assert.Loosely(t, testResults, should.HaveLength(len(expected)))
 			for i := range testResults {
-				So(testResults[i], ShouldResembleProto, expected[i])
+				assert.Loosely(t, testResults[i], should.Resemble(expected[i]))
 			}
 		})
 	})

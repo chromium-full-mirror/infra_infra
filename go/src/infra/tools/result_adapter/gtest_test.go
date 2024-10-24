@@ -12,9 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -34,7 +34,7 @@ func TestGTestConversions(t *testing.T) {
 		return a
 	}
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		str := `{
 				"all_tests": [
 					"FooTest.TestDoBar",
@@ -115,11 +115,11 @@ func TestGTestConversions(t *testing.T) {
 
 		results := &GTestResults{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
-		So(err, ShouldBeNil)
-		So(results.AllTests, ShouldResemble, []string{"FooTest.TestDoBar", "FooTest.TestDoBaz"})
-		So(results.DisabledTests, ShouldResemble, []string{"FooTest.TestDoBarDisabled"})
-		So(results.GlobalTags, ShouldResemble, []string{"CPU_64_BITS", "MODE_RELEASE", "OS_WIN"})
-		So(results.PerIterationData, ShouldResemble, []map[string][]*GTestRunResult{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, results.AllTests, should.Resemble([]string{"FooTest.TestDoBar", "FooTest.TestDoBaz"}))
+		assert.Loosely(t, results.DisabledTests, should.Resemble([]string{"FooTest.TestDoBarDisabled"}))
+		assert.Loosely(t, results.GlobalTags, should.Resemble([]string{"CPU_64_BITS", "MODE_RELEASE", "OS_WIN"}))
+		assert.Loosely(t, results.PerIterationData, should.Resemble([]map[string][]*GTestRunResult{
 			{
 				"FooTest.TestDoBar": {
 					{
@@ -179,14 +179,14 @@ func TestGTestConversions(t *testing.T) {
 					},
 				},
 			},
-		})
-		So(results.TestLocations, ShouldResemble, map[string]*Location{
+		}))
+		assert.Loosely(t, results.TestLocations, should.Resemble(map[string]*Location{
 			"FooTest.TestDoBar": {File: "../../chrome/browser/foo/test.cc", Line: 287},
 			"FooTest.TestDoBaz": {File: "../../chrome/browser/foo/test.cc", Line: 293},
-		})
+		}))
 	})
 
-	Convey(`all_tests can be empty`, t, func() {
+	ftt.Run(`all_tests can be empty`, t, func(t *ftt.Test) {
 		str := `{
 				"all_tests": [],
 				"disabled_tests": [],
@@ -197,86 +197,86 @@ func TestGTestConversions(t *testing.T) {
 
 		results := &GTestResults{}
 		err := results.ConvertFromJSON(strings.NewReader(str))
-		So(err, ShouldBeNil)
-		So(len(results.AllTests), ShouldEqual, 0)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(results.AllTests), should.BeZero)
 	})
 
-	Convey("convertTestResult", t, func() {
+	ftt.Run("convertTestResult", t, func(t *ftt.Test) {
 		var buf bytes.Buffer
 		convert := func(result *GTestRunResult) *sinkpb.TestResult {
 			r := &GTestResults{}
 			buf := &bytes.Buffer{}
 			tr, err := r.convertTestResult(ctx, buf, "testId", "TestName", result)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return tr
 		}
-		Convey("EXCESSIVE_OUTPUT", func() {
+		t.Run("EXCESSIVE_OUTPUT", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{Status: "EXCESSIVE_OUTPUT"})
-			So(tr.Status, ShouldEqual, pb.TestStatus_FAIL)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "EXCESSIVE_OUTPUT")), ShouldBeTrue)
+			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_FAIL))
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "EXCESSIVE_OUTPUT")), should.BeTrue)
 		})
 
-		Convey("NOTRUN", func() {
+		t.Run("NOTRUN", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{Status: "NOTRUN"})
-			So(tr.Status, ShouldEqual, pb.TestStatus_SKIP)
-			So(tr.Expected, ShouldBeFalse)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "NOTRUN")), ShouldBeTrue)
+			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_SKIP))
+			assert.Loosely(t, tr.Expected, should.BeFalse)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "NOTRUN")), should.BeTrue)
 		})
 
-		Convey("SKIPPED", func() {
+		t.Run("SKIPPED", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{Status: "SKIPPED"})
-			So(tr.Status, ShouldEqual, pb.TestStatus_SKIP)
-			So(tr.Expected, ShouldBeTrue)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "SKIPPED")), ShouldBeTrue)
+			assert.Loosely(t, tr.Status, should.Equal(pb.TestStatus_SKIP))
+			assert.Loosely(t, tr.Expected, should.BeTrue)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("gtest_status", "SKIPPED")), should.BeTrue)
 		})
 
-		Convey("Duration", func() {
+		t.Run("Duration", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{
 				Status:        "SUCCESS",
 				ElapsedTimeMs: 1e3,
 			})
-			So(tr.Duration.GetSeconds(), ShouldEqual, 1)
-			So(tr.Duration.GetNanos(), ShouldEqual, 0)
+			assert.Loosely(t, tr.Duration.GetSeconds(), should.Equal(1))
+			assert.Loosely(t, tr.Duration.GetNanos(), should.BeZero)
 		})
 
-		Convey("snippet", func() {
-			Convey("valid", func() {
+		t.Run("snippet", func(t *ftt.Test) {
+			t.Run("valid", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status:              "SUCCESS",
 					LosslessSnippet:     true,
 					OutputSnippetBase64: "WyBSVU4gICAgICBdIEZvb1Rlc3QuVGVzdERvQmFyCigxMCBtcyk=",
 				})
-				So(tr.SummaryHtml, ShouldEqual, snippetInSummaryHtml)
-				So(tr.Artifacts["snippet"], ShouldResembleProto, textArt(
+				assert.Loosely(t, tr.SummaryHtml, should.Equal(snippetInSummaryHtml))
+				assert.Loosely(t, tr.Artifacts["snippet"], should.Resemble(textArt(
 					"[ RUN      ] FooTest.TestDoBar\n(10 ms)",
-				))
+				)))
 			})
 
-			Convey("invalid does not cause a fatal error", func() {
+			t.Run("invalid does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status:              "SUCCESS",
 					LosslessSnippet:     true,
 					OutputSnippetBase64: "invalid base64",
 				})
-				So(tr.SummaryHtml, ShouldEqual, "")
+				assert.Loosely(t, tr.SummaryHtml, should.BeEmpty)
 			})
 
-			Convey("stack trace in artifact", func() {
+			t.Run("stack trace in artifact", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status:              "FAILURE",
 					LosslessSnippet:     true,
 					OutputSnippetBase64: "WyBSVU4gICAgICBdIEZvb1Rlc3QuVGVzdERvQmFyCigxMCBtcyk=",
 				})
-				So(tr.SummaryHtml, ShouldEqual, snippetInSummaryHtml)
-				So(tr.Artifacts, ShouldHaveLength, 1)
-				So(tr.Artifacts["snippet"], ShouldResemble, textArt(
+				assert.Loosely(t, tr.SummaryHtml, should.Equal(snippetInSummaryHtml))
+				assert.Loosely(t, tr.Artifacts, should.HaveLength(1))
+				assert.Loosely(t, tr.Artifacts["snippet"], should.Resemble(textArt(
 					"[ RUN      ] FooTest.TestDoBar\n(10 ms)",
-				))
+				)))
 			})
 		})
 
-		Convey("testLocations", func() {
-			Convey(`Works`, func() {
+		t.Run("testLocations", func(t *ftt.Test) {
+			t.Run(`Works`, func(t *ftt.Test) {
 				results := &GTestResults{
 					TestLocations: map[string]*Location{
 						"TestName": {
@@ -286,17 +286,17 @@ func TestGTestConversions(t *testing.T) {
 					},
 				}
 				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", &GTestRunResult{Status: "SUCCESS"})
-				So(err, ShouldBeNil)
-				So(tr.TestMetadata, ShouldResembleProto, &pb.TestMetadata{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, tr.TestMetadata, should.Resemble(&pb.TestMetadata{
 					Name: "TestName",
 					Location: &pb.TestLocation{
 						Repo:     chromiumSrcRepo,
 						FileName: "//TestFile",
 						Line:     54,
 					},
-				})
+				}))
 			})
-			Convey(`Clean path`, func() {
+			t.Run(`Clean path`, func(t *ftt.Test) {
 				results := &GTestResults{
 					TestLocations: map[string]*Location{
 						"TestName": {
@@ -306,16 +306,16 @@ func TestGTestConversions(t *testing.T) {
 					},
 				}
 				tr, err := results.convertTestResult(ctx, &buf, "testId", "TestName", &GTestRunResult{Status: "SUCCESS"})
-				So(err, ShouldBeNil)
-				So(tr.TestMetadata.Location, ShouldResembleProto, &pb.TestLocation{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, tr.TestMetadata.Location, should.Resemble(&pb.TestLocation{
 					Repo:     chromiumSrcRepo,
 					FileName: "//TestFile",
 					Line:     54,
-				})
+				}))
 			})
 		})
 
-		Convey("links", func() {
+		t.Run("links", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{
 				Status:              "SUCCESS",
 				LosslessSnippet:     true,
@@ -324,10 +324,10 @@ func TestGTestConversions(t *testing.T) {
 					"logcat": json.RawMessage(`{"content": "https://luci-logdog.appspot.com/v/?s=logcat"}`),
 				},
 			})
-			So(tr.SummaryHtml, ShouldEqual, `<ul><li><a href="https://luci-logdog.appspot.com/v/?s=logcat">logcat</a></li></ul>`)
+			assert.Loosely(t, tr.SummaryHtml, should.Equal(`<ul><li><a href="https://luci-logdog.appspot.com/v/?s=logcat">logcat</a></li></ul>`))
 		})
 
-		Convey("tags", func() {
+		t.Run("tags", func(t *ftt.Test) {
 			tr := convert(&GTestRunResult{
 				Status:              "SUCCESS",
 				LosslessSnippet:     true,
@@ -344,14 +344,14 @@ func TestGTestConversions(t *testing.T) {
 					},
 				},
 			})
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_1", "tag_value_1")), ShouldBeTrue)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_2")), ShouldBeTrue)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_3")), ShouldBeTrue)
-			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_3", "tag_value_4")), ShouldBeTrue)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_1", "tag_value_1")), should.BeTrue)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_2")), should.BeTrue)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_3")), should.BeTrue)
+			assert.Loosely(t, pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_3", "tag_value_4")), should.BeTrue)
 		})
 
-		Convey("failure reason", func() {
-			Convey("first failure takes precedence", func() {
+		t.Run("failure reason", func(t *ftt.Test) {
+			t.Run("first failure takes precedence", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -371,7 +371,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: `first_failure.cc(123): ` +
 							`This is a failure message.`,
@@ -379,9 +379,9 @@ func TestGTestConversions(t *testing.T) {
 							{Message: `first_failure.cc(123): ` +
 								`This is a failure message.`},
 						},
-					})
+					}))
 			})
-			Convey("first fatal failure takes precedence", func() {
+			t.Run("first fatal failure takes precedence", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -408,7 +408,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: `first_fatal.cc(456): This is a ` +
 							`fatal failure message.`,
@@ -416,9 +416,9 @@ func TestGTestConversions(t *testing.T) {
 							{Message: `first_fatal.cc(456): This is a fatal ` +
 								`failure message.`},
 						},
-					})
+					}))
 			})
-			Convey("failure result parts take precedence over snippet", func() {
+			t.Run("failure result parts take precedence over snippet", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -433,7 +433,7 @@ func TestGTestConversions(t *testing.T) {
 					// [FATAL:file_name.cc(123)] Error message.
 					OutputSnippetBase64: "W0ZBVEFMOmZpbGVfbmFtZS5jYygxMjMpXSBFcnJvciBtZXNzYWdlLg==",
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: `failure_parts.cc(456): This is ` +
 							`a failure message.`,
@@ -441,9 +441,9 @@ func TestGTestConversions(t *testing.T) {
 							{Message: `failure_parts.cc(456): This is a ` +
 								`failure message.`},
 						},
-					})
+					}))
 			})
-			Convey("Google Test trace is removed from failure reason", func() {
+			t.Run("Google Test trace is removed from failure reason", func(t *ftt.Test) {
 				input := "error message\nGoogle Test trace:\nRandom tracing output\n"
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
@@ -456,15 +456,15 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: "file_name.cc(123): error message",
 						Errors: []*pb.FailureReason_Error{
 							{Message: "file_name.cc(123): error message"},
 						},
-					})
+					}))
 			})
-			Convey("Leading and trailing spaces are removed from failure reason", func() {
+			t.Run("Leading and trailing spaces are removed from failure reason", func(t *ftt.Test) {
 				input := "  error\n message\n  "
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
@@ -477,23 +477,23 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: "file_name.cc(123): error\n " +
 							"message",
 						Errors: []*pb.FailureReason_Error{
 							{Message: "file_name.cc(123): error\n message"},
 						},
-					})
+					}))
 			})
-			Convey("empty", func() {
+			t.Run("empty", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status:      "FAILURE",
 					ResultParts: []*GTestRunResultPart{},
 				})
-				So(tr.FailureReason, ShouldBeNil)
+				assert.Loosely(t, tr.FailureReason, should.BeNil)
 			})
-			Convey("primary error message truncated at 1024 bytes", func() {
+			t.Run("primary error message truncated at 1024 bytes", func(t *ftt.Test) {
 				var input bytes.Buffer
 				var expected bytes.Buffer
 
@@ -514,8 +514,8 @@ func TestGTestConversions(t *testing.T) {
 				input.WriteString("12345")
 				expected.WriteString("1...")
 
-				So(input.Len(), ShouldEqual, 1025-18)
-				So(expected.Len(), ShouldEqual, 1024)
+				assert.Loosely(t, input.Len(), should.Equal(1025-18))
+				assert.Loosely(t, expected.Len(), should.Equal(1024))
 
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
@@ -528,15 +528,15 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: expected.String(),
 						Errors: []*pb.FailureReason_Error{
 							{Message: expected.String()},
 						},
-					})
+					}))
 			})
-			Convey("invalid type does not cause a fatal error", func() {
+			t.Run("invalid type does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -549,9 +549,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldBeNil)
+				assert.Loosely(t, tr.FailureReason, should.BeNil)
 			})
-			Convey("invalid UTF-8 does not cause a fatal error", func() {
+			t.Run("invalid UTF-8 does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -565,9 +565,9 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldBeNil)
+				assert.Loosely(t, tr.FailureReason, should.BeNil)
 			})
-			Convey("invalid base64 does not cause a fatal error", func() {
+			t.Run("invalid base64 does not cause a fatal error", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					ResultParts: []*GTestRunResultPart{
@@ -579,70 +579,70 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldBeNil)
+				assert.Loosely(t, tr.FailureReason, should.BeNil)
 			})
-			Convey("extracted from snippet", func() {
+			t.Run("extracted from snippet", func(t *ftt.Test) {
 				tr := convert(&GTestRunResult{
 					Status: "FAILURE",
 					// [FATAL:file_name.cc(123)] Error message.
 					OutputSnippetBase64: "W0ZBVEFMOmZpbGVfbmFtZS5jYygxMjMpXSBFcnJvciBtZXNzYWdlLg==",
 				})
-				So(tr.FailureReason, ShouldResemble,
+				assert.Loosely(t, tr.FailureReason, should.Resemble(
 					&pb.FailureReason{
 						PrimaryErrorMessage: `file_name.cc(123): Error message.`,
 						Errors: []*pb.FailureReason_Error{
 							{Message: `file_name.cc(123): Error message.`},
 						},
-					})
+					}))
 			})
 		})
 	})
 
-	Convey("extractFailureReasonFromSnippet", t, func() {
+	ftt.Run("extractFailureReasonFromSnippet", t, func(t *ftt.Test) {
 		test := func(input string, expected string) {
 			result := extractFailureReasonFromSnippet(ctx, input)
 			if expected != "" {
-				So(result, ShouldNotEqual, nil)
-				So(result.PrimaryErrorMessage, ShouldEqual, expected)
+				assert.Loosely(t, result, should.NotBeNil)
+				assert.Loosely(t, result.PrimaryErrorMessage, should.Equal(expected))
 			} else {
-				So(result, ShouldBeNil)
+				assert.Loosely(t, result, should.BeNil)
 			}
 		}
-		Convey("fatal example without DCheck", func() {
+		t.Run("fatal example without DCheck", func(t *ftt.Test) {
 			// This example does has in the message and and does not have "Check failed:".
 			example := "[70297:775:0716/090328.691561:FATAL:sync_test.cc(928)] AwaitQuiescence() failed."
 			test(example, "sync_test.cc(928): AwaitQuiescence() failed.")
 		})
-		Convey("fatal DCheck example #1", func() {
+		t.Run("fatal DCheck example #1", func(t *ftt.Test) {
 			example := "[722:259:FATAL:multiplex_router.cc(181)] Check failed: !client_. "
 			test(example, "multiplex_router.cc(181): Check failed: !client_.")
 		})
-		Convey("fatal DCheck example #2", func() {
+		t.Run("fatal DCheck example #2", func(t *ftt.Test) {
 			example := "[27483:27483:0807/204616.124527:FATAL:video_source.mojom.cc(555)] Check failed: !connected. PushVideoStreamSubscription::GetPhotoStateCallback was destroyed"
 			test(example, "video_source.mojom.cc(555): Check failed: !connected. PushVideoStreamSubscription::GetPhotoStateCallback was destroyed")
 		})
-		Convey("fatal DCheck example #3", func() {
+		t.Run("fatal DCheck example #3", func(t *ftt.Test) {
 			example := "FATAL ash_unittests[6813:6813]: [display_manager_test_api.cc(160)] Check failed: display_manager_->GetNumDisplays() >= 2U (1 vs. 2)"
 			test(example, "display_manager_test_api.cc(160): Check failed: display_manager_->GetNumDisplays() >= 2U (1 vs. 2)")
 		})
-		Convey("fatal DCheck example #4", func() {
+		t.Run("fatal DCheck example #4", func(t *ftt.Test) {
 			example := "[FATAL:gl_context.cc(203)] Check failed: false. "
 			test(example, "gl_context.cc(203): Check failed: false.")
 		})
-		Convey("non-fatal DCheck example", func() {
+		t.Run("non-fatal DCheck example", func(t *ftt.Test) {
 			// This example does not have FATAL in the message and relies upon matching "Check failed:".
 			example := "../../base/allocator/partition_allocator/partition_root.h(998) Check failed: !slot_span->bucket->is_direct_mapped()"
 			test(example, "partition_root.h(998): Check failed: !slot_span->bucket->is_direct_mapped()")
 		})
-		Convey("unix line endings", func() {
+		t.Run("unix line endings", func(t *ftt.Test) {
 			example := "blah\n../../base/allocator/partition_allocator/partition_root.h(998) Check failed: !slot_span->bucket->is_direct_mapped()\nblah"
 			test(example, "partition_root.h(998): Check failed: !slot_span->bucket->is_direct_mapped()")
 		})
-		Convey("windows line endings", func() {
+		t.Run("windows line endings", func(t *ftt.Test) {
 			example := "blah\r\n../../base/allocator/partition_allocator/partition_root.h(998) Check failed: !slot_span->bucket->is_direct_mapped()\r\nblah"
 			test(example, "partition_root.h(998): Check failed: !slot_span->bucket->is_direct_mapped()")
 		})
-		Convey("GTest Expectation", func() {
+		t.Run("GTest Expectation", func(t *ftt.Test) {
 			// Test a log with multiple expectation failures, to make
 			// sure only one gets picekd up.
 			example := `Unrelated log line
@@ -665,7 +665,7 @@ Stack trace:
     Which is: 1`
 			test(example, expected)
 		})
-		Convey("GTest Expectation (Windows)", func() {
+		t.Run("GTest Expectation (Windows)", func(t *ftt.Test) {
 			example := `Unrelated log line
 ../../chrome/browser/net/network_context_configuration_browsertest.cc(984): error: Expected equality of these values:
   net::ERR_CONNECTION_REFUSED
@@ -682,118 +682,118 @@ Backtrace:
     Which is: -21`
 			test(example, expected)
 		})
-		Convey("empty snippet", func() {
+		t.Run("empty snippet", func(t *ftt.Test) {
 			example := ""
 			test(example, "")
 		})
-		Convey("non-matching snippet", func() {
+		t.Run("non-matching snippet", func(t *ftt.Test) {
 			example := "blah\nblah\n"
 			test(example, "")
 		})
-		Convey("first fatal error extracted", func() {
+		t.Run("first fatal error extracted", func(t *ftt.Test) {
 			example := "blah\npath/to/file.cc(123) Check failed: bool_expression\n[FATAL:file2.cc(456)] Check failed: second_bool_expression\nblah"
 			test(example, "file.cc(123): Check failed: bool_expression")
 		})
 	})
 
-	Convey("truncateString", t, func() {
-		Convey("one-byte runes", func() {
-			Convey("longer than desired length", func() {
+	ftt.Run("truncateString", t, func(t *ftt.Test) {
+		t.Run("one-byte runes", func(t *ftt.Test) {
+			t.Run("longer than desired length", func(t *ftt.Test) {
 				result := truncateString("12345678", 5)
-				So(result, ShouldEqual, "12...")
+				assert.Loosely(t, result, should.Equal("12..."))
 			})
-			Convey("exactly desired length", func() {
+			t.Run("exactly desired length", func(t *ftt.Test) {
 				result := truncateString("12345", 5)
-				So(result, ShouldEqual, "12345")
+				assert.Loosely(t, result, should.Equal("12345"))
 			})
-			Convey("shorter than desired length", func() {
+			t.Run("shorter than desired length", func(t *ftt.Test) {
 				result := truncateString("1234", 5)
-				So(result, ShouldEqual, "1234")
+				assert.Loosely(t, result, should.Equal("1234"))
 			})
 		})
-		Convey("three-byte runes", func() {
-			Convey("longer than desired length", func() {
+		t.Run("three-byte runes", func(t *ftt.Test) {
+			t.Run("longer than desired length", func(t *ftt.Test) {
 				result := truncateString("\u2318\u2318\u2318", 7)
-				So(result, ShouldEqual, "\u2318...")
+				assert.Loosely(t, result, should.Equal("\u2318..."))
 			})
-			Convey("exactly desired length", func() {
+			t.Run("exactly desired length", func(t *ftt.Test) {
 				result := truncateString("\u2318\u2318", 6)
-				So(result, ShouldEqual, "\u2318\u2318")
+				assert.Loosely(t, result, should.Equal("\u2318\u2318"))
 			})
-			Convey("shorter than desired length", func() {
+			t.Run("shorter than desired length", func(t *ftt.Test) {
 				result := truncateString("\u2318\u2318", 7)
-				So(result, ShouldEqual, "\u2318\u2318")
+				assert.Loosely(t, result, should.Equal("\u2318\u2318"))
 			})
 		})
 	})
 
-	Convey(`extractGTestParameters`, t, func() {
-		Convey(`type parametrized`, func() {
-			Convey(`with instantiation`, func() {
+	ftt.Run(`extractGTestParameters`, t, func(t *ftt.Test) {
+		t.Run(`type parametrized`, func(t *ftt.Test) {
+			t.Run(`with instantiation`, func(t *ftt.Test) {
 				baseID, err := extractGTestParameters("MyInstantiation/FooTest/1.DoesBar")
-				So(err, ShouldBeNil)
-				So(baseID, ShouldEqual, "FooTest.DoesBar/MyInstantiation.1")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/MyInstantiation.1"))
 			})
 
-			Convey(`without instantiation`, func() {
+			t.Run(`without instantiation`, func(t *ftt.Test) {
 				baseID, err := extractGTestParameters("FooTest/1.DoesBar")
-				So(err, ShouldBeNil)
-				So(baseID, ShouldEqual, "FooTest.DoesBar/1")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/1"))
 			})
 		})
 
-		Convey(`value parametrized`, func() {
-			Convey(`with instantiation`, func() {
+		t.Run(`value parametrized`, func(t *ftt.Test) {
+			t.Run(`with instantiation`, func(t *ftt.Test) {
 				baseID, err := extractGTestParameters("MyInstantiation/FooTest.DoesBar/1")
-				So(err, ShouldBeNil)
-				So(baseID, ShouldEqual, "FooTest.DoesBar/MyInstantiation.1")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/MyInstantiation.1"))
 			})
 
-			Convey(`without instantiation`, func() {
+			t.Run(`without instantiation`, func(t *ftt.Test) {
 				baseID, err := extractGTestParameters("FooTest.DoesBar/1")
-				So(err, ShouldBeNil)
-				So(baseID, ShouldEqual, "FooTest.DoesBar/1")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar/1"))
 			})
 		})
 
-		Convey(`not parametrized`, func() {
+		t.Run(`not parametrized`, func(t *ftt.Test) {
 			baseID, err := extractGTestParameters("FooTest.DoesBar")
-			So(err, ShouldBeNil)
-			So(baseID, ShouldEqual, "FooTest.DoesBar")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar"))
 		})
 
-		Convey(`with magic prefixes`, func() {
+		t.Run(`with magic prefixes`, func(t *ftt.Test) {
 			baseID, err := extractGTestParameters("FooTest.PRE_PRE_MANUAL_DoesBar")
-			So(err, ShouldBeNil)
-			So(baseID, ShouldEqual, "FooTest.DoesBar")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, baseID, should.Equal("FooTest.DoesBar"))
 		})
 
-		Convey(`with JUnit tests`, func() {
+		t.Run(`with JUnit tests`, func(t *ftt.Test) {
 			baseID, err := extractGTestParameters("org.chromium.tests#testFoo_sub__param=val")
-			So(err, ShouldBeNil)
-			So(baseID, ShouldEqual, "org.chromium.tests#testFoo_sub__param=val")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, baseID, should.Equal("org.chromium.tests#testFoo_sub__param=val"))
 		})
 
-		Convey(`synthetic parameterized test`, func() {
+		t.Run(`synthetic parameterized test`, func(t *ftt.Test) {
 			_, err := extractGTestParameters("GoogleTestVerification.UninstantiatedParamaterizedTestSuite<Suite>")
-			So(err, ShouldErrLike, "not a real test")
-			So(syntheticTestTag.In(err), ShouldBeTrue)
+			assert.Loosely(t, err, should.ErrLike("not a real test"))
+			assert.Loosely(t, syntheticTestTag.In(err), should.BeTrue)
 		})
 
-		Convey(`synthetic type parameterized test`, func() {
+		t.Run(`synthetic type parameterized test`, func(t *ftt.Test) {
 			_, err := extractGTestParameters("GoogleTestVerification.UninstantiatedTypeParamaterizedTestSuite<Suite>")
-			So(err, ShouldErrLike, "not a real test")
-			So(syntheticTestTag.In(err), ShouldBeTrue)
+			assert.Loosely(t, err, should.ErrLike("not a real test"))
+			assert.Loosely(t, syntheticTestTag.In(err), should.BeTrue)
 		})
 
-		Convey(`with unrecognized format`, func() {
+		t.Run(`with unrecognized format`, func(t *ftt.Test) {
 			_, err := extractGTestParameters("not_gtest_test")
-			So(err, ShouldErrLike, "test id of unknown format")
+			assert.Loosely(t, err, should.ErrLike("test id of unknown format"))
 		})
 	})
 
-	Convey(`ToProtos`, t, func() {
-		Convey("Works", func() {
+	ftt.Run(`ToProtos`, t, func(t *ftt.Test) {
+		t.Run("Works", func(t *ftt.Test) {
 			results := &GTestResults{
 				DisabledTests: []string{"FooTest.TestDoBarDisabled"},
 				GlobalTags: []string{
@@ -845,7 +845,7 @@ Backtrace:
 			}
 
 			testResults, err := results.ToProtos(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := []*sinkpb.TestResult{
 				// Disabled tests.
@@ -982,9 +982,9 @@ Backtrace:
 					},
 				},
 			}
-			So(testResults, ShouldHaveLength, len(expected))
+			assert.Loosely(t, testResults, should.HaveLength(len(expected)))
 			for i := range testResults {
-				So(testResults[i], ShouldResembleProto, expected[i])
+				assert.Loosely(t, testResults[i], should.Resemble(expected[i]))
 			}
 		})
 	})

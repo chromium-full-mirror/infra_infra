@@ -5,16 +5,17 @@
 package main
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"path/filepath"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCommonDirFromFiles(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Finds common directory when it exists`, t, func() {
+	ftt.Run(`Finds common directory when it exists`, t, func(t *ftt.Test) {
 		commonDir := filepath.Join("test_data", "cros_test_result", "artifacts")
 		wantCommonDir := commonDir + string(filepath.Separator)
 		filepaths := []string{
@@ -23,16 +24,16 @@ func TestCommonDirFromFiles(t *testing.T) {
 		}
 
 		gotCommonDir := commonDirFromFiles(filepaths)
-		So(gotCommonDir, ShouldEqual, wantCommonDir)
+		assert.Loosely(t, gotCommonDir, should.Equal(wantCommonDir))
 	})
 
-	Convey(`Returns empty string when no common directory exists`, t, func() {
+	ftt.Run(`Returns empty string when no common directory exists`, t, func(t *ftt.Test) {
 		filepaths := []string{
 			filepath.Join("dir1", "test_artifact_1.txt"),
 			filepath.Join("dir2", "test_artifact_2.txt"),
 		}
 
 		gotCommonDir := commonDirFromFiles(filepaths)
-		So(gotCommonDir, ShouldBeEmpty)
+		assert.Loosely(t, gotCommonDir, should.BeEmpty)
 	})
 }

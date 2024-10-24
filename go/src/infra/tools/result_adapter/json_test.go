@@ -22,9 +22,11 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -34,7 +36,7 @@ func TestJSONConversions(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	Convey(`From JSON works`, t, func() {
+	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
 		buf := []byte(`
 		{
 			"version": 3,
@@ -83,17 +85,17 @@ func TestJSONConversions(t *testing.T) {
 			}
 		}`)
 
-		Convey(`Works`, func() {
+		t.Run(`Works`, func(t *ftt.Test) {
 			results := &JSONTestResults{}
 			err := results.ConvertFromJSON(bytes.NewReader(buf))
-			So(err, ShouldBeNil)
-			So(results, ShouldNotBeNil)
-			So(results.Version, ShouldEqual, 3)
-			So(results.Interrupted, ShouldEqual, false)
-			So(results.PathDelimiter, ShouldEqual, "::")
-			So(results.BuildNumber, ShouldEqual, "82046")
-			So(results.BuilderName, ShouldEqual, "Linux Tests")
-			So(results.Tests, ShouldResemble, map[string]*TestFields{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, results, should.NotBeNil)
+			assert.Loosely(t, results.Version, should.Equal(3))
+			assert.Loosely(t, results.Interrupted, should.Equal(false))
+			assert.Loosely(t, results.PathDelimiter, should.Equal("::"))
+			assert.Loosely(t, results.BuildNumber, should.Equal("82046"))
+			assert.Loosely(t, results.BuilderName, should.Equal("Linux Tests"))
+			assert.Loosely(t, results.Tests, should.Resemble(map[string]*TestFields{
 				"prefix.c1::c2::t1.html": {
 					Actual:   "PASS PASS PASS",
 					Expected: "PASS",
@@ -123,33 +125,33 @@ func TestJSONConversions(t *testing.T) {
 						"reason": json.RawMessage(`"inlined string"`),
 					},
 				},
-			})
+			}))
 
-			Convey(`with default path delimiter`, func() {
+			t.Run(`with default path delimiter`, func(t *ftt.Test) {
 				// Clear the delimiter and already processed and flattened tests.
 				results.PathDelimiter = ""
 				results.Tests = make(map[string]*TestFields)
 
 				err := results.convertTests("", results.TestsRaw)
-				So(err, ShouldBeNil)
-				So(results, ShouldNotBeNil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, results, should.NotBeNil)
 
 				paths := make([]string, 0, len(results.Tests))
 				for path := range results.Tests {
 					paths = append(paths, path)
 				}
 				sort.Slice(paths, func(i, j int) bool { return paths[i] < paths[j] })
-				So(paths, ShouldResemble, []string{
+				assert.Loosely(t, paths, should.Resemble([]string{
 					"prefix.c1/c2/t1.html",
 					"prefix.c1/c2/t2.html",
 					"prefix.c2/t3.html",
 					"prefix.c3/time/time-t1.html",
-				})
+				}))
 			})
 		})
 	})
 
-	Convey(`ToProtos works`, t, func() {
+	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
 		results := &JSONTestResults{
 			Interrupted: true,
 			Metadata: map[string]json.RawMessage{
@@ -218,9 +220,9 @@ func TestJSONConversions(t *testing.T) {
 		}
 
 		testResults, err := results.ToProtos(ctx, normPathToFullPath, true)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		assertTestResultsResemble(testResults, []*sinkpb.TestResult{
+		assertTestResultsResemble(t, testResults, []*sinkpb.TestResult{
 			// Test 1.
 			{
 				TestId:   "c1/c2/t1.html",
@@ -527,17 +529,19 @@ func TestJSONConversions(t *testing.T) {
 	})
 }
 
-func assertTestResultsResemble(actual, expected []*sinkpb.TestResult) {
-	So(actual, ShouldHaveLength, len(expected))
+func assertTestResultsResemble(t testing.TB, actual, expected []*sinkpb.TestResult) {
+	t.Helper()
+
+	assert.Loosely(t, actual, should.HaveLength(len(expected)), truth.LineContext())
 	for i := range actual {
-		So(actual[i], ShouldResembleProto, expected[i])
+		assert.Loosely(t, actual[i], should.Resemble(expected[i]), truth.LineContext())
 	}
 }
 
 func TestArtifactUtils(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Checking subdirs`, t, func() {
+	ftt.Run(`Checking subdirs`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		normToFull := map[string]string{
@@ -554,7 +558,7 @@ func TestArtifactUtils(t *testing.T) {
 		}}
 
 		artifactsPerRun := f.parseArtifacts(ctx, "testID", normToFull)
-		So(artifactsPerRun, ShouldHaveLength, 1)
+		assert.Loosely(t, artifactsPerRun, should.HaveLength(1))
 
 		arts := artifactsPerRun[0].artifacts
 
@@ -574,7 +578,7 @@ func TestArtifactUtils(t *testing.T) {
 		}
 
 		for i := range arts {
-			So(arts[i], ShouldResembleProto, expected[i])
+			assert.Loosely(t, arts[i], should.Resemble(expected[i]))
 		}
 	})
 }
