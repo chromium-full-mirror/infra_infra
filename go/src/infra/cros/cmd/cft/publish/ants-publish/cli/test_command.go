@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
+	"infra/cros/cmd/common_lib/common"
 )
 
 // TestCommand executed the provisioning as a Server
@@ -54,7 +55,7 @@ func (tc *TestCommand) Run() error {
 	log.Printf("running test mode:")
 	ctx := context.Background()
 
-	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.LOCAL)
+	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.LOCAL, common.Prod)
 	if err != nil {
 		return err
 	}

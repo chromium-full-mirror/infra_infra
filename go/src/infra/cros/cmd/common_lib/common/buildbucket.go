@@ -67,3 +67,26 @@ func BBUrl(builderID *buildbucketpb.BuilderID, bbId int64) string {
 func IsLedRun(builderID *buildbucketpb.BuilderID) bool {
 	return strings.Contains(builderID.Bucket, "shadow")
 }
+
+type Environment int
+
+const (
+	Unknown Environment = iota
+	Prod
+	Staging
+	Dev
+)
+
+func GetCTPEnvironment(builderID *buildbucketpb.BuilderID) Environment {
+	if strings.Contains(builderID.Builder, "dev") {
+		return Dev
+	} else if strings.Contains(builderID.Builder, "staging") {
+		return Staging
+	} else {
+		return Prod
+	}
+}
+
+func IsProd(builderID *buildbucketpb.BuilderID) bool {
+	return !(strings.Contains(builderID.Builder, "dev") || strings.Contains(builderID.Builder, "staging"))
+}

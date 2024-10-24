@@ -10,7 +10,8 @@ import (
 
 	"google.golang.org/api/option"
 
-	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"infra/cros/cmd/common_lib/common"
 )
 
 const (
@@ -49,7 +50,7 @@ type AndroidBuildAPIOptions struct {
 
 // NewAndroidBuildService returns a new service which is used to interact with the android build api.
 // It initializes the build client depending on rt RunType(environment SA, container or local)
-func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
+func NewAndroidBuildService(ctx context.Context, rt RunType, env common.Environment) (*Service, error) {
 	creds, err := FetchCredentials(rt)
 	if err != nil {
 		return nil, err
@@ -64,9 +65,21 @@ func NewAndroidBuildService(ctx context.Context, rt RunType) (*Service, error) {
 		opts = append(opts, option.WithQuotaProject(quotaProject))
 	}
 
-	client, err := ab_prod.NewService(ctx, opts...)
+	client, err := atp.NewService(ctx, opts...)
 	if err != nil {
 		return nil, err
+	}
+
+	// Set the ATP environment according to the current CTP environment.
+	switch env {
+	case common.Prod:
+		atp.Environment = "v3"
+	case common.Staging:
+		atp.Environment = "v3_qa_atp"
+	case common.Dev:
+		atp.Environment = "v3_qa_atp"
+	case common.Unknown:
+		return nil, fmt.Errorf("unknown CTP environment passed to NewAndroidBuildService")
 	}
 
 	service := &Service{}

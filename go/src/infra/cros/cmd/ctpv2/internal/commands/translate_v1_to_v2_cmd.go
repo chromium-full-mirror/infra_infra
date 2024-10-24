@@ -189,7 +189,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 			cmd.AlStateInfo.IsAlRun = true
 
 			// Generate the top of the tree node to begin the ATP WU tree.
-			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.TestJob, nil)
+			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.TestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 			if err != nil {
 				return err
 			}

@@ -6,25 +6,25 @@ package androidapi
 import (
 	"context"
 
-	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // InvocationService handles API calls related to invocations.
 type InvocationService interface {
-	Get(resourceID string) (*ab_prod.Invocation, error)
-	Insert(invocation *ab_prod.Invocation) (*ab_prod.Invocation, error)
-	Update(resourceID string, invocation *ab_prod.Invocation) (*ab_prod.Invocation, error)
-	Patch(resourceID string, invocation *ab_prod.Invocation) (*ab_prod.Invocation, error)
-	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.InvocationListResponse, error)
+	Get(resourceID string) (*atp.Invocation, error)
+	Insert(invocation *atp.Invocation) (*atp.Invocation, error)
+	Update(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error)
+	Patch(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error)
+	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*atp.InvocationListResponse, error)
 }
 
 // InvocationServiceImpl is the RPC implementation of InvocationService.
 type InvocationServiceImpl struct {
-	client *ab_prod.InvocationService
+	client *atp.InvocationService
 }
 
 // Get implementation for invocations.
-func (w *InvocationServiceImpl) Get(resourceID string) (*ab_prod.Invocation, error) {
+func (w *InvocationServiceImpl) Get(resourceID string) (*atp.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -35,7 +35,7 @@ func (w *InvocationServiceImpl) Get(resourceID string) (*ab_prod.Invocation, err
 }
 
 // Insert implementation for invocations.
-func (w *InvocationServiceImpl) Insert(invocation *ab_prod.Invocation) (*ab_prod.Invocation, error) {
+func (w *InvocationServiceImpl) Insert(invocation *atp.Invocation) (*atp.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -46,7 +46,7 @@ func (w *InvocationServiceImpl) Insert(invocation *ab_prod.Invocation) (*ab_prod
 }
 
 // Update implementation for invocations.
-func (w *InvocationServiceImpl) Update(resourceID string, invocation *ab_prod.Invocation) (*ab_prod.Invocation, error) {
+func (w *InvocationServiceImpl) Update(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -57,7 +57,7 @@ func (w *InvocationServiceImpl) Update(resourceID string, invocation *ab_prod.In
 }
 
 // Patch implementation for invocations.
-func (w *InvocationServiceImpl) Patch(resourceID string, invocation *ab_prod.Invocation) (*ab_prod.Invocation, error) {
+func (w *InvocationServiceImpl) Patch(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
@@ -68,7 +68,7 @@ func (w *InvocationServiceImpl) Patch(resourceID string, invocation *ab_prod.Inv
 }
 
 // List implementation for invocations.
-func (w *InvocationServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*ab_prod.InvocationListResponse, error) {
+func (w *InvocationServiceImpl) List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*atp.InvocationListResponse, error) {
 	if w.client == nil {
 		return nil, errInit
 	}

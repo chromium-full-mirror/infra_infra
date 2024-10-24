@@ -24,6 +24,8 @@ import (
 type AlStatusUpdateCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
+	BuildState *build.State
+
 	// Deps
 	AlStateInfo *data.AlStateInfo
 }
@@ -83,7 +85,12 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
 	}
 
+	if sk.BuildState == nil {
+		return fmt.Errorf("cmd %q missing dependency: BuildState", cmd.GetCommandType())
+	}
+
 	cmd.AlStateInfo = sk.AlStateInfo
+	cmd.BuildState = sk.BuildState
 
 	return nil
 }
@@ -116,7 +123,7 @@ func (cmd *AlStatusUpdateCmd) initRunLayer() error {
 		fmt.Printf("top Parent %s-%s#%d: %+v\n", top.GetWorkUnit().Id, top.GetWorkUnit().Name, top.GetIndex(), top)
 
 		// Generate and insert the Run Node into the WU tree.
-		runNode, err := androidapi.NewWorkUnitNode(top.GetWorkUnit().Id, top.GetWorkUnit().InvocationId, androidapi.Run, top)
+		runNode, err := androidapi.NewWorkUnitNode(top.GetWorkUnit().Id, top.GetWorkUnit().InvocationId, androidapi.Run, top, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return err
 		}
@@ -128,7 +135,6 @@ func (cmd *AlStatusUpdateCmd) initRunLayer() error {
 }
 
 func patchRunsAndTestJob(service *androidapi.Service, top *androidapi.WorkUnitNode) error {
-
 	runNodes, err := top.FetchRunLayer()
 	if err != nil {
 		return err
@@ -182,7 +188,7 @@ func (cmd *AlStatusUpdateCmd) closeWUTree() error {
 	}
 
 	// TODO(b/372507028): Pass this in rather than create a new one each time
-	service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT)
+	service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}

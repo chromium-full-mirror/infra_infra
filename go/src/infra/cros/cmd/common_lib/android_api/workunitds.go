@@ -10,6 +10,7 @@ import (
 	"sort"
 
 	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"infra/cros/cmd/common_lib/common"
 )
 
 // WULayer is and enum signifying what WU layer type the node represents
@@ -183,9 +184,9 @@ func (w *WorkUnitNode) FetchAttemptLayer() ([][]*WorkUnitNode, error) {
 
 // NewWorkUnitNode Creates and registers a Work Unit using the ATP API and
 // inserts it into the local Work Unit tree.
-func NewWorkUnitNode(parentWUId, InvocationID string, nodeType WULayer, parent *WorkUnitNode) (*WorkUnitNode, error) {
+func NewWorkUnitNode(parentWUId, InvocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
 	// TODO: Pass this in rather than create a new one each time
-	service, err := NewAndroidBuildService(context.Background(), SERVICEACCOUNT)
+	service, err := NewAndroidBuildService(context.Background(), SERVICEACCOUNT, env)
 	if err != nil {
 		return nil, err
 	}

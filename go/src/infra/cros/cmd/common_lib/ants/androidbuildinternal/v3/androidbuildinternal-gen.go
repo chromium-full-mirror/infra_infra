@@ -11060,7 +11060,7 @@ func (c *AconfigflagsGetdiffCall) doRequest(alt string) (*http.Response, error) 
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/aconfig_flags/get_diff")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/aconfig_flags/get_diff")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11155,7 +11155,7 @@ func (c *AconfigflagsGetsnapshotCall) doRequest(alt string) (*http.Response, err
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/aconfig_flags/get_snapshot")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/aconfig_flags/get_snapshot")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11257,7 +11257,7 @@ func (c *AconfigflagsInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/aconfig_flags/insert/{buildId}/{target}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/aconfig_flags/insert/{buildId}/{target}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11368,7 +11368,7 @@ func (c *AconfigflagsUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/aconfig_flags/update/{buildId}/{target}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/aconfig_flags/update/{buildId}/{target}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -11476,7 +11476,7 @@ func (c *AnalyzerfindingGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerFindings/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerFindings/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -11598,7 +11598,7 @@ func (c *AnalyzerfindingListCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerFindings")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerFindings")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -11718,7 +11718,7 @@ func (c *AnalyzerresultAddFindingsCall) doRequest(alt string) (*http.Response, e
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults/{analyzerResultId}/addFindings")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults/{analyzerResultId}/addFindings")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11816,7 +11816,7 @@ func (c *AnalyzerresultCategoriesCall) doRequest(alt string) (*http.Response, er
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults/categories")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults/categories")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -11921,7 +11921,7 @@ func (c *AnalyzerresultGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12018,7 +12018,7 @@ func (c *AnalyzerresultInsertCall) doRequest(alt string) (*http.Response, error)
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -12171,7 +12171,7 @@ func (c *AnalyzerresultListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12291,7 +12291,7 @@ func (c *AnalyzerresultUpdateCall) doRequest(alt string) (*http.Response, error)
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/analyzerResults/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/analyzerResults/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -12398,7 +12398,7 @@ func (c *BranchGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/branches/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/branches/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12585,7 +12585,7 @@ func (c *BranchListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/branches")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/branches")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12714,7 +12714,7 @@ func (c *BughashGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/bugHashes/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/bugHashes/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12842,7 +12842,7 @@ func (c *BughashListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/bugHashes")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/bugHashes")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -12965,7 +12965,7 @@ func (c *BughashUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/bugHashes/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/bugHashes/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -13095,7 +13095,7 @@ func (c *BuildGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -13221,7 +13221,7 @@ func (c *BuildInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildType}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildType}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -13337,7 +13337,7 @@ func (c *BuildLinkaclCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/linkacl")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/linkacl")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -13666,7 +13666,7 @@ func (c *BuildListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -13785,7 +13785,7 @@ func (c *BuildMarkTestCompleteCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/markTestComplete")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/markTestComplete")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -13890,7 +13890,7 @@ func (c *BuildPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -14008,7 +14008,7 @@ func (c *BuildPopCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/pop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/pop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14117,7 +14117,7 @@ func (c *BuildPrioritizeCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/prioritize")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/prioritize")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14231,7 +14231,7 @@ func (c *BuildQueueDepthCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{poolName}/queueDepth")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{poolName}/queueDepth")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14336,7 +14336,7 @@ func (c *BuildRefreshChangesCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/refreshChanges")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/refreshChanges")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14441,7 +14441,7 @@ func (c *BuildSignCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/sign")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/sign")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14543,7 +14543,7 @@ func (c *BuildUnsetTestCompleteCall) doRequest(alt string) (*http.Response, erro
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/unsetTestComplete")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/unsetTestComplete")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14672,7 +14672,7 @@ func (c *BuildUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -14789,7 +14789,7 @@ func (c *BuildartifactCopyToCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{artifactName}/copyTo")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{artifactName}/copyTo")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -14916,7 +14916,7 @@ func (c *BuildartifactCopyToBuildCall) doRequest(alt string) (*http.Response, er
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{artifactName}/copyToBuild")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{artifactName}/copyToBuild")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -15042,7 +15042,7 @@ func (c *BuildartifactCreateAclCall) doRequest(alt string) (*http.Response, erro
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}/createAcl")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}/createAcl")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -15156,7 +15156,7 @@ func (c *BuildartifactDeleteCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -15252,7 +15252,7 @@ func (c *BuildartifactGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -15394,7 +15394,7 @@ func (c *BuildartifactGetdownloadurlCall) doRequest(alt string) (*http.Response,
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}/url")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}/url")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -15529,7 +15529,7 @@ func (c *BuildartifactListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -15663,7 +15663,7 @@ func (c *BuildartifactPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -15837,9 +15837,9 @@ func (c *BuildartifactUpdateCall) doRequest(alt string) (*http.Response, error) 
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
 	if c.mediaInfo_ != nil {
-		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
+		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/artifacts/{resourceId}")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
 	}
 	if body == nil {
@@ -15994,7 +15994,7 @@ func (c *BuildattemptGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -16100,7 +16100,7 @@ func (c *BuildattemptInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -16235,7 +16235,7 @@ func (c *BuildattemptListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -16368,7 +16368,7 @@ func (c *BuildattemptPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{target}/attempts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{target}/attempts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -16479,7 +16479,7 @@ func (c *BuildattemptUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{target}/attempts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{target}/attempts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -16637,7 +16637,7 @@ func (c *BuildidListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/buildIds/{branch}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/buildIds/{branch}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -16760,7 +16760,7 @@ func (c *BuildidPopCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/buildIds/{buildType}/pop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/buildIds/{buildType}/pop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -16868,7 +16868,7 @@ func (c *BuildtransitionGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/buildTransitions/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/buildTransitions/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -17008,7 +17008,7 @@ func (c *BuildtransitionListCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/buildTransitions")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/buildTransitions")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -17152,7 +17152,7 @@ func (c *ChangeListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/changes/{buildId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/changes/{buildId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -17281,7 +17281,7 @@ func (c *ChangesetspecGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/changeSetSpecs/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/changeSetSpecs/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -17378,7 +17378,7 @@ func (c *ChangesetspecInsertCall) doRequest(alt string) (*http.Response, error) 
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/changeSetSpecs")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/changeSetSpecs")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -17472,7 +17472,7 @@ func (c *ChangesetspecListsupersetsCall) doRequest(alt string) (*http.Response, 
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/changeSetSpecs/listSupersets")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/changeSetSpecs/listSupersets")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -17571,7 +17571,7 @@ func (c *ChangesetspecUpdateCall) doRequest(alt string) (*http.Response, error) 
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/changeSetSpecs/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/changeSetSpecs/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -17684,7 +17684,7 @@ func (c *DeviceblobCopyToCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{version}/copyTo")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{version}/copyTo")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -17794,7 +17794,7 @@ func (c *DeviceblobDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -17886,7 +17886,7 @@ func (c *DeviceblobGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -18024,7 +18024,7 @@ func (c *DeviceblobGetdownloadurlCall) doRequest(alt string) (*http.Response, er
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{resourceId}/url")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{resourceId}/url")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -18158,7 +18158,7 @@ func (c *DeviceblobListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -18329,9 +18329,9 @@ func (c *DeviceblobUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
 	if c.mediaInfo_ != nil {
-		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/v3/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
+		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/"+Environment+"/deviceBlobs/{deviceName}/{binaryType}/{resourceId}")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
 	}
 	if body == nil {
@@ -18467,7 +18467,7 @@ func (c *ExternaldiskGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/externaldisks/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/externaldisks/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -18603,7 +18603,7 @@ func (c *ExternaldiskGetdiskCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/externaldisks/getdisk")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/externaldisks/getdisk")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -18708,7 +18708,7 @@ func (c *ImagerequestGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/imageRequests/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/imageRequests/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -18805,7 +18805,7 @@ func (c *ImagerequestInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/imageRequests")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/imageRequests")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -18958,7 +18958,7 @@ func (c *ImagerequestListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/imageRequests")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/imageRequests")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -19078,7 +19078,7 @@ func (c *ImagerequestUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/imageRequests/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/imageRequests/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -19185,7 +19185,7 @@ func (c *InvocationGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/invocations/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/invocations/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -19300,7 +19300,7 @@ func (c *InvocationInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/invocations")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/invocations")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -19557,7 +19557,7 @@ func (c *InvocationListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/invocations")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/invocations")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -19677,7 +19677,7 @@ func (c *InvocationPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/invocations/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/invocations/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -19796,7 +19796,7 @@ func (c *InvocationUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/invocations/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/invocations/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -19900,7 +19900,7 @@ func (c *LabelAddBuildsCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{name}/addBuilds")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{name}/addBuilds")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -20003,7 +20003,7 @@ func (c *LabelCloneCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{name}/reset/{destinationName}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{name}/reset/{destinationName}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -20104,7 +20104,7 @@ func (c *LabelDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -20192,7 +20192,7 @@ func (c *LabelGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -20332,7 +20332,7 @@ func (c *LabelListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -20455,7 +20455,7 @@ func (c *LabelPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -20560,7 +20560,7 @@ func (c *LabelRemoveBuildsCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{name}/removeBuilds")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{name}/removeBuilds")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -20660,7 +20660,7 @@ func (c *LabelResetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{name}/reset")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{name}/reset")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -20766,7 +20766,7 @@ func (c *LabelUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/labels/{namespace}/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/labels/{namespace}/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -20889,7 +20889,7 @@ func (c *LegacytestartifactGetCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21039,7 +21039,7 @@ func (c *LegacytestartifactGetdownloadurlCall) doRequest(alt string) (*http.Resp
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts/{resourceId}/url")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts/{resourceId}/url")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21176,7 +21176,7 @@ func (c *LegacytestartifactListCall) doRequest(alt string) (*http.Response, erro
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildType}/{buildId}/{target}/attempts/{attemptId}/tests/{testResultId}/artifacts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21318,7 +21318,7 @@ func (c *LegacytestresultGetCall) doRequest(alt string) (*http.Response, error) 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/tests/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/tests/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21469,7 +21469,7 @@ func (c *LegacytestresultListCall) doRequest(alt string) (*http.Response, error)
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/builds/{buildId}/{target}/attempts/{attemptId}/tests")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/builds/{buildId}/{target}/attempts/{attemptId}/tests")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21588,7 +21588,7 @@ func (c *MachineDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/machines/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/machines/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -21672,7 +21672,7 @@ func (c *MachineGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/machines/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/machines/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -21900,7 +21900,7 @@ func (c *MachineListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/machines")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/machines")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -22026,7 +22026,7 @@ func (c *MachinePatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/machines/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/machines/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -22133,7 +22133,7 @@ func (c *MachineUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/machines/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/machines/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -22240,7 +22240,7 @@ func (c *MessageGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/messages/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/messages/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -22338,7 +22338,7 @@ func (c *MessageInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/messages")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/messages")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -22463,7 +22463,7 @@ func (c *MessageListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/messages")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/messages")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -22583,7 +22583,7 @@ func (c *MessagePatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/messages/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/messages/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -22685,7 +22685,7 @@ func (c *MessageUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/messages/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/messages/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -22783,7 +22783,7 @@ func (c *MetricIncrementCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/metrics/increment")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/metrics/increment")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -22878,7 +22878,7 @@ func (c *MetricIncrementbyCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/metrics/incrementby")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/metrics/incrementby")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -22973,7 +22973,7 @@ func (c *MetricSetCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/metrics/set")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/metrics/set")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -23078,7 +23078,7 @@ func (c *PlatinumtransitionGetCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/platinumTransitions/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/platinumTransitions/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -23212,7 +23212,7 @@ func (c *PlatinumtransitionListCall) doRequest(alt string) (*http.Response, erro
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/platinumTransition")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/platinumTransition")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -23338,7 +23338,7 @@ func (c *PrebuiltfileDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -23436,7 +23436,7 @@ func (c *PrebuiltfileGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -23557,7 +23557,7 @@ func (c *PrebuiltfileListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/prebuiltfiles/{buildId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/prebuiltfiles/{buildId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -23692,7 +23692,7 @@ func (c *PrebuiltfileUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/prebuiltfiles/{buildId}/{destGitProject}/{destFile}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -23801,7 +23801,7 @@ func (c *SchedulingpoolGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/schedulingPools/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/schedulingPools/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -23949,7 +23949,7 @@ func (c *SchedulingpoolListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/schedulingPools")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/schedulingPools")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -24075,7 +24075,7 @@ func (c *SoftwareGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/software/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/software/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -24186,7 +24186,7 @@ func (c *TargetGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/branches/{branch}/targets/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/branches/{branch}/targets/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -24342,7 +24342,7 @@ func (c *TargetListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/branches/{branch}/targets")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/branches/{branch}/targets")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -24468,7 +24468,7 @@ func (c *TestartifactAssociateArtifactSectionCall) doRequest(alt string) (*http.
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/{invocationId}/{workUnitId}/{resultId}/artifacts/{artifactName}/associateArtifactSection")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/{invocationId}/{workUnitId}/{resultId}/artifacts/{artifactName}/associateArtifactSection")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -24594,7 +24594,7 @@ func (c *TestartifactCopyToCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/{invocationId}/artifacts/{artifactName}/copyTo")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/{invocationId}/artifacts/{artifactName}/copyTo")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -24706,7 +24706,7 @@ func (c *TestartifactDeleteCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/{invocationId}/{workUnitId}/{resultId}/artifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/{invocationId}/{workUnitId}/{resultId}/artifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("DELETE", urls, body)
 	if err != nil {
@@ -24811,7 +24811,7 @@ func (c *TestartifactGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/testArtifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/testArtifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -24959,7 +24959,7 @@ func (c *TestartifactGetdownloadurlCall) doRequest(alt string) (*http.Response, 
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/testArtifacts/{resourceId}/url")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/testArtifacts/{resourceId}/url")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -25111,7 +25111,7 @@ func (c *TestartifactListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/testArtifacts")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/testArtifacts")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -25249,7 +25249,7 @@ func (c *TestartifactPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/testArtifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/testArtifacts/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -25423,9 +25423,9 @@ func (c *TestartifactUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/testArtifacts/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/testArtifacts/{resourceId}")
 	if c.mediaInfo_ != nil {
-		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/v3/testArtifacts/{resourceId}")
+		urls = googleapi.ResolveRelative(c.s.BasePath, "/upload/android/internal/build/"+Environment+"/testArtifacts/{resourceId}")
 		c.urlParams_.Set("uploadType", c.mediaInfo_.UploadType())
 	}
 	if body == nil {
@@ -25555,7 +25555,7 @@ func (c *TestresultBatchinsertCall) doRequest(alt string) (*http.Response, error
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/batchInsert")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/batchInsert")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -25656,7 +25656,7 @@ func (c *TestresultBulkinsertCall) doRequest(alt string) (*http.Response, error)
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/bulkInsert")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/bulkInsert")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -25767,7 +25767,7 @@ func (c *TestresultGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -25864,7 +25864,7 @@ func (c *TestresultInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -26181,7 +26181,7 @@ func (c *TestresultListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -26307,7 +26307,7 @@ func (c *TestresultUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/tests/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/tests/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -26404,7 +26404,7 @@ func (c *WorknodeCompleteCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/complete")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/complete")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -26499,7 +26499,7 @@ func (c *WorknodeFailCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/fail")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/fail")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -26604,7 +26604,7 @@ func (c *WorknodeGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -26766,7 +26766,7 @@ func (c *WorknodeGetchildnodesCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{workNodeId}/getChildNodes")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{workNodeId}/getChildNodes")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27015,7 +27015,7 @@ func (c *WorknodeListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -27108,7 +27108,7 @@ func (c *WorknodeMakeavailableCall) doRequest(alt string) (*http.Response, error
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{workNodeId}/makeAvailable")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{workNodeId}/makeAvailable")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27210,7 +27210,7 @@ func (c *WorknodePatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -27307,7 +27307,7 @@ func (c *WorknodePopCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/pop")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/pop")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27400,7 +27400,7 @@ func (c *WorknodeRemovepiiCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{workNodeId}/removePii")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{workNodeId}/removePii")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27496,7 +27496,7 @@ func (c *WorknodeTouchCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{workNodeId}/touch")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{workNodeId}/touch")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27598,7 +27598,7 @@ func (c *WorknodeUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workNodes/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workNodes/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -27695,7 +27695,7 @@ func (c *WorkplanAddnodesCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workPlans/addNodes")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workPlans/addNodes")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27790,7 +27790,7 @@ func (c *WorkplanCreatewithnodesCall) doRequest(alt string) (*http.Response, err
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workPlans/createWithNodes")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workPlans/createWithNodes")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -27895,7 +27895,7 @@ func (c *WorkplanGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workPlans/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workPlans/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -28010,7 +28010,7 @@ func (c *WorkplanListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workPlans")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workPlans")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -28136,7 +28136,7 @@ func (c *WorkunitGetCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workunits/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workunits/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -28233,7 +28233,7 @@ func (c *WorkunitInsertCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workunits")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workunits")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("POST", urls, body)
 	if err != nil {
@@ -28428,7 +28428,7 @@ func (c *WorkunitListCall) doRequest(alt string) (*http.Response, error) {
 	var body io.Reader = nil
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workunits")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workunits")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("GET", urls, body)
 	if err != nil {
@@ -28548,7 +28548,7 @@ func (c *WorkunitPatchCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workunits/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workunits/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PATCH", urls, body)
 	if err != nil {
@@ -28649,7 +28649,7 @@ func (c *WorkunitUpdateCall) doRequest(alt string) (*http.Response, error) {
 	}
 	c.urlParams_.Set("alt", alt)
 	c.urlParams_.Set("prettyPrint", "false")
-	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/v3/workunits/{resourceId}")
+	urls := googleapi.ResolveRelative(c.s.BasePath, "android/internal/build/"+Environment+"/workunits/{resourceId}")
 	urls += "?" + c.urlParams_.Encode()
 	req, err := http.NewRequest("PUT", urls, body)
 	if err != nil {
@@ -28698,3 +28698,5 @@ func (c *WorkunitUpdateCall) Do(opts ...googleapi.CallOption) (*WorkUnit, error)
 	}
 	return ret, nil
 }
+
+var Environment = "v3"

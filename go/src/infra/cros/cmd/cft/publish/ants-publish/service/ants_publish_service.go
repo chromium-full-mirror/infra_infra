@@ -21,7 +21,8 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
-	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"infra/cros/cmd/common_lib/common"
 )
 
 const (
@@ -33,7 +34,7 @@ type AntsPublishService struct {
 	metadata   *metadata.PublishAntsMetadata
 	results    []*api.CrosTestResponse_GivenTestResult
 	service    *androidlib.Service
-	invocation *ab_prod.Invocation
+	invocation *atp.Invocation
 }
 
 // NewAntsPublishService creates a new publish service to interact with Ants.
@@ -47,7 +48,7 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 		return nil, err
 	}
 
-	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB)
+	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Prod)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +66,8 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 	}, nil
 }
 
-func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*ab_prod.WorkUnit, error) {
-	wu := &ab_prod.WorkUnit{
+func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
+	wu := &atp.WorkUnit{
 		Name:         name,
 		Type:         wuType,
 		ParentId:     parent,
@@ -76,14 +77,14 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	return aps.service.WorkUnitService.Insert(wu)
 }
 
-func (aps *AntsPublishService) resultEntries(module *ab_prod.WorkUnit, token int64, results []*api.TestCaseResult) ([]*ab_prod.BatchInsertEntry, int64, error) {
+func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
-	var entries []*ab_prod.BatchInsertEntry
+	var entries []*atp.BatchInsertEntry
 
 	for _, result := range results {
 		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
 		parentwu := module
-		var testID *ab_prod.TestIdentifier
+		var testID *atp.TestIdentifier
 		var err error
 		// If testcase exists, use that as the parent module instead
 		if len(names) == 2 {
@@ -97,13 +98,13 @@ func (aps *AntsPublishService) resultEntries(module *ab_prod.WorkUnit, token int
 				tcWorkunits[names[0]] = parentwu.Id
 			}
 
-			testID = &ab_prod.TestIdentifier{
+			testID = &atp.TestIdentifier{
 				Module:    module.Name,
 				TestClass: names[0],
 				Method:    names[1],
 			}
 		} else if len(names) == 1 {
-			testID = &ab_prod.TestIdentifier{
+			testID = &atp.TestIdentifier{
 				TestClass: module.Name,
 				Method:    names[0],
 			}
@@ -112,22 +113,22 @@ func (aps *AntsPublishService) resultEntries(module *ab_prod.WorkUnit, token int
 		}
 
 		startTime := result.GetStartTime().AsTime().Unix()
-		tr := &ab_prod.TestResult{
+		tr := &atp.TestResult{
 			InvocationId:   aps.metadata.GetAntsInvocationId(),
 			WorkUnitId:     parentwu.Id,
 			TestIdentifier: testID,
 			TestStatus:     antsTestStatus(result),
-			Timing: &ab_prod.Timing{
+			Timing: &atp.Timing{
 				CreationTimestamp: startTime,
 				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
 			},
-			AggregationDetail: &ab_prod.AggregationDetail{
+			AggregationDetail: &atp.AggregationDetail{
 				AggregationLevel: aggregationStatus,
 			},
 			PrimaryBuildInfo: aps.invocation.PrimaryBuild,
 		}
 
-		entries = append(entries, &ab_prod.BatchInsertEntry{TestResult: tr, Token: token})
+		entries = append(entries, &atp.BatchInsertEntry{TestResult: tr, Token: token})
 		token = token + 1
 	}
 
@@ -138,7 +139,7 @@ func (aps *AntsPublishService) resultEntries(module *ab_prod.WorkUnit, token int
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	var entries []*ab_prod.BatchInsertEntry
+	var entries []*atp.BatchInsertEntry
 	token := int64(0)
 	for _, result := range aps.results {
 		log.Printf("looking at result: %+v", result)
@@ -149,7 +150,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 			return err
 		}
 
-		var childEntries []*ab_prod.BatchInsertEntry
+		var childEntries []*atp.BatchInsertEntry
 		childEntries, token, err = aps.resultEntries(mwu, token, result.GetChildTestCaseResults())
 		if err != nil {
 			return err
@@ -157,7 +158,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		entries = append(entries, childEntries...)
 	}
 
-	request := &ab_prod.TestResultBatchInsertRequest{
+	request := &atp.TestResultBatchInsertRequest{
 		TestResults:     entries,
 		InsertBatchSize: int64(len(entries)),
 	}
@@ -171,8 +172,8 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	return aps.uploadInvocationProperties()
 }
 
-func (aps *AntsPublishService) invocationProperties() ([]*ab_prod.Property, error) {
-	var props []*ab_prod.Property
+func (aps *AntsPublishService) invocationProperties() ([]*atp.Property, error) {
+	var props []*atp.Property
 	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
 
 	var model *labapi.DutModel
@@ -185,15 +186,15 @@ func (aps *AntsPublishService) invocationProperties() ([]*ab_prod.Property, erro
 		return nil, fmt.Errorf("unsupported dut type")
 	}
 
-	props = append(props, &ab_prod.Property{Name: "board", Value: model.GetBuildTarget()})
-	props = append(props, &ab_prod.Property{Name: "model", Value: model.GetModelName()})
+	props = append(props, &atp.Property{Name: "board", Value: model.GetBuildTarget()})
+	props = append(props, &atp.Property{Name: "model", Value: model.GetModelName()})
 
 	for k, v := range dutInfo.GetTags() {
-		props = append(props, &ab_prod.Property{Name: k, Value: v})
+		props = append(props, &atp.Property{Name: k, Value: v})
 	}
 
 	if aps.metadata.GetLuciInvocationId() != "" {
-		props = append(props, &ab_prod.Property{Name: "luci-invocation-id", Value: aps.metadata.GetLuciInvocationId()})
+		props = append(props, &atp.Property{Name: "luci-invocation-id", Value: aps.metadata.GetLuciInvocationId()})
 	}
 
 	return props, nil
@@ -239,7 +240,7 @@ func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
 	})
 }
 
-func (aps *AntsPublishService) uploadArtifact(path string) (*ab_prod.BuildArtifactMetadata, error) {
+func (aps *AntsPublishService) uploadArtifact(path string) (*atp.BuildArtifactMetadata, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -250,7 +251,7 @@ func (aps *AntsPublishService) uploadArtifact(path string) (*ab_prod.BuildArtifa
 	return aps.service.TestArtifactsService.Update(am.Name, f, am)
 }
 
-func (aps *AntsPublishService) artifactMetadata(path string) *ab_prod.BuildArtifactMetadata {
+func (aps *AntsPublishService) artifactMetadata(path string) *atp.BuildArtifactMetadata {
 	filename := filepath.Base(path)
 	if strings.HasSuffix(path, "log.txt") {
 		// Multiple path names have the same log.txt file
@@ -262,7 +263,7 @@ func (aps *AntsPublishService) artifactMetadata(path string) *ab_prod.BuildArtif
 	// Just use the content type from this.
 	contentType := strings.Split(mime.TypeByExtension(filepath.Ext(path)), ";")[0]
 
-	return &ab_prod.BuildArtifactMetadata{
+	return &atp.BuildArtifactMetadata{
 		Name:         filename,
 		InvocationId: aps.metadata.AntsInvocationId,
 		WorkUnitId:   aps.metadata.ParentWorkUnitId,

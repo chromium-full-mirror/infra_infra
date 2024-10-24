@@ -301,7 +301,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 			var shardNode *androidapi.WorkUnitNode
 			if runNode != nil {
 				// Generate and insert the Shard Node into the WU tree.
-				shardNode, err = androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.Shard, runNode)
+				shardNode, err = androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.Shard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 				if err != nil {
 					logging.Errorf(ctx, err.Error())
 				}
@@ -314,7 +314,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 				return
 			}
 
-			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT)
+			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 			if err != nil {
 				logging.Errorf(ctx, err.Error())
 				return
@@ -519,7 +519,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	if shardNode != nil {
 		fmt.Printf("Shard Node Parent %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
 
-		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.Attempt, shardNode)
+		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.Attempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return err
 		}
@@ -620,7 +620,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			}
 
 			// TODO(b/372507028): Pass this in rather than create a new one each time
-			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT)
+			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 			if err != nil {
 				logging.Infof(ctx, "err while creating android build service: %s", err)
 				return setTopLevelError(ctx, step, result, resultsChan, err)

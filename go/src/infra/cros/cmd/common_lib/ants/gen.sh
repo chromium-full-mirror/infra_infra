@@ -49,3 +49,15 @@ goimports -w androidbuildinternal/v3/*.go gensupport/*.go
 rm androidbuildinternal/v3/*.json
 
 sed  -i '1i // common_typos_disable' androidbuildinternal/v3/*.go
+
+
+# If the global environment var has been written to the generated file then do
+# not duplicate the line
+if ! grep -q "var Environment = \"v3\"" androidbuildinternal/v3/androidbuildinternal-gen.go; then
+  sed  -i '$a var Environment = \"v3\"' androidbuildinternal/v3/androidbuildinternal-gen.go
+fi
+
+# Change all hardcoded "v3" endpoint uses to instead use the global env
+# variable. This will allow us to swap between enivonments without duplicating
+# the common types.
+sed -i 's/\/v3\//\/\"\+ Environment \+ \"\//g' androidbuildinternal/v3/androidbuildinternal-gen.go
