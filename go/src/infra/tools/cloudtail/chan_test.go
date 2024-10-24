@@ -5,14 +5,15 @@
 package cloudtail
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
 	"time"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDrainChannel(t *testing.T) {
-	Convey("Works", t, func() {
+	ftt.Run("Works", t, func(t *ftt.Test) {
 		ctx := testContext()
 		client := &fakeClient{}
 		buf := NewPushBuffer(PushBufferOptions{Client: client})
@@ -29,16 +30,16 @@ func TestDrainChannel(t *testing.T) {
 
 		buf.Start(ctx)
 		drainChannel(ctx, ch, NullParser(), buf)
-		So(buf.Stop(ctx), ShouldBeNil)
+		assert.Loosely(t, buf.Stop(ctx), should.BeNil)
 
 		text := []string{}
 		for _, e := range client.getEntries() {
 			text = append(text, e.TextPayload)
 		}
-		So(text, ShouldResemble, []string{"normal line", "to be trimmed"})
+		assert.Loosely(t, text, should.Resemble([]string{"normal line", "to be trimmed"}))
 	})
 
-	Convey("Rejects unparsed lines", t, func() {
+	ftt.Run("Rejects unparsed lines", t, func(t *ftt.Test) {
 		ctx := testContext()
 		client := &fakeClient{}
 		buf := NewPushBuffer(PushBufferOptions{Client: client})
@@ -54,37 +55,37 @@ func TestDrainChannel(t *testing.T) {
 
 		buf.Start(ctx)
 		drainChannel(ctx, ch, parser, buf)
-		So(buf.Stop(ctx), ShouldBeNil)
-		So(len(client.getEntries()), ShouldEqual, 0)
+		assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+		assert.Loosely(t, len(client.getEntries()), should.BeZero)
 	})
 }
 
 func TestComputeInsertID(t *testing.T) {
-	Convey("Text with TS", t, func() {
+	ftt.Run("Text with TS", t, func(t *ftt.Test) {
 		id, err := computeInsertID(&Entry{
 			Timestamp:   time.Unix(1435788505, 12345),
 			TextPayload: "Hi",
 		})
-		So(err, ShouldBeNil)
-		So(id, ShouldEqual, "1435788505000012345:lN2eCMEpx4X38lbo")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, id, should.Equal("1435788505000012345:lN2eCMEpx4X38lbo"))
 	})
 
-	Convey("Text without TS", t, func() {
+	ftt.Run("Text without TS", t, func(t *ftt.Test) {
 		id, err := computeInsertID(&Entry{
 			TextPayload: "Hi",
 		})
-		So(err, ShouldBeNil)
-		So(id, ShouldEqual, ":lN2eCMEpx4X38lbo")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, id, should.Equal(":lN2eCMEpx4X38lbo"))
 	})
 
-	Convey("JSON", t, func() {
+	ftt.Run("JSON", t, func(t *ftt.Test) {
 		id, err := computeInsertID(&Entry{
 			JSONPayload: struct {
 				A int
 				B int
 			}{10, 20},
 		})
-		So(err, ShouldBeNil)
-		So(id, ShouldEqual, ":dJ9ZWHLGN9BWUyLG")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, id, should.Equal(":dJ9ZWHLGN9BWUyLG"))
 	})
 }

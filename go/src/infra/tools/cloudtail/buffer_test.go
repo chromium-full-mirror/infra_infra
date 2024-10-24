@@ -11,17 +11,18 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/retry/transient"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/tsmon"
 )
 
 func TestPushBuffer(t *testing.T) {
-	Convey("with mocked time", t, func() {
+	ftt.Run("with mocked time", t, func(t *ftt.Test) {
 		ctx := testContext()
 		cl := clock.Get(ctx).(testclock.TestClock)
 		cl.SetTimerCallback(func(d time.Duration, t clock.Timer) {
@@ -30,22 +31,22 @@ func TestPushBuffer(t *testing.T) {
 			}
 		})
 
-		Convey("Noop run", func() {
+		t.Run("Noop run", func(t *ftt.Test) {
 			buf := NewPushBuffer(PushBufferOptions{})
 			buf.Start(ctx)
-			So(buf.Stop(ctx), ShouldBeNil)
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
 		})
 
-		Convey("Send one, then stop", func() {
+		t.Run("Send one, then stop", func(t *ftt.Test) {
 			client := &fakeClient{}
 			buf := NewPushBuffer(PushBufferOptions{Client: client})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{})
-			So(buf.Stop(ctx), ShouldBeNil)
-			So(len(client.getCalls()), ShouldEqual, 1)
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+			assert.Loosely(t, len(client.getCalls()), should.Equal(1))
 		})
 
-		Convey("Send a big chunk to trigger immediate flush, then stop.", func() {
+		t.Run("Send a big chunk to trigger immediate flush, then stop.", func(t *ftt.Test) {
 			cl := clock.Get(ctx).(testclock.TestClock)
 			client := &fakeClient{ch: make(chan pushEntriesCall)}
 			buf := NewPushBuffer(PushBufferOptions{
@@ -58,12 +59,12 @@ func TestPushBuffer(t *testing.T) {
 			}
 			client.drain(t, 4, 30*time.Second)
 			cl.Add(time.Second) // to be able to distinguish flushes done during Stop
-			So(buf.Stop(ctx), ShouldBeNil)
-			So(len(client.getCalls()), ShouldEqual, 2)
-			So(client.getCalls()[0].ts, ShouldResemble, testclock.TestRecentTimeUTC) // i.e. before Stop
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+			assert.Loosely(t, len(client.getCalls()), should.Equal(2))
+			assert.Loosely(t, client.getCalls()[0].ts, should.Resemble(testclock.TestRecentTimeUTC)) // i.e. before Stop
 		})
 
-		Convey("Send an entry, wait for flush", func() {
+		t.Run("Send an entry, wait for flush", func(t *ftt.Test) {
 			cl := clock.Get(ctx).(testclock.TestClock)
 			cl.SetTimerCallback(func(d time.Duration, t clock.Timer) {
 				if testclock.HasTags(t, "flush-timer") {
@@ -80,24 +81,24 @@ func TestPushBuffer(t *testing.T) {
 			<-client.ch
 
 			// Make sure it happened by timer.
-			So(cl.Now().Sub(testclock.TestRecentTimeUTC), ShouldEqual, DefaultFlushTimeout)
+			assert.Loosely(t, cl.Now().Sub(testclock.TestRecentTimeUTC), should.Equal(DefaultFlushTimeout))
 
-			So(buf.Stop(ctx), ShouldBeNil)
-			So(len(client.getCalls()), ShouldEqual, 1)
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+			assert.Loosely(t, len(client.getCalls()), should.Equal(1))
 		})
 
-		Convey("Send some entries that should be merged into one", func() {
+		t.Run("Send some entries that should be merged into one", func(t *ftt.Test) {
 			client := &fakeClient{}
 			buf := NewPushBuffer(PushBufferOptions{Client: client})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{TextPayload: "a", ParsedBy: NullParser()})
 			buf.Send(ctx, Entry{TextPayload: "b"})
-			So(buf.Stop(ctx), ShouldBeNil)
-			So(len(client.getCalls()), ShouldEqual, 1)
-			So(client.getEntries()[0].TextPayload, ShouldEqual, "a\nb")
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+			assert.Loosely(t, len(client.getCalls()), should.Equal(1))
+			assert.Loosely(t, client.getEntries()[0].TextPayload, should.Equal("a\nb"))
 		})
 
-		Convey("Retry works", func() {
+		t.Run("Retry works", func(t *ftt.Test) {
 			client := &fakeClient{transientErrors: 4}
 			buf := NewPushBuffer(PushBufferOptions{
 				Client:          client,
@@ -106,11 +107,11 @@ func TestPushBuffer(t *testing.T) {
 			})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{})
-			So(buf.Stop(ctx), ShouldBeNil)
-			So(len(client.getCalls()), ShouldEqual, 5) // 4 failures, 1 success
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
+			assert.Loosely(t, len(client.getCalls()), should.Equal(5)) // 4 failures, 1 success
 		})
 
-		Convey("Gives up retrying after N attempts", func() {
+		t.Run("Gives up retrying after N attempts", func(t *ftt.Test) {
 			client := &fakeClient{transientErrors: 10000}
 			buf := NewPushBuffer(PushBufferOptions{
 				Client:          client,
@@ -119,11 +120,11 @@ func TestPushBuffer(t *testing.T) {
 			})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{})
-			So(buf.Stop(ctx), ShouldNotBeNil)
-			So(len(client.calls), ShouldEqual, 5)
+			assert.Loosely(t, buf.Stop(ctx), should.NotBeNil)
+			assert.Loosely(t, len(client.calls), should.Equal(5))
 		})
 
-		Convey("Gives up retrying on fatal errors", func() {
+		t.Run("Gives up retrying on fatal errors", func(t *ftt.Test) {
 			client := &fakeClient{transientErrors: 5, fatalErrors: 1}
 			buf := NewPushBuffer(PushBufferOptions{
 				Client:          client,
@@ -132,11 +133,11 @@ func TestPushBuffer(t *testing.T) {
 			})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{})
-			So(buf.Stop(ctx), ShouldNotBeNil)
-			So(len(client.calls), ShouldEqual, 6)
+			assert.Loosely(t, buf.Stop(ctx), should.NotBeNil)
+			assert.Loosely(t, len(client.calls), should.Equal(6))
 		})
 
-		Convey("Stop timeout works", func() {
+		t.Run("Stop timeout works", func(t *ftt.Test) {
 			withDeadline, _ := clock.WithTimeout(ctx, 20*time.Second)
 
 			cl.SetTimerCallback(func(d time.Duration, t clock.Timer) {
@@ -157,8 +158,8 @@ func TestPushBuffer(t *testing.T) {
 			})
 			buf.Start(ctx)
 			buf.Send(ctx, Entry{})
-			So(buf.Stop(withDeadline), ShouldNotBeNil)
-			So(clock.Now(ctx).Sub(testclock.TestRecentTimeUTC), ShouldBeLessThan, 30*time.Second)
+			assert.Loosely(t, buf.Stop(withDeadline), should.NotBeNil)
+			assert.Loosely(t, clock.Now(ctx).Sub(testclock.TestRecentTimeUTC), should.BeLessThan(30*time.Second))
 		})
 	})
 }
@@ -223,7 +224,9 @@ func (c *fakeClient) getEntries() []Entry {
 	return out
 }
 
-func (c *fakeClient) drain(t *testing.T, count int, timeout time.Duration) {
+func (c *fakeClient) drain(t testing.TB, count int, timeout time.Duration) {
+	t.Helper()
+
 	deadline := time.After(timeout) // use real clock to detect stuck test
 	total := 0
 	for {

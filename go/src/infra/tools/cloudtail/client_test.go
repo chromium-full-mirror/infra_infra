@@ -10,12 +10,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	logging "google.golang.org/api/logging/v2"
 )
 
 func TestClient(t *testing.T) {
-	Convey("PushEntries works", t, func() {
+	ftt.Run("PushEntries works", t, func(t *ftt.Test) {
 		ctx := testContext()
 
 		opts := ClientOptions{
@@ -35,10 +37,10 @@ func TestClient(t *testing.T) {
 		}
 
 		ts, err := time.Parse(time.RFC3339, "2015-10-02T15:00:00Z")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		c, err := clientWithMockWrite(opts, writeFunc)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = c.PushEntries(ctx, []*Entry{
 			{
 				InsertID:    "insert-id",
@@ -47,26 +49,26 @@ func TestClient(t *testing.T) {
 				TextPayload: "hi",
 			},
 		})
-		So(err, ShouldBeNil)
-		So(len(requests), ShouldEqual, 1)
-		So(requests[0].LogName, ShouldEqual, "projects/proj-id/logs/log-id")
-		So(requests[0].Labels, ShouldResemble, map[string]string{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, len(requests), should.Equal(1))
+		assert.Loosely(t, requests[0].LogName, should.Equal("projects/proj-id/logs/log-id"))
+		assert.Loosely(t, requests[0].Labels, should.Resemble(map[string]string{
 			"cloudtail/resource_id":   "res-id",
 			"cloudtail/resource_type": "res-type",
-		})
-		So(requests[0].Resource, ShouldResemble, &logging.MonitoredResource{
+		}))
+		assert.Loosely(t, requests[0].Resource, should.Resemble(&logging.MonitoredResource{
 			Type: "global",
 			Labels: map[string]string{
 				"project_id": "proj-id",
 			},
-		})
-		So(len(requests[0].Entries), ShouldEqual, 1)
-		So(requests[0].Entries[0], ShouldResemble, &logging.LogEntry{
+		}))
+		assert.Loosely(t, len(requests[0].Entries), should.Equal(1))
+		assert.Loosely(t, requests[0].Entries[0], should.Resemble(&logging.LogEntry{
 			InsertId:    "insert-id",
 			Severity:    "DEBUG",
 			TextPayload: "hi",
 			Timestamp:   "2015-10-02T15:00:00Z",
-		})
+		}))
 	})
 }
 

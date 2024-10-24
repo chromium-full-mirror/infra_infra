@@ -6,12 +6,13 @@ package cloudtail
 
 import (
 	"context"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"io"
 	"strings"
 	"sync"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 type blockingPushBuffer struct {
@@ -54,12 +55,12 @@ func (b *blockingPushBuffer) getEntries() (out []Entry) {
 }
 
 func TestPipeReader(t *testing.T) {
-	Convey("PipeReader", t, func() {
+	ftt.Run("PipeReader", t, func(t *ftt.Test) {
 		ctx := testContext()
 
 		id := ClientID{"foo", "bar", "baz"}
 
-		Convey("works", func() {
+		t.Run("works", func(t *ftt.Test) {
 			client := &fakeClient{}
 			buf := NewPushBuffer(PushBufferOptions{Client: client})
 			body := `
@@ -76,17 +77,17 @@ func TestPipeReader(t *testing.T) {
 				PushBuffer: buf,
 				Parser:     NullParser(),
 			}
-			So(pipeReader.Run(ctx), ShouldBeNil)
-			So(buf.Stop(ctx), ShouldBeNil)
+			assert.Loosely(t, pipeReader.Run(ctx), should.BeNil)
+			assert.Loosely(t, buf.Stop(ctx), should.BeNil)
 
 			text := []string{}
 			for _, e := range client.getEntries() {
 				text = append(text, e.TextPayload)
 			}
-			So(text, ShouldResemble, []string{"line", "another", "last one"})
+			assert.Loosely(t, text, should.Resemble([]string{"line", "another", "last one"}))
 		})
 
-		Convey("is buffered and non-blocking", func(c C) {
+		t.Run("is buffered and non-blocking", func(c *ftt.Test) {
 			buf := blockingPushBuffer{
 				blocking: true,
 				start:    make(chan struct{}),
@@ -98,7 +99,7 @@ func TestPipeReader(t *testing.T) {
 			reader, writer := io.Pipe()
 			go func() {
 				_, err := writer.Write([]byte("first line\n"))
-				c.So(err, ShouldBeNil)
+				assert.Loosely(c, err, should.BeNil)
 
 				// Wait for drainChannel to call Send for the first time and then block.
 				<-buf.start
@@ -106,7 +107,7 @@ func TestPipeReader(t *testing.T) {
 				// Send another two lines while drainChannel is blocked on Send.
 				// PipeFromReader will send the first one but drop the second one.
 				_, err = writer.Write([]byte("second line\nthird line\n"))
-				c.So(err, ShouldBeNil)
+				assert.Loosely(c, err, should.BeNil)
 
 				// Wait for the dropped line to be reported.
 				<-dropped
@@ -115,7 +116,7 @@ func TestPipeReader(t *testing.T) {
 				buf.setBlocking(false)
 				buf.finish <- struct{}{}
 
-				c.So(writer.Close(), ShouldBeNil)
+				assert.Loosely(c, writer.Close(), should.BeNil)
 			}()
 
 			pipeReader := PipeReader{
@@ -128,16 +129,16 @@ func TestPipeReader(t *testing.T) {
 			}
 			err := pipeReader.Run(ctx)
 
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldEqual,
-				"1 lines in total were dropped due to insufficient line buffer size")
+			assert.Loosely(c, err, should.NotBeNil)
+			assert.Loosely(c, err.Error(), should.Equal(
+				"1 lines in total were dropped due to insufficient line buffer size"))
 
 			entries := buf.getEntries()
-			So(len(entries), ShouldEqual, 2)
-			So(entries[0].TextPayload, ShouldEqual, "first line")
-			So(entries[1].TextPayload, ShouldEqual, "second line")
+			assert.Loosely(c, len(entries), should.Equal(2))
+			assert.Loosely(c, entries[0].TextPayload, should.Equal("first line"))
+			assert.Loosely(c, entries[1].TextPayload, should.Equal("second line"))
 
-			So(droppedCounter.Get(ctx, "baz", "foo", "bar"), ShouldEqual, 1)
+			assert.Loosely(c, droppedCounter.Get(ctx, "baz", "foo", "bar"), should.Equal(1))
 		})
 	})
 }

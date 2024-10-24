@@ -14,7 +14,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestTailer(t *testing.T) {
@@ -29,21 +32,23 @@ func TestTailer(t *testing.T) {
 	// (including inotify subsystem, or whatever fsnotify library is using on
 	// the current platform).
 
-	Convey("Dumb poller works", t, func(c C) {
-		runTest(c, TailerOptions{
+	ftt.Run("Dumb poller works", t, func(t *ftt.Test) {
+		runTest(t, TailerOptions{
 			UsePolling:    true,
 			PollingPeriod: 10 * time.Millisecond,
 		})
 	})
 
-	Convey("Fsnotify poller works", t, func(c C) {
-		runTest(c, TailerOptions{
+	ftt.Run("Fsnotify poller works", t, func(t *ftt.Test) {
+		runTest(t, TailerOptions{
 			UsePolling: false,
 		})
 	})
 }
 
-func runTest(c C, opts TailerOptions) {
+func runTest(t testing.TB, opts TailerOptions) {
+	t.Helper()
+
 	// This test is more like a smoke test (it uses real file system), do not
 	// mock the clock.
 	ctx := context.Background()
@@ -54,40 +59,45 @@ func runTest(c C, opts TailerOptions) {
 	buf.Start(ctx)
 
 	dir, err := ioutil.TempDir("", "cloudtail_test")
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 	defer os.RemoveAll(dir)
 	filePath := filepath.Join(dir, "tailed")
 
 	totalExpected := 0
 	putData := func(expected int, data string) {
+		t.Helper()
+
 		f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
-		c.So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil, truth.LineContext())
 		_, err = f.Seek(0, os.SEEK_END)
-		c.So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil, truth.LineContext())
 		_, err = f.WriteString(data)
-		c.So(err, ShouldBeNil)
-		c.So(f.Sync(), ShouldBeNil)
-		c.So(f.Close(), ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil, truth.LineContext())
+		assert.Loosely(t, f.Sync(), should.BeNil, truth.LineContext())
+		assert.Loosely(t, f.Close(), should.BeNil, truth.LineContext())
 
 		// Wait for this data to be consumed by tailer.
 		totalExpected += expected
 		for expected != 0 {
 			consumed := <-client.ch
-			c.So(len(consumed.entries), ShouldBeLessThanOrEqualTo, expected)
+			assert.Loosely(t, len(consumed.entries), should.BeLessThanOrEqual(expected), truth.LineContext())
 			expected -= len(consumed.entries)
 		}
 	}
 
 	truncateFile := func() {
-		So(os.Truncate(filePath, 0), ShouldBeNil)
+		t.Helper()
+		assert.Loosely(t, os.Truncate(filePath, 0), should.BeNil, truth.LineContext())
 	}
 
 	rotateFile := func() {
-		c.So(os.Rename(filePath, filePath+".1"), ShouldBeNil)
+		t.Helper()
+		assert.Loosely(t, os.Rename(filePath, filePath+".1"), should.BeNil, truth.LineContext())
 	}
 
 	deleteFile := func() {
-		c.So(os.Remove(filePath), ShouldBeNil)
+		t.Helper()
+		assert.Loosely(t, os.Remove(filePath), should.BeNil, truth.LineContext())
 
 		// On Windows if deleted file still has open handles, new one can't be
 		// created in its place. Wait until tailer closes its handle. Daemons that
@@ -104,7 +114,7 @@ func runTest(c C, opts TailerOptions) {
 				}
 				time.Sleep(10 * time.Millisecond)
 			}
-			So(lastErr, ShouldBeNil)
+			assert.Loosely(t, lastErr, should.BeNil, truth.LineContext())
 		}
 	}
 
@@ -122,7 +132,7 @@ func runTest(c C, opts TailerOptions) {
 	opts.RotationCheckPeriod = 50 * time.Millisecond
 	opts.initializedSignal = initializedSignal
 	tailer, err := NewTailer(opts)
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 
 	done := make(chan struct{})
 	go func() {
@@ -153,12 +163,12 @@ func runTest(c C, opts TailerOptions) {
 	tailer.Stop()
 	<-done
 
-	So(buf.Stop(ctx), ShouldBeNil)
+	assert.Loosely(t, buf.Stop(ctx), should.BeNil, truth.LineContext())
 
 	text := []string{}
 	for _, e := range client.getEntries() {
 		text = append(text, e.TextPayload)
 	}
-	So(len(text), ShouldEqual, totalExpected)
-	So(text[:6], ShouldResemble, []string{"line", "another", "truncated", "rotated", "deleted", "last one"})
+	assert.Loosely(t, len(text), should.Equal(totalExpected), truth.LineContext())
+	assert.Loosely(t, text[:6], should.Resemble([]string{"line", "another", "truncated", "rotated", "deleted", "last one"}), truth.LineContext())
 }

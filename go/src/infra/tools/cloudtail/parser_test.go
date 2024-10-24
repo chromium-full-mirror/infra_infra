@@ -5,26 +5,27 @@
 package cloudtail
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"reflect"
 	"testing"
 	"time"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestLogParserChain(t *testing.T) {
-	Convey("StdParser coverage", t, func() {
-		So(StdParser(), ShouldNotBeNil)
+	ftt.Run("StdParser coverage", t, func(t *ftt.Test) {
+		assert.Loosely(t, StdParser(), should.NotBeNil)
 	})
 
-	Convey("Empty works", t, func() {
+	ftt.Run("Empty works", t, func(t *ftt.Test) {
 		chain := LogParserChain{}
 		entry := chain.ParseLogLine("hi")
-		So(entry, ShouldNotBeNil)
-		So(entry.TextPayload, ShouldEqual, "hi")
+		assert.Loosely(t, entry, should.NotBeNil)
+		assert.Loosely(t, entry.TextPayload, should.Equal("hi"))
 	})
 
-	Convey("Non empty works", t, func() {
+	ftt.Run("Non empty works", t, func(t *ftt.Test) {
 		parser1 := &callbackParser{
 			cb: func(string) *Entry { return nil },
 		}
@@ -33,7 +34,7 @@ func TestLogParserChain(t *testing.T) {
 		}
 		chain := LogParserChain{parser1, parser2}
 		entry := chain.ParseLogLine("hi")
-		So(entry.TextPayload, ShouldEqual, "hi, yo")
+		assert.Loosely(t, entry.TextPayload, should.Equal("hi, yo"))
 	})
 }
 
