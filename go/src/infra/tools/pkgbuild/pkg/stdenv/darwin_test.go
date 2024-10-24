@@ -11,14 +11,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/common/exec/execmock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestImportDarwin(t *testing.T) {
-	Convey("import darwin", t, func() {
+	ftt.Run("import darwin", t, func(t *ftt.Test) {
 		ctx := execmock.Init(context.Background())
 		xcodeSelectUses := execmock.Simple.WithArgs("xcode-select", "--print-path").Mock(ctx, execmock.SimpleInput{
 			Stdout: "/path/to/xcode.app",
@@ -33,22 +34,22 @@ func TestImportDarwin(t *testing.T) {
 			},
 			BuildPlatform: generators.NewPlatform("darwin", "arm64"),
 		})
-		So(err, ShouldBeNil)
-		So(xcodeSelectUses.Snapshot(), ShouldHaveLength, 1)
-		So(xcodeBuildUses.Snapshot(), ShouldHaveLength, 1)
-		So(gs, ShouldContain, &generators.ImportTargets{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, xcodeSelectUses.Snapshot(), should.HaveLength(1))
+		assert.Loosely(t, xcodeBuildUses.Snapshot(), should.HaveLength(1))
+		assert.Loosely(t, gs, should.ContainMatch[generators.Generator](&generators.ImportTargets{
 			Name: "xcode_import",
 			Targets: map[string]generators.ImportTarget{
 				"Developer": {Source: "/path/to/xcode.app", Mode: fs.ModeSymlink, Version: "xcodeversion"},
 			},
-		})
+		}))
 
 		// All imports on Mac should be symlink.
 		for _, g := range gs {
 			if targets, ok := g.(*generators.ImportTargets); ok {
-				for _, t := range targets.Targets {
-					_, _ = Println("checking", t)
-					So(t.Mode&fs.ModeSymlink, ShouldNotBeEmpty)
+				for _, targ := range targets.Targets {
+					t.Log("checking", t)
+					assert.Loosely(t, targ.Mode&fs.ModeSymlink, should.NotEqual(0))
 				}
 			}
 		}

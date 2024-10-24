@@ -19,8 +19,6 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/cipkg/base/actions"
 	"go.chromium.org/luci/cipkg/base/generators"
@@ -29,14 +27,18 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
-	"go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/pkgbuild/pkg/spec"
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
-func initStdenv(build generators.Platform) {
-	So(stdenv.Init(&stdenv.Config{
+func initStdenv(t testing.TB, build generators.Platform) {
+	t.Helper()
+	assert.Loosely(t, stdenv.Init(&stdenv.Config{
 		XcodeDeveloper: &generators.ImportTargets{Name: "xcode_import"},
 		WinSDK:         &generators.ImportTargets{Name: "winsdk_files"},
 		FindBinary: func(bin string) (string, error) {
@@ -47,7 +49,7 @@ func initStdenv(build generators.Platform) {
 			return fmt.Sprintf("/bin/%s", bin), nil
 		},
 		BuildPlatform: build,
-	}), ShouldBeNil)
+	}), should.BeNil, truth.LineContext())
 }
 
 func TestBuildPackagesFromSpec(t *testing.T) {
@@ -58,7 +60,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 
 	ctx := gologger.StdConfig.Use(context.Background())
 
-	Convey("native platform", t, func() {
+	ftt.Run("native platform", t, func(t *ftt.Test) {
 		tempBase := t.TempDir()
 		buildTemp := filepath.Join(tempBase, "build")
 		storeTemp := filepath.Join(tempBase, "store")
@@ -72,10 +74,10 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -94,53 +96,53 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			),
 		}
 
-		Convey("build ninja", func() {
+		t.Run("build ninja", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/ninja")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			pkg := pkgs[len(pkgs)-1]
 			env := environ.New(pkg.Derivation.Env)
-			So(pkg.Derivation.Name, ShouldEqual, "ninja")
-			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
-			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdPlatform)
+			assert.Loosely(t, pkg.Derivation.Name, should.Equal("ninja"))
+			assert.Loosely(t, pkg.Derivation.Platform, should.Equal(buildPlatform.String()))
+			assert.Loosely(t, env.Get("_3PP_PLATFORM"), should.Equal(cipdPlatform))
 		})
 
-		Convey("Build go", func() {
+		t.Run("Build go", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/go")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			pkg := pkgs[len(pkgs)-1]
 			env := environ.New(pkg.Derivation.Env)
-			So(pkg.Derivation.Name, ShouldEqual, "go")
-			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
-			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdPlatform)
+			assert.Loosely(t, pkg.Derivation.Name, should.Equal("go"))
+			assert.Loosely(t, pkg.Derivation.Platform, should.Equal(buildPlatform.String()))
+			assert.Loosely(t, env.Get("_3PP_PLATFORM"), should.Equal(cipdPlatform))
 		})
 
-		Convey("Build virtualenv (universal)", func() {
+		t.Run("Build virtualenv (universal)", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/virtualenv")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			pkg := pkgs[len(pkgs)-1]
 			env := environ.New(pkg.Derivation.Env)
-			So(pkg.Derivation.Name, ShouldEqual, "virtualenv")
-			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
-			So(pkg.Action.Metadata.Cipd.Name, ShouldEqual, "mock/tools/virtualenv")
+			assert.Loosely(t, pkg.Derivation.Name, should.Equal("virtualenv"))
+			assert.Loosely(t, pkg.Derivation.Platform, should.Equal(buildPlatform.String()))
+			assert.Loosely(t, pkg.Action.Metadata.Cipd.Name, should.Equal("mock/tools/virtualenv"))
 			ver := "3@git-tag.chromium.8"
 			if cipdPlatform != "linux-amd64" {
 				ver += "-" + cipdPlatform
 			}
-			So(pkg.Action.Metadata.Cipd.Version, ShouldEqual, ver)
-			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdPlatform)
+			assert.Loosely(t, pkg.Action.Metadata.Cipd.Version, should.Equal(ver))
+			assert.Loosely(t, env.Get("_3PP_PLATFORM"), should.Equal(cipdPlatform))
 		})
 	})
 
-	Convey("cross-compile platform", t, func() {
+	ftt.Run("cross-compile platform", t, func(t *ftt.Test) {
 		tempBase := t.TempDir()
 		buildTemp := filepath.Join(tempBase, "build")
 		storeTemp := filepath.Join(tempBase, "store")
@@ -156,10 +158,10 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -178,49 +180,49 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			),
 		}
 
-		Convey("build packages", func() {
+		t.Run("build packages", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/ninja")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			pkg := pkgs[len(pkgs)-1]
 			env := environ.New(pkg.Derivation.Env)
-			So(pkg.Derivation.Name, ShouldEqual, "ninja")
-			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
-			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdTarget)
+			assert.Loosely(t, pkg.Derivation.Name, should.Equal("ninja"))
+			assert.Loosely(t, pkg.Derivation.Platform, should.Equal(buildPlatform.String()))
+			assert.Loosely(t, env.Get("_3PP_PLATFORM"), should.Equal(cipdTarget))
 		})
 
-		Convey("Build virtualenv (universal)", func() {
+		t.Run("Build virtualenv (universal)", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/virtualenv")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			pkg := pkgs[len(pkgs)-1]
 			env := environ.New(pkg.Derivation.Env)
-			So(pkg.Derivation.Name, ShouldEqual, "virtualenv")
-			So(pkg.Derivation.Platform, ShouldEqual, buildPlatform.String())
-			So(pkg.Action.Metadata.Cipd.Name, ShouldEqual, "mock/tools/virtualenv")
-			So(pkg.Action.Metadata.Cipd.Version, ShouldEqual, "3@git-tag.chromium.8-linux-arm64")
-			So(env.Get("_3PP_PLATFORM"), ShouldEqual, cipdTarget)
+			assert.Loosely(t, pkg.Derivation.Name, should.Equal("virtualenv"))
+			assert.Loosely(t, pkg.Derivation.Platform, should.Equal(buildPlatform.String()))
+			assert.Loosely(t, pkg.Action.Metadata.Cipd.Name, should.Equal("mock/tools/virtualenv"))
+			assert.Loosely(t, pkg.Action.Metadata.Cipd.Version, should.Equal("3@git-tag.chromium.8-linux-arm64"))
+			assert.Loosely(t, env.Get("_3PP_PLATFORM"), should.Equal(cipdTarget))
 		})
 
 		// If a dependency is not available, ErrPackageNotAvailable should be the
 		// inner error.
-		Convey("unavailable dependency", func() {
+		t.Run("unavailable dependency", func(t *ftt.Test) {
 			err := b.Load(ctx, "tests/unavailable_depends")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldNotEqual, spec.ErrPackageNotAvailable)
-			So(errors.Is(err, spec.ErrPackageNotAvailable), ShouldBeTrue)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.NotEqual(spec.ErrPackageNotAvailable))
+			assert.Loosely(t, errors.Is(err, spec.ErrPackageNotAvailable), should.BeTrue)
 		})
 
 		// If a package itself is not available, ErrPackageNotAvailable should be
 		// the direct error.
-		Convey("unavailable", func() {
+		t.Run("unavailable", func(t *ftt.Test) {
 			err := b.Load(ctx, "tests/unavailable_arm64")
-			So(err, ShouldNotBeNil)
-			So(err, ShouldEqual, spec.ErrPackageNotAvailable)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err, should.Equal(spec.ErrPackageNotAvailable))
 		})
 	})
 }
@@ -233,7 +235,7 @@ func TestRootPackges(t *testing.T) {
 
 	ctx := gologger.StdConfig.Use(context.Background())
 
-	Convey("native platform", t, func() {
+	ftt.Run("native platform", t, func(t *ftt.Test) {
 		tempBase := t.TempDir()
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
@@ -246,10 +248,10 @@ func TestRootPackges(t *testing.T) {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -257,27 +259,27 @@ func TestRootPackges(t *testing.T) {
 			Target: buildPlatform,
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		var loaded []generators.Generator
 		load := func(name string) {
 			g, err := loader.FromSpec(name, cipdPlatform, cipdPlatform)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			loaded = append(loaded, g)
 		}
 
-		Convey("ok", func() {
+		t.Run("ok", func(t *ftt.Test) {
 			load("tests/step_1")
 			load("tests/step_2")
 
 			builder := workflow.NewBuilder(plats, pm, actions.NewActionProcessor())
 			pkgs, err := builder.GeneratePackages(ctx, loaded)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rootSteps := NewRootSteps()
 			for _, pkg := range pkgs {
 				_, err = rootSteps.UpdateRoot(ctx, pkg)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 			var roots []string
 			for id, s := range rootSteps {
@@ -296,11 +298,11 @@ func TestRootPackges(t *testing.T) {
 			}
 			slices.Sort(expected)
 
-			So(roots, ShouldEqual, expected)
+			assert.Loosely(t, roots, should.Match(expected))
 		})
 	})
 
-	Convey("cross-compile platform", t, func() {
+	ftt.Run("cross-compile platform", t, func(t *ftt.Test) {
 		tempBase := t.TempDir()
 		storeTemp := filepath.Join(tempBase, "store")
 		specs := filepath.Join(cwd, "testdata")
@@ -315,10 +317,10 @@ func TestRootPackges(t *testing.T) {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -326,26 +328,26 @@ func TestRootPackges(t *testing.T) {
 			Target: hostPlatform,
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		var loaded []generators.Generator
 		load := func(name string) {
 			g, err := loader.FromSpec(name, cipdHost, cipdTarget)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			loaded = append(loaded, g)
 		}
 
-		Convey("self depends", func() {
+		t.Run("self depends", func(t *ftt.Test) {
 			load("tests/step_cross")
 
 			builder := workflow.NewBuilder(plats, pm, actions.NewActionProcessor())
 			pkgs, err := builder.GeneratePackages(ctx, loaded)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			rootSteps := NewRootSteps()
 			for _, pkg := range pkgs {
 				_, err = rootSteps.UpdateRoot(ctx, pkg)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			}
 			var roots []string
 			for id, s := range rootSteps {
@@ -362,7 +364,7 @@ func TestRootPackges(t *testing.T) {
 			}
 			slices.Sort(expected)
 
-			So(roots, ShouldEqual, expected)
+			assert.Loosely(t, roots, should.Match(expected))
 		})
 	})
 }
@@ -376,7 +378,7 @@ func TestPackageSources(t *testing.T) {
 	ctx := gologger.StdConfig.Use(context.Background())
 	ctx = logging.SetLevel(ctx, logging.Error)
 
-	Convey("native platform", t, func() {
+	ftt.Run("native platform", t, func(t *ftt.Test) {
 		tempBase := t.TempDir()
 		buildTemp := filepath.Join(tempBase, "build")
 		storeTemp := filepath.Join(tempBase, "store")
@@ -390,10 +392,10 @@ func TestPackageSources(t *testing.T) {
 			t.Fatalf("failed to init spec loader: %v", err)
 		}
 
-		initStdenv(buildPlatform)
+		initStdenv(t, buildPlatform)
 
 		pm, err := workflow.NewLocalPackageManager(storeTemp)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		plats := generators.Platforms{
 			Build:  buildPlatform,
@@ -412,11 +414,11 @@ func TestPackageSources(t *testing.T) {
 			),
 		}
 
-		Convey("git source", func() {
+		t.Run("git source", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/ninja")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
@@ -427,11 +429,11 @@ func TestPackageSources(t *testing.T) {
 			})
 		})
 
-		Convey("url source", func() {
+		t.Run("url source", func(t *ftt.Test) {
 			err := b.Load(ctx, "static_libs/curl")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
@@ -442,11 +444,11 @@ func TestPackageSources(t *testing.T) {
 			})
 		})
 
-		Convey("script source", func() {
+		t.Run("script source", func(t *ftt.Test) {
 			err := b.Load(ctx, "tools/go")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			pkgs, err := b.BuildAll(ctx, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
@@ -459,13 +461,13 @@ func TestPackageSources(t *testing.T) {
 	})
 }
 
-func verifySource(t *testing.T, pkgs []actions.Package, metadata *core.Action_Metadata) {
+func verifySource(t testing.TB, pkgs []actions.Package, metadata *core.Action_Metadata) {
 	t.Helper()
 	pkg := pkgs[len(pkgs)-1]
 	name := fmt.Sprintf("%s_source", pkg.Derivation.Name)
 	for _, p := range pkg.BuildDependencies {
 		if p.Derivation.Name == name {
-			So(p.Action.Metadata, assertions.ShouldResembleProto, metadata)
+			assert.Loosely(t, p.Action.Metadata, should.Resemble(metadata), truth.LineContext())
 			return
 		}
 	}

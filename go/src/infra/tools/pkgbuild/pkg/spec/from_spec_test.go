@@ -13,20 +13,20 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/filesystem"
-	"go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func TestCreateParser(t *testing.T) {
-	Convey("singe create", t, func() {
+	ftt.Run("singe create", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Source: &Spec_Create_Source{
@@ -42,8 +42,8 @@ func TestCreateParser(t *testing.T) {
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldBeNil)
-		So(p.create, assertions.ShouldResembleProto, &Spec_Create{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.create, should.Resemble(&Spec_Create{
 			Source: &Spec_Create_Source{
 				Method: &Spec_Create_Source_Url{
 					Url: &UrlSource{
@@ -55,10 +55,10 @@ func TestCreateParser(t *testing.T) {
 				CpeBaseAddress: "cpe:/a:zlib:zlib",
 			},
 			Build: &Spec_Create_Build{},
-		})
+		}))
 	})
 
-	Convey("multiple create", t, func() {
+	ftt.Run("multiple create", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Source: &Spec_Create_Source{
@@ -82,8 +82,8 @@ func TestCreateParser(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
-		So(p.create, assertions.ShouldResembleProto, &Spec_Create{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.create, should.Resemble(&Spec_Create{
 			Source: &Spec_Create_Source{
 				Method: &Spec_Create_Source_Url{
 					Url: &UrlSource{
@@ -95,10 +95,10 @@ func TestCreateParser(t *testing.T) {
 				CpeBaseAddress: "cpe:/a:zlib:zlib",
 			},
 			Build: &Spec_Create_Build{},
-		})
+		}))
 	})
 
-	Convey("match platform", t, func() {
+	ftt.Run("match platform", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				PlatformRe: "linux-.*",
@@ -119,8 +119,8 @@ func TestCreateParser(t *testing.T) {
 				Unsupported: true,
 			},
 		})
-		So(err, ShouldBeNil)
-		So(p.create, assertions.ShouldResembleProto, &Spec_Create{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.create, should.Resemble(&Spec_Create{
 			Source: &Spec_Create_Source{
 				Method: &Spec_Create_Source_Url{
 					Url: &UrlSource{
@@ -132,10 +132,10 @@ func TestCreateParser(t *testing.T) {
 				CpeBaseAddress: "cpe:/a:zlib:zlib",
 			},
 			Build: &Spec_Create_Build{},
-		})
+		}))
 	})
 
-	Convey("unsupported platform explicit", t, func() {
+	ftt.Run("unsupported platform explicit", t, func(t *ftt.Test) {
 		_, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Unsupported: true,
@@ -154,10 +154,10 @@ func TestCreateParser(t *testing.T) {
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldEqual, ErrPackageNotAvailable)
+		assert.Loosely(t, err, should.Equal(ErrPackageNotAvailable))
 	})
 
-	Convey("unsupported platform implicit", t, func() {
+	ftt.Run("unsupported platform implicit", t, func(t *ftt.Test) {
 		_, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				PlatformRe: "unknown-.*",
@@ -174,10 +174,10 @@ func TestCreateParser(t *testing.T) {
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldEqual, ErrPackageNotAvailable)
+		assert.Loosely(t, err, should.Equal(ErrPackageNotAvailable))
 	})
 
-	Convey("merge values", t, func() {
+	ftt.Run("merge values", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Source: &Spec_Create_Source{
@@ -200,8 +200,8 @@ func TestCreateParser(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
-		So(p.create, assertions.ShouldResembleProto, &Spec_Create{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.create, should.Resemble(&Spec_Create{
 			Source: &Spec_Create_Source{
 				Method: &Spec_Create_Source_Url{
 					Url: &UrlSource{
@@ -214,12 +214,12 @@ func TestCreateParser(t *testing.T) {
 				CpeBaseAddress: "cpe:/a:zlib:zlib1",
 			},
 			Build: &Spec_Create_Build{},
-		})
+		}))
 	})
 }
 
 func TestParseSource(t *testing.T) {
-	Convey("url", t, func() {
+	ftt.Run("url", t, func(t *ftt.Test) {
 		def := &PackageDef{
 			packageName: "pkg_name",
 			Spec: &Spec{
@@ -241,19 +241,19 @@ func TestParseSource(t *testing.T) {
 			},
 		}
 		p, err := newCreateParser("linux-amd64", def.Spec.Create)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-		So(err, ShouldBeNil)
-		So(p.Source, ShouldEqual, &stdenv.SourceURLs{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Source, should.Match(&stdenv.SourceURLs{
 			URLs: []stdenv.SourceURL{
 				{URL: "https://zlib.net/fossils/zlib-1.2.12.tar.gz", Filename: "raw_source_0.tar.gz"},
 			},
 			CIPDName: "pkg_prefix/src_prefix/url/pkg_name/linux-amd64",
 			Version:  "3@1.2.12",
-		})
-		So(p.Enviroments.Get("_3PP_UNPACK_ARCHIVE"), ShouldEqual, "1")
+		}))
+		assert.Loosely(t, p.Enviroments.Get("_3PP_UNPACK_ARCHIVE"), should.Equal("1"))
 	})
-	Convey("git", t, func() {
+	ftt.Run("git", t, func(t *ftt.Test) {
 		def := &PackageDef{
 			packageName: "pkg_name",
 			Spec: &Spec{
@@ -273,18 +273,18 @@ func TestParseSource(t *testing.T) {
 			},
 		}
 		p, err := newCreateParser("linux-amd64", def.Spec.Create)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-		So(err, ShouldBeNil)
-		So(p.Source, ShouldEqual, &stdenv.SourceGit{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Source, should.Match(&stdenv.SourceGit{
 			URL: "https://chromium.googlesource.com/external/github.com/ninja-build/Ninja",
 			Ref: "commit",
 
 			CIPDName: "pkg_prefix/src_prefix/git/github.com/ninja-build/ninja",
 			Version:  "3@git-tag",
-		})
+		}))
 	})
-	Convey("script", t, func() {
+	ftt.Run("script", t, func(t *ftt.Test) {
 		def := &PackageDef{
 			packageName: "pkg_name",
 			Spec: &Spec{
@@ -303,19 +303,19 @@ func TestParseSource(t *testing.T) {
 			},
 		}
 		p, err := newCreateParser("linux-amd64", def.Spec.Create)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-		So(err, ShouldBeNil)
-		So(p.Source, ShouldEqual, &stdenv.SourceURLs{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Source, should.Match(&stdenv.SourceURLs{
 			URLs: []stdenv.SourceURL{
 				{URL: "url1", Filename: "name1"},
 				{URL: "url2", Filename: "name2"},
 			},
 			CIPDName: "pkg_prefix/src_prefix/script/pkg_name/linux-amd64",
 			Version:  "3@script-version",
-		})
+		}))
 	})
-	Convey("version", t, func() {
+	ftt.Run("version", t, func(t *ftt.Test) {
 		def := &PackageDef{
 			packageName: "pkg_name",
 			Spec: &Spec{
@@ -336,12 +336,12 @@ func TestParseSource(t *testing.T) {
 			},
 		}
 		p, err := newCreateParser("linux-amd64", def.Spec.Create)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-		So(err, ShouldBeNil)
-		So(p.SourceVersion, ShouldEqual, "1.2.12")
-		So(p.PatchVersion, ShouldEqual, "chromium.1")
-		So(p.CIPDVersion(), ShouldEqual, "3@1.2.12.chromium.1")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.SourceVersion, should.Equal("1.2.12"))
+		assert.Loosely(t, p.PatchVersion, should.Equal("chromium.1"))
+		assert.Loosely(t, p.CIPDVersion(), should.Equal("3@1.2.12.chromium.1"))
 	})
 }
 
@@ -383,7 +383,7 @@ func TestFindPatch(t *testing.T) {
 		}
 	}
 
-	Convey("single dir", t, func() {
+	ftt.Run("single dir", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Source: &Spec_Create_Source{
@@ -392,16 +392,16 @@ func TestFindPatch(t *testing.T) {
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.FindPatches("something", dir)
-		So(err, ShouldBeNil)
-		So(p.Patches, ShouldEqual, []string{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Patches, should.Resemble([]string{
 			filepath.Join("{{.something}}", "patches1", "01-file2"),
 			filepath.Join("{{.something}}", "patches1", "02-file1"),
-		})
+		}))
 	})
 
-	Convey("multiple dir", t, func() {
+	ftt.Run("multiple dir", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Source: &Spec_Create_Source{
@@ -410,31 +410,31 @@ func TestFindPatch(t *testing.T) {
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.FindPatches("something", dir)
-		So(err, ShouldBeNil)
-		So(p.Patches, ShouldEqual, []string{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Patches, should.Resemble([]string{
 			filepath.Join("{{.something}}", "patches1", "01-file2"),
 			filepath.Join("{{.something}}", "patches1", "02-file1"),
 			filepath.Join("{{.something}}", "patches2", "01-file2"),
 			filepath.Join("{{.something}}", "patches2", "02-file1"),
-		})
+		}))
 	})
 }
 
 func TestParseBuilder(t *testing.T) {
-	Convey("default", t, func() {
+	ftt.Run("default", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Build: &Spec_Create_Build{},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseBuilder()
-		So(err, ShouldBeNil)
-		So(p.Installer, ShouldEqual, `["install.sh"]`)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Installer, should.Equal(`["install.sh"]`))
 	})
-	Convey("customize", t, func() {
+	ftt.Run("customize", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-amd64", []*Spec_Create{
 			{
 				Build: &Spec_Create_Build{
@@ -442,15 +442,15 @@ func TestParseBuilder(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseBuilder()
-		So(err, ShouldBeNil)
-		So(p.Installer, ShouldEqual, `["install.py"]`)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Installer, should.Equal(`["install.py"]`))
 	})
 }
 
 func TestParsePackage(t *testing.T) {
-	Convey("package", t, func() {
+	ftt.Run("package", t, func(t *ftt.Test) {
 		create := &Spec_Create{
 			Source: &Spec_Create_Source{
 				Method: &Spec_Create_Source_Url{
@@ -461,125 +461,125 @@ func TestParsePackage(t *testing.T) {
 
 		def := &PackageDef{packageName: "pkg_name", Spec: &Spec{Create: []*Spec_Create{create}}}
 
-		Convey("ok", func() {
+		t.Run("ok", func(t *ftt.Test) {
 			create.Package = &Spec_Create_Package{}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version: "3@1.2.12.xxx.1-rc1",
 				Refs:    []string{"latest"},
-			})
+			}))
 		})
 
-		Convey("install mode", func() {
+		t.Run("install mode", func(t *ftt.Test) {
 			create.Package = &Spec_Create_Package{InstallMode: Spec_Create_Package_symlink}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version:     "3@1.2.12.xxx.1-rc1",
 				InstallMode: core.Action_Metadata_CIPD_symlink,
 				Refs:        []string{"latest"},
-			})
+			}))
 		})
 
-		Convey("version file", func() {
+		t.Run("version file", func(t *ftt.Test) {
 			create.Package = &Spec_Create_Package{VersionFile: "something.version"}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version:     "3@1.2.12.xxx.1-rc1",
 				Refs:        []string{"latest"},
 				VersionFile: "something.version",
-			})
+			}))
 		})
 
-		Convey("alternative version", func() {
+		t.Run("alternative version", func(t *ftt.Test) {
 			create.Source.PatchVersion = "chromium.1"
 			create.Package = &Spec_Create_Package{AlterVersionRe: "(.*)\\.xxx\\.\\d*(.*)", AlterVersionReplace: "\\1\\2"}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.SourceVersion, ShouldEqual, "1.2.12-rc1")
-			So(p.PatchVersion, ShouldEqual, "chromium.1")
-			So(p.CIPDVersion(), ShouldEqual, "3@1.2.12-rc1.chromium.1")
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.SourceVersion, should.Equal("1.2.12-rc1"))
+			assert.Loosely(t, p.PatchVersion, should.Equal("chromium.1"))
+			assert.Loosely(t, p.CIPDVersion(), should.Equal("3@1.2.12-rc1.chromium.1"))
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version: "3@1.2.12-rc1.chromium.1",
 				Refs:    []string{"latest"},
 				Tags:    []string{"real_version:1.2.12.xxx.1-rc1"},
-			})
+			}))
 		})
 
-		Convey("disable latest", func() {
+		t.Run("disable latest", func(t *ftt.Test) {
 			create.Package = &Spec_Create_Package{DisableLatestRef: true}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version: "3@1.2.12.xxx.1-rc1",
-			})
+			}))
 		})
 
-		Convey("additional ref", func() {
+		t.Run("additional ref", func(t *ftt.Test) {
 			create.Package = &Spec_Create_Package{AdditionalRef: []string{"ref1"}}
 
 			p, err := newCreateParser("linux-amd64", def.Spec.Create)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseSource(def, "pkg_prefix", "src_prefix", "linux-amd64", &MockSourceResolver{})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParsePackage()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(p.CIPD, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, p.CIPD, should.Resemble(&core.Action_Metadata_CIPD{
 				Version: "3@1.2.12.xxx.1-rc1",
 				Refs:    []string{"ref1", "latest"},
-			})
+			}))
 		})
 	})
 }
 
 func TestLoadDependencies(t *testing.T) {
-	Convey("loader", t, func() {
+	ftt.Run("loader", t, func(t *ftt.Test) {
 		cfg := DefaultSpecLoaderConfig("", "linux-amd64")
 		cfg.SourceResolver = &MockSourceResolver{}
 		root, err := filepath.Abs("testdata")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		l, err := NewSpecLoader(root, cfg)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(l.ListAllByFullName(), ShouldEqual, []string{
+		assert.Loosely(t, l.ListAllByFullName(), should.Resemble([]string{
 			"tests/unavailable_arm64",
 			"tests/unavailable_depends",
 			"tools/ninja",
 			"tools/re2c",
-		})
+		}))
 
 		plats := generators.Platforms{
 			Build:  generators.NewPlatform("linux", "amd64"),
@@ -587,14 +587,14 @@ func TestLoadDependencies(t *testing.T) {
 			Target: generators.NewPlatform("linux", "amd64"),
 		}
 
-		Convey("no install", func() {
+		t.Run("no install", func(t *ftt.Test) {
 			p, err := newCreateParser("linux-amd64", []*Spec_Create{{}})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.ParseBuilder()
-			So(err, ShouldBeNil)
-			So(p.Enviroments.Get("_3PP_NO_INSTALL"), ShouldEqual, "1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, p.Enviroments.Get("_3PP_NO_INSTALL"), should.Equal("1"))
 		})
-		Convey("tool", func() {
+		t.Run("tool", func(t *ftt.Test) {
 			p, err := newCreateParser("linux-arm64", []*Spec_Create{
 				{
 					Build: &Spec_Create_Build{
@@ -602,20 +602,20 @@ func TestLoadDependencies(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.LoadDependencies("linux-amd64", l)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			a, err := p.Dependencies[0].Generate(context.Background(), plats)
-			So(err, ShouldBeNil)
-			So(a.Name, ShouldEqual, "ninja")
-			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.Name, should.Equal("ninja"))
+			assert.Loosely(t, a.Metadata.Cipd, should.Resemble(&core.Action_Metadata_CIPD{
 				Name:    "tools/ninja/linux-amd64",
 				Version: "3@git-tag.chromium.4",
 				Refs:    []string{"latest"},
-			})
+			}))
 		})
-		Convey("dep", func() {
+		t.Run("dep", func(t *ftt.Test) {
 			p, err := newCreateParser("linux-arm64", []*Spec_Create{
 				{
 					Build: &Spec_Create_Build{
@@ -623,23 +623,23 @@ func TestLoadDependencies(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.LoadDependencies("linux-amd64", l)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			a, err := p.Dependencies[0].Generate(context.Background(), plats)
-			So(err, ShouldBeNil)
-			So(a.Name, ShouldEqual, "ninja")
-			So(a.Metadata.Cipd, assertions.ShouldResembleProto, &core.Action_Metadata_CIPD{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.Name, should.Equal("ninja"))
+			assert.Loosely(t, a.Metadata.Cipd, should.Resemble(&core.Action_Metadata_CIPD{
 				Name:    "tools/ninja/linux-arm64",
 				Version: "3@git-tag.chromium.4",
 				Refs:    []string{"latest"},
 
 				// Avoid uploading linux-arm64 package from linux-amd64 builder
 				DisableUpload: true,
-			})
+			}))
 		})
-		Convey("pin", func() {
+		t.Run("pin", func(t *ftt.Test) {
 			p, err := newCreateParser("linux-arm64", []*Spec_Create{
 				{
 					Build: &Spec_Create_Build{
@@ -648,28 +648,28 @@ func TestLoadDependencies(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.LoadDependencies("linux-amd64", l)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			a, err := p.Dependencies[0].Generate(context.Background(), plats)
-			So(err, ShouldBeNil)
-			So(a.Name, ShouldEqual, "ninja")
-			So(a.Spec, assertions.ShouldResembleProto, &core.Action_Cipd{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.Name, should.Equal("ninja"))
+			assert.Loosely(t, a.Spec, should.Resemble(&core.Action_Cipd{
 				Cipd: &core.ActionCIPDExport{
 					EnsureFile: "tools/ninja/linux-amd64  version:version1\n",
 				},
-			})
+			}))
 			a, err = p.Dependencies[1].Generate(context.Background(), plats)
-			So(err, ShouldBeNil)
-			So(a.Name, ShouldEqual, "ninja")
-			So(a.Spec, assertions.ShouldResembleProto, &core.Action_Cipd{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, a.Name, should.Equal("ninja"))
+			assert.Loosely(t, a.Spec, should.Resemble(&core.Action_Cipd{
 				Cipd: &core.ActionCIPDExport{
 					EnsureFile: "tools/ninja/linux-arm64  version:version2\n",
 				},
-			})
+			}))
 		})
-		Convey("unavailable", func() {
+		t.Run("unavailable", func(t *ftt.Test) {
 			p, err := newCreateParser("linux-arm64", []*Spec_Create{
 				{
 					Build: &Spec_Create_Build{
@@ -677,15 +677,15 @@ func TestLoadDependencies(t *testing.T) {
 					},
 				},
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = p.LoadDependencies("linux-amd64", l)
-			So(errors.Is(err, ErrPackageNotAvailable), ShouldBeTrue)
+			assert.Loosely(t, errors.Is(err, ErrPackageNotAvailable), should.BeTrue)
 		})
 	})
 }
 
 func TestParseExternalDependencies(t *testing.T) {
-	Convey("tool", t, func() {
+	ftt.Run("tool", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-arm64", []*Spec_Create{
 			{
 				Build: &Spec_Create_Build{
@@ -693,11 +693,11 @@ func TestParseExternalDependencies(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseExternalDependencies("something", "linux-amd64")
-		So(err, ShouldBeNil)
-		So(p.Dependencies, ShouldHaveLength, 1)
-		So(p.Dependencies[0], ShouldResemble, generators.Dependency{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Dependencies, should.HaveLength(1))
+		assert.Loosely(t, p.Dependencies[0], should.Resemble(generators.Dependency{
 			Type: generators.DepsBuildHost,
 			Generator: &generators.CIPDExport{
 				Name: "something" + "_dep",
@@ -715,9 +715,9 @@ func TestParseExternalDependencies(t *testing.T) {
 				},
 				Expander: template.Platform{OS: "linux", Arch: "amd64"}.Expander(),
 			},
-		})
+		}))
 	})
-	Convey("dep", t, func() {
+	ftt.Run("dep", t, func(t *ftt.Test) {
 		p, err := newCreateParser("linux-arm64", []*Spec_Create{
 			{
 				Build: &Spec_Create_Build{
@@ -725,11 +725,11 @@ func TestParseExternalDependencies(t *testing.T) {
 				},
 			},
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = p.ParseExternalDependencies("something", "linux-amd64")
-		So(err, ShouldBeNil)
-		So(p.Dependencies, ShouldHaveLength, 1)
-		So(p.Dependencies[0], ShouldResemble, generators.Dependency{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, p.Dependencies, should.HaveLength(1))
+		assert.Loosely(t, p.Dependencies[0], should.Resemble(generators.Dependency{
 			Type: generators.DepsHostTarget,
 			Generator: &generators.CIPDExport{
 				Name: "something" + "_dep",
@@ -747,6 +747,6 @@ func TestParseExternalDependencies(t *testing.T) {
 				},
 				Expander: template.Platform{OS: "linux", Arch: "arm64"}.Expander(),
 			},
-		})
+		}))
 	})
 }
