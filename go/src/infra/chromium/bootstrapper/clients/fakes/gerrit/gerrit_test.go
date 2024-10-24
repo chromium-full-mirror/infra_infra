@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromium/bootstrapper/clients/gerrit"
 )
@@ -23,29 +23,29 @@ func TestFactory(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Factory", t, func() {
+	ftt.Run("Factory", t, func(t *ftt.Test) {
 
-		Convey("returns an RPC client by default", func() {
+		t.Run("returns an RPC client by default", func(t *ftt.Test) {
 			factory := Factory(nil)
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.NotBeNil)
 		})
 
-		Convey("fails for a nil host", func() {
+		t.Run("fails for a nil host", func(t *ftt.Test) {
 			factory := Factory(map[string]*Host{
 				"fake-host": nil,
 			})
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldNotBeNil)
-			So(client, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, client, should.BeNil)
 		})
 
-		Convey("returns RPC client for provided host", func() {
+		t.Run("returns RPC client for provided host", func(t *ftt.Test) {
 			host := &Host{}
 			factory := Factory(map[string]*Host{
 				"fake-host": host,
@@ -53,11 +53,11 @@ func TestFactory(t *testing.T) {
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldResemble, &Client{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.Resemble(&Client{
 				hostname: "fake-host",
 				gerrit:   host,
-			})
+			}))
 		})
 	})
 }
@@ -75,25 +75,25 @@ func TestGetChange(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.GetChange", t, func() {
+	ftt.Run("Client.GetChange", t, func(t *ftt.Test) {
 
-		Convey("returns a change info by default", func() {
+		t.Run("returns a change info by default", func(t *ftt.Test) {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
 			changeInfo, err := client.GetChange(ctx, getChangeRequest("fake/project", 123))
 
-			So(err, ShouldBeNil)
-			So(changeInfo, ShouldNotBeNil)
-			So(changeInfo.Project, ShouldEqual, "fake/project")
-			So(changeInfo.Number, ShouldEqual, 123)
-			So(changeInfo.Revisions, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changeInfo, should.NotBeNil)
+			assert.Loosely(t, changeInfo.Project, should.Equal("fake/project"))
+			assert.Loosely(t, changeInfo.Number, should.Equal(123))
+			assert.Loosely(t, changeInfo.Revisions, should.HaveLength(1))
 			for rev, revInfo := range changeInfo.Revisions {
-				So(rev, ShouldNotBeEmpty)
-				So(revInfo.Number, ShouldEqual, 1)
+				assert.Loosely(t, rev, should.NotBeEmpty)
+				assert.Loosely(t, revInfo.Number, should.Equal(1))
 			}
 		})
 
-		Convey("fails for a nil project", func() {
+		t.Run("fails for a nil project", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -104,11 +104,11 @@ func TestGetChange(t *testing.T) {
 
 			changeInfo, err := client.GetChange(ctx, getChangeRequest("fake/project", 123))
 
-			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
-			So(changeInfo, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, changeInfo, should.BeNil)
 		})
 
-		Convey("fails for a nil change", func() {
+		t.Run("fails for a nil change", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -123,11 +123,11 @@ func TestGetChange(t *testing.T) {
 
 			changeInfo, err := client.GetChange(ctx, getChangeRequest("fake/project", 123))
 
-			So(err, ShouldErrLike, `change 123 does not exist for project "fake/project" on host "fake-host"`)
-			So(changeInfo, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`change 123 does not exist for project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, changeInfo, should.BeNil)
 		})
 
-		Convey("returns info for provided change without revisions", func() {
+		t.Run("returns info for provided change without revisions", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -144,18 +144,18 @@ func TestGetChange(t *testing.T) {
 
 			changeInfo, err := client.GetChange(ctx, getChangeRequest("fake/project", 123))
 
-			So(err, ShouldBeNil)
-			So(changeInfo, ShouldNotBeNil)
-			So(changeInfo.Project, ShouldEqual, "fake/project")
-			So(changeInfo.Number, ShouldEqual, 123)
-			So(changeInfo.Ref, ShouldEqual, "fake-ref")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changeInfo, should.NotBeNil)
+			assert.Loosely(t, changeInfo.Project, should.Equal("fake/project"))
+			assert.Loosely(t, changeInfo.Number, should.Equal(123))
+			assert.Loosely(t, changeInfo.Ref, should.Equal("fake-ref"))
 			for rev, revInfo := range changeInfo.Revisions {
-				So(rev, ShouldNotBeEmpty)
-				So(revInfo.Number, ShouldEqual, 1)
+				assert.Loosely(t, rev, should.NotBeEmpty)
+				assert.Loosely(t, revInfo.Number, should.Equal(1))
 			}
 		})
 
-		Convey("returns info for provided change with revisions", func() {
+		t.Run("returns info for provided change with revisions", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -176,20 +176,20 @@ func TestGetChange(t *testing.T) {
 
 			changeInfo, err := client.GetChange(ctx, getChangeRequest("fake/project", 123))
 
-			So(err, ShouldBeNil)
-			So(changeInfo, ShouldNotBeNil)
-			So(changeInfo.Project, ShouldEqual, "fake/project")
-			So(changeInfo.Number, ShouldEqual, 123)
-			So(changeInfo.Ref, ShouldEqual, "fake-ref")
-			So(changeInfo.Revisions, ShouldContainKey, "fake-revision-4")
-			So(changeInfo.Revisions["fake-revision-4"].Number, ShouldEqual, 4)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changeInfo, should.NotBeNil)
+			assert.Loosely(t, changeInfo.Project, should.Equal("fake/project"))
+			assert.Loosely(t, changeInfo.Number, should.Equal(123))
+			assert.Loosely(t, changeInfo.Ref, should.Equal("fake-ref"))
+			assert.Loosely(t, changeInfo.Revisions, should.ContainKey("fake-revision-4"))
+			assert.Loosely(t, changeInfo.Revisions["fake-revision-4"].Number, should.Equal(4))
 			var patchsets []int
 			for rev, revInfo := range changeInfo.Revisions {
-				So(rev, ShouldNotBeEmpty)
+				assert.Loosely(t, rev, should.NotBeEmpty)
 				patchsets = append(patchsets, int(revInfo.Number))
 			}
 			sort.Ints(patchsets)
-			So(patchsets, ShouldResemble, []int{1, 2, 3, 4, 5, 6, 7})
+			assert.Loosely(t, patchsets, should.Resemble([]int{1, 2, 3, 4, 5, 6, 7}))
 		})
 
 	})
@@ -209,16 +209,16 @@ func TestIntegration(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("gerrit using fake factory", t, func() {
+	ftt.Run("gerrit using fake factory", t, func(t *ftt.Test) {
 
-		Convey("succeeds when calling GetChangeInfo", func() {
+		t.Run("succeeds when calling GetChangeInfo", func(t *ftt.Test) {
 			ctx := gerrit.UseGerritClientFactory(ctx, Factory(nil))
 			client := gerrit.NewClient(ctx)
 
 			info, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 234, 1)
 
-			So(err, ShouldBeNil)
-			So(info, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, info, should.NotBeNil)
 		})
 
 	})

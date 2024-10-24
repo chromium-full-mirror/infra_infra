@@ -12,9 +12,10 @@ import (
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/client"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
-	. "github.com/smartystreets/goconvey/convey"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
@@ -35,9 +36,9 @@ func TestClientForHost(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.clientForInstance", t, func() {
+	ftt.Run("Client.clientForInstance", t, func(t *ftt.Test) {
 
-		Convey("fails if factory fails", func() {
+		t.Run("fails if factory fails", func(t *ftt.Test) {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return nil, errors.New("test client factory failure")
 			})
@@ -45,11 +46,11 @@ func TestClientForHost(t *testing.T) {
 			client := NewClient(ctx)
 			casClient, err := client.clientForInstance(ctx, "fake-instance")
 
-			So(err, ShouldErrLike, "test client factory failure")
-			So(casClient, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("test client factory failure"))
+			assert.Loosely(t, casClient, should.BeNil)
 		})
 
-		Convey("returns CAS client from factory", func() {
+		t.Run("returns CAS client from factory", func(t *ftt.Test) {
 			fakeClient := &fakeCasClient{}
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, host string) (CasClient, error) {
 				return fakeClient, nil
@@ -58,11 +59,11 @@ func TestClientForHost(t *testing.T) {
 			client := NewClient(ctx)
 			casClient, err := client.clientForInstance(ctx, "fake-instance")
 
-			So(err, ShouldBeNil)
-			So(casClient, ShouldEqual, fakeClient)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, casClient, should.Equal(fakeClient))
 		})
 
-		Convey("re-uses CAS client for instance", func() {
+		t.Run("re-uses CAS client for instance", func(t *ftt.Test) {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, host string) (CasClient, error) {
 				return &fakeCasClient{}, nil
 			})
@@ -72,9 +73,9 @@ func TestClientForHost(t *testing.T) {
 			casClientFoo2, _ := client.clientForInstance(ctx, "fake-instance-foo")
 			casClientBar, _ := client.clientForInstance(ctx, "fake-instance-bar")
 
-			So(casClientFoo1, ShouldNotBeNil)
-			So(casClientFoo2, ShouldPointTo, casClientFoo1)
-			So(casClientBar, ShouldNotPointTo, casClientFoo1)
+			assert.Loosely(t, casClientFoo1, should.NotBeNil)
+			assert.Loosely(t, casClientFoo2, should.Equal(casClientFoo1))
+			assert.Loosely(t, casClientBar, should.NotEqual(casClientFoo1))
 		})
 
 	})
@@ -85,9 +86,9 @@ func TestDownload(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.Download", t, func() {
+	ftt.Run("Client.Download", t, func(t *ftt.Test) {
 
-		Convey("fails if getting client for instance fails", func() {
+		t.Run("fails if getting client for instance fails", func(t *ftt.Test) {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return nil, errors.New("test client factory failure")
 			})
@@ -98,10 +99,10 @@ func TestDownload(t *testing.T) {
 				SizeBytes: 42,
 			})
 
-			So(err, ShouldErrLike, "test client factory failure")
+			assert.Loosely(t, err, should.ErrLike("test client factory failure"))
 		})
 
-		Convey("fails if downloading directory fails", func() {
+		t.Run("fails if downloading directory fails", func(t *ftt.Test) {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return &fakeCasClient{
 					downloadDirectory: func(ctx context.Context, d digest.Digest, execRoot string, cache filemetadata.Cache) (map[string]*client.TreeOutput, *client.MovedBytesMetadata, error) {
@@ -116,10 +117,10 @@ func TestDownload(t *testing.T) {
 				SizeBytes: 42,
 			})
 
-			So(err, ShouldErrLike, "test DownloadDirectory failure")
+			assert.Loosely(t, err, should.ErrLike("test DownloadDirectory failure"))
 		})
 
-		Convey("succeeds if downloading directory succeeds", func() {
+		t.Run("succeeds if downloading directory succeeds", func(t *ftt.Test) {
 			ctx := UseCasClientFactory(ctx, func(ctx context.Context, instance string) (CasClient, error) {
 				return &fakeCasClient{}, nil
 			})
@@ -130,7 +131,7 @@ func TestDownload(t *testing.T) {
 				SizeBytes: 42,
 			})
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})

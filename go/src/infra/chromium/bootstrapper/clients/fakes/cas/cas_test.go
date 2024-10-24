@@ -10,8 +10,10 @@ import (
 
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
-	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
 	bscas "infra/chromium/bootstrapper/clients/cas"
@@ -23,37 +25,37 @@ func TestFactory(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Factory", t, func() {
+	ftt.Run("Factory", t, func(t *ftt.Test) {
 
-		Convey("succeeds by default", func() {
+		t.Run("succeeds by default", func(t *ftt.Test) {
 			factory := Factory(nil)
 
 			client, err := factory(ctx, "fake-instance")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.NotBeNil)
 		})
 
-		Convey("fails for a nil instance", func() {
+		t.Run("fails for a nil instance", func(t *ftt.Test) {
 			factory := Factory(map[string]*Instance{
 				"fake-instance": nil,
 			})
 
 			client, err := factory(ctx, "fake-instance")
 
-			So(err, ShouldNotBeNil)
-			So(client, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, client, should.BeNil)
 		})
 
-		Convey("succeeds for provided instance", func() {
+		t.Run("succeeds for provided instance", func(t *ftt.Test) {
 			factory := Factory(map[string]*Instance{
 				"fake-instance": {},
 			})
 
 			client, err := factory(ctx, "fake-instance")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.NotBeNil)
 		})
 
 	})
@@ -65,7 +67,7 @@ func TestDownload(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("casClient.Download", t, func() {
+	ftt.Run("casClient.Download", t, func(t *ftt.Test) {
 
 		execRoot := t.TempDir()
 
@@ -76,16 +78,16 @@ func TestDownload(t *testing.T) {
 
 		cache := filemetadata.NewNoopCache()
 
-		Convey("succeeds by default", func() {
+		t.Run("succeeds by default", func(t *ftt.Test) {
 			client, err := Factory(nil)(ctx, "fake-instance")
 			util.PanicOnError(err)
 
 			_, _, err = client.DownloadDirectory(ctx, d, execRoot, cache)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("fails for a false blob", func() {
+		t.Run("fails for a false blob", func(t *ftt.Test) {
 			client, err := Factory(map[string]*Instance{
 				"fake-instance": {
 					Blobs: map[string]bool{
@@ -97,10 +99,10 @@ func TestDownload(t *testing.T) {
 
 			_, _, err = client.DownloadDirectory(ctx, d, execRoot, cache)
 
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 
-		Convey("succeeds for a true blob", func() {
+		t.Run("succeeds for a true blob", func(t *ftt.Test) {
 			client, err := Factory(map[string]*Instance{
 				"fake-instance": {
 					Blobs: map[string]bool{
@@ -112,7 +114,7 @@ func TestDownload(t *testing.T) {
 
 			_, _, err = client.DownloadDirectory(ctx, d, execRoot, cache)
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})
@@ -123,11 +125,11 @@ func TestIntegration(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("package using fake CAS client", t, func() {
+	ftt.Run("package using fake CAS client", t, func(t *ftt.Test) {
 
 		ctx := bscas.UseCasClientFactory(ctx, Factory(nil))
 
-		Convey("succeeds when calling Download", func() {
+		t.Run("succeeds when calling Download", func(t *ftt.Test) {
 			client := bscas.NewClient(ctx)
 
 			err := client.Download(ctx, "fake-out-dir", "fake-instance", &apipb.Digest{
@@ -135,7 +137,7 @@ func TestIntegration(t *testing.T) {
 				SizeBytes: 42,
 			})
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})

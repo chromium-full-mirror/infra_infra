@@ -7,17 +7,20 @@ package bootstrap
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestInput(t *testing.T) {
 	t.Parallel()
 
-	Convey("NewInput", t, func() {
+	ftt.Run("NewInput", t, func(t *ftt.Test) {
 		build := &buildbucketpb.Build{
 			Input: &buildbucketpb.Build_Input{
 				Properties: &structpb.Struct{},
@@ -26,14 +29,14 @@ func TestInput(t *testing.T) {
 
 		opts := InputOptions{}
 
-		Convey("fails if no required bootstrap properties are not set", func() {
+		t.Run("fails if no required bootstrap properties are not set", func(t *ftt.Test) {
 			input, err := opts.NewInput(build)
 
-			So(err, ShouldErrLike, "the following required properties are not set: $bootstrap/exe, $bootstrap/properties")
-			So(input, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("the following required properties are not set: $bootstrap/exe, $bootstrap/properties"))
+			assert.Loosely(t, input, should.BeNil)
 		})
 
-		Convey("fails validating $bootstrap/properties", func() {
+		t.Run("fails validating $bootstrap/properties", func(t *ftt.Test) {
 			setBootstrapExeProperties(build, `{
 				"exe": {
 					"cipd_package": "fake-package",
@@ -42,26 +45,26 @@ func TestInput(t *testing.T) {
 				}
 			}`)
 
-			Convey("for incorrectly typed $bootstrap/properties", func() {
+			t.Run("for incorrectly typed $bootstrap/properties", func(t *ftt.Test) {
 				setBootstrapPropertiesProperties(build, `{"foo": "bar"}`)
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldErrLike, `unknown field "foo"`)
-				So(input, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike(`unknown field "foo"`))
+				assert.Loosely(t, input, should.BeNil)
 			})
 
-			Convey("for invalid $bootstrap/properties", func() {
+			t.Run("for invalid $bootstrap/properties", func(t *ftt.Test) {
 				setBootstrapPropertiesProperties(build, "{}")
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldErrLike, "none of the config_project fields in $bootstrap/properties is set")
-				So(input, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("none of the config_project fields in $bootstrap/properties is set"))
+				assert.Loosely(t, input, should.BeNil)
 			})
 
 		})
 
-		Convey("fails validating $bootstrap/exe", func() {
+		t.Run("fails validating $bootstrap/exe", func(t *ftt.Test) {
 			setBootstrapPropertiesProperties(build, `{
 				"top_level_project": {
 					"repo": {
@@ -73,27 +76,27 @@ func TestInput(t *testing.T) {
 				"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 			}`)
 
-			Convey("for incorrectly typed $bootstrap/exe", func() {
+			t.Run("for incorrectly typed $bootstrap/exe", func(t *ftt.Test) {
 				setBootstrapExeProperties(build, `{"foo": "bar"}`)
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldErrLike, `unknown field "foo"`)
-				So(input, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike(`unknown field "foo"`))
+				assert.Loosely(t, input, should.BeNil)
 			})
 
-			Convey("for invalid $bootstrap/exe", func() {
+			t.Run("for invalid $bootstrap/exe", func(t *ftt.Test) {
 				setBootstrapExeProperties(build, "{}")
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldErrLike, "$bootstrap/exe.exe is not set")
-				So(input, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("$bootstrap/exe.exe is not set"))
+				assert.Loosely(t, input, should.BeNil)
 			})
 
 		})
 
-		Convey("succeeds", func() {
+		t.Run("succeeds", func(t *ftt.Test) {
 			setBootstrapPropertiesProperties(build, `{
 				"top_level_project": {
 					"repo": {
@@ -113,17 +116,17 @@ func TestInput(t *testing.T) {
 			}`)
 			build.Input.Properties.Fields["foo"] = structpb.NewStringValue("bar")
 
-			Convey("for well-formed properties", func() {
+			t.Run("for well-formed properties", func(t *ftt.Test) {
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.commits, ShouldBeEmpty)
-				So(input.changes, ShouldBeEmpty)
-				So(input.buildProperties, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.commits, should.BeEmpty)
+				assert.Loosely(t, input.changes, should.BeEmpty)
+				assert.Loosely(t, input.buildProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"foo": "bar"
-				}`)
-				So(input.buildRequestedProperties, ShouldBeNil)
-				So(input.propsProperties, ShouldResembleProtoJSON, `{
+				}`))
+				assert.Loosely(t, input.buildRequestedProperties, should.BeNil)
+				assert.Loosely(t, input.propsProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"top_level_project": {
 						"repo": {
 							"host": "chromium.googlesource.com",
@@ -132,23 +135,23 @@ func TestInput(t *testing.T) {
 						"ref": "refs/heads/top-level"
 					},
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
-				}`)
-				So(input.exeProperties, ShouldResembleProtoJSON, `{
+				}`))
+				assert.Loosely(t, input.exeProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"exe": {
 						"cipd_package": "fake-package",
 						"cipd_version": "fake-version",
 						"cmd": ["fake-exe"]
 					}
-				}`)
-				So(input.casRecipeBundle, ShouldBeNil)
-				So(input.ledEditedProperties, ShouldBeNil)
-				So(input.ledRemovedProperties, ShouldBeNil)
+				}`))
+				assert.Loosely(t, input.casRecipeBundle, should.BeNil)
+				assert.Loosely(t, input.ledEditedProperties, should.BeNil)
+				assert.Loosely(t, input.ledRemovedProperties, should.BeNil)
 				// Make sure the build wasn't modified
-				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/properties")
-				So(build.Input.Properties.Fields, ShouldContainKey, "$bootstrap/exe")
+				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("$bootstrap/properties"))
+				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("$bootstrap/exe"))
 			})
 
-			Convey("with requested properties", func() {
+			t.Run("with requested properties", func(t *ftt.Test) {
 				build.Infra = &buildbucketpb.BuildInfra{
 					Buildbucket: &buildbucketpb.BuildInfra_Buildbucket{
 						RequestedProperties: jsonToStruct(`{
@@ -159,51 +162,51 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.buildRequestedProperties, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.buildRequestedProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"foo": "bar"
-				}`)
+				}`))
 			})
 
-			Convey("for shadow build", func() {
+			t.Run("for shadow build", func(t *ftt.Test) {
 				build.Input.Properties.Fields["$recipe_engine/led"] = structpb.NewStructValue(jsonToStruct(`{
 					"shadowed_bucket": "fake-bucket"
 				}`))
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.shadowBuild, ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.shadowBuild, should.BeTrue)
 			})
 
-			Convey("for polymorphic option", func() {
+			t.Run("for polymorphic option", func(t *ftt.Test) {
 				opts := InputOptions{Polymorphic: true}
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.polymorphic, ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.polymorphic, should.BeTrue)
 			})
 
-			Convey("without $bootstrap/properties if PropertiesOptional is set", func() {
+			t.Run("without $bootstrap/properties if PropertiesOptional is set", func(t *ftt.Test) {
 				opts := InputOptions{PropertiesOptional: true}
 				delete(build.Input.Properties.Fields, "$bootstrap/properties")
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.propertiesOptional, ShouldBeTrue)
-				So(input.propsProperties, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.propertiesOptional, should.BeTrue)
+				assert.Loosely(t, input.propsProperties, should.BeNil)
 			})
 
-			Convey("with $bootstrap/properties if PropertiesOptional is set", func() {
+			t.Run("with $bootstrap/properties if PropertiesOptional is set", func(t *ftt.Test) {
 				opts := InputOptions{PropertiesOptional: true}
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.propertiesOptional, ShouldBeTrue)
-				So(input.propsProperties, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.propertiesOptional, should.BeTrue)
+				assert.Loosely(t, input.propsProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"top_level_project": {
 						"repo": {
 							"host": "chromium.googlesource.com",
@@ -212,10 +215,10 @@ func TestInput(t *testing.T) {
 						"ref": "refs/heads/top-level"
 					},
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
-				}`)
+				}`))
 			})
 
-			Convey("with commits set if build has commit", func() {
+			t.Run("with commits set if build has commit", func(t *ftt.Test) {
 				build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
 					Project: "fake-project",
@@ -225,13 +228,13 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.commits, ShouldResembleProto, []*buildbucketpb.GitilesCommit{build.Input.GitilesCommit})
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.commits, should.Resemble([]*buildbucketpb.GitilesCommit{build.Input.GitilesCommit}))
 				// Make sure we can't modify the build through aliased protos
-				So(input.commits[0], ShouldNotPointTo, build.Input.GitilesCommit)
+				assert.Loosely(t, input.commits[0], should.NotEqual(build.Input.GitilesCommit))
 			})
 
-			Convey("with commits set if $bootstrap/trigger has commits", func() {
+			t.Run("with commits set if $bootstrap/trigger has commits", func(t *ftt.Test) {
 				setBootstrapTriggerProperties(build, `{
 					"commits": [
 						{
@@ -251,8 +254,8 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.commits, ShouldResembleProto, []*buildbucketpb.GitilesCommit{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.commits, should.Resemble([]*buildbucketpb.GitilesCommit{
 					{
 						Host:    "fake-host1",
 						Project: "fake-project1",
@@ -265,10 +268,10 @@ func TestInput(t *testing.T) {
 						Ref:     "fake-ref2",
 						Id:      "fake-revision2",
 					},
-				})
+				}))
 			})
 
-			Convey("with commits set if build has commit and $bootstrap/trigger has commits", func() {
+			t.Run("with commits set if build has commit and $bootstrap/trigger has commits", func(t *ftt.Test) {
 				build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 					Host:    "fake-host1",
 					Project: "fake-project1",
@@ -293,8 +296,8 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.commits, ShouldResembleProto, []*buildbucketpb.GitilesCommit{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.commits, should.Resemble([]*buildbucketpb.GitilesCommit{
 					{
 						Host:    "fake-host1",
 						Project: "fake-project1",
@@ -312,10 +315,10 @@ func TestInput(t *testing.T) {
 						Ref:     "fake-ref2",
 						Id:      "fake-revision2",
 					},
-				})
+				}))
 			})
 
-			Convey("with changes set if build has changes", func() {
+			t.Run("with changes set if build has changes", func(t *ftt.Test) {
 				build.Input.GerritChanges = []*buildbucketpb.GerritChange{
 					{
 						Host:     "fake-host",
@@ -333,15 +336,15 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.changes, ShouldHaveLength, 2)
-				So(input.changes, ShouldResembleProto, build.Input.GerritChanges)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.changes, should.HaveLength(2))
+				assert.Loosely(t, input.changes, should.Resemble(build.Input.GerritChanges))
 				// Make sure we can't modify the build through aliased protos
-				So(input.changes[0], ShouldNotPointTo, build.Input.GerritChanges[0])
-				So(input.changes[1], ShouldNotPointTo, build.Input.GerritChanges[1])
+				assert.Loosely(t, input.changes[0], should.NotEqual(build.Input.GerritChanges[0]))
+				assert.Loosely(t, input.changes[1], should.NotEqual(build.Input.GerritChanges[1]))
 			})
 
-			Convey("with casRecipeBundle set if build has led_cas_recipe_bundle property", func() {
+			t.Run("with casRecipeBundle set if build has led_cas_recipe_bundle property", func(t *ftt.Test) {
 				build.Input.Properties.Fields["led_cas_recipe_bundle"] = structpb.NewStructValue(jsonToStruct(`{
 					"cas_instance": "fake-instance",
 					"digest": {
@@ -352,20 +355,20 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.casRecipeBundle, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.casRecipeBundle, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"cas_instance": "fake-instance",
 					"digest": {
 						"hash": "fake-hash",
 						"size_bytes": 42
 					}
-				}`)
-				So(input.buildProperties.Fields, ShouldNotContainKey, "led_cas_recipe_bundle")
+				}`))
+				assert.Loosely(t, input.buildProperties.Fields, should.NotContainKey("led_cas_recipe_bundle"))
 				// Make sure the build wasn't modified
-				So(build.Input.Properties.Fields, ShouldContainKey, "led_cas_recipe_bundle")
+				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("led_cas_recipe_bundle"))
 			})
 
-			Convey("with ledEditedProperties set if build has led_edited_properties property", func() {
+			t.Run("with ledEditedProperties set if build has led_edited_properties property", func(t *ftt.Test) {
 				build.Input.Properties.Fields["led_edited_properties"] = structpb.NewStructValue(jsonToStruct(`{
 					"foo": "led-foo-value",
 					"bar": "led-bar-value"
@@ -373,17 +376,17 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.ledEditedProperties, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.ledEditedProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"foo": "led-foo-value",
 					"bar": "led-bar-value"
-				}`)
-				So(input.buildProperties.Fields, ShouldNotContainKey, "led_edited_properties")
+				}`))
+				assert.Loosely(t, input.buildProperties.Fields, should.NotContainKey("led_edited_properties"))
 				// Make sure the build wasn't modified
-				So(build.Input.Properties.Fields, ShouldContainKey, "led_edited_properties")
+				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("led_edited_properties"))
 			})
 
-			Convey("with ledRemovedProperties set if build has led_removed_properties property", func() {
+			t.Run("with ledRemovedProperties set if build has led_removed_properties property", func(t *ftt.Test) {
 				build.Input.Properties.Fields["led_removed_properties"] = structpb.NewListValue(&structpb.ListValue{
 					Values: []*structpb.Value{
 						structpb.NewStringValue("foo"),
@@ -393,11 +396,11 @@ func TestInput(t *testing.T) {
 
 				input, err := opts.NewInput(build)
 
-				So(err, ShouldBeNil)
-				So(input.ledRemovedProperties, ShouldResemble, []string{"foo", "bar"})
-				So(input.buildProperties.Fields, ShouldNotContainKey, "led_removed_properties")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, input.ledRemovedProperties, should.Resemble([]string{"foo", "bar"}))
+				assert.Loosely(t, input.buildProperties.Fields, should.NotContainKey("led_removed_properties"))
 				// Make sure the build wasn't modified
-				So(build.Input.Properties.Fields, ShouldContainKey, "led_removed_properties")
+				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("led_removed_properties"))
 			})
 		})
 

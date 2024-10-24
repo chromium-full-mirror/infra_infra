@@ -8,7 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestPatchFile(t *testing.T) {
@@ -16,9 +18,9 @@ func TestPatchFile(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("patchFile", t, func() {
+	ftt.Run("patchFile", t, func(t *ftt.Test) {
 
-		Convey("returns patched contents for modified file", func() {
+		t.Run("returns patched contents for modified file", func(t *ftt.Test) {
 			contents := `0
 1
 2
@@ -72,8 +74,8 @@ index 7b09d64..4dced17 100644
 
 			newContents, err := patchFile(ctx, "test/baz", contents, diff)
 
-			So(err, ShouldBeNil)
-			So(newContents, ShouldEqual, `0
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newContents, should.Equal(`0
 1
 2
 3
@@ -82,10 +84,10 @@ index 7b09d64..4dced17 100644
 6
 7
 8
-`)
+`))
 		})
 
-		Convey("fails with patch rejected tag if the patch doesn't apply", func() {
+		t.Run("fails with patch rejected tag if the patch doesn't apply", func(t *ftt.Test) {
 			contents := `0
 1
 2
@@ -119,9 +121,9 @@ index 8c159cc..78603df 100644
 
 			newContents, err := patchFile(ctx, "test/baz", contents, diff)
 
-			So(err, ShouldNotBeNil)
-			So(PatchRejected.In(err), ShouldBeTrue)
-			So(newContents, ShouldBeEmpty)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, PatchRejected.In(err), should.BeTrue)
+			assert.Loosely(t, newContents, should.BeEmpty)
 		})
 
 	})

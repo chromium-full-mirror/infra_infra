@@ -10,14 +10,15 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/chromium/bootstrapper/clients/gob"
@@ -28,9 +29,9 @@ func TestGerritClientForHost(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.gerritClientForHost", t, func() {
+	ftt.Run("Client.gerritClientForHost", t, func(t *ftt.Test) {
 
-		Convey("fails if factory fails", func() {
+		t.Run("fails if factory fails", func(t *ftt.Test) {
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return nil, errors.New("fake client factory failure")
 			})
@@ -38,11 +39,11 @@ func TestGerritClientForHost(t *testing.T) {
 			client := NewClient(ctx)
 			gerritClient, err := client.gerritClientForHost(ctx, "fake-host")
 
-			So(err, ShouldNotBeNil)
-			So(gerritClient, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, gerritClient, should.BeNil)
 		})
 
-		Convey("returns gerrit client from factory", func() {
+		t.Run("returns gerrit client from factory", func(t *ftt.Test) {
 			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return mockGerritClient, nil
@@ -51,11 +52,11 @@ func TestGerritClientForHost(t *testing.T) {
 			client := NewClient(ctx)
 			gerritClient, err := client.gerritClientForHost(ctx, "fake-host")
 
-			So(err, ShouldBeNil)
-			So(gerritClient, ShouldEqual, mockGerritClient)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, gerritClient, should.Equal(mockGerritClient))
 		})
 
-		Convey("re-uses gerrit client for host", func() {
+		t.Run("re-uses gerrit client for host", func(t *ftt.Test) {
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return gerritpb.NewMockGerritClient(gomock.NewController(t)), nil
 			})
@@ -65,9 +66,9 @@ func TestGerritClientForHost(t *testing.T) {
 			gerritClientFoo2, _ := client.gerritClientForHost(ctx, "fake-host-foo")
 			gerritClientBar, _ := client.gerritClientForHost(ctx, "fake-host-bar")
 
-			So(gerritClientFoo1, ShouldNotBeNil)
-			So(gerritClientFoo2, ShouldPointTo, gerritClientFoo1)
-			So(gerritClientBar, ShouldNotPointTo, gerritClientFoo1)
+			assert.Loosely(t, gerritClientFoo1, should.NotBeNil)
+			assert.Loosely(t, gerritClientFoo2, should.Equal(gerritClientFoo1))
+			assert.Loosely(t, gerritClientBar, should.NotEqual(gerritClientFoo1))
 		})
 
 	})
@@ -80,9 +81,9 @@ func TestGetChangeInfo(t *testing.T) {
 
 	ctx = gob.UseTestClock(ctx)
 
-	Convey("Client.getChangeInfo", t, func() {
+	ftt.Run("Client.getChangeInfo", t, func(t *ftt.Test) {
 
-		Convey("fails if getting client for host fails", func() {
+		t.Run("fails if getting client for host fails", func(t *ftt.Test) {
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return nil, errors.New("fake client factory failure")
 			})
@@ -90,11 +91,11 @@ func TestGetChangeInfo(t *testing.T) {
 			client := NewClient(ctx)
 			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
-			So(err, ShouldErrLike, "fake client factory failure")
-			So(changeInfo, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("fake client factory failure"))
+			assert.Loosely(t, changeInfo, should.BeNil)
 		})
 
-		Convey("fails if API call fails", func() {
+		t.Run("fails if API call fails", func(t *ftt.Test) {
 			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return mockGerritClient, nil
@@ -110,11 +111,11 @@ func TestGetChangeInfo(t *testing.T) {
 			client := NewClient(ctx)
 			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
-			So(err, ShouldErrLike, "fake GetChange failure")
-			So(changeInfo, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("fake GetChange failure"))
+			assert.Loosely(t, changeInfo, should.BeNil)
 		})
 
-		Convey("returns change info for change", func() {
+		t.Run("returns change info for change", func(t *ftt.Test) {
 			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return mockGerritClient, nil
@@ -148,14 +149,14 @@ func TestGetChangeInfo(t *testing.T) {
 			client := NewClient(ctx)
 			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 1)
 
-			So(err, ShouldBeNil)
-			So(changeInfo, ShouldResemble, &ChangeInfo{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changeInfo, should.Resemble(&ChangeInfo{
 				TargetRef:       "fake-ref",
 				GitilesRevision: "fake-revision",
-			})
+			}))
 		})
 
-		Convey("fails with not found if change doesn't have requested patchset", func() {
+		t.Run("fails with not found if change doesn't have requested patchset", func(t *ftt.Test) {
 			mockGerritClient := gerritpb.NewMockGerritClient(gomock.NewController(t))
 			ctx := UseGerritClientFactory(ctx, func(ctx context.Context, host string) (GerritClient, error) {
 				return mockGerritClient, nil
@@ -179,9 +180,9 @@ func TestGetChangeInfo(t *testing.T) {
 			client := NewClient(ctx)
 			changeInfo, err := client.GetChangeInfo(ctx, "fake-host", "fake/project", 123, 2)
 
-			So(err, ShouldErrLike, "fake-host/c/fake/project/+/123 does not have patchset 2")
-			So(grpcutil.Code(err), ShouldEqual, codes.NotFound)
-			So(changeInfo, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("fake-host/c/fake/project/+/123 does not have patchset 2"))
+			assert.Loosely(t, grpcutil.Code(err), should.Equal(codes.NotFound))
+			assert.Loosely(t, changeInfo, should.BeNil)
 		})
 
 	})

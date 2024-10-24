@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -18,7 +17,9 @@ import (
 	gitpb "go.chromium.org/luci/common/proto/git"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/chromium/bootstrapper/clients/gob"
 )
@@ -30,11 +31,11 @@ func TestClient(t *testing.T) {
 
 	ctx = gob.UseTestClock(ctx)
 
-	Convey("Client", t, func() {
+	ftt.Run("Client", t, func(t *ftt.Test) {
 
-		Convey("gitilesClientForHost", func() {
+		t.Run("gitilesClientForHost", func(t *ftt.Test) {
 
-			Convey("fails if factory fails", func() {
+			t.Run("fails if factory fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("fake client factory failure")
 				})
@@ -42,11 +43,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				gitilesClient, err := client.gitilesClientForHost(ctx, "fake-host")
 
-				So(err, ShouldNotBeNil)
-				So(gitilesClient, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, gitilesClient, should.BeNil)
 			})
 
-			Convey("returns gitiles client from factory", func() {
+			t.Run("returns gitiles client from factory", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -58,11 +59,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				gitilesClient, err := client.gitilesClientForHost(ctx, "fake-host")
 
-				So(err, ShouldBeNil)
-				So(gitilesClient, ShouldEqual, mockGitilesClient)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, gitilesClient, should.Equal(mockGitilesClient))
 			})
 
-			Convey("re-uses gitiles client for host", func() {
+			t.Run("re-uses gitiles client for host", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -75,16 +76,16 @@ func TestClient(t *testing.T) {
 				gitilesClientFoo2, _ := client.gitilesClientForHost(ctx, "fake-host-foo")
 				gitilesClientBar, _ := client.gitilesClientForHost(ctx, "fake-host-bar")
 
-				So(gitilesClientFoo1, ShouldNotBeNil)
-				So(gitilesClientFoo2, ShouldPointTo, gitilesClientFoo1)
-				So(gitilesClientBar, ShouldNotPointTo, gitilesClientFoo1)
+				assert.Loosely(t, gitilesClientFoo1, should.NotBeNil)
+				assert.Loosely(t, gitilesClientFoo2, should.Equal(gitilesClientFoo1))
+				assert.Loosely(t, gitilesClientBar, should.NotEqual(gitilesClientFoo1))
 			})
 
 		})
 
-		Convey("FetchLatestRevision", func() {
+		t.Run("FetchLatestRevision", func(t *ftt.Test) {
 
-			Convey("fails if getting gitiles client fails", func() {
+			t.Run("fails if getting gitiles client fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("test gitiles client factory failure")
 				})
@@ -92,11 +93,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevision(ctx, "fake-host", "fake/project", "refs/heads/fake-branch")
 
-				So(err, ShouldNotBeNil)
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("fails if API call fails", func() {
+			t.Run("fails if API call fails", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -111,11 +112,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevision(ctx, "fake-host", "fake/project", "refs/heads/fake-branch")
 
-				So(err, ShouldNotBeNil)
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("returns latest revision for ref", func() {
+			t.Run("returns latest revision for ref", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -146,15 +147,15 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevision(ctx, "fake-host", "fake/project", "refs/heads/fake-branch")
 
-				So(err, ShouldBeNil)
-				So(revision, ShouldEqual, "fake-revision")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, revision, should.Equal("fake-revision"))
 			})
 
 		})
 
-		Convey("FetchLatestRevisionForPath", func() {
+		t.Run("FetchLatestRevisionForPath", func(t *ftt.Test) {
 
-			Convey("fails if getting gitiles client fails", func() {
+			t.Run("fails if getting gitiles client fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("test gitiles client factory failure")
 				})
@@ -162,11 +163,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
 
-				So(err, ShouldNotBeNil)
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("fails if API call fails", func() {
+			t.Run("fails if API call fails", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -181,11 +182,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
 
-				So(err, ShouldNotBeNil)
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("returns latest revision for path on ref", func() {
+			t.Run("returns latest revision for path on ref", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -217,15 +218,15 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.FetchLatestRevisionForPath(ctx, "fake-host", "fake/project", "refs/heads/fake-branch", "fake-path")
 
-				So(err, ShouldBeNil)
-				So(revision, ShouldEqual, "fake-revision")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, revision, should.Equal("fake-revision"))
 			})
 
 		})
 
-		Convey("GetParentRevision", func() {
+		t.Run("GetParentRevision", func(t *ftt.Test) {
 
-			Convey("fails if getting gitiles client fails", func() {
+			t.Run("fails if getting gitiles client fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("test gitiles client factory failure")
 				})
@@ -233,11 +234,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
 
-				So(err, ShouldErrLike, "test gitiles client factory failure")
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.ErrLike("test gitiles client factory failure"))
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("fails if API call fails", func() {
+			t.Run("fails if API call fails", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -252,11 +253,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
 
-				So(err, ShouldErrLike, "fake Log failure")
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.ErrLike("fake Log failure"))
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("returns parent revision for revision", func() {
+			t.Run("returns parent revision for revision", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -288,15 +289,15 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetParentRevision(ctx, "fake-host", "fake/project", "fake-revision")
 
-				So(err, ShouldBeNil)
-				So(revision, ShouldEqual, "fake-parent-revision")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, revision, should.Equal("fake-parent-revision"))
 			})
 
 		})
 
-		Convey("GetSubmoduleRevision", func() {
+		t.Run("GetSubmoduleRevision", func(t *ftt.Test) {
 
-			Convey("fails if getting gitiles client fails", func() {
+			t.Run("fails if getting gitiles client fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("test gitiles client factory failure")
 				})
@@ -304,11 +305,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
 
-				So(err, ShouldErrLike, "test gitiles client factory failure")
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.ErrLike("test gitiles client factory failure"))
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("fails if API call fails", func() {
+			t.Run("fails if API call fails", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -323,11 +324,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
 
-				So(err, ShouldErrLike, "fake DownloadFile failure")
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.ErrLike("fake DownloadFile failure"))
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("fails if json response doesn't contain revision", func() {
+			t.Run("fails if json response doesn't contain revision", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -357,11 +358,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
 
-				So(err, ShouldErrLike, "no revision found for fake-host/fake/project/+/fake-revision/fake/submodule/path")
-				So(revision, ShouldBeEmpty)
+				assert.Loosely(t, err, should.ErrLike("no revision found for fake-host/fake/project/+/fake-revision/fake/submodule/path"))
+				assert.Loosely(t, revision, should.BeEmpty)
 			})
 
-			Convey("returns submodule revision", func() {
+			t.Run("returns submodule revision", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -391,15 +392,15 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule/path")
 
-				So(err, ShouldBeNil)
-				So(revision, ShouldEqual, "fake-submodule-revision")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, revision, should.Equal("fake-submodule-revision"))
 			})
 
 		})
 
-		Convey("DownloadFile", func() {
+		t.Run("DownloadFile", func(t *ftt.Test) {
 
-			Convey("fails if getting gitiles client fails", func() {
+			t.Run("fails if getting gitiles client fails", func(t *ftt.Test) {
 				ctx := UseGitilesClientFactory(ctx, func(ctx context.Context, host string) (GitilesClient, error) {
 					return nil, errors.New("test gitiles client factory failure")
 				})
@@ -407,11 +408,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				contents, err := client.DownloadFile(ctx, "fake-host", "fake/project", "fake-revision", "fake-file")
 
-				So(err, ShouldNotBeNil)
-				So(contents, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, contents, should.BeEmpty)
 			})
 
-			Convey("fails if API call fails", func() {
+			t.Run("fails if API call fails", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -426,11 +427,11 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				contents, err := client.DownloadFile(ctx, "fake-host", "fake/project", "fake-revision", "fake-file")
 
-				So(err, ShouldNotBeNil)
-				So(contents, ShouldBeEmpty)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, contents, should.BeEmpty)
 			})
 
-			Convey("returns file contents", func() {
+			t.Run("returns file contents", func(t *ftt.Test) {
 				ctl := gomock.NewController(t)
 				defer ctl.Finish()
 
@@ -460,8 +461,8 @@ func TestClient(t *testing.T) {
 				client := NewClient(ctx)
 				contents, err := client.DownloadFile(ctx, "fake-host", "fake/project", "fake-revision", "fake-file")
 
-				So(err, ShouldBeNil)
-				So(contents, ShouldEqual, "fake-contents")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, contents, should.Equal("fake-contents"))
 			})
 
 		})

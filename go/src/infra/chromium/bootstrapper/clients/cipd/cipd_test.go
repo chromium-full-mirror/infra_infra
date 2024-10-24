@@ -8,10 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 type fakeClient struct {
@@ -31,11 +31,11 @@ func TestEnsure(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Ensure", t, func() {
+	ftt.Run("Ensure", t, func(t *ftt.Test) {
 
 		cipdRoot := t.TempDir()
 
-		Convey("fails if provided empty service URL", func() {
+		t.Run("fails if provided empty service URL", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "", cipdRoot, map[string]*Package{
 				"fake-subdir": {
 					Name:    "fake-package",
@@ -43,11 +43,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, "empty serviceUrl")
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("empty serviceUrl"))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided empty CIPD root", func() {
+		t.Run("fails if provided empty CIPD root", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", "", map[string]*Package{
 				"fake-subdir": {
 					Name:    "fake-package",
@@ -55,18 +55,18 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, "empty cipdRoot")
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("empty cipdRoot"))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided empty packages", func() {
+		t.Run("fails if provided empty packages", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", cipdRoot, nil)
 
-			So(err, ShouldErrLike, "empty packages")
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("empty packages"))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided empty subdir", func() {
+		t.Run("fails if provided empty subdir", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", cipdRoot, map[string]*Package{
 				"": {
 					Name:    "fake-package",
@@ -74,20 +74,20 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, "empty subdir in packages")
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("empty subdir in packages"))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided nil package", func() {
+		t.Run("fails if provided nil package", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", cipdRoot, map[string]*Package{
 				"fake-subdir": nil,
 			})
 
-			So(err, ShouldErrLike, `nil package for subdir "fake-subdir"`)
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`nil package for subdir "fake-subdir"`))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided empty package name", func() {
+		t.Run("fails if provided empty package name", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", cipdRoot, map[string]*Package{
 				"fake-subdir": {
 					Name:    "",
@@ -95,11 +95,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, `empty package name for subdir "fake-subdir"`)
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`empty package name for subdir "fake-subdir"`))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if provided empty package version", func() {
+		t.Run("fails if provided empty package version", func(t *ftt.Test) {
 			resolvedPackages, err := Ensure(ctx, "fake-url", cipdRoot, map[string]*Package{
 				"fake-subdir": {
 					Name:    "fake-package",
@@ -107,11 +107,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, `empty package version for subdir "fake-subdir"`)
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`empty package version for subdir "fake-subdir"`))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("fails if ensuring packages fails", func() {
+		t.Run("fails if ensuring packages fails", func(t *ftt.Test) {
 			factory := func(ctx context.Context) Client {
 				return &fakeClient{ensure: func(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*Package) (map[string]string, error) {
 					return nil, errors.New("test Ensure failure")
@@ -126,11 +126,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, "test Ensure failure")
-			So(resolvedPackages, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike("test Ensure failure"))
+			assert.Loosely(t, resolvedPackages, should.BeNil)
 		})
 
-		Convey("returns resolved package information on success", func() {
+		t.Run("returns resolved package information on success", func(t *ftt.Test) {
 			factory := func(ctx context.Context) Client {
 				return &fakeClient{ensure: func(ctx context.Context, serviceUrl, cipdRoot string, packages map[string]*Package) (map[string]string, error) {
 					return map[string]string{"fake-subdir": "fake-instance-id"}, nil
@@ -145,14 +145,14 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
-			So(resolvedPackages, ShouldResemble, map[string]*ResolvedPackage{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resolvedPackages, should.Resemble(map[string]*ResolvedPackage{
 				"fake-subdir": {
 					Name:             "fake-package",
 					RequestedVersion: "fake-version",
 					ActualVersion:    "fake-instance-id",
 				},
-			})
+			}))
 		})
 
 	})
@@ -160,7 +160,7 @@ func TestEnsure(t *testing.T) {
 
 func TestUnmarshalEnsureJsonOut(t *testing.T) {
 
-	Convey("unmarshallEnsureJsonOut decodes valid ensure json out", t, func() {
+	ftt.Run("unmarshallEnsureJsonOut decodes valid ensure json out", t, func(t *ftt.Test) {
 		jsonOutContents := []byte(`{
 			"result": {
 				"exe": [
@@ -174,8 +174,8 @@ func TestUnmarshalEnsureJsonOut(t *testing.T) {
 
 		out, err := unmarshalEnsureJsonOut(jsonOutContents)
 
-		So(err, ShouldBeNil)
-		So(out, ShouldResemble, &jsonOut{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble(&jsonOut{
 			Result: map[string][]jsonPackage{
 				"exe": {
 					{
@@ -184,7 +184,7 @@ func TestUnmarshalEnsureJsonOut(t *testing.T) {
 					},
 				},
 			},
-		})
+		}))
 
 	})
 }

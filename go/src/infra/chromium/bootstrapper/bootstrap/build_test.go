@@ -9,11 +9,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	fakegerrit "infra/chromium/bootstrapper/clients/fakes/gerrit"
 	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
@@ -30,7 +33,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 	ctx := context.Background()
 	ctx = gob.UseTestClock(ctx)
 
-	Convey("BuildBootstrapper.GetBootstrapConfig", t, func() {
+	ftt.Run("BuildBootstrapper.GetBootstrapConfig", t, func(t *ftt.Test) {
 
 		build := &buildbucketpb.Build{
 			Input: &buildbucketpb.Build_Input{
@@ -95,28 +98,28 @@ func TestGetBootstrapConfig(t *testing.T) {
 			return gclientClient, nil
 		})
 
-		Convey("fails", func() {
+		t.Run("fails", func(t *ftt.Test) {
 
-			Convey("if unable to get revision", func() {
+			t.Run("if unable to get revision", func(t *ftt.Test) {
 				input := getInput(build)
 				topLevelGitiles.Refs["refs/heads/top-level"] = ""
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldNotBeNil)
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
-			Convey("if unable to get file", func() {
+			t.Run("if unable to get file", func(t *ftt.Test) {
 				input := getInput(build)
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldNotBeNil)
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
-			Convey("if unable to get change info", func() {
+			t.Run("if unable to get change info", func(t *ftt.Test) {
 				build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 					Host:     "chromium-review.googlesource.com",
 					Project:  "top/level",
@@ -128,11 +131,11 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldErrLike, "failed to get change info for config change")
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("failed to get change info for config change"))
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
-			Convey("if the properties file is invalid", func() {
+			t.Run("if the properties file is invalid", func(t *ftt.Test) {
 				input := getInput(build)
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
@@ -143,11 +146,11 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldNotBeNil)
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
-			Convey("if unable to get diff for properties file", func() {
+			t.Run("if unable to get diff for properties file", func(t *ftt.Test) {
 				build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 					Host:     "chromium-review.googlesource.com",
 					Project:  "top/level",
@@ -176,11 +179,11 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldErrLike, "failed to get diff")
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike("failed to get diff"))
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
-			Convey("if patch for properties file does not apply", func() {
+			t.Run("if patch for properties file does not apply", func(t *ftt.Test) {
 				build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 					Host:     "chromium-review.googlesource.com",
 					Project:  "top/level",
@@ -220,16 +223,16 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				properties, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldNotBeNil)
-				So(PatchRejected.In(err), ShouldBeTrue)
-				So(properties, ShouldBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
+				assert.Loosely(t, PatchRejected.In(err), should.BeTrue)
+				assert.Loosely(t, properties, should.BeNil)
 			})
 
 		})
 
-		Convey("returns config", func() {
+		t.Run("returns config", func(t *ftt.Test) {
 
-			Convey("with buildProperties from input", func() {
+			t.Run("with buildProperties from input", func(t *ftt.Test) {
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 					Files: map[string]*fakegitiles.PathObject{
@@ -258,17 +261,17 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldBeNil)
-				So(config.buildProperties, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, config.buildProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"test_property": "foo"
-				}`)
-				So(config.buildRequestedProperties, ShouldResembleProtoJSON, `{
+				}`))
+				assert.Loosely(t, config.buildRequestedProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"test_property": "foo"
-				}`)
-				So(config.preferBuildProperties, ShouldBeFalse)
+				}`))
+				assert.Loosely(t, config.preferBuildProperties, should.BeFalse)
 			})
 
-			Convey("for polymorphic bootstrapping", func() {
+			t.Run("for polymorphic bootstrapping", func(t *ftt.Test) {
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 					Files: map[string]*fakegitiles.PathObject{
@@ -291,11 +294,11 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldBeNil)
-				So(config.preferBuildProperties, ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, config.preferBuildProperties, should.BeTrue)
 			})
 
-			Convey("for properties-optional bootstrapping", func() {
+			t.Run("for properties-optional bootstrapping", func(t *ftt.Test) {
 				inputOpts := InputOptions{PropertiesOptional: true}
 				delete(build.Input.Properties.Fields, "$bootstrap/properties")
 				input, err := inputOpts.NewInput(build)
@@ -303,13 +306,13 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 				config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-				So(err, ShouldBeNil)
-				So(config.configCommit, ShouldBeNil)
-				So(config.change, ShouldBeNil)
-				So(config.builderProperties, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, config.configCommit, should.BeNil)
+				assert.Loosely(t, config.change, should.BeNil)
+				assert.Loosely(t, config.builderProperties, should.BeNil)
 			})
 
-			Convey("for top-level project", func() {
+			t.Run("for top-level project", func(t *ftt.Test) {
 
 				setBootstrapPropertiesProperties(build, `{
 					"top_level_project": {
@@ -322,7 +325,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 
-				Convey("returns config with properties from top level ref when no commit or change for project", func() {
+				t.Run("returns config with properties from top level ref when no commit or change for project", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Parent: "config-changed-revision",
@@ -338,18 +341,18 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
 						"id": "top-level-top-level-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "config-changed-value"
-					}`)
-					So(config.configSource, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.configSource, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"last_changed_commit": {
 							"host": "chromium.googlesource.com",
 							"project": "top/level",
@@ -357,10 +360,10 @@ func TestGetBootstrapConfig(t *testing.T) {
 							"id": "config-changed-revision"
 						},
 						"path": "infra/config/fake-bucket/fake-builder/properties.json"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit ref when commit for project without ID", func() {
+				t.Run("returns config with properties from commit ref when commit for project without ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -378,20 +381,20 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit revision when commit for project with ID", func() {
+				t.Run("returns config with properties from commit revision when commit for project with ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -409,20 +412,20 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "some-branch-revision"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from target ref and patch applied when change for project", func() {
+				t.Run("returns config with properties from target ref and patch applied when change for project", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "top/level",
@@ -476,34 +479,34 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change.GerritChange, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium-review.googlesource.com",
 						"project": "top/level",
 						"change": 2345,
 						"patchset": 1
-					}`)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-new-value",
 						"test_property2": "some-branch-head-value2",
 						"test_property3": "some-branch-head-value3",
 						"test_property4": "some-branch-head-value4",
 						"test_property5": "some-branch-head-value5"
-					}`)
-					So(config.skipAnalysisReasons, ShouldResemble, []string{
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.Resemble([]string{
 						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
-					})
+					}))
 				})
 
 			})
 
-			Convey("for dependency project with config repo path", func() {
+			t.Run("for dependency project with config repo path", func(t *ftt.Test) {
 
 				setBootstrapPropertiesProperties(build, `{
 					"dependency_project": {
@@ -521,7 +524,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 
-				Convey("returns config with properties from ref pinned by top level ref when no commit or change for either project", func() {
+				t.Run("returns config with properties from ref pinned by top level ref when no commit or change for either project", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -542,26 +545,26 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/dependency",
 						"id": "dependency-dependency-head"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
 						"id": "top-level-top-level-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-head-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from revision pinned by top level ref when no commit or change for either project", func() {
+				t.Run("returns config with properties from revision pinned by top level ref when no commit or change for either project", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -581,25 +584,25 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
 						"id": "top-level-top-level-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit ref when commit for dependency project without ID", func() {
+				t.Run("returns config with properties from commit ref when commit for dependency project without ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "dependency",
@@ -617,20 +620,20 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit revision when commit for dependency project with ID", func() {
+				t.Run("returns config with properties from commit revision when commit for dependency project with ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "dependency",
@@ -648,20 +651,20 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-revision"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func() {
+				t.Run("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -686,25 +689,25 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func() {
+				t.Run("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -729,25 +732,25 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-revision"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from target ref and patch applied when change for dependency project", func() {
+				t.Run("returns config with properties from target ref and patch applied when change for dependency project", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "dependency",
@@ -801,32 +804,32 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-head"
-					}`)
-					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change.GerritChange, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium-review.googlesource.com",
 						"project": "dependency",
 						"change": 2345,
 						"patchset": 1
-					}`)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-new-value",
 						"test_property2": "some-branch-head-value2",
 						"test_property3": "some-branch-head-value3",
 						"test_property4": "some-branch-head-value4",
 						"test_property5": "some-branch-head-value5"
-					}`)
-					So(config.skipAnalysisReasons, ShouldResemble, []string{
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.Resemble([]string{
 						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
-					})
+					}))
 				})
 
-				Convey("returns config with properties from patched pinned revision when change for top level project that changes pin", func() {
+				t.Run("returns config with properties from patched pinned revision when change for top level project that changes pin", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "top/level",
@@ -885,28 +888,28 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "new-dependency-revision-value"
-					}`)
-					So(config.skipAnalysisReasons, ShouldResemble, []string{
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.Resemble([]string{
 						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL (via DEPS change)",
-					})
+					}))
 				})
 
-				Convey("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func() {
+				t.Run("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "top/level",
@@ -974,26 +977,26 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-value"
-					}`)
-					So(config.skipAnalysisReasons, ShouldBeEmpty)
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.BeEmpty)
 				})
 
-				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {
+				t.Run("fails with a tagged error when the properties file does not exist at pinned revision", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -1012,17 +1015,17 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
-This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
+					assert.Loosely(t, err, should.ErrLike(`dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
+This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`))
 					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
-					So(errHasSleepTag, ShouldBeTrue)
-					So(sleepDuration, ShouldEqual, 10*time.Minute)
-					So(config, ShouldBeNil)
+					assert.Loosely(t, errHasSleepTag, should.BeTrue)
+					assert.Loosely(t, sleepDuration, should.Equal(10*time.Minute))
+					assert.Loosely(t, config, should.BeNil)
 				})
 
 			})
 
-			Convey("for dependency project with config repo submodule path", func() {
+			t.Run("for dependency project with config repo submodule path", func(t *ftt.Test) {
 
 				setBootstrapPropertiesProperties(build, `{
 					"dependency_project": {
@@ -1040,7 +1043,7 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 
-				Convey("returns config with properties from revision pinned by top level ref when no commit or change for either project", func() {
+				t.Run("returns config with properties from revision pinned by top level ref when no commit or change for either project", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -1058,25 +1061,25 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/top-level",
 						"id": "top-level-top-level-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit ref when commit for dependency project without ID", func() {
+				t.Run("returns config with properties from commit ref when commit for dependency project without ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "dependency",
@@ -1094,20 +1097,20 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from commit revision when commit for dependency project with ID", func() {
+				t.Run("returns config with properties from commit revision when commit for dependency project with ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "dependency",
@@ -1125,20 +1128,20 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-revision"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func() {
+				t.Run("returns config with properties from revision pinned by commit ref when commit for top level project without ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -1161,25 +1164,25 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func() {
+				t.Run("returns config with properties from revision pinned by commit revision when commit for top level project with ID", func(t *ftt.Test) {
 					build.Input.GitilesCommit = &buildbucketpb.GitilesCommit{
 						Host:    "chromium.googlesource.com",
 						Project: "top/level",
@@ -1202,25 +1205,25 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-revision"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-revision-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns config with properties from target ref and patch applied when change for dependency project", func() {
+				t.Run("returns config with properties from target ref and patch applied when change for dependency project", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "dependency",
@@ -1274,32 +1277,32 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"ref": "refs/heads/some-branch",
 						"id": "dependency-some-branch-head"
-					}`)
-					So(config.change.GerritChange, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change.GerritChange, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium-review.googlesource.com",
 						"project": "dependency",
 						"change": 2345,
 						"patchset": 1
-					}`)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "some-branch-head-new-value",
 						"test_property2": "some-branch-head-value2",
 						"test_property3": "some-branch-head-value3",
 						"test_property4": "some-branch-head-value4",
 						"test_property5": "some-branch-head-value5"
-					}`)
-					So(config.skipAnalysisReasons, ShouldResemble, []string{
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.Resemble([]string{
 						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
-					})
+					}))
 				})
 
-				Convey("returns config with properties from patched pinned revision when change for top level project that changes pin", func() {
+				t.Run("returns config with properties from patched pinned revision when change for top level project that changes pin", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "top/level",
@@ -1349,28 +1352,28 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "new-dependency-revision-value"
-					}`)
-					So(config.skipAnalysisReasons, ShouldResemble, []string{
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.Resemble([]string{
 						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL (via DEPS change)",
-					})
+					}))
 				})
 
-				Convey("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func() {
+				t.Run("returns config with properties from patched pinned revision when change for top level project that does not change properties file", func(t *ftt.Test) {
 					build.Input.GerritChanges = append(build.Input.GerritChanges, &buildbucketpb.GerritChange{
 						Host:     "chromium-review.googlesource.com",
 						Project:  "top/level",
@@ -1420,26 +1423,26 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.configCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.configCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "dependency",
 						"id": "new-dependency-revision"
-					}`)
-					So(config.inputCommit.GitilesCommit, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.inputCommit.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"host": "chromium.googlesource.com",
 						"project": "top/level",
 						"ref": "refs/heads/some-branch",
 						"id": "top-level-some-branch-head"
-					}`)
-					So(config.change, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					}`))
+					assert.Loosely(t, config.change, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "dependency-value"
-					}`)
-					So(config.skipAnalysisReasons, ShouldBeEmpty)
+					}`))
+					assert.Loosely(t, config.skipAnalysisReasons, should.BeEmpty)
 				})
 
-				Convey("fails with a tagged error when the properties file does not exist at pinned revision", func() {
+				t.Run("fails with a tagged error when the properties file does not exist at pinned revision", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -1455,17 +1458,17 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-revision
-This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
+					assert.Loosely(t, err, should.ErrLike(`dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-revision
+This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`))
 					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
-					So(errHasSleepTag, ShouldBeTrue)
-					So(sleepDuration, ShouldEqual, 10*time.Minute)
-					So(config, ShouldBeNil)
+					assert.Loosely(t, errHasSleepTag, should.BeTrue)
+					assert.Loosely(t, sleepDuration, should.Equal(10*time.Minute))
+					assert.Loosely(t, config, should.BeNil)
 				})
 
 			})
 
-			Convey("for builder with shadow props file", func() {
+			t.Run("for builder with shadow props file", func(t *ftt.Test) {
 				setBootstrapPropertiesProperties(build, `{
 					"top_level_project": {
 						"repo": {
@@ -1478,7 +1481,7 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 					"shadow_properties_file": "infra/config/fake-bucket/fake-builder/shadow-properties.json"
 				}`)
 
-				Convey("returns properties without shadow properties if not a shadow build", func() {
+				t.Run("returns properties without shadow properties if not a shadow build", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -1494,13 +1497,13 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "non-shadow-value"
-					}`)
+					}`))
 				})
 
-				Convey("returns properties with shadow properties if a shadow build", func() {
+				t.Run("returns properties with shadow properties if a shadow build", func(t *ftt.Test) {
 					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 						Files: map[string]*fakegitiles.PathObject{
@@ -1521,10 +1524,10 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldBeNil)
-					So(config.builderProperties, ShouldResembleProtoJSON, `{
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, config.builderProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
 						"test_property": "shadow-value"
-					}`)
+					}`))
 				})
 
 			})
@@ -1537,9 +1540,9 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 func TestUpdateBuild(t *testing.T) {
 	t.Parallel()
 
-	Convey("BootstrapConfig.UpdateBuild", t, func() {
+	ftt.Run("BootstrapConfig.UpdateBuild", t, func(t *ftt.Test) {
 
-		Convey("updates build with gitiles commit, builder properties, $build/chromium_bootstrap module properties and build properties", func() {
+		t.Run("updates build with gitiles commit, builder properties, $build/chromium_bootstrap module properties and build properties", func(t *ftt.Test) {
 			config := &BootstrapConfig{
 				inputCommit: &gitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
@@ -1601,11 +1604,11 @@ func TestUpdateBuild(t *testing.T) {
 				},
 			}
 
-			Convey("preferring builder properties by default", func() {
+			t.Run("preferring builder properties by default", func(t *ftt.Test) {
 				err := config.UpdateBuild(build, exe)
 
-				So(err, ShouldBeNil)
-				So(build, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"input": {
 						"gitiles_commit": {
 							"host": "fake-host",
@@ -1658,16 +1661,16 @@ func TestUpdateBuild(t *testing.T) {
 							"shaz": "builder-shaz-value"
 						}
 					}
-				}`)
+				}`))
 			})
 
-			Convey("when preferring build properties", func() {
+			t.Run("when preferring build properties", func(t *ftt.Test) {
 				config.preferBuildProperties = true
 
 				err := config.UpdateBuild(build, exe)
 
-				So(err, ShouldBeNil)
-				So(build, ShouldResembleProtoJSON, `{
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 					"input": {
 						"gitiles_commit": {
 							"host": "fake-host",
@@ -1720,12 +1723,12 @@ func TestUpdateBuild(t *testing.T) {
 							"shaz": "builder-shaz-value"
 						}
 					}
-				}`)
+				}`))
 			})
 
 		})
 
-		Convey("updates build with $build/chromium_bootstrap module properties and build properties for properties optional bootstrapping", func() {
+		t.Run("updates build with $build/chromium_bootstrap module properties and build properties for properties optional bootstrapping", func(t *ftt.Test) {
 			config := &BootstrapConfig{
 				buildProperties: jsonToStruct(`{
 					"foo": "build-foo-value",
@@ -1749,8 +1752,8 @@ func TestUpdateBuild(t *testing.T) {
 
 			err := config.UpdateBuild(build, exe)
 
-			So(err, ShouldBeNil)
-			So(build, ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 				"input": {
 					"properties": {
 						"$build/chromium_bootstrap": {
@@ -1768,10 +1771,10 @@ func TestUpdateBuild(t *testing.T) {
 						"bar": "build-bar-value"
 					}
 				}
-			}`)
+			}`))
 		})
 
-		Convey("does not update gitiles commit for different repo", func() {
+		t.Run("does not update gitiles commit for different repo", func(t *ftt.Test) {
 			config := &BootstrapConfig{
 				configCommit: &gitilesCommit{&buildbucketpb.GitilesCommit{
 					Host:    "fake-host",
@@ -1804,16 +1807,16 @@ func TestUpdateBuild(t *testing.T) {
 
 			err := config.UpdateBuild(build, exe)
 
-			So(err, ShouldBeNil)
-			So(build.Input.GitilesCommit, ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, build.Input.GitilesCommit, convey.Adapt(ShouldResembleProtoJSON)(`{
 				"host": "fake-host",
 				"project": "fake-other-project",
 				"ref": "fake-ref"
-			}`)
+			}`))
 
 		})
 
-		Convey("applies led property edits", func() {
+		t.Run("applies led property edits", func(t *ftt.Test) {
 			config := &BootstrapConfig{
 				buildProperties: jsonToStruct(`{
 					"foo": "build-requested-foo-value",
@@ -1849,13 +1852,13 @@ func TestUpdateBuild(t *testing.T) {
 
 			err := config.UpdateBuild(build, exe)
 
-			So(err, ShouldBeNil)
-			So(build.Input.Properties.Fields["foo"], ShouldResembleProtoJSON, `"led-foo-value"`)
-			So(build.Input.Properties.Fields["bar"], ShouldResembleProtoJSON, `"led-bar-value"`)
-			So(build.Input.Properties.Fields["baz"], ShouldResembleProtoJSON, `"led-baz-value"`)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, build.Input.Properties.Fields["foo"], convey.Adapt(ShouldResembleProtoJSON)(`"led-foo-value"`))
+			assert.Loosely(t, build.Input.Properties.Fields["bar"], convey.Adapt(ShouldResembleProtoJSON)(`"led-bar-value"`))
+			assert.Loosely(t, build.Input.Properties.Fields["baz"], convey.Adapt(ShouldResembleProtoJSON)(`"led-baz-value"`))
 		})
 
-		Convey("removes properties removed by led", func() {
+		t.Run("removes properties removed by led", func(t *ftt.Test) {
 			config := &BootstrapConfig{
 				buildProperties: jsonToStruct(`{
 					"foo": "build-requested-foo-value",
@@ -1887,10 +1890,10 @@ func TestUpdateBuild(t *testing.T) {
 
 			err := config.UpdateBuild(build, exe)
 
-			So(err, ShouldBeNil)
-			So(build.Input.Properties.Fields, ShouldNotContainKey, "foo")
-			So(build.Input.Properties.Fields, ShouldNotContainKey, "bar")
-			So(build.Input.Properties.Fields, ShouldNotContainKey, "baz")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, build.Input.Properties.Fields, should.NotContainKey("foo"))
+			assert.Loosely(t, build.Input.Properties.Fields, should.NotContainKey("bar"))
+			assert.Loosely(t, build.Input.Properties.Fields, should.NotContainKey("baz"))
 		})
 
 	})

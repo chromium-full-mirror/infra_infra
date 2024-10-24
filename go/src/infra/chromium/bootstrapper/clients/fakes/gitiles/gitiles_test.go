@@ -9,11 +9,12 @@ import (
 	"regexp"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/chromium/bootstrapper/clients/gitiles"
@@ -24,29 +25,29 @@ func TestFactory(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Factory", t, func() {
+	ftt.Run("Factory", t, func(t *ftt.Test) {
 
-		Convey("returns an RPC client by default", func() {
+		t.Run("returns an RPC client by default", func(t *ftt.Test) {
 			factory := Factory(nil)
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.NotBeNil)
 		})
 
-		Convey("fails for a nil host", func() {
+		t.Run("fails for a nil host", func(t *ftt.Test) {
 			factory := Factory(map[string]*Host{
 				"fake-host": nil,
 			})
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldNotBeNil)
-			So(client, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, client, should.BeNil)
 		})
 
-		Convey("returns RPC client for provided host", func() {
+		t.Run("returns RPC client for provided host", func(t *ftt.Test) {
 			host := &Host{}
 			factory := Factory(map[string]*Host{
 				"fake-host": host,
@@ -54,11 +55,11 @@ func TestFactory(t *testing.T) {
 
 			client, err := factory(ctx, "fake-host")
 
-			So(err, ShouldBeNil)
-			So(client, ShouldResemble, &Client{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, client, should.Resemble(&Client{
 				hostname: "fake-host",
 				gitiles:  host,
-			})
+			}))
 		})
 	})
 }
@@ -68,9 +69,9 @@ func TestLog(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("gitilesClient.Log", t, func() {
+	ftt.Run("gitilesClient.Log", t, func(t *ftt.Test) {
 
-		Convey("returns requested number of revisions by default", func() {
+		t.Run("returns requested number of revisions by default", func(t *ftt.Test) {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
 			response, err := client.Log(ctx, &gitilespb.LogRequest{
@@ -79,16 +80,16 @@ func TestLog(t *testing.T) {
 				PageSize:   4,
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 4)
-			So(response.Log[0].Id, ShouldNotBeEmpty)
-			So(response.Log[1].Id, ShouldNotBeEmpty)
-			So(response.Log[2].Id, ShouldNotBeEmpty)
-			So(response.Log[3].Id, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
+			assert.Loosely(t, response.Log, should.HaveLength(4))
+			assert.Loosely(t, response.Log[0].Id, should.NotBeEmpty)
+			assert.Loosely(t, response.Log[1].Id, should.NotBeEmpty)
+			assert.Loosely(t, response.Log[2].Id, should.NotBeEmpty)
+			assert.Loosely(t, response.Log[3].Id, should.NotBeEmpty)
 		})
 
-		Convey("fails for a nil project", func() {
+		t.Run("fails for a nil project", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -103,11 +104,11 @@ func TestLog(t *testing.T) {
 				PageSize:   1,
 			})
 
-			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("fails for an empty ref revision", func() {
+		t.Run("fails for an empty ref revision", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -126,11 +127,11 @@ func TestLog(t *testing.T) {
 				PageSize:   1,
 			})
 
-			So(err, ShouldErrLike, `unknown ref "refs/heads/fake-branch" for project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown ref "refs/heads/fake-branch" for project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("returns log for provided revision", func() {
+		t.Run("returns log for provided revision", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -154,15 +155,15 @@ func TestLog(t *testing.T) {
 				PageSize:   3,
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 3)
-			So(response.Log[0].Id, ShouldEqual, "fake-revision")
-			So(response.Log[1].Id, ShouldEqual, "fake-parent-revision")
-			So(response.Log[2].Id, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
+			assert.Loosely(t, response.Log, should.HaveLength(3))
+			assert.Loosely(t, response.Log[0].Id, should.Equal("fake-revision"))
+			assert.Loosely(t, response.Log[1].Id, should.Equal("fake-parent-revision"))
+			assert.Loosely(t, response.Log[2].Id, should.NotBeEmpty)
 		})
 
-		Convey("returns log for known revision", func() {
+		t.Run("returns log for known revision", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -183,15 +184,15 @@ func TestLog(t *testing.T) {
 				PageSize:   3,
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 3)
-			So(response.Log[0].Id, ShouldEqual, "fake-revision")
-			So(response.Log[1].Id, ShouldEqual, "fake-parent-revision")
-			So(response.Log[2].Id, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
+			assert.Loosely(t, response.Log, should.HaveLength(3))
+			assert.Loosely(t, response.Log[0].Id, should.Equal("fake-revision"))
+			assert.Loosely(t, response.Log[1].Id, should.Equal("fake-parent-revision"))
+			assert.Loosely(t, response.Log[2].Id, should.NotBeEmpty)
 		})
 
-		Convey("fails for path by default", func() {
+		t.Run("fails for path by default", func(t *ftt.Test) {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
 			response, err := client.Log(ctx, &gitilespb.LogRequest{
@@ -201,12 +202,12 @@ func TestLog(t *testing.T) {
 				PageSize:   3,
 			})
 
-			So(err, ShouldNotBeNil)
-			So(grpcutil.Code(err), ShouldEqual, codes.NotFound)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, grpcutil.Code(err), should.Equal(codes.NotFound))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("returns log for path", func() {
+		t.Run("returns log for path", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -258,13 +259,13 @@ func TestLog(t *testing.T) {
 				PageSize:   5,
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
-			So(response.Log, ShouldHaveLength, 4)
-			So(response.Log[0].Id, ShouldEqual, "fake-revision-touching-path")
-			So(response.Log[1].Id, ShouldEqual, "fake-revision-touching-path-2")
-			So(response.Log[2].Id, ShouldEqual, "fake-revision-touching-path-3")
-			So(response.Log[3].Id, ShouldEqual, "fake-revision-touching-path-4")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
+			assert.Loosely(t, response.Log, should.HaveLength(4))
+			assert.Loosely(t, response.Log[0].Id, should.Equal("fake-revision-touching-path"))
+			assert.Loosely(t, response.Log[1].Id, should.Equal("fake-revision-touching-path-2"))
+			assert.Loosely(t, response.Log[2].Id, should.Equal("fake-revision-touching-path-3"))
+			assert.Loosely(t, response.Log[3].Id, should.Equal("fake-revision-touching-path-4"))
 		})
 
 	})
@@ -293,18 +294,18 @@ func TestDownloadFile(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("gitilesClient.DownloadFile", t, func() {
+	ftt.Run("gitilesClient.DownloadFile", t, func(t *ftt.Test) {
 
-		Convey("fails by default", func() {
+		t.Run("fails by default", func(t *ftt.Test) {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
 			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-			So(err, ShouldErrLike, `unknown file "fake/file"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown file "fake/file"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("fails for a nil project", func() {
+		t.Run("fails for a nil project", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -315,11 +316,11 @@ func TestDownloadFile(t *testing.T) {
 
 			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("fails for a nil revision", func() {
+		t.Run("fails for a nil revision", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -334,13 +335,13 @@ func TestDownloadFile(t *testing.T) {
 
 			response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-			So(err, ShouldErrLike, `unknown revision "fake-revision" of project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown revision "fake-revision" of project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("TEXT format", func() {
+		t.Run("TEXT format", func(t *ftt.Test) {
 
-			Convey("returns contents for provided file at revision", func() {
+			t.Run("returns contents for provided file at revision", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -359,12 +360,12 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, "fake-contents")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
+				assert.Loosely(t, response.Contents, should.Equal("fake-contents"))
 			})
 
-			Convey("returns contents for provided file at revision where file is not affected", func() {
+			t.Run("returns contents for provided file at revision where file is not affected", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -386,12 +387,12 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision-2", "fake/file"))
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, "fake-contents")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
+				assert.Loosely(t, response.Contents, should.Equal("fake-contents"))
 			})
 
-			Convey("fails for nil contents", func() {
+			t.Run("fails for nil contents", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -410,15 +411,15 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileRequest("fake/project", "fake-revision", "fake/file"))
 
-				So(err, ShouldErrLike, `unknown file "fake/file" at revision "fake-revision" of project "fake/project" on host "fake-host"`)
-				So(response, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike(`unknown file "fake/file" at revision "fake-revision" of project "fake/project" on host "fake-host"`))
+				assert.Loosely(t, response, should.BeNil)
 			})
 
 		})
 
-		Convey("JSON format", func() {
+		t.Run("JSON format", func(t *ftt.Test) {
 
-			Convey("returns contents for provided file at revision", func() {
+			t.Run("returns contents for provided file at revision", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -437,12 +438,12 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision", "fake/submodule"))
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, `{"revision": "fake-submodule-revision"}`)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
+				assert.Loosely(t, response.Contents, should.Equal(`{"revision": "fake-submodule-revision"}`))
 			})
 
-			Convey("returns contents for provided file at revision where file is not affected", func() {
+			t.Run("returns contents for provided file at revision where file is not affected", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -464,12 +465,12 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision-2", "fake/submodule"))
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
-				So(response.Contents, ShouldEqual, `{"revision": "fake-submodule-revision"}`)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
+				assert.Loosely(t, response.Contents, should.Equal(`{"revision": "fake-submodule-revision"}`))
 			})
 
-			Convey("fails for nil contents", func() {
+			t.Run("fails for nil contents", func(t *ftt.Test) {
 				client, _ := Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -488,8 +489,8 @@ func TestDownloadFile(t *testing.T) {
 
 				response, err := client.DownloadFile(ctx, downloadFileJSONRequest("fake/project", "fake-revision", "fake/submodule"))
 
-				So(err, ShouldErrLike, `unknown file "fake/submodule" at revision "fake-revision" of project "fake/project" on host "fake-host"`)
-				So(response, ShouldBeNil)
+				assert.Loosely(t, err, should.ErrLike(`unknown file "fake/submodule" at revision "fake-revision" of project "fake/project" on host "fake-host"`))
+				assert.Loosely(t, response, should.BeNil)
 			})
 
 		})
@@ -502,9 +503,9 @@ func TestDownloadDiff(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("gitilesClient.DownloadFile", t, func() {
+	ftt.Run("gitilesClient.DownloadFile", t, func(t *ftt.Test) {
 
-		Convey("returns an empty diff by default", func() {
+		t.Run("returns an empty diff by default", func(t *ftt.Test) {
 			client, _ := Factory(nil)(ctx, "fake-host")
 
 			response, err := client.DownloadDiff(ctx, &gitilespb.DownloadDiffRequest{
@@ -512,12 +513,12 @@ func TestDownloadDiff(t *testing.T) {
 				Committish: "fake-revision",
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
-			So(response.Contents, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
+			assert.Loosely(t, response.Contents, should.BeEmpty)
 		})
 
-		Convey("fails for a nil project", func() {
+		t.Run("fails for a nil project", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -531,11 +532,11 @@ func TestDownloadDiff(t *testing.T) {
 				Committish: "fake-revision",
 			})
 
-			So(err, ShouldErrLike, `unknown project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("fails for a nil revision", func() {
+		t.Run("fails for a nil revision", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -553,11 +554,11 @@ func TestDownloadDiff(t *testing.T) {
 				Committish: "fake-revision",
 			})
 
-			So(err, ShouldErrLike, `unknown revision "fake-revision" of project "fake/project" on host "fake-host"`)
-			So(response, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown revision "fake-revision" of project "fake/project" on host "fake-host"`))
+			assert.Loosely(t, response, should.BeNil)
 		})
 
-		Convey("returns difference between revision and parent", func() {
+		t.Run("returns difference between revision and parent", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -595,17 +596,17 @@ func TestDownloadDiff(t *testing.T) {
 				},
 			})(ctx, "fake-host")
 
-			Convey("for all files if no path is specified", func() {
+			t.Run("for all files if no path is specified", func(t *ftt.Test) {
 				response, err := client.DownloadDiff(ctx, &gitilespb.DownloadDiffRequest{
 					Project:    "fake/project",
 					Committish: "fake-revision-3",
 				})
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
 				// (?m) - multiline regex mode: ^ matches line start
 				contents := regexp.MustCompile(`(?m)^index [0-9a-f]+\.\.[0-9a-f]+`).ReplaceAllLiteralString(response.Contents, "index A..B")
-				So(contents, ShouldEqual,
+				assert.Loosely(t, contents, should.Equal(
 					`diff --git a/to-add b/to-add
 new file mode 100644
 index A..B
@@ -646,22 +647,22 @@ index A..B
 +++ b/to-re-add
 @@ -0,0 +1 @@
 +fake-contents-to-be-re-added
-`)
+`))
 
 			})
 
-			Convey("for individual file if path is specified", func() {
+			t.Run("for individual file if path is specified", func(t *ftt.Test) {
 				response, err := client.DownloadDiff(ctx, &gitilespb.DownloadDiffRequest{
 					Project:    "fake/project",
 					Committish: "fake-revision-3",
 					Path:       "to-modify",
 				})
 
-				So(err, ShouldBeNil)
-				So(response, ShouldNotBeNil)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, response, should.NotBeNil)
 				// (?m) - multiline regex mode: ^ matches line start
 				contents := regexp.MustCompile(`(?m)^index [0-9a-f]+\.\.[0-9a-f]+`).ReplaceAllLiteralString(response.Contents, "index A..B")
-				So(contents, ShouldEqual,
+				assert.Loosely(t, contents, should.Equal(
 					`diff --git a/to-modify b/to-modify
 index A..B 100644
 --- a/to-modify
@@ -669,12 +670,12 @@ index A..B 100644
 @@ -1 +1 @@
 -fake-contents-1
 +fake-contents-2
-`)
+`))
 			})
 
 		})
 
-		Convey("returns difference between revisions if base is specified", func() {
+		t.Run("returns difference between revisions if base is specified", func(t *ftt.Test) {
 			client, _ := Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -709,11 +710,11 @@ index A..B 100644
 				Base:       "fake-revision-3",
 			})
 
-			So(err, ShouldBeNil)
-			So(response, ShouldNotBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, response, should.NotBeNil)
 			// (?m) - multiline regex mode: ^ matches line start
 			contents := regexp.MustCompile(`(?m)^index [0-9a-f]+\.\.[0-9a-f]+`).ReplaceAllLiteralString(response.Contents, "index A..B")
-			So(contents, ShouldEqual,
+			assert.Loosely(t, contents, should.Equal(
 				`diff --git a/to-modify b/to-modify
 index A..B 100644
 --- a/to-modify
@@ -721,7 +722,7 @@ index A..B 100644
 @@ -1 +1 @@
 -fake-contents-B
 +fake-contents-A
-`)
+`))
 		})
 
 	})
@@ -733,19 +734,19 @@ func TestIntegration(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("gitiles using fake factory", t, func() {
+	ftt.Run("gitiles using fake factory", t, func(t *ftt.Test) {
 
-		Convey("succeeds when calling FetchLatestRevision", func() {
+		t.Run("succeeds when calling FetchLatestRevision", func(t *ftt.Test) {
 			ctx := gitiles.UseGitilesClientFactory(ctx, Factory(nil))
 			client := gitiles.NewClient(ctx)
 
 			revision, err := client.FetchLatestRevision(ctx, "fake-host", "fake/project", "refs/heads/fake-branch")
 
-			So(err, ShouldBeNil)
-			So(revision, ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revision, should.NotBeEmpty)
 		})
 
-		Convey("succeeds when calling GetSubmoduleRevision", func() {
+		t.Run("succeeds when calling GetSubmoduleRevision", func(t *ftt.Test) {
 			ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -765,12 +766,12 @@ func TestIntegration(t *testing.T) {
 
 			revision, err := client.GetSubmoduleRevision(ctx, "fake-host", "fake/project", "fake-revision", "fake/submodule")
 
-			So(err, ShouldBeNil)
-			So(revision, ShouldEqual, "fake-submodule-revision")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, revision, should.Equal("fake-submodule-revision"))
 
 		})
 
-		Convey("succeeds when calling DownloadFile", func() {
+		t.Run("succeeds when calling DownloadFile", func(t *ftt.Test) {
 			ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 				"fake-host": {
 					Projects: map[string]*Project{
@@ -790,13 +791,13 @@ func TestIntegration(t *testing.T) {
 
 			contents, err := client.DownloadFile(ctx, "fake-host", "fake/project", "fake-revision", "fake/file")
 
-			So(err, ShouldBeNil)
-			So(contents, ShouldEqual, "fake-contents")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, contents, should.Equal("fake-contents"))
 		})
 
-		Convey("succeeds when calling DownloadDiff", func() {
+		t.Run("succeeds when calling DownloadDiff", func(t *ftt.Test) {
 
-			Convey("with diff against parent when called for modified path", func() {
+			t.Run("with diff against parent when called for modified path", func(t *ftt.Test) {
 				ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -822,11 +823,11 @@ func TestIntegration(t *testing.T) {
 
 				contents, err := client.DownloadDiff(ctx, "fake-host", "fake/project", "fake-revision-2", gitiles.PARENT, "fake/file")
 
-				So(err, ShouldBeNil)
-				So(contents, ShouldNotBeEmpty)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, contents, should.NotBeEmpty)
 			})
 
-			Convey("with no diff against parent when called for unmodified path", func() {
+			t.Run("with no diff against parent when called for unmodified path", func(t *ftt.Test) {
 				ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -852,11 +853,11 @@ func TestIntegration(t *testing.T) {
 
 				contents, err := client.DownloadDiff(ctx, "fake-host", "fake/project", "fake-revision-2", gitiles.PARENT, "other/fake/file")
 
-				So(err, ShouldBeNil)
-				So(contents, ShouldBeEmpty)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, contents, should.BeEmpty)
 			})
 
-			Convey("with diff against revision when called for modified path", func() {
+			t.Run("with diff against revision when called for modified path", func(t *ftt.Test) {
 				ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -887,11 +888,11 @@ func TestIntegration(t *testing.T) {
 
 				contents, err := client.DownloadDiff(ctx, "fake-host", "fake/project", "fake-revision-2", "fake-revision-3", "fake/file")
 
-				So(err, ShouldBeNil)
-				So(contents, ShouldNotBeEmpty)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, contents, should.NotBeEmpty)
 			})
 
-			Convey("with no diff against revision when called for unmodified path", func() {
+			t.Run("with no diff against revision when called for unmodified path", func(t *ftt.Test) {
 				ctx := gitiles.UseGitilesClientFactory(ctx, Factory(map[string]*Host{
 					"fake-host": {
 						Projects: map[string]*Project{
@@ -922,8 +923,8 @@ func TestIntegration(t *testing.T) {
 
 				contents, err := client.DownloadDiff(ctx, "fake-host", "fake/project", "fake-revision-2", "fake-revision-3", "fake/file")
 
-				So(err, ShouldBeNil)
-				So(contents, ShouldBeEmpty)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, contents, should.BeEmpty)
 			})
 
 		})

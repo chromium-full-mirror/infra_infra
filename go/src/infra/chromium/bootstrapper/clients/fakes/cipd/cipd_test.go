@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/testfs"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	real "infra/chromium/bootstrapper/clients/cipd"
 	"infra/chromium/util"
@@ -29,10 +29,10 @@ func TestEnsure(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Client.Ensure", t, func() {
+	ftt.Run("Client.Ensure", t, func(t *ftt.Test) {
 		cipdRoot := t.TempDir()
 
-		Convey("returns pin for a package by default", func() {
+		t.Run("returns pin for a package by default", func(t *ftt.Test) {
 			client := Client{}
 
 			packageVersions, err := client.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
@@ -42,12 +42,12 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
-			So(packageVersions, ShouldContainKey, "fake-subdir")
-			So(packageVersions["fake-subdir"], ShouldNotBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packageVersions, should.ContainKey("fake-subdir"))
+			assert.Loosely(t, packageVersions["fake-subdir"], should.NotBeEmpty)
 		})
 
-		Convey("fails for a nil package", func() {
+		t.Run("fails for a nil package", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": nil,
 			}}
@@ -59,11 +59,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, `unknown package "fake-package"`)
-			So(packageVersions, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown package "fake-package"`))
+			assert.Loosely(t, packageVersions, should.BeNil)
 		})
 
-		Convey("fails for an a version mapping to an empty instance ID", func() {
+		t.Run("fails for an a version mapping to an empty instance ID", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": {
 					Refs: map[string]string{
@@ -79,11 +79,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, `unknown version "fake-version" of package "fake-package"`)
-			So(packageVersions, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown version "fake-version" of package "fake-package"`))
+			assert.Loosely(t, packageVersions, should.BeNil)
 		})
 
-		Convey("returns pin for version mapping to provided instance ID", func() {
+		t.Run("returns pin for version mapping to provided instance ID", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": {
 					Refs: map[string]string{
@@ -99,12 +99,12 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
-			So(packageVersions, ShouldContainKey, "fake-subdir")
-			So(packageVersions["fake-subdir"], ShouldEqual, "fake-instance-id")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packageVersions, should.ContainKey("fake-subdir"))
+			assert.Loosely(t, packageVersions["fake-subdir"], should.Equal("fake-instance-id"))
 		})
 
-		Convey("fails for a non-existent instance ID", func() {
+		t.Run("fails for a non-existent instance ID", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": {
 					Instances: map[string]*PackageInstance{
@@ -120,11 +120,11 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldErrLike, `unknown version "fake-instance-id" of package "fake-package"`)
-			So(packageVersions, ShouldBeNil)
+			assert.Loosely(t, err, should.ErrLike(`unknown version "fake-instance-id" of package "fake-package"`))
+			assert.Loosely(t, packageVersions, should.BeNil)
 		})
 
-		Convey("returns pin for instance ID", func() {
+		t.Run("returns pin for instance ID", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": {
 					Instances: map[string]*PackageInstance{
@@ -140,12 +140,12 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
-			So(packageVersions, ShouldContainKey, "fake-subdir")
-			So(packageVersions["fake-subdir"], ShouldEqual, "fake-instance-id")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packageVersions, should.ContainKey("fake-subdir"))
+			assert.Loosely(t, packageVersions["fake-subdir"], should.Equal("fake-instance-id"))
 		})
 
-		Convey("deploys specified files", func() {
+		t.Run("deploys specified files", func(t *ftt.Test) {
 			client := Client{map[string]*Package{
 				"fake-package": {
 					Instances: map[string]*PackageInstance{
@@ -166,12 +166,12 @@ func TestEnsure(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			layout := collect(cipdRoot, "fake-subdir")
-			So(layout, ShouldResemble, map[string]string{
+			assert.Loosely(t, layout, should.Resemble(map[string]string{
 				"infra/config/recipes.cfg": "fake-recipes.cfg",
 				"recipes/foo.py":           "fake-recipe-foo",
-			})
+			}))
 		})
 
 	})
@@ -182,13 +182,13 @@ func TestIntegration(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("CIPD using fake factory", t, func() {
+	ftt.Run("CIPD using fake factory", t, func(t *ftt.Test) {
 
 		cipdRoot := t.TempDir()
 
 		ctx := real.UseClientFactory(ctx, Factory(nil))
 
-		Convey("succeeds when calling EnsurePackages", func() {
+		t.Run("succeeds when calling EnsurePackages", func(t *ftt.Test) {
 			packages, err := real.Ensure(ctx, "fake-url", cipdRoot, map[string]*real.Package{
 				"fake-subdir": {
 					Name:    "fake-package",
@@ -196,12 +196,12 @@ func TestIntegration(t *testing.T) {
 				},
 			})
 
-			So(err, ShouldBeNil)
-			So(packages, ShouldContainKey, "fake-subdir")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packages, should.ContainKey("fake-subdir"))
 			pkg := packages["fake-subdir"]
-			So(pkg.Name, ShouldEqual, "fake-package")
-			So(pkg.RequestedVersion, ShouldEqual, "fake-version")
-			So(pkg.ActualVersion, ShouldNotBeEmpty)
+			assert.Loosely(t, pkg.Name, should.Equal("fake-package"))
+			assert.Loosely(t, pkg.RequestedVersion, should.Equal("fake-version"))
+			assert.Loosely(t, pkg.ActualVersion, should.NotBeEmpty)
 		})
 
 	})

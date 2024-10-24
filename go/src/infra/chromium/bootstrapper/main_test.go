@@ -17,12 +17,15 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 
 	"infra/chromium/bootstrapper/bootstrap"
@@ -83,38 +86,38 @@ func TestPerformBootstrap(t *testing.T) {
 		"fake-package": pkg,
 	}))
 
-	Convey("performBootstrap", t, func() {
+	ftt.Run("performBootstrap", t, func(t *ftt.Test) {
 
-		Convey("fails if reading input fails", func() {
+		t.Run("fails if reading input fails", func(t *ftt.Test) {
 			input := reader{func(p []byte) (int, error) {
 				return 0, errors.New("test read failure")
 			}}
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldNotBeNil)
-			So(cmd, ShouldBeNil)
-			So(exeInput, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, cmd, should.BeNil)
+			assert.Loosely(t, exeInput, should.BeNil)
 		})
 
-		Convey("fails if unmarshalling build fails", func() {
+		t.Run("fails if unmarshalling build fails", func(t *ftt.Test) {
 			input := strings.NewReader("invalid-proto")
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldNotBeNil)
-			So(cmd, ShouldBeNil)
-			So(exeInput, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, cmd, should.BeNil)
+			assert.Loosely(t, exeInput, should.BeNil)
 		})
 
-		Convey("fails if bootstrap fails", func() {
+		t.Run("fails if bootstrap fails", func(t *ftt.Test) {
 			input := createInput(`{}`)
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldNotBeNil)
-			So(cmd, ShouldBeNil)
-			So(exeInput, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, cmd, should.BeNil)
+			assert.Loosely(t, exeInput, should.BeNil)
 		})
 
 		input := createInput(`{
@@ -142,7 +145,7 @@ func TestPerformBootstrap(t *testing.T) {
 			}
 		}`)
 
-		Convey("fails if determining executable fails", func() {
+		t.Run("fails if determining executable fails", func(t *ftt.Test) {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
 				Files: map[string]*fakegitiles.PathObject{
@@ -155,12 +158,12 @@ func TestPerformBootstrap(t *testing.T) {
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldNotBeNil)
-			So(cmd, ShouldBeNil)
-			So(exeInput, ShouldBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, cmd, should.BeNil)
+			assert.Loosely(t, exeInput, should.BeNil)
 		})
 
-		Convey("succeeds for valid input", func() {
+		t.Run("succeeds for valid input", func(t *ftt.Test) {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
 				Files: map[string]*fakegitiles.PathObject{
@@ -173,15 +176,15 @@ func TestPerformBootstrap(t *testing.T) {
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldBeNil)
-			So(cmd, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, cmd, should.Resemble([]string{
 				filepath.Join(opts.packagesRoot, "cipd", "exe", "fake-exe"),
 				"--output",
 				opts.outputPath,
-			})
+			}))
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			So(build, ShouldResembleProtoJSON, `{
+			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 				"input": {
 					"gitiles_commit": {
 						"host": "fake-host",
@@ -221,10 +224,10 @@ func TestPerformBootstrap(t *testing.T) {
 						"foo": "builder-value"
 					}
 				}
-			}`)
+			}`))
 		})
 
-		Convey("succeeds for polymorphic with build properties prioritized over builder properties", func() {
+		t.Run("succeeds for polymorphic with build properties prioritized over builder properties", func(t *ftt.Test) {
 			project.Refs["fake-ref"] = "fake-revision"
 			project.Revisions["fake-revision"] = &fakegitiles.Revision{
 				Files: map[string]*fakegitiles.PathObject{
@@ -236,10 +239,10 @@ func TestPerformBootstrap(t *testing.T) {
 			opts.polymorphic = true
 
 			_, exeInput, err := performBootstrap(ctx, input, opts)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			So(build, ShouldResembleProtoJSON, `{
+			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 				"input": {
 					"gitiles_commit": {
 						"host": "fake-host",
@@ -279,10 +282,10 @@ func TestPerformBootstrap(t *testing.T) {
 						"foo": "build-value"
 					}
 				}
-			}`)
+			}`))
 		})
 
-		Convey("succeeds for properties-optional without $bootstrap/properties", func() {
+		t.Run("succeeds for properties-optional without $bootstrap/properties", func(t *ftt.Test) {
 			input := createInput(`{
 				"input": {
 					"properties": {
@@ -300,15 +303,15 @@ func TestPerformBootstrap(t *testing.T) {
 
 			cmd, exeInput, err := performBootstrap(ctx, input, opts)
 
-			So(err, ShouldBeNil)
-			So(cmd, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, cmd, should.Resemble([]string{
 				filepath.Join(opts.packagesRoot, "cipd", "exe", "fake-exe"),
 				"--output",
 				opts.outputPath,
-			})
+			}))
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			So(build, ShouldResembleProtoJSON, `{
+			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
 				"input": {
 					"properties": {
 						"$build/chromium_bootstrap": {
@@ -324,7 +327,7 @@ func TestPerformBootstrap(t *testing.T) {
 						}
 					}
 				}
-			}`)
+			}`))
 		})
 
 	})
@@ -397,22 +400,22 @@ func TestBootstrapMain(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("bootstrapMain", t, func() {
+	ftt.Run("bootstrapMain", t, func(t *ftt.Test) {
 
 		getOptions := func() options { return options{} }
 		performBootstrap := testBootstrapFn(nil)
 		execute := testExecuteCmdFn(nil)
 		records, getStream := testGetStreamFn(nil)
 
-		Convey("does not update build on success", func() {
+		t.Run("does not update build on success", func(t *ftt.Test) {
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldBeNil)
-			So(sleepDuration, ShouldEqual, 0)
-			So(records.builds, ShouldBeEmpty)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, records.builds, should.BeEmpty)
 		})
 
-		Convey("does not update build on bootstrapped exe failure", func() {
+		t.Run("does not update build on bootstrapped exe failure", func(t *ftt.Test) {
 			exeErr := &exec.ExitError{
 				ProcessState: &os.ProcessState{},
 				Stderr:       []byte("test exe failure"),
@@ -421,34 +424,34 @@ func TestBootstrapMain(t *testing.T) {
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, exeErr)
-			So(sleepDuration, ShouldEqual, 0)
-			So(records.builds, ShouldBeEmpty)
+			assert.Loosely(t, err, should.ErrLike(exeErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, records.builds, should.BeEmpty)
 		})
 
-		Convey("updates build when failing to execute bootstrapped exe", func() {
+		t.Run("updates build when failing to execute bootstrapped exe", func(t *ftt.Test) {
 			cmdErr := errors.New("test cmd execution failure")
 			execute := testExecuteCmdFn(cmdErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, cmdErr)
-			So(sleepDuration, ShouldEqual, 0)
-			So(len(records.builds), ShouldEqual, 2)
-			So(records.builds[0], ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.ErrLike(cmdErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, len(records.builds), should.Equal(2))
+			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`)
-			So(records.builds[1], ShouldResembleProtoJSON, `{
+			}`))
+			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"summary_markdown": "<pre>test cmd execution failure</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`)
+			}`))
 		})
 
-		Convey("updates build on failure of non-bootstrapped exe process", func() {
+		t.Run("updates build on failure of non-bootstrapped exe process", func(t *ftt.Test) {
 			cmdErr := &exec.ExitError{
 				ProcessState: &os.ProcessState{},
 				Stderr:       []byte("test process failure"),
@@ -457,60 +460,60 @@ func TestBootstrapMain(t *testing.T) {
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, cmdErr)
-			So(sleepDuration, ShouldEqual, 0)
-			So(len(records.builds), ShouldEqual, 2)
-			So(records.builds[0], ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.ErrLike(cmdErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, len(records.builds), should.Equal(2))
+			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`)
-			So(records.builds[1], ShouldResembleProtoJSON, fmt.Sprintf(`{
+			}`))
+			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(fmt.Sprintf(`{
 				"summary_markdown": "<pre>%s</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`, cmdErr))
+			}`, cmdErr)))
 		})
 
-		Convey("updates build for generic bootstrap failure", func() {
+		t.Run("updates build for generic bootstrap failure", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, bootstrapErr)
-			So(sleepDuration, ShouldEqual, 0)
-			So(len(records.builds), ShouldEqual, 2)
-			So(records.builds[0], ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, len(records.builds), should.Equal(2))
+			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`)
-			So(records.builds[1], ShouldResembleProtoJSON, `{
+			}`))
+			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"summary_markdown": "<pre>test bootstrap failure</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`)
+			}`))
 		})
 
-		Convey("updates build for patch rejected failure", func() {
+		t.Run("updates build for patch rejected failure", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			bootstrapErr = bootstrap.PatchRejected.Apply(bootstrapErr)
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, bootstrapErr)
-			So(sleepDuration, ShouldEqual, 0)
-			So(len(records.builds), ShouldEqual, 2)
-			So(records.builds[0], ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
+			assert.Loosely(t, len(records.builds), should.Equal(2))
+			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`)
-			So(records.builds[1], ShouldResembleProtoJSON, `{
+			}`))
+			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"summary_markdown": "<pre>Patch failure: See build stderr log. Try rebasing?</pre>",
 				"output": {
 					"status": "FAILURE",
@@ -518,33 +521,33 @@ func TestBootstrapMain(t *testing.T) {
 						"failure_type": "PATCH_FAILURE"
 					}
 				}
-			}`)
+			}`))
 		})
 
-		Convey("returns sleep duration for sleep tagged error", func() {
+		t.Run("returns sleep duration for sleep tagged error", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test error")
 			bootstrapErr = bootstrap.SleepBeforeExiting.With(20 * time.Second).Apply(bootstrapErr)
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, "test error")
-			So(sleepDuration, ShouldEqual, 20*time.Second)
-			So(len(records.builds), ShouldEqual, 2)
-			So(records.builds[0], ShouldResembleProtoJSON, `{
+			assert.Loosely(t, err, should.ErrLike("test error"))
+			assert.Loosely(t, sleepDuration, should.Equal(20*time.Second))
+			assert.Loosely(t, len(records.builds), should.Equal(2))
+			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`)
-			So(records.builds[1], ShouldResembleProtoJSON, `{
+			}`))
+			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
 				"summary_markdown": "<pre>test error</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`)
+			}`))
 		})
 
-		Convey("returns original error if getting stream fails", func() {
+		t.Run("returns original error if getting stream fails", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 			getStreamErr := errors.New("test get stream failure")
@@ -552,11 +555,11 @@ func TestBootstrapMain(t *testing.T) {
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, bootstrapErr)
-			So(sleepDuration, ShouldEqual, 0)
+			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
 		})
 
-		Convey("returns original error if writing initial build fails", func() {
+		t.Run("returns original error if writing initial build fails", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 			initialBuildErr := errors.New("test initial build failure")
@@ -564,11 +567,11 @@ func TestBootstrapMain(t *testing.T) {
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, bootstrapErr)
-			So(sleepDuration, ShouldEqual, 0)
+			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
 		})
 
-		Convey("returns original error if updating build fails", func() {
+		t.Run("returns original error if updating build fails", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test bootstrap failure")
 			performBootstrap := testBootstrapFn(bootstrapErr)
 			updateBuildErr := errors.New("test update build failure")
@@ -576,8 +579,8 @@ func TestBootstrapMain(t *testing.T) {
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)
 
-			So(err, ShouldErrLike, bootstrapErr)
-			So(sleepDuration, ShouldEqual, 0)
+			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
+			assert.Loosely(t, sleepDuration, should.BeZero)
 		})
 
 	})

@@ -10,11 +10,12 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 type fakeClient struct {
@@ -41,7 +42,7 @@ func TestExecute(t *testing.T) {
 	ctx := context.Background()
 	ctx = UseTestClock(ctx)
 
-	Convey("Execute", t, func() {
+	ftt.Run("Execute", t, func(t *ftt.Test) {
 
 		var retriableErrors = []codes.Code{
 			codes.NotFound,
@@ -50,7 +51,7 @@ func TestExecute(t *testing.T) {
 			codes.ResourceExhausted,
 		}
 
-		Convey("does not retry on errors without status code", func() {
+		t.Run("does not retry on errors without status code", func(t *ftt.Test) {
 			client := &fakeClient{
 				err: errors.New("fake error without code"),
 				max: 1,
@@ -58,10 +59,10 @@ func TestExecute(t *testing.T) {
 
 			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldErrLike, "fake error without code")
+			assert.Loosely(t, err, should.ErrLike("fake error without code"))
 		})
 
-		Convey("does not retry on errors with non-retriable code", func() {
+		t.Run("does not retry on errors with non-retriable code", func(t *ftt.Test) {
 			client := &fakeClient{
 				err: status.Error(codes.InvalidArgument, "fake error with non-retriable code"),
 				max: 1,
@@ -69,11 +70,11 @@ func TestExecute(t *testing.T) {
 
 			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldErrLike, "fake error with non-retriable code")
+			assert.Loosely(t, err, should.ErrLike("fake error with non-retriable code"))
 		})
 
 		for _, code := range retriableErrors {
-			Convey(fmt.Sprintf("retries on %s errors", code), func() {
+			t.Run(fmt.Sprintf("retries on %s errors", code), func(t *ftt.Test) {
 				message := messageForCode(code)
 				client := &fakeClient{
 					err: status.Error(code, message),
@@ -82,29 +83,29 @@ func TestExecute(t *testing.T) {
 
 				err := Execute(ctx, "fake op", client.op)
 
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				Convey("unless retries are disabled", func() {
+				t.Run("unless retries are disabled", func(t *ftt.Test) {
 					client.count = 0
 					ctx := DisableRetries(ctx)
 
 					err := Execute(ctx, "fake op", client.op)
 
-					So(err, ShouldErrLike, message)
+					assert.Loosely(t, err, should.ErrLike(message))
 				})
 
-				Convey("when retries are re-enabled", func() {
+				t.Run("when retries are re-enabled", func(t *ftt.Test) {
 					client.count = 0
 					ctx := EnableRetries(DisableRetries(ctx))
 
 					err := Execute(ctx, "fake op", client.op)
 
-					So(err, ShouldBeNil)
+					assert.Loosely(t, err, should.BeNil)
 				})
 			})
 		}
 
-		Convey("fails if operation does not succeed within max time", func() {
+		t.Run("fails if operation does not succeed within max time", func(t *ftt.Test) {
 			code := retriableErrors[0]
 			message := messageForCode(code)
 			client := &fakeClient{
@@ -114,7 +115,7 @@ func TestExecute(t *testing.T) {
 
 			err := Execute(ctx, "fake op", client.op)
 
-			So(err, ShouldErrLike, message)
+			assert.Loosely(t, err, should.ErrLike(message))
 		})
 
 	})

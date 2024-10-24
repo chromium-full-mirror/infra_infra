@@ -8,10 +8,11 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	. "infra/chromium/util"
 )
@@ -19,30 +20,28 @@ import (
 func TestMultierror(t *testing.T) {
 	t.Parallel()
 
-	Convey("multierror", t, func() {
+	ftt.Run("multierror", t, func(t *ftt.Test) {
 
-		Convey("reports a contained error", func() {
+		t.Run("reports a contained error", func(t *ftt.Test) {
 			m := &multierror{[]error{
 				errors.New("foo error"),
 			}}
 
-			So(m, ShouldErrLike,
-				"1 error occurred",
-				"foo error")
+			assert.Loosely(t, m, should.ErrLike("1 error occurred"))
+			assert.Loosely(t, m, should.ErrLike("foo error"))
 		})
 
-		Convey("reports all contained errors", func() {
+		t.Run("reports all contained errors", func(t *ftt.Test) {
 			m := &multierror{[]error{
 				errors.New("foo error"),
 				errors.New("bar error"),
 				errors.New("baz error"),
 			}}
 
-			So(m, ShouldErrLike,
-				"3 errors occurred",
-				"foo error",
-				"bar error",
-				"baz error")
+			assert.Loosely(t, m, should.ErrLike("3 errors occurred"))
+			assert.Loosely(t, m, should.ErrLike("foo error"))
+			assert.Loosely(t, m, should.ErrLike("bar error"))
+			assert.Loosely(t, m, should.ErrLike("baz error"))
 		})
 
 	})
@@ -61,9 +60,9 @@ func (f *fakeValidatable) validate(v *validator) {
 func TestValidate(t *testing.T) {
 	t.Parallel()
 
-	Convey("validate", t, func() {
+	ftt.Run("validate", t, func(t *ftt.Test) {
 
-		Convey("calls validate on the validatable", func() {
+		t.Run("calls validate on the validatable", func(t *ftt.Test) {
 			called := false
 			x := &fakeValidatable{func(v *validator) {
 				called = true
@@ -71,34 +70,34 @@ func TestValidate(t *testing.T) {
 
 			err := validate(x, "$test")
 
-			So(err, ShouldBeNil)
-			So(called, ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, called, should.BeTrue)
 		})
 
-		Convey("returns error if validator.errorf is called", func() {
+		t.Run("returns error if validator.errorf is called", func(t *ftt.Test) {
 
-			Convey("with ${} in format string replaced with validation context", func() {
+			t.Run("with ${} in format string replaced with validation context", func(t *ftt.Test) {
 				x := &fakeValidatable{func(v *validator) {
 					v.errorf("failure to validate ${}")
 				}}
 
 				err := validate(x, "$test")
 
-				So(err, ShouldErrLike, "failure to validate $test")
+				assert.Loosely(t, err, should.ErrLike("failure to validate $test"))
 
 			})
 
-			Convey("with ${} in format arguments not replace with validation context", func() {
+			t.Run("with ${} in format arguments not replace with validation context", func(t *ftt.Test) {
 				x := &fakeValidatable{func(v *validator) {
 					v.errorf("failure to validate %s", "${}")
 				}}
 
 				err := validate(x, "$test")
 
-				So(err, ShouldErrLike, "failure to validate ${}")
+				assert.Loosely(t, err, should.ErrLike("failure to validate ${}"))
 			})
 
-			Convey("with ${} in format string replaced with updated validation context in nested validate call", func() {
+			t.Run("with ${} in format string replaced with updated validation context in nested validate call", func(t *ftt.Test) {
 				x := &fakeValidatable{func(v *validator) {
 					v.errorf("failure to validate ${}")
 				}}
@@ -108,7 +107,7 @@ func TestValidate(t *testing.T) {
 
 				err := validate(y, "$test")
 
-				So(err, ShouldErrLike, "failure to validate $test.x")
+				assert.Loosely(t, err, should.ErrLike("failure to validate $test.x"))
 			})
 
 		})
@@ -125,33 +124,31 @@ func createBootstrapPropertiesProperties(propsJson []byte) *BootstrapPropertiesP
 func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 	t.Parallel()
 
-	Convey("validate", t, func() {
+	ftt.Run("validate", t, func(t *ftt.Test) {
 
-		Convey("fails for unset required top-level fields", func() {
+		t.Run("fails for unset required top-level fields", func(t *ftt.Test) {
 			props := createBootstrapPropertiesProperties([]byte("{}"))
 
 			err := validate(props, "$test")
 
-			So(err, ShouldErrLike,
-				"none of the config_project fields in $test is set",
-				"$test.properties_file is not set")
+			assert.Loosely(t, err, should.ErrLike("none of the config_project fields in $test is set"))
+			assert.Loosely(t, err, should.ErrLike("$test.properties_file is not set"))
 		})
 
-		Convey("with a top level project", func() {
+		t.Run("with a top level project", func(t *ftt.Test) {
 
-			Convey("fails for unset required fields in top_level_project", func() {
+			t.Run("fails for unset required fields in top_level_project", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 					"top_level_project": {}
 				}`))
 
 				err := validate(props, "$test")
 
-				So(err, ShouldErrLike,
-					"$test.top_level_project.repo is not set",
-					"$test.top_level_project.ref is not set")
+				assert.Loosely(t, err, should.ErrLike("$test.top_level_project.repo is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.top_level_project.ref is not set"))
 			})
 
-			Convey("fails for unset required fields in top_level_project.repo", func() {
+			t.Run("fails for unset required fields in top_level_project.repo", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"top_level_project": {
 							"repo": {}
@@ -160,12 +157,11 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldErrLike,
-					"$test.top_level_project.repo.host is not set",
-					"$test.top_level_project.repo.project is not set")
+				assert.Loosely(t, err, should.ErrLike("$test.top_level_project.repo.host is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.top_level_project.repo.project is not set"))
 			})
 
-			Convey("succeeds for valid properties", func() {
+			t.Run("succeeds for valid properties", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"top_level_project": {
 							"repo": {
@@ -179,27 +175,27 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 
-		Convey("with a dependency project", func() {
+		t.Run("with a dependency project", func(t *ftt.Test) {
 
-			Convey("fails for unset required fields in dependency_project", func() {
+			t.Run("fails for unset required fields in dependency_project", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {}
 					}`))
 
 				err := validate(props, "$test")
 
-				So(err, ShouldErrLike,
-					"$test.dependency_project.top_level_repo is not set",
-					"$test.dependency_project.top_level_ref is not set",
-					"$test.dependency_project.config_repo is not set",
-					"none of the config_repo_locator fields in $test.dependency_project is set")
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.top_level_repo is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.top_level_ref is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.config_repo is not set"))
+				assert.Loosely(t, err, should.ErrLike(
+					"none of the config_repo_locator fields in $test.dependency_project is set"))
 			})
 
-			Convey("fails for unset required fields in dependency_project.top_level_repo", func() {
+			t.Run("fails for unset required fields in dependency_project.top_level_repo", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {
 							"top_level_repo": {}
@@ -208,12 +204,11 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldErrLike,
-					"$test.dependency_project.top_level_repo.host is not set",
-					"$test.dependency_project.top_level_repo.project is not set")
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.top_level_repo.host is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.top_level_repo.project is not set"))
 			})
 
-			Convey("fails for unset required fields in dependency_project.config_repo", func() {
+			t.Run("fails for unset required fields in dependency_project.config_repo", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {
 							"config_repo": {}
@@ -222,12 +217,11 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldErrLike,
-					"$test.dependency_project.config_repo.host is not set",
-					"$test.dependency_project.config_repo.project is not set")
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.config_repo.host is not set"))
+				assert.Loosely(t, err, should.ErrLike("$test.dependency_project.config_repo.project is not set"))
 			})
 
-			Convey("succeeds for valid properties with config_repo_submodule_path", func() {
+			t.Run("succeeds for valid properties with config_repo_submodule_path", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {
 							"top_level_repo": {
@@ -246,10 +240,10 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 
-			Convey("succeeds for valid properties with config_repo_path", func() {
+			t.Run("succeeds for valid properties with config_repo_path", func(t *ftt.Test) {
 				props := createBootstrapPropertiesProperties([]byte(`{
 						"dependency_project": {
 							"top_level_repo": {
@@ -268,7 +262,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 
 				err := validate(props, "$test")
 
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 			})
 
 		})
@@ -285,30 +279,29 @@ func createBootstrapExeProperties(propsJson []byte) *BootstrapExeProperties {
 func TestBootstrapExePropertiesValidation(t *testing.T) {
 	t.Parallel()
 
-	Convey("validate", t, func() {
+	ftt.Run("validate", t, func(t *ftt.Test) {
 
-		Convey("fails for unset required top-level fields", func() {
+		t.Run("fails for unset required top-level fields", func(t *ftt.Test) {
 			props := createBootstrapExeProperties([]byte("{}"))
 
 			err := validate(props, "$test")
 
-			So(err, ShouldErrLike, "$test.exe is not set")
+			assert.Loosely(t, err, should.ErrLike("$test.exe is not set"))
 		})
 
-		Convey("fails for unset required fields in exe", func() {
+		t.Run("fails for unset required fields in exe", func(t *ftt.Test) {
 			props := createBootstrapExeProperties([]byte(`{
 				"exe": {}
 			}`))
 
 			err := validate(props, "$test")
 
-			So(err, ShouldErrLike,
-				"$test.exe.cipd_package is not set",
-				"$test.exe.cipd_version is not set",
-				"$test.exe.cmd is not set")
+			assert.Loosely(t, err, should.ErrLike("$test.exe.cipd_package is not set"))
+			assert.Loosely(t, err, should.ErrLike("$test.exe.cipd_version is not set"))
+			assert.Loosely(t, err, should.ErrLike("$test.exe.cmd is not set"))
 		})
 
-		Convey("succeeds for valid properties", func() {
+		t.Run("succeeds for valid properties", func(t *ftt.Test) {
 			props := createBootstrapExeProperties([]byte(`{
 				"exe": {
 					"cipd_package": "fake-package",
@@ -319,7 +312,7 @@ func TestBootstrapExePropertiesValidation(t *testing.T) {
 
 			err := validate(props, "$test")
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})
@@ -334,9 +327,9 @@ func createBootstrapTriggerProperties(propsJson []byte) *BootstrapTriggerPropert
 func TestBootstrapTriggerPropertiesValidation(t *testing.T) {
 	t.Parallel()
 
-	Convey("validate", t, func() {
+	ftt.Run("validate", t, func(t *ftt.Test) {
 
-		Convey("fails for unset required fields in commits", func() {
+		t.Run("fails for unset required fields in commits", func(t *ftt.Test) {
 			props := createBootstrapTriggerProperties([]byte(`{
 				"commits": [
 					{
@@ -356,13 +349,12 @@ func TestBootstrapTriggerPropertiesValidation(t *testing.T) {
 
 			err := validate(props, "$test")
 
-			So(err, ShouldErrLike,
-				"$test.commits[0].host is not set",
-				"$test.commits[1].project is not set",
-				"$test.commits[2] has neither ref nor id set")
+			assert.Loosely(t, err, should.ErrLike("$test.commits[0].host is not set"))
+			assert.Loosely(t, err, should.ErrLike("$test.commits[1].project is not set"))
+			assert.Loosely(t, err, should.ErrLike("$test.commits[2] has neither ref nor id set"))
 		})
 
-		Convey("succeeds for valid properties", func() {
+		t.Run("succeeds for valid properties", func(t *ftt.Test) {
 			props := createBootstrapTriggerProperties([]byte(`{
 				"commits": [
 					{
@@ -390,7 +382,7 @@ func TestBootstrapTriggerPropertiesValidation(t *testing.T) {
 
 			err := validate(props, "$test")
 
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})
