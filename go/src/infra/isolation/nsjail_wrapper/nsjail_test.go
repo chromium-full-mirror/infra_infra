@@ -18,14 +18,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 // in the test
@@ -89,12 +90,12 @@ func TestRunInNsjail(t *testing.T) {
 
 	ctx = context.WithValue(ctx, nsjailLogTestKey, f)
 
-	Convey("basic command tries to run nsjail", t, func() {
+	ftt.Run("basic command tries to run nsjail", t, func(t *ftt.Test) {
 		err := RunInNsjail(ctx, []string{"cat", "hello world"})
 		// // override exec.Command
 		execCommand = fakeExecCommand
 		defer func() { execCommand = exec.CommandContext }()
-		So(err.Error(), ShouldContainSubstring, "nsjail: no such file or directory")
+		assert.Loosely(t, err.Error(), should.ContainSubstring("nsjail: no such file or directory"))
 	})
 
 	defer os.Remove(testNsjailLog)
