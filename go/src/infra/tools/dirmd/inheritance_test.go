@@ -7,18 +7,17 @@ package dirmd
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestReduce(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Reduce`, t, func() {
-		Convey(`Works`, func() {
+	ftt.Run(`Reduce`, t, func(t *ftt.Test) {
+		t.Run(`Works`, func(t *ftt.Test) {
 			input := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {
@@ -39,8 +38,8 @@ func TestReduce(t *testing.T) {
 			}
 
 			actual := input.Clone()
-			So(actual.Reduce(), ShouldBeNil)
-			So(actual.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, actual.Reduce(), should.BeNil)
+			assert.Loosely(t, actual.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": input.Dirs["."], // did not change
 					"a": {
@@ -50,10 +49,10 @@ func TestReduce(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Deep nesting`, func() {
+		t.Run(`Deep nesting`, func(t *ftt.Test) {
 			m := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {TeamEmail: "team@example.com"},
@@ -65,13 +64,13 @@ func TestReduce(t *testing.T) {
 					"a/b": {TeamEmail: "team@example.com"},
 				},
 			}
-			So(m.Reduce(), ShouldBeNil)
-			So(m.Dirs["a"].GetTeamEmail(), ShouldEqual, "")
-			So(m.Dirs["a"].GetOs(), ShouldEqual, dirmdpb.OS_ANDROID)
-			So(m.Dirs, ShouldNotContainKey, "a/b")
+			assert.Loosely(t, m.Reduce(), should.BeNil)
+			assert.Loosely(t, m.Dirs["a"].GetTeamEmail(), should.BeEmpty)
+			assert.Loosely(t, m.Dirs["a"].GetOs(), should.Equal(dirmdpb.OS_ANDROID))
+			assert.Loosely(t, m.Dirs, should.NotContainKey("a/b"))
 		})
 
-		Convey(`Mixins`, func() {
+		t.Run(`Mixins`, func(t *ftt.Test) {
 			input := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {
@@ -109,8 +108,8 @@ func TestReduce(t *testing.T) {
 			}
 
 			actual := input.Clone()
-			So(actual.Reduce(), ShouldBeNil)
-			So(actual.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, actual.Reduce(), should.BeNil)
+			assert.Loosely(t, actual.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": input.Dirs["."], // did not change
 					"a": {
@@ -125,30 +124,30 @@ func TestReduce(t *testing.T) {
 					},
 				},
 				Repos: input.Repos,
-			})
+			}))
 		})
 
-		Convey(`Nothing to reduce`, func() {
+		t.Run(`Nothing to reduce`, func(t *ftt.Test) {
 			m := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a": {TeamEmail: "team@example.com"},
 					"b": {TeamEmail: "team@example.com"},
 				},
 			}
-			So(m.Reduce(), ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, m.Reduce(), should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a": {TeamEmail: "team@example.com"},
 					"b": {TeamEmail: "team@example.com"},
 				},
-			})
+			}))
 		})
 	})
 }
 
 func TestMerge(t *testing.T) {
-	Convey(`Merge`, t, func() {
-		Convey(`wpt.notify false value is not overwritten/ignored`, func() {
+	ftt.Run(`Merge`, t, func(t *ftt.Test) {
+		t.Run(`wpt.notify false value is not overwritten/ignored`, func(t *ftt.Test) {
 			inherited := &dirmdpb.Metadata{
 				Wpt: &dirmdpb.WPT{Notify: dirmdpb.Trinary_YES},
 			}
@@ -156,7 +155,7 @@ func TestMerge(t *testing.T) {
 				Wpt: &dirmdpb.WPT{Notify: dirmdpb.Trinary_NO},
 			}
 			Merge(inherited, own)
-			So(inherited.Wpt.Notify, ShouldEqual, dirmdpb.Trinary_NO)
+			assert.Loosely(t, inherited.Wpt.Notify, should.Equal(dirmdpb.Trinary_NO))
 		})
 	})
 }
@@ -164,18 +163,18 @@ func TestMerge(t *testing.T) {
 func TestComputeAll(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Nearest ancestor`, t, func() {
+	ftt.Run(`Nearest ancestor`, t, func(t *ftt.Test) {
 		m := &Mapping{
 			Dirs: map[string]*dirmdpb.Metadata{
 				".": {TeamEmail: "0"},
 			},
 		}
-		So(m.nearestAncestor("a/b/c").TeamEmail, ShouldEqual, "0")
-		So(m.nearestAncestor("."), ShouldBeNil)
+		assert.Loosely(t, m.nearestAncestor("a/b/c").TeamEmail, should.Equal("0"))
+		assert.Loosely(t, m.nearestAncestor("."), should.BeNil)
 	})
 
-	Convey(`ComputeAll`, t, func() {
-		Convey(`Works`, func() {
+	ftt.Run(`ComputeAll`, t, func(t *ftt.Test) {
+		t.Run(`Works`, func(t *ftt.Test) {
 			m := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {
@@ -196,8 +195,8 @@ func TestComputeAll(t *testing.T) {
 					},
 				},
 			}
-			So(m.ComputeAll(), ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, m.ComputeAll(), should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": m.Dirs["."], // did not change
 					"a": {
@@ -209,10 +208,10 @@ func TestComputeAll(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Deep nesting`, func() {
+		t.Run(`Deep nesting`, func(t *ftt.Test) {
 			m := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".":   {TeamEmail: "team@example.com"},
@@ -220,11 +219,11 @@ func TestComputeAll(t *testing.T) {
 					"a/b": {},
 				},
 			}
-			So(m.ComputeAll(), ShouldBeNil)
-			So(m.Dirs["a/b"].TeamEmail, ShouldEqual, "team@example.com")
+			assert.Loosely(t, m.ComputeAll(), should.BeNil)
+			assert.Loosely(t, m.Dirs["a/b"].TeamEmail, should.Equal("team@example.com"))
 		})
 
-		Convey(`Mixins`, func() {
+		t.Run(`Mixins`, func(t *ftt.Test) {
 			m := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": {
@@ -261,8 +260,8 @@ func TestComputeAll(t *testing.T) {
 					},
 				},
 			}
-			So(m.ComputeAll(), ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, m.ComputeAll(), should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					".": m.Dirs["."], // did not change
 					"a": {
@@ -276,10 +275,10 @@ func TestComputeAll(t *testing.T) {
 					},
 				},
 				Repos: m.Repos,
-			})
+			}))
 		})
 
-		Convey(`No root`, func() {
+		t.Run(`No root`, func(t *ftt.Test) {
 			input := &Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a": {TeamEmail: "a"},
@@ -288,8 +287,8 @@ func TestComputeAll(t *testing.T) {
 			}
 
 			actual := input.Clone()
-			So(actual.ComputeAll(), ShouldBeNil)
-			So(input.Proto(), ShouldResembleProto, input.Proto())
+			assert.Loosely(t, actual.ComputeAll(), should.BeNil)
+			assert.Loosely(t, input.Proto(), should.Resemble(input.Proto()))
 		})
 	})
 }

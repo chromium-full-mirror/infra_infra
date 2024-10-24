@@ -7,10 +7,9 @@ package dirmd
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
@@ -25,27 +24,27 @@ func TestHandleMetadata(t *testing.T) {
 	}
 	dir := "/some/path/to/dir/"
 
-	Convey(`Invalid`, t, func() {
-		Convey(`Monorail Nil`, func() {
+	ftt.Run(`Invalid`, t, func(t *ftt.Test) {
+		t.Run(`Monorail Nil`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				TeamEmail: "team@sample.com",
 			}
 			md, err := HandleMetadata(md, cm, dir)
-			So(md, ShouldBeNil)
-			So(err, ShouldErrLike, MonorailMissingError)
+			assert.Loosely(t, md, should.BeNil)
+			assert.Loosely(t, err, should.ErrLike(MonorailMissingError))
 		})
 
-		Convey(`Monorail Component Nil`, func() {
+		t.Run(`Monorail Component Nil`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project: "chromium",
 				},
 			}
 			md, err := HandleMetadata(md, cm, dir)
-			So(md, ShouldBeNil)
-			So(err, ShouldErrLike, MonorailMissingError)
+			assert.Loosely(t, md, should.BeNil)
+			assert.Loosely(t, err, should.ErrLike(MonorailMissingError))
 		})
-		Convey(`Missing Component`, func() {
+		t.Run(`Missing Component`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
@@ -53,33 +52,33 @@ func TestHandleMetadata(t *testing.T) {
 				},
 			}
 			md, err := HandleMetadata(md, cm, dir)
-			So(md, ShouldBeNil)
-			So(err, ShouldErrLike, "Random>Component is missing from the provided mapping")
+			assert.Loosely(t, md, should.BeNil)
+			assert.Loosely(t, err, should.ErrLike("Random>Component is missing from the provided mapping"))
 		})
 	})
 
-	Convey(`Valid`, t, func() {
-		Convey(`Buganizer Defined`, func() {
+	ftt.Run(`Valid`, t, func(t *ftt.Test) {
+		t.Run(`Buganizer Defined`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Buganizer: &dirmdpb.Buganizer{
 					ComponentId: 123,
 				},
 			}
 			newMd, err := HandleMetadata(md, cm, dir)
-			So(err, ShouldBeNil)
-			So(newMd, ShouldResembleProto, md)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newMd, should.Resemble(md))
 		})
-		Convey(`Buganizer Public Defined`, func() {
+		t.Run(`Buganizer Public Defined`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				BuganizerPublic: &dirmdpb.Buganizer{
 					ComponentId: 123,
 				},
 			}
 			newMd, err := HandleMetadata(md, cm, dir)
-			So(err, ShouldBeNil)
-			So(newMd, ShouldResembleProto, md)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, newMd, should.Resemble(md))
 		})
-		Convey(`1:1 mapping`, func() {
+		t.Run(`1:1 mapping`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
@@ -87,7 +86,7 @@ func TestHandleMetadata(t *testing.T) {
 				},
 			}
 			newMd, err := HandleMetadata(md, cm, dir)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
@@ -98,9 +97,9 @@ func TestHandleMetadata(t *testing.T) {
 					ComponentId: 12345,
 				},
 			}
-			So(newMd, ShouldResembleProto, expected)
+			assert.Loosely(t, newMd, should.Resemble(expected))
 		})
-		Convey(`Case insensitive`, func() {
+		t.Run(`Case insensitive`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
@@ -108,7 +107,7 @@ func TestHandleMetadata(t *testing.T) {
 				},
 			}
 			newMd, err := HandleMetadata(md, cm, dir)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			expected := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
@@ -119,9 +118,9 @@ func TestHandleMetadata(t *testing.T) {
 					ComponentId: 12345,
 				},
 			}
-			So(newMd, ShouldResembleProto, expected)
+			assert.Loosely(t, newMd, should.Resemble(expected))
 		})
-		Convey(`Non Chromium Monorail Project`, func() {
+		t.Run(`Non Chromium Monorail Project`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "v8",
@@ -129,10 +128,10 @@ func TestHandleMetadata(t *testing.T) {
 				},
 			}
 			md, err := HandleMetadata(md, cm, dir)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Should remain unchanged.
-			So(md, ShouldResembleProto, md)
+			assert.Loosely(t, md, should.Resemble(md))
 		})
 	})
 }
@@ -140,16 +139,16 @@ func TestHandleMetadata(t *testing.T) {
 func TestCanSkipMixin(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Skip`, t, func() {
-		Convey(`Buganizer Present`, func() {
+	ftt.Run(`Skip`, t, func(t *ftt.Test) {
+		t.Run(`Buganizer Present`, func(t *ftt.Test) {
 			mixin := &dirmdpb.Metadata{
 				Buganizer: &dirmdpb.Buganizer{
 					ComponentId: 12345,
 				},
 			}
-			So(canSkipMixin(mixin), ShouldBeTrue)
+			assert.Loosely(t, canSkipMixin(mixin), should.BeTrue)
 		})
-		Convey(`Buganizer & Monorail Present`, func() {
+		t.Run(`Buganizer & Monorail Present`, func(t *ftt.Test) {
 			mixin := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
@@ -159,32 +158,32 @@ func TestCanSkipMixin(t *testing.T) {
 					ComponentId: 12345,
 				},
 			}
-			So(canSkipMixin(mixin), ShouldBeTrue)
+			assert.Loosely(t, canSkipMixin(mixin), should.BeTrue)
 		})
-		Convey(`No Monorail`, func() {
+		t.Run(`No Monorail`, func(t *ftt.Test) {
 			mixin := &dirmdpb.Metadata{}
-			So(canSkipMixin(mixin), ShouldBeTrue)
+			assert.Loosely(t, canSkipMixin(mixin), should.BeTrue)
 		})
-		Convey(`Non Chromium`, func() {
+		t.Run(`Non Chromium`, func(t *ftt.Test) {
 			mixin := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "v8",
 					Component: "tEsT>CompOnent",
 				},
 			}
-			So(canSkipMixin(mixin), ShouldBeTrue)
+			assert.Loosely(t, canSkipMixin(mixin), should.BeTrue)
 		})
 	})
 
-	Convey(`No Skip`, t, func() {
-		Convey(`Monorail Only`, func() {
+	ftt.Run(`No Skip`, t, func(t *ftt.Test) {
+		t.Run(`Monorail Only`, func(t *ftt.Test) {
 			mixin := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
 					Component: "tEsT>CompOnent",
 				},
 			}
-			So(canSkipMixin(mixin), ShouldBeFalse)
+			assert.Loosely(t, canSkipMixin(mixin), should.BeFalse)
 		})
 	})
 
@@ -192,13 +191,13 @@ func TestCanSkipMixin(t *testing.T) {
 		"test>component": 12345,
 	}
 
-	Convey(`Handle Mixins`, t, func() {
-		Convey(`Nil md`, func() {
+	ftt.Run(`Handle Mixins`, t, func(t *ftt.Test) {
+		t.Run(`Nil md`, func(t *ftt.Test) {
 			mixins, err := HandleMixins(nil, cm, "/root")
-			So(err, ShouldBeNil)
-			So(len(mixins), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mixins), should.BeZero)
 		})
-		Convey(`No Mixins`, func() {
+		t.Run(`No Mixins`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Monorail: &dirmdpb.Monorail{
 					Project:   "chromium",
@@ -207,17 +206,17 @@ func TestCanSkipMixin(t *testing.T) {
 			}
 
 			mixins, err := HandleMixins(md, cm, "/root")
-			So(err, ShouldBeNil)
-			So(len(mixins), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mixins), should.BeZero)
 		})
-		Convey(`Empty Mixins`, func() {
+		t.Run(`Empty Mixins`, func(t *ftt.Test) {
 			md := &dirmdpb.Metadata{
 				Mixins: make([]string, 0),
 			}
 
 			mixins, err := HandleMixins(md, cm, "/root")
-			So(err, ShouldBeNil)
-			So(len(mixins), ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(mixins), should.BeZero)
 		})
 	})
 }

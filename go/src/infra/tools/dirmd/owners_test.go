@@ -8,18 +8,18 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
 	dirmdpb "infra/tools/dirmd/proto"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestParseOwners(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ParseOwners`, t, func() {
-		Convey(`Works`, func() {
+	ftt.Run(`ParseOwners`, t, func(t *ftt.Test) {
+		t.Run(`Works`, func(t *ftt.Test) {
 			actual, filtered, err := ParseOwners(strings.NewReader(`
 # TEAM: team-email@chromium.org
 someone@example.com
@@ -30,15 +30,15 @@ someone@example.com
 # COMPONENT: Some>Component
 # Internal Component: b/components/1234
 # WPT-NOTIFY: true`))
-			So(err, ShouldBeNil)
-			So(filtered, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, filtered, should.Resemble([]string{
 				"",
 				"someone@example.com",
 				"",
 				"# Some comments",
 				"",
-			})
-			So(actual, ShouldResembleProto, &dirmdpb.Metadata{
+			}))
+			assert.Loosely(t, actual, should.Resemble(&dirmdpb.Metadata{
 				TeamEmail: "team-email@chromium.org",
 				Os:        dirmdpb.OS_IOS,
 				Monorail: &dirmdpb.Monorail{
@@ -49,14 +49,14 @@ someone@example.com
 				Buganizer: &dirmdpb.Buganizer{
 					ComponentId: 1234,
 				},
-			})
+			}))
 		})
 
-		Convey(`ChromeOS`, func() {
+		t.Run(`ChromeOS`, func(t *ftt.Test) {
 			actual, filtered, err := ParseOwners(strings.NewReader(`# OS: ChromeOS`))
-			So(err, ShouldBeNil)
-			So(filtered, ShouldEqual, []string(nil))
-			So(actual.Os, ShouldEqual, dirmdpb.OS_CHROME_OS)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, filtered, should.Match([]string(nil)))
+			assert.Loosely(t, actual.Os, should.Equal(dirmdpb.OS_CHROME_OS))
 		})
 
 	})

@@ -10,12 +10,13 @@ import (
 	"sync"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
@@ -37,10 +38,10 @@ func (i *mockInserter) Put(ctx context.Context, src interface{}) error {
 func TestBqExport(t *testing.T) {
 	t.Parallel()
 
-	Convey("BqExport", t, func() {
-		Convey("generateSchema", func() {
+	ftt.Run("BqExport", t, func(t *ftt.Test) {
+		t.Run("generateSchema", func(t *ftt.Test) {
 			_, err := GenerateDirBQRowSchema()
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 		mapping := &dirmd.Mapping{
 			Dirs: map[string]*dirmdpb.Metadata{
@@ -110,7 +111,7 @@ func TestBqExport(t *testing.T) {
 				},
 			},
 		}
-		Convey("success", func() {
+		t.Run("success", func(t *ftt.Test) {
 			ctx, _ := testclock.UseTime(context.Background(), testclock.TestRecentTimeUTC)
 			i := &mockInserter{}
 			commit := &GitCommit{
@@ -119,7 +120,7 @@ func TestBqExport(t *testing.T) {
 				Ref:      "ref",
 				Revision: "revision",
 			}
-			So(writeToBQ(ctx, i, mapping, commit, true), ShouldBeNil)
+			assert.Loosely(t, writeToBQ(ctx, i, mapping, commit, true), should.BeNil)
 
 			pt := timestamppb.New(testclock.TestRecentTimeUTC)
 			expected := []*dirmdpb.DirBQRow{
@@ -223,10 +224,10 @@ func TestBqExport(t *testing.T) {
 			sort.Slice(actual, func(i, j int) bool {
 				return actual[i].Dir < actual[j].Dir
 			})
-			So(actual, ShouldResembleProto, expected)
+			assert.Loosely(t, actual, should.Resemble(expected))
 		})
 
-		Convey("success without files", func() {
+		t.Run("success without files", func(t *ftt.Test) {
 			ctx, _ := testclock.UseTime(context.Background(), testclock.TestRecentTimeUTC)
 			i := &mockInserter{}
 			commit := &GitCommit{
@@ -235,7 +236,7 @@ func TestBqExport(t *testing.T) {
 				Ref:      "ref",
 				Revision: "revision",
 			}
-			So(writeToBQ(ctx, i, mapping, commit, false), ShouldBeNil)
+			assert.Loosely(t, writeToBQ(ctx, i, mapping, commit, false), should.BeNil)
 
 			pt := timestamppb.New(testclock.TestRecentTimeUTC)
 			expected := []*dirmdpb.DirBQRow{
@@ -321,7 +322,7 @@ func TestBqExport(t *testing.T) {
 			sort.Slice(actual, func(i, j int) bool {
 				return actual[i].Dir < actual[j].Dir
 			})
-			So(actual, ShouldResembleProto, expected)
+			assert.Loosely(t, actual, should.Resemble(expected))
 		})
 	})
 }

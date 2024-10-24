@@ -5,16 +5,17 @@
 package dirmd
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestMigrate(t *testing.T) {
 	t.Parallel()
 
-	Convey(`FilterEmptyLines`, t, func() {
-		Convey(`Works`, func() {
+	ftt.Run(`FilterEmptyLines`, t, func(t *ftt.Test) {
+		t.Run(`Works`, func(t *ftt.Test) {
 			actual := filterEmptyLines([]string{
 				"",
 				"",
@@ -26,19 +27,19 @@ func TestMigrate(t *testing.T) {
 				"",
 				"",
 			})
-			So(actual, ShouldResemble, []string{
+			assert.Loosely(t, actual, should.Resemble([]string{
 				"joe@example.com",
 				"",
 				"doe@example.com",
 				"",
-			})
+			}))
 		})
-		Convey(`Empty`, func() {
+		t.Run(`Empty`, func(t *ftt.Test) {
 			actual := filterEmptyLines([]string{
 				"",
 				"",
 			})
-			So(actual, ShouldResemble, []string{})
+			assert.Loosely(t, actual, should.Resemble([]string{}))
 		})
 	})
 }

@@ -10,10 +10,9 @@ import (
 	"runtime"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	dirmdpb "infra/tools/dirmd/proto"
 )
 
@@ -37,14 +36,14 @@ func TestRead(t *testing.T) {
 		}},
 	}
 
-	Convey(`ReadMapping`, t, func() {
+	ftt.Run(`ReadMapping`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 		rootKey := testDataKey + "/root"
 
-		Convey(`Original`, func() {
+		t.Run(`Original`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -116,13 +115,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Original with two dirs`, func() {
+		t.Run(`Original with two dirs`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root/subdir", "testdata/root/subdir_with_owners")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -154,13 +153,13 @@ func TestRead(t *testing.T) {
 					// no metadata.
 				},
 				Repos: dummyRepos,
-			})
+			}))
 		})
 
-		Convey(`Original with two dirs metadata`, func() {
+		t.Run(`Original with two dirs metadata`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root/subdir", "testdata/root/subdir_with_files")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -225,13 +224,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Full`, func() {
+		t.Run(`Full`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_FULL, false, "testdata/root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -298,13 +297,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Computed`, func() {
+		t.Run(`Computed`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -355,13 +354,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Computed, not from root`, func() {
+		t.Run(`Computed, not from root`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/root/subdir")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -383,13 +382,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyRepos,
-			})
+			}))
 		})
 
-		Convey(`Computed, only DIR_METADATA`, func() {
+		t.Run(`Computed, only DIR_METADATA`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, true, "testdata/root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -432,16 +431,16 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Computed, from a symlink`, func() {
+		t.Run(`Computed, from a symlink`, func(t *ftt.Test) {
 			if runtime.GOOS == "windows" {
 				return
 			}
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/sym_root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -492,13 +491,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 
-		Convey(`Computed, with mixin`, func() {
+		t.Run(`Computed, with mixin`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_COMPUTED, false, "testdata/mixins")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					mxKey: {
 						TeamEmail: "team-email@chromium.org",
@@ -528,13 +527,13 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Sparse`, func() {
+		t.Run(`Sparse`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/root/subdir")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey + "/subdir": {
 						TeamEmail: "team-email@chromium.org",
@@ -552,13 +551,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyRepos,
-			})
+			}))
 		})
 
-		Convey(`Sparse, only DIR_METADATA`, func() {
+		t.Run(`Sparse, only DIR_METADATA`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, true, "testdata/root/subdir_with_owners/")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					// Include inherited metadata from root/DIR_METADATA, the content of
 					// its OWNERS file is not included.
@@ -568,14 +567,14 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyRepos,
-			})
+			}))
 		})
 
-		Convey(`Sparse, with mixins`, func() {
+		t.Run(`Sparse, with mixins`, func(t *ftt.Test) {
 			mxKey := testDataKey + "/mixins"
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/mixins/subdir")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					mxKey + "/subdir": {
 						TeamEmail: "team-email@chromium.org",
@@ -602,16 +601,16 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Sparse, from a symlink`, func() {
+		t.Run(`Sparse, from a symlink`, func(t *ftt.Test) {
 			if runtime.GOOS == "windows" {
 				return
 			}
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_SPARSE, false, "testdata/sym_root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -619,13 +618,13 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyRepos,
-			})
+			}))
 		})
 
-		Convey(`Reduced`, func() {
+		t.Run(`Reduced`, func(t *ftt.Test) {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_REDUCED, false, "testdata/root")
-			So(err, ShouldBeNil)
-			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Proto(), should.Resemble(&dirmdpb.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					rootKey: {
 						TeamEmail: "chromium-review@chromium.org",
@@ -694,7 +693,7 @@ func TestRead(t *testing.T) {
 					},
 				},
 				Repos: dummyMixinRepos,
-			})
+			}))
 		})
 	})
 }
@@ -702,7 +701,7 @@ func TestRead(t *testing.T) {
 func TestRemoveRedundantDirs(t *testing.T) {
 	t.Parallel()
 
-	Convey("TestRemoveRedundantDirs", t, func() {
+	ftt.Run("TestRemoveRedundantDirs", t, func(t *ftt.Test) {
 		actual := removeRedundantDirs(
 			filepath.FromSlash("x/y2/z"),
 			filepath.FromSlash("a"),
@@ -710,10 +709,10 @@ func TestRemoveRedundantDirs(t *testing.T) {
 			filepath.FromSlash("x/y1"),
 			filepath.FromSlash("x/y2"),
 		)
-		So(actual, ShouldResemble, []string{
+		assert.Loosely(t, actual, should.Resemble([]string{
 			filepath.FromSlash("a"),
 			filepath.FromSlash("x/y1"),
 			filepath.FromSlash("x/y2"),
-		})
+		}))
 	})
 }
