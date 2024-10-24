@@ -9,26 +9,17 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/chrome-test-health/api"
 )
 
-func ShouldContainParameter(actual any, expected ...any) string {
-	expectedParameter := expected[0].(bigquery.QueryParameter)
-	for _, parameter := range actual.([]bigquery.QueryParameter) {
-		actualParameter := bigquery.QueryParameter(parameter)
-		if actualParameter.Name == expectedParameter.Name {
-			return ShouldResemble(actualParameter, expectedParameter)
-		}
-	}
-	return "Parameter not found in the actual"
-}
-
 func TestCreateFetchMetricsQuery(t *testing.T) {
 	t.Parallel()
 
-	Convey("createFetchMetricsQuery", t, func() {
+	ftt.Run("createFetchMetricsQuery", t, func(t *ftt.Test) {
 		client := Client{
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
@@ -51,12 +42,12 @@ func TestCreateFetchMetricsQuery(t *testing.T) {
 				Ascending: true,
 			},
 		}
-		Convey("Valid unfiltered request", func() {
+		t.Run("Valid unfiltered request", func(t *ftt.Test) {
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH base AS (
 	SELECT
 		m.date,
@@ -83,16 +74,16 @@ WITH base AS (
 SELECT
 	* EXCEPT (variants),
 	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
-FROM base`)
+FROM base`))
 		})
 
-		Convey("Valid filtered request", func() {
+		t.Run("Valid filtered request", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH base AS (
 	SELECT
 		m.date,
@@ -121,16 +112,16 @@ WITH base AS (
 SELECT
 	* EXCEPT (variants),
 	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
-FROM base`)
+FROM base`))
 		})
 
-		Convey("No component request", func() {
+		t.Run("No component request", func(t *ftt.Test) {
 			request.Components = []string{}
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH base AS (
 	SELECT
 		m.date,
@@ -156,17 +147,17 @@ WITH base AS (
 SELECT
 	* EXCEPT (variants),
 	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
-FROM base`)
+FROM base`))
 		})
 
-		Convey("Valid filename filtered request", func() {
+		t.Run("Valid filename filtered request", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 			request.FileNames = []string{"filename.html"}
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH base AS (
 	SELECT
 		m.date,
@@ -196,21 +187,21 @@ WITH base AS (
 SELECT
 	* EXCEPT (variants),
 	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
-FROM base`)
+FROM base`))
 		})
 
-		Convey("Valid filtered multi-day request", func() {
+		t.Run("Valid filtered multi-day request", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 			request.Dates = append(request.Dates, "2023-07-13")
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "sort_date",
 				Value: "2023-07-12",
-			})
-			So(query.QueryConfig.Q, ShouldResemble, `
+			}))
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH tests AS (
 	SELECT
 		m.date,
@@ -244,22 +235,22 @@ WITH tests AS (
 )
 SELECT t.*
 FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
-ORDER BY rank IS NULL, rank ASC`)
+ORDER BY rank IS NULL, rank ASC`))
 		})
 
-		Convey("Valid no component multi-day request", func() {
+		t.Run("Valid no component multi-day request", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 			request.Dates = append(request.Dates, "2023-07-13")
 			request.Components = []string{}
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "sort_date",
 				Value: "2023-07-12",
-			})
-			So(query.QueryConfig.Q, ShouldResemble, `
+			}))
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH tests AS (
 	SELECT
 		m.date,
@@ -292,18 +283,18 @@ WITH tests AS (
 )
 SELECT t.*
 FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
-ORDER BY rank IS NULL, rank ASC`)
+ORDER BY rank IS NULL, rank ASC`))
 		})
 
-		Convey("Valid sorted multi-day request", func() {
+		t.Run("Valid sorted multi-day request", func(t *ftt.Test) {
 			request.Dates = append(request.Dates, "2023-07-13")
 			request.Sort.SortDate = "2023-07-13"
 			request.Sort.Ascending = false
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH tests AS (
 	SELECT
 		m.date,
@@ -335,52 +326,52 @@ WITH tests AS (
 )
 SELECT t.*
 FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
-ORDER BY rank IS NULL, rank DESC`)
+ORDER BY rank IS NULL, rank DESC`))
 		})
 
-		Convey("Parameterized args", func() {
+		t.Run("Parameterized args", func(t *ftt.Test) {
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "components",
 				Value: []string{"Blink"},
-			})
+			}))
 		})
 
-		Convey("Parameterized page args", func() {
+		t.Run("Parameterized page args", func(t *ftt.Test) {
 			request.PageSize = 10
 			request.PageOffset = 5
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "page_size",
 				Value: int64(10 + 1),
-			})
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			}))
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "page_offset",
 				Value: int64(5),
-			})
+			}))
 		})
 
-		Convey("Parameterized filter arg", func() {
+		t.Run("Parameterized filter arg", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "filter0",
 				Value: "linux-rel",
-			})
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			}))
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "filter1",
 				Value: "blink_python_tests",
-			})
+			}))
 		})
 
-		Convey("Parameterized dates arg", func() {
+		t.Run("Parameterized dates arg", func(t *ftt.Test) {
 			request.Dates = []string{
 				"2023-07-12",
 				"2023-07-13",
@@ -388,8 +379,8 @@ ORDER BY rank IS NULL, rank DESC`)
 
 			query, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name: "dates",
 				Value: []civil.Date{
 					{
@@ -403,15 +394,15 @@ ORDER BY rank IS NULL, rank DESC`)
 						Day:   13,
 					},
 				},
-			})
+			}))
 		})
 
-		Convey("Partially defined sort returns error", func() {
+		t.Run("Partially defined sort returns error", func(t *ftt.Test) {
 			request.Sort = &api.SortBy{Metric: 99}
 
 			_, err := client.createFetchMetricsQuery(request)
 
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
@@ -419,7 +410,7 @@ ORDER BY rank IS NULL, rank DESC`)
 func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 	t.Parallel()
 
-	Convey("createFetchMetricsQuery", t, func() {
+	ftt.Run("createFetchMetricsQuery", t, func(t *ftt.Test) {
 		client := Client{
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
@@ -442,13 +433,13 @@ func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 			},
 		}
 
-		Convey("Valid no component request", func() {
+		t.Run("Valid no component request", func(t *ftt.Test) {
 			request.Components = []string{}
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 SELECT
 	date,
 	node_name,
@@ -463,15 +454,15 @@ WHERE
 	OR (parent = '' AND NOT STARTS_WITH(node_name, "/")))
 	AND DATE(date) IN UNNEST(@dates)
 GROUP BY date, node_name
-ORDER BY is_file, node_name ASC`)
+ORDER BY is_file, node_name ASC`))
 		})
 
-		Convey("Valid unfiltered request", func() {
+		t.Run("Valid unfiltered request", func(t *ftt.Test) {
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 SELECT
 	date,
 	node_name,
@@ -487,22 +478,22 @@ WHERE
 	AND DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY is_file, node_name ASC`)
+ORDER BY is_file, node_name ASC`))
 		})
 
-		Convey("Valid unfiltered multi-day request", func() {
+		t.Run("Valid unfiltered multi-day request", func(t *ftt.Test) {
 			request.Dates = append(request.Dates, "2023-07-13")
 			request.Sort.SortDate = "2023-07-13"
 			request.Sort.Ascending = false
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "sort_date",
 				Value: "2023-07-13",
-			})
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			}))
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH nodes AS(
 	SELECT
 		date,
@@ -528,24 +519,24 @@ WITH nodes AS(
 )
 SELECT t.*
 FROM nodes AS t FULL OUTER JOIN sorted_day AS s USING(node_name)
-ORDER BY is_file, s.rank IS NULL, s.rank DESC`)
+ORDER BY is_file, s.rank IS NULL, s.rank DESC`))
 		})
 
-		Convey("Parameterized args", func() {
+		t.Run("Parameterized args", func(t *ftt.Test) {
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "components",
 				Value: []string{"Blink"},
-			})
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			}))
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "parents",
 				Value: []string{"/"},
-			})
+			}))
 		})
 
-		Convey("Parameterized dates arg", func() {
+		t.Run("Parameterized dates arg", func(t *ftt.Test) {
 			request.Dates = []string{
 				"2023-07-12",
 				"2023-07-13",
@@ -553,8 +544,8 @@ ORDER BY is_file, s.rank IS NULL, s.rank DESC`)
 
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name: "dates",
 				Value: []civil.Date{
 					{
@@ -568,7 +559,7 @@ ORDER BY is_file, s.rank IS NULL, s.rank DESC`)
 						Day:   13,
 					},
 				},
-			})
+			}))
 		})
 	})
 }
@@ -576,7 +567,7 @@ ORDER BY is_file, s.rank IS NULL, s.rank DESC`)
 func TestCreateFilteredDirectoryQuery(t *testing.T) {
 	t.Parallel()
 
-	Convey("createFetchMetricsQuery", t, func() {
+	ftt.Run("createFetchMetricsQuery", t, func(t *ftt.Test) {
 		client := Client{
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
@@ -600,12 +591,12 @@ func TestCreateFilteredDirectoryQuery(t *testing.T) {
 			Filter: "linux-rel",
 		}
 
-		Convey("Valid unfiltered request", func() {
+		t.Run("Valid unfiltered request", func(t *ftt.Test) {
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH
 test_summaries AS (
 	SELECT
@@ -643,16 +634,16 @@ WHERE
 	AND DATE(f.date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY is_file, node_name ASC`)
+ORDER BY is_file, node_name ASC`))
 		})
 
-		Convey("Valid no component request", func() {
+		t.Run("Valid no component request", func(t *ftt.Test) {
 			request.Components = []string{}
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH
 test_summaries AS (
 	SELECT
@@ -688,10 +679,10 @@ WHERE
 	OR (parent = '' AND NOT STARTS_WITH(f.node_name, "/")))
 	AND DATE(f.date) IN UNNEST(@dates)
 GROUP BY date, node_name
-ORDER BY is_file, node_name ASC`)
+ORDER BY is_file, node_name ASC`))
 		})
 
-		Convey("Valid unfiltered multi-day request", func() {
+		t.Run("Valid unfiltered multi-day request", func(t *ftt.Test) {
 			request.Dates = []string{
 				"2023-07-12",
 				"2023-07-13",
@@ -701,13 +692,13 @@ ORDER BY is_file, node_name ASC`)
 
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "sort_date",
 				Value: "2023-07-13",
-			})
-			So(query, ShouldNotBeNil)
-			So(query.QueryConfig.Q, ShouldResemble, `
+			}))
+			assert.Loosely(t, query, should.NotBeNil)
+			assert.Loosely(t, query.QueryConfig.Q, should.Match(`
 WITH
 test_summaries AS (
 	SELECT
@@ -755,24 +746,24 @@ test_summaries AS (
 
 SELECT node_summaries.*
 FROM node_summaries FULL OUTER JOIN sorted_day USING(node_name)
-ORDER BY is_file, rank IS NULL, rank DESC`)
+ORDER BY is_file, rank IS NULL, rank DESC`))
 		})
 
-		Convey("Parameterized args", func() {
+		t.Run("Parameterized args", func(t *ftt.Test) {
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "components",
 				Value: []string{"Blink"},
-			})
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			}))
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "parents",
 				Value: []string{"/"},
-			})
+			}))
 		})
 
-		Convey("Parameterized dates arg", func() {
+		t.Run("Parameterized dates arg", func(t *ftt.Test) {
 			request.Dates = []string{
 				"2023-07-12",
 				"2023-07-13",
@@ -780,8 +771,8 @@ ORDER BY is_file, rank IS NULL, rank DESC`)
 
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name: "dates",
 				Value: []civil.Date{
 					{
@@ -795,31 +786,31 @@ ORDER BY is_file, rank IS NULL, rank DESC`)
 						Day:   13,
 					},
 				},
-			})
+			}))
 		})
 
-		Convey("Parameterized filter arg", func() {
+		t.Run("Parameterized filter arg", func(t *ftt.Test) {
 			request.Filter = "linux-rel blink_python_tests"
 
 			query, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldBeNil)
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "filter0",
 				Value: "linux-rel",
-			})
-			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+			}))
+			assert.Loosely(t, query.Parameters, should.ContainMatch(bigquery.QueryParameter{
 				Name:  "filter1",
 				Value: "blink_python_tests",
-			})
+			}))
 		})
 
-		Convey("Invalid sort metric returns error", func() {
+		t.Run("Invalid sort metric returns error", func(t *ftt.Test) {
 			request.Sort = &api.SortBy{Metric: 99}
 
 			_, err := client.createDirectoryQuery(request)
 
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
