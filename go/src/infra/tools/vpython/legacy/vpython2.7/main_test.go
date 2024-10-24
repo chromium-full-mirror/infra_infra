@@ -20,11 +20,12 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 const (
@@ -256,9 +257,9 @@ func (tc *testCase) getDelegateCommand(c context.Context, root string, env envir
 func (tc *testCase) run(t *testing.T, env environ.Env) {
 	t.Parallel()
 
-	Convey(fmt.Sprintf(`Testing %q`, tc), t, func() {
+	ftt.Run(fmt.Sprintf(`Testing %q`, tc), t, func(t *ftt.Test) {
 		td, err := ioutil.TempDir(t.TempDir(), "vpython")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer func() {
 			if err := filesystem.RemoveAll(td); err != nil {
 				t.Logf("Failed to remove test dir %q: %s", td, err)
@@ -285,19 +286,19 @@ func (tc *testCase) run(t *testing.T, env environ.Env) {
 	})
 }
 
-func (tc *testCase) runCommon(c context.Context, t *testing.T, td string, env environ.Env, exitCode int) {
+func (tc *testCase) runCommon(c context.Context, t testing.TB, td string, env environ.Env, exitCode int) {
 	tdc := tc.getDelegateCommand(c, td, env)
 
 	err := tdc.Run(t)
 	if rc, ok := exitcode.Get(err); ok {
-		So(rc, ShouldEqual, exitCode)
+		assert.Loosely(t, rc, should.Equal(exitCode))
 	} else {
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	}
-	So(tdc.CheckOutput(t), ShouldBeTrue)
+	assert.Loosely(t, tdc.CheckOutput(t), should.BeTrue)
 }
 
-func (tc *testCase) runTestSignals(c context.Context, t *testing.T, td string, env environ.Env) {
+func (tc *testCase) runTestSignals(c context.Context, t testing.TB, td string, env environ.Env) {
 	// We set up a mechanism for our subprocess to signal to us that it has
 	// established its signal handlers and is ready for testing.
 	//
@@ -341,16 +342,16 @@ func (tc *testCase) runTestSignals(c context.Context, t *testing.T, td string, e
 		t.Log("Failed to signal process")
 	}
 
-	So(tdc.Wait(t), ShouldBeNil)
-	So(tdc.CheckOutput(t), ShouldBeTrue)
+	assert.Loosely(t, tdc.Wait(t), should.BeNil)
+	assert.Loosely(t, tdc.CheckOutput(t), should.BeTrue)
 }
 
-func (tc *testCase) runBypass(c context.Context, t *testing.T, td string, env environ.Env) {
+func (tc *testCase) runBypass(c context.Context, t testing.TB, td string, env environ.Env) {
 	env.Set(BypassENV, BypassSentinel)
 	tdc := tc.getDelegateCommand(c, td, env)
 
-	So(tdc.Run(t), ShouldBeNil)
-	So(tdc.CheckOutput(t), ShouldBeTrue)
+	assert.Loosely(t, tdc.Run(t), should.BeNil)
+	assert.Loosely(t, tdc.CheckOutput(t), should.BeTrue)
 }
 
 func testMainRunDelegate(self, v string) int {

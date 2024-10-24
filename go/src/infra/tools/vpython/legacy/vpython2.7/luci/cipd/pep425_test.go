@@ -18,8 +18,9 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
@@ -64,10 +65,10 @@ func TestPlatformForPEP425Tag(t *testing.T) {
 		{mkTag("win_amd64"), "windows-amd64"},
 	}
 
-	Convey(`Testing PEP425 tag selection`, t, func() {
+	ftt.Run(`Testing PEP425 tag selection`, t, func(t *ftt.Test) {
 		for _, tc := range testCases {
-			Convey(fmt.Sprintf("Tag %q => %q", tc.tag.TagString(), tc.platform), func() {
-				So(PlatformForPEP425Tag(tc.tag), ShouldResemble, tc.platform)
+			t.Run(fmt.Sprintf("Tag %q => %q", tc.tag.TagString(), tc.platform), func(t *ftt.Test) {
+				assert.Loosely(t, PlatformForPEP425Tag(tc.tag), should.Resemble(tc.platform))
 			})
 		}
 	})

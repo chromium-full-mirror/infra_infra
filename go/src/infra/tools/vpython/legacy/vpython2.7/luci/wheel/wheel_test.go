@@ -20,10 +20,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/testfs"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 var (
@@ -112,20 +112,20 @@ func TestName(t *testing.T) {
 		{"foo-bar-baz-qux.whl", "unknown number of segments"},
 	}
 
-	Convey(`Testing wheel name parsing`, t, func() {
+	ftt.Run(`Testing wheel name parsing`, t, func(t *ftt.Test) {
 		for _, tc := range successes {
-			Convey(fmt.Sprintf(`Success: %s`, tc.v), func() {
+			t.Run(fmt.Sprintf(`Success: %s`, tc.v), func(t *ftt.Test) {
 				wn, err := ParseName(tc.v)
-				So(err, ShouldBeNil)
-				So(wn, ShouldResemble, tc.exp)
-				So(wn.String(), ShouldEqual, tc.v)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, wn, should.Resemble(tc.exp))
+				assert.Loosely(t, wn.String(), should.Equal(tc.v))
 			})
 		}
 
 		for _, tc := range failures {
-			Convey(fmt.Sprintf(`Failure: %s`, tc.v), func() {
+			t.Run(fmt.Sprintf(`Failure: %s`, tc.v), func(t *ftt.Test) {
 				_, err := ParseName(tc.v)
-				So(err, ShouldErrLike, tc.err)
+				assert.Loosely(t, err, should.ErrLike(tc.err))
 			})
 		}
 	})
@@ -134,7 +134,7 @@ func TestName(t *testing.T) {
 func TestScanDir(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Testing ScanDir`, t, func() {
+	ftt.Run(`Testing ScanDir`, t, func(t *ftt.Test) {
 		tdir := t.TempDir()
 		mustBuild := func(layout map[string]string) {
 			if err := testfs.Build(tdir, layout); err != nil {
@@ -150,19 +150,19 @@ func TestScanDir(t *testing.T) {
 			wheelCryptography.String() + "/": "", // Directories should be ignored.
 		})
 
-		Convey(`With no malformed wheels, picks up wheel names.`, func() {
+		t.Run(`With no malformed wheels, picks up wheel names.`, func(t *ftt.Test) {
 			wheels, err := ScanDir(tdir)
-			So(err, ShouldBeNil)
-			So(wheels, ShouldResemble, []Name{wheelMarkupSafe, wheelSimpleJSON})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, wheels, should.Resemble([]Name{wheelMarkupSafe, wheelSimpleJSON}))
 		})
 
-		Convey(`With a malformed wheel name, fails.`, func() {
+		t.Run(`With a malformed wheel name, fails.`, func(t *ftt.Test) {
 			mustBuild(map[string]string{
 				"malformed-thing.whl": "",
 			})
 
 			_, err := ScanDir(tdir)
-			So(err, ShouldErrLike, "failed to parse wheel")
+			assert.Loosely(t, err, should.ErrLike("failed to parse wheel"))
 		})
 	})
 }
@@ -170,7 +170,7 @@ func TestScanDir(t *testing.T) {
 func TestWriteRequirementsFile(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Can write a requirements file.`, t, func() {
+	ftt.Run(`Can write a requirements file.`, t, func(t *ftt.Test) {
 		tdir := t.TempDir()
 		similarSimpleJSON := wheelSimpleJSON
 		similarSimpleJSON.ABITag = "some_other_abi"
@@ -181,13 +181,13 @@ func TestWriteRequirementsFile(t *testing.T) {
 			wheelSimpleJSON,
 			similarSimpleJSON,
 			wheelCryptography})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		content, err := ioutil.ReadFile(req)
-		So(err, ShouldBeNil)
-		So(content, ShouldResemble, []byte(""+
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, content, should.Resemble([]byte(""+
 			"MarkupSafe==0.23\n"+
 			"simplejson==3.6.5\n"+
-			"cryptography==1.4\n"))
+			"cryptography==1.4\n")))
 	})
 }

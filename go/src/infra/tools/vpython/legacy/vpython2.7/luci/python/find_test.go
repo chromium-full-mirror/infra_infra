@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/system/filesystem"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestFind(t *testing.T) {
@@ -61,7 +61,7 @@ func TestFind(t *testing.T) {
 		},
 	}
 
-	Convey(`Can Find a Python interpreter`, t, func() {
+	ftt.Run(`Can Find a Python interpreter`, t, func(t *ftt.Test) {
 		tdir := t.TempDir()
 		c := context.Background()
 
@@ -87,7 +87,7 @@ func TestFind(t *testing.T) {
 				kind = "failure"
 			}
 
-			Convey(fmt.Sprintf(`Test case #%d (%s): find %q in %v`, i, kind, tc.version, tc.interpreters), func() {
+			t.Run(fmt.Sprintf(`Test case #%d (%s): find %q in %v`, i, kind, tc.version, tc.interpreters), func(t *ftt.Test) {
 				for _, interpreter := range tc.interpreters {
 					path := filepath.Join(tdir, interpreter)
 					if err := filesystem.Touch(path, time.Time{}, 0644); err != nil {
@@ -98,16 +98,16 @@ func TestFind(t *testing.T) {
 				lookPathVersion = tc.foundVersion
 				interp, err := Find(c, tc.version, testLookPath)
 				if tc.err == "" {
-					So(err, ShouldBeNil)
+					assert.Loosely(t, err, should.BeNil)
 
 					// Success case. Version will be cached.
 					version, err := interp.GetVersion(c)
-					So(err, ShouldBeNil)
-					So(filepath.Base(interp.Python), ShouldEqual, tc.found)
-					So(tc.version.IsSatisfiedBy(version), ShouldBeTrue)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, filepath.Base(interp.Python), should.Equal(tc.found))
+					assert.Loosely(t, tc.version.IsSatisfiedBy(version), should.BeTrue)
 				} else {
 					// Error case.
-					So(err, ShouldErrLike, tc.err)
+					assert.Loosely(t, err, should.ErrLike(tc.err))
 				}
 			})
 		}

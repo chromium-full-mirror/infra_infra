@@ -20,10 +20,10 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/rand/mathrand"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestParseVersion(t *testing.T) {
@@ -58,19 +58,19 @@ func TestParseVersion(t *testing.T) {
 		{"1.1.X", "non-canonical Python version string"},
 	}
 
-	Convey(`Testing ParseVersion`, t, func() {
+	ftt.Run(`Testing ParseVersion`, t, func(t *ftt.Test) {
 		for _, tc := range successes {
-			Convey(fmt.Sprintf(`Success: %q`, tc.input), func() {
+			t.Run(fmt.Sprintf(`Success: %q`, tc.input), func(t *ftt.Test) {
 				v, err := ParseVersion(tc.input)
-				So(err, ShouldBeNil)
-				So(v, ShouldResemble, tc.v)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, v, should.Resemble(tc.v))
 			})
 		}
 
 		for _, tc := range failures {
-			Convey(fmt.Sprintf(`Failure: %q (%s)`, tc.input, tc.err), func() {
+			t.Run(fmt.Sprintf(`Failure: %q (%s)`, tc.input, tc.err), func(t *ftt.Test) {
 				_, err := ParseVersion(tc.input)
-				So(err, ShouldErrLike, tc.err)
+				assert.Loosely(t, err, should.ErrLike(tc.err))
 			})
 		}
 	})
@@ -130,16 +130,16 @@ func TestVersionSatisfied(t *testing.T) {
 		{Version{2, 3, 5}, Version{2, 3, 4}},
 	}
 
-	Convey(`Testing version satisfaction`, t, func() {
+	ftt.Run(`Testing version satisfaction`, t, func(t *ftt.Test) {
 		for _, tc := range successes {
-			Convey(fmt.Sprintf(`%q is satisfied by %q`, tc.base, tc.other), func() {
-				So(tc.base.IsSatisfiedBy(tc.other), ShouldBeTrue)
+			t.Run(fmt.Sprintf(`%q is satisfied by %q`, tc.base, tc.other), func(t *ftt.Test) {
+				assert.Loosely(t, tc.base.IsSatisfiedBy(tc.other), should.BeTrue)
 			})
 		}
 
 		for _, tc := range failures {
-			Convey(fmt.Sprintf(`%q is NOT satisfied by %q`, tc.base, tc.other), func() {
-				So(tc.base.IsSatisfiedBy(tc.other), ShouldBeFalse)
+			t.Run(fmt.Sprintf(`%q is NOT satisfied by %q`, tc.base, tc.other), func(t *ftt.Test) {
+				assert.Loosely(t, tc.base.IsSatisfiedBy(tc.other), should.BeFalse)
 			})
 		}
 	})
@@ -148,7 +148,7 @@ func TestVersionSatisfied(t *testing.T) {
 func TestVersionLess(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Testing "Less"`, t, func() {
+	ftt.Run(`Testing "Less"`, t, func(t *ftt.Test) {
 		s := versionSlice{
 			{0, 0, 0},
 			{1, 0, 0},
@@ -161,13 +161,13 @@ func TestVersionLess(t *testing.T) {
 			{3, 4, 0},
 		}
 
-		Convey(`Can sort.`, func() {
+		t.Run(`Can sort.`, func(t *ftt.Test) {
 			cp := append(versionSlice(nil), s...)
 			sort.Sort(cp)
-			So(cp, ShouldResemble, s)
+			assert.Loosely(t, cp, should.Resemble(s))
 		})
 
-		Convey(`Can sort reversed.`, func() {
+		t.Run(`Can sort reversed.`, func(t *ftt.Test) {
 			cp := append(versionSlice(nil), s...)
 			for i := 0; i < len(cp)/2; i++ {
 				j := len(cp) - i - 1
@@ -175,10 +175,10 @@ func TestVersionLess(t *testing.T) {
 			}
 
 			sort.Sort(cp)
-			So(cp, ShouldResemble, s)
+			assert.Loosely(t, cp, should.Resemble(s))
 		})
 
-		Convey(`Can sort randomized.`, func() {
+		t.Run(`Can sort randomized.`, func(t *ftt.Test) {
 			mr := mathrand.Get(context.Background())
 			cp := append(versionSlice(nil), s...)
 			for i := range cp {
@@ -187,7 +187,7 @@ func TestVersionLess(t *testing.T) {
 			}
 
 			sort.Sort(cp)
-			So(cp, ShouldResemble, s)
+			assert.Loosely(t, cp, should.Resemble(s))
 		})
 	})
 }

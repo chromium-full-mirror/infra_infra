@@ -17,15 +17,16 @@ package application
 import (
 	"flag"
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestExtractFlagsForSet(t *testing.T) {
 	t.Parallel()
 
-	Convey(`With a testing FlagSet`, t, func() {
+	ftt.Run(`With a testing FlagSet`, t, func(t *ftt.Test) {
 		var app application
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
 		app.addToFlagSet(fs)
@@ -65,10 +66,10 @@ func TestExtractFlagsForSet(t *testing.T) {
 				[]string{"-d", "--", "script"},
 			},
 		} {
-			Convey(fmt.Sprintf(`Flags %v are split into %v and %v`, tc.args, tc.self, tc.extra), func() {
+			t.Run(fmt.Sprintf(`Flags %v are split into %v and %v`, tc.args, tc.self, tc.extra), func(t *ftt.Test) {
 				self, extra := extractFlagsForSet(tc.args, fs)
-				So(self, ShouldResemble, tc.self)
-				So(extra, ShouldResemble, tc.extra)
+				assert.Loosely(t, self, should.Resemble(tc.self))
+				assert.Loosely(t, extra, should.Resemble(tc.extra))
 			})
 		}
 	})

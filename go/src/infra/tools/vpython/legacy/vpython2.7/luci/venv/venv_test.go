@@ -25,15 +25,16 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 	"infra/tools/vpython/legacy/vpython2.7/luci/python"
@@ -85,42 +86,43 @@ func TestResolvePythonInterpreter(t *testing.T) {
 
 	// This test is run for each resolved Python interpreter found on the host
 	// system.
-	testPythonInterpreter := func(c C, ctx context.Context, ri *resolvedInterpreter, vers string) {
+	testPythonInterpreter := func(t *ftt.Test, ctx context.Context, ri *resolvedInterpreter, vers string) {
 		cfg := Config{}
 		s := vpython.Spec{
 			PythonVersion: vers,
 		}
 
-		c.Convey(`Can resolve interpreter version`, func() {
-			So(cfg.resolvePythonInterpreter(ctx, &s), ShouldBeNil)
-			So(cfg.si.Python, ShouldEqual, ri.py.Python)
+		t.Run(`Can resolve interpreter version`, func(t *ftt.Test) {
+			assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.BeNil)
+			assert.Loosely(t, cfg.si.Python, should.Equal(ri.py.Python))
 
 			vers, err := python.ParseVersion(s.PythonVersion)
-			So(err, ShouldBeNil)
-			So(vers.IsSatisfiedBy(ri.version), ShouldBeTrue)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, vers.IsSatisfiedBy(ri.version), should.BeTrue)
 		})
 
-		c.Convey(`Can resolve Runtime information`, func() {
+		t.Run(`Can resolve Runtime information`, func(t *ftt.Test) {
 			r, err := ri.py.GetRuntime(ctx)
-			So(err, ShouldBeNil)
-			So(r.Path, ShouldNotEqual, "")
-			So(r.Prefix, ShouldNotEqual, "")
-			So(r.Hash, ShouldNotEqual, "")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, r.Path, should.NotEqual(""))
+			assert.Loosely(t, r.Prefix, should.NotEqual(""))
+			assert.Loosely(t, r.Hash, should.NotEqual(""))
 		})
 
-		c.Convey(fmt.Sprintf(`Fails when Python 9999 is requested, but a Python %s interpreter is forced.`, vers), func() {
+		t.Run(fmt.Sprintf(`Fails when Python 9999 is requested, but a Python %s interpreter is forced.`, vers), func(t *ftt.Test) {
 			cfg.UnversionedPython = []string{ri.py.Python}
 			s.PythonVersion = "9999"
-			So(cfg.resolvePythonInterpreter(ctx, &s), ShouldErrLike, "none of [", "] matched specification")
+			assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.ErrLike("none of ["))
+			assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.ErrLike("] matched specification"))
 		})
 	}
 
-	Convey(`Resolving a Python interpreter`, t, func() {
+	ftt.Run(`Resolving a Python interpreter`, t, func(t *ftt.Test) {
 		ctx := testContext()
 
 		// Tests to run if we have Python 2.7 installed.
 		if python27 != nil {
-			Convey(`When Python 2.7 is requested`, func(c C) {
+			t.Run(`When Python 2.7 is requested`, func(c *ftt.Test) {
 				testPythonInterpreter(c, ctx, python27, "2.7")
 			})
 		}
@@ -128,27 +130,27 @@ func TestResolvePythonInterpreter(t *testing.T) {
 		// Tests to run if we have Python 2.7 and a generic Python installed.
 		if pythonGeneric != nil && python27 != nil {
 			// Our generic Python resolves to a known version, so we can proceed.
-			Convey(`When no Python version is specified, spec resolves to generic.`, func() {
+			t.Run(`When no Python version is specified, spec resolves to generic.`, func(t *ftt.Test) {
 				cfg := Config{}
 				s := vpython.Spec{}
-				So(cfg.resolvePythonInterpreter(ctx, &s), ShouldBeNil)
-				So(cfg.si.Python, ShouldEqual, pythonGeneric.py.Python)
+				assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.BeNil)
+				assert.Loosely(t, cfg.si.Python, should.Equal(pythonGeneric.py.Python))
 
 				vers, err := python.ParseVersion(s.PythonVersion)
-				So(err, ShouldBeNil)
-				So(vers.IsSatisfiedBy(pythonGeneric.version), ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, vers.IsSatisfiedBy(pythonGeneric.version), should.BeTrue)
 			})
 		}
 
 		// Tests to run if we have Python 3 installed.
 		if python3 != nil {
-			Convey(`When Python 3 is requested`, func(c C) {
-				testPythonInterpreter(c, ctx, python3, "3")
+			t.Run(`When Python 3 is requested`, func(t *ftt.Test) {
+				testPythonInterpreter(t, ctx, python3, "3")
 			})
 		}
 	})
 
-	Convey(`Resolving interpreter from multiple options`, t, func() {
+	ftt.Run(`Resolving interpreter from multiple options`, t, func(t *ftt.Test) {
 		ctx := testContext()
 
 		pythons := []*resolvedInterpreter{}
@@ -175,7 +177,7 @@ func TestResolvePythonInterpreter(t *testing.T) {
 			return
 		}
 
-		Convey(`First interpreter in slice is selected by default`, func() {
+		t.Run(`First interpreter in slice is selected by default`, func(t *ftt.Test) {
 			for i := 0; i < len(pythons); i += 1 {
 				cfgPythons := SliceFlag{pythons[i].py.Python}
 				for j := 0; j < len(pythons); j += 1 {
@@ -189,12 +191,12 @@ func TestResolvePythonInterpreter(t *testing.T) {
 				// No Python version specified in the spec, so we should default
 				// to the first interpreter from the config.
 				s := vpython.Spec{}
-				So(cfg.resolvePythonInterpreter(ctx, &s), ShouldBeNil)
-				So(cfg.si.Python, ShouldEqual, cfgPythons[0])
+				assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.BeNil)
+				assert.Loosely(t, cfg.si.Python, should.Equal(cfgPythons[0]))
 			}
 		})
 
-		Convey(`Spec selects matching Python interpreter from config`, func() {
+		t.Run(`Spec selects matching Python interpreter from config`, func(t *ftt.Test) {
 			cfgPythons := SliceFlag{}
 			for _, ri := range pythons {
 				cfgPythons = append(cfgPythons, ri.py.Python)
@@ -208,8 +210,8 @@ func TestResolvePythonInterpreter(t *testing.T) {
 				s := vpython.Spec{
 					PythonVersion: fmt.Sprintf("%d.%d", ri.version.Major, ri.version.Minor),
 				}
-				So(cfg.resolvePythonInterpreter(ctx, &s), ShouldBeNil)
-				So(cfg.si.Python, ShouldEqual, ri.py.Python)
+				assert.Loosely(t, cfg.resolvePythonInterpreter(ctx, &s), should.BeNil)
+				assert.Loosely(t, cfg.si.Python, should.Equal(ri.py.Python))
 			}
 		})
 	})
@@ -233,15 +235,15 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 		t.Fatalf("could not set up test loader for %q: %s", ri.py.Python, err)
 	}
 
-	Convey(`Testing the VirtualEnv`, t, func() {
+	ftt.Run(`Testing the VirtualEnv`, t, func(t *ftt.Test) {
 		tdir := t.TempDir()
 		defer func() {
-			So(filesystem.RemoveAll(tdir), ShouldBeNil)
+			assert.Loosely(t, filesystem.RemoveAll(tdir), should.BeNil)
 		}()
 		c := testContext()
 
 		// Load the bootstrap wheels for the next part of the test.
-		So(tl.ensureWheels(c, t, ri.py, tdir), ShouldBeNil)
+		assert.Loosely(t, tl.ensureWheels(c, t, ri.py, tdir), should.BeNil)
 
 		config := Config{
 			BaseDir:    tdir,
@@ -261,7 +263,7 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 			},
 		}
 
-		Convey(`Testing Setup`, func() {
+		t.Run(`Testing Setup`, func(t *ftt.Test) {
 			config.FailIfLocked = true
 			err := With(c, config, func(c context.Context, v *Env) error {
 				testScriptTarget := python.ScriptTarget{
@@ -271,39 +273,39 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 				cmd := v.Interpreter().MkIsolatedCommand(c, testScriptTarget, "--json-output", checkOut)
 				defer cmd.Cleanup()
 				cmd.Dir = "" // we want cwd
-				So(cmd.Run(), ShouldBeNil)
+				assert.Loosely(t, cmd.Run(), should.BeNil)
 
 				var m setupCheckManifest
-				So(loadJSON(checkOut, &m), ShouldBeNil)
-				So(m.Interpreter, ShouldStartWith, v.Root)
-				So(m.Pants, ShouldStartWith, v.Root)
-				So(m.Shirt, ShouldStartWith, v.Root)
-				So(v.Environment, ShouldNotBeNil)
+				assert.Loosely(t, loadJSON(checkOut, &m), should.BeNil)
+				assert.Loosely(t, m.Interpreter, should.HavePrefix(v.Root))
+				assert.Loosely(t, m.Pants, should.HavePrefix(v.Root))
+				assert.Loosely(t, m.Shirt, should.HavePrefix(v.Root))
+				assert.Loosely(t, v.Environment, should.NotBeNil)
 
 				// We should be able to load its environment stamp.
 				v.Environment = nil
-				So(v.AssertCompleteAndLoad(), ShouldBeNil)
-				So(v.Environment, ShouldNotBeNil)
-				So(len(v.Environment.Pep425Tag), ShouldBeGreaterThan, 0)
-				So(v.Environment.Spec, ShouldNotBeNil)
-				So(len(v.Environment.Spec.Wheel), ShouldEqual, len(config.Spec.Wheel))
-				So(v.Environment.Spec.Virtualenv, ShouldNotBeNil)
-				So(v.Environment.Spec.PythonVersion, ShouldNotEqual, "")
+				assert.Loosely(t, v.AssertCompleteAndLoad(), should.BeNil)
+				assert.Loosely(t, v.Environment, should.NotBeNil)
+				assert.Loosely(t, len(v.Environment.Pep425Tag), should.BeGreaterThan(0))
+				assert.Loosely(t, v.Environment.Spec, should.NotBeNil)
+				assert.Loosely(t, len(v.Environment.Spec.Wheel), should.Equal(len(config.Spec.Wheel)))
+				assert.Loosely(t, v.Environment.Spec.Virtualenv, should.NotBeNil)
+				assert.Loosely(t, v.Environment.Spec.PythonVersion, should.NotEqual(""))
 
 				return nil
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// We should be able to delete it.
 			v, err := config.makeEnv(c, nil)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
-			So(v.Delete(c), ShouldBeNil)
-			So(v.Root, shouldNotExist)
-			So(v.lockPath, shouldNotExist)
+			assert.Loosely(t, v.Delete(c), should.BeNil)
+			assert.Loosely(t, v.Root, convey.Adapt(shouldNotExist)())
+			assert.Loosely(t, v.lockPath, convey.Adapt(shouldNotExist)())
 		})
 
-		Convey(`Testing new environment setup race`, func() {
+		t.Run(`Testing new environment setup race`, func(t *ftt.Test) {
 			const workers = 4
 
 			envs := make([]*vpython.Environment, workers)
@@ -325,7 +327,7 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 					}
 				}
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// All Environments must be equal.
 			var archetype *vpython.Environment
@@ -333,7 +335,7 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 				if archetype == nil {
 					archetype = env
 				} else {
-					So(env, ShouldResembleProto, archetype)
+					assert.Loosely(t, env, should.Resemble(archetype))
 				}
 			}
 		})

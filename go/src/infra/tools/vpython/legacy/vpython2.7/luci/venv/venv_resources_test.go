@@ -134,7 +134,7 @@ func (tl *testingLoader) withCacheLock(t *testing.T, fn func() error) error {
 	})
 }
 
-func (tl *testingLoader) ensureWheels(ctx context.Context, t *testing.T, py *python.Interpreter, tdir string) error {
+func (tl *testingLoader) ensureWheels(ctx context.Context, t testing.TB, py *python.Interpreter, tdir string) error {
 	var err error
 	if tl.pantsWheelPath, err = tl.buildWheelLocked(t, py, "pants-1.2-py2.py3-none-any.whl", tdir); err != nil {
 		return err
@@ -177,7 +177,7 @@ func (tl *testingLoader) installPackage(name, root string) error {
 	}
 }
 
-func (tl *testingLoader) buildWheelLocked(t *testing.T, py *python.Interpreter, name, outDir string) (string, error) {
+func (tl *testingLoader) buildWheelLocked(t testing.TB, py *python.Interpreter, name, outDir string) (string, error) {
 	ctx := context.Background()
 	w, err := wheel.ParseName(name)
 	if err != nil {
