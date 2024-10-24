@@ -7,9 +7,10 @@ package handler
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/sheriff-o-matic/som/model"
@@ -18,14 +19,14 @@ import (
 func TestRenderSettingsPage(t *testing.T) {
 	t.Parallel()
 
-	Convey("render settings", t, func() {
+	ftt.Run("render settings", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		s := SettingsPage{}
 
-		Convey("Title", func() {
+		t.Run("Title", func(t *ftt.Test) {
 			title, err := SettingsPage.Title(s, c)
-			So(err, ShouldBeNil)
-			So(title, ShouldEqual, "Admin SOM settings")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, title, should.Equal("Admin SOM settings"))
 		})
 
 		tree := &model.Tree{
@@ -40,27 +41,27 @@ func TestRenderSettingsPage(t *testing.T) {
 			BuildBucketProjectFilter:   "oak-build",
 		}
 
-		So(datastore.Put(c, tree), ShouldBeNil)
+		assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 		datastore.GetTestable(c).CatchupIndexes()
 
-		Convey("Fields", func() {
+		t.Run("Fields", func(t *ftt.Test) {
 			fields, err := SettingsPage.Fields(s, c)
-			So(err, ShouldBeNil)
-			So(len(fields), ShouldEqual, 8)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(fields), should.Equal(8))
 		})
 
-		Convey("ReadSettings", func() {
+		t.Run("ReadSettings", func(t *ftt.Test) {
 			settings, err := SettingsPage.ReadSettings(s, c)
-			So(err, ShouldBeNil)
-			So(len(settings), ShouldEqual, 8)
-			So(settings["Trees"], ShouldEqual, "oak:Great Oaakk")
-			So(settings["BugQueueLabels"], ShouldEqual, "oak:test")
-			So(settings["AlertStreams-oak"], ShouldEqual, "hello,world")
-			So(settings["HelpLink-oak"], ShouldEqual, "http://google.com/")
-			So(settings["GerritProject-oak"], ShouldEqual, "some/project/name")
-			So(settings["GerritInstance-oak"], ShouldEqual, "some-gerrit-instance")
-			So(settings["DefaultMonorailProjectName-oak"], ShouldEqual, "oak-project")
-			So(settings["BuildBucketProjectFilter-oak"], ShouldEqual, "oak-build")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(settings), should.Equal(8))
+			assert.Loosely(t, settings["Trees"], should.Equal("oak:Great Oaakk"))
+			assert.Loosely(t, settings["BugQueueLabels"], should.Equal("oak:test"))
+			assert.Loosely(t, settings["AlertStreams-oak"], should.Equal("hello,world"))
+			assert.Loosely(t, settings["HelpLink-oak"], should.Equal("http://google.com/"))
+			assert.Loosely(t, settings["GerritProject-oak"], should.Equal("some/project/name"))
+			assert.Loosely(t, settings["GerritInstance-oak"], should.Equal("some-gerrit-instance"))
+			assert.Loosely(t, settings["DefaultMonorailProjectName-oak"], should.Equal("oak-project"))
+			assert.Loosely(t, settings["BuildBucketProjectFilter-oak"], should.Equal("oak-build"))
 		})
 	})
 }
@@ -68,23 +69,23 @@ func TestRenderSettingsPage(t *testing.T) {
 func TestWriteAllValues(t *testing.T) {
 	t.Parallel()
 
-	Convey("write settings", t, func() {
+	ftt.Run("write settings", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 
-		Convey("writeTrees", func() {
-			Convey("basic", func() {
+		t.Run("writeTrees", func(t *ftt.Test) {
+			t.Run("basic", func(t *ftt.Test) {
 				values := map[string]string{
 					"Trees": "foo",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				t := &model.Tree{
+				tree := &model.Tree{
 					Name: "foo",
 				}
-				So(datastore.Get(c, t), ShouldBeNil)
-				So(t.DisplayName, ShouldEqual, "Foo")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Foo"))
 			})
 
 			tree := &model.Tree{
@@ -92,128 +93,128 @@ func TestWriteAllValues(t *testing.T) {
 				DisplayName: "Great Oaakk",
 			}
 
-			So(datastore.Put(c, tree), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("overwrite tree", func() {
+			t.Run("overwrite tree", func(t *ftt.Test) {
 				values := map[string]string{
 					"Trees": "oak",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oak")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
 			})
 
-			Convey("overwrite tree with new display name", func() {
+			t.Run("overwrite tree with new display name", func(t *ftt.Test) {
 				values := map[string]string{
 					"Trees": "oak:Oaakk",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oaakk")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oaakk"))
 			})
 		})
 
-		Convey("update AlertStreams", func() {
+		t.Run("update AlertStreams", func(t *ftt.Test) {
 			tree := &model.Tree{
 				Name:        "oak",
 				DisplayName: "Oak",
 			}
 
-			So(datastore.Put(c, tree), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("basic", func() {
+			t.Run("basic", func(t *ftt.Test) {
 				values := map[string]string{
 					"AlertStreams-oak": "thing,hello",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.AlertStreams, ShouldResemble, []string{"thing", "hello"})
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.AlertStreams, should.Resemble([]string{"thing", "hello"}))
 			})
 
-			Convey("delete", func() {
+			t.Run("delete", func(t *ftt.Test) {
 				values := map[string]string{
 					"AlertStreams-oak": "",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.AlertStreams, ShouldResemble, []string(nil))
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.AlertStreams, should.Resemble([]string(nil)))
 			})
 		})
 
-		Convey("splitBugQueueLabels", func() {
-			Convey("single", func() {
+		t.Run("splitBugQueueLabels", func(t *ftt.Test) {
+			t.Run("single", func(t *ftt.Test) {
 				labelMap, err := splitBugQueueLabels(c, "oak:thing")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(labelMap["oak"], ShouldEqual, "thing")
+				assert.Loosely(t, labelMap["oak"], should.Equal("thing"))
 			})
 
-			Convey("mutiple", func() {
+			t.Run("mutiple", func(t *ftt.Test) {
 				labelMap, err := splitBugQueueLabels(c, "oak:thing,maple:syrup,haha:haha")
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
-				So(labelMap["oak"], ShouldEqual, "thing")
-				So(labelMap["maple"], ShouldEqual, "syrup")
-				So(labelMap["haha"], ShouldEqual, "haha")
+				assert.Loosely(t, labelMap["oak"], should.Equal("thing"))
+				assert.Loosely(t, labelMap["maple"], should.Equal("syrup"))
+				assert.Loosely(t, labelMap["haha"], should.Equal("haha"))
 			})
 		})
 
-		Convey("update BugQueueLabel", func() {
+		t.Run("update BugQueueLabel", func(t *ftt.Test) {
 			tree := &model.Tree{
 				Name:          "oak",
 				DisplayName:   "Oak",
 				BugQueueLabel: "test",
 			}
 
-			So(datastore.Put(c, tree), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("basic", func() {
+			t.Run("basic", func(t *ftt.Test) {
 				values := map[string]string{
 					"BugQueueLabels": "oak:thing",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.Name, ShouldEqual, "oak")
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.BugQueueLabel, ShouldEqual, "thing")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.Name, should.Equal("oak"))
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.BugQueueLabel, should.Equal("thing"))
 			})
 
-			Convey("remove label", func() {
+			t.Run("remove label", func(t *ftt.Test) {
 				values := map[string]string{
 					"BugQueueLabels": "oak:",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.Name, ShouldEqual, "oak")
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.BugQueueLabel, ShouldEqual, "")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.Name, should.Equal("oak"))
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.BugQueueLabel, should.BeEmpty)
 			})
 		})
 
-		Convey("update HelpLink", func() {
+		t.Run("update HelpLink", func(t *ftt.Test) {
 			tree := &model.Tree{
 				Name:          "oak",
 				DisplayName:   "Oak",
@@ -221,35 +222,35 @@ func TestWriteAllValues(t *testing.T) {
 				BugQueueLabel: "ShouldNotChange",
 			}
 
-			So(datastore.Put(c, tree), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, tree), should.BeNil)
 			datastore.GetTestable(c).CatchupIndexes()
 
-			Convey("basic", func() {
+			t.Run("basic", func(t *ftt.Test) {
 				values := map[string]string{
 					"HelpLink-oak": "http://google.com",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.HelpLink, ShouldEqual, "http://google.com")
-				So(tree.BugQueueLabel, ShouldEqual, "ShouldNotChange")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.HelpLink, should.Equal("http://google.com"))
+				assert.Loosely(t, tree.BugQueueLabel, should.Equal("ShouldNotChange"))
 			})
 
-			Convey("delete", func() {
+			t.Run("delete", func(t *ftt.Test) {
 				values := map[string]string{
 					"HelpLink-oak": "",
 				}
 				err := writeAllValues(c, values)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				datastore.GetTestable(c).CatchupIndexes()
 
-				So(datastore.Get(c, tree), ShouldBeNil)
-				So(tree.DisplayName, ShouldEqual, "Oak")
-				So(tree.HelpLink, ShouldEqual, "")
-				So(tree.BugQueueLabel, ShouldEqual, "ShouldNotChange")
+				assert.Loosely(t, datastore.Get(c, tree), should.BeNil)
+				assert.Loosely(t, tree.DisplayName, should.Equal("Oak"))
+				assert.Loosely(t, tree.HelpLink, should.BeEmpty)
+				assert.Loosely(t, tree.BugQueueLabel, should.Equal("ShouldNotChange"))
 			})
 		})
 	})

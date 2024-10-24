@@ -8,11 +8,11 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"testing"
 	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,6 +20,9 @@ import (
 	"go.chromium.org/luci/appengine/tq"
 	"go.chromium.org/luci/appengine/tq/tqtesting"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/arquebus/app/backend/model"
 	"infra/appengine/arquebus/app/config"
@@ -112,35 +115,41 @@ func createTestContextWithTQ() context.Context {
 }
 
 // createAssigner creates a sample Assigner entity.
-func createAssigner(c context.Context, id string) *model.Assigner {
+func createAssigner(c context.Context, t testing.TB, id string) *model.Assigner {
+	t.Helper()
+
 	var cfg config.Assigner
-	So(proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), ShouldBeNil)
+	assert.Loosely(t, proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), should.BeNil, truth.LineContext())
 	cfg.Id = id
 
-	So(UpdateAssigners(c, []*config.Assigner{&cfg}, "rev-1"), ShouldBeNil)
+	assert.Loosely(t, UpdateAssigners(c, []*config.Assigner{&cfg}, "rev-1"), should.BeNil, truth.LineContext())
 	assigner, err := GetAssigner(c, id)
-	So(assigner.ID, ShouldEqual, id)
-	So(err, ShouldBeNil)
-	So(assigner, ShouldNotBeNil)
+	assert.Loosely(t, assigner.ID, should.Equal(id))
+	assert.Loosely(t, err, should.BeNil)
+	assert.Loosely(t, assigner, should.NotBeNil)
 
 	return assigner
 }
 
-func triggerScheduleTaskHandler(c context.Context, id string) []*model.Task {
+func triggerScheduleTaskHandler(c context.Context, t testing.TB, id string) []*model.Task {
+	t.Helper()
+
 	req := &ScheduleAssignerTask{AssignerId: id}
-	So(scheduleAssignerTaskHandler(c, req), ShouldBeNil)
+	assert.Loosely(t, scheduleAssignerTaskHandler(c, req), should.BeNil, truth.LineContext())
 	_, tasks, err := GetAssignerWithTasks(c, id, 99999, true)
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 	return tasks
 }
 
-func triggerRunTaskHandler(c context.Context, assignerID string, taskID int64) *model.Task {
+func triggerRunTaskHandler(c context.Context, t testing.TB, assignerID string, taskID int64) *model.Task {
+	t.Helper()
+
 	req := &RunAssignerTask{AssignerId: assignerID, TaskId: taskID}
-	So(runAssignerTaskHandler(c, req), ShouldBeNil)
+	assert.Loosely(t, runAssignerTaskHandler(c, req), should.BeNil, truth.LineContext())
 	assigner, task, err := GetTask(c, assignerID, taskID)
-	So(assigner.ID, ShouldEqual, assignerID)
-	So(err, ShouldBeNil)
-	So(task, ShouldNotBeNil)
+	assert.Loosely(t, assigner.ID, should.Equal(assignerID), truth.LineContext())
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
+	assert.Loosely(t, task, should.NotBeNil, truth.LineContext())
 	return task
 }
 

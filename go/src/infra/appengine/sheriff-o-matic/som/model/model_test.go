@@ -11,11 +11,12 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 )
 
@@ -24,7 +25,7 @@ var _ = fmt.Printf
 func TestAnnotation(t *testing.T) {
 	t.Parallel()
 
-	Convey("Annotation", t, func() {
+	ftt.Run("Annotation", t, func(t *ftt.Test) {
 		c := gaetesting.TestingContext()
 		cl := testclock.New(testclock.TestTimeUTC)
 		c = clock.Set(c, cl)
@@ -36,177 +37,177 @@ func TestAnnotation(t *testing.T) {
 		}
 		cl.Add(time.Hour)
 
-		Convey("allows weird keys", func() {
+		t.Run("allows weird keys", func(t *ftt.Test) {
 			ann.Key = "hihih\"///////%20     lol"
 			ann.KeyDigest = fmt.Sprintf("%x", sha1.Sum([]byte(ann.Key)))
-			So(datastore.Put(c, ann), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, ann), should.BeNil)
 		})
 
-		Convey("allows long keys", func() {
+		t.Run("allows long keys", func(t *ftt.Test) {
 			// App engine key size limit is 500 characters
 			ann.Key = strings.Repeat("annnn", 200)
 			ann.KeyDigest = fmt.Sprintf("%x", sha1.Sum([]byte(ann.Key)))
-			So(datastore.Put(c, ann), ShouldBeNil)
+			assert.Loosely(t, datastore.Put(c, ann), should.BeNil)
 		})
 
-		Convey("with mocked checkAndGetBug", func() {
-			Convey("add", func() {
-				Convey("time", func() {
+		t.Run("with mocked checkAndGetBug", func(t *ftt.Test) {
+			t.Run("add", func(t *ftt.Test) {
+				t.Run("time", func(t *ftt.Test) {
 					changeS := `{"snoozeTime":123123}`
 					needRefresh, err := ann.Add(c, strings.NewReader(changeS))
 
-					So(err, ShouldBeNil)
-					So(needRefresh, ShouldBeFalse)
-					So(ann.SnoozeTime, ShouldEqual, 123123)
-					So(ann.Bugs, ShouldBeNil)
-					So(ann.Comments, ShouldBeNil)
-					So(ann.ModificationTime, ShouldResemble, cl.Now())
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, needRefresh, should.BeFalse)
+					assert.Loosely(t, ann.SnoozeTime, should.Equal(123123))
+					assert.Loosely(t, ann.Bugs, should.BeNil)
+					assert.Loosely(t, ann.Comments, should.BeNil)
+					assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now()))
 				})
 
-				Convey("bugs", func() {
+				t.Run("bugs", func(t *ftt.Test) {
 					changeString := `{"bugs":[{"id": "123123", "projectId": "chromium"}]}`
-					Convey("basic", func() {
+					t.Run("basic", func(t *ftt.Test) {
 						needRefresh, err := ann.Add(c, strings.NewReader(changeString))
 
-						So(err, ShouldBeNil)
-						So(needRefresh, ShouldBeTrue)
-						So(ann.SnoozeTime, ShouldEqual, 0)
-						So(ann.Bugs, ShouldResemble, []MonorailBug{{BugID: "123123", ProjectID: "chromium"}})
-						So(ann.ModificationTime, ShouldResemble, cl.Now())
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, needRefresh, should.BeTrue)
+						assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+						assert.Loosely(t, ann.Bugs, should.Resemble([]MonorailBug{{BugID: "123123", ProjectID: "chromium"}}))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now()))
 
-						Convey("duplicate bugs", func() {
+						t.Run("duplicate bugs", func(t *ftt.Test) {
 							cl.Add(time.Hour)
 							needRefresh, err = ann.Add(c, strings.NewReader(changeString))
-							So(err, ShouldBeNil)
-							So(needRefresh, ShouldBeFalse)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, needRefresh, should.BeFalse)
 
-							So(ann.SnoozeTime, ShouldEqual, 0)
-							So(ann.Bugs, ShouldResemble, []MonorailBug{{BugID: "123123", ProjectID: "chromium"}})
-							So(ann.Comments, ShouldBeNil)
+							assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+							assert.Loosely(t, ann.Bugs, should.Resemble([]MonorailBug{{BugID: "123123", ProjectID: "chromium"}}))
+							assert.Loosely(t, ann.Comments, should.BeNil)
 							// We aren't changing the annotation, so the modification time shouldn't update.
-							So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+							assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 						})
 					})
 
-					Convey("bug error", func() {
+					t.Run("bug error", func(t *ftt.Test) {
 						needRefresh, err := ann.Add(c, strings.NewReader("hi"))
 
-						So(err, ShouldNotBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 0)
-						So(ann.Bugs, ShouldBeNil)
-						So(ann.Comments, ShouldBeNil)
-						So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+						assert.Loosely(t, err, should.NotBeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+						assert.Loosely(t, ann.Bugs, should.BeNil)
+						assert.Loosely(t, ann.Comments, should.BeNil)
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 					})
 				})
 
-				Convey("comments", func() {
+				t.Run("comments", func(t *ftt.Test) {
 					changeString := `{"comments":["woah", "man", "comments"]}`
-					Convey("basic", func() {
+					t.Run("basic", func(t *ftt.Test) {
 						needRefresh, err := ann.Add(c, strings.NewReader(changeString))
-						t := cl.Now()
+						tm := cl.Now()
 
-						So(err, ShouldBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 0)
-						So(ann.Bugs, ShouldBeNil)
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+						assert.Loosely(t, ann.Bugs, should.BeNil)
 
-						So(ann.Comments, ShouldResemble, []Comment{{"woah", "", t}, {"man", "", t}, {"comments", "", t}})
-						So(ann.ModificationTime, ShouldResemble, t)
+						assert.Loosely(t, ann.Comments, should.Resemble([]Comment{{"woah", "", tm}, {"man", "", tm}, {"comments", "", tm}}))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(tm))
 					})
 
-					Convey("comments error", func() {
+					t.Run("comments error", func(t *ftt.Test) {
 						needRefresh, err := ann.Add(c, strings.NewReader("plz don't add me"))
 
-						So(err, ShouldNotBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 0)
-						So(ann.Bugs, ShouldBeNil)
-						So(ann.Comments, ShouldBeNil)
-						So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+						assert.Loosely(t, err, should.NotBeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+						assert.Loosely(t, ann.Bugs, should.BeNil)
+						assert.Loosely(t, ann.Comments, should.BeNil)
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 					})
 				})
 			})
 
-			Convey("remove", func() {
-				t := cl.Now()
-				fakeComments := []Comment{{"hello", "", t}, {"world", "", t}, {"hehe", "", t}}
+			t.Run("remove", func(t *ftt.Test) {
+				tm := cl.Now()
+				fakeComments := []Comment{{"hello", "", tm}, {"world", "", tm}, {"hehe", "", tm}}
 				fakeBugs := []MonorailBug{{BugID: "123123", ProjectID: "chromium"}, {BugID: "bug2", ProjectID: "fuchsia"}}
 				ann.SnoozeTime = 100
 				ann.Bugs = fakeBugs
 				ann.Comments = fakeComments
 
-				Convey("time", func() {
+				t.Run("time", func(t *ftt.Test) {
 					changeS := `{"snoozeTime":true}`
 					needRefresh, err := ann.Remove(c, strings.NewReader(changeS))
 
-					So(err, ShouldBeNil)
-					So(needRefresh, ShouldBeFalse)
-					So(ann.SnoozeTime, ShouldEqual, 0)
-					So(ann.Bugs, ShouldResemble, fakeBugs)
-					So(ann.Comments, ShouldResemble, fakeComments)
-					So(ann.ModificationTime, ShouldResemble, cl.Now())
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, needRefresh, should.BeFalse)
+					assert.Loosely(t, ann.SnoozeTime, should.BeZero)
+					assert.Loosely(t, ann.Bugs, should.Resemble(fakeBugs))
+					assert.Loosely(t, ann.Comments, should.Resemble(fakeComments))
+					assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now()))
 				})
 
-				Convey("bugs", func() {
+				t.Run("bugs", func(t *ftt.Test) {
 					changeString := `{"bugs":[{"id": "123123", "projectId": "chromium"}]}`
-					Convey("basic", func() {
+					t.Run("basic", func(t *ftt.Test) {
 						needRefresh, err := ann.Remove(c, strings.NewReader(changeString))
 
-						So(err, ShouldBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 100)
-						So(ann.Comments, ShouldResemble, fakeComments)
-						So(ann.Bugs, ShouldResemble, []MonorailBug{{BugID: "bug2", ProjectID: "fuchsia"}})
-						So(ann.ModificationTime, ShouldResemble, cl.Now())
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.Equal(100))
+						assert.Loosely(t, ann.Comments, should.Resemble(fakeComments))
+						assert.Loosely(t, ann.Bugs, should.Resemble([]MonorailBug{{BugID: "bug2", ProjectID: "fuchsia"}}))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now()))
 					})
 
-					Convey("bug error", func() {
+					t.Run("bug error", func(t *ftt.Test) {
 						needRefresh, err := ann.Remove(c, strings.NewReader("badbugzman"))
 
-						So(err, ShouldNotBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 100)
-						So(ann.Bugs, ShouldResemble, fakeBugs)
-						So(ann.Comments, ShouldResemble, fakeComments)
-						So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+						assert.Loosely(t, err, should.NotBeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.Equal(100))
+						assert.Loosely(t, ann.Bugs, should.Resemble(fakeBugs))
+						assert.Loosely(t, ann.Comments, should.Resemble(fakeComments))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 					})
 				})
 
-				Convey("comments", func() {
-					Convey("basic", func() {
+				t.Run("comments", func(t *ftt.Test) {
+					t.Run("basic", func(t *ftt.Test) {
 						changeString := `{"comments":[1]}`
 						needRefresh, err := ann.Remove(c, strings.NewReader(changeString))
 
-						So(err, ShouldBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 100)
-						So(ann.Bugs, ShouldResemble, fakeBugs)
-						So(ann.Comments, ShouldResemble, []Comment{{"hello", "", t}, {"hehe", "", t}})
-						So(ann.ModificationTime, ShouldResemble, cl.Now())
+						assert.Loosely(t, err, should.BeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.Equal(100))
+						assert.Loosely(t, ann.Bugs, should.Resemble(fakeBugs))
+						assert.Loosely(t, ann.Comments, should.Resemble([]Comment{{"hello", "", tm}, {"hehe", "", tm}}))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now()))
 					})
 
-					Convey("bad format", func() {
+					t.Run("bad format", func(t *ftt.Test) {
 						needRefresh, err := ann.Remove(c, strings.NewReader("don't do this"))
 
-						So(err, ShouldNotBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 100)
-						So(ann.Bugs, ShouldResemble, fakeBugs)
-						So(ann.Comments, ShouldResemble, fakeComments)
-						So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+						assert.Loosely(t, err, should.NotBeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.Equal(100))
+						assert.Loosely(t, ann.Bugs, should.Resemble(fakeBugs))
+						assert.Loosely(t, ann.Comments, should.Resemble(fakeComments))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 					})
 
-					Convey("invalid index", func() {
+					t.Run("invalid index", func(t *ftt.Test) {
 						changeString := `{"comments":[3]}`
 						needRefresh, err := ann.Remove(c, strings.NewReader(changeString))
 
-						So(err, ShouldNotBeNil)
-						So(needRefresh, ShouldBeFalse)
-						So(ann.SnoozeTime, ShouldEqual, 100)
-						So(ann.Bugs, ShouldResemble, fakeBugs)
-						So(ann.Comments, ShouldResemble, fakeComments)
-						So(ann.ModificationTime, ShouldResemble, cl.Now().Add(-time.Hour))
+						assert.Loosely(t, err, should.NotBeNil)
+						assert.Loosely(t, needRefresh, should.BeFalse)
+						assert.Loosely(t, ann.SnoozeTime, should.Equal(100))
+						assert.Loosely(t, ann.Bugs, should.Resemble(fakeBugs))
+						assert.Loosely(t, ann.Comments, should.Resemble(fakeComments))
+						assert.Loosely(t, ann.ModificationTime, should.Resemble(cl.Now().Add(-time.Hour)))
 					})
 				})
 
@@ -216,71 +217,71 @@ func TestAnnotation(t *testing.T) {
 }
 
 func TestAlertJSONNonGroupingGetStepName(t *testing.T) {
-	Convey("valid ID", t, func() {
+	ftt.Run("valid ID", t, func(t *ftt.Test) {
 		ann := &AlertJSONNonGrouping{
 			ID: "tree$!project$!bucket$!builder$!step$!0",
 		}
 		stepName, err := ann.GetStepName()
-		So(err, ShouldBeNil)
-		So(stepName, ShouldEqual, "step")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, stepName, should.Equal("step"))
 	})
-	Convey("invalid ID", t, func() {
+	ftt.Run("invalid ID", t, func(t *ftt.Test) {
 		ann := &AlertJSONNonGrouping{
 			ID: "my key",
 		}
 		_, err := ann.GetStepName()
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
-	Convey("invalid ID 1", t, func() {
+	ftt.Run("invalid ID 1", t, func(t *ftt.Test) {
 		ann := &AlertJSONNonGrouping{
 			ID: "1$!2$!3$!4$!5$!6$!7",
 		}
 		_, err := ann.GetStepName()
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestAnnotationGetStepName(t *testing.T) {
 	c := gaetesting.TestingContext()
-	Convey("Get step name valid", t, func() {
+	ftt.Run("Get step name valid", t, func(t *ftt.Test) {
 		ann := &Annotation{
 			Tree: datastore.MakeKey(c, "Tree", "chromium"),
 			Key:  "chromium.step_name",
 		}
 		stepName, err := ann.GetStepName()
-		So(err, ShouldBeNil)
-		So(stepName, ShouldEqual, "step_name")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, stepName, should.Equal("step_name"))
 	})
-	Convey("Get step name when tree name containing dot", t, func() {
+	ftt.Run("Get step name when tree name containing dot", t, func(t *ftt.Test) {
 		ann := &Annotation{
 			Tree: datastore.MakeKey(c, "Tree", "chromium.clang"),
 			Key:  "chromium.clang.step_name",
 		}
 		stepName, err := ann.GetStepName()
-		So(err, ShouldBeNil)
-		So(stepName, ShouldEqual, "step_name")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, stepName, should.Equal("step_name"))
 	})
-	Convey("Get step name invalid", t, func() {
+	ftt.Run("Get step name invalid", t, func(t *ftt.Test) {
 		ann := &Annotation{
 			Tree: datastore.MakeKey(c, "Tree", "chromium"),
 			Key:  "step_name",
 		}
 		_, err := ann.GetStepName()
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestIsGroupAnnotation(t *testing.T) {
-	Convey("is group annotation returns true", t, func() {
+	ftt.Run("is group annotation returns true", t, func(t *ftt.Test) {
 		ann := &Annotation{
 			Key: "e2d935ac-c623-4c10-b1e3-73bb54584f8f",
 		}
-		So(ann.IsGroupAnnotation(), ShouldBeTrue)
+		assert.Loosely(t, ann.IsGroupAnnotation(), should.BeTrue)
 	})
-	Convey("is group annotation returns false", t, func() {
+	ftt.Run("is group annotation returns false", t, func(t *ftt.Test) {
 		ann := &Annotation{
 			Key: "abcd",
 		}
-		So(ann.IsGroupAnnotation(), ShouldBeFalse)
+		assert.Loosely(t, ann.IsGroupAnnotation(), should.BeFalse)
 	})
 }

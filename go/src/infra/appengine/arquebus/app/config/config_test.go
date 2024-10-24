@@ -12,9 +12,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/cfgclient"
 	cfgmem "go.chromium.org/luci/config/impl/memory"
@@ -26,10 +28,12 @@ import (
 	"infra/appengine/arquebus/app/util"
 )
 
-func createConfig(id string) *Config {
+func createConfig(t testing.TB, id string) *Config {
+	t.Helper()
+
 	// returns an assigner with a given ID and all required fields.
 	var cfg Assigner
-	So(proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), ShouldBeNil)
+	assert.Loosely(t, proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), should.BeNil, truth.LineContext())
 	cfg.Id = id
 
 	return &Config{
@@ -49,18 +53,18 @@ func createRotationSource(rotation string) *UserSource_Rotation {
 func TestMiddleware(t *testing.T) {
 	t.Parallel()
 
-	Convey("loads config and updates context", t, func() {
+	ftt.Run("loads config and updates context", t, func(t *ftt.Test) {
 		c := memory.Use(context.Background())
 		c = caching.WithEmptyProcessCache(c)
 		c = cfgclient.Use(c, cfgmem.New(map[config.Set]cfgmem.Files{
 			"services/${appid}": {
-				cachedCfg.Path: createConfig("assigner").String(),
+				cachedCfg.Path: createConfig(t, "assigner").String(),
 			},
 		}))
 
 		Middleware(&router.Context{Request: (&http.Request{}).WithContext(c)}, func(c *router.Context) {
-			So(Get(c.Request.Context()).AccessGroup, ShouldEqual, "trooper")
-			So(GetConfigRevision(c.Request.Context()), ShouldNotEqual, "")
+			assert.Loosely(t, Get(c.Request.Context()).AccessGroup, should.Equal("trooper"))
+			assert.Loosely(t, GetConfigRevision(c.Request.Context()), should.NotEqual(""))
 		})
 	})
 }
@@ -74,145 +78,145 @@ func TestConfigValidator(t *testing.T) {
 		return c.Finalize()
 	}
 
-	Convey("devcfg template is valid", t, func() {
+	ftt.Run("devcfg template is valid", t, func(t *ftt.Test) {
 		content, err := ioutil.ReadFile(
 			"../devcfg/services/dev/config-template.cfg",
 		)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		cfg := &Config{}
-		So(proto.UnmarshalText(string(content), cfg), ShouldBeNil)
-		So(validate(cfg), ShouldBeNil)
+		assert.Loosely(t, proto.UnmarshalText(string(content), cfg), should.BeNil)
+		assert.Loosely(t, validate(cfg), should.BeNil)
 	})
 
-	Convey("empty monorail_hostname is not valid", t, func() {
-		cfg := createConfig("my-assigner")
+	ftt.Run("empty monorail_hostname is not valid", t, func(t *ftt.Test) {
+		cfg := createConfig(t, "my-assigner")
 		cfg.MonorailHostname = ""
-		So(validate(cfg), ShouldErrLike, "empty value is not allowed")
+		assert.Loosely(t, validate(cfg), should.ErrLike("empty value is not allowed"))
 	})
 
-	Convey("validateConfig catches errors", t, func() {
-		Convey("For duplicate IDs", func() {
-			cfg := createConfig("my-assigner")
+	ftt.Run("validateConfig catches errors", t, func(t *ftt.Test) {
+		t.Run("For duplicate IDs", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners = append(cfg.Assigners, cfg.Assigners[0])
-			So(validate(cfg), ShouldErrLike, "duplicate id")
+			assert.Loosely(t, validate(cfg), should.ErrLike("duplicate id"))
 		})
 
-		Convey("for invalid IDs", func() {
+		t.Run("for invalid IDs", func(t *ftt.Test) {
 			msg := "invalid id"
-			So(validate(createConfig("a-")), ShouldErrLike, msg)
-			So(validate(createConfig("a-")), ShouldErrLike, msg)
-			So(validate(createConfig("-a")), ShouldErrLike, msg)
-			So(validate(createConfig("-")), ShouldErrLike, msg)
-			So(validate(createConfig("a--b")), ShouldErrLike, msg)
-			So(validate(createConfig("a@!3")), ShouldErrLike, msg)
-			So(validate(createConfig("12=56")), ShouldErrLike, msg)
-			So(validate(createConfig("A-cfg")), ShouldErrLike, msg)
+			assert.Loosely(t, validate(createConfig(t, "a-")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "a-")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "-a")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "-")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "a--b")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "a@!3")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "12=56")), should.ErrLike(msg))
+			assert.Loosely(t, validate(createConfig(t, "A-cfg")), should.ErrLike(msg))
 		})
 
-		Convey("for invalid owners", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for invalid owners", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].Owners = []string{"example.com"}
-			So(validate(cfg), ShouldErrLike, "invalid email address")
+			assert.Loosely(t, validate(cfg), should.ErrLike("invalid email address"))
 		})
 
-		Convey("for missing interval", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for missing interval", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].Interval = nil
-			So(validate(cfg), ShouldErrLike, "missing interval")
+			assert.Loosely(t, validate(cfg), should.ErrLike("missing interval"))
 		})
 
-		Convey("for an interval shoter than 1 minute", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for an interval shoter than 1 minute", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].Interval = &duration.Duration{Seconds: 59}
-			So(validate(cfg), ShouldErrLike, "interval should be at least one minute")
+			assert.Loosely(t, validate(cfg), should.ErrLike("interval should be at least one minute"))
 		})
 
-		Convey("for missing assignees", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for missing assignees", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].Assignees = []*UserSource{}
-			Convey("with ccs", func() {
+			t.Run("with ccs", func(t *ftt.Test) {
 				// If ccs[] is given, assignees[] can be omitted.
-				So(cfg.Assigners[0].Ccs, ShouldNotBeNil)
-				So(validate(cfg), ShouldBeNil)
+				assert.Loosely(t, cfg.Assigners[0].Ccs, should.NotBeNil)
+				assert.Loosely(t, validate(cfg), should.BeNil)
 			})
 
-			Convey("Without ccs", func() {
+			t.Run("Without ccs", func(t *ftt.Test) {
 				cfg.Assigners[0].Ccs = []*UserSource{}
-				So(validate(cfg), ShouldErrLike, "at least one of assignees or ccs must be given")
+				assert.Loosely(t, validate(cfg), should.ErrLike("at least one of assignees or ccs must be given"))
 			})
 		})
 
-		Convey("for missing ccs", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for missing ccs", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].Ccs = []*UserSource{}
-			Convey("with assignees", func() {
+			t.Run("with assignees", func(t *ftt.Test) {
 				// If assignees[] is given, ccs[] can be omitted.
-				So(cfg.Assigners[0].Ccs, ShouldNotBeNil)
-				So(validate(cfg), ShouldBeNil)
+				assert.Loosely(t, cfg.Assigners[0].Ccs, should.NotBeNil)
+				assert.Loosely(t, validate(cfg), should.BeNil)
 			})
 
-			Convey("Without assignees", func() {
+			t.Run("Without assignees", func(t *ftt.Test) {
 				cfg.Assigners[0].Assignees = []*UserSource{}
-				So(validate(cfg), ShouldErrLike, "at least one of assignees or ccs must be given")
+				assert.Loosely(t, validate(cfg), should.ErrLike("at least one of assignees or ccs must be given"))
 			})
 		})
 
-		Convey("for missing issue_query", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for missing issue_query", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			cfg.Assigners[0].IssueQuery = nil
-			So(validate(cfg), ShouldErrLike, "missing issue_query")
+			assert.Loosely(t, validate(cfg), should.ErrLike("missing issue_query"))
 			cfg.Assigners[0].IssueQuery = &IssueQuery{ProjectNames: []string{}}
-			So(validate(cfg), ShouldErrLike, "missing q")
+			assert.Loosely(t, validate(cfg), should.ErrLike("missing q"))
 			cfg.Assigners[0].IssueQuery = &IssueQuery{Q: "text"}
-			So(validate(cfg), ShouldErrLike, "missing project_names")
+			assert.Loosely(t, validate(cfg), should.ErrLike("missing project_names"))
 		})
 
-		Convey("for valid UserResource", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for valid UserResource", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			assigner := cfg.Assigners[0]
 			source := &UserSource{}
 			assigner.Assignees[0] = source
 
-			Convey("with valid rotation names", func() {
+			t.Run("with valid rotation names", func(t *ftt.Test) {
 				source.From = createRotationSource("oncallator:foo-bar")
-				So(validate(cfg), ShouldBeNil)
+				assert.Loosely(t, validate(cfg), should.BeNil)
 				source.From = createRotationSource("grotation:foo-bar")
-				So(validate(cfg), ShouldBeNil)
+				assert.Loosely(t, validate(cfg), should.BeNil)
 			})
 		})
 
-		Convey("for invalid UserResource", func() {
-			cfg := createConfig("my-assigner")
+		t.Run("for invalid UserResource", func(t *ftt.Test) {
+			cfg := createConfig(t, "my-assigner")
 			assigner := cfg.Assigners[0]
 			source := &UserSource{}
 			assigner.Assignees[0] = source
 
-			Convey("with missing value", func() {
+			t.Run("with missing value", func(t *ftt.Test) {
 				source.Reset()
-				So(validate(cfg), ShouldErrLike, "missing or unknown user source")
+				assert.Loosely(t, validate(cfg), should.ErrLike("missing or unknown user source"))
 			})
 
-			Convey("with invalid rotation names", func() {
+			t.Run("with invalid rotation names", func(t *ftt.Test) {
 				invalidID := "invalid id"
 				source.From = createRotationSource("")
-				So(validate(cfg), ShouldErrLike, "either name or rotation must be specified")
+				assert.Loosely(t, validate(cfg), should.ErrLike("either name or rotation must be specified"))
 				source.From = createRotationSource("foo-bar")
-				So(validate(cfg), ShouldErrLike, invalidID)
+				assert.Loosely(t, validate(cfg), should.ErrLike(invalidID))
 				source.From = createRotationSource("oncallator: foo-bar")
-				So(validate(cfg), ShouldErrLike, invalidID)
+				assert.Loosely(t, validate(cfg), should.ErrLike(invalidID))
 				source.From = createRotationSource("oncallator:foo:bar")
-				So(validate(cfg), ShouldErrLike, invalidID)
+				assert.Loosely(t, validate(cfg), should.ErrLike(invalidID))
 				source.From = createRotationSource("oncallator:[foo-bar]")
-				So(validate(cfg), ShouldErrLike, invalidID)
+				assert.Loosely(t, validate(cfg), should.ErrLike(invalidID))
 			})
 
-			Convey("with invalid user", func() {
+			t.Run("with invalid user", func(t *ftt.Test) {
 				source.From = &UserSource_Email{Email: "example"}
-				So(validate(cfg), ShouldErrLike, "invalid email")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid email"))
 				source.From = &UserSource_Email{Email: "example.org"}
-				So(validate(cfg), ShouldErrLike, "invalid email")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid email"))
 				source.From = &UserSource_Email{Email: "http://foo@example.org"}
-				So(validate(cfg), ShouldErrLike, "invalid email")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid email"))
 			})
 		})
 	})

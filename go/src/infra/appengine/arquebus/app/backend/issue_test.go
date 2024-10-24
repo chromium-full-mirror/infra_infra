@@ -11,10 +11,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/appengine/arquebus/app/config"
 	rotationproxy "infra/appengine/rotation-proxy/proto"
@@ -25,17 +27,17 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 	t.Parallel()
 	assignerID := "test-assigner"
 
-	Convey("searchAndUpdateIssues", t, func() {
+	ftt.Run("searchAndUpdateIssues", t, func(t *ftt.Test) {
 		c := createTestContextWithTQ()
 
 		// create a sample assigner with tasks.
-		assigner := createAssigner(c, assignerID)
+		assigner := createAssigner(c, t, assignerID)
 		assigner.AssigneesRaw = createRawUserSources(
 			rotationUserSource("Rotation 1", config.Oncall_PRIMARY),
 		)
 		assigner.CCsRaw = createRawUserSources()
-		tasks := triggerScheduleTaskHandler(c, assignerID)
-		So(tasks, ShouldNotBeNil)
+		tasks := triggerScheduleTaskHandler(c, t, assignerID)
+		assert.Loosely(t, tasks, should.NotBeNil)
 		task := tasks[0]
 
 		var sampleIssues []*monorail.Issue
@@ -46,75 +48,75 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 		}
 		mockGetAndListIssues(c, sampleIssues...)
 
-		Convey("issues with opt-out label are filtered in search", func() {
+		t.Run("issues with opt-out label are filtered in search", func(t *ftt.Test) {
 			countOptOptLabel := func(query string) int {
 				assigner.IssueQueryRaw, _ = proto.Marshal(&config.IssueQuery{
 					Q: query,
 				})
 				_, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				req := getListIssuesRequest(c)
-				So(req, ShouldNotBeNil)
+				assert.Loosely(t, req, should.NotBeNil)
 				return strings.Count(req.Query, fmt.Sprintf("-label:%s", OptOutLabel))
 			}
-			So(countOptOptLabel("ABC"), ShouldEqual, 1)
-			So(countOptOptLabel("ABC OR "), ShouldEqual, 1)
-			So(countOptOptLabel("ABC OR"), ShouldEqual, 1)
-			So(countOptOptLabel("ABC DEF"), ShouldEqual, 1)
-			So(countOptOptLabel(" OR ABC"), ShouldEqual, 1)
-			So(countOptOptLabel("OR ABC DEF"), ShouldEqual, 1)
-			So(countOptOptLabel("ABC OR DEF"), ShouldEqual, 2)
-			So(countOptOptLabel("ABC OR DEF OR FOO"), ShouldEqual, 3)
+			assert.Loosely(t, countOptOptLabel("ABC"), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel("ABC OR "), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel("ABC OR"), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel("ABC DEF"), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel(" OR ABC"), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel("OR ABC DEF"), should.Equal(1))
+			assert.Loosely(t, countOptOptLabel("ABC OR DEF"), should.Equal(2))
+			assert.Loosely(t, countOptOptLabel("ABC OR DEF OR FOO"), should.Equal(3))
 		})
 
-		Convey("issues are updated", func() {
+		t.Run("issues are updated", func(t *ftt.Test) {
 			nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-			So(err, ShouldBeNil)
-			So(nUpdated, ShouldEqual, len(sampleIssues))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nUpdated, should.Equal(len(sampleIssues)))
 
 			for _, issue := range sampleIssues {
 				req := getIssueUpdateRequest(c, issue.ProjectName, issue.LocalId)
-				So(req, ShouldNotBeNil)
-				So(
-					req.Delta.OwnerRef.DisplayName, ShouldEqual,
-					findPrimaryOncall(sampleRotationProxyRotations["Rotation 1"].Shifts[0]).DisplayName,
-				)
+				assert.Loosely(t, req, should.NotBeNil)
+				assert.Loosely(t,
+					req.Delta.OwnerRef.DisplayName, should.Equal(
+						findPrimaryOncall(sampleRotationProxyRotations["Rotation 1"].Shifts[0]).DisplayName,
+					))
 			}
 		})
 
-		Convey("no issues are updated", func() {
+		t.Run("no issues are updated", func(t *ftt.Test) {
 			mockGetAndListIssues(
 				c, &monorail.Issue{ProjectName: "test", LocalId: 123},
 			)
 
-			Convey("if no oncaller is available", func() {
+			t.Run("if no oncaller is available", func(t *ftt.Test) {
 				// simulate an oncall with empty shifts.
 				mockRotation(c, "Rotation 1", &rotationproxy.Rotation{})
 
 				// nUpdated should be 0
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
 
-			Convey("if no assignees and ccs set in config", func() {
+			t.Run("if no assignees and ccs set in config", func(t *ftt.Test) {
 				assigner.AssigneesRaw = createRawUserSources()
 				assigner.CCsRaw = createRawUserSources()
 
 				// nUpdated should be 0
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
 
-			Convey("if no delta was found", func() {
+			t.Run("if no delta was found", func(t *ftt.Test) {
 				issue := &monorail.Issue{
 					ProjectName: "test", LocalId: 123,
 					OwnerRef: nil,
 					CcRefs:   []*monorail.UserRef{},
 				}
 
-				Convey("when the owners are the same", func() {
+				t.Run("when the owners are the same", func(t *ftt.Test) {
 					assigner.AssigneesRaw = createRawUserSources(emailUserSource("foo@example.org"))
 					assigner.CCsRaw = createRawUserSources()
 					issue.OwnerRef = monorailUser("foo@example.org")
@@ -133,11 +135,11 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 					mockGetAndListIssues(c, issue)
 
 					nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-					So(err, ShouldBeNil)
-					So(nUpdated, ShouldEqual, 0)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, nUpdated, should.BeZero)
 				})
 
-				Convey("when the user is already in the cc list.", func() {
+				t.Run("when the user is already in the cc list.", func(t *ftt.Test) {
 					assigner.AssigneesRaw = createRawUserSources()
 					assigner.CCsRaw = createRawUserSources(emailUserSource("bar@example.net"))
 					issue.CcRefs = append(issue.CcRefs, monorailUser("bar@example.net"))
@@ -145,12 +147,12 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 					mockGetAndListIssues(c, issue)
 
 					nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-					So(err, ShouldBeNil)
-					So(nUpdated, ShouldEqual, 0)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, nUpdated, should.BeZero)
 				})
 			})
 
-			Convey("if dry-run is set", func() {
+			t.Run("if dry-run is set", func(t *ftt.Test) {
 				assigner.IsDryRun = true
 				assigner.AssigneesRaw = createRawUserSources(
 					emailUserSource("foo@example.org"),
@@ -162,24 +164,24 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 					c, &monorail.Issue{ProjectName: "test", LocalId: 123},
 				)
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
 		})
 
-		Convey("search response contains stale data", func() {
+		t.Run("search response contains stale data", func(t *ftt.Test) {
 			// These are to ensure that Arquebus makes a decision for issue
 			// updates, based on the latest status of the issues that are found
 			// in search responses.
-			Convey("the issue no longer exists", func() {
+			t.Run("the issue no longer exists", func(t *ftt.Test) {
 				// mock GetIssues() without any issue objects.
 				mockGetIssues(c)
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
 				// NotFound should not result in searchAndUpdateIssues() failed.
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
-			Convey("there is an owner already", func() {
+			t.Run("there is an owner already", func(t *ftt.Test) {
 				assigner.AssigneesRaw = createRawUserSources(
 					emailUserSource("foo@example.org"),
 				)
@@ -197,19 +199,19 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 				)
 				// Therefore, an update shouldn't be made.
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
 		})
 
-		Convey("an issue update is throttled", func() {
+		t.Run("an issue update is throttled", func(t *ftt.Test) {
 			clk := testclock.New(time.Unix(testclock.TestTimeUTC.Unix(), 0).UTC())
 			c = clock.Set(c, clk)
 
 			// Perform issue updates with new owners, first.
 			nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-			So(err, ShouldBeNil)
-			So(nUpdated, ShouldEqual, len(sampleIssues))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nUpdated, should.Equal(len(sampleIssues)))
 
 			// Advance the time by half of the throttle duration, and re-perform
 			// issue updates. Note that samplesIssues still have no owners, and
@@ -219,18 +221,18 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 			// generate any issue updates.
 			clk.Add(issueUpdateThrottleDuration / 2)
 			nUpdated, err = searchAndUpdateIssues(c, assigner, task)
-			So(err, ShouldBeNil)
-			So(nUpdated, ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nUpdated, should.BeZero)
 
 			// Advnace the time again. Now, it's out of the throttling window,
 			// and issue updates should be generated.
 			clk.Add(issueUpdateThrottleDuration)
 			nUpdated, err = searchAndUpdateIssues(c, assigner, task)
-			So(err, ShouldBeNil)
-			So(nUpdated, ShouldEqual, len(sampleIssues))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, nUpdated, should.Equal(len(sampleIssues)))
 		})
 
-		Convey("the status and assignee remain the same, if there is no intended assignee", func() {
+		t.Run("the status and assignee remain the same, if there is no intended assignee", func(t *ftt.Test) {
 			// Mock an issue with an assignee and status.
 			si := &monorail.Issue{
 				ProjectName: "test", LocalId: 123,
@@ -242,16 +244,16 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 			}
 			mockGetAndListIssues(c, si)
 
-			Convey("because it's outside of the oncall hours", func() {
+			t.Run("because it's outside of the oncall hours", func(t *ftt.Test) {
 				// Mock a rotation with empty shifts.
 				mockRotation(c, "Rotation 1", &rotationproxy.Rotation{})
 				// nUpdated should be 0
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.BeZero)
 			})
 
-			Convey("because the config doesn't have assignee", func() {
+			t.Run("because the config doesn't have assignee", func(t *ftt.Test) {
 				// This rotation only cc-es the oncaller into the issue.
 				assigner.CCsRaw = createRawUserSources(
 					rotationUserSource("Rotation 1", config.Oncall_PRIMARY),
@@ -260,16 +262,16 @@ func TestSearchAndUpdateIssues(t *testing.T) {
 
 				// nUpdated should be 1 for the new cc-ed oncall.
 				nUpdated, err := searchAndUpdateIssues(c, assigner, task)
-				So(err, ShouldBeNil)
-				So(nUpdated, ShouldEqual, 1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, nUpdated, should.Equal(1))
 
 				// The IssueDelta{} should only contain a change for CC, but
 				// not for the owner and status.
 				req := getIssueUpdateRequest(c, si.ProjectName, si.LocalId)
-				So(req, ShouldNotBeNil)
-				So(req.Delta.OwnerRef, ShouldBeNil)
-				So(req.Delta.Status, ShouldBeNil)
-				So(req.Delta.CcRefsAdd, ShouldNotBeNil)
+				assert.Loosely(t, req, should.NotBeNil)
+				assert.Loosely(t, req.Delta.OwnerRef, should.BeNil)
+				assert.Loosely(t, req.Delta.Status, should.BeNil)
+				assert.Loosely(t, req.Delta.CcRefsAdd, should.NotBeNil)
 			})
 		})
 	})

@@ -10,9 +10,12 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/julienschmidt/httprouter"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
@@ -57,28 +60,32 @@ func testContext() context.Context {
 }
 
 // createAssigner creates a sample Assigner entity.
-func createAssigner(c context.Context, id string) *model.Assigner {
+func createAssigner(c context.Context, t testing.TB, id string) *model.Assigner {
+	t.Helper()
+
 	var cfg config.Assigner
-	So(proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), ShouldBeNil)
+	assert.Loosely(t, proto.UnmarshalText(util.SampleValidAssignerCfg, &cfg), should.BeNil, truth.LineContext())
 	cfg.Id = id
 
-	So(backend.UpdateAssigners(c, []*config.Assigner{&cfg}, "revision-1"), ShouldBeNil)
+	assert.Loosely(t, backend.UpdateAssigners(c, []*config.Assigner{&cfg}, "revision-1"), should.BeNil, truth.LineContext())
 	datastore.GetTestable(c).CatchupIndexes()
 	assigner, err := backend.GetAssigner(c, cfg.Id)
-	So(assigner.ID, ShouldEqual, cfg.Id)
-	So(err, ShouldBeNil)
-	So(assigner, ShouldNotBeNil)
+	assert.Loosely(t, assigner.ID, should.Equal(cfg.Id), truth.LineContext())
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
+	assert.Loosely(t, assigner, should.NotBeNil, truth.LineContext())
 
 	return assigner
 }
 
-func createScheduledTask(c context.Context, assigner *model.Assigner) *model.Task {
+func createScheduledTask(c context.Context, t testing.TB, assigner *model.Assigner) *model.Task {
+	t.Helper()
+
 	task := &model.Task{
 		AssignerKey:   model.GenAssignerKey(c, assigner),
 		Status:        model.TaskStatus_Scheduled,
 		ExpectedStart: testclock.TestTimeUTC,
 	}
-	So(datastore.Put(c, task), ShouldBeNil)
+	assert.Loosely(t, datastore.Put(c, task), should.BeNil, truth.LineContext())
 	return task
 }
 
@@ -86,80 +93,80 @@ func TestFrontend(t *testing.T) {
 	t.Parallel()
 	assignerID := "test-assigner"
 
-	Convey("frontend", t, func() {
+	ftt.Run("frontend", t, func(t *ftt.Test) {
 		w := httptest.NewRecorder()
 		c := &router.Context{
 			Writer:  w,
 			Request: (&http.Request{}).WithContext(testContext()),
 		}
 
-		Convey("index", func() {
+		t.Run("index", func(t *ftt.Test) {
 			indexPage(c)
-			So(w.Code, ShouldEqual, 200)
+			assert.Loosely(t, w.Code, should.Equal(200))
 		})
 
-		Convey("assigner", func() {
-			createAssigner(c.Request.Context(), assignerID)
+		t.Run("assigner", func(t *ftt.Test) {
+			createAssigner(c.Request.Context(), t, assignerID)
 
-			Convey("found", func() {
+			t.Run("found", func(t *ftt.Test) {
 				c.Params = makeParams("AssignerID", assignerID)
 				assignerPage(c)
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 			})
 
-			Convey("not found, if assignerID not given", func() {
+			t.Run("not found, if assignerID not given", func(t *ftt.Test) {
 				assignerPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 
-			Convey("not found, if non-existing assignerID given", func() {
+			t.Run("not found, if non-existing assignerID given", func(t *ftt.Test) {
 				c.Params = makeParams("AssignerID", "foo")
 				assignerPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 		})
 
-		Convey("task", func() {
-			assigner := createAssigner(c.Request.Context(), assignerID)
-			task := createScheduledTask(c.Request.Context(), assigner)
+		t.Run("task", func(t *ftt.Test) {
+			assigner := createAssigner(c.Request.Context(), t, assignerID)
+			task := createScheduledTask(c.Request.Context(), t, assigner)
 
-			Convey("found", func() {
+			t.Run("found", func(t *ftt.Test) {
 				c.Params = makeParams(
 					"AssignerID", assignerID,
 					"TaskID", strconv.FormatInt(task.ID, 10),
 				)
 				taskPage(c)
-				So(w.Code, ShouldEqual, 200)
+				assert.Loosely(t, w.Code, should.Equal(200))
 			})
 
-			Convey("not found, if no params given", func() {
+			t.Run("not found, if no params given", func(t *ftt.Test) {
 				taskPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 
-			Convey("not found, if taskID not given", func() {
+			t.Run("not found, if taskID not given", func(t *ftt.Test) {
 				c.Params = makeParams(
 					"AssignerID", assignerID,
 				)
 				taskPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 
-			Convey("not found, if assignerID not given", func() {
+			t.Run("not found, if assignerID not given", func(t *ftt.Test) {
 				c.Params = makeParams(
 					"TaskID", strconv.FormatInt(task.ID, 10),
 				)
 				taskPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 
-			Convey("not found, if non-existing taskID given", func() {
+			t.Run("not found, if non-existing taskID given", func(t *ftt.Test) {
 				c.Params = makeParams(
 					"AssignerID", assignerID,
 					"TaskID", strconv.FormatInt(task.ID+1, 10),
 				)
 				taskPage(c)
-				So(w.Code, ShouldEqual, 404)
+				assert.Loosely(t, w.Code, should.Equal(404))
 			})
 		})
 	})
