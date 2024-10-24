@@ -8,15 +8,17 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/grpclog"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestDisableGRPCLogging(t *testing.T) {
-	Convey(`LogDog executions suppress gRPC print-level logging`, t, func() {
+	ftt.Run(`LogDog executions suppress gRPC print-level logging`, t, func(t *ftt.Test) {
 		var (
 			ctx = context.Background()
 			ml  memlogger.MemLogger
@@ -28,20 +30,20 @@ func TestDisableGRPCLogging(t *testing.T) {
 		// Call "runWithLogdogButler". This should panic, but, more importantly for
 		// this test, should also install our gRPC log suppression. Note that this
 		// is GLOBAL, so we cannot run this in parallel.
-		Convey(`When log level is Info, does not log Prints.`, func() {
+		t.Run(`When log level is Info, does not log Prints.`, func(t *ftt.Test) {
 			ctx = logging.SetLevel(ctx, logging.Info)
 			disableGRPCLogging(ctx)
 
 			grpclog.Println("TEST!")
-			So(ml.Messages(), ShouldHaveLength, 0)
+			assert.Loosely(t, ml.Messages(), should.HaveLength(0))
 		})
 
-		Convey(`When log level is Debug, does log Prints.`, func() {
+		t.Run(`When log level is Debug, does log Prints.`, func(t *ftt.Test) {
 			ctx = logging.SetLevel(ctx, logging.Debug)
 			disableGRPCLogging(ctx)
 
 			grpclog.Println("TEST!")
-			So(ml.Messages(), ShouldHaveLength, 1)
+			assert.Loosely(t, ml.Messages(), should.HaveLength(1))
 		})
 	})
 }

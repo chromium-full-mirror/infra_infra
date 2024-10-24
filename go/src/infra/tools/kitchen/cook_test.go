@@ -17,7 +17,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/luci/auth/integration/authtest"
 	"go.chromium.org/luci/auth/integration/localauth"
@@ -25,6 +24,9 @@ import (
 	log "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/lucictx"
 
 	"infra/tools/kitchen/third_party/recipe_engine"
@@ -36,29 +38,29 @@ func TestCook(t *testing.T) {
 	//
 	// t.Parallel()
 
-	Convey("cook", t, func() {
+	ftt.Run("cook", t, func(t *ftt.Test) {
 		cook := cmdCook.CommandRun().(*cookRun)
 
-		Convey("updateEnv", func() {
+		t.Run("updateEnv", func(t *ftt.Test) {
 			tdir, err := ioutil.TempDir("", "kitchen-test-")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tdir)
 
 			cook.TempDir = tdir
 			expected := filepath.Join(tdir, "t")
 
 			env := environ.New(nil)
-			So(cook.updateEnv(env), ShouldBeNil)
-			So(env.Map(), ShouldResemble, map[string]string{
+			assert.Loosely(t, cook.updateEnv(env), should.BeNil)
+			assert.Loosely(t, env.Map(), should.Resemble(map[string]string{
 				"TEMPDIR":             expected,
 				"TMPDIR":              expected,
 				"TEMP":                expected,
 				"TMP":                 expected,
 				"MAC_CHROMIUM_TMPDIR": expected,
-			})
+			}))
 		})
 
-		Convey("run", func() {
+		t.Run("run", func(t *ftt.Test) {
 			// Setup context.
 			c := context.Background()
 			cfg := gologger.LoggerConfig{
@@ -84,18 +86,18 @@ func TestCook(t *testing.T) {
 				DefaultAccountID: "recipe_acc",
 			}
 			la, err := fakeAuth.Start(c)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer fakeAuth.Stop(c)
 			c = lucictx.SetLocalAuth(c, la)
 
 			// Setup tempdir.
 			tdir, err := ioutil.TempDir("", "kitchen-test-")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tdir)
 
 			// OS X has symlinks in its TempDir return values by default.
 			tdir, err = filepath.EvalSymlinks(tdir)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Prepare paths
 			recipeRepoDir := filepath.Join(tdir, "recipe_repo")
@@ -104,16 +106,16 @@ func TestCook(t *testing.T) {
 			kitchenTempDir := filepath.Join(tdir, "tmp")
 			cacheDirPath := filepath.Join(tdir, "cache-dir")
 
-			// Prepare recipe dir.
-			So(setupRecipeRepo(c, recipeRepoDir), ShouldBeNil)
-
-			// Kitchen works relative to its cwd
-			cwd, err := os.Getwd()
-			So(err, ShouldBeNil)
-			So(os.Chdir(tdir), ShouldBeNil)
-			defer os.Chdir(cwd)
-
 			run := func(mockRecipeResult *recipe_engine.Result, recipeExitCode int, withResultDBContext bool) (*buildbucketpb.Build, int) {
+				// Prepare recipe dir.
+				assert.Loosely(t, setupRecipeRepo(c, recipeRepoDir), should.BeNil)
+
+				// Kitchen works relative to its cwd
+				cwd, err := os.Getwd()
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, os.Chdir(tdir), should.BeNil)
+				defer os.Chdir(cwd)
+
 				// Set lucictx.
 				ctx := c
 				if withResultDBContext {
@@ -130,10 +132,10 @@ func TestCook(t *testing.T) {
 				mockedRecipeResultPath := filepath.Join(tdir, "expected_result.json")
 				m := jsonpb.Marshaler{}
 				f, err := os.Create(mockedRecipeResultPath)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				defer f.Close()
 				err = m.Marshal(f, mockRecipeResult)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Prepare arguments
 				recipeInputPath := filepath.Join(tdir, "recipe_input.json")
@@ -183,30 +185,30 @@ func TestCook(t *testing.T) {
 
 				// Cook.
 				err = cook.Flags.Parse(args)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				result, outputExitCode := cook.run(ctx, nil, env)
 
 				// Log results
 				t.Logf("cook result:\n%s\n", proto.MarshalTextString(result))
 
 				// Check parsed kitchen own properties.
-				So(cook.kitchenProps, ShouldResemble, &kitchenProperties{
+				assert.Loosely(t, cook.kitchenProps, should.Resemble(&kitchenProperties{
 					GitAuth:      true,
 					EmulateGCE:   true,
 					DockerAuth:   true,
 					FirebaseAuth: false,
-				})
+				}))
 
 				// Check recipes.py input.
 				recipeInputFile, err := ioutil.ReadFile(recipeInputPath)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				type recipeInput struct {
 					Args       []string
 					Properties map[string]interface{}
 				}
 				var actualRecipeInput recipeInput
 				err = json.Unmarshal(recipeInputFile, &actualRecipeInput)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				expectedInputProperties := map[string]interface{}{
 					"bot_id":      "bot",
 					"path_config": "generic",
@@ -225,7 +227,7 @@ func TestCook(t *testing.T) {
 						},
 					},
 				}
-				So(actualRecipeInput, ShouldResemble, recipeInput{
+				assert.Loosely(t, actualRecipeInput, should.Resemble(recipeInput{
 					Args: []string{
 						filepath.Join(recipeRepoDir, "recipes"),
 						"run",
@@ -235,22 +237,22 @@ func TestCook(t *testing.T) {
 						"kitchen_test",
 					},
 					Properties: expectedInputProperties,
-				})
+				}))
 
 				return result, outputExitCode
 			}
 
-			Convey("recipe success", func() {
+			t.Run("recipe success", func(t *ftt.Test) {
 				recipeResult := &recipe_engine.Result{
 					OneofResult: &recipe_engine.Result_JsonResult{
 						JsonResult: `{"foo": "bar"}`,
 					},
 				}
 				result, exitCode := run(recipeResult, 0, false)
-				So(exitCode, ShouldEqual, 0)
-				So(result.Status, ShouldEqual, buildbucketpb.Status_SUCCESS)
+				assert.Loosely(t, exitCode, should.BeZero)
+				assert.Loosely(t, result.Status, should.Equal(buildbucketpb.Status_SUCCESS))
 			})
-			Convey("recipe step failed", func() {
+			t.Run("recipe step failed", func(t *ftt.Test) {
 				recipeResult := &recipe_engine.Result{
 					OneofResult: &recipe_engine.Result_Failure{
 						Failure: &recipe_engine.Failure{
@@ -264,11 +266,11 @@ func TestCook(t *testing.T) {
 					},
 				}
 				result, exitCode := run(recipeResult, 1, false)
-				So(exitCode, ShouldEqual, 1)
-				So(result.Status, ShouldEqual, buildbucketpb.Status_FAILURE)
-				So(result.SummaryMarkdown, ShouldEqual, recipeResult.GetFailure().HumanReason)
+				assert.Loosely(t, exitCode, should.Equal(1))
+				assert.Loosely(t, result.Status, should.Equal(buildbucketpb.Status_FAILURE))
+				assert.Loosely(t, result.SummaryMarkdown, should.Equal(recipeResult.GetFailure().HumanReason))
 			})
-			Convey("long summary markdown", func() {
+			t.Run("long summary markdown", func(t *ftt.Test) {
 				recipeResult := &recipe_engine.Result{
 					OneofResult: &recipe_engine.Result_Failure{
 						Failure: &recipe_engine.Failure{
@@ -282,20 +284,20 @@ func TestCook(t *testing.T) {
 					},
 				}
 				result, exitCode := run(recipeResult, 1, false)
-				So(exitCode, ShouldEqual, 1)
-				So(result.Status, ShouldEqual, buildbucketpb.Status_FAILURE)
+				assert.Loosely(t, exitCode, should.Equal(1))
+				assert.Loosely(t, result.Status, should.Equal(buildbucketpb.Status_FAILURE))
 				expectedSummary := recipeResult.GetFailure().HumanReason[:maxSummaryLength-3] + "..."
-				So(result.SummaryMarkdown, ShouldEqual, expectedSummary)
+				assert.Loosely(t, result.SummaryMarkdown, should.Equal(expectedSummary))
 			})
-			Convey("recipe success with resultdb context", func() {
+			t.Run("recipe success with resultdb context", func(t *ftt.Test) {
 				recipeResult := &recipe_engine.Result{
 					OneofResult: &recipe_engine.Result_JsonResult{
 						JsonResult: `{"foo": "bar"}`,
 					},
 				}
 				result, exitCode := run(recipeResult, 0, true)
-				So(exitCode, ShouldEqual, 0)
-				So(result.Status, ShouldEqual, buildbucketpb.Status_SUCCESS)
+				assert.Loosely(t, exitCode, should.BeZero)
+				assert.Loosely(t, result.Status, should.Equal(buildbucketpb.Status_SUCCESS))
 			})
 		})
 	})

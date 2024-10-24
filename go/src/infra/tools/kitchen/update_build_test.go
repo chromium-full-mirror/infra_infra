@@ -15,7 +15,6 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -27,7 +26,9 @@ import (
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/errors"
 	luciproto "go.chromium.org/luci/common/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/logdog/common/types"
 	"go.chromium.org/luci/lucictx"
 	annopb "go.chromium.org/luci/luciexe/legacy/annotee/proto"
@@ -58,7 +59,7 @@ func newAnnBytes(stepNames ...string) []byte {
 func TestBuildUpdater(t *testing.T) {
 	t.Parallel()
 
-	Convey(`buildUpdater`, t, func(c C) {
+	ftt.Run(`buildUpdater`, t, func(c *ftt.Test) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		client := buildbucketpb.NewMockBuildsClient(ctrl)
@@ -80,11 +81,11 @@ func TestBuildUpdater(t *testing.T) {
 			annotations: make(chan []byte),
 		}
 
-		Convey("build token is sent", func() {
+		c.Run("build token is sent", func(c *ftt.Test) {
 			updateBuild := func(ctx context.Context, req *buildbucketpb.UpdateBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error) {
 				md, ok := metadata.FromOutgoingContext(ctx)
-				c.So(ok, ShouldBeTrue)
-				c.So(md.Get(buildbucket.BuildTokenHeader), ShouldResemble, []string{"build token"})
+				assert.Loosely(c, ok, should.BeTrue)
+				assert.Loosely(c, md.Get(buildbucket.BuildTokenHeader), should.Resemble([]string{"build token"}))
 				res := &buildbucketpb.Build{}
 				return res, nil
 			}
@@ -94,10 +95,10 @@ func TestBuildUpdater(t *testing.T) {
 				DoAndReturn(updateBuild)
 
 			err := bu.UpdateBuild(ctx, &buildbucketpb.UpdateBuildRequest{})
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 		})
 
-		Convey(`run`, func() {
+		c.Run(`run`, func(c *ftt.Test) {
 			update := func(ctx context.Context, annBytes []byte) error {
 				return nil
 			}
@@ -124,19 +125,19 @@ func TestBuildUpdater(t *testing.T) {
 				return <-errC
 			}
 
-			Convey("two successful requests", func() {
-				So(run(nil, nil), ShouldBeNil)
+			c.Run("two successful requests", func(c *ftt.Test) {
+				assert.Loosely(c, run(nil, nil), should.BeNil)
 			})
 
-			Convey("first failed, second succeeded", func() {
-				So(run(fmt.Errorf("transient"), nil), ShouldBeNil)
+			c.Run("first failed, second succeeded", func(c *ftt.Test) {
+				assert.Loosely(c, run(fmt.Errorf("transient"), nil), should.BeNil)
 			})
 
-			Convey("first succeeded, second failed", func() {
-				So(run(nil, fmt.Errorf("fatal")), ShouldErrLike, "fatal")
+			c.Run("first succeeded, second failed", func(c *ftt.Test) {
+				assert.Loosely(c, run(nil, fmt.Errorf("fatal")), should.ErrLike("fatal"))
 			})
 
-			Convey("minDistance", func() {
+			c.Run("minDistance", func(c *ftt.Test) {
 				var sleepDuration time.Duration
 				open := true
 				clk.SetTimerCallback(func(d time.Duration, t clock.Timer) {
@@ -154,11 +155,11 @@ func TestBuildUpdater(t *testing.T) {
 
 				start()
 				bu.AnnotationUpdated([]byte("1"))
-				So(<-errC, ShouldBeNil)
-				So(sleepDuration, ShouldBeGreaterThanOrEqualTo, time.Second)
+				assert.Loosely(c, <-errC, should.BeNil)
+				assert.Loosely(c, sleepDuration, should.BeGreaterThanOrEqual(time.Second))
 			})
 
-			Convey("errSleep", func() {
+			c.Run("errSleep", func(c *ftt.Test) {
 				attempt := 0
 				clk.SetTimerCallback(func(d time.Duration, t clock.Timer) {
 					switch {
@@ -184,10 +185,10 @@ func TestBuildUpdater(t *testing.T) {
 
 				start()
 				bu.AnnotationUpdated([]byte("1"))
-				So(<-errC, ShouldBeNil)
+				assert.Loosely(c, <-errC, should.BeNil)
 			})
 
-			Convey("first is fatal, second never occurs", func() {
+			c.Run("first is fatal, second never occurs", func(c *ftt.Test) {
 				fatal := status.Error(codes.InvalidArgument, "too large")
 				calls := 0
 				update = func(ctx context.Context, annBytes []byte) error {
@@ -197,19 +198,19 @@ func TestBuildUpdater(t *testing.T) {
 				start()
 				bu.AnnotationUpdated([]byte("1"))
 				cancel()
-				So(errors.Unwrap(<-errC), ShouldEqual, fatal)
-				So(calls, ShouldEqual, 1)
+				assert.Loosely(c, errors.Unwrap(<-errC), should.Equal(fatal))
+				assert.Loosely(c, calls, should.Equal(1))
 			})
 
-			Convey("done is closed", func() {
+			c.Run("done is closed", func(c *ftt.Test) {
 				start()
 				bu.AnnotationUpdated([]byte("1"))
 				close(done)
-				So(<-errC, ShouldBeNil)
+				assert.Loosely(c, <-errC, should.BeNil)
 			})
 		})
 
-		Convey("ParseAnnotations", func() {
+		c.Run("ParseAnnotations", func(c *ftt.Test) {
 			ann := &annopb.Step{}
 			err := luciproto.UnmarshalTextML(`
 				substep: <
@@ -244,8 +245,8 @@ END
 					>
 				>
 			`, ann)
-			So(err, ShouldBeNil)
-			So(ann.Substep, ShouldHaveLength, 2)
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, ann.Substep, should.HaveLength(2))
 
 			expected := &buildbucketpb.UpdateBuildRequest{}
 			err = jsonpb.UnmarshalString(`{
@@ -284,14 +285,14 @@ END
 					]
 				}
 			}`, expected)
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 
 			actual, err := bu.ParseAnnotations(ctx, ann)
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, expected)
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, actual, should.Resemble(expected))
 		})
 
-		Convey(`test addtional tags`, func(c C) {
+		c.Run(`test addtional tags`, func(c *ftt.Test) {
 			ann := &annopb.Step{}
 			err := luciproto.UnmarshalTextML(`
 					substep: <
@@ -312,8 +313,8 @@ END
 						>
 					>
 				`, ann)
-			So(err, ShouldBeNil)
-			So(ann.Substep, ShouldHaveLength, 1)
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, ann.Substep, should.HaveLength(1))
 
 			expected := &buildbucketpb.UpdateBuildRequest{}
 			err = jsonpb.UnmarshalString(`{
@@ -350,10 +351,10 @@ END
 						]
 					}
 				}`, expected)
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 
 			actual, err := bu.ParseAnnotations(ctx, ann)
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 
 			// Because the order is undeterministic when iterating the dict during
 			// the process of converting to Tags proto in ParseAnnotations func.
@@ -368,7 +369,7 @@ END
 			sortTagsFunc(actual.Build.Tags)
 			sortTagsFunc(expected.Build.Tags)
 
-			So(actual, ShouldResembleProto, expected)
+			assert.Loosely(c, actual, should.Resemble(expected))
 		})
 	})
 }
@@ -376,27 +377,27 @@ END
 func TestReadBuildSecrets(t *testing.T) {
 	t.Parallel()
 
-	Convey("readBuildSecrets", t, func() {
+	ftt.Run("readBuildSecrets", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx = lucictx.SetSwarming(ctx, nil)
 
-		Convey("empty", func() {
+		t.Run("empty", func(t *ftt.Test) {
 			secrets, err := readBuildSecrets(ctx)
-			So(err, ShouldBeNil)
-			So(secrets, ShouldResemble, &buildbucketpb.BuildSecrets{})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, secrets, should.Resemble(&buildbucketpb.BuildSecrets{}))
 		})
 
-		Convey("build token", func() {
+		t.Run("build token", func(t *ftt.Test) {
 			secretBytes, err := proto.Marshal(&buildbucketpb.BuildSecrets{
 				BuildToken: "build token",
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			ctx = lucictx.SetSwarming(ctx, &lucictx.Swarming{SecretBytes: secretBytes})
 
 			secrets, err := readBuildSecrets(ctx)
-			So(err, ShouldBeNil)
-			So(string(secrets.BuildToken), ShouldEqual, "build token")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, string(secrets.BuildToken), should.Equal("build token"))
 		})
 	})
 }
@@ -407,19 +408,19 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 	parse := func(propJSON string) (*buildbucketpb.GitilesCommit, error) {
 		propStruct := &structpb.Struct{}
 		err := jsonpb.UnmarshalString(propJSON, propStruct)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		return outputCommitFromLegacyProperties(propStruct)
 	}
 
-	Convey("TestOutputCommitFromLegacyProperties", t, func() {
-		Convey("no properties", func() {
+	ftt.Run("TestOutputCommitFromLegacyProperties", t, func(t *ftt.Test) {
+		t.Run("no properties", func(t *ftt.Test) {
 			actual, err := parse(`{}`)
-			So(err, ShouldBeNil)
-			So(actual, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.BeNil)
 		})
 
-		Convey("got_revision id", func() {
+		t.Run("got_revision id", func(t *ftt.Test) {
 			actual, err := parse(`{
 				"$recipe_engine/buildbucket": {
 					"build": {
@@ -434,16 +435,16 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 				},
 				"got_revision": "e57f4e87022d765b45e741e478a8351d9789bc37"
 			}`)
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, &buildbucketpb.GitilesCommit{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Resemble(&buildbucketpb.GitilesCommit{
 				Host:    "chromium.googlesource.com",
 				Project: "chromium/src",
 				Ref:     "refs/heads/master",
 				Id:      "e57f4e87022d765b45e741e478a8351d9789bc37",
-			})
+			}))
 		})
 
-		Convey("got_revision non-default ref", func() {
+		t.Run("got_revision non-default ref", func(t *ftt.Test) {
 			actual, err := parse(`{
 				"$recipe_engine/buildbucket": {
 					"build": {
@@ -458,16 +459,16 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 				},
 				"got_revision": "e57f4e87022d765b45e741e478a8351d9789bc37"
 			}`)
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, &buildbucketpb.GitilesCommit{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Resemble(&buildbucketpb.GitilesCommit{
 				Host:    "chromium.googlesource.com",
 				Project: "chromium/src",
 				Ref:     "refs/heads/x",
 				Id:      "e57f4e87022d765b45e741e478a8351d9789bc37",
-			})
+			}))
 		})
 
-		Convey("got_revision id tryjob", func() {
+		t.Run("got_revision id tryjob", func(t *ftt.Test) {
 			actual, err := parse(`{
 				"$recipe_engine/buildbucket": {
 					"build": {
@@ -483,16 +484,16 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 				},
 				"got_revision": "e57f4e87022d765b45e741e478a8351d9789bc37"
 			}`)
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, &buildbucketpb.GitilesCommit{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Resemble(&buildbucketpb.GitilesCommit{
 				Host:    "chromium.googlesource.com",
 				Project: "chromium/src",
 				Ref:     "refs/heads/master",
 				Id:      "e57f4e87022d765b45e741e478a8351d9789bc37",
-			})
+			}))
 		})
 
-		Convey("got_revision ref", func() {
+		t.Run("got_revision ref", func(t *ftt.Test) {
 			actual, err := parse(`{
 				"$recipe_engine/buildbucket": {
 					"build": {
@@ -506,15 +507,15 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 				},
 				"got_revision": "refs/heads/master"
 			}`)
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, &buildbucketpb.GitilesCommit{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Resemble(&buildbucketpb.GitilesCommit{
 				Host:    "chromium.googlesource.com",
 				Project: "chromium/src",
 				Ref:     "refs/heads/master",
-			})
+			}))
 		})
 
-		Convey("got_revision_cp", func() {
+		t.Run("got_revision_cp", func(t *ftt.Test) {
 			actual, err := parse(`{
 				"$recipe_engine/buildbucket": {
 					"build": {
@@ -530,14 +531,14 @@ func TestOutputCommitFromLegacyProperties(t *testing.T) {
 				"got_revision_cp": "refs/heads/master@{#673406}"
 			}`)
 
-			So(err, ShouldBeNil)
-			So(actual, ShouldResembleProto, &buildbucketpb.GitilesCommit{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, actual, should.Resemble(&buildbucketpb.GitilesCommit{
 				Host:     "chromium.googlesource.com",
 				Project:  "chromium/src",
 				Ref:      "refs/heads/master",
 				Id:       "e57f4e87022d765b45e741e478a8351d9789bc37",
 				Position: 673406,
-			})
+			}))
 		})
 	})
 }
