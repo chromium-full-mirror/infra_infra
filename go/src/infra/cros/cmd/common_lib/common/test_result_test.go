@@ -6,15 +6,16 @@ package common
 
 import (
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetTesthausURL(t *testing.T) {
 	t.Parallel()
 
-	Convey("Test get Testhaus URL", t, func() {
+	ftt.Run("Test get Testhaus URL", t, func(t *ftt.Test) {
 		tests := []struct {
 			invocationName      string
 			gcsURL              string
@@ -48,10 +49,10 @@ func TestGetTesthausURL(t *testing.T) {
 		}
 		for _, tc := range tests {
 
-			Convey(fmt.Sprintf("When the invocation is: %q and gcsURL is: %q should get Testhaus URL postfix: %q", tc.invocationName, tc.gcsURL, tc.wantTesthausPostfix), func() {
+			t.Run(fmt.Sprintf("When the invocation is: %q and gcsURL is: %q should get Testhaus URL postfix: %q", tc.invocationName, tc.gcsURL, tc.wantTesthausPostfix), func(t *ftt.Test) {
 				wantTesthausURL := fmt.Sprintf("%s%s", TesthausURLPrefix, tc.wantTesthausPostfix)
 				gotTesthausURL := GetTesthausURL(tc.invocationName, tc.gcsURL)
-				So(gotTesthausURL, ShouldEqual, wantTesthausURL)
+				assert.Loosely(t, gotTesthausURL, should.Equal(wantTesthausURL))
 			})
 		}
 	})

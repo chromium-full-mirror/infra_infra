@@ -9,20 +9,21 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	builders "infra/cros/cmd/common_lib/common_builders"
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {
-	Convey("Empty CftTestRequest All Skipped", t, func() {
+	ftt.Run("Empty CftTestRequest All Skipped", t, func(t *ftt.Test) {
 		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
 			StepsConfig: &tpcommon.CftStepsConfig{
 				ConfigType: &tpcommon.CftStepsConfig_HwTestConfig{
@@ -54,13 +55,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			},
 		}
 
-		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 0)
-		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
-		So(request.GetParams(), ShouldResemble, expected.GetParams())
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(0))
+		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
 	})
 
-	Convey("Build Params and StartRequest", t, func() {
+	ftt.Run("Build Params and StartRequest", t, func(t *ftt.Test) {
 		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
 			ParentRequestUid: "parent",
 			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -117,13 +118,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			},
 		}
 
-		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 0)
-		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
-		So(request.GetParams(), ShouldResemble, expected.GetParams())
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(0))
+		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
 	})
 
-	Convey("Builds Tasks", t, func() {
+	ftt.Run("Builds Tasks", t, func(t *ftt.Test) {
 		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
 			ParentRequestUid: "parent",
 			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -169,13 +170,13 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			},
 		}
 
-		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 6)
-		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
-		So(request.GetParams(), ShouldResemble, expected.GetParams())
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(6))
+		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
 	})
 
-	Convey("Builds Tasks with Companions", t, func() {
+	ftt.Run("Builds Tasks with Companions", t, func(t *ftt.Test) {
 		request, err := builders.NewDynamicTrv2FromCftBuilder(&skylab_test_runner.CFTTestRequest{
 			ParentRequestUid: "parent",
 			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
@@ -262,10 +263,10 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			},
 		}
 
-		So(err, ShouldBeNil)
-		So(request.GetOrderedTasks(), ShouldHaveLength, 12)
-		So(request.GetStartRequest(), ShouldResemble, expected.GetStartRequest())
-		So(request.GetParams(), ShouldResemble, expected.GetParams())
-		So(request.GetParams().GetContainerMetadata().GetContainers()["default"].GetImages()["cros-fw-provision"].GetDigest(), ShouldEqual, fmt.Sprintf("sha256:%s", common.DefaultCrosFwProvisionSha))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(12))
+		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
+		assert.Loosely(t, request.GetParams().GetContainerMetadata().GetContainers()["default"].GetImages()["cros-fw-provision"].GetDigest(), should.Equal(fmt.Sprintf("sha256:%s", common.DefaultCrosFwProvisionSha)))
 	})
 }

@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -18,7 +19,7 @@ import (
 
 func TestGcloudAuthCmd_UnsupportedSK(t *testing.T) {
 	t.Parallel()
-	Convey("Unsupported state keeper", t, func() {
+	ftt.Run("Unsupported state keeper", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &UnsupportedStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -26,13 +27,13 @@ func TestGcloudAuthCmd_UnsupportedSK(t *testing.T) {
 		exec := common_executors.NewCtrExecutor(ctr)
 		cmd := common_commands.NewGcloudAuthCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGcloudAuthCmd_MissingDeps(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
+	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -40,13 +41,13 @@ func TestGcloudAuthCmd_MissingDeps(t *testing.T) {
 		exec := common_executors.NewCtrExecutor(ctr)
 		cmd := common_commands.NewGcloudAuthCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestGcloudAuthCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
-	Convey("Cmd with no updates", t, func() {
+	ftt.Run("Cmd with no updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -54,7 +55,7 @@ func TestGcloudAuthCmd_UpdateSK(t *testing.T) {
 		exec := common_executors.NewCtrExecutor(ctr)
 		cmd := common_commands.NewGcloudAuthCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
@@ -63,7 +64,7 @@ func TestGcloudAuthCmd_ExtractDepsSuccess(t *testing.T) {
 
 	dockerKeyFileLoc := "docker/file/loc"
 
-	Convey("BuildInputValidationCmd extract deps", t, func() {
+	ftt.Run("BuildInputValidationCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{DockerKeyFileLocation: dockerKeyFileLoc}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -73,7 +74,7 @@ func TestGcloudAuthCmd_ExtractDepsSuccess(t *testing.T) {
 
 		// Extract deps first
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
-		So(cmd.DockerKeyFileLocation, ShouldEqual, dockerKeyFileLoc)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, cmd.DockerKeyFileLocation, should.Equal(dockerKeyFileLoc))
 	})
 }

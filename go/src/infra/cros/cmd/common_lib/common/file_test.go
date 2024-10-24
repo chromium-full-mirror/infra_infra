@@ -8,30 +8,32 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestFindDirWithPrefix(t *testing.T) {
 	t.Parallel()
 	dirPath := "test_data"
 
-	Convey("success with valid dir", t, func() {
+	ftt.Run("success with valid dir", t, func(t *ftt.Test) {
 		wantDir := filepath.Join(dirPath, "artifacts")
 		gotPath, err := FindDirWithPrefix(dirPath, "art")
-		So(err, ShouldBeNil)
-		So(gotPath, ShouldEqual, wantDir)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, gotPath, should.Equal(wantDir))
 	})
 
-	Convey("failure with invalid dir", t, func() {
+	ftt.Run("failure with invalid dir", t, func(t *ftt.Test) {
 		gotPath, err := FindDirWithPrefix(dirPath, "invalid-dir")
-		So(err, ShouldBeError)
-		So(gotPath, ShouldBeEmpty)
+		assert.Loosely(t, err, should.ErrLike("no directory with prefix"))
+		assert.Loosely(t, gotPath, should.BeEmpty)
 	})
 
-	Convey("failure with only files", t, func() {
+	ftt.Run("failure with only files", t, func(t *ftt.Test) {
 		dir := filepath.Join(dirPath, "artifacts")
 		gotPath, err := FindDirWithPrefix(dir, "sample_artifact")
-		So(err, ShouldBeError)
-		So(gotPath, ShouldBeEmpty)
+		assert.Loosely(t, err, should.ErrLike("no directory with prefix"))
+		assert.Loosely(t, gotPath, should.BeEmpty)
 	})
 }

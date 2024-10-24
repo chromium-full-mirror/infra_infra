@@ -10,11 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/build"
 
 	builders "infra/cros/cmd/common_lib/common_builders"
@@ -37,24 +38,24 @@ func ConstructCtpv2Req(reqTov2Map map[string]*testapi.CTPRequest) *testapi.CTPv2
 }
 
 func TestCTPv1Tov2Translation(t *testing.T) {
-	Convey("Single Translation", t, func() {
+	ftt.Run("Single Translation", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 		}
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
-		So(result.GetRequests(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetBoard(), ShouldEqual, "board")
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetBuild(), ShouldEqual, "release")
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetVariant(), ShouldEqual, "")
+		assert.Loosely(t, result.GetRequests(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetBoard(), should.Equal("board"))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetHwTarget().GetLegacyHw().GetModel(), should.Equal("model"))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetBuild(), should.Equal("release"))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/board-release/R123.0.0"))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetVariant(), should.BeEmpty)
 	})
 
-	Convey("Multi Translation, no grouping", t, func() {
+	ftt.Run("Multi Translation, no grouping", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true, false),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false, false),
@@ -62,11 +63,11 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
-		So(result.GetRequests(), ShouldHaveLength, 2)
-		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[1].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		assert.Loosely(t, result.GetRequests(), should.HaveLength(2))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[1].GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
 
 		request1 := result.GetRequests()[0]
 		request2 := result.GetRequests()[1]
@@ -80,15 +81,15 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			request1 = request2
 			request2 = swap
 		}
-		So(request1.GetSchedulerInfo().GetScheduler(), ShouldEqual, testapi.SchedulerInfo_QSCHEDULER)
-		So(request2.GetSchedulerInfo().GetScheduler(), ShouldEqual, testapi.SchedulerInfo_SCHEDUKE)
+		assert.Loosely(t, request1.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_QSCHEDULER))
+		assert.Loosely(t, request2.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_SCHEDUKE))
 		target1 := request1.GetScheduleTargets()[0].GetTargets()[0]
 		target2 := request2.GetScheduleTargets()[0].GetTargets()[0]
-		So(target1.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
-		So(target2.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R124.0.0")
+		assert.Loosely(t, target1.GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/board-release/R123.0.0"))
+		assert.Loosely(t, target2.GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/board-release/R124.0.0"))
 	})
 
-	Convey("Multi Translation, grouping", t, func() {
+	ftt.Run("Multi Translation, grouping", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, false),
@@ -96,10 +97,10 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
-		So(result.GetRequests(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 2)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
+		assert.Loosely(t, result.GetRequests(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets(), should.HaveLength(2))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[1].GetTargets(), should.HaveLength(1))
 		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
 		target2 := result.GetRequests()[0].GetScheduleTargets()[1].GetTargets()[0]
 		if target1.GetHwTarget().GetLegacyHw().GetModel() != "model" {
@@ -107,11 +108,11 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			target1 = target2
 			target2 = swap
 		}
-		So(target1.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
-		So(target2.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model2")
+		assert.Loosely(t, target1.GetHwTarget().GetLegacyHw().GetModel(), should.Equal("model"))
+		assert.Loosely(t, target2.GetHwTarget().GetLegacyHw().GetModel(), should.Equal("model2"))
 	})
 
-	Convey("Multi Translation, grouping, including public manifest", t, func() {
+	ftt.Run("Multi Translation, grouping, including public manifest", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false, false),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, false),
@@ -119,11 +120,11 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
-		So(result.GetRequests(), ShouldHaveLength, 2)
-		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[1].GetScheduleTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
+		assert.Loosely(t, result.GetRequests(), should.HaveLength(2))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[1].GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[1].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
 		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
 		target2 := result.GetRequests()[1].GetScheduleTargets()[0].GetTargets()[0]
 		if target1.GetSwTarget().GetLegacySw().GetGcsPath() != "gs://chromeos-image-archive/public-manifest-release/R123.0.0" {
@@ -131,11 +132,11 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			target1 = target2
 			target2 = swap
 		}
-		So(target1.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/public-manifest-release/R123.0.0")
-		So(target2.GetSwTarget().GetLegacySw().GetGcsPath(), ShouldEqual, "gs://chromeos-image-archive/board-release/R123.0.0")
+		assert.Loosely(t, target1.GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/public-manifest-release/R123.0.0"))
+		assert.Loosely(t, target2.GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/board-release/R123.0.0"))
 	})
 
-	Convey("Multi Translation, grouping, 3d, including public manifest", t, func() {
+	ftt.Run("Multi Translation, grouping, 3d, including public manifest", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "public-manifest-release/R123.0.0", "suite", "", "", false, true),
 			"r2": getCTPv1Request("board", "model2", "board-release/R123.0.0", "suite", "", "", false, true),
@@ -143,10 +144,10 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
-		So(result.GetRequests(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets(), ShouldHaveLength, 2)
-		So(result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(result.GetRequests()[0].GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
+		assert.Loosely(t, result.GetRequests(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets(), should.HaveLength(2))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, result.GetRequests()[0].GetScheduleTargets()[1].GetTargets(), should.HaveLength(1))
 		target1 := result.GetRequests()[0].GetScheduleTargets()[0].GetTargets()[0]
 		target2 := result.GetRequests()[0].GetScheduleTargets()[1].GetTargets()[0]
 		if target1.GetHwTarget().GetLegacyHw().GetModel() != "model" {
@@ -154,52 +155,52 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			target1 = target2
 			target2 = swap
 		}
-		So(target1.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model")
-		So(target2.GetHwTarget().GetLegacyHw().GetModel(), ShouldEqual, "model2")
+		assert.Loosely(t, target1.GetHwTarget().GetLegacyHw().GetModel(), should.Equal("model"))
+		assert.Loosely(t, target2.GetHwTarget().GetLegacyHw().GetModel(), should.Equal("model2"))
 	})
 }
 
 func TestGetBuildType(t *testing.T) {
-	Convey("GetBuildType", t, func() {
+	ftt.Run("GetBuildType", t, func(t *ftt.Test) {
 		buildType := builders.GetBuildType(getChromeosSoftwareDeps("board-release/R123.0.0"))
-		So(buildType, ShouldEqual, "release")
+		assert.Loosely(t, buildType, should.Equal("release"))
 	})
 
-	Convey("GetBuildType remove postfix", t, func() {
+	ftt.Run("GetBuildType remove postfix", t, func(t *ftt.Test) {
 		buildType := builders.GetBuildType(getChromeosSoftwareDeps("board-release-main/R123.0.0"))
-		So(buildType, ShouldEqual, "release")
+		assert.Loosely(t, buildType, should.Equal("release"))
 	})
 
-	Convey("GetBuildType empty string", t, func() {
+	ftt.Run("GetBuildType empty string", t, func(t *ftt.Test) {
 		buildType := builders.GetBuildType(getChromeosSoftwareDeps(""))
-		So(buildType, ShouldEqual, "")
+		assert.Loosely(t, buildType, should.BeEmpty)
 	})
 }
 
 func TestGetVariant(t *testing.T) {
-	Convey("GetVariant", t, func() {
+	ftt.Run("GetVariant", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps("board-variant-arc-release/R123.0.0"))
-		So(variant, ShouldEqual, "variant-arc")
+		assert.Loosely(t, variant, should.Equal("variant-arc"))
 	})
 
-	Convey("GetVariant no variant", t, func() {
+	ftt.Run("GetVariant no variant", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps("board-release/R123.0.0"))
-		So(variant, ShouldEqual, "")
+		assert.Loosely(t, variant, should.BeEmpty)
 	})
 
-	Convey("GetVariant remove postfix", t, func() {
+	ftt.Run("GetVariant remove postfix", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps("board-variant-arc-release-main/R123.0.0"))
-		So(variant, ShouldEqual, "variant-arc")
+		assert.Loosely(t, variant, should.Equal("variant-arc"))
 	})
 
-	Convey("GetVariant remove prefix", t, func() {
+	ftt.Run("GetVariant remove prefix", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps("staging-board-variant-arc-release/R123.0.0"))
-		So(variant, ShouldEqual, "variant-arc")
+		assert.Loosely(t, variant, should.Equal("variant-arc"))
 	})
 
-	Convey("GetVariant remove prefix and postfix", t, func() {
+	ftt.Run("GetVariant remove prefix and postfix", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps("dev-board-variant-arc-release-main/R123.0.0"))
-		So(variant, ShouldEqual, "variant-arc")
+		assert.Loosely(t, variant, should.Equal("variant-arc"))
 	})
 
 	// Currently this incorrectly pulls the variant for the example below; but without better variant info,
@@ -210,75 +211,75 @@ func TestGetVariant(t *testing.T) {
 	// 	So(variant, ShouldEqual, "")
 	// })
 
-	Convey("GetVariant empty string", t, func() {
+	ftt.Run("GetVariant empty string", t, func(t *ftt.Test) {
 		variant := builders.GetVariant(getChromeosSoftwareDeps(""))
-		So(variant, ShouldEqual, "")
+		assert.Loosely(t, variant, should.BeEmpty)
 	})
 }
 
 func TestCTP2Grouping(t *testing.T) {
-	Convey("Same build, same suite, diff boards", t, func() {
+	ftt.Run("Same build, same suite, diff boards", t, func(t *ftt.Test) {
 		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2WithKeyRequest("board2", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 		})
 
-		So(groupings, ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 2)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[1].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
-			ShouldEqual,
-			groupings[0].V2.GetScheduleTargets()[1].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
+		assert.Loosely(t, groupings, should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets(), should.HaveLength(2))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[1].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+			should.Equal(
+				groupings[0].V2.GetScheduleTargets()[1].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()))
 	})
 
-	Convey("Same build, diff suite", t, func() {
+	ftt.Run("Same build, diff suite", t, func(t *ftt.Test) {
 		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite2", ""),
 		})
 
-		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
-			ShouldNotEqual,
-			groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName())
+		assert.Loosely(t, groupings, should.HaveLength(2))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[1].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
+			should.NotEqual(
+				groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName()))
 	})
 
-	Convey("Diff build, same suite", t, func() {
+	ftt.Run("Diff build, same suite", t, func(t *ftt.Test) {
 		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R124.0.0", "", "suite1", ""),
 		})
 
-		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[1].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
-			ShouldNotEqual,
-			groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
+		assert.Loosely(t, groupings, should.HaveLength(2))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[1].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[1].V2.GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+			should.NotEqual(
+				groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()))
 	})
 
-	Convey("Diff build, diff suite", t, func() {
+	ftt.Run("Diff build, diff suite", t, func(t *ftt.Test) {
 		groupings, _ := builders.GroupEligibleV2Requests(context.Background(), []*builders.V2WithKey{
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R123.0.0", "", "suite1", ""),
 			getCTPv2WithKeyRequest("board1", "model1", "release", "board1-release/R124.0.0", "", "suite2", ""),
 		})
 
-		So(groupings, ShouldHaveLength, 2)
-		So(groupings[0].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[1].V2.GetScheduleTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[1].V2.GetScheduleTargets()[0].GetTargets(), ShouldHaveLength, 1)
-		So(groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
-			ShouldNotEqual,
-			groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath())
-		So(groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
-			ShouldNotEqual,
-			groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName())
+		assert.Loosely(t, groupings, should.HaveLength(2))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[1].V2.GetScheduleTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[1].V2.GetScheduleTargets()[0].GetTargets(), should.HaveLength(1))
+		assert.Loosely(t, groupings[0].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath(),
+			should.NotEqual(
+				groupings[1].V2.GetScheduleTargets()[0].GetTargets()[0].GetSwTarget().GetLegacySw().GetGcsPath()))
+		assert.Loosely(t, groupings[0].V2.GetSuiteRequest().GetTestSuite().GetName(),
+			should.NotEqual(
+				groupings[1].V2.GetSuiteRequest().GetTestSuite().GetName()))
 	})
 }
 

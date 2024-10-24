@@ -8,15 +8,16 @@ import (
 	"container/list"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common_commands"
 )
 
 func TestPopQueueInstantiation_BadCast(t *testing.T) {
-	Convey("Bad Type Cast", t, func() {
+	ftt.Run("Bad Type Cast", t, func(t *ftt.Test) {
 		queue := list.New()
 		queue.PushBack(&api.TestTask{
 			DynamicDeps: []*api.DynamicDep{
@@ -29,12 +30,12 @@ func TestPopQueueInstantiation_BadCast(t *testing.T) {
 		err := common_commands.Instantiate_PopFromQueue(queue, func(element any) {
 			_ = element.(*api.ProvisionTask)
 		})
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
 func TestPopQueueInstantiation_GoodCast(t *testing.T) {
-	Convey("Good Type Cast", t, func() {
+	ftt.Run("Good Type Cast", t, func(t *ftt.Test) {
 		queue := list.New()
 		queue.PushBack(&api.TestTask{
 			DynamicDeps: []*api.DynamicDep{
@@ -48,9 +49,9 @@ func TestPopQueueInstantiation_GoodCast(t *testing.T) {
 		err := common_commands.Instantiate_PopFromQueue(queue, func(element any) {
 			testRequest = element.(*api.TestTask)
 		})
-		So(err, ShouldBeNil)
-		So(testRequest, ShouldNotBeNil)
-		So(testRequest.DynamicDeps, ShouldHaveLength, 1)
-		So(testRequest.DynamicDeps[0].Key, ShouldEqual, "key")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, testRequest, should.NotBeNil)
+		assert.Loosely(t, testRequest.DynamicDeps, should.HaveLength(1))
+		assert.Loosely(t, testRequest.DynamicDeps[0].Key, should.Equal("key"))
 	})
 }

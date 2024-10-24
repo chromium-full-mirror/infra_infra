@@ -8,8 +8,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -18,7 +19,7 @@ import (
 
 func TestCtrServiceStopCmd_NoDeps(t *testing.T) {
 	t.Parallel()
-	Convey("No deps", t, func() {
+	ftt.Run("No deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -26,13 +27,13 @@ func TestCtrServiceStopCmd_NoDeps(t *testing.T) {
 		exec := common_executors.NewCtrExecutor(ctr)
 		cmd := common_commands.NewCtrServiceStopCmd(exec)
 		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestCtrServiceStopCmd_NoUpdates(t *testing.T) {
 	t.Parallel()
-	Convey("No updates", t, func() {
+	ftt.Run("No updates", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -40,6 +41,6 @@ func TestCtrServiceStopCmd_NoUpdates(t *testing.T) {
 		exec := common_executors.NewCtrExecutor(ctr)
 		cmd := common_commands.NewCtrServiceStopCmd(exec)
 		err := cmd.UpdateStateKeeper(ctx, sk)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }

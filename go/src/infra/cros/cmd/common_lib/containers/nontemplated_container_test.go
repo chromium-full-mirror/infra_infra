@@ -8,9 +8,10 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
@@ -18,42 +19,42 @@ import (
 func TestNonTemplatedInitialize(t *testing.T) {
 	t.Parallel()
 
-	Convey("Initialize_correct_type", t, func() {
+	ftt.Run("Initialize_correct_type", t, func(t *ftt.Test) {
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		gotContType := cont.GetContainerType()
-		So(gotContType, ShouldNotBeNil)
-		So(gotContType, ShouldEqual, wantContType)
+		assert.Loosely(t, gotContType, should.NotEqual(""))
+		assert.Loosely(t, gotContType, should.Equal(wantContType))
 	})
 
-	Convey("Initialize_success", t, func() {
+	ftt.Run("Initialize_success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		err := cont.Initialize(ctx, nil)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
 func TestNonTemplatedStartContainer(t *testing.T) {
 	t.Parallel()
 
-	Convey("StartContainer_empty_req", t, func() {
+	ftt.Run("StartContainer_empty_req", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		resp, err := cont.StartContainer(ctx)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("StartContainer_empty_req", t, func() {
+	ftt.Run("StartContainer_empty_req", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantContType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -61,7 +62,7 @@ func TestNonTemplatedStartContainer(t *testing.T) {
 		cont := NewNonTemplatedContainer(wantContType, "test-container", "host", "container-image", ctr)
 		cont.StartContainerReq = &api.StartContainerRequest{}
 		resp, err := cont.StartContainer(ctx)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 }

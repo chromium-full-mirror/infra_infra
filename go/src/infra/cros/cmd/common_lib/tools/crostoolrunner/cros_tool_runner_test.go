@@ -13,20 +13,22 @@ import (
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestStartCtrServer(t *testing.T) {
 	t.Parallel()
 
-	Convey("CTR server start initialization error", t, func() {
+	ftt.Run("CTR server start initialization error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		err := ctr.StartCTRServer(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 }
 
@@ -35,35 +37,35 @@ func TestStartCtrServerAsync(t *testing.T) {
 	//
 	// t.Parallel()
 
-	Convey("CTR server start async error with existing server connection", t, func() {
+	ftt.Run("CTR server start async error with existing server connection", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.wg = &sync.WaitGroup{}
 		err := ctr.StartCTRServerAsync(ctx)
-		So(err, ShouldNotBeNil)
-		So(ctr.wg, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, ctr.wg, should.NotBeNil)
 	})
 
-	Convey("CTR server start async success", t, func() {
+	ftt.Run("CTR server start async success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		err := ctr.StartCTRServerAsync(ctx)
-		So(err, ShouldBeNil)
-		So(ctr.wg, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ctr.wg, should.NotBeNil)
 	})
 }
 
 func TestGetServerAddressFromServiceMetadata(t *testing.T) {
 	t.Parallel()
-	Convey("CTR get server address without temp dir error", t, func() {
+	ftt.Run("CTR get server address without temp dir error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		serverAddress, err := ctr.GetServerAddressFromServiceMetadata(ctx)
-		So(err, ShouldNotBeNil)
-		So(serverAddress, ShouldEqual, "")
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, serverAddress, should.BeEmpty)
 	})
 }
 
@@ -72,23 +74,23 @@ func TestConnectToCtrServer(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("CTR server connection without server address", t, func() {
+	ftt.Run("CTR server connection without server address", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctrClient, err := ctr.ConnectToCTRServer(ctx, "")
-		So(err, ShouldNotBeNil)
-		So(ctrClient, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, ctrClient, should.BeNil)
 	})
 
-	Convey("CTR server connection with existing client", t, func() {
+	ftt.Run("CTR server connection with existing client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.CtrClient = NewMockCrosToolRunnerContainerServiceClient(ctrl)
 		ctrClient, err := ctr.ConnectToCTRServer(ctx, "localhost:1234")
-		So(err, ShouldBeNil)
-		So(ctrClient, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ctrClient, should.NotBeNil)
 	})
 }
 
@@ -97,25 +99,25 @@ func TestStopCtrServer(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("CTR server stop error while server is not running", t, func() {
+	ftt.Run("CTR server stop error while server is not running", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.isServerRunning = false
 		err := ctr.StopCTRServer(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("CTR server stop error while no established client exists", t, func() {
+	ftt.Run("CTR server stop error while no established client exists", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.isServerRunning = true
 		err := ctr.StopCTRServer(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("CTR server stop grpc failure", t, func() {
+	ftt.Run("CTR server stop grpc failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -127,11 +129,11 @@ func TestStopCtrServer(t *testing.T) {
 		getMockedShutdown(mocked_client).Return(nil, fmt.Errorf("some error"))
 
 		err := ctr.StopCTRServer(ctx)
-		So(err, ShouldNotBeNil)
-		So(ctr.isServerRunning, ShouldBeTrue)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, ctr.isServerRunning, should.BeTrue)
 	})
 
-	Convey("CTR server stop success", t, func() {
+	ftt.Run("CTR server stop success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -144,9 +146,9 @@ func TestStopCtrServer(t *testing.T) {
 		getMockedShutdown(mocked_client).Return(&testapi.ShutdownResponse{}, nil)
 
 		err := ctr.StopCTRServer(ctx)
-		So(err, ShouldBeNil)
-		So(ctr.isServerRunning, ShouldBeFalse)
-		So(ctr.wg, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ctr.isServerRunning, should.BeFalse)
+		assert.Loosely(t, ctr.wg, should.BeNil)
 	})
 }
 
@@ -155,25 +157,25 @@ func TestStartContainer(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("CTR start container error with nil request", t, func() {
+	ftt.Run("CTR start container error with nil request", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.StartContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start container error with no established client", t, func() {
+	ftt.Run("CTR start container error with no established client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start container error with grpc failure", t, func() {
+	ftt.Run("CTR start container error with grpc failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -183,11 +185,11 @@ func TestStartContainer(t *testing.T) {
 
 		getMockedStartContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start container success", t, func() {
+	ftt.Run("CTR start container success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -197,8 +199,8 @@ func TestStartContainer(t *testing.T) {
 
 		getMockedStartContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
 		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
 }
 
@@ -207,25 +209,25 @@ func TestStartTemplatedContainer(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 
-	Convey("CTR start templated container error with nil request", t, func() {
+	ftt.Run("CTR start templated container error with nil request", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.StartTemplatedContainer(ctx, nil)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start templated container error with no established client", t, func() {
+	ftt.Run("CTR start templated container error with no established client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start templated container error with grpc failure", t, func() {
+	ftt.Run("CTR start templated container error with grpc failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -235,11 +237,11 @@ func TestStartTemplatedContainer(t *testing.T) {
 
 		getMockedStartTemplatedContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR start templated container success", t, func() {
+	ftt.Run("CTR start templated container success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -249,21 +251,21 @@ func TestStartTemplatedContainer(t *testing.T) {
 
 		getMockedStartTemplatedContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
 		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
 }
 
 func TestStopContainer(t *testing.T) {
 	t.Parallel()
 
-	Convey("CTR stop container with empty container name", t, func() {
+	ftt.Run("CTR stop container with empty container name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.isServerRunning = false
 		err := ctr.StopContainer(ctx, "")
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
 	// TODO (azrahman): fix test for windows (sudo not in path)
@@ -284,26 +286,26 @@ func TestGetContainer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	containerName := "container-1234"
 
-	Convey("CTR get container with empty container name", t, func() {
+	ftt.Run("CTR get container with empty container name", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.isServerRunning = false
 		resp, err := ctr.GetContainer(ctx, "")
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR get container error with no established client", t, func() {
+	ftt.Run("CTR get container error with no established client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.GetContainer(ctx, containerName)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR get container error with grpc failure", t, func() {
+	ftt.Run("CTR get container error with grpc failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -313,11 +315,11 @@ func TestGetContainer(t *testing.T) {
 
 		getMockedGetContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.GetContainer(ctx, containerName)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR get templated container success", t, func() {
+	ftt.Run("CTR get templated container success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -337,8 +339,8 @@ func TestGetContainer(t *testing.T) {
 		},
 			nil)
 		resp, err := ctr.GetContainer(ctx, containerName)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
 }
 
@@ -348,16 +350,16 @@ func TestGcloudAuth(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	BackoffFunc = getMockedBackoff
 
-	Convey("CTR gcloud auth error with no established client", t, func() {
+	ftt.Run("CTR gcloud auth error with no established client", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		resp, err := ctr.GcloudAuth(ctx, "", false)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR gcloud auth error with grpc failure", t, func() {
+	ftt.Run("CTR gcloud auth error with grpc failure", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -367,11 +369,11 @@ func TestGcloudAuth(t *testing.T) {
 
 		getMockedLoginRegistry(mocked_client).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.GcloudAuth(ctx, "", false)
-		So(err, ShouldNotBeNil)
-		So(resp, ShouldBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
+		assert.Loosely(t, resp, should.BeNil)
 	})
 
-	Convey("CTR gcloud auth success", t, func() {
+	ftt.Run("CTR gcloud auth success", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -381,8 +383,8 @@ func TestGcloudAuth(t *testing.T) {
 
 		getMockedLoginRegistry(mocked_client).Return(&testapi.LoginRegistryResponse{}, nil)
 		resp, err := ctr.GcloudAuth(ctx, "docker/file/location", false)
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
 	})
 }
 

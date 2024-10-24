@@ -6,9 +6,10 @@ package crostoolrunner
 
 import (
 	"context"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 const (
@@ -18,18 +19,18 @@ const (
 func TestValidate(t *testing.T) {
 	t.Parallel()
 
-	Convey("CTR cipd validate without version", t, func() {
+	ftt.Run("CTR cipd validate without version", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{CtrCipdPackage: ctrCipdPackagePackageForTest}
 		err := ctrCipd.Validate(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
-	Convey("CTR cipd validate with version", t, func() {
+	ftt.Run("CTR cipd validate with version", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "Version1234"}
 		err := ctrCipd.Validate(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 }
 
@@ -56,19 +57,19 @@ func TestValidate(t *testing.T) {
 func TestInitialize(t *testing.T) {
 	t.Parallel()
 
-	Convey("CTR cipd initialize with already initialized package", t, func() {
+	ftt.Run("CTR cipd initialize with already initialized package", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{CtrCipdPackage: ctrCipdPackagePackageForTest}
 		ctrCipd.IsInitialized = true
 		err := ctrCipd.Initialize(ctx)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 	})
 
-	Convey("CTR cipd initialize with validation error", t, func() {
+	ftt.Run("CTR cipd initialize with validation error", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{CtrCipdPackage: ctrCipdPackagePackageForTest}
 		err := ctrCipd.Initialize(ctx)
-		So(err, ShouldNotBeNil)
+		assert.Loosely(t, err, should.NotBeNil)
 	})
 
 	// Convey("CTR cipd initialize with ensure error", t, func() {

@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 	. "infra/cros/cmd/common_lib/dynamic_updates/resolver"
@@ -26,79 +27,79 @@ var lookupTable DynamicPlaceholderLookup = DynamicPlaceholderLookup{
 }
 
 func TestPlaceholderResolution(t *testing.T) {
-	Convey("no placeholders", t, func() {
+	ftt.Run("no placeholders", t, func(t *ftt.Test) {
 		simpleStr := "Hello, world!"
 		resolvedStr := common.ResolvePlaceholders(simpleStr, lookupTable)
 
-		So(resolvedStr, ShouldEqual, simpleStr)
+		assert.Loosely(t, resolvedStr, should.Equal(simpleStr))
 	})
 
-	Convey("empty", t, func() {
+	ftt.Run("empty", t, func(t *ftt.Test) {
 		empty := ""
 		resolvedStr := common.ResolvePlaceholders(empty, lookupTable)
 
-		So(resolvedStr, ShouldEqual, "")
+		assert.Loosely(t, resolvedStr, should.BeEmpty)
 	})
 
-	Convey("one placeholder", t, func() {
+	ftt.Run("one placeholder", t, func(t *ftt.Test) {
 		simplePlaceholder := "This is board: ${board}"
 		resolvedStr := common.ResolvePlaceholders(simplePlaceholder, lookupTable)
 
-		So(resolvedStr, ShouldEqual, fmt.Sprintf("This is board: %s", lookupTable["board"]))
+		assert.Loosely(t, resolvedStr, should.Equal(fmt.Sprintf("This is board: %s", lookupTable["board"])))
 	})
 
-	Convey("two placeholders", t, func() {
+	ftt.Run("two placeholders", t, func(t *ftt.Test) {
 		twoPlaceholders := "This is board/model: ${board}/${model}"
 		resolvedStr := common.ResolvePlaceholders(twoPlaceholders, lookupTable)
 
-		So(resolvedStr, ShouldEqual, fmt.Sprintf("This is board/model: %s/%s", lookupTable["board"], lookupTable["model"]))
+		assert.Loosely(t, resolvedStr, should.Equal(fmt.Sprintf("This is board/model: %s/%s", lookupTable["board"], lookupTable["model"])))
 	})
 
-	Convey("embedded placeholder", t, func() {
+	ftt.Run("embedded placeholder", t, func(t *ftt.Test) {
 		embeddedPlaceholder := "${${board}_${model}_dut_id}"
 		resolvedStr := common.ResolvePlaceholders(embeddedPlaceholder, lookupTable)
 		// Extra resolution to support one layer of embedded placeholders.
 		resolvedStr = common.ResolvePlaceholders(resolvedStr, lookupTable)
 
-		So(resolvedStr, ShouldEqual, lookupTable["dedede_helion_dut_id"])
+		assert.Loosely(t, resolvedStr, should.Equal(lookupTable["dedede_helion_dut_id"]))
 	})
 }
 
 func TestResolveDynamicUpdate(t *testing.T) {
-	Convey("placeholders", t, func() {
+	ftt.Run("placeholders", t, func(t *ftt.Test) {
 		dynamicUpdate := &api.UserDefinedDynamicUpdate{
 			UpdateAction: getAppendUpdateAction(getProvisionTask("gs://${gcsBasePath}/${board}/${buildNumber}")),
 		}
 
 		resolvedUpdate, err := Resolve(dynamicUpdate, lookupTable)
-		So(err, ShouldBeNil)
-		So(resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
-			ShouldEqual,
-			fmt.Sprintf("gs://%s/%s/%s", lookupTable["gcsBasePath"], lookupTable["board"], lookupTable["buildNumber"]))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
+			should.Equal(
+				fmt.Sprintf("gs://%s/%s/%s", lookupTable["gcsBasePath"], lookupTable["board"], lookupTable["buildNumber"])))
 	})
 
-	Convey("no placeholders", t, func() {
+	ftt.Run("no placeholders", t, func(t *ftt.Test) {
 		dynamicUpdate := &api.UserDefinedDynamicUpdate{
 			UpdateAction: getAppendUpdateAction(getProvisionTask("no_placeholders_here")),
 		}
 
 		resolvedUpdate, err := Resolve(dynamicUpdate, lookupTable)
-		So(err, ShouldBeNil)
-		So(resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
-			ShouldEqual,
-			"no_placeholders_here")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
+			should.Equal(
+				"no_placeholders_here"))
 	})
 
-	Convey("embedded placeholders", t, func() {
+	ftt.Run("embedded placeholders", t, func(t *ftt.Test) {
 		dynamicUpdate := &api.UserDefinedDynamicUpdate{
 			UpdateAction: getAppendUpdateAction(getProvisionTask("gs://${gcsBasePath}/${${board}_${model}_dut_id}/${buildNumber}")),
 		}
 
 		resolvedUpdate, err := Resolve(dynamicUpdate, lookupTable)
-		So(err, ShouldBeNil)
-		So(resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
-			ShouldEqual,
-			fmt.Sprintf("gs://%s/%s/%s", lookupTable["gcsBasePath"], lookupTable["dedede_helion_dut_id"], lookupTable["buildNumber"]))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resolvedUpdate.UpdateAction.GetInsert().Task.GetProvision().InstallRequest.ImagePath.Path,
+			should.Equal(
+				fmt.Sprintf("gs://%s/%s/%s", lookupTable["gcsBasePath"], lookupTable["dedede_helion_dut_id"], lookupTable["buildNumber"])))
 	})
 }
 

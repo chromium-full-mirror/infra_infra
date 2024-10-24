@@ -7,7 +7,6 @@ package common_test
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
@@ -15,12 +14,15 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
 )
 
 func TestDependencyInjectionAny(t *testing.T) {
-	Convey("Concrete -> Any", t, func() {
+	ftt.Run("Concrete -> Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
 		original_proto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
@@ -32,18 +34,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 			},
 		}
 		storage := common.NewInjectableStorage()
-		So(storage.Set("testResult", testResult), ShouldBeNil)
-		So(storage.LoadInjectables(), ShouldBeNil)
-		So(common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), ShouldBeNil)
+		assert.Loosely(t, storage.Set("testResult", testResult), should.BeNil)
+		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
+		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
 
-		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
-		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
-		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
+		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
-	Convey("Concrete -> Undefined Any", t, func() {
+	ftt.Run("Concrete -> Undefined Any", t, func(t *ftt.Test) {
 		original_proto := &testapi.PublishRequest{}
 		testResult := &artifact.TestResult{
 			Version: 12,
@@ -52,18 +54,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 			},
 		}
 		storage := common.NewInjectableStorage()
-		So(storage.Set("testResult", testResult), ShouldBeNil)
-		So(storage.LoadInjectables(), ShouldBeNil)
-		So(common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), ShouldBeNil)
+		assert.Loosely(t, storage.Set("testResult", testResult), should.BeNil)
+		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
+		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
 
-		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
-		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
-		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
+		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
-	Convey("Any -> Any", t, func() {
+	ftt.Run("Any -> Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
 		original_proto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
@@ -76,18 +78,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 		}
 		testResultAny, _ := anypb.New(testResult)
 		storage := common.NewInjectableStorage()
-		So(storage.Set("testResult", testResultAny), ShouldBeNil)
-		So(storage.LoadInjectables(), ShouldBeNil)
-		So(common.Inject(original_proto, "metadata", storage, "testResult"), ShouldBeNil)
+		assert.Loosely(t, storage.Set("testResult", testResultAny), should.BeNil)
+		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
+		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "testResult"), should.BeNil)
 
-		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestResult")
+		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		So(original_proto.Metadata.UnmarshalTo(extractedTestResult), ShouldBeNil)
-		So(extractedTestResult.Version, ShouldEqual, testResult.Version)
-		So(extractedTestResult.TestInvocation.IsCftRun, ShouldEqual, testResult.TestInvocation.IsCftRun)
+		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
+		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
-	Convey("Overwrite with different Any", t, func() {
+	ftt.Run("Overwrite with different Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
 		original_proto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
@@ -97,19 +99,19 @@ func TestDependencyInjectionAny(t *testing.T) {
 		}
 		testInvocationAny, _ := anypb.New(testInvocation)
 		storage := common.NewInjectableStorage()
-		So(storage.Set("testResult", testInvocationAny), ShouldBeNil)
-		So(storage.LoadInjectables(), ShouldBeNil)
-		So(common.Inject(original_proto, "metadata", storage, "testResult"), ShouldBeNil)
+		assert.Loosely(t, storage.Set("testResult", testInvocationAny), should.BeNil)
+		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
+		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "testResult"), should.BeNil)
 
-		So(original_proto.Metadata.TypeUrl, ShouldEqual, "type.googleapis.com/chromiumos.test.artifact.TestInvocation")
+		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestInvocation"))
 		extractedTestInvocation := &artifact.TestInvocation{}
-		So(original_proto.Metadata.UnmarshalTo(extractedTestInvocation), ShouldBeNil)
-		So(extractedTestInvocation.IsCftRun, ShouldEqual, testInvocation.IsCftRun)
+		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestInvocation), should.BeNil)
+		assert.Loosely(t, extractedTestInvocation.IsCftRun, should.Equal(testInvocation.IsCftRun))
 	})
 }
 
 func TestDependencyInjectionBasic(t *testing.T) {
-	Convey("basic injection", t, func() {
+	ftt.Run("basic injection", t, func(t *ftt.Test) {
 		original_proto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
@@ -124,19 +126,19 @@ func TestDependencyInjectionBasic(t *testing.T) {
 		}
 		storage := common.NewInjectableStorage()
 		err := storage.Set("dut_primary", dut_address_proto)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = common.Inject(original_proto, "dutServer", storage, "dut_primary")
 
-		So(err, ShouldBeNil)
-		So(original_proto.DutServer, ShouldNotBeNil)
-		So(original_proto.DutServer.Address, ShouldEqual, dut_address_proto.Address)
-		So(original_proto.DutServer.Port, ShouldEqual, dut_address_proto.Port)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, original_proto.DutServer, should.NotBeNil)
+		assert.Loosely(t, original_proto.DutServer.Address, should.Equal(dut_address_proto.Address))
+		assert.Loosely(t, original_proto.DutServer.Port, should.Equal(dut_address_proto.Port))
 	})
 
-	Convey("IpEndpoint direct injection", t, func() {
+	ftt.Run("IpEndpoint direct injection", t, func(t *ftt.Test) {
 		original_proto := &labapi.IpEndpoint{}
 		dut_address_proto := &labapi.IpEndpoint{
 			Address: "localhost",
@@ -144,19 +146,19 @@ func TestDependencyInjectionBasic(t *testing.T) {
 		}
 		storage := common.NewInjectableStorage()
 		err := storage.Set("cros-dut", dut_address_proto)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = common.Inject(original_proto, "", storage, "cros-dut")
 
-		So(err, ShouldBeNil)
-		So(original_proto, ShouldNotBeNil)
-		So(original_proto.Address, ShouldEqual, dut_address_proto.Address)
-		So(original_proto.Port, ShouldEqual, dut_address_proto.Port)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, original_proto, should.NotBeNil)
+		assert.Loosely(t, original_proto.Address, should.Equal(dut_address_proto.Address))
+		assert.Loosely(t, original_proto.Port, should.Equal(dut_address_proto.Port))
 	})
 
-	Convey("test injection", t, func() {
+	ftt.Run("test injection", t, func(t *ftt.Test) {
 		original_proto := &api.ContainerRequest{
 			DynamicIdentifier: "cros-provision",
 			Container: &api.Template{
@@ -191,21 +193,21 @@ func TestDependencyInjectionBasic(t *testing.T) {
 		}
 		storage := common.NewInjectableStorage()
 		err := storage.Set("cros-dut", dut_address_proto)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.Set("dut_primary", dut)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		for _, dep := range original_proto.DynamicDeps {
 			err := common.Inject(original_proto.Container, dep.Key, storage, dep.Value)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		}
 	})
 }
 
 func TestDependencyInjectionArray(t *testing.T) {
-	Convey("array injection", t, func() {
+	ftt.Run("array injection", t, func(t *ftt.Test) {
 		original_proto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
@@ -227,21 +229,21 @@ func TestDependencyInjectionArray(t *testing.T) {
 
 		storage := common.NewInjectableStorage()
 		err := storage.Set("duts", dut_address_protos)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = common.Inject(original_proto, "dutServer", storage, "duts.1")
 
-		So(err, ShouldBeNil)
-		So(original_proto.DutServer, ShouldNotBeNil)
-		So(original_proto.DutServer.Address, ShouldEqual, dut_address_protos[1].Address)
-		So(original_proto.DutServer.Port, ShouldEqual, dut_address_protos[1].Port)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, original_proto.DutServer, should.NotBeNil)
+		assert.Loosely(t, original_proto.DutServer.Address, should.Equal(dut_address_protos[1].Address))
+		assert.Loosely(t, original_proto.DutServer.Port, should.Equal(dut_address_protos[1].Port))
 	})
 }
 
 func TestDependencyInjectionArrayAppend(t *testing.T) {
-	Convey("array injection", t, func() {
+	ftt.Run("array injection", t, func(t *ftt.Test) {
 		original_proto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
@@ -275,20 +277,20 @@ func TestDependencyInjectionArrayAppend(t *testing.T) {
 
 		storage := common.NewInjectableStorage()
 		err := storage.Set("package", new_package)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = common.Inject(original_proto, "provisionState.packages", storage, "package")
 
-		So(err, ShouldBeNil)
-		So(original_proto.ProvisionState.Packages, ShouldHaveLength, 4)
-		So(original_proto.ProvisionState.Packages[3].PackagePath.Path, ShouldEqual, new_package.PackagePath.Path)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, original_proto.ProvisionState.Packages, should.HaveLength(4))
+		assert.Loosely(t, original_proto.ProvisionState.Packages[3].PackagePath.Path, should.Equal(new_package.PackagePath.Path))
 	})
 }
 
 func TestDependencyInjectionArrayOverride(t *testing.T) {
-	Convey("array override injection", t, func() {
+	ftt.Run("array override injection", t, func(t *ftt.Test) {
 		original_proto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
@@ -318,17 +320,17 @@ func TestDependencyInjectionArrayOverride(t *testing.T) {
 
 		storage := common.NewInjectableStorage()
 		err := storage.Set("packages", new_packages)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		err = common.Inject(original_proto, "provisionState.packages", storage, "packages")
 
-		So(err, ShouldBeNil)
-		So(original_proto.ProvisionState.Packages, ShouldHaveLength, 3)
-		So(original_proto.ProvisionState.Packages[0].PackagePath.Path, ShouldEqual, new_packages[0].PackagePath.Path)
-		So(original_proto.ProvisionState.Packages[1].PackagePath.Path, ShouldEqual, new_packages[1].PackagePath.Path)
-		So(original_proto.ProvisionState.Packages[2].PackagePath.Path, ShouldEqual, new_packages[2].PackagePath.Path)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, original_proto.ProvisionState.Packages, should.HaveLength(3))
+		assert.Loosely(t, original_proto.ProvisionState.Packages[0].PackagePath.Path, should.Equal(new_packages[0].PackagePath.Path))
+		assert.Loosely(t, original_proto.ProvisionState.Packages[1].PackagePath.Path, should.Equal(new_packages[1].PackagePath.Path))
+		assert.Loosely(t, original_proto.ProvisionState.Packages[2].PackagePath.Path, should.Equal(new_packages[2].PackagePath.Path))
 	})
 }
 
@@ -345,41 +347,41 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 		t.Fatalf("%s", err)
 	}
 
-	Convey("NoticeChangesInStateKeeper", t, func() {
+	ftt.Run("NoticeChangesInStateKeeper", t, func(t *ftt.Test) {
 		req.GetParams().Keyvals = map[string]string{
 			"build_target": "drallion",
 		}
 		err := storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		buildTarget, err := storage.Get("req.params.keyvals.build_target")
-		So(err, ShouldBeNil)
-		So(buildTarget, ShouldEqual, "drallion")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, buildTarget, should.Equal("drallion"))
 	})
 
-	Convey("CanAddStringToInjectables", t, func() {
+	ftt.Run("CanAddStringToInjectables", t, func(t *ftt.Test) {
 		err := storage.Set("hello", "world!")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		str, err := storage.Get("hello")
-		So(err, ShouldBeNil)
-		So(str, ShouldEqual, "world!")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, str, should.Equal("world!"))
 	})
 
-	Convey("CanAddStringArrayToInjectables", t, func() {
+	ftt.Run("CanAddStringArrayToInjectables", t, func(t *ftt.Test) {
 		err := storage.Set("hello", []string{"World1", "World2"})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		arr, err := storage.Get("hello")
-		So(err, ShouldBeNil)
-		So(arr, ShouldHaveLength, 2)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, arr, should.HaveLength(2))
 	})
 
-	Convey("CanAddAndPullParams", t, func() {
+	ftt.Run("CanAddAndPullParams", t, func(t *ftt.Test) {
 		req.Params.TestSuites = []*api.TestSuite{
 			{
 				Name: "Test1",
@@ -389,29 +391,29 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 				Name: "Test3",
 			},
 		}
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		testSuites, err := storage.Get("req.params.testSuites")
-		So(err, ShouldBeNil)
-		So(testSuites, ShouldHaveLength, 3)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, testSuites, should.HaveLength(3))
 
 		req.Params.TestSuites = append(req.Params.TestSuites, &testapi.TestSuite{Name: "Test4"})
 		err = storage.LoadInjectables()
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		testSuites, err = storage.Get("req.params.testSuites")
-		So(err, ShouldBeNil)
-		So(testSuites, ShouldHaveLength, 4)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, testSuites, should.HaveLength(4))
 	})
 
-	Convey("CanDoDependencyInjection", t, func() {
+	ftt.Run("CanDoDependencyInjection", t, func(t *ftt.Test) {
 		endpoint := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    1234,
 		}
 		err := storage.Set("cros-test", endpoint)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		req.Params.TestSuites = []*api.TestSuite{
 			{
 				Name: "Test1",
@@ -444,10 +446,10 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 		}
 
 		err = common.InjectDependencies(testRequest, storage, testRequest.DynamicDeps)
-		So(err, ShouldBeNil)
-		So(testRequest.ServiceAddress.Address, ShouldEqual, endpoint.Address)
-		So(testRequest.ServiceAddress.Port, ShouldEqual, endpoint.Port)
-		So(testRequest.TestRequest.TestSuites, ShouldHaveLength, len(req.Params.TestSuites))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, testRequest.ServiceAddress.Address, should.Equal(endpoint.Address))
+		assert.Loosely(t, testRequest.ServiceAddress.Port, should.Equal(endpoint.Port))
+		assert.Loosely(t, testRequest.TestRequest.TestSuites, should.HaveLength(len(req.Params.TestSuites)))
 	})
 }
 
@@ -469,7 +471,7 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 		t.Fatalf("%s", err)
 	}
 
-	Convey("Anypb dep", t, func() {
+	ftt.Run("Anypb dep", t, func(t *ftt.Test) {
 		testRequest := &api.TestTask{
 			TestRequest: &api.CrosTestRequest{
 				Primary:  &api.CrosTestRequest_Device{},
@@ -484,62 +486,62 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 		}
 
 		err = common.InjectDependencies(testRequest, storage, testRequest.DynamicDeps)
-		So(err, ShouldBeNil)
-		So(testRequest.TestRequest.Primary.DevboardServer.Address, ShouldEqual, "localhost")
-		So(testRequest.TestRequest.Primary.DevboardServer.Port, ShouldEqual, 12345)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, testRequest.TestRequest.Primary.DevboardServer.Address, should.Equal("localhost"))
+		assert.Loosely(t, testRequest.TestRequest.Primary.DevboardServer.Port, should.Equal(12345))
 	})
 }
 
 func TestHandlers(t *testing.T) {
 	storage := common.NewInjectableStorage()
 
-	Convey("bool handler", t, func() {
+	ftt.Run("bool handler", t, func(t *ftt.Test) {
 		valUntyped, err := storage.Get("BOOL=true")
 		val, ok := valUntyped.(bool)
 
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeTrue)
-		So(val, ShouldBeTrue)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, val, should.BeTrue)
 
 		valUntyped, err = storage.Get("BOOL=false")
 		val, ok = valUntyped.(bool)
 
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeTrue)
-		So(val, ShouldBeFalse)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, val, should.BeFalse)
 	})
 
-	Convey("fmt handler", t, func() {
+	ftt.Run("fmt handler", t, func(t *ftt.Test) {
 		endpoint := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    1234,
 		}
-		So(storage.Set("endpoint", endpoint), ShouldBeNil)
-		So(storage.LoadInjectables(), ShouldBeNil)
+		assert.Loosely(t, storage.Set("endpoint", endpoint), should.BeNil)
+		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
 
 		valUntyped, err := storage.Get("FMT=${endpoint.address}:${endpoint.port}")
 		val, ok := valUntyped.(string)
 
-		So(err, ShouldBeNil)
-		So(ok, ShouldBeTrue)
-		So(val, ShouldEqual, "localhost:1234")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, ok, should.BeTrue)
+		assert.Loosely(t, val, should.Equal("localhost:1234"))
 	})
 }
 
 func TestHandlersWithinDynamicDeps(t *testing.T) {
 	storage := common.NewInjectableStorage()
 
-	Convey("init", t, func() {
+	ftt.Run("init", t, func(t *ftt.Test) {
 		endpoint := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    1234,
 		}
-		So(storage.Set("endpoint", endpoint), ShouldBeNil)
+		assert.Loosely(t, storage.Set("endpoint", endpoint), should.BeNil)
 	})
 
-	Convey("bool handler", t, func() {
+	ftt.Run("bool handler", t, func(t *ftt.Test) {
 		crosProvisionMetadata, err := anypb.New(&api.CrOSProvisionMetadata{})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		provisionTaskRequest := &api.ProvisionTask{
 			InstallRequest: &api.InstallRequest{
 				Metadata: crosProvisionMetadata,
@@ -552,13 +554,13 @@ func TestHandlersWithinDynamicDeps(t *testing.T) {
 			},
 		}
 
-		So(common.InjectDependencies(provisionTaskRequest, storage, provisionTaskRequest.DynamicDeps), ShouldBeNil)
+		assert.Loosely(t, common.InjectDependencies(provisionTaskRequest, storage, provisionTaskRequest.DynamicDeps), should.BeNil)
 		metadata := &api.CrOSProvisionMetadata{}
-		So(provisionTaskRequest.GetInstallRequest().GetMetadata().UnmarshalTo(metadata), ShouldBeNil)
-		So(metadata.UpdateFirmware, ShouldBeTrue)
+		assert.Loosely(t, provisionTaskRequest.GetInstallRequest().GetMetadata().UnmarshalTo(metadata), should.BeNil)
+		assert.Loosely(t, metadata.UpdateFirmware, should.BeTrue)
 	})
 
-	Convey("fmt handler", t, func() {
+	ftt.Run("fmt handler", t, func(t *ftt.Test) {
 		containerRequest := &api.ContainerRequest{
 			Container: &api.Template{
 				Container: &api.Template_Generic{
@@ -578,7 +580,7 @@ func TestHandlersWithinDynamicDeps(t *testing.T) {
 			},
 		}
 
-		So(common.InjectDependencies(containerRequest.Container, storage, containerRequest.DynamicDeps), ShouldBeNil)
-		So(containerRequest.GetContainer().GetGeneric().GetBinaryArgs()[2], ShouldEqual, "localhost:1234")
+		assert.Loosely(t, common.InjectDependencies(containerRequest.Container, storage, containerRequest.DynamicDeps), should.BeNil)
+		assert.Loosely(t, containerRequest.GetContainer().GetGeneric().GetBinaryArgs()[2], should.Equal("localhost:1234"))
 	})
 }
