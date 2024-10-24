@@ -5,13 +5,14 @@
 package dockerfile
 
 import (
-	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/should"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestLoadAndResolve(t *testing.T) {

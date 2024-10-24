@@ -10,10 +10,11 @@ import (
 	"testing"
 	"time"
 
+	logging "google.golang.org/api/logging/v2"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	logging "google.golang.org/api/logging/v2"
 )
 
 func TestClient(t *testing.T) {

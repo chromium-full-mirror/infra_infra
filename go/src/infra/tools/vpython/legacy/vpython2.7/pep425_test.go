@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func TestPEP425TagSelector(t *testing.T) {

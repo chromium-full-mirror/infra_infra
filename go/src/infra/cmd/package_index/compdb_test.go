@@ -10,10 +10,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	kpb "infra/cmd/package_index/kythe/proto"
 )

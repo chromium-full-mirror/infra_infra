@@ -10,14 +10,15 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	ufsProto "infra/unifiedfleet/api/v1/models"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"

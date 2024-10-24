@@ -13,6 +13,7 @@ import (
 	"time"
 
 	mock "github.com/stretchr/testify/mock"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"

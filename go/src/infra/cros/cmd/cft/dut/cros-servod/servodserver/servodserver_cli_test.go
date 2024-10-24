@@ -11,10 +11,10 @@ import (
 	"log"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"infra/cros/cmd/cft/dut/cros-servod/mock_commandexecutor"
 	"infra/cros/cmd/cft/dut/cros-servod/model"
-
-	"github.com/golang/mock/gomock"
 )
 
 // Tests that servod starts successfully.

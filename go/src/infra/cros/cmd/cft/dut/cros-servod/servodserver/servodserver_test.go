@@ -7,16 +7,17 @@ package servodserver
 import (
 	"bytes"
 	"context"
-	"go.chromium.org/chromiumos/test/servod/cmd/mock_commandexecutor"
 	"io"
 	"log"
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"golang.org/x/crypto/ssh"
+
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/servod/cmd/mock_commandexecutor"
 	"go.chromium.org/luci/common/errors"
-	"golang.org/x/crypto/ssh"
 )
 
 // Tests that servod starts successfully.

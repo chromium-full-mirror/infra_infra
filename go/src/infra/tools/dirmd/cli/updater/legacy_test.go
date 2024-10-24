@@ -10,13 +10,13 @@ import (
 	"encoding/json"
 	"testing"
 
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
-
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	"infra/tools/dirmd"
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestLegacy(t *testing.T) {

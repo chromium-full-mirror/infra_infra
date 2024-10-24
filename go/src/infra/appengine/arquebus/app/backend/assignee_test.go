@@ -7,12 +7,12 @@ package backend
 import (
 	"testing"
 
-	"infra/appengine/arquebus/app/config"
-	monorail "infra/monorailv2/api/api_proto"
-
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	"infra/appengine/arquebus/app/config"
+	monorail "infra/monorailv2/api/api_proto"
 )
 
 func TestAssignee(t *testing.T) {

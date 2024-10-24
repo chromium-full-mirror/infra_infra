@@ -14,21 +14,19 @@ import (
 	"log"
 	"strings"
 
-	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
-
 	dc "github.com/docker/docker/client"
+	crypto_ssh "golang.org/x/crypto/ssh"
 
+	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
+	"go.chromium.org/chromiumos/config/go/longrunning"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
+	common_util "go.chromium.org/chromiumos/test/util/common"
+
 	"infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
 	"infra/cros/cmd/cft/dut/cros-servod/model"
 	"infra/cros/cmd/cft/dut/cros-servod/servod"
-
-	common_util "go.chromium.org/chromiumos/test/util/common"
 	"infra/cros/cmd/cft/dut/cros-servod/ssh"
-
-	"go.chromium.org/chromiumos/config/go/longrunning"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	crypto_ssh "golang.org/x/crypto/ssh"
 )
 
 // ServodService implementation of servod_service.proto

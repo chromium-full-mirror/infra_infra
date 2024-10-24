@@ -5,12 +5,13 @@
 package cloudtail
 
 import (
-	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/should"
 	"reflect"
 	"testing"
 	"time"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestLogParserChain(t *testing.T) {

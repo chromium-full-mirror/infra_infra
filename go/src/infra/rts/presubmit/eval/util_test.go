@@ -9,10 +9,11 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/protobuf/types/known/durationpb"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	evalpb "infra/rts/presubmit/eval/proto"
 )

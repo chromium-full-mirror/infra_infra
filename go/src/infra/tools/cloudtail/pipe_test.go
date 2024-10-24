@@ -6,13 +6,14 @@ package cloudtail
 
 import (
 	"context"
-	"go.chromium.org/luci/common/testing/ftt"
-	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/should"
 	"io"
 	"strings"
 	"sync"
 	"testing"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 type blockingPushBuffer struct {

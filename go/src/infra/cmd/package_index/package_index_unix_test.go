@@ -20,10 +20,11 @@ import (
 	"time"
 
 	v1 "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"google.golang.org/protobuf/proto"
 
 	kpb "infra/cmd/package_index/kythe/proto"
 )

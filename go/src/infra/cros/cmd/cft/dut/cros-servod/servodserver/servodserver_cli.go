@@ -17,15 +17,14 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
-
-	"infra/cros/cmd/cft/dut/cros-servod/model"
-
 	dc "github.com/docker/docker/client"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"google.golang.org/grpc"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/cft/dut/cros-servod/model"
 )
 
 const (

@@ -19,13 +19,11 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
-
-	"infra/cros/cmd/cft/dut/cros-servod/model"
-
-	"infra/cros/cmd/cft/dut/cros-servod/servodserver"
-
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
+	"infra/cros/cmd/cft/dut/cros-servod/model"
+	"infra/cros/cmd/cft/dut/cros-servod/servodserver"
 )
 
 const (

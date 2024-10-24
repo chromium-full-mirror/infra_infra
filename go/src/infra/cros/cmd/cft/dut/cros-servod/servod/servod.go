@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/cft/dut/cros-servod/ssh"
-	"infra/cros/cmd/cft/dut/cros-servod/xmlrpc"
-
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/cft/dut/cros-servod/ssh"
+	"infra/cros/cmd/cft/dut/cros-servod/xmlrpc"
 )
 
 const (
