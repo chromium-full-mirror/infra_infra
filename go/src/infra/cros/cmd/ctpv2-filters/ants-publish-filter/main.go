@@ -22,6 +22,10 @@ import (
 	"infra/cros/cmd/common_lib/common"
 )
 
+const (
+	skipTFUpload = "skip_ants_upload"
+)
+
 type ANTSPublishUpdater struct {
 	PublishPath  string
 	InvocationID string
@@ -68,6 +72,12 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 	return ""
 }
 
+func (apu *ANTSPublishUpdater) skipTFUpload(req *api.InternalTestplan) {
+	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUpload, Value: "true"})
+	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
+}
+
 func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 	log.Println("Executing ants publish request-updater filter")
@@ -82,6 +92,10 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		return req, err
 	}
 
+	// Skip uploading to Ants using TF plugin.
+	apu.skipTFUpload(req)
+
+	// Add request to publish using ants-publish container.
 	if err := GeneratePublishTask(req, apu.antsPublishMetadata(req), apu.PublishPath, log); err != nil {
 		log.Printf("Error while generating publish task, %s", err)
 		return req, err
