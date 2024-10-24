@@ -10,7 +10,9 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -34,7 +36,7 @@ type FakeUFSClient struct {
 func TestReadState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Read state from USF", t, func() {
+	ftt.Run("Read state from USF", t, func(t *ftt.Test) {
 		c := &FakeUFSClient{
 			getStateMap: map[string]ufsProto.State{
 				"os:machineLSEs/host1":         ufsProto.State_STATE_REPAIR_FAILED,
@@ -44,81 +46,81 @@ func TestReadState(t *testing.T) {
 		}
 		// no namespace - should default to `os`
 		r := Read(ctx, c, "host1")
-		So(r.State, ShouldEqual, RepairFailed)
-		So(r.Time, ShouldNotEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(RepairFailed))
+		assert.Loosely(t, r.Time, should.NotEqual(0))
 
 		r = Read(ctx, c, "host2")
-		So(r.State, ShouldEqual, ManualRepair)
-		So(r.Time, ShouldNotEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(ManualRepair))
+		assert.Loosely(t, r.Time, should.NotEqual(0))
 
 		r = Read(ctx, c, "not_found")
-		So(r.State, ShouldEqual, Unknown)
-		So(r.Time, ShouldEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(Unknown))
+		assert.Loosely(t, r.Time, should.BeZero)
 
 		r = Read(ctx, c, "fail")
-		So(r.State, ShouldEqual, Unknown)
-		So(r.Time, ShouldEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(Unknown))
+		assert.Loosely(t, r.Time, should.BeZero)
 
 		// explicitly set os context, should give the same results
 		osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
 		r = Read(osCtx, c, "host1")
-		So(r.State, ShouldEqual, RepairFailed)
-		So(r.Time, ShouldNotEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(RepairFailed))
+		assert.Loosely(t, r.Time, should.NotEqual(0))
 
 		// explicitly set partner context, should fetch a different DUT
 		partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
 		r = Read(partnerCtx, c, "host1")
-		So(r.State, ShouldEqual, NeedsDeploy)
-		So(r.Time, ShouldNotEqual, 0)
+		assert.Loosely(t, r.State, should.Equal(NeedsDeploy))
+		assert.Loosely(t, r.Time, should.NotEqual(0))
 	})
 }
 
 func TestUpdateState(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	Convey("Read state from USF", t, func() {
+	ftt.Run("Read state from USF", t, func(t *ftt.Test) {
 		c := &FakeUFSClient{
 			updateStateMap: map[string]ufsProto.State{},
 		}
 
 		// dont explicitly set context
-		Convey("set repair_failed and expect REPAIR_FAILED", func() {
+		t.Run("set repair_failed and expect REPAIR_FAILED", func(t *ftt.Test) {
 			e := Update(ctx, c, "host1", RepairFailed)
-			So(e, ShouldBeNil)
-			So(c.updateStateMap, ShouldHaveLength, 1)
-			So(c.updateStateMap["os:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_REPAIR_FAILED)
+			assert.Loosely(t, e, should.BeNil)
+			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
+			assert.Loosely(t, c.updateStateMap["os:machineLSEs/host1"], should.Equal(ufsProto.State_STATE_REPAIR_FAILED))
 		})
 
-		Convey("set manual_repair and expect DEPLOYED_TESTING", func() {
+		t.Run("set manual_repair and expect DEPLOYED_TESTING", func(t *ftt.Test) {
 			e := Update(ctx, c, "host2", ManualRepair)
-			So(e, ShouldBeNil)
-			So(c.updateStateMap, ShouldHaveLength, 1)
-			So(c.updateStateMap["os:machineLSEs/host2"], ShouldEqual, ufsProto.State_STATE_DEPLOYED_TESTING)
+			assert.Loosely(t, e, should.BeNil)
+			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
+			assert.Loosely(t, c.updateStateMap["os:machineLSEs/host2"], should.Equal(ufsProto.State_STATE_DEPLOYED_TESTING))
 		})
 
-		Convey("set incorrect state and expect UNSPECIFIED for UFS", func() {
+		t.Run("set incorrect state and expect UNSPECIFIED for UFS", func(t *ftt.Test) {
 			e := Update(ctx, c, "host2", "wrong_state")
-			So(e, ShouldBeNil)
-			So(c.updateStateMap, ShouldHaveLength, 1)
-			So(c.updateStateMap["os:machineLSEs/host2"], ShouldEqual, ufsProto.State_STATE_UNSPECIFIED)
+			assert.Loosely(t, e, should.BeNil)
+			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
+			assert.Loosely(t, c.updateStateMap["os:machineLSEs/host2"], should.Equal(ufsProto.State_STATE_UNSPECIFIED))
 		})
 
 		// explicitly set os context and expect same result as default
-		Convey("set repair_failed and expect REPAIR_FAILED in os namespace", func() {
+		t.Run("set repair_failed and expect REPAIR_FAILED in os namespace", func(t *ftt.Test) {
 			osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
 			e := Update(osCtx, c, "host1", RepairFailed)
-			So(e, ShouldBeNil)
-			So(c.updateStateMap, ShouldHaveLength, 1)
-			So(c.updateStateMap["os:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_REPAIR_FAILED)
+			assert.Loosely(t, e, should.BeNil)
+			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
+			assert.Loosely(t, c.updateStateMap["os:machineLSEs/host1"], should.Equal(ufsProto.State_STATE_REPAIR_FAILED))
 		})
 
 		// update DUT in separate namespace, should touch a different machine
-		Convey("set state in separate namespace", func() {
+		t.Run("set state in separate namespace", func(t *ftt.Test) {
 			partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
 			e := Update(partnerCtx, c, "host1", ManualRepair)
-			So(e, ShouldBeNil)
-			So(c.updateStateMap, ShouldHaveLength, 1)
-			So(c.updateStateMap["os-partner:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_DEPLOYED_TESTING)
+			assert.Loosely(t, e, should.BeNil)
+			assert.Loosely(t, c.updateStateMap, should.HaveLength(1))
+			assert.Loosely(t, c.updateStateMap["os-partner:machineLSEs/host1"], should.Equal(ufsProto.State_STATE_DEPLOYED_TESTING))
 		})
 	})
 }
