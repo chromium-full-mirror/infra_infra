@@ -6,6 +6,7 @@ platforms:
   - dragonfly-amd64
   - freebsd-amd64
   - freebsd-arm64
+  - freebsd-armv7l
   - freebsd-riscv64
   - illumos-amd64
   - linux-386
@@ -19,9 +20,10 @@ platforms:
   - linux-s390x
   - netbsd-amd64
   - netbsd-arm64
-  - netbsd-armv6l
+  - netbsd-armv7l
   - openbsd-amd64
   - openbsd-arm64
+  - openbsd-armv7l
   - openbsd-ppc64
   - openbsd-riscv64
   - solaris-amd64
