@@ -5,10 +5,12 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
@@ -16,13 +18,45 @@ import (
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 )
 
-func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater, log *log.Logger) error {
+const (
+	artifactsDir      = "/tmp/ants-publish"
+	runCmd            = "ants-publish server -port 0"
+	containerID       = "ants-publish"
+	internalAccountID = 1
+)
+
+func isInternal(accountID string) bool {
+	// Sometimes, we do not have accountId for internal users.
+	if accountID == "" {
+		return true
+	}
+
+	id, err := strconv.Atoi(accountID)
+	if err != nil {
+		log.Printf("Cannot convert account %s to int", accountID)
+		return false
+	}
+
+	if id < 1 {
+		log.Printf("Account ID %s not supported", accountID)
+		return false
+	}
+
+	return id == internalAccountID
+}
+
+func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
+	if !isInternal(metadata.AccountId) {
+		// Skip calling ants-publish for external partners.
+		log.Printf("Skipping ants-publish task for external partners. Found accountId: %s", metadata.AccountId)
+		return nil
+	}
 	antsContainerBuilder := builders.NewContainerBuilder(
-		"ants-publish",      //  ContainerID
-		"",                  //  ContainerImageKey
-		apu.PublishPath,     //	 Container ImagePath
-		"/tmp/ants-publish", //  ContainerArtifactDir
-		"ants-publish server -port 0",
+		containerID,  //  ContainerID
+		"",           //  ContainerImageKey
+		publishPath,  //  Container ImagePath
+		artifactsDir, //  ContainerArtifactDir
+		runCmd,
 	)
 
 	//  Add test artifacts directory for container.
@@ -33,11 +67,9 @@ func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater,
 		},
 	)
 
-	publishMetadata := apu.antsPublishMetadata(req)
-	log.Printf("publishMetadata %+v", publishMetadata)
-
+	log.Printf("publishMetadata %+v", metadata)
 	publishRequestMetadata := &anypb.Any{}
-	if err := publishRequestMetadata.MarshalFrom(publishMetadata); err != nil {
+	if err := publishRequestMetadata.MarshalFrom(metadata); err != nil {
 		log.Printf("Failed to marshal request, %s", err)
 	}
 	log.Printf("publishRequestMetadata: %+v", publishRequestMetadata)
@@ -66,12 +98,8 @@ func GeneratePublishTask(req *testapi.InternalTestplan, apu *ANTSPublishUpdater,
 		},
 		dynamic_common.AppendTaskWrapper(dynamic_common.FindLast(testapi.FocalTaskFinder_PUBLISH)))
 
-	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
-	if err != nil {
-		log.Printf("Error while modifying provision request, %s", err)
-	}
-
-	return nil
+	dynamicUpdates := req.SuiteInfo.SuiteMetadata.DynamicUpdates
+	return dynamic_updates.AppendUserDefinedDynamicUpdates(&dynamicUpdates, generator.Generate)
 }
 
 func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*testapi.DynamicDep {

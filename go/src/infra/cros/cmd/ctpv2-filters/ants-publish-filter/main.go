@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -38,20 +39,19 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *m
 	}
 
 	if apu.InvocationID == "" {
-		publishMetadata.AntsInvocationId = getSuiteExecutionMetadataFlag(req, "ants_invocation_id")
+		publishMetadata.AntsInvocationId = suiteExecutionMetadataArgValue(req, "ants_invocation_id")
 	} else {
 		publishMetadata.AntsInvocationId = apu.InvocationID
 	}
 
 	if apu.WorkUnitID == "" {
-		publishMetadata.ParentWorkUnitId = getSuiteExecutionMetadataFlag(req, "ants_work_unit_id")
+		publishMetadata.ParentWorkUnitId = suiteExecutionMetadataArgValue(req, "ants_work_unit_id")
 	} else {
 		publishMetadata.ParentWorkUnitId = apu.WorkUnitID
 	}
 
 	if apu.AccountID == "" {
-		internalAccountID := "1"
-		publishMetadata.AccountId = internalAccountID
+		publishMetadata.AccountId = strconv.Itoa(internalAccountID)
 	} else {
 		publishMetadata.AccountId = apu.AccountID
 	}
@@ -59,7 +59,7 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *m
 	return publishMetadata
 }
 
-func getSuiteExecutionMetadataFlag(req *api.InternalTestplan, flag string) string {
+func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) string {
 	for _, arg := range req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs() {
 		if strings.EqualFold(arg.GetFlag(), flag) {
 			return arg.GetValue()
@@ -69,9 +69,9 @@ func getSuiteExecutionMetadataFlag(req *api.InternalTestplan, flag string) strin
 }
 
 func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+	ctx := context.Background()
 	log.Println("Executing ants publish request-updater filter")
 
-	ctx := context.Background()
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
@@ -82,12 +82,12 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		return req, err
 	}
 
-	if err := GeneratePublishTask(req, apu, log); err != nil {
+	if err := GeneratePublishTask(req, apu.antsPublishMetadata(req), apu.PublishPath, log); err != nil {
 		log.Printf("Error while generating publish task, %s", err)
 		return req, err
 	}
-	log.Println("Finished generating publish task.")
 
+	log.Println("Finished generating publish task.")
 	return req, nil
 }
 
