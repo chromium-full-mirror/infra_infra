@@ -590,6 +590,12 @@ func getModemInfo(src *lab.ModemInfo) *labapi.ModemInfo {
 		r.Type = labapi.ModemType_MODEM_TYPE_FM101
 	case lab.ModemType_MODEM_TYPE_EM060:
 		r.Type = labapi.ModemType_MODEM_TYPE_EM060
+	case lab.ModemType_MODEM_TYPE_RW101:
+		r.Type = labapi.ModemType_MODEM_TYPE_RW101
+	case lab.ModemType_MODEM_TYPE_RW135:
+		r.Type = labapi.ModemType_MODEM_TYPE_RW135
+	case lab.ModemType_MODEM_TYPE_LCUK54:
+		r.Type = labapi.ModemType_MODEM_TYPE_LCUK54
 	default:
 		r.Type = labapi.ModemType_MODEM_TYPE_UNSUPPORTED
 	}

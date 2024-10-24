@@ -180,7 +180,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 											},
 										},
 										Modeminfo: &lab.ModemInfo{
-											Type:           lab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+											Type:           lab.ModemType_MODEM_TYPE_LCUK54,
 											Imei:           "123456789",
 											SupportedBands: "1,2,3,4,5",
 											SimCount:       2,
@@ -444,7 +444,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 						Hwid:  "fake-hwid",
 						Phase: labapi.Phase_EVT_MAPLE,
 						ModemInfo: &labapi.ModemInfo{
-							Type:           labapi.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+							Type:           labapi.ModemType_MODEM_TYPE_LCUK54,
 							Imei:           "123456789",
 							SupportedBands: "1,2,3,4,5",
 							SimCount:       2,
