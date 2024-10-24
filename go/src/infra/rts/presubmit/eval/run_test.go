@@ -5,33 +5,34 @@
 package eval
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"math"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestScoreString(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ScoreString`, t, func() {
-		Convey("NaN", func() {
-			So(scoreString(float32(math.NaN())), ShouldEqual, "?")
+	ftt.Run(`ScoreString`, t, func(t *ftt.Test) {
+		t.Run("NaN", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(float32(math.NaN())), should.Equal("?"))
 		})
-		Convey("0%", func() {
-			So(scoreString(0), ShouldEqual, "0.00%")
+		t.Run("0%", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(0), should.Equal("0.00%"))
 		})
-		Convey("0.0001%", func() {
-			So(scoreString(0.000001), ShouldEqual, "<0.01%")
+		t.Run("0.0001%", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(0.000001), should.Equal("<0.01%"))
 		})
-		Convey("50%", func() {
-			So(scoreString(0.5), ShouldEqual, "50.00%")
+		t.Run("50%", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(0.5), should.Equal("50.00%"))
 		})
-		Convey("99.999%", func() {
-			So(scoreString(0.99999), ShouldEqual, ">99.99%")
+		t.Run("99.999%", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(0.99999), should.Equal(">99.99%"))
 		})
-		Convey("100%", func() {
-			So(scoreString(1), ShouldEqual, "100.00%")
+		t.Run("100%", func(t *ftt.Test) {
+			assert.Loosely(t, scoreString(1), should.Equal("100.00%"))
 		})
 	})
 }

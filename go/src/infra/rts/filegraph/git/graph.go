@@ -82,6 +82,46 @@ type node struct {
 	children map[string]*node
 }
 
+func (n *node) Equal(other *node) bool {
+	if n == nil || other == nil {
+		return n == other
+	}
+	if n == other {
+		return true
+	}
+	if n.name != other.name {
+		return false
+	}
+	if n.probSumDenominator != other.probSumDenominator {
+		return false
+	}
+	if len(n.edges) != len(other.edges) {
+		return false
+	}
+	for i, myEdge := range n.edges {
+		oEdge := n.edges[i]
+		if !myEdge.to.Equal(oEdge.to) {
+			return false
+		}
+		if myEdge.probSum != oEdge.probSum {
+			return false
+		}
+	}
+	if len(n.children) != len(other.children) {
+		return false
+	}
+	for key, myChild := range n.children {
+		oChild := other.children[key]
+		if oChild == nil {
+			return false
+		}
+		if !myChild.Equal(oChild) {
+			return false
+		}
+	}
+	return true
+}
+
 // probabiliy is a probability encoded as p * 2^24.
 type probability int64
 

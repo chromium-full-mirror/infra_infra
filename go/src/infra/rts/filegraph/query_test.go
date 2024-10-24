@@ -7,8 +7,17 @@ package filegraph
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/registry"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
+
+func init() {
+	registry.RegisterCmpOption(cmp.AllowUnexported(testNode{}))
+}
 
 type testGraph struct {
 	nodes map[string]*testNode
@@ -34,11 +43,13 @@ func (g *testGraph) ReadEdges(from Node, callback func(to Node, distance float64
 	}
 }
 
-func run(q *Query) map[string]*ShortestPath {
+func run(t testing.TB, q *Query) map[string]*ShortestPath {
+	t.Helper()
+
 	ret := map[string]*ShortestPath{}
 	q.Run(func(sp *ShortestPath) bool {
 		name := sp.Node.Name()
-		So(ret[name], ShouldBeNil)
+		assert.Loosely(t, ret[name], should.BeNil, truth.LineContext())
 		ret[name] = sp
 		return true
 	})
@@ -86,9 +97,9 @@ type testEdge struct {
 func TestQuery(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Query`, t, func() {
-		Convey(`Run`, func() {
-			Convey(`Works`, func() {
+	ftt.Run(`Query`, t, func(t *ftt.Test) {
+		t.Run(`Run`, func(t *ftt.Test) {
+			t.Run(`Works`, func(t *ftt.Test) {
 				g := initGraph(
 					testEdge{from: "//a", to: "//b/1", distance: 1},
 					testEdge{from: "//a", to: "//b/2", distance: 2},
@@ -96,8 +107,8 @@ func TestQuery(t *testing.T) {
 					testEdge{from: "//b/2", to: "//c", distance: 3},
 				)
 
-				sps := run(g.query("//a"))
-				So(sps, ShouldResemble, map[string]*ShortestPath{
+				sps := run(t, g.query("//a"))
+				assert.Loosely(t, sps, should.Resemble(map[string]*ShortestPath{
 					"//a": {
 						Node:     g.node("//a"),
 						Distance: 0,
@@ -117,10 +128,10 @@ func TestQuery(t *testing.T) {
 						Node:     g.node("//c"),
 						Distance: 4,
 					},
-				})
+				}))
 			})
 
-			Convey(`MaxDistance`, func() {
+			t.Run(`MaxDistance`, func(t *ftt.Test) {
 				g := initGraph(
 					testEdge{from: "//a", to: "//b/1", distance: 1},
 					testEdge{from: "//a", to: "//b/2", distance: 2},
@@ -129,8 +140,8 @@ func TestQuery(t *testing.T) {
 				)
 				q := g.query("//a")
 				q.MaxDistance = 3
-				sps := run(q)
-				So(sps, ShouldResemble, map[string]*ShortestPath{
+				sps := run(t, q)
+				assert.Loosely(t, sps, should.Resemble(map[string]*ShortestPath{
 					"//a": {
 						Node:     g.node("//a"),
 						Distance: 0,
@@ -145,17 +156,17 @@ func TestQuery(t *testing.T) {
 						Node:     g.node("//b/2"),
 						Distance: 2,
 					},
-				})
+				}))
 			})
 
-			Convey(`Unreachable`, func() {
+			t.Run(`Unreachable`, func(t *ftt.Test) {
 				g := initGraph(
 					testEdge{from: "//a", to: "//b", distance: 1},
 					testEdge{from: "//c", to: "//d"},
 				)
 
-				sps := run(g.query("//a"))
-				So(sps, ShouldResemble, map[string]*ShortestPath{
+				sps := run(t, g.query("//a"))
+				assert.Loosely(t, sps, should.Resemble(map[string]*ShortestPath{
 					"//a": {
 						Node:     g.node("//a"),
 						Distance: 0,
@@ -165,10 +176,10 @@ func TestQuery(t *testing.T) {
 						Node:     g.node("//b"),
 						Distance: 1,
 					},
-				})
+				}))
 			})
 
-			Convey(`Visiting the same node multiple times`, func() {
+			t.Run(`Visiting the same node multiple times`, func(t *ftt.Test) {
 				g := initGraph(
 					testEdge{from: "//a", to: "//b", distance: 1},
 					testEdge{from: "//a", to: "//c", distance: 10},
@@ -176,7 +187,7 @@ func TestQuery(t *testing.T) {
 				)
 				g.query("//a") // asserts that each node is reported once
 			})
-			Convey(`Duplicate sources`, func() {
+			t.Run(`Duplicate sources`, func(t *ftt.Test) {
 				g := initGraph(
 					testEdge{from: "//a", to: "//b", distance: 1},
 				)
@@ -184,7 +195,7 @@ func TestQuery(t *testing.T) {
 			})
 		})
 
-		Convey(`ShortestPath`, func() {
+		t.Run(`ShortestPath`, func(t *ftt.Test) {
 			g := initGraph(
 				testEdge{from: "//a", to: "//b/1", distance: 1},
 				testEdge{from: "//a", to: "//b/2", distance: 2},
@@ -194,9 +205,9 @@ func TestQuery(t *testing.T) {
 			)
 			q := g.query("//a")
 
-			Convey(`Works`, func() {
+			t.Run(`Works`, func(t *ftt.Test) {
 				sp := q.ShortestPath(g.node("//c"))
-				So(sp, ShouldResemble, &ShortestPath{
+				assert.Loosely(t, sp, should.Resemble(&ShortestPath{
 					Node:     g.node("//c"),
 					Distance: 4,
 					Prev: &ShortestPath{
@@ -207,12 +218,12 @@ func TestQuery(t *testing.T) {
 							Distance: 0,
 						},
 					},
-				})
-				So(sp.Path(), ShouldResemble, []*ShortestPath{sp.Prev.Prev, sp.Prev, sp})
+				}))
+				assert.Loosely(t, sp.Path(), should.Resemble([]*ShortestPath{sp.Prev.Prev, sp.Prev, sp}))
 			})
 
-			Convey(`Unreachable`, func() {
-				So(q.ShortestPath(g.node("//unreachable/1")), ShouldBeNil)
+			t.Run(`Unreachable`, func(t *ftt.Test) {
+				assert.Loosely(t, q.ShortestPath(g.node("//unreachable/1")), should.BeNil)
 			})
 		})
 	})

@@ -6,16 +6,17 @@ package git
 
 import (
 	"bytes"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestWrite(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Write`, t, func() {
+	ftt.Run(`Write`, t, func(t *ftt.Test) {
 		buf := &bytes.Buffer{}
 		w := writer{
 			textMode: true,
@@ -24,12 +25,12 @@ func TestWrite(t *testing.T) {
 
 		test := func(g *Graph, expected ...string) {
 			err := w.writeGraph(g)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			actual := strings.Split(strings.TrimSuffix(buf.String(), "\n"), "\n")
-			So(actual, ShouldResemble, expected)
+			assert.Loosely(t, actual, should.Resemble(expected))
 		}
 
-		Convey(`Zero`, func() {
+		t.Run(`Zero`, func(t *ftt.Test) {
 			test(&Graph{},
 				"54", // header
 				"0",  // version
@@ -41,7 +42,7 @@ func TestWrite(t *testing.T) {
 			)
 		})
 
-		Convey(`Two direct children`, func() {
+		t.Run(`Two direct children`, func(t *ftt.Test) {
 			foo := &node{probSumDenominator: 1}
 			bar := &node{probSumDenominator: 2}
 			foo.edges = []edge{{to: bar, probSum: probOne}}

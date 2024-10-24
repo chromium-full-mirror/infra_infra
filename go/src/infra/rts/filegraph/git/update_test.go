@@ -6,34 +6,35 @@ package git
 
 import (
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestApply(t *testing.T) {
 	t.Parallel()
 
-	Convey(`apply`, t, func() {
+	ftt.Run(`apply`, t, func(t *ftt.Test) {
 		g := &Graph{}
 		g.ensureInitialized()
 
 		applyChanges := func(changes []fileChange) {
 			err := g.apply(changes, 100)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		}
 
-		Convey(`Empty change`, func() {
+		t.Run(`Empty change`, func(t *ftt.Test) {
 			applyChanges(nil)
-			So(g.root, ShouldResemble, node{name: "//"})
+			assert.Loosely(t, g.root, should.Resemble(node{name: "//"}))
 		})
 
-		Convey(`Add one file`, func() {
+		t.Run(`Add one file`, func(t *ftt.Test) {
 			applyChanges([]fileChange{
 				{Path: "a", Status: 'A'},
 			})
 			// The file is registered, but the commit is otherwise ignored.
-			So(g.root, ShouldResemble, node{
+			assert.Loosely(t, g.root, should.Resemble(node{
 				name: "//",
 				children: map[string]*node{
 					"a": {
@@ -41,15 +42,15 @@ func TestApply(t *testing.T) {
 						parent: &g.root,
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Add two files`, func() {
+		t.Run(`Add two files`, func(t *ftt.Test) {
 			applyChanges([]fileChange{
 				{Path: "a", Status: 'A'},
 				{Path: "b", Status: 'A'},
 			})
-			So(g.root, ShouldResemble, node{
+			assert.Loosely(t, g.root, should.Resemble(node{
 				name: "//",
 				children: map[string]*node{
 					"a": {
@@ -65,14 +66,14 @@ func TestApply(t *testing.T) {
 						edges:              []edge{{to: g.node("//a"), probSum: probOne}},
 					},
 				},
-			})
+			}))
 
-			Convey(`Add two more`, func() {
+			t.Run(`Add two more`, func(t *ftt.Test) {
 				applyChanges([]fileChange{
 					{Path: "b", Status: 'A'},
 					{Path: "c/d", Status: 'A'},
 				})
-				So(g.root, ShouldResemble, node{
+				assert.Loosely(t, g.root, should.Resemble(node{
 					name: "//",
 					children: map[string]*node{
 						"a": {
@@ -103,15 +104,15 @@ func TestApply(t *testing.T) {
 							},
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`Modify them again`, func() {
+			t.Run(`Modify them again`, func(t *ftt.Test) {
 				applyChanges([]fileChange{
 					{Path: "a", Status: 'M'},
 					{Path: "b", Status: 'M'},
 				})
-				So(g.root, ShouldResemble, node{
+				assert.Loosely(t, g.root, should.Resemble(node{
 					name: "//",
 					children: map[string]*node{
 						"a": {
@@ -127,16 +128,16 @@ func TestApply(t *testing.T) {
 							edges:              []edge{{to: g.node("//a"), probSum: 2 * probOne}},
 						},
 					},
-				})
+				}))
 
 			})
 
-			Convey(`Modify one and add another`, func() {
+			t.Run(`Modify one and add another`, func(t *ftt.Test) {
 				applyChanges([]fileChange{
 					{Path: "b", Status: 'M'},
 					{Path: "c", Status: 'M'},
 				})
-				So(g.root, ShouldResemble, node{
+				assert.Loosely(t, g.root, should.Resemble(node{
 					name: "//",
 					children: map[string]*node{
 						"a": {
@@ -161,14 +162,14 @@ func TestApply(t *testing.T) {
 							edges:              []edge{{to: g.node("//b"), probSum: probOne}},
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`Rename one`, func() {
+			t.Run(`Rename one`, func(t *ftt.Test) {
 				applyChanges([]fileChange{
 					{Path: "b", Path2: "c", Status: 'R'},
 				})
-				So(g.root, ShouldResemble, node{
+				assert.Loosely(t, g.root, should.Resemble(node{
 					name: "//",
 					children: map[string]*node{
 						"a": {
@@ -192,14 +193,14 @@ func TestApply(t *testing.T) {
 							edges:  []edge{{to: g.node("//b")}},
 						},
 					},
-				})
+				}))
 			})
 
-			Convey(`Remove one`, func() {
+			t.Run(`Remove one`, func(t *ftt.Test) {
 				applyChanges([]fileChange{
 					{Path: "b", Status: 'D'},
 				})
-				So(g.root, ShouldResemble, node{
+				assert.Loosely(t, g.root, should.Resemble(node{
 					name: "//",
 					children: map[string]*node{
 						"a": {
@@ -215,11 +216,11 @@ func TestApply(t *testing.T) {
 							edges:              []edge{{to: g.node("//a"), probSum: probOne}},
 						},
 					},
-				})
+				}))
 			})
 		})
 
-		Convey(`Great migration`, func() {
+		t.Run(`Great migration`, func(t *ftt.Test) {
 			addFiles := make([]fileChange, 1000)
 			for i := range addFiles {
 				addFiles[i] = fileChange{Path: fmt.Sprintf("%d", i), Status: 'A'}
@@ -238,8 +239,8 @@ func TestApply(t *testing.T) {
 
 			old54 := g.node("//54")
 			new54 := g.node("//new/54")
-			So(new54, ShouldNotBeNil)
-			So(new54.edges, ShouldResemble, []edge{{to: old54}})
+			assert.Loosely(t, new54, should.NotBeNil)
+			assert.Loosely(t, new54.edges, should.Resemble([]edge{{to: old54}}))
 		})
 	})
 }

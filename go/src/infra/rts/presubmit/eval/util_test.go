@@ -9,7 +9,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	evalpb "infra/rts/presubmit/eval/proto"
@@ -17,7 +19,7 @@ import (
 
 func TestPSURL(t *testing.T) {
 	t.Parallel()
-	Convey(`psURL`, t, func() {
+	ftt.Run(`psURL`, t, func(t *ftt.Test) {
 		patchSet := &evalpb.GerritPatchset{
 			Change: &evalpb.GerritChange{
 				Host:   "example.googlesource.com",
@@ -25,14 +27,14 @@ func TestPSURL(t *testing.T) {
 			},
 			Patchset: 4,
 		}
-		So(psURL(patchSet), ShouldEqual, "https://example.googlesource.com/c/123/4")
+		assert.Loosely(t, psURL(patchSet), should.Equal("https://example.googlesource.com/c/123/4"))
 	})
 }
 
 func TestPrintResults(t *testing.T) {
 	t.Parallel()
 
-	Convey(`PrintResults`, t, func() {
+	ftt.Run(`PrintResults`, t, func(t *ftt.Test) {
 		r := &evalpb.Results{
 			TotalRejections:   100,
 			TotalTestFailures: 100,
@@ -58,7 +60,7 @@ func TestPrintResults(t *testing.T) {
 
 		buf := &bytes.Buffer{}
 		PrintResults(r, buf, 0)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings | TestRecall | Distance
 ----------------------------------------------
   0.00%      | 100.00% |   0.00%    |  0.000
@@ -66,10 +68,10 @@ ChangeRecall | Savings | TestRecall | Distance
 100.00%      |  50.00% | 100.00%    | 40.000
 
 based on 100 rejections, 100 test failures, 1 years 0 days 0 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 	})
 
-	Convey(`PrintResultsNoDuplicates`, t, func() {
+	ftt.Run(`PrintResultsNoDuplicates`, t, func(t *ftt.Test) {
 		r := &evalpb.Results{
 			TotalRejections:   100,
 			TotalTestFailures: 100,
@@ -107,7 +109,7 @@ based on 100 rejections, 100 test failures, 1 years 0 days 0 hours 0 minutes 0 s
 
 		buf := &bytes.Buffer{}
 		PrintResults(r, buf, 0)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings | TestRecall | Distance
 ----------------------------------------------
   0.00%      | 100.00% |   0.00%    |  0.000
@@ -116,14 +118,14 @@ ChangeRecall | Savings | TestRecall | Distance
 100.00%      |  50.00% |  90.00%    | 41.000
 
 based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 	})
 }
 
 func TestPrintSpecificResults(t *testing.T) {
 	t.Parallel()
 
-	Convey(`PrintSpecificResults`, t, func() {
+	ftt.Run(`PrintSpecificResults`, t, func(t *ftt.Test) {
 		r := &evalpb.Results{
 			TotalRejections:   100,
 			TotalTestFailures: 100,
@@ -149,7 +151,7 @@ func TestPrintSpecificResults(t *testing.T) {
 
 		buf := &bytes.Buffer{}
 		PrintSpecificResults(r, buf, 0, true, true)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings | TestRecall | Distance
 ----------------------------------------------
   0.00%      | 100.00% |   0.00%    |  0.000
@@ -157,11 +159,11 @@ ChangeRecall | Savings | TestRecall | Distance
 100.00%      |  50.00% | 100.00%    | 40.000
 
 based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 
 		buf = &bytes.Buffer{}
 		PrintSpecificResults(r, buf, 0, true, false)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings | TestRecall
 -----------------------------------
   0.00%      | 100.00% |   0.00%    
@@ -169,11 +171,11 @@ ChangeRecall | Savings | TestRecall
 100.00%      |  50.00% | 100.00%    
 
 based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 
 		buf = &bytes.Buffer{}
 		PrintSpecificResults(r, buf, 0, false, true)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings | Distance
 ---------------------------------
   0.00%      | 100.00% |  0.000
@@ -181,11 +183,11 @@ ChangeRecall | Savings | Distance
 100.00%      |  50.00% | 40.000
 
 based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 
 		buf = &bytes.Buffer{}
 		PrintSpecificResults(r, buf, 0, false, false)
-		So(buf.String(), ShouldEqual, `
+		assert.Loosely(t, buf.String(), should.Equal(`
 ChangeRecall | Savings
 ----------------------
   0.00%      | 100.00% 
@@ -193,6 +195,6 @@ ChangeRecall | Savings
 100.00%      |  50.00% 
 
 based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
-`[1:])
+`[1:]))
 	})
 }

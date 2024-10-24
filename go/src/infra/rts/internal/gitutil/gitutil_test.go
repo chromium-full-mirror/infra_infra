@@ -5,13 +5,14 @@
 package gitutil
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGit(t *testing.T) {
@@ -27,15 +28,15 @@ func TestGit(t *testing.T) {
 		t.Skipf("git not found: %s", err)
 	}
 
-	Convey(`Git`, t, func() {
+	ftt.Run(`Git`, t, func(t *ftt.Test) {
 		tmpd, err := ioutil.TempDir("", "filegraph_git")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		defer os.RemoveAll(tmpd)
 
 		git := func(context string) func(args ...string) string {
 			return func(args ...string) string {
 				out, err := Exec(context)(args...)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				return out
 			}
 		}
@@ -44,29 +45,29 @@ func TestGit(t *testing.T) {
 
 		fooPath := filepath.Join(tmpd, "foo")
 		err = ioutil.WriteFile(fooPath, []byte("hello"), 0777)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		// Run in fooBar context.
 		git(fooPath)("add", fooPath)
 		git(tmpd)("commit", "-a", "-m", "message")
 
 		out := git(fooPath)("status")
-		So(out, ShouldContainSubstring, "working tree clean")
+		assert.Loosely(t, out, should.ContainSubstring("working tree clean"))
 
 		repoDir, err := EnsureSameRepo(tmpd, fooPath)
-		So(err, ShouldBeNil)
-		So(repoDir, ShouldEqual, tmpd)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, repoDir, should.Equal(tmpd))
 	})
 }
 
 func TestChangedFiles(t *testing.T) {
 	t.Parallel()
-	Convey(`ChangedFiles`, t, func() {
-		Convey(`Works`, func() {
-			So(changedFiles("foo\nbar\n"), ShouldResemble, []string{"foo", "bar"})
+	ftt.Run(`ChangedFiles`, t, func(t *ftt.Test) {
+		t.Run(`Works`, func(t *ftt.Test) {
+			assert.Loosely(t, changedFiles("foo\nbar\n"), should.Resemble([]string{"foo", "bar"}))
 		})
-		Convey(`No files changed`, func() {
-			So(changedFiles("\n"), ShouldResemble, []string(nil))
+		t.Run(`No files changed`, func(t *ftt.Test) {
+			assert.Loosely(t, changedFiles("\n"), should.Resemble([]string(nil)))
 		})
 	})
 }

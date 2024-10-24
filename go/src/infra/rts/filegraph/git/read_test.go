@@ -9,13 +9,22 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/registry"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
+
+func init() {
+	registry.RegisterCmpOption(cmp.AllowUnexported(node{}))
+	registry.RegisterCmpOption(cmp.AllowUnexported(edge{}))
+}
 
 func TestRead(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Read`, t, func() {
+	ftt.Run(`Read`, t, func(t *ftt.Test) {
 		parseGraph := func(tokens ...string) *Graph {
 			g := &Graph{}
 			g.ensureInitialized()
@@ -25,11 +34,11 @@ func TestRead(t *testing.T) {
 				textMode: true,
 			}
 			err := r.readGraph(g)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return g
 		}
 
-		Convey(`Zero`, func() {
+		t.Run(`Zero`, func(t *ftt.Test) {
 			g := parseGraph(
 				"54", // header
 				"0",  // version
@@ -39,11 +48,11 @@ func TestRead(t *testing.T) {
 				"0",  // total number of edges
 				"0",  // number of root edges
 			)
-			So(g.Commit, ShouldResemble, "")
-			So(g.root, ShouldResemble, node{name: "//"})
+			assert.Loosely(t, g.Commit, should.BeBlank)
+			assert.Loosely(t, g.root, should.Resemble(node{name: "//"}))
 		})
 
-		Convey(`Two direct children`, func() {
+		t.Run(`Two direct children`, func(t *ftt.Test) {
 			g := parseGraph(
 				"54",       // header
 				"0",        // version
@@ -73,8 +82,8 @@ func TestRead(t *testing.T) {
 				"16777216", // probSum for foo->bar
 			)
 
-			So(g.Commit, ShouldResemble, "deadbeef")
-			So(g.root, ShouldResemble, node{
+			assert.Loosely(t, g.Commit, should.Match("deadbeef"))
+			assert.Loosely(t, g.root, should.Resemble(node{
 				name: "//",
 				children: map[string]*node{
 					"foo": {
@@ -98,10 +107,10 @@ func TestRead(t *testing.T) {
 						}},
 					},
 				},
-			})
+			}))
 		})
 
-		Convey(`Descendant name`, func() {
+		t.Run(`Descendant name`, func(t *ftt.Test) {
 			g := parseGraph(
 				"54",       // header
 				"0",        // version
@@ -125,8 +134,8 @@ func TestRead(t *testing.T) {
 				"0", // number of foo edges
 			)
 
-			So(g.Commit, ShouldResemble, "deadbeef")
-			So(g.root, ShouldResemble, node{
+			assert.Loosely(t, g.Commit, should.Match("deadbeef"))
+			assert.Loosely(t, g.root, should.Resemble(node{
 				name: "//",
 				children: map[string]*node{
 					"dir": {
@@ -141,7 +150,7 @@ func TestRead(t *testing.T) {
 						},
 					},
 				},
-			})
+			}))
 		})
 	})
 }

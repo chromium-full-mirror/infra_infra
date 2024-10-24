@@ -9,8 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/rts"
 	evalpb "infra/rts/presubmit/eval/proto"
 )
@@ -21,9 +22,9 @@ func TestPrintLostRejection(t *testing.T) {
 	assert := func(rej *evalpb.Rejection, expectedText string) {
 		buf := &bytes.Buffer{}
 		p := rejectionPrinter{printer: newPrinter(buf)}
-		So(p.rejection(rej, rts.Affectedness{Distance: 5}), ShouldBeNil)
+		assert.Loosely(t, p.rejection(rej, rts.Affectedness{Distance: 5}), should.BeNil)
 		expectedText = strings.Replace(expectedText, "\t", "  ", -1)
-		So(buf.String(), ShouldEqual, expectedText)
+		assert.Loosely(t, buf.String(), should.Equal(expectedText))
 	}
 
 	ps1 := &evalpb.GerritPatchset{
@@ -43,8 +44,8 @@ func TestPrintLostRejection(t *testing.T) {
 		Patchset: 4,
 	}
 
-	Convey(`PrintLostRejection`, t, func() {
-		Convey(`Basic`, func() {
+	ftt.Run(`PrintLostRejection`, t, func(t *ftt.Test) {
+		t.Run(`Basic`, func(t *ftt.Test) {
 			rej := &evalpb.Rejection{
 				Patchsets:          []*evalpb.GerritPatchset{ps1},
 				FailedTestVariants: []*evalpb.TestVariant{{Id: "test1"}},
@@ -60,7 +61,7 @@ func TestPrintLostRejection(t *testing.T) {
 `)
 		})
 
-		Convey(`With file name`, func() {
+		t.Run(`With file name`, func(t *ftt.Test) {
 			rej := &evalpb.Rejection{
 				Patchsets: []*evalpb.GerritPatchset{ps1},
 				FailedTestVariants: []*evalpb.TestVariant{{
@@ -79,7 +80,7 @@ func TestPrintLostRejection(t *testing.T) {
 `)
 		})
 
-		Convey(`Multiple variants`, func() {
+		t.Run(`Multiple variants`, func(t *ftt.Test) {
 			rej := &evalpb.Rejection{
 				Patchsets: []*evalpb.GerritPatchset{ps1},
 				FailedTestVariants: []*evalpb.TestVariant{
@@ -112,7 +113,7 @@ func TestPrintLostRejection(t *testing.T) {
 `)
 		})
 
-		Convey(`Two patchsets`, func() {
+		t.Run(`Two patchsets`, func(t *ftt.Test) {
 			rej := &evalpb.Rejection{
 				Patchsets:          []*evalpb.GerritPatchset{ps1, ps2},
 				FailedTestVariants: []*evalpb.TestVariant{{Id: "test1"}},

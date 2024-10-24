@@ -11,34 +11,36 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGraphCache(t *testing.T) {
 	t.Parallel()
 
-	Convey(`GraphCache`, t, func() {
+	ftt.Run(`GraphCache`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx = memlogger.Use(ctx)
 
-		Convey(`empty file is cache-miss`, func() {
+		t.Run(`empty file is cache-miss`, func(t *ftt.Test) {
 			tmpd, err := ioutil.TempDir("", "filegraph_git")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tmpd)
 
 			var cache graphCache
 			cache.File, err = os.Create(filepath.Join(tmpd, "empty"))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer cache.Close()
 
 			_, err = cache.tryReading(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			log := logging.Get(ctx).(*memlogger.MemLogger)
-			So(log, memlogger.ShouldHaveLog, logging.Info, "populating cache")
+			assert.Loosely(t, log, convey.Adapt(memlogger.ShouldHaveLog)(logging.Info, "populating cache"))
 		})
 	})
 }

@@ -9,17 +9,20 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"golang.org/x/sync/errgroup"
 
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/convey"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	evalpb "infra/rts/presubmit/eval/proto"
 )
 
 func TestReadDurationData(t *testing.T) {
 	t.Parallel()
-	Convey("ReadDurationData", t, func() {
+	ftt.Run("ReadDurationData", t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		recordC := make(chan *evalpb.TestDurationRecord)
@@ -36,10 +39,10 @@ func TestReadDurationData(t *testing.T) {
 			}
 			return nil
 		})
-		So(eg.Wait(), ShouldBeNil)
+		assert.Loosely(t, eg.Wait(), should.BeNil)
 
-		So(records, ShouldHaveLength, 2)
-		So(records[0], ShouldResembleProtoJSON, `{
+		assert.Loosely(t, records, should.HaveLength(2))
+		assert.Loosely(t, records[0], convey.Adapt(ShouldResembleProtoJSON)(`{
 			"patchsets": [
 				{
 					"change": {
@@ -86,8 +89,8 @@ func TestReadDurationData(t *testing.T) {
 					"duration": "1.575000s"
 				}
 			]
-		}`)
-		So(records[1], ShouldResembleProtoJSON, `{
+		}`))
+		assert.Loosely(t, records[1], convey.Adapt(ShouldResembleProtoJSON)(`{
 			"patchsets": [
 				{
 					"change": {
@@ -118,6 +121,6 @@ func TestReadDurationData(t *testing.T) {
 					"duration": "2.096000s"
 				}
 			]
-		}`)
+		}`))
 	})
 }

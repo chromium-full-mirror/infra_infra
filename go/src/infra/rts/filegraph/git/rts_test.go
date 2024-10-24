@@ -9,17 +9,20 @@ import (
 	"math"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"infra/rts"
 	"infra/rts/presubmit/eval"
 	evalpb "infra/rts/presubmit/eval/proto"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestEvalStrategy(t *testing.T) {
 	t.Parallel()
 
-	Convey(`apply`, t, func() {
+	ftt.Run(`apply`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		s := &SelectionStrategy{Graph: &Graph{}}
@@ -27,7 +30,7 @@ func TestEvalStrategy(t *testing.T) {
 
 		applyChanges := func(changes []fileChange) {
 			err := s.Graph.apply(changes, 100)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		}
 
 		applyChanges([]fileChange{
@@ -46,20 +49,22 @@ func TestEvalStrategy(t *testing.T) {
 		})
 
 		assertAffectedness := func(in eval.Input, expectedDistance float64) {
+			t.Helper()
 			out := &eval.Output{
 				TestVariantAffectedness: make([]rts.Affectedness, 1),
 			}
 			err := s.SelectEval(ctx, in, out)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil, truth.LineContext())
 			af := out.TestVariantAffectedness[0]
 			if math.IsInf(expectedDistance, 1) {
-				So(math.IsInf(af.Distance, 1), ShouldBeTrue)
+				assert.Loosely(t, math.IsInf(af.Distance, 1), should.BeTrue, truth.LineContext())
 			} else {
-				So(af.Distance, ShouldAlmostEqual, expectedDistance)
+				assert.Loosely(t, af.Distance, should.AlmostEqual(
+					expectedDistance, 0.00000000000001), truth.LineContext())
 			}
 		}
 
-		Convey(`a -> b`, func() {
+		t.Run(`a -> b`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//a"},
@@ -71,7 +76,7 @@ func TestEvalStrategy(t *testing.T) {
 			assertAffectedness(in, -math.Log(0.5))
 		})
 
-		Convey(`a -> unrechable`, func() {
+		t.Run(`a -> unrechable`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//a"},
@@ -83,7 +88,7 @@ func TestEvalStrategy(t *testing.T) {
 			assertAffectedness(in, math.Inf(1))
 		})
 
-		Convey(`Unknown test`, func() {
+		t.Run(`Unknown test`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//a"},
@@ -95,7 +100,7 @@ func TestEvalStrategy(t *testing.T) {
 			assertAffectedness(in, 0)
 		})
 
-		Convey(`New test`, func() {
+		t.Run(`New test`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//new_test"},
@@ -107,7 +112,7 @@ func TestEvalStrategy(t *testing.T) {
 			assertAffectedness(in, 0)
 		})
 
-		Convey(`One of tests is unknown`, func() {
+		t.Run(`One of tests is unknown`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//a"},
@@ -121,12 +126,14 @@ func TestEvalStrategy(t *testing.T) {
 				TestVariantAffectedness: make([]rts.Affectedness, 2),
 			}
 			err := s.SelectEval(ctx, in, out)
-			So(err, ShouldBeNil)
-			So(out.TestVariantAffectedness[0].Distance, ShouldAlmostEqual, -math.Log(0.5))
-			So(out.TestVariantAffectedness[1].Distance, ShouldEqual, 0)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, out.TestVariantAffectedness[0].Distance, should.AlmostEqual(
+				-math.Log(0.5), 0.00000000000001,
+			))
+			assert.Loosely(t, out.TestVariantAffectedness[1].Distance, should.BeZero)
 		})
 
-		Convey(`Test without a file name`, func() {
+		t.Run(`Test without a file name`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//a"},
@@ -138,7 +145,7 @@ func TestEvalStrategy(t *testing.T) {
 			assertAffectedness(in, 0)
 		})
 
-		Convey(`Unknown changed file`, func() {
+		t.Run(`Unknown changed file`, func(t *ftt.Test) {
 			in := eval.Input{
 				ChangedFiles: []*evalpb.SourceFile{
 					{Path: "//unknown"},

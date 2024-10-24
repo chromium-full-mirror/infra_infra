@@ -9,39 +9,41 @@ import (
 	"bytes"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestReadWrite(t *testing.T) {
 	t.Parallel()
 
-	Convey(`ReadWrite`, t, func() {
+	ftt.Run(`ReadWrite`, t, func(t *ftt.Test) {
 		test := func(g *Graph) {
 			g.ensureInitialized()
 
 			buf := &bytes.Buffer{}
 			w := writer{w: buf}
 			err := w.writeGraph(g)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			r := reader{r: bufio.NewReader(buf)}
 			g2 := &Graph{}
 			g2.ensureInitialized()
 			err = r.readGraph(g2)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			g2.root.visit(func(n *node) bool {
 				n.copyEdgesOnAppend = false
 				return true
 			})
-			So(g, ShouldResemble, g2)
+			assert.Loosely(t, g, should.Resemble(g2))
 		}
 
-		Convey(`Zero`, func() {
+		t.Run(`Zero`, func(t *ftt.Test) {
 			test(&Graph{})
 		})
 
-		Convey(`Two direct children`, func() {
+		t.Run(`Two direct children`, func(t *ftt.Test) {
 			g := &Graph{
 				Commit: "deadbeef",
 				root:   node{name: "//"},

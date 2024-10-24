@@ -9,23 +9,25 @@ import (
 	"sort"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"infra/rts/filegraph"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestGraph(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Graph`, t, func() {
-		Convey(`Root of zero value`, func() {
+	ftt.Run(`Graph`, t, func(t *ftt.Test) {
+		t.Run(`Root of zero value`, func(t *ftt.Test) {
 			g := &Graph{}
 			root := g.Node("//")
-			So(root, ShouldNotBeNil)
-			So(root.Name(), ShouldEqual, "//")
+			assert.Loosely(t, root, should.NotBeNil)
+			assert.Loosely(t, root.Name(), should.Equal("//"))
 		})
 
-		Convey(`node()`, func() {
+		t.Run(`node()`, func(t *ftt.Test) {
 			g := &Graph{
 				root: node{
 					children: map[string]*node{
@@ -38,63 +40,63 @@ func TestGraph(t *testing.T) {
 				},
 			}
 
-			Convey(`//`, func() {
-				So(g.node("//"), ShouldEqual, &g.root)
+			t.Run(`//`, func(t *ftt.Test) {
+				assert.Loosely(t, g.node("//"), should.Equal(&g.root))
 			})
 
-			Convey(`//dir`, func() {
-				So(g.node("//dir"), ShouldEqual, g.root.children["dir"])
+			t.Run(`//dir`, func(t *ftt.Test) {
+				assert.Loosely(t, g.node("//dir"), should.Equal(g.root.children["dir"]))
 			})
-			Convey(`//dir/foo`, func() {
-				So(g.node("//dir/foo"), ShouldEqual, g.root.children["dir"].children["foo"])
+			t.Run(`//dir/foo`, func(t *ftt.Test) {
+				assert.Loosely(t, g.node("//dir/foo"), should.Equal(g.root.children["dir"].children["foo"]))
 			})
-			Convey(`//dir/bar`, func() {
-				So(g.node("//dir/bar"), ShouldBeNil)
+			t.Run(`//dir/bar`, func(t *ftt.Test) {
+				assert.Loosely(t, g.node("//dir/bar"), should.BeNil)
 			})
 		})
 
-		Convey(`ensureNode`, func() {
+		t.Run(`ensureNode`, func(t *ftt.Test) {
 			g := &Graph{}
-			Convey("//foo/bar", func() {
+			t.Run("//foo/bar", func(t *ftt.Test) {
 				bar := g.ensureNode("//foo/bar")
-				So(bar, ShouldNotBeNil)
-				So(bar.name, ShouldEqual, "//foo/bar")
-				So(g.node("//foo/bar"), ShouldEqual, bar)
+				assert.Loosely(t, bar, should.NotBeNil)
+				assert.Loosely(t, bar.name, should.Equal("//foo/bar"))
+				assert.Loosely(t, g.node("//foo/bar"), should.Equal(bar))
 
 				foo := g.node("//foo")
-				So(foo, ShouldNotBeNil)
-				So(foo.name, ShouldEqual, "//foo")
-				So(foo.children["bar"], ShouldEqual, bar)
+				assert.Loosely(t, foo, should.NotBeNil)
+				assert.Loosely(t, foo.name, should.Equal("//foo"))
+				assert.Loosely(t, foo.children["bar"], should.Equal(bar))
 			})
 
-			Convey("already exists", func() {
-				So(g.ensureNode("//foo/bar"), ShouldEqual, g.ensureNode("//foo/bar"))
+			t.Run("already exists", func(t *ftt.Test) {
+				assert.Loosely(t, g.ensureNode("//foo/bar"), should.Equal(g.ensureNode("//foo/bar")))
 			})
 
-			Convey("//", func() {
+			t.Run("//", func(t *ftt.Test) {
 				root := g.ensureNode("//")
-				So(root, ShouldEqual, &g.root)
+				assert.Loosely(t, root, should.Equal(&g.root))
 			})
 		})
 
-		Convey(`sortedChildKeys()`, func() {
+		t.Run(`sortedChildKeys()`, func(t *ftt.Test) {
 			node := &node{
 				children: map[string]*node{
 					"foo": {},
 					"bar": {},
 				},
 			}
-			So(node.sortedChildKeys(), ShouldResemble, []string{"bar", "foo"})
+			assert.Loosely(t, node.sortedChildKeys(), should.Resemble([]string{"bar", "foo"}))
 		})
 
-		Convey(`Node(non-existent) returns nil`, func() {
+		t.Run(`Node(non-existent) returns nil`, func(t *ftt.Test) {
 			g := &Graph{}
 			// Do not use ShouldBeNil - it checks for interface{} with nil inside,
 			// and we need exact nil.
-			So(g.Node("//a/b") == nil, ShouldBeTrue)
+			assert.Loosely(t, g.Node("//a/b") == nil, should.BeTrue)
 		})
 
-		Convey(`EdgeReader`, func() {
+		t.Run(`EdgeReader`, func(t *ftt.Test) {
 			root := &node{name: "//"}
 			bar := &node{parent: root, name: "//foo", probSumDenominator: 4}
 			foo := &node{parent: root, name: "//bar", probSumDenominator: 2}
@@ -116,56 +118,59 @@ func TestGraph(t *testing.T) {
 			}
 
 			r := &EdgeReader{}
-			Convey(`Works`, func() {
+			t.Run(`Works`, func(t *ftt.Test) {
 				r.ReadEdges(foo, callback)
-				So(actual, ShouldHaveLength, 1)
-				So(actual[0].to, ShouldEqual, bar)
-				So(actual[0].distance, ShouldAlmostEqual, -math.Log(0.25))
+				assert.Loosely(t, actual, should.HaveLength(1))
+				assert.Loosely(t, actual[0].to, should.Equal(bar))
+				assert.Loosely(t, actual[0].distance, should.AlmostEqual(
+					-math.Log(0.25), 0.00000000000001))
 			})
-			Convey(`Double ChangeLogFactor`, func() {
+			t.Run(`Double ChangeLogFactor`, func(t *ftt.Test) {
 				r.ChangeLogDistanceFactor = 2
 				r.ReadEdges(foo, callback)
-				So(actual, ShouldHaveLength, 1)
-				So(actual[0].to, ShouldEqual, bar)
-				So(actual[0].distance, ShouldAlmostEqual, -2*math.Log(0.25))
+				assert.Loosely(t, actual, should.HaveLength(1))
+				assert.Loosely(t, actual[0].to, should.Equal(bar))
+				assert.Loosely(t, actual[0].distance, should.AlmostEqual(
+					-2*math.Log(0.25), 0.00000000000001))
 			})
-			Convey(`File structure distance only`, func() {
+			t.Run(`File structure distance only`, func(t *ftt.Test) {
 				r.FileStructureDistanceFactor = 1
-				Convey(`parent`, func() {
+				t.Run(`parent`, func(t *ftt.Test) {
 					r.ReadEdges(foo, callback)
-					So(actual, ShouldResemble, []outgoingEdge{
+					assert.Loosely(t, actual, should.Resemble([]outgoingEdge{
 						{to: root, distance: 1},
-					})
+					}))
 				})
-				Convey(`children`, func() {
+				t.Run(`children`, func(t *ftt.Test) {
 					r.ReadEdges(root, callback)
 					sort.Slice(actual, func(i, j int) bool {
 						return actual[i].to == foo
 					})
-					So(actual, ShouldResemble, []outgoingEdge{
+					assert.Loosely(t, actual, should.Resemble([]outgoingEdge{
 						{to: foo, distance: 1},
 						{to: bar, distance: 1},
-					})
+					}))
 				})
 			})
-			Convey(`Both distances`, func() {
+			t.Run(`Both distances`, func(t *ftt.Test) {
 				r.ChangeLogDistanceFactor = 1
 				r.FileStructureDistanceFactor = 1
 				r.ReadEdges(foo, callback)
-				So(actual, ShouldHaveLength, 2)
-				So(actual[0].to, ShouldEqual, bar)
-				So(actual[0].distance, ShouldAlmostEqual, -math.Log(0.25))
-				So(actual[1].to, ShouldEqual, root)
-				So(actual[1].distance, ShouldEqual, 1)
+				assert.Loosely(t, actual, should.HaveLength(2))
+				assert.Loosely(t, actual[0].to, should.Equal(bar))
+				assert.Loosely(t, actual[0].distance, should.AlmostEqual(
+					-math.Log(0.25), 0.00000000000001))
+				assert.Loosely(t, actual[1].to, should.Equal(root))
+				assert.Loosely(t, actual[1].distance, should.Equal(1.0))
 			})
 		})
 
-		Convey(`splitName`, func() {
-			Convey("//foo/bar.cc", func() {
-				So(splitName("//foo/bar.cc"), ShouldResemble, []string{"foo", "bar.cc"})
+		t.Run(`splitName`, func(t *ftt.Test) {
+			t.Run("//foo/bar.cc", func(t *ftt.Test) {
+				assert.Loosely(t, splitName("//foo/bar.cc"), should.Resemble([]string{"foo", "bar.cc"}))
 			})
-			Convey("//", func() {
-				So(splitName("//"), ShouldResemble, []string(nil))
+			t.Run("//", func(t *ftt.Test) {
+				assert.Loosely(t, splitName("//"), should.Resemble([]string(nil)))
 			})
 		})
 	})
