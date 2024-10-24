@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/flag/stringmapflag"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestFlagParse(t *testing.T) {
@@ -28,11 +28,11 @@ func TestFlagParse(t *testing.T) {
 		}},
 	}
 
-	Convey(`Test bad flag parsing`, t, func() {
+	ftt.Run(`Test bad flag parsing`, t, func(t *ftt.Test) {
 		for _, tc := range cases {
 			tc := tc
-			Convey(tc.name, func() {
-				So(tc.input.parseFlags(), ShouldErrLike, tc.expect)
+			t.Run(tc.name, func(t *ftt.Test) {
+				assert.Loosely(t, tc.input.parseFlags(), should.ErrLike(tc.expect))
 			})
 		}
 	})
@@ -62,12 +62,12 @@ func TestRepoInputParsing(t *testing.T) {
 			"foo.bar/repo": "f00b45"}},
 	}
 
-	Convey(`Test bad parseRepoInput`, t, func() {
+	ftt.Run(`Test bad parseRepoInput`, t, func(t *ftt.Test) {
 		for _, tc := range badCases {
 			tc := tc
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				_, err := parseRepoInput(tc.input)
-				So(err, ShouldErrLike, tc.expect)
+				assert.Loosely(t, err, should.ErrLike(tc.expect))
 			})
 		}
 	})
@@ -98,13 +98,13 @@ func TestRepoInputParsing(t *testing.T) {
 			map[string]fetchSpec{"foo.bar/repo": {"FETCH_HEAD", "HEAD"}}},
 	}
 
-	Convey(`Test good parseRepoInput`, t, func() {
+	ftt.Run(`Test good parseRepoInput`, t, func(t *ftt.Test) {
 		for _, tc := range goodCases {
 			tc := tc
-			Convey(tc.name, func() {
+			t.Run(tc.name, func(t *ftt.Test) {
 				ret, err := parseRepoInput(tc.input)
-				So(err, ShouldBeNil)
-				So(ret, ShouldResemble, tc.expect)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, ret, should.Resemble(tc.expect))
 			})
 		}
 	})
