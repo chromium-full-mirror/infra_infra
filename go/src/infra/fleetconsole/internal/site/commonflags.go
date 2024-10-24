@@ -75,11 +75,11 @@ func (fl *CommonFlags) Host() (string, error) {
 	case fl.address != "":
 		return fl.address, nil
 	case fl.dev && !fl.local:
-		return "", errors.New("dev service not yet implemented")
+		return "fleet-console-dev-1037063051440.us-central1.run.app", nil
 	case !fl.dev && fl.local:
 		return "localhost:8800", nil
 	case !fl.dev && !fl.local:
-		return "", errors.New("prod service not yet implemented")
+		return "fleet-console-prod-1012156191214.us-central1.run.app", nil
 	default:
 		return "", errors.New("-dev and -local are alternatives")
 	}
