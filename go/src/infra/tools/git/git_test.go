@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,13 +16,14 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/git/state"
 )
@@ -109,9 +109,9 @@ func TestGitCommand(t *testing.T) {
 		t.Fatalf("failed to get self executable: %s", err)
 	}
 
-	Convey(`Using a test setup for "Git" command`, t, func() {
+	ftt.Run(`Using a test setup for "Git" command`, t, func(t *ftt.Test) {
 		tdir, err := ioutil.TempDir(t.TempDir(), "git_command")
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		var in testAgentRequest
 		var out testAgentResponse
@@ -180,10 +180,10 @@ func TestGitCommand(t *testing.T) {
 
 		c := baseTestContext()
 
-		Convey(`Testing GitCommandDirect`, func() {
+		t.Run(`Testing GitCommandDirect`, func(t *ftt.Test) {
 			args = []string{"status"}
 
-			Convey(`Can perform a basic execution`, func() {
+			t.Run(`Can perform a basic execution`, func(t *ftt.Test) {
 				var stdin = []byte("o hai there!")
 
 				in.ReturnCode = 123
@@ -195,10 +195,10 @@ func TestGitCommand(t *testing.T) {
 				gc.Stdin = bytes.NewReader(stdin)
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, in.ReturnCode)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.Equal(in.ReturnCode))
 
-				So(out, ShouldResemble, testAgentResponse{
+				assert.Loosely(t, out, should.Resemble(testAgentResponse{
 					Args: []string{"status"},
 					Env: prepareAgentENV(
 						"FOO=BAR",
@@ -207,9 +207,10 @@ func TestGitCommand(t *testing.T) {
 						encodeStateENV(gc.State),
 					),
 					Stdin: stdin,
-				})
+				}))
 			})
-			Convey(`Won't override environments`, func() {
+
+			t.Run(`Won't override environments`, func(t *ftt.Test) {
 				var stdin = []byte("o hai there!")
 
 				in.ReturnCode = 123
@@ -221,10 +222,10 @@ func TestGitCommand(t *testing.T) {
 				gc.Stdin = bytes.NewReader(stdin)
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, in.ReturnCode)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.Equal(in.ReturnCode))
 
-				So(out, ShouldResemble, testAgentResponse{
+				assert.Loosely(t, out, should.Resemble(testAgentResponse{
 					Args: []string{"status"},
 					Env: prepareAgentENV(
 						"GIT_HTTP_LOW_SPEED_LIMIT=0",
@@ -232,14 +233,14 @@ func TestGitCommand(t *testing.T) {
 						encodeStateENV(gc.State),
 					),
 					Stdin: stdin,
-				})
+				}))
 			})
 		})
 
-		Convey(`Testing GitCommandRetry.`, func() {
+		t.Run(`Testing GitCommandRetry.`, func(t *ftt.Test) {
 			args = []string{"clone", "<repo>"}
 
-			Convey(`Can perform a basic execution`, func() {
+			t.Run(`Can perform a basic execution`, func(t *ftt.Test) {
 				var stdin = []byte("o hai there!")
 				var stdout, stderr bytes.Buffer
 
@@ -256,13 +257,13 @@ func TestGitCommand(t *testing.T) {
 				gc.Stderr = &stderr
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, in.ReturnCode)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.Equal(in.ReturnCode))
 
 				st := gc.State
 				st.Retrying = true
 
-				So(out, ShouldResemble, testAgentResponse{
+				assert.Loosely(t, out, should.Resemble(testAgentResponse{
 					Args: []string{"clone", "<repo>"},
 					Env: prepareAgentENV(
 						"FOO=BAR",
@@ -271,19 +272,19 @@ func TestGitCommand(t *testing.T) {
 						encodeStateENV(st),
 					),
 					Stdin: stdin,
-				})
-				So(stdout.Bytes(), ShouldResemble, in.Stdout)
-				So(stderr.Bytes(), ShouldResemble, in.Stderr)
+				}))
+				assert.Loosely(t, stdout.Bytes(), should.Resemble(in.Stdout))
+				assert.Loosely(t, stderr.Bytes(), should.Resemble(in.Stderr))
 			})
 
-			Convey(`Will fail if Git target does not exist`, func() {
+			t.Run(`Will fail if Git target does not exist`, func(t *ftt.Test) {
 				gc.State.GitPath = filepath.Join(tdir, "nonexist")
 
 				_, err := runAgent(c)
-				So(err, ShouldNotBeNil)
+				assert.Loosely(t, err, should.NotBeNil)
 			})
 
-			Convey(`When configured with a retry regexp`, func() {
+			t.Run(`With a retry regexp`, func(t *ftt.Test) {
 				const numRetries = 10
 				counter := 0
 				var onNext func()
@@ -299,7 +300,7 @@ func TestGitCommand(t *testing.T) {
 					{"stdout", &in.Stdout},
 					{"stderr", &in.Stderr},
 				} {
-					Convey(fmt.Sprintf(`When configured to emit that regexp to %s.`, tc.name), func() {
+					t.Run(tc.name, func(t *ftt.Test) {
 						*tc.installTo = []byte(strings.Join([]string{
 							"nothing to see here",
 							"splitting: foo bar",
@@ -308,33 +309,33 @@ func TestGitCommand(t *testing.T) {
 							"tail",
 						}, "\n"))
 
-						Convey(`Will not retry if the process returns zero.`, func() {
+						t.Run(`no retry on zero.`, func(t *ftt.Test) {
 							rc, err := runAgent(c)
-							So(err, ShouldBeNil)
-							So(rc, ShouldEqual, in.ReturnCode)
-							So(counter, ShouldEqual, 0)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+							assert.Loosely(t, counter, should.BeZero)
 						})
 
-						Convey(`Will not retry if already retrying.`, func() {
+						t.Run(`no nested retry.`, func(t *ftt.Test) {
 							gc.State.Retrying = true
 							in.ReturnCode = 42
 
 							rc, err := runAgent(c)
-							So(err, ShouldBeNil)
-							So(rc, ShouldEqual, in.ReturnCode)
-							So(counter, ShouldEqual, 0)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+							assert.Loosely(t, counter, should.BeZero)
 						})
 
-						Convey(`Will retry if the process returns non-zero.`, func() {
+						t.Run(`retry on non-zero.`, func(t *ftt.Test) {
 							in.ReturnCode = 42
 
 							rc, err := runAgent(c)
-							So(err, ShouldBeNil)
-							So(rc, ShouldEqual, in.ReturnCode)
-							So(counter, ShouldEqual, numRetries+1)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+							assert.Loosely(t, counter, should.Equal(numRetries+1))
 						})
 
-						Convey(`Will stop retrying if a subsequent attempt returns zero.`, func() {
+						t.Run(`stops retry on zero.`, func(t *ftt.Test) {
 							in.ReturnCode = 42
 							onNext = func() {
 								if counter == numRetries-1 {
@@ -345,12 +346,12 @@ func TestGitCommand(t *testing.T) {
 							}
 
 							rc, err := runAgent(c)
-							So(err, ShouldBeNil)
-							So(rc, ShouldEqual, 0)
-							So(counter, ShouldEqual, numRetries-1)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.BeZero)
+							assert.Loosely(t, counter, should.Equal(numRetries-1))
 						})
 
-						Convey(`Will stop retrying if a subsequent does not include a retry string.`, func() {
+						t.Run(`stops retry on no match.`, func(t *ftt.Test) {
 							in.ReturnCode = 42
 							onNext = func() {
 								if counter == numRetries-1 {
@@ -362,41 +363,41 @@ func TestGitCommand(t *testing.T) {
 							}
 
 							rc, err := runAgent(c)
-							So(err, ShouldBeNil)
-							So(rc, ShouldEqual, in.ReturnCode)
-							So(counter, ShouldEqual, numRetries-1)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+							assert.Loosely(t, counter, should.Equal(numRetries-1))
 						})
-					})
 
-					Convey(fmt.Sprintf(`Will not retry if that regexp is not encountered (%s).`, tc.name), func() {
-						in.ReturnCode = 42
-						*tc.installTo = []byte(strings.Join([]string{
-							"nothing to see here",
-							"splitting: foo bar",
-							"baz end split",
-							"tail",
-						}, "\n"))
+						t.Run(`no retry on non-match`, func(t *ftt.Test) {
+							in.ReturnCode = 42
+							*tc.installTo = []byte(strings.Join([]string{
+								"nothing to see here",
+								"splitting: foo bar",
+								"baz end split",
+								"tail",
+							}, "\n"))
 
-						rc, err := runAgent(c)
-						So(err, ShouldBeNil)
-						So(rc, ShouldEqual, in.ReturnCode)
-						So(counter, ShouldEqual, 0)
+							rc, err := runAgent(c)
+							assert.Loosely(t, err, should.BeNil)
+							assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+							assert.Loosely(t, counter, should.BeZero)
+						})
 					})
 				}
 
-				Convey(`Will retry if the regexp is encountered on both STDOUT and STDERR.`, func() {
+				t.Run(`Will retry if the regexp is encountered on both STDOUT and STDERR.`, func(t *ftt.Test) {
 					in.ReturnCode = 42
 					in.Stdout = []byte("ohai there foo, how are bar and baz?")
 					in.Stderr = []byte("there once was a dog named foo, who passed the bar a bazillion times.")
 
 					rc, err := runAgent(c)
-					So(err, ShouldBeNil)
-					So(rc, ShouldEqual, in.ReturnCode)
-					So(counter, ShouldEqual, 11)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+					assert.Loosely(t, counter, should.Equal(11))
 				})
 			})
 
-			Convey(`Can be terminated by cancelling the Context.`, func() {
+			t.Run(`Can be terminated by cancelling the Context.`, func(t *ftt.Test) {
 				c, cancelFunc := context.WithCancel(c)
 				defer cancelFunc()
 
@@ -423,43 +424,43 @@ func TestGitCommand(t *testing.T) {
 				}
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldNotEqual, 0)
-				So(out.Incomplete, ShouldBeTrue)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.NotEqual(0))
+				assert.Loosely(t, out.Incomplete, should.BeTrue)
 			})
 		})
 
-		Convey(`Testing GitCommandAugmentVersion`, func() {
+		t.Run(`Testing GitCommandAugmentVersion`, func(t *ftt.Test) {
 			args = []string{"version"}
 
 			var stdout bytes.Buffer
 			gc.Stdout = &stdout
 
-			Convey(`If the Agent emits a single line, will augment it with our version.`, func() {
+			t.Run(`If the Agent emits a single line, will augment it with our version.`, func(t *ftt.Test) {
 				in.Stdout = []byte("foo\n")
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, 0)
-				So(out.Args, ShouldResemble, args)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.BeZero)
+				assert.Loosely(t, out.Args, should.Resemble(args))
 
 				v := stdout.String()
-				So(v, ShouldStartWith, "foo")
-				So(v, ShouldContainSubstring, "/ Infra wrapper")
-				So(v, ShouldEndWith, "\n")
+				assert.Loosely(t, v, should.HavePrefix("foo"))
+				assert.Loosely(t, v, should.ContainSubstring("/ Infra wrapper"))
+				assert.Loosely(t, v, should.HaveSuffix("\n"))
 			})
 
-			Convey(`If the Agent emits no newline, will not augment anything.`, func() {
+			t.Run(`If the Agent emits no newline, will not augment anything.`, func(t *ftt.Test) {
 				in.Stdout = []byte("foo")
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, 0)
-				So(stdout.Bytes(), ShouldResemble, in.Stdout)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.BeZero)
+				assert.Loosely(t, stdout.Bytes(), should.Resemble(in.Stdout))
 			})
 		})
 
-		Convey(`Testing "clone" subcommand directory deletion`, func() {
+		t.Run(`Testing "clone" subcommand directory deletion`, func(t *ftt.Test) {
 			dest := filepath.Join(tdir, "destination")
 			args = []string{"clone", "https://foo.example.com/something.git", dest}
 
@@ -480,32 +481,32 @@ func TestGitCommand(t *testing.T) {
 			gc.Retry = func() retry.Iterator { return &countingRetryIterator{&counter, numRetries, &onNext} }
 			in.Stdout = []byte("transient")
 
-			Convey(`Can successfully execute the command.`, func() {
+			t.Run(`Can successfully execute the command.`, func(t *ftt.Test) {
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, 0)
-				So(out.Args, ShouldResemble, args)
-				So(counter, ShouldEqual, 0)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.BeZero)
+				assert.Loosely(t, out.Args, should.Resemble(args))
+				assert.Loosely(t, counter, should.BeZero)
 
 				// After all of the retries, the path should exist.
-				So(pathExists(dest), ShouldBeTrue)
+				assert.Loosely(t, pathExists(dest), should.BeTrue)
 			})
 
-			Convey(`If the command fails, will recreate and retry, deleting the directory in between.`, func() {
+			t.Run(`If the command fails, will recreate and retry, deleting the directory in between.`, func(t *ftt.Test) {
 				in.ReturnCode = 1
 
-				Convey(`Relative directory`, func() {
+				t.Run(`Relative directory`, func(t *ftt.Test) {
 					rc, err := runAgent(c)
-					So(err, ShouldBeNil)
-					So(rc, ShouldEqual, in.ReturnCode)
-					So(out.Args, ShouldResemble, args)
-					So(counter, ShouldEqual, numRetries+1)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+					assert.Loosely(t, out.Args, should.Resemble(args))
+					assert.Loosely(t, counter, should.Equal(numRetries+1))
 
 					// After all of the retries, the path should still exist.
-					So(pathExists(dest), ShouldBeTrue)
+					assert.Loosely(t, pathExists(dest), should.BeTrue)
 				})
 
-				Convey(`Honors the "-C" Git flag`, func() {
+				t.Run(`Honors the "-C" Git flag`, func(t *ftt.Test) {
 					// Using "dest", so no need to update agent arguments.
 					args = []string{
 						"-C", filepath.Dir(dest),
@@ -513,17 +514,17 @@ func TestGitCommand(t *testing.T) {
 					}
 
 					rc, err := runAgent(c)
-					So(err, ShouldBeNil)
-					So(rc, ShouldEqual, in.ReturnCode)
-					So(out.Args, ShouldResemble, args)
-					So(counter, ShouldEqual, numRetries+1)
+					assert.Loosely(t, err, should.BeNil)
+					assert.Loosely(t, rc, should.Equal(in.ReturnCode))
+					assert.Loosely(t, out.Args, should.Resemble(args))
+					assert.Loosely(t, counter, should.Equal(numRetries+1))
 
 					// After all of the retries, the path should still exist.
-					So(pathExists(dest), ShouldBeTrue)
+					assert.Loosely(t, pathExists(dest), should.BeTrue)
 				})
 			})
 
-			Convey(`If the command permanently fails, the diectory will remain.`, func() {
+			t.Run(`If the command permanently fails, the diectory will remain.`, func(t *ftt.Test) {
 				in.ReturnCode = 1
 
 				onNext = func() {
@@ -536,35 +537,35 @@ func TestGitCommand(t *testing.T) {
 				}
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, 2)
-				So(out.Args, ShouldResemble, args)
-				So(counter, ShouldEqual, numRetries-1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.Equal(2))
+				assert.Loosely(t, out.Args, should.Resemble(args))
+				assert.Loosely(t, counter, should.Equal(numRetries-1))
 
 				// After all of the retries, the path should still exist.
-				So(pathExists(dest), ShouldBeTrue)
+				assert.Loosely(t, pathExists(dest), should.BeTrue)
 			})
 
-			Convey(`If the directory already existed, we won't delete it on transient failure.`, func() {
+			t.Run(`If the directory already existed, we won't delete it on transient failure.`, func(t *ftt.Test) {
 				in.ReturnCode = 1
 				if err := filesystem.MakeDirs(dest); err != nil {
 					t.Fatalf("failed to create directory: %s", err)
 				}
 
 				rc, err := runAgent(c)
-				So(err, ShouldBeNil)
-				So(rc, ShouldEqual, in.CreateDirectoryExistsReturnCode)
-				So(out.Args, ShouldResemble, args)
-				So(counter, ShouldEqual, numRetries+1)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, rc, should.Equal(in.CreateDirectoryExistsReturnCode))
+				assert.Loosely(t, out.Args, should.Resemble(args))
+				assert.Loosely(t, counter, should.Equal(numRetries+1))
 
 				// After all of the retries, the path should still exist.
-				So(pathExists(dest), ShouldBeTrue)
+				assert.Loosely(t, pathExists(dest), should.BeTrue)
 			})
 		})
 	})
 
-	Convey(`Unittests`, t, func() {
-		Convey(`For windows`, func() {
+	ftt.Run(`Unittests`, t, func(t *ftt.Test) {
+		t.Run(`For windows`, func(t *ftt.Test) {
 			gitPathPrefix := "cool/path/to/git"
 			gr := &gitRunner{
 				GitCommand: &GitCommand{
@@ -573,20 +574,20 @@ func TestGitCommand(t *testing.T) {
 				testGOOS: "windows",
 			}
 
-			Convey(`We properly escape the '^' symbol when invoking a batfile`, func() {
+			t.Run(`We properly escape the '^' symbol when invoking a batfile`, func(t *ftt.Test) {
 				gitPath := gitPathPrefix + ".Bat"
 				gr.GitCommand.State.GitPath = gitPath
 				gr.Args = []string{"diff-tree", "HEAD^!"}
 				cmd := gr.setupCommand(context.Background())
-				So(cmd.Args, ShouldResemble, []string{gitPath, "diff-tree", "HEAD^^^^!"})
+				assert.Loosely(t, cmd.Args, should.Resemble([]string{gitPath, "diff-tree", "HEAD^^^^!"}))
 			})
 
-			Convey(`Should leave things alone when invoking an exe`, func() {
+			t.Run(`Should leave things alone when invoking an exe`, func(t *ftt.Test) {
 				gitPath := gitPathPrefix + ".exe"
 				gr.GitCommand.State.GitPath = gitPath
 				gr.Args = []string{"diff-tree", "HEAD^!"}
 				cmd := gr.setupCommand(context.Background())
-				So(cmd.Args, ShouldResemble, []string{gitPath, "diff-tree", "HEAD^!"})
+				assert.Loosely(t, cmd.Args, should.Resemble([]string{gitPath, "diff-tree", "HEAD^!"}))
 			})
 		})
 	})

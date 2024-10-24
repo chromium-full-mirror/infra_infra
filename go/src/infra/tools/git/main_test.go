@@ -11,9 +11,10 @@ import (
 	"os"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/system/environ"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/git/state"
 )
@@ -26,7 +27,7 @@ func TestMain(t *testing.T) {
 		t.Fatalf("failed to get self executable: %s", err)
 	}
 
-	Convey(`Using a test setup`, t, func() {
+	ftt.Run(`Using a test setup`, t, func(t *ftt.Test) {
 		c := context.Background()
 
 		env := environ.New(nil)
@@ -35,53 +36,51 @@ func TestMain(t *testing.T) {
 			return mainImpl(c, args, env, bytes.NewReader(nil), ioutil.Discard, ioutil.Discard)
 		}
 
-		Convey(`When run in check mode, returns "1".`, func() {
+		t.Run(`When run in check mode, returns "1".`, func(t *ftt.Test) {
 			env.Set(gitWrapperCheckENV, executable)
-			So(runMain(c), ShouldEqual, 1)
+			assert.Loosely(t, runMain(c), should.Equal(1))
 		})
 
-		Convey(`Can run local Git (must be in PATH)`, func() {
+		t.Run(`Can run local Git (must be in PATH)`, func(t *ftt.Test) {
 			env = environ.System()
 			systemGit, err := gitProbe.Locate(c, "", env)
 
-			convey := Convey
 			if err != nil {
-				t.Logf("Cannot find system Git; skipping Git test: %s", err)
-				convey = SkipConvey
+				t.Skipf("Cannot find system Git; skipping Git test: %s", err)
 			}
 
-			convey(`With system Git`, func() {
-				Convey(`"git version" returns 0.`, func() {
-					So(runMain(c, "version"), ShouldEqual, 0)
+			t.Run(`With system Git`, func(t *ftt.Test) {
+				t.Run(`"git version" returns 0.`, func(t *ftt.Test) {
+					assert.Loosely(t, runMain(c, "version"), should.BeZero)
 				})
 
-				Convey(`"git --clearly-an-invalid-flag" returns 129 (-1).`, func() {
-					So(runMain(c, "--clearly-an-invalid-flag"), ShouldEqual, 129)
+				t.Run(`"git --clearly-an-invalid-flag" returns 129 (-1).`, func(t *ftt.Test) {
+					assert.Loosely(t, runMain(c, "--clearly-an-invalid-flag"), should.Equal(129))
 				})
 
-				Convey(`Returns wrapper error code if we can't find Git.`, func() {
+				t.Run(`Returns wrapper error code if we can't find Git.`, func(t *ftt.Test) {
 					env.Set("PATH", "")
-					So(runMain(c, "version"), ShouldEqual, gitWrapperErrorReturnCode)
+					assert.Loosely(t, runMain(c, "version"), should.Equal(gitWrapperErrorReturnCode))
 				})
 
-				Convey(`Can use the cached Git path, if configured.`, func() {
+				t.Run(`Can use the cached Git path, if configured.`, func(t *ftt.Test) {
 					st := state.State{
 						SelfPath: executable,
 						GitPath:  systemGit,
 					}
 					env.Set(gitWrapperENV, st.ToENV())
 
-					So(runMain(c, "version"), ShouldEqual, 0)
+					assert.Loosely(t, runMain(c, "version"), should.BeZero)
 				})
 
-				Convey(`Will ignore the cached Git path, if "self" is invalid.`, func() {
+				t.Run(`Will ignore the cached Git path, if "self" is invalid.`, func(t *ftt.Test) {
 					st := state.State{
 						SelfPath: "** DOES NOT EXIST **",
 						GitPath:  systemGit,
 					}
 					env.Set(gitWrapperENV, st.ToENV())
 
-					So(runMain(c, "version"), ShouldEqual, 0)
+					assert.Loosely(t, runMain(c, "version"), should.BeZero)
 				})
 			})
 		})

@@ -9,14 +9,16 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 // TestGitFlags tests GitFlagParser.
 func TestGitFlags(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Testing GitFlagParser`, t, func() {
+	ftt.Run(`Testing GitFlagParser`, t, func(t *ftt.Test) {
 		for _, tc := range []struct {
 			args []string
 			exp  GitArgs
@@ -116,8 +118,8 @@ func TestGitFlags(t *testing.T) {
 				},
 			},
 		} {
-			Convey(fmt.Sprintf(`Can parse args from: [%s]`, strings.Join(tc.args, " ")), func() {
-				So(ParseGitArgs(tc.args...), ShouldResemble, tc.exp)
+			t.Run(fmt.Sprintf(`Can parse args from: [%s]`, strings.Join(tc.args, " ")), func(t *ftt.Test) {
+				assert.Loosely(t, ParseGitArgs(tc.args...), should.Resemble(tc.exp))
 			})
 		}
 	})
@@ -127,7 +129,7 @@ func TestGitFlags(t *testing.T) {
 func TestGitCloneFlags(t *testing.T) {
 	t.Parallel()
 
-	Convey(`Testing GitCloneFlagParser`, t, func() {
+	ftt.Run(`Testing GitCloneFlagParser`, t, func(t *ftt.Test) {
 		for _, tc := range []struct {
 			args           []string
 			cloneTargetDir string
@@ -177,19 +179,19 @@ func TestGitCloneFlags(t *testing.T) {
 				cloneTargetDir: "--recurse-submodules",
 			},
 		} {
-			Convey(fmt.Sprintf(`Can parse clone flags from: [%s] to dir: %q`,
-				strings.Join(tc.args, " "), tc.cloneTargetDir), func() {
+			t.Run(fmt.Sprintf(`Can parse clone flags from: [%s] to dir: %q`,
+				strings.Join(tc.args, " "), tc.cloneTargetDir), func(t *ftt.Test) {
 
 				ga := ParseGitArgs(tc.args...)
-				So(ga, ShouldHaveSameTypeAs, &GitCloneArgs{})
+				assert.Loosely(t, ga, should.HaveType[*GitCloneArgs])
 
 				gca := ga.(*GitCloneArgs)
-				So(gca.TargetDir(), ShouldEqual, tc.cloneTargetDir)
+				assert.Loosely(t, gca.TargetDir(), should.Equal(tc.cloneTargetDir))
 			})
 		}
 	})
 
-	Convey(`Testing clone source repository name`, t, func() {
+	ftt.Run(`Testing clone source repository name`, t, func(t *ftt.Test) {
 		for _, tc := range []struct {
 			repo  string
 			value string
@@ -205,8 +207,8 @@ func TestGitCloneFlags(t *testing.T) {
 			{"https://git.example.com/foo/bar/...git", ""},
 			{"https://git.example.com/foo/bar.git/.git", ""},
 		} {
-			Convey(fmt.Sprintf(`Source repository for %q is %q`, tc.repo, tc.value), func() {
-				So(sourceRepositoryName(tc.repo), ShouldEqual, tc.value)
+			t.Run(fmt.Sprintf(`Source repository for %q is %q`, tc.repo, tc.value), func(t *ftt.Test) {
+				assert.Loosely(t, sourceRepositoryName(tc.repo), should.Equal(tc.value))
 			})
 		}
 	})
