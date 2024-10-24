@@ -10,13 +10,14 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/tq/tqtesting"
 
@@ -26,7 +27,7 @@ import (
 )
 
 func TestQueue(t *testing.T) {
-	Convey("Chain works", t, func() {
+	ftt.Run("Chain works", t, func(t *ftt.Test) {
 		cfg := &config.Config{
 			DefaultTimeWindow: "7d",
 			HostConfigs: map[string]*config.HostConfig{
@@ -50,7 +51,7 @@ func TestQueue(t *testing.T) {
 		sched.TaskSucceeded = tqtesting.TasksCollector(&succeeded)
 		sched.TaskFailed = func(ctx context.Context, task *tqtesting.Task) { panic("should not fail") }
 
-		Convey("Test deduplication", func() {
+		t.Run("Test deduplication", func(t *ftt.Test) {
 			const host = "host"
 			createdTime := timestamppb.New(time.Now().Add(-5 * time.Minute))
 			cls := []*gerritpb.ChangeInfo{
@@ -196,22 +197,22 @@ func TestQueue(t *testing.T) {
 
 			// After enqueuing, run the tasks immediately to make sure they end
 			// executing by order, otherwise the test could be flaky.
-			So(EnqueueChangeReviewTask(ctx, host, cls[0]), ShouldBeNil)
-			So(EnqueueChangeReviewTask(ctx, host, cls[0]), ShouldBeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[0]), should.BeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[0]), should.BeNil)
 			sched.Run(ctx, tqtesting.StopWhenDrained())
 
-			So(EnqueueChangeReviewTask(ctx, host, cls[1]), ShouldBeNil)
-			So(EnqueueChangeReviewTask(ctx, host, cls[1]), ShouldBeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[1]), should.BeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[1]), should.BeNil)
 			sched.Run(ctx, tqtesting.StopWhenDrained())
 
-			So(EnqueueChangeReviewTask(ctx, host, cls[2]), ShouldBeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[2]), should.BeNil)
 			sched.Run(ctx, tqtesting.StopWhenDrained())
 
-			So(EnqueueChangeReviewTask(ctx, host, cls[3]), ShouldBeNil)
+			assert.Loosely(t, EnqueueChangeReviewTask(ctx, host, cls[3]), should.BeNil)
 			sched.Run(ctx, tqtesting.StopWhenDrained())
 
-			So(len(succeeded.Payloads()), ShouldEqual, 4)
-			So(succeeded.Payloads(), ShouldResembleProto, []protoreflect.ProtoMessage{
+			assert.Loosely(t, len(succeeded.Payloads()), should.Equal(4))
+			assert.Loosely(t, succeeded.Payloads(), should.Resemble([]protoreflect.ProtoMessage{
 				&taskspb.ChangeReviewTask{
 					Host:           "host",
 					Number:         12345,
@@ -258,7 +259,7 @@ func TestQueue(t *testing.T) {
 					Hashtags:           []string{"Tag"},
 					OwnerEmail:         "user@example.com",
 				},
-			})
+			}))
 		})
 	})
 }

@@ -9,13 +9,14 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
 	"infra/appengine/rubber-stamper/config"
@@ -23,14 +24,14 @@ import (
 )
 
 func TestReviewBenignFileChange(t *testing.T) {
-	Convey("review benign file change", t, func() {
+	ftt.Run("review benign file change", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 
 		ctl := gomock.NewController(t)
 		defer ctl.Finish()
 		gerritMock := gerritpb.NewMockGerritClient(ctl)
 
-		t := &taskspb.ChangeReviewTask{
+		tsk := &taskspb.ChangeReviewTask{
 			Host:       "test-host",
 			Number:     12345,
 			Revision:   "123abc",
@@ -38,7 +39,7 @@ func TestReviewBenignFileChange(t *testing.T) {
 			AutoSubmit: false,
 		}
 
-		Convey("BenignFilePattern in RepoConfig works", func() {
+		t.Run("BenignFilePattern in RepoConfig works", func(t *ftt.Test) {
 			hostCfg := &config.HostConfig{
 				RepoConfigs: map[string]*config.RepoConfig{
 					"dummy": {
@@ -57,10 +58,10 @@ func TestReviewBenignFileChange(t *testing.T) {
 				},
 			}
 
-			Convey("valid files with gitignore style patterns", func() {
+			t.Run("valid files with gitignore style patterns", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"/COMMIT_MSG":   nil,
@@ -70,14 +71,14 @@ func TestReviewBenignFileChange(t *testing.T) {
 						"test/c/i/a.md": nil,
 					},
 				}, nil)
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(len(invalidFiles), ShouldEqual, 0)
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(invalidFiles), should.BeZero)
 			})
-			Convey("gitigore style patterns' order matters", func() {
+			t.Run("gitigore style patterns' order matters", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"/COMMIT_MSG":             nil,
@@ -88,22 +89,22 @@ func TestReviewBenignFileChange(t *testing.T) {
 						"test/override/ab/5.txt":  nil,
 					},
 				}, nil)
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(invalidFiles, ShouldResemble, []string{"test/override/1.txt", "test/override/a/b/3.txt", "test/override/ab/5.txt"})
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, invalidFiles, should.Resemble([]string{"test/override/1.txt", "test/override/a/b/3.txt", "test/override/ab/5.txt"}))
 			})
-			Convey("gerrit ListFiles API returns error", func() {
+			t.Run("gerrit ListFiles API returns error", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(nil, grpc.Errorf(codes.NotFound, "not found"))
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldErrLike, "gerrit ListFiles rpc call failed with error")
-				So(len(invalidFiles), ShouldEqual, 0)
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.ErrLike("gerrit ListFiles rpc call failed with error"))
+				assert.Loosely(t, len(invalidFiles), should.BeZero)
 			})
 		})
 
-		Convey("BenignFilePattern in RepoRegexpConfig works", func() {
+		t.Run("BenignFilePattern in RepoRegexpConfig works", func(t *ftt.Test) {
 			hostCfg := &config.HostConfig{
 				RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 					{
@@ -125,10 +126,10 @@ func TestReviewBenignFileChange(t *testing.T) {
 				},
 			}
 
-			Convey("valid files with gitignore style patterns", func() {
+			t.Run("valid files with gitignore style patterns", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"/COMMIT_MSG":   nil,
@@ -138,14 +139,14 @@ func TestReviewBenignFileChange(t *testing.T) {
 						"test/c/i/a.md": nil,
 					},
 				}, nil)
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(len(invalidFiles), ShouldEqual, 0)
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, len(invalidFiles), should.BeZero)
 			})
-			Convey("gitigore style patterns' order matters", func() {
+			t.Run("gitigore style patterns' order matters", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"/COMMIT_MSG":             nil,
@@ -156,35 +157,35 @@ func TestReviewBenignFileChange(t *testing.T) {
 						"test/override/ab/5.txt":  nil,
 					},
 				}, nil)
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(invalidFiles, ShouldResemble, []string{"test/override/1.txt", "test/override/a/b/3.txt", "test/override/ab/5.txt"})
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, invalidFiles, should.Resemble([]string{"test/override/1.txt", "test/override/a/b/3.txt", "test/override/ab/5.txt"}))
 			})
-			Convey("gerrit ListFiles API returns error", func() {
+			t.Run("gerrit ListFiles API returns error", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(nil, grpc.Errorf(codes.NotFound, "not found"))
-				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, t)
-				So(err, ShouldErrLike, "gerrit ListFiles rpc call failed with error")
-				So(len(invalidFiles), ShouldEqual, 0)
+				invalidFiles, err := reviewBenignFileChange(ctx, hostCfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.ErrLike("gerrit ListFiles rpc call failed with error"))
+				assert.Loosely(t, len(invalidFiles), should.BeZero)
 			})
 		})
 	})
 }
 
 func TestRetrieveBenignFilePattern(t *testing.T) {
-	Convey("retrieveBenignFilePattern works", t, func() {
+	ftt.Run("retrieveBenignFilePattern works", t, func(t *ftt.Test) {
 		sampleBenignFilePattern := &config.BenignFilePattern{
 			Paths: []string{
 				"test/a/*",
 				"test/b/c.txt",
 			},
 		}
-		Convey("returns nil when hostConfig is nil", func() {
-			So(retrieveBenignFilePattern(context.Background(), nil, "dummy"), ShouldBeNil)
+		t.Run("returns nil when hostConfig is nil", func(t *ftt.Test) {
+			assert.Loosely(t, retrieveBenignFilePattern(context.Background(), nil, "dummy"), should.BeNil)
 		})
-		Convey("when repoConfig exists", func() {
+		t.Run("when repoConfig exists", func(t *ftt.Test) {
 			hostCfg := &config.HostConfig{
 				RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 					{
@@ -193,25 +194,25 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 					},
 				},
 			}
-			Convey("BenignFilePattern exists", func() {
+			t.Run("BenignFilePattern exists", func(t *ftt.Test) {
 				hostCfg.RepoConfigs = map[string]*config.RepoConfig{
 					"dummy": {
 						BenignFilePattern: sampleBenignFilePattern,
 					},
 				}
-				So(retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), ShouldEqual, sampleBenignFilePattern)
+				assert.Loosely(t, retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), should.Equal(sampleBenignFilePattern))
 			})
-			Convey("BenignFilePattern is nil", func() {
+			t.Run("BenignFilePattern is nil", func(t *ftt.Test) {
 				hostCfg.RepoConfigs = map[string]*config.RepoConfig{
 					"dummy": {
 						BenignFilePattern: nil,
 					},
 				}
-				So(retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), ShouldBeNil)
+				assert.Loosely(t, retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), should.BeNil)
 			})
 		})
-		Convey("when repoConfig doesn't exist and repoRegexpConfig exists", func() {
-			Convey("BenignFilePattern exists", func() {
+		t.Run("when repoConfig doesn't exist and repoRegexpConfig exists", func(t *ftt.Test) {
+			t.Run("BenignFilePattern exists", func(t *ftt.Test) {
 				hostCfg := &config.HostConfig{
 					RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 						{
@@ -222,9 +223,9 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 						},
 					},
 				}
-				So(retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), ShouldEqual, sampleBenignFilePattern)
+				assert.Loosely(t, retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), should.Equal(sampleBenignFilePattern))
 			})
-			Convey("BenignFilePattern is nil", func() {
+			t.Run("BenignFilePattern is nil", func(t *ftt.Test) {
 				hostCfg := &config.HostConfig{
 					RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 						{
@@ -235,10 +236,10 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 						},
 					},
 				}
-				So(retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), ShouldBeNil)
+				assert.Loosely(t, retrieveBenignFilePattern(context.Background(), hostCfg, "dummy"), should.BeNil)
 			})
 		})
-		Convey("returns nil when no repo config can be found", func() {
+		t.Run("returns nil when no repo config can be found", func(t *ftt.Test) {
 			hostCfg := &config.HostConfig{
 				RepoConfigs: map[string]*config.RepoConfig{
 					"dummy": {
@@ -254,7 +255,7 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 					},
 				},
 			}
-			So(retrieveBenignFilePattern(context.Background(), hostCfg, "invalid"), ShouldBeNil)
+			assert.Loosely(t, retrieveBenignFilePattern(context.Background(), hostCfg, "invalid"), should.BeNil)
 		})
 	})
 }

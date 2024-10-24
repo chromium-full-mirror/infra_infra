@@ -23,7 +23,7 @@ import (
 
 // SetupTestingContext contains all the context setup things needed for
 // testing. It returns the context, a MockGerritClient and a
-func SetupTestingContext(ctx context.Context, cfg *config.Config, serviceAccount, host string, t *testing.T) (context.Context, *gerritpb.MockGerritClient, *tqtesting.Scheduler) {
+func SetupTestingContext(ctx context.Context, cfg *config.Config, serviceAccount, host string, t testing.TB) (context.Context, *gerritpb.MockGerritClient, *tqtesting.Scheduler) {
 	ctx = gerrit.Setup(ctx)
 	config.SetTestConfig(ctx, cfg)
 	ctx = auth.ModifyConfig(ctx, func(cfg auth.Config) auth.Config {

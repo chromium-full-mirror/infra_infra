@@ -10,14 +10,15 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
 	"infra/appengine/rubber-stamper/config"
@@ -25,7 +26,7 @@ import (
 )
 
 func TestReviewCleanCherryPick(t *testing.T) {
-	Convey("review clean cherry pick", t, func() {
+	ftt.Run("review clean cherry pick", t, func(t *ftt.Test) {
 		ctx := memory.Use(context.Background())
 
 		ctl := gomock.NewController(t)
@@ -41,7 +42,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 			},
 		}
 
-		t := &taskspb.ChangeReviewTask{
+		tsk := &taskspb.ChangeReviewTask{
 			Host:               "test-host",
 			Number:             12345,
 			Revision:           "123abc",
@@ -54,11 +55,11 @@ func TestReviewCleanCherryPick(t *testing.T) {
 			Created:            timestamppb.New(time.Now().Add(-time.Minute)),
 		}
 
-		Convey("approve", func() {
-			Convey("approves when the change is valid", func() {
-				t.RevisionsCount = 2
+		t.Run("approve", func(t *ftt.Test) {
+			t.Run("approves when the change is valid", func(t *ftt.Test) {
+				tsk.RevisionsCount = 2
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -73,8 +74,8 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Base:       "1",
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
@@ -82,18 +83,18 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.MergeableInfo{
 					Mergeable: true,
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.BeEmpty)
 			})
-			Convey("has invalid files, but can be bypassed", func() {
-				t.RevisionsCount = 2
+			t.Run("has invalid files, but can be bypassed", func(t *ftt.Test) {
+				tsk.RevisionsCount = 2
 				cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
 					CleanCherryPickPattern: &config.CleanCherryPickPattern{
 						FileCheckBypassRule: &config.CleanCherryPickPattern_FileCheckBypassRule{
@@ -104,7 +105,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -119,8 +120,8 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Base:       "1",
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
@@ -129,23 +130,23 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.MergeableInfo{
 					Mergeable: true,
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.BeEmpty)
 			})
 		})
 
-		Convey("decline when the current revision made any file changes compared with the initial version", func() {
-			t.RevisionsCount = 2
+		t.Run("decline when the current revision made any file changes compared with the initial version", func(t *ftt.Test) {
+			tsk.RevisionsCount = 2
 			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-				Number:     t.Number,
-				RevisionId: t.Revision,
+				Number:     tsk.Number,
+				RevisionId: tsk.Revision,
 				Base:       "1",
 			})).Return(&gerritpb.ListFilesResponse{
 				Files: map[string]*gerritpb.FileInfo{
@@ -154,14 +155,14 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				},
 			}, nil)
 
-			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-			So(err, ShouldBeNil)
-			So(msg, ShouldEqual, "The current revision changed the following files compared with the initial revision: no.txt.")
+			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msg, should.Equal("The current revision changed the following files compared with the initial revision: no.txt."))
 		})
-		Convey("decline when out of configured time window", func() {
-			Convey("global time window works", func() {
+		t.Run("decline when out of configured time window", func(t *ftt.Test) {
+			t.Run("global time window works", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -175,14 +176,14 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 7 day(s).")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 7 day(s)."))
 			})
-			Convey("host-level time window works", func() {
+			t.Run("host-level time window works", func(t *ftt.Test) {
 				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "5d"
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -196,11 +197,11 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 5 day(s).")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 5 day(s)."))
 			})
-			Convey("repo-level time window works", func() {
+			t.Run("repo-level time window works", func(t *ftt.Test) {
 				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "5d"
 				cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
 					CleanCherryPickPattern: &config.CleanCherryPickPattern{
@@ -208,7 +209,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -222,11 +223,11 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 58 minute(s).")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 58 minute(s)."))
 			})
-			Convey("repo-level time window from repo_regexp_configs works", func() {
+			t.Run("repo-level time window from repo_regexp_configs works", func(t *ftt.Test) {
 				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "5d"
 				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
 					{
@@ -239,7 +240,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -253,15 +254,15 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 10 minute(s).")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 10 minute(s)."))
 			})
 		})
-		Convey("decline when the change wasn't cherry-picked after the original CL has been merged.", func() {
-			Convey("decline when the original CL hasn't been merged", func() {
+		t.Run("decline when the change wasn't cherry-picked after the original CL has been merged.", func(t *ftt.Test) {
+			t.Run("decline when the original CL hasn't been merged", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_NEW,
@@ -272,13 +273,13 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not cherry-picked after the original CL has been merged.")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not cherry-picked after the original CL has been merged."))
 			})
-			Convey("decline when cherry-picked before the original CL has been merged", func() {
+			t.Run("decline when cherry-picked before the original CL has been merged", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -289,20 +290,20 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				t.Created = timestamppb.New(time.Now().Add(-24*time.Hour - time.Minute))
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(err, ShouldBeNil)
-				So(msg, ShouldEqual, "The change is not cherry-picked after the original CL has been merged.")
+				tsk.Created = timestamppb.New(time.Now().Add(-24*time.Hour - time.Minute))
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, msg, should.Equal("The change is not cherry-picked after the original CL has been merged."))
 			})
 		})
-		Convey("decline when alters any excluded file", func() {
+		t.Run("decline when alters any excluded file", func(t *ftt.Test) {
 			cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
 				CleanCherryPickPattern: &config.CleanCherryPickPattern{
 					ExcludedPaths: []string{"p/q/**", "**.c"},
 				},
 			}
 			gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-				Number:  t.CherryPickOfChange,
+				Number:  tsk.CherryPickOfChange,
 				Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 			})).Return(&gerritpb.ChangeInfo{
 				Status:          gerritpb.ChangeStatus_MERGED,
@@ -317,8 +318,8 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				},
 			}, nil)
 			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-				Number:     t.Number,
-				RevisionId: t.Revision,
+				Number:     tsk.Number,
+				RevisionId: tsk.Revision,
 			})).Return(&gerritpb.ListFilesResponse{
 				Files: map[string]*gerritpb.FileInfo{
 					"p/q/o/0.txt": nil,
@@ -326,13 +327,13 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					"a/invalid.c": nil,
 				},
 			}, nil)
-			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-			So(err, ShouldBeNil)
-			So(msg, ShouldEqual, "The change contains the following files which require a human reviewer: a/invalid.c, p/q/o/0.txt.")
+			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msg, should.Equal("The change contains the following files which require a human reviewer: a/invalid.c, p/q/o/0.txt."))
 		})
-		Convey("decline when not mergeable", func() {
+		t.Run("decline when not mergeable", func(t *ftt.Test) {
 			gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-				Number:  t.CherryPickOfChange,
+				Number:  tsk.CherryPickOfChange,
 				Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 			})).Return(&gerritpb.ChangeInfo{
 				Status:          gerritpb.ChangeStatus_MERGED,
@@ -347,34 +348,34 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				},
 			}, nil)
 			gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-				Number:     t.Number,
-				Project:    t.Repo,
-				RevisionId: t.Revision,
+				Number:     tsk.Number,
+				Project:    tsk.Repo,
+				RevisionId: tsk.Revision,
 			})).Return(&gerritpb.MergeableInfo{
 				Mergeable: false,
 			}, nil)
-			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-			So(err, ShouldBeNil)
-			So(msg, ShouldEqual, "The change is not mergeable.")
+			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msg, should.Equal("The change is not mergeable."))
 		})
-		Convey("return error works", func() {
-			Convey("Gerrit GetChange API returns error", func() {
+		t.Run("return error works", func(t *ftt.Test) {
+			t.Run("Gerrit GetChange API returns error", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(nil, grpc.Errorf(codes.NotFound, "not found"))
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(msg, ShouldEqual, "")
-				So(err, ShouldErrLike, "gerrit GetChange rpc call failed with error")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, msg, should.BeEmpty)
+				assert.Loosely(t, err, should.ErrLike("gerrit GetChange rpc call failed with error"))
 			})
-			Convey("Gerrit ListFiles API returns error", func() {
+			t.Run("Gerrit ListFiles API returns error", func(t *ftt.Test) {
 				cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
 					CleanCherryPickPattern: &config.CleanCherryPickPattern{
 						ExcludedPaths: []string{"p/q/**", "**.c"},
 					},
 				}
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -389,16 +390,16 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(nil, grpc.Errorf(codes.NotFound, "not found"))
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(msg, ShouldEqual, "")
-				So(err, ShouldErrLike, "gerrit ListFiles rpc call failed with error")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, msg, should.BeEmpty)
+				assert.Loosely(t, err, should.ErrLike("gerrit ListFiles rpc call failed with error"))
 			})
-			Convey("Gerrit GetMergeable API returns error", func() {
+			t.Run("Gerrit GetMergeable API returns error", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -413,18 +414,18 @@ func TestReviewCleanCherryPick(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(nil, grpc.Errorf(codes.NotFound, "not found"))
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(msg, ShouldEqual, "")
-				So(err, ShouldErrLike, "gerrit GetMergeable rpc call failed with error")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, msg, should.BeEmpty)
+				assert.Loosely(t, err, should.ErrLike("gerrit GetMergeable rpc call failed with error"))
 			})
-			Convey("time window config error", func() {
+			t.Run("time window config error", func(t *ftt.Test) {
 				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "112-1d"
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -438,16 +439,16 @@ func TestReviewCleanCherryPick(t *testing.T) {
 						},
 					},
 				}, nil)
-				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
-				So(msg, ShouldEqual, "")
-				So(err, ShouldErrLike, "invalid time_window config 112-1d")
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+				assert.Loosely(t, msg, should.BeEmpty)
+				assert.Loosely(t, err, should.ErrLike("invalid time_window config 112-1d"))
 			})
 		})
 	})
 }
 
 func TestReviewBypassFileCheck(t *testing.T) {
-	Convey("bypass file check", t, func() {
+	ftt.Run("bypass file check", t, func(t *ftt.Test) {
 		fr := &config.CleanCherryPickPattern_FileCheckBypassRule{
 			IncludedPaths: []string{"dir_a/dir_b/**/*.json"},
 			Hashtag:       "Example_Hashtag",
@@ -458,37 +459,37 @@ func TestReviewBypassFileCheck(t *testing.T) {
 		hashtags := []string{"Random", "Example_Hashtag"}
 		const owner = "userA@example.com"
 
-		Convey("approve", func() {
-			So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, true)
+		t.Run("approve", func(t *ftt.Test) {
+			assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(true))
 		})
-		Convey("decline when config is incomplete", func() {
-			Convey("nil config", func() {
+		t.Run("decline when config is incomplete", func(t *ftt.Test) {
+			t.Run("nil config", func(t *ftt.Test) {
 				fr = nil
-				So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+				assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 			})
-			Convey("no includedPath", func() {
+			t.Run("no includedPath", func(t *ftt.Test) {
 				fr.IncludedPaths = nil
-				So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+				assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 			})
-			Convey("no hashtag", func() {
+			t.Run("no hashtag", func(t *ftt.Test) {
 				fr.Hashtag = ""
-				So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+				assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 			})
-			Convey("no allowedOwners", func() {
+			t.Run("no allowedOwners", func(t *ftt.Test) {
 				fr.AllowedOwners = nil
-				So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+				assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 			})
 		})
-		Convey("decline when files are not included", func() {
+		t.Run("decline when files are not included", func(t *ftt.Test) {
 			invalidFiles = append(invalidFiles, "dir_c/ok.json")
-			So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+			assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 		})
-		Convey("decline when no hashtag matches", func() {
+		t.Run("decline when no hashtag matches", func(t *ftt.Test) {
 			hashtags = []string{"Random1", "Random2"}
-			So(bypassFileCheck(invalidFiles, hashtags, owner, fr), ShouldEqual, false)
+			assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, owner, fr), should.Equal(false))
 		})
-		Convey("decline when owner is not allowed", func() {
-			So(bypassFileCheck(invalidFiles, hashtags, "userC@example.com", fr), ShouldEqual, false)
+		t.Run("decline when owner is not allowed", func(t *ftt.Test) {
+			assert.Loosely(t, bypassFileCheck(invalidFiles, hashtags, "userC@example.com", fr), should.Equal(false))
 		})
 	})
 }

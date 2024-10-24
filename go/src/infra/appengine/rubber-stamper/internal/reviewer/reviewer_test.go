@@ -10,11 +10,13 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
 	"infra/appengine/rubber-stamper/config"
@@ -23,7 +25,7 @@ import (
 )
 
 func TestReviewChange(t *testing.T) {
-	Convey("review change", t, func() {
+	ftt.Run("review change", t, func(t *ftt.Test) {
 		cfg := &config.Config{
 			DefaultTimeWindow: "7d",
 			HostConfigs: map[string]*config.HostConfig{
@@ -41,8 +43,8 @@ func TestReviewChange(t *testing.T) {
 		ctx := memory.Use(context.Background())
 		ctx, gerritMock, _ := util.SetupTestingContext(ctx, cfg, "srv-account@example.com", "test-host", t)
 
-		Convey("BenignFileChange", func() {
-			t := &taskspb.ChangeReviewTask{
+		t.Run("BenignFileChange", func(t *ftt.Test) {
+			tsk := &taskspb.ChangeReviewTask{
 				Host:       "test-host",
 				Number:     12345,
 				Revision:   "123abc",
@@ -50,47 +52,47 @@ func TestReviewChange(t *testing.T) {
 				AutoSubmit: false,
 				Created:    timestamppb.New(time.Now().Add(-time.Minute)),
 			}
-			Convey("valid BenignFileChange", func() {
+			t.Run("valid BenignFileChange", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/x": nil,
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("valid BenignFileChange with Auto-Submit", func() {
-				t.AutoSubmit = true
+			t.Run("valid BenignFileChange with Auto-Submit", func(t *ftt.Test) {
+				tsk.AutoSubmit = true
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/x": nil,
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1, "Commit-Queue": 2},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("invalid BenignFileChange", func() {
+			t.Run("invalid BenignFileChange", func(t *ftt.Test) {
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/d.txt":     nil,
@@ -101,21 +103,21 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Message:    "The change cannot be auto-reviewed. The following files do not match the benign file configuration: a/d.txt, a/e/p/p.txt, a/f/z.txt, a/p. Learn more: go/rubber-stamper-user-guide.",
 				})).Return(&gerritpb.ReviewResult{}, nil)
 				gerritMock.EXPECT().DeleteReviewer(gomock.Any(), proto.MatcherEqual(&gerritpb.DeleteReviewerRequest{
-					Number:    t.Number,
+					Number:    tsk.Number,
 					AccountId: "srv-account@example.com",
 				})).Return(nil, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
-		Convey("CleanRevert", func() {
-			t := &taskspb.ChangeReviewTask{
+		t.Run("CleanRevert", func(t *ftt.Test) {
+			tsk := &taskspb.ChangeReviewTask{
 				Host:       "test-host",
 				Number:     12345,
 				Revision:   "123abc",
@@ -124,15 +126,15 @@ func TestReviewChange(t *testing.T) {
 				RevertOf:   45678,
 				Created:    timestamppb.New(time.Now().Add(-time.Minute)),
 			}
-			Convey("valid CleanRevert", func() {
+			t.Run("valid CleanRevert", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
-					Number:  t.Number,
-					Project: t.Repo,
+					Number:  tsk.Number,
+					Project: tsk.Repo,
 				})).Return(&gerritpb.PureRevertInfo{
 					IsPureRevert: true,
 				}, nil)
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.RevertOf,
+					Number:  tsk.RevertOf,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					CurrentRevision: "456def",
@@ -143,23 +145,23 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("invalid CleanRevert but can pass the BenignFilePattern", func() {
+			t.Run("invalid CleanRevert but can pass the BenignFilePattern", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
-					Number:  t.Number,
-					Project: t.Repo,
+					Number:  tsk.Number,
+					Project: tsk.Repo,
 				})).Return(&gerritpb.PureRevertInfo{
 					IsPureRevert: false,
 				}, nil)
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.RevertOf,
+					Number:  tsk.RevertOf,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					CurrentRevision: "456def",
@@ -170,31 +172,31 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/x": nil,
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("invalid CleanRevert", func() {
+			t.Run("invalid CleanRevert", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
-					Number:  t.Number,
-					Project: t.Repo,
+					Number:  tsk.Number,
+					Project: tsk.Repo,
 				})).Return(&gerritpb.PureRevertInfo{
 					IsPureRevert: false,
 				}, nil)
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.RevertOf,
+					Number:  tsk.RevertOf,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					CurrentRevision: "456def",
@@ -205,8 +207,8 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/d.txt":     nil,
@@ -217,21 +219,21 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Message:    "Gerrit GetPureRevert API does not mark this CL as a pure revert. Learn more: go/rubber-stamper-user-guide.",
 				})).Return(&gerritpb.ReviewResult{}, nil)
 				gerritMock.EXPECT().DeleteReviewer(gomock.Any(), proto.MatcherEqual(&gerritpb.DeleteReviewerRequest{
-					Number:    t.Number,
+					Number:    tsk.Number,
 					AccountId: "srv-account@example.com",
 				})).Return(nil, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
-		Convey("CleanCherryPick", func() {
-			t := &taskspb.ChangeReviewTask{
+		t.Run("CleanCherryPick", func(t *ftt.Test) {
+			tsk := &taskspb.ChangeReviewTask{
 				Host:               "test-host",
 				Number:             12345,
 				Revision:           "123abc",
@@ -241,9 +243,9 @@ func TestReviewChange(t *testing.T) {
 				CherryPickOfChange: 45678,
 				Created:            timestamppb.New(time.Now().Add(-time.Minute)),
 			}
-			Convey("valid CherryPick", func() {
+			t.Run("valid CherryPick", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -255,24 +257,24 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.MergeableInfo{
 					Mergeable: true,
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("invalid CherryPick but can pass the BenignFilePattern", func() {
+			t.Run("invalid CherryPick but can pass the BenignFilePattern", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -284,32 +286,32 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.MergeableInfo{
 					Mergeable: false,
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/faaa.txt": nil,
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Labels:     map[string]int32{"Bot-Commit": 1},
 				})).Return(&gerritpb.ReviewResult{}, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
-			Convey("invalid CherryPick", func() {
+			t.Run("invalid CherryPick", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-					Number:  t.CherryPickOfChange,
+					Number:  tsk.CherryPickOfChange,
 					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
 				})).Return(&gerritpb.ChangeInfo{
 					Status:          gerritpb.ChangeStatus_MERGED,
@@ -321,32 +323,32 @@ func TestReviewChange(t *testing.T) {
 					},
 				}, nil)
 				gerritMock.EXPECT().GetMergeable(gomock.Any(), proto.MatcherEqual(&gerritpb.GetMergeableRequest{
-					Number:     t.Number,
-					Project:    t.Repo,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					Project:    tsk.Repo,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.MergeableInfo{
 					Mergeable: false,
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
 						"a/invalid.md": nil,
 					},
 				}, nil)
 				gerritMock.EXPECT().SetReview(gomock.Any(), proto.MatcherEqual(&gerritpb.SetReviewRequest{
-					Number:     t.Number,
-					RevisionId: t.Revision,
+					Number:     tsk.Number,
+					RevisionId: tsk.Revision,
 					Message:    "The change is not mergeable. Learn more: go/rubber-stamper-user-guide.",
 				})).Return(&gerritpb.ReviewResult{}, nil)
 				gerritMock.EXPECT().DeleteReviewer(gomock.Any(), proto.MatcherEqual(&gerritpb.DeleteReviewerRequest{
-					Number:    t.Number,
+					Number:    tsk.Number,
 					AccountId: "srv-account@example.com",
 				})).Return(nil, nil)
 
-				err := ReviewChange(ctx, t)
-				So(err, ShouldBeNil)
+				err := ReviewChange(ctx, tsk)
+				assert.Loosely(t, err, should.BeNil)
 			})
 		})
 	})

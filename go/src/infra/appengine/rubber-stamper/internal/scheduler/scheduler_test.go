@@ -9,12 +9,13 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"go.chromium.org/luci/common/proto"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/tq/tqtesting"
 
@@ -24,7 +25,7 @@ import (
 )
 
 func TestScheduleReviews(t *testing.T) {
-	Convey("schedule reviews", t, func() {
+	ftt.Run("schedule reviews", t, func(t *ftt.Test) {
 		cfg := &config.Config{
 			HostConfigs: map[string]*config.HostConfig{
 				"test-host": {
@@ -48,7 +49,7 @@ func TestScheduleReviews(t *testing.T) {
 		sched.TaskSucceeded = tqtesting.TasksCollector(&succeeded)
 		sched.TaskFailed = func(ctx context.Context, task *tqtesting.Task) { panic("should not fail") }
 
-		Convey("schedule works", func() {
+		t.Run("schedule works", func(t *ftt.Test) {
 			gerritMock.EXPECT().ListChanges(gomock.Any(), proto.MatcherEqual(&gerritpb.ListChangesRequest{
 				Query:   "status:open r:srv-account@example.com",
 				Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS, gerritpb.QueryOption_LABELS, gerritpb.QueryOption_DETAILED_ACCOUNTS},
@@ -158,10 +159,10 @@ func TestScheduleReviews(t *testing.T) {
 			})).Return(nil, nil)
 
 			err := ScheduleReviews(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			sched.Run(ctx, tqtesting.StopWhenDrained())
-			So(succeeded.Payloads(), ShouldResembleProto, []protoreflect.ProtoMessage{
+			assert.Loosely(t, succeeded.Payloads(), should.Resemble([]protoreflect.ProtoMessage{
 				&taskspb.ChangeReviewTask{
 					Host:           "test-host",
 					Number:         00000,
@@ -193,10 +194,10 @@ func TestScheduleReviews(t *testing.T) {
 					Hashtags:           []string{"Tag"},
 					OwnerEmail:         "user@example.com",
 				},
-			})
+			}))
 		})
 
-		Convey("repo disabled", func() {
+		t.Run("repo disabled", func(t *ftt.Test) {
 			gerritMock.EXPECT().ListChanges(gomock.Any(), proto.MatcherEqual(&gerritpb.ListChangesRequest{
 				Query:   "status:open r:srv-account@example.com",
 				Options: []gerritpb.QueryOption{gerritpb.QueryOption_ALL_REVISIONS, gerritpb.QueryOption_LABELS, gerritpb.QueryOption_DETAILED_ACCOUNTS},
@@ -222,10 +223,10 @@ func TestScheduleReviews(t *testing.T) {
 			}, nil)
 
 			err := ScheduleReviews(ctx)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			sched.Run(ctx, tqtesting.StopWhenDrained())
-			So(len(succeeded.Payloads()), ShouldEqual, 0)
+			assert.Loosely(t, len(succeeded.Payloads()), should.BeZero)
 		})
 	})
 }

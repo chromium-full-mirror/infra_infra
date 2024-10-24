@@ -9,9 +9,11 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	. "github.com/smartystreets/goconvey/convey"
 
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/config/validation"
 )
 
@@ -51,9 +53,11 @@ var sampleConfigStr = `
   	}
 `
 
-func createConfig() *Config {
+func createConfig(t testing.TB) *Config {
+	t.Helper()
+
 	var cfg Config
-	So(proto.UnmarshalText(sampleConfigStr, &cfg), ShouldBeNil)
+	assert.Loosely(t, proto.UnmarshalText(sampleConfigStr, &cfg), should.BeNil, truth.LineContext())
 	return &cfg
 }
 
@@ -64,48 +68,48 @@ func TestConfigValidator(t *testing.T) {
 		return c.Finalize()
 	}
 
-	Convey("sampleConfigStr is valid", t, func() {
-		cfg := createConfig()
-		So(validate(cfg), ShouldBeNil)
+	ftt.Run("sampleConfigStr is valid", t, func(t *ftt.Test) {
+		cfg := createConfig(t)
+		assert.Loosely(t, validate(cfg), should.BeNil)
 	})
 
-	Convey("validateConfig catches errors", t, func() {
-		cfg := createConfig()
-		Convey("empty default_time_window", func() {
+	ftt.Run("validateConfig catches errors", t, func(t *ftt.Test) {
+		cfg := createConfig(t)
+		t.Run("empty default_time_window", func(t *ftt.Test) {
 			cfg.DefaultTimeWindow = ""
-			So(validate(cfg), ShouldErrLike, "empty default_time_window")
+			assert.Loosely(t, validate(cfg), should.ErrLike("empty default_time_window"))
 		})
-		Convey("validateCleanRevertPattern catches errors", func() {
+		t.Run("validateCleanRevertPattern catches errors", func(t *ftt.Test) {
 			crp := cfg.HostConfigs["test-host"].RepoConfigs["dummy"].CleanRevertPattern
-			Convey("invalid time window value", func() {
+			t.Run("invalid time window value", func(t *ftt.Test) {
 				crp.TimeWindow = "a1s"
-				So(validate(cfg), ShouldErrLike, "invalid time_window a1s")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid time_window a1s"))
 			})
-			Convey("invalid time window unit", func() {
+			t.Run("invalid time window unit", func(t *ftt.Test) {
 				crp.TimeWindow = "12t"
-				So(validate(cfg), ShouldErrLike, "invalid time_window 12t")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid time_window 12t"))
 			})
 		})
-		Convey("validateCleanCherryPickPattern catches errors", func() {
+		t.Run("validateCleanCherryPickPattern catches errors", func(t *ftt.Test) {
 			ccpp := cfg.HostConfigs["test-host"].RepoConfigs["dummy"].CleanCherryPickPattern
-			Convey("invalid time window value", func() {
+			t.Run("invalid time window value", func(t *ftt.Test) {
 				ccpp.TimeWindow = "a1s"
-				So(validate(cfg), ShouldErrLike, "invalid time_window a1s")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid time_window a1s"))
 			})
-			Convey("invalid time window unit", func() {
+			t.Run("invalid time window unit", func(t *ftt.Test) {
 				ccpp.TimeWindow = "12t"
-				So(validate(cfg), ShouldErrLike, "invalid time_window 12t")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid time_window 12t"))
 			})
 		})
-		Convey("validateRepoRegexpConfig catches errors", func() {
+		t.Run("validateRepoRegexpConfig catches errors", func(t *ftt.Test) {
 			rrcfgs := cfg.HostConfigs["test-host"].GetRepoRegexpConfigs()
-			Convey("invalid repo regexp", func() {
+			t.Run("invalid repo regexp", func(t *ftt.Test) {
 				rrcfgs[0].Key = `dummy-(ac`
-				So(validate(cfg), ShouldErrLike, "invalid repo_regexp dummy-(ac")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid repo_regexp dummy-(ac"))
 			})
-			Convey("invalid repo config", func() {
+			t.Run("invalid repo config", func(t *ftt.Test) {
 				rrcfgs[0].Value.CleanCherryPickPattern.TimeWindow = "abc"
-				So(validate(cfg), ShouldErrLike, "invalid time_window abc")
+				assert.Loosely(t, validate(cfg), should.ErrLike("invalid time_window abc"))
 			})
 		})
 	})
