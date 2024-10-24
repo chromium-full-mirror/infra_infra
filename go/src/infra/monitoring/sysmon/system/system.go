@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"runtime"
-	"time"
+	"sync"
 
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
@@ -65,19 +65,19 @@ var (
 		&types.MetricMetadata{Units: types.Bytes},
 		field.String("disk"))
 	diskReadCount = metric.NewCounter("dev/disk/io/read_count",
-		"The total number of read operations since boot.",
+		"The total number of read operations.",
 		nil,
 		field.String("disk"))
 	diskReadTimeSpent = metric.NewCounter("dev/disk/io/read_time_spent",
-		"The total number of milliseconds spent by all reads since boot.",
+		"The total number of milliseconds spent by all reads.",
 		&types.MetricMetadata{Units: types.Milliseconds},
 		field.String("disk"))
 	diskWriteCount = metric.NewCounter("dev/disk/io/write_count",
-		"The total number of write operations since boot.",
+		"The total number of write operations.",
 		nil,
 		field.String("disk"))
 	diskWriteTimeSpent = metric.NewCounter("dev/disk/io/write_time_spent",
-		"The total number of milliseconds spent by all writes since boot.",
+		"The total number of milliseconds spent by all writes.",
 		&types.MetricMetadata{Units: types.Milliseconds},
 		field.String("disk"))
 
@@ -161,37 +161,16 @@ var (
 		"Kernel version on the machine",
 		nil)
 
-	lastCPUTimes cpu.TimesStat
+	lastCPUTimes *cpu.TimesStat
+
+	sysCountersLock      sync.Mutex
+	sysCountersInit      = map[sysCounterKey]int64{}
+	sysCountersSkipShift = false // set only in tests
 )
 
-func init() {
-	bootTimeSecs, err := host.BootTime()
-	if err != nil {
-		panic(fmt.Sprintf("Failed to get system boot time: %s", err))
-	}
-	bootTime := time.Unix(int64(bootTimeSecs), 0)
-
-	diskRead.SetFixedResetTime(bootTime)
-	diskReadCount.SetFixedResetTime(bootTime)
-	diskReadTimeSpent.SetFixedResetTime(bootTime)
-	diskWrite.SetFixedResetTime(bootTime)
-	diskWriteCount.SetFixedResetTime(bootTime)
-	diskWriteTimeSpent.SetFixedResetTime(bootTime)
-	netUp.SetFixedResetTime(bootTime)
-	netDown.SetFixedResetTime(bootTime)
-	netErrUp.SetFixedResetTime(bootTime)
-	netErrDown.SetFixedResetTime(bootTime)
-	netDropUp.SetFixedResetTime(bootTime)
-	netDropDown.SetFixedResetTime(bootTime)
-
-	cpuTimes, err := cpu.Times(false)
-	if err != nil {
-		if cgoEnabled || runtime.GOOS != "darwin" {
-			panic(fmt.Sprintf("Failed to get initial CPU times: %s", err))
-		}
-		return
-	}
-	lastCPUTimes = cpuTimes[0]
+type sysCounterKey struct {
+	counter metric.Counter
+	field   string
 }
 
 // Register adds tsmon callbacks to set system metrics.
@@ -221,8 +200,6 @@ func Register() {
 		if err := updateSystemTemps(c); err != nil {
 			logging.Warningf(c, "Failed to update system temperatures: %v", err)
 		}
-
-		// Should be done last.
 		if err := updateUnixTimeMetrics(c); err != nil {
 			logging.Warningf(c, "Failed to update unix time metrics: %v", err)
 		}
@@ -247,23 +224,34 @@ func updateCPUMetrics(c context.Context) error {
 	if len(cpuTimes) < 1 {
 		return status.Errorf(codes.OutOfRange, "cpu.Times(false) returned no entries")
 	}
+
+	if lastCPUTimes == nil {
+		// Initialize on the first call. Don't report any bogus 0 values though.
+		// `cpuTime` is a gauge, not a counter. We'll need to report a value only
+		// after we calculate the delta on the next measurement.
+		cpy := cpuTimes[0]
+		lastCPUTimes = &cpy
+		return nil
+	}
+
 	user := cpuTimes[0].User - lastCPUTimes.User
 	system := cpuTimes[0].System - lastCPUTimes.System
 	idle := cpuTimes[0].Idle - lastCPUTimes.Idle
-	total := cpuTimes[0].Total() - lastCPUTimes.Total()
-	lastCPUTimes = cpuTimes[0]
-
-	// Total might be 0 when running unit tests on Windows - this gets called
-	// immediately after the module's init().
-	if total != 0 {
+	if total := cpuTimes[0].Total() - lastCPUTimes.Total(); total != 0 {
 		user = user / total * 100
 		system = system / total * 100
 		idle = idle / total * 100
+	} else {
+		user = 0
+		system = 0
+		idle = 0
 	}
+	*lastCPUTimes = cpuTimes[0]
 
 	cpuTime.Set(c, user, "user")
 	cpuTime.Set(c, system, "system")
 	cpuTime.Set(c, idle, "idle")
+
 	return nil
 }
 
@@ -308,12 +296,12 @@ func updateDiskMetrics(c context.Context) errors.MultiError {
 
 		for _, device := range devices {
 			counters := io[device]
-			diskRead.Set(c, int64(counters.ReadBytes), device)
-			diskReadCount.Set(c, int64(counters.ReadCount), device)
-			diskReadTimeSpent.Set(c, int64(counters.ReadTime), device)
-			diskWrite.Set(c, int64(counters.WriteBytes), device)
-			diskWriteCount.Set(c, int64(counters.WriteCount), device)
-			diskWriteTimeSpent.Set(c, int64(counters.WriteTime), device)
+			setSysCounter(c, diskRead, int64(counters.ReadBytes), device)
+			setSysCounter(c, diskReadCount, int64(counters.ReadCount), device)
+			setSysCounter(c, diskReadTimeSpent, int64(counters.ReadTime), device)
+			setSysCounter(c, diskWrite, int64(counters.WriteBytes), device)
+			setSysCounter(c, diskWriteCount, int64(counters.WriteCount), device)
+			setSysCounter(c, diskWriteTimeSpent, int64(counters.WriteTime), device)
 		}
 	}
 
@@ -336,12 +324,12 @@ func updateNetworkMetrics(c context.Context) error {
 		return err
 	}
 	for _, count := range counts {
-		netUp.Set(c, int64(count.BytesSent), count.Name)
-		netDown.Set(c, int64(count.BytesRecv), count.Name)
-		netErrUp.Set(c, int64(count.Errout), count.Name)
-		netErrDown.Set(c, int64(count.Errin), count.Name)
-		netDropUp.Set(c, int64(count.Dropout), count.Name)
-		netDropDown.Set(c, int64(count.Dropin), count.Name)
+		setSysCounter(c, netUp, int64(count.BytesSent), count.Name)
+		setSysCounter(c, netDown, int64(count.BytesRecv), count.Name)
+		setSysCounter(c, netErrUp, int64(count.Errout), count.Name)
+		setSysCounter(c, netErrDown, int64(count.Errin), count.Name)
+		setSysCounter(c, netDropUp, int64(count.Dropout), count.Name)
+		setSysCounter(c, netDropDown, int64(count.Dropin), count.Name)
 	}
 	return nil
 }
@@ -377,8 +365,7 @@ func updateProcessMetrics(c context.Context) error {
 }
 
 func updateUnixTimeMetrics(c context.Context) error {
-	t := clock.Get(c).Now()
-	unixTime.Set(c, t.UnixNano()/int64(time.Millisecond))
+	unixTime.Set(c, clock.Get(c).Now().UnixMilli())
 	return nil
 }
 
@@ -420,4 +407,26 @@ func updateSystemTemps(c context.Context) error {
 		tempCPU.Set(c, cpu.Temperature, cpu.Core)
 	}
 	return nil
+}
+
+// setSysCounter reports a value of an OS counter (a cumulative integer).
+//
+// It makes sure values start from 0 to conform to tsmon rules for cumulative
+// metrics. The monitoring backend will use the reset timestamp (set when the
+// sysmon process starts) to correctly integrate values in presence of
+// discontinuities.
+func setSysCounter(ctx context.Context, counter metric.Counter, val int64, field string) {
+	var initVal int64
+
+	if !sysCountersSkipShift {
+		var ok bool
+		sysCountersLock.Lock()
+		if initVal, ok = sysCountersInit[sysCounterKey{counter, field}]; !ok {
+			sysCountersInit[sysCounterKey{counter, field}] = val
+			initVal = val
+		}
+		sysCountersLock.Unlock()
+	}
+
+	counter.Set(ctx, val-initVal, field)
 }

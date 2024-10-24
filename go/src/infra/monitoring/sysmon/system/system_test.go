@@ -14,6 +14,11 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 )
 
+func init() {
+	// Do not shift values to be 0. Tests are simpler that way.
+	sysCountersSkipShift = true
+}
+
 func TestMetrics(t *testing.T) {
 	t.Parallel()
 

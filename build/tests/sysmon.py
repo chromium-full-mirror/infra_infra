@@ -14,10 +14,12 @@ EXE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
 def main():
   sysmon = os.path.join(os.getcwd(), 'sysmon' + EXE_SUFFIX)
   return subprocess.call([
-      sysmon, '-log-level', 'debug', '-ts-mon-flush', 'manual',
-      '-ts-mon-config-file', ''
-  ],
-                         executable=sysmon)
+      sysmon,
+      '-log-level', 'debug',
+      '-sysmon-exit-after', '1s',
+      '-ts-mon-config-file', '',
+      '-ts-mon-endpoint', 'file://',
+  ], executable=sysmon)
 
 
 if __name__ == '__main__':
