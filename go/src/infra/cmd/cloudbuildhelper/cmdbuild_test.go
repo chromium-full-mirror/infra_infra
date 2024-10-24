@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cmd/cloudbuildhelper/cloudbuild"
 	"infra/cmd/cloudbuildhelper/fileset"
@@ -48,7 +48,7 @@ var testBaseOutput = &baseOutput{
 func TestBuild(t *testing.T) {
 	t.Parallel()
 
-	Convey("With mocks", t, func() {
+	ftt.Run("With mocks", t, func(t *ftt.Test) {
 		testTime := time.Date(2016, time.February, 3, 4, 5, 6, 0, time.Local)
 		ctx, tc := testclock.UseTime(context.Background(), testTime)
 		tc.SetTimerCallback(func(d time.Duration, t clock.Timer) {
@@ -71,15 +71,15 @@ func TestBuild(t *testing.T) {
 		)
 
 		builder.provenance = func(gs string) string {
-			So(gs, ShouldEqual, testTarballURL+"#1") // used first gen
-			return digest                            // got its digest correctly
+			assert.Loosely(t, gs, should.Equal(testTarballURL+"#1")) // used first gen
+			return digest                                            // got its digest correctly
 		}
 		builder.outputDigests = func(img string) string {
-			So(img, ShouldStartWith, testImageName+":mocked-")
+			assert.Loosely(t, img, should.HavePrefix(testImageName+":mocked-"))
 			return testDigest
 		}
 
-		Convey("Never seen before tarball", func() {
+		t.Run("Never seen before tarball", func(t *ftt.Test) {
 			res, err := runBuild(ctx, buildParams{
 				Manifest: &manifest.Manifest{
 					Name:          testTargetName,
@@ -95,15 +95,15 @@ func TestBuild(t *testing.T) {
 				Registry:     registry,
 				Output:       testBaseOutput,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Uploaded the file.
 			obj, err := store.Check(ctx, testTarballPath)
-			So(err, ShouldBeNil)
-			So(obj.String(), ShouldEqual, testTarballURL+"#1") // uploaded the first gen
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, obj.String(), should.Equal(testTarballURL+"#1")) // uploaded the first gen
 
 			// Used Cloud Build.
-			So(res, ShouldResemble, buildResult{
+			assert.Loosely(t, res, should.Resemble(buildResult{
 				baseOutput: testBaseOutput,
 				Image: &imageRef{
 					Image:        testImageName,
@@ -112,21 +112,21 @@ func TestBuild(t *testing.T) {
 					BuildID:      "b1",
 				},
 				ViewBuildURL: testLogURL,
-			})
+			}))
 
 			// Tagged it with canonical tag.
 			img, err := registry.GetImage(ctx, fmt.Sprintf("%s:%s", testImageName, testTagName))
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 
 			// And moved "latest" tag.
 			img, err = registry.GetImage(ctx, testImageName+":latest")
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 
 			// Now we build this exact tarball again using different canonical tag.
 			// We should get back the image we've already built.
-			Convey("Building existing tarball deterministically: reuses the image", func() {
+			t.Run("Building existing tarball deterministically: reuses the image", func(t *ftt.Test) {
 				builder.provenance = func(gs string) string {
 					panic("Cloud Build should not be invoked")
 				}
@@ -149,10 +149,10 @@ func TestBuild(t *testing.T) {
 					Registry:     registry,
 					Output:       testBaseOutput,
 				})
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Reused the existing image.
-				So(res, ShouldResemble, buildResult{
+				assert.Loosely(t, res, should.Resemble(buildResult{
 					baseOutput: testBaseOutput,
 					Image: &imageRef{
 						Image:        testImageName,
@@ -161,28 +161,28 @@ func TestBuild(t *testing.T) {
 						BuildID:      "b1", // was build there
 						Timestamp:    testTime.Add(10 * time.Second),
 					},
-				})
+				}))
 
 				// And moved "pushed" tag, even through no new image was built.
 				img, err := registry.GetImage(ctx, testImageName+":pushed")
-				So(err, ShouldBeNil)
-				So(img.Digest, ShouldEqual, testDigest)
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, img.Digest, should.Equal(testDigest))
 
 				// Both builds are associated with the tarball via its metadata now.
 				tarball, err := store.Check(ctx, testTarballPath)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				md := tarball.Metadata.Values(buildRefMetaKey)
-				So(md, ShouldHaveLength, 2)
-				So(md[0].Value, ShouldEqual, `{"build_id":"b2","tag":"another-tag"}`)
-				So(md[1].Value, ShouldEqual, `{"build_id":"b1","tag":"canonical-tag"}`)
+				assert.Loosely(t, md, should.HaveLength(2))
+				assert.Loosely(t, md[0].Value, should.Equal(`{"build_id":"b2","tag":"another-tag"}`))
+				assert.Loosely(t, md[1].Value, should.Equal(`{"build_id":"b1","tag":"canonical-tag"}`))
 			})
 
 			// Now we build this exact tarball again using different canonical tag,
 			// but mark the target as non-deterministic. It should ignore the existing
 			// image and build a new one.
-			Convey("Building existing tarball non-deterministically: creates new image", func() {
+			t.Run("Building existing tarball non-deterministically: creates new image", func(t *ftt.Test) {
 				builder.outputDigests = func(img string) string {
-					So(img, ShouldStartWith, testImageName+":mocked-")
+					assert.Loosely(t, img, should.HavePrefix(testImageName+":mocked-"))
 					return "sha256:new-totally-legit-hash"
 				}
 
@@ -204,10 +204,10 @@ func TestBuild(t *testing.T) {
 					Registry:     registry,
 					Output:       testBaseOutput,
 				})
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 
 				// Built the new image.
-				So(res, ShouldResemble, buildResult{
+				assert.Loosely(t, res, should.Resemble(buildResult{
 					baseOutput: testBaseOutput,
 					Image: &imageRef{
 						Image:        testImageName,
@@ -216,24 +216,24 @@ func TestBuild(t *testing.T) {
 						BuildID:      "b2",
 					},
 					ViewBuildURL: testLogURL,
-				})
+				}))
 
 				// And moved "latest" tag.
 				img, err = registry.GetImage(ctx, testImageName+":latest")
-				So(err, ShouldBeNil)
-				So(img.Digest, ShouldEqual, "sha256:new-totally-legit-hash")
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, img.Digest, should.Equal("sha256:new-totally-legit-hash"))
 
 				// Both builds are associated with the tarball via its metadata now.
 				tarball, err := store.Check(ctx, testTarballPath)
-				So(err, ShouldBeNil)
+				assert.Loosely(t, err, should.BeNil)
 				md := tarball.Metadata.Values(buildRefMetaKey)
-				So(md, ShouldHaveLength, 2)
-				So(md[0].Value, ShouldEqual, `{"build_id":"b2","tag":"another-tag"}`)
-				So(md[1].Value, ShouldEqual, `{"build_id":"b1","tag":"canonical-tag"}`)
+				assert.Loosely(t, md, should.HaveLength(2))
+				assert.Loosely(t, md[0].Value, should.Equal(`{"build_id":"b2","tag":"another-tag"}`))
+				assert.Loosely(t, md[1].Value, should.Equal(`{"build_id":"b1","tag":"canonical-tag"}`))
 			})
 		})
 
-		Convey("Building with PushesExplicitly==true builder", func() {
+		t.Run("Building with PushesExplicitly==true builder", func(t *ftt.Test) {
 			builder.pushesExplicitly = true
 
 			res, err := runBuild(ctx, buildParams{
@@ -251,15 +251,15 @@ func TestBuild(t *testing.T) {
 				Registry:     registry,
 				Output:       testBaseOutput,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Uploaded the file.
 			obj, err := store.Check(ctx, testTarballPath)
-			So(err, ShouldBeNil)
-			So(obj.String(), ShouldEqual, testTarballURL+"#1") // uploaded the first gen
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, obj.String(), should.Equal(testTarballURL+"#1")) // uploaded the first gen
 
 			// Used Cloud Build.
-			So(res, ShouldResemble, buildResult{
+			assert.Loosely(t, res, should.Resemble(buildResult{
 				baseOutput: testBaseOutput,
 				Image: &imageRef{
 					Image:        testImageName,
@@ -268,20 +268,20 @@ func TestBuild(t *testing.T) {
 					BuildID:      "b1",
 				},
 				ViewBuildURL: testLogURL,
-			})
+			}))
 
 			// Tagged it with canonical tag.
 			img, err := registry.GetImage(ctx, fmt.Sprintf("%s:%s", testImageName, testTagName))
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 
 			// And moved "latest" tag.
 			img, err = registry.GetImage(ctx, testImageName+":latest")
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 		})
 
-		Convey("Already seen canonical tag", func() {
+		t.Run("Already seen canonical tag", func(t *ftt.Test) {
 			registry.put(fmt.Sprintf("%s:%s", testImageName, testTagName), testDigest)
 
 			res, err := runBuild(ctx, buildParams{
@@ -292,25 +292,25 @@ func TestBuild(t *testing.T) {
 				Registry:     registry,
 				Output:       testBaseOutput,
 			})
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Reused the existing image.
-			So(res, ShouldResemble, buildResult{
+			assert.Loosely(t, res, should.Resemble(buildResult{
 				baseOutput: testBaseOutput,
 				Image: &imageRef{
 					Image:        testImageName,
 					Digest:       testDigest,
 					CanonicalTag: testTagName,
 				},
-			})
+			}))
 
 			// And moved "latest" tag.
 			img, err := registry.GetImage(ctx, testImageName+":latest")
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 		})
 
-		Convey("Using :inputs-hash as canonical tag", func() {
+		t.Run("Using :inputs-hash as canonical tag", func(t *ftt.Test) {
 			expectedTag := "cbh-inputs-" + digest[:24]
 
 			params := buildParams{
@@ -329,15 +329,15 @@ func TestBuild(t *testing.T) {
 				Output:       testBaseOutput,
 			}
 			res, err := runBuild(ctx, params)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// Uploaded the file.
 			obj, err := store.Check(ctx, testTarballPath)
-			So(err, ShouldBeNil)
-			So(obj.String(), ShouldEqual, testTarballURL+"#1") // uploaded the first gen
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, obj.String(), should.Equal(testTarballURL+"#1")) // uploaded the first gen
 
 			// Used Cloud Build.
-			So(res, ShouldResemble, buildResult{
+			assert.Loosely(t, res, should.Resemble(buildResult{
 				baseOutput: testBaseOutput,
 				Image: &imageRef{
 					Image:        testImageName,
@@ -346,19 +346,19 @@ func TestBuild(t *testing.T) {
 					BuildID:      "b1",
 				},
 				ViewBuildURL: testLogURL,
-			})
+			}))
 
 			// Tagged it with canonical tag.
 			img, err := registry.GetImage(ctx, fmt.Sprintf("%s:%s", testImageName, expectedTag))
-			So(err, ShouldBeNil)
-			So(img.Digest, ShouldEqual, testDigest)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, img.Digest, should.Equal(testDigest))
 
 			// Repeating the build reuses the existing image since inputs hash didn't
 			// change (and thus its canonical tag also didn't change and we already
 			// have an image with this canonical tag).
 			res, err = runBuild(ctx, params)
-			So(err, ShouldBeNil)
-			So(res, ShouldResemble, buildResult{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.Resemble(buildResult{
 				baseOutput: testBaseOutput,
 				Image: &imageRef{
 					Image:        testImageName,
@@ -366,10 +366,10 @@ func TestBuild(t *testing.T) {
 					CanonicalTag: expectedTag,
 				},
 				ViewBuildURL: "", // Cloud Build wasn't used
-			})
+			}))
 		})
 
-		Convey("Cloud Build build failure", func() {
+		t.Run("Cloud Build build failure", func(t *ftt.Test) {
 			builder.finalStatus = cloudbuild.StatusFailure
 			_, err := runBuild(ctx, buildParams{
 				Manifest: &manifest.Manifest{Name: testTargetName},
@@ -379,10 +379,10 @@ func TestBuild(t *testing.T) {
 				Builder:  builder,
 				Registry: registry,
 			})
-			So(err, ShouldErrLike, "build failed, see its logs")
+			assert.Loosely(t, err, should.ErrLike("build failed, see its logs"))
 		})
 
-		Convey("Cloud Build API errors", func() {
+		t.Run("Cloud Build API errors", func(t *ftt.Test) {
 			builder.checkCallback = func(b *runningBuild) error {
 				return fmt.Errorf("boom")
 			}
@@ -394,7 +394,7 @@ func TestBuild(t *testing.T) {
 				Builder:  builder,
 				Registry: registry,
 			})
-			So(err, ShouldErrLike, "waiting for the build to finish: too many errors, the last one: boom")
+			assert.Loosely(t, err, should.ErrLike("waiting for the build to finish: too many errors, the last one: boom"))
 		})
 	})
 }

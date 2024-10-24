@@ -5,21 +5,22 @@
 package docker
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
 	"time"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestLabels(t *testing.T) {
 	t.Parallel()
 
-	Convey("Empty", t, func() {
+	ftt.Run("Empty", t, func(t *ftt.Test) {
 		l := Labels{}
-		So(l.AsBuildArgs(), ShouldHaveLength, 0)
+		assert.Loosely(t, l.AsBuildArgs(), should.HaveLength(0))
 	})
 
-	Convey("Non-empty", t, func() {
+	ftt.Run("Non-empty", t, func(t *ftt.Test) {
 		l := Labels{
 			Created:      time.Date(2016, time.February, 3, 4, 5, 6, 7, time.UTC),
 			BuildTool:    "xxx",
@@ -32,7 +33,7 @@ func TestLabels(t *testing.T) {
 				"org.chromium.build.tool": "should be overridden",
 			},
 		}
-		So(l.AsBuildArgs(), ShouldResemble, []string{
+		assert.Loosely(t, l.AsBuildArgs(), should.Resemble([]string{
 			"--label", "k1=v1",
 			"--label", "org.chromium.build.canonical=www",
 			"--label", "org.chromium.build.id=123",
@@ -40,6 +41,6 @@ func TestLabels(t *testing.T) {
 			"--label", "org.chromium.build.mode=yyy",
 			"--label", "org.chromium.build.tool=xxx",
 			"--label", "org.opencontainers.image.created=2016-02-03T04:05:06Z",
-		})
+		}))
 	})
 }

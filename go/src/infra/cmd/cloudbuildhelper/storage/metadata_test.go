@@ -9,9 +9,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestMetadata(t *testing.T) {
@@ -67,33 +68,33 @@ func TestMetadata(t *testing.T) {
 		},
 	}
 
-	Convey("ParseMetadata", t, func() {
-		So(ParseMetadata(raw()), ShouldResemble, parsed)
+	ftt.Run("ParseMetadata", t, func(t *ftt.Test) {
+		assert.Loosely(t, ParseMetadata(raw()), should.Resemble(parsed))
 	})
 
-	Convey("Assemble", t, func() {
+	ftt.Run("Assemble", t, func(t *ftt.Test) {
 		raw := raw()
 		md := ParseMetadata(raw).Assemble()
-		So(md, ShouldHaveLength, len(raw))
+		assert.Loosely(t, md, should.HaveLength(len(raw)))
 
 		// Known edge cases we don't care about.
-		So(md["c@3"], ShouldEqual, "v7")
-		So(md["d"], ShouldEqual, "v8")
+		assert.Loosely(t, md["c@3"], should.Equal("v7"))
+		assert.Loosely(t, md["d"], should.Equal("v8"))
 		delete(md, "c@3")
 		delete(raw, "c@0003")
 		delete(md, "d")
 		delete(raw, "d@0")
 
-		So(md, ShouldResemble, raw)
+		assert.Loosely(t, md, should.Resemble(raw))
 	})
 
-	Convey("Keys", t, func() {
-		So(ParseMetadata(raw()).Keys(), ShouldResemble, []string{
+	ftt.Run("Keys", t, func(t *ftt.Test) {
+		assert.Loosely(t, ParseMetadata(raw()).Keys(), should.Resemble([]string{
 			"a", "b", "bad@", "bad@1@2", "bad@?", "c", "d", "raw1", "raw2",
-		})
+		}))
 	})
 
-	Convey("Equal", t, func() {
+	ftt.Run("Equal", t, func(t *ftt.Test) {
 		e := func(k string, ts Timestamp) Metadatum {
 			return Metadatum{Key: k, Timestamp: ts}
 		}
@@ -106,19 +107,19 @@ func TestMetadata(t *testing.T) {
 			return out
 		}
 
-		So(md().Equal(md()), ShouldBeTrue)
-		So(md(e("1", 1)).Equal(md(e("1", 1))), ShouldBeTrue)
-		So(md(e("1", 1)).Equal(md(e("1", 2))), ShouldBeFalse)
-		So(md(e("1", 1), e("1", 2)).Equal(md(e("1", 1))), ShouldBeFalse)
-		So(md(e("1", 1), e("2", 2)).Equal(md(e("1", 1), e("1", 2))), ShouldBeFalse)
+		assert.Loosely(t, md().Equal(md()), should.BeTrue)
+		assert.Loosely(t, md(e("1", 1)).Equal(md(e("1", 1))), should.BeTrue)
+		assert.Loosely(t, md(e("1", 1)).Equal(md(e("1", 2))), should.BeFalse)
+		assert.Loosely(t, md(e("1", 1), e("1", 2)).Equal(md(e("1", 1))), should.BeFalse)
+		assert.Loosely(t, md(e("1", 1), e("2", 2)).Equal(md(e("1", 1), e("1", 2))), should.BeFalse)
 	})
 
-	Convey("Clone", t, func() {
+	ftt.Run("Clone", t, func(t *ftt.Test) {
 		md := ParseMetadata(raw())
-		So(md.Clone().Equal(md), ShouldBeTrue)
+		assert.Loosely(t, md.Clone().Equal(md), should.BeTrue)
 	})
 
-	Convey("Add", t, func() {
+	ftt.Run("Add", t, func(t *ftt.Test) {
 		md := ParseMetadata(raw())
 
 		md.Add(Metadatum{Key: "new", Timestamp: 5})
@@ -127,15 +128,15 @@ func TestMetadata(t *testing.T) {
 		md.Add(Metadatum{Key: "new", Timestamp: 6})
 		md.Add(Metadatum{Key: "new", Timestamp: 4, Value: "z"})
 
-		So(md.Values("new"), ShouldResemble, []Metadatum{
+		assert.Loosely(t, md.Values("new"), should.Resemble([]Metadatum{
 			{Key: "new", Timestamp: 6},
 			{Key: "new", Timestamp: 5},
 			{Key: "new", Timestamp: 4, Value: "z"},
 			{Key: "new", Timestamp: 3},
-		})
+		}))
 	})
 
-	Convey("TrimUnimportant", t, func() {
+	ftt.Run("TrimUnimportant", t, func(t *ftt.Test) {
 		md := Metadata{}
 
 		md.Add(Metadatum{Key: "k1", Timestamp: 1})
@@ -144,14 +145,14 @@ func TestMetadata(t *testing.T) {
 		md.Add(Metadatum{Key: "k2", Timestamp: 1})
 
 		md.TrimUnimportant(2)
-		So(md.Assemble(), ShouldResemble, map[string]string{
+		assert.Loosely(t, md.Assemble(), should.Resemble(map[string]string{
 			"k1@1": "", // oldest
 			"k1@3": "", // most recent
 			"k2@1": "",
-		})
+		}))
 	})
 
-	Convey("ToPretty", t, func() {
+	ftt.Run("ToPretty", t, func(t *ftt.Test) {
 		ts := testclock.TestRecentTimeUTC
 		md := Metadata{}
 
@@ -176,7 +177,7 @@ func TestMetadata(t *testing.T) {
 		add("k2", 5*time.Second, "small1")
 		add("k2", 10*time.Second, "small2")
 
-		So("\n"+md.ToPretty(ts, 10), ShouldEqual, `
+		assert.Loosely(t, "\n"+md.ToPretty(ts, 10), should.Equal(`
 k1 (5 seconds ago): "small1"
 k1 (10 seconds ago):
   {
@@ -186,6 +187,6 @@ k1 (10 seconds ago):
 k1 (15 seconds ago): "small2"
 k2 (5 seconds ago): "small1"
 k2 (10 seconds ago): "small2"
-`)
+`))
 	})
 }

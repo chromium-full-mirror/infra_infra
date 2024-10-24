@@ -15,15 +15,16 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestSet(t *testing.T) {
 	t.Parallel()
 
-	Convey("Regular files", t, func(c C) {
+	ftt.Run("Regular files", t, func(c *ftt.Test) {
 		dir1 := newTempDir(c)
 		dir1.touch("f1")
 		dir1.mkdir("dir")
@@ -41,12 +42,12 @@ func TestSet(t *testing.T) {
 		dir3.touch("f")
 
 		s := &Set{}
-		So(s.AddFromDisk(dir1.join(""), "", nil), ShouldBeNil)
-		So(s.AddFromDisk(dir2.join(""), "", nil), ShouldBeNil)
-		So(s.AddFromDisk(dir3.join(""), "dir/deep/", nil), ShouldBeNil)
-		So(s.AddFromMemory("mem", nil, nil), ShouldBeNil)
-		So(s.Len(), ShouldEqual, 11)
-		So(collect(s), ShouldResemble, []string{
+		assert.Loosely(c, s.AddFromDisk(dir1.join(""), "", nil), should.BeNil)
+		assert.Loosely(c, s.AddFromDisk(dir2.join(""), "", nil), should.BeNil)
+		assert.Loosely(c, s.AddFromDisk(dir3.join(""), "dir/deep/", nil), should.BeNil)
+		assert.Loosely(c, s.AddFromMemory("mem", nil, nil), should.BeNil)
+		assert.Loosely(c, s.Len(), should.Equal(11))
+		assert.Loosely(c, collect(s), should.Resemble([]string{
 			"D dir",
 			"F dir/a",
 			"F dir/b",
@@ -58,10 +59,10 @@ func TestSet(t *testing.T) {
 			"F f1",
 			"F f2",
 			"F mem",
-		})
+		}))
 	})
 
-	Convey("Symlinks", t, func() {
+	ftt.Run("Symlinks", t, func(c *ftt.Test) {
 		addOne := func(path, target string) (*File, error) {
 			s := Set{}
 			if err := s.AddSymlink(path, target); err != nil {
@@ -76,103 +77,103 @@ func TestSet(t *testing.T) {
 		}
 
 		f, err := addOne("path", "target")
-		So(err, ShouldBeNil)
-		So(f, ShouldResemble, &File{
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, f, should.Resemble(&File{
 			Path:          "path",
 			SymlinkTarget: "target",
-		})
+		}))
 
 		f, err = addOne("a/b/c/path", "target")
-		So(err, ShouldBeNil)
-		So(f, ShouldResemble, &File{
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, f, should.Resemble(&File{
 			Path:          "a/b/c/path",
 			SymlinkTarget: "target",
-		})
+		}))
 
 		f, err = addOne("a/b/c/path", ".././.")
-		So(err, ShouldBeNil)
-		So(f, ShouldResemble, &File{
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, f, should.Resemble(&File{
 			Path:          "a/b/c/path",
 			SymlinkTarget: "..",
-		})
+		}))
 
 		f, err = addOne("a/b/c/path", "../..")
-		So(err, ShouldBeNil)
-		So(f, ShouldResemble, &File{
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, f, should.Resemble(&File{
 			Path:          "a/b/c/path",
 			SymlinkTarget: "../..",
-		})
+		}))
 
 		_, err = addOne("a/b/c/path", "../../..")
-		So(err, ShouldErrLike, "is not in the set")
+		assert.Loosely(c, err, should.ErrLike("is not in the set"))
 	})
 
-	Convey("Reading body", t, func(c C) {
+	ftt.Run("Reading body", t, func(c *ftt.Test) {
 		s := &Set{}
 
 		dir1 := newTempDir(c)
 		dir1.put("f", "1", 0666)
-		So(s.AddFromDisk(dir1.join(""), "", nil), ShouldBeNil)
-		So(s.Files(), ShouldHaveLength, 1)
+		assert.Loosely(c, s.AddFromDisk(dir1.join(""), "", nil), should.BeNil)
+		assert.Loosely(c, s.Files(), should.HaveLength(1))
 
 		f, ok := s.File("f")
-		So(ok, ShouldBeTrue)
-		So(read(f), ShouldEqual, "1")
+		assert.Loosely(c, ok, should.BeTrue)
+		assert.Loosely(c, read(t, f), should.Equal("1"))
 
 		dir2 := newTempDir(c)
 		dir2.put("f", "2", 0666)
-		So(s.AddFromDisk(dir2.join(""), "", nil), ShouldBeNil)
-		So(s.Files(), ShouldHaveLength, 1) // overwritten
+		assert.Loosely(c, s.AddFromDisk(dir2.join(""), "", nil), should.BeNil)
+		assert.Loosely(c, s.Files(), should.HaveLength(1)) // overwritten
 
 		// Overwritten.
 		f, ok = s.File("f")
-		So(ok, ShouldBeTrue)
-		So(read(f), ShouldEqual, "2")
+		assert.Loosely(c, ok, should.BeTrue)
+		assert.Loosely(c, read(t, f), should.Equal("2"))
 	})
 
-	Convey("Reading memfile", t, func(c C) {
+	ftt.Run("Reading memfile", t, func(c *ftt.Test) {
 		s := &Set{}
-		So(s.AddFromMemory("mem", []byte("123456"), &File{
+		assert.Loosely(c, s.AddFromMemory("mem", []byte("123456"), &File{
 			Writable:   true,
 			Executable: true,
-		}), ShouldBeNil)
+		}), should.BeNil)
 		files := s.Files()
-		So(files, ShouldHaveLength, 1)
-		So(files[0].Writable, ShouldBeTrue)
-		So(files[0].Executable, ShouldBeTrue)
-		So(read(files[0]), ShouldEqual, "123456")
+		assert.Loosely(c, files, should.HaveLength(1))
+		assert.Loosely(c, files[0].Writable, should.BeTrue)
+		assert.Loosely(c, files[0].Executable, should.BeTrue)
+		assert.Loosely(c, read(t, files[0]), should.Equal("123456"))
 	})
 
 	if runtime.GOOS != "windows" {
-		Convey("Recognizes read-only", t, func(c C) {
+		ftt.Run("Recognizes read-only", t, func(c *ftt.Test) {
 			s := &Set{}
 
 			dir := newTempDir(c)
 			dir.put("ro", "", 0444)
 			dir.put("rw", "", 0666)
-			So(s.AddFromDisk(dir.join(""), "", nil), ShouldBeNil)
+			assert.Loosely(c, s.AddFromDisk(dir.join(""), "", nil), should.BeNil)
 
 			files := s.Files()
-			So(files, ShouldHaveLength, 2)
-			So(files[0].Writable, ShouldBeFalse)
-			So(files[1].Writable, ShouldBeTrue)
+			assert.Loosely(c, files, should.HaveLength(2))
+			assert.Loosely(c, files[0].Writable, should.BeFalse)
+			assert.Loosely(c, files[1].Writable, should.BeTrue)
 		})
 
-		Convey("Recognizes executable", t, func(c C) {
+		ftt.Run("Recognizes executable", t, func(c *ftt.Test) {
 			s := &Set{}
 
 			dir := newTempDir(c)
 			dir.put("n", "", 0666)
 			dir.put("y", "", 0777)
-			So(s.AddFromDisk(dir.join(""), "", nil), ShouldBeNil)
+			assert.Loosely(c, s.AddFromDisk(dir.join(""), "", nil), should.BeNil)
 
 			files := s.Files()
-			So(files, ShouldHaveLength, 2)
-			So(files[0].Executable, ShouldBeFalse)
-			So(files[1].Executable, ShouldBeTrue)
+			assert.Loosely(c, files, should.HaveLength(2))
+			assert.Loosely(c, files[0].Executable, should.BeFalse)
+			assert.Loosely(c, files[1].Executable, should.BeTrue)
 		})
 
-		Convey("Follows symlinks", t, func(c C) {
+		ftt.Run("Follows symlinks", t, func(c *ftt.Test) {
 			dir := newTempDir(c)
 			dir.touch("file")
 			dir.mkdir("dir")
@@ -183,16 +184,16 @@ func TestSet(t *testing.T) {
 			dir.symlink("stage/broken", "broken") // skipped
 
 			s := &Set{}
-			So(s.AddFromDisk(dir.join("stage"), "", nil), ShouldBeNil)
-			So(collect(s), ShouldResemble, []string{
+			assert.Loosely(c, s.AddFromDisk(dir.join("stage"), "", nil), should.BeNil)
+			assert.Loosely(c, collect(s), should.Resemble([]string{
 				"D dirlink",
 				"F dirlink/a",
 				"F filelink",
-			})
+			}))
 		})
 	}
 
-	Convey("Materialize works", t, func(c C) {
+	ftt.Run("Materialize works", t, func(c *ftt.Test) {
 		set := &Set{}
 		set.Add(memFile("f", "hello"))
 		set.Add(File{Path: "dir", Directory: true})
@@ -207,20 +208,20 @@ func TestSet(t *testing.T) {
 		set.Add(exe)
 
 		d := newTempDir(c)
-		So(set.Materialize(d.join("")), ShouldBeNil)
+		assert.Loosely(c, set.Materialize(d.join("")), should.BeNil)
 
 		scanned := &Set{}
-		So(scanned.AddFromDisk(d.join(""), "", nil), ShouldBeNil)
-		assertEqualSets(scanned, set)
+		assert.Loosely(c, scanned.AddFromDisk(d.join(""), "", nil), should.BeNil)
+		assertEqualSets(t, scanned, set)
 	})
 
-	Convey("ToTar works", t, func(c C) {
+	ftt.Run("ToTar works", t, func(c *ftt.Test) {
 		s := prepSet()
 
 		buf := bytes.Buffer{}
 		tb := tar.NewWriter(&buf)
-		So(s.ToTar(tb), ShouldBeNil)
-		So(tb.Close(), ShouldBeNil)
+		assert.Loosely(c, s.ToTar(tb), should.BeNil)
+		assert.Loosely(c, tb.Close(), should.BeNil)
 
 		scan := &Set{}
 		tr := tar.NewReader(&buf)
@@ -229,7 +230,7 @@ func TestSet(t *testing.T) {
 			if err == io.EOF {
 				break
 			}
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 
 			if hdr.Typeflag == tar.TypeDir {
 				scan.Add(File{
@@ -246,7 +247,7 @@ func TestSet(t *testing.T) {
 
 			body := bytes.Buffer{}
 			_, err = io.Copy(&body, tr)
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 
 			f := memFile(hdr.Name, string(body.Bytes()))
 			if runtime.GOOS != "windows" {
@@ -256,22 +257,22 @@ func TestSet(t *testing.T) {
 			scan.Add(f)
 		}
 
-		assertEqualSets(s, scan)
+		assertEqualSets(t, s, scan)
 	})
 
-	Convey("ToTarGz works", t, func(c C) {
+	ftt.Run("ToTarGz works", t, func(c *ftt.Test) {
 		buf := bytes.Buffer{}
-		So(prepSet().ToTarGz(&buf), ShouldBeNil)
-		So(buf.Len(), ShouldNotEqual, 0) // writes something...
+		assert.Loosely(c, prepSet().ToTarGz(&buf), should.BeNil)
+		assert.Loosely(c, buf.Len(), should.NotEqual(0)) // writes something...
 	})
 
-	Convey("ToTarGzFile works", t, func(c C) {
+	ftt.Run("ToTarGzFile works", t, func(c *ftt.Test) {
 		hash, err := prepSet().ToTarGzFile(newTempDir(c).join("tmp"))
-		So(err, ShouldBeNil)
-		So(hash, ShouldHaveLength, 64)
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, hash, should.HaveLength(64))
 	})
 
-	Convey("Overlay set works", t, func(c C) {
+	ftt.Run("Overlay set works", t, func(c *ftt.Test) {
 		set := &Set{}
 		set.Add(memFile("f1", "main"))
 		set.Add(memFile("f2", "main"))
@@ -280,20 +281,20 @@ func TestSet(t *testing.T) {
 		set.Overlay().Add(memFile("f1", "overlay"))
 		set.Overlay().Add(memFile("f4", "overlay"))
 
-		So(set.Len(), ShouldEqual, 4)
-		So(collect(set), ShouldResemble, []string{
+		assert.Loosely(c, set.Len(), should.Equal(4))
+		assert.Loosely(c, collect(set), should.Resemble([]string{
 			"F f1",
 			"F f2",
 			"F f3",
 			"F f4",
-		})
+		}))
 
 		f1, _ := set.File("f1")
-		So(read(f1), ShouldEqual, "overlay")
+		assert.Loosely(c, read(t, f1), should.Equal("overlay"))
 		f2, _ := set.File("f2")
-		So(read(f2), ShouldEqual, "main")
+		assert.Loosely(c, read(t, f2), should.Equal("main"))
 		f4, _ := set.File("f4")
-		So(read(f4), ShouldEqual, "overlay")
+		assert.Loosely(c, read(t, f4), should.Equal("overlay"))
 	})
 }
 
@@ -310,12 +311,14 @@ func collect(s *Set) []string {
 	return out
 }
 
-func read(f File) string {
+func read(t testing.TB, f File) string {
+	t.Helper()
+
 	if f.Directory || f.SymlinkTarget != "" {
 		return ""
 	}
 	blob, err := f.ReadAll()
-	So(err, ShouldBeNil)
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
 	return string(blob)
 }
 
@@ -348,18 +351,21 @@ func memFile(path, body string) File {
 	}
 }
 
-func assertEqualSets(a, b *Set) {
-	aMeta, aBodies := splitBodies(a.Files())
-	bMeta, bBodies := splitBodies(b.Files())
-	So(aMeta, ShouldResemble, bMeta)
-	So(aBodies, ShouldResemble, bBodies)
+func assertEqualSets(t testing.TB, a, b *Set) {
+	t.Helper()
+	aMeta, aBodies := splitBodies(t, a.Files())
+	bMeta, bBodies := splitBodies(t, b.Files())
+	assert.Loosely(t, aMeta, should.Resemble(bMeta), truth.LineContext())
+	assert.Loosely(t, aBodies, should.Resemble(bBodies), truth.LineContext())
 }
 
-func splitBodies(fs []File) (files []File, bodies map[string]string) {
+func splitBodies(t testing.TB, fs []File) (files []File, bodies map[string]string) {
+	t.Helper()
+
 	files = make([]File, len(fs))
 	bodies = make(map[string]string, len(fs))
 	for i, f := range fs {
-		bodies[f.Path] = read(f)
+		bodies[f.Path] = read(t, f)
 		f.Body = nil
 		files[i] = f
 	}
@@ -368,14 +374,15 @@ func splitBodies(fs []File) (files []File, bodies map[string]string) {
 
 type tmpDir struct {
 	p string
-	c C
+	t testing.TB
 }
 
-func newTempDir(c C) tmpDir {
+func newTempDir(t testing.TB) tmpDir {
+	t.Helper()
 	tmp, err := os.MkdirTemp("", "fileset_test")
-	c.So(err, ShouldBeNil)
-	c.Reset(func() { _ = os.RemoveAll(tmp) })
-	return tmpDir{tmp, c}
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
+	t.Cleanup(func() { _ = os.RemoveAll(tmp) })
+	return tmpDir{tmp, t}
 }
 
 func (t tmpDir) join(p string) string {
@@ -383,21 +390,27 @@ func (t tmpDir) join(p string) string {
 }
 
 func (t tmpDir) mkdir(p string) {
-	t.c.So(os.MkdirAll(t.join(p), 0777), ShouldBeNil)
+	t.t.Helper()
+	assert.Loosely(t.t, os.MkdirAll(t.join(p), 0777), should.ErrLike(nil), truth.LineContext())
 }
 
 func (t tmpDir) put(p, data string, mode os.FileMode) {
+	t.t.Helper()
 	f, err := os.OpenFile(t.join(p), os.O_CREATE|os.O_WRONLY, mode)
-	t.c.So(err, ShouldBeNil)
+	assert.Loosely(t.t, err, should.ErrLike(nil), truth.LineContext())
 	_, err = f.Write([]byte(data))
-	t.c.So(err, ShouldBeNil)
-	t.c.So(f.Close(), ShouldBeNil)
+	assert.Loosely(t.t, err, should.ErrLike(nil), truth.LineContext())
+	assert.Loosely(t.t, f.Close(), should.ErrLike(nil), truth.LineContext())
 }
 
 func (t tmpDir) touch(p string) {
+	t.t.Helper()
+
 	t.put(p, "", 0666)
 }
 
 func (t tmpDir) symlink(name, target string) {
-	So(os.Symlink(t.join(target), t.join(name)), ShouldBeNil)
+	t.t.Helper()
+
+	assert.Loosely(t.t, os.Symlink(t.join(target), t.join(name)), should.BeNil, truth.LineContext())
 }

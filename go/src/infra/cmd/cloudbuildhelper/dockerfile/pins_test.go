@@ -7,12 +7,11 @@ package dockerfile
 import (
 	"bytes"
 	"errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"strings"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestPins(t *testing.T) {
@@ -24,85 +23,85 @@ func TestPins(t *testing.T) {
 		{"image": "gcr.io/example/zzz", "tag": "1.2.3", "digest": "sha256:789"}
 	]}`
 
-	Convey("Works", t, func() {
+	ftt.Run("Works", t, func(t *ftt.Test) {
 		p, err := ReadPins(strings.NewReader(pinsYAML))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		r := p.Resolver()
 
 		d, err := r.ResolveTag("xxx", "")
-		So(err, ShouldBeNil)
-		So(d, ShouldEqual, "sha256:123")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, d, should.Equal("sha256:123"))
 
 		// The same exact pin.
 		d, err = r.ResolveTag("library/xxx", "latest")
-		So(err, ShouldBeNil)
-		So(d, ShouldEqual, "sha256:123")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, d, should.Equal("sha256:123"))
 
 		// And this one too.
 		d, err = r.ResolveTag("docker.io/library/xxx", "latest")
-		So(err, ShouldBeNil)
-		So(d, ShouldEqual, "sha256:123")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, d, should.Equal("sha256:123"))
 
 		d, err = r.ResolveTag("yyy", "old")
-		So(err, ShouldBeNil)
-		So(d, ShouldEqual, "sha256:456")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, d, should.Equal("sha256:456"))
 
 		d, err = r.ResolveTag("gcr.io/example/zzz", "1.2.3")
-		So(err, ShouldBeNil)
-		So(d, ShouldEqual, "sha256:789")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, d, should.Equal("sha256:789"))
 
 		// Missing image.
 		_, err = r.ResolveTag("zzz", "1.2.3")
-		So(err, ShouldErrLike, "no such pinned <image>:<tag> combination in pins YAML")
-		So(IsMissingPinErr(err), ShouldResemble, &Pin{
+		assert.Loosely(t, err, should.ErrLike("no such pinned <image>:<tag> combination in pins YAML"))
+		assert.Loosely(t, IsMissingPinErr(err), should.Resemble(&Pin{
 			Image: "docker.io/library/zzz",
 			Tag:   "1.2.3",
-		})
+		}))
 
 		// Missing tag.
 		_, err = r.ResolveTag("yyy", "blah")
-		So(err, ShouldErrLike, "no such pinned <image>:<tag> combination in pins YAML")
-		So(IsMissingPinErr(err), ShouldResemble, &Pin{
+		assert.Loosely(t, err, should.ErrLike("no such pinned <image>:<tag> combination in pins YAML"))
+		assert.Loosely(t, IsMissingPinErr(err), should.Resemble(&Pin{
 			Image: "docker.io/library/yyy",
 			Tag:   "blah",
-		})
+		}))
 	})
 
-	Convey("Duplicate pins YAML", t, func() {
+	ftt.Run("Duplicate pins YAML", t, func(t *ftt.Test) {
 		_, err := ReadPins(strings.NewReader(`{"pins": [
 			{"image": "library/xxx", "tag": "tag", "digest": "sha256:456"},
 			{"image": "library/xxx", "tag": "another", "digest": "sha256:456"},  # OK
 			{"image": "xxx", "tag": "tag", "digest": "sha256:456"}               # dup
 		]}`))
-		So(err, ShouldErrLike, `pin #3: duplicate entry for "docker.io/library/xxx:tag"`)
+		assert.Loosely(t, err, should.ErrLike(`pin #3: duplicate entry for "docker.io/library/xxx:tag"`))
 	})
 
-	Convey("Incomplete pins", t, func() {
+	ftt.Run("Incomplete pins", t, func(t *ftt.Test) {
 		_, err := ReadPins(strings.NewReader(`{"pins": [
       {"digest": "sha256:123"}
     ]}`))
-		So(err, ShouldErrLike, "pin #1: 'image' field is required")
+		assert.Loosely(t, err, should.ErrLike("pin #1: 'image' field is required"))
 
 		_, err = ReadPins(strings.NewReader(`{"pins": [
       {"image": "xxx"}
     ]}`))
-		So(err, ShouldErrLike, "pin #1: 'digest' field is required")
+		assert.Loosely(t, err, should.ErrLike("pin #1: 'digest' field is required"))
 	})
 
-	Convey("Empty", t, func() {
+	ftt.Run("Empty", t, func(t *ftt.Test) {
 		r := (&Pins{}).Resolver()
 		_, err := r.ResolveTag("img", "tag")
-		So(err, ShouldErrLike, "not using pins YAML, the Dockerfile must use @<digest> refs")
+		assert.Loosely(t, err, should.ErrLike("not using pins YAML, the Dockerfile must use @<digest> refs"))
 	})
 
-	Convey("WritePins", t, func() {
+	ftt.Run("WritePins", t, func(t *ftt.Test) {
 		p, err := ReadPins(strings.NewReader(pinsYAML))
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
 		out := bytes.Buffer{}
-		So(WritePins(&out, p), ShouldBeNil)
-		So(out.String(), ShouldEqual, `# Managed by cloudbuildhelper.
+		assert.Loosely(t, WritePins(&out, p), should.BeNil)
+		assert.Loosely(t, out.String(), should.Equal(`# Managed by cloudbuildhelper.
 #
 # All comments or unrecognized fields will be overwritten. To comment an entry
 # use "comment" field.
@@ -130,29 +129,29 @@ pins:
 - image: gcr.io/example/zzz
   tag: 1.2.3
   digest: sha256:789
-`)
+`))
 	})
 
-	Convey("Add", t, func() {
+	ftt.Run("Add", t, func(t *ftt.Test) {
 		p := Pins{}
 
 		// Adds new, normalizing it.
-		So(p.Add(Pin{Image: "xxx", Digest: "yyy"}), ShouldBeNil)
-		So(p.Pins, ShouldResemble, []Pin{
+		assert.Loosely(t, p.Add(Pin{Image: "xxx", Digest: "yyy"}), should.BeNil)
+		assert.Loosely(t, p.Pins, should.Resemble([]Pin{
 			{Image: "docker.io/library/xxx", Tag: "latest", Digest: "yyy"},
-		})
+		}))
 
 		// Overwrites existing.
-		So(p.Add(Pin{Image: "library/xxx", Digest: "zzz"}), ShouldBeNil)
-		So(p.Pins, ShouldResemble, []Pin{
+		assert.Loosely(t, p.Add(Pin{Image: "library/xxx", Digest: "zzz"}), should.BeNil)
+		assert.Loosely(t, p.Pins, should.Resemble([]Pin{
 			{Image: "docker.io/library/xxx", Tag: "latest", Digest: "zzz"},
-		})
+		}))
 
 		// Handle bad pins.
-		So(p.Add(Pin{}), ShouldErrLike, `'image' field is required`)
+		assert.Loosely(t, p.Add(Pin{}), should.ErrLike(`'image' field is required`))
 	})
 
-	Convey("Visit success", t, func() {
+	ftt.Run("Visit success", t, func(t *ftt.Test) {
 		p := Pins{Pins: []Pin{
 			{Image: "example.com/repo/img1", Tag: "t1", Digest: "d1"},
 			{Image: "example.com/repo/img1", Tag: "t2", Digest: "d2"},
@@ -164,17 +163,17 @@ pins:
 			p.Digest += "_new"
 			return nil
 		})
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 
-		So(p.Pins, ShouldResemble, []Pin{
+		assert.Loosely(t, p.Pins, should.Resemble([]Pin{
 			{Image: "example.com/repo/img1", Tag: "t1", Digest: "d1_new"},
 			{Image: "example.com/repo/img1", Tag: "t2", Digest: "d2_new"},
 			{Image: "example.com/repo/img2", Tag: "t3", Digest: "d3_new"},
 			{Image: "example.com/repo/img2", Tag: "t4", Digest: "d4_new"},
-		})
+		}))
 	})
 
-	Convey("Visit failure", t, func() {
+	ftt.Run("Visit failure", t, func(t *ftt.Test) {
 		p := Pins{Pins: []Pin{
 			{Image: "example.com/repo/img1", Tag: "t1", Digest: "d1"},
 			{Image: "example.com/repo/img1", Tag: "t2", Digest: "d2"},
@@ -189,14 +188,14 @@ pins:
 			}
 			return nil
 		})
-		So(err, ShouldErrLike, `blarg (and 1 other error)`)
+		assert.Loosely(t, err, should.ErrLike(`blarg (and 1 other error)`))
 
 		// Updated only img1 ones.
-		So(p.Pins, ShouldResemble, []Pin{
+		assert.Loosely(t, p.Pins, should.Resemble([]Pin{
 			{Image: "example.com/repo/img1", Tag: "t1", Digest: "d1_new"},
 			{Image: "example.com/repo/img1", Tag: "t2", Digest: "d2_new"},
 			{Image: "example.com/repo/img2", Tag: "t3", Digest: "d3"},
 			{Image: "example.com/repo/img2", Tag: "t4", Digest: "d4"},
-		})
+		}))
 	})
 }

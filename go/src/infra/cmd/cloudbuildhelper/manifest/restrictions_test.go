@@ -7,61 +7,62 @@ package manifest
 import (
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/flag/stringsetflag"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestCheckTargetName(t *testing.T) {
 	t.Parallel()
 
-	Convey("Unrestricted", t, func() {
+	ftt.Run("Unrestricted", t, func(t *ftt.Test) {
 		r := Restrictions{}
-		So(r.CheckTargetName("blah"), ShouldBeNil)
+		assert.Loosely(t, r.CheckTargetName("blah"), should.BeNil)
 	})
 
-	Convey("Restricted", t, func() {
+	ftt.Run("Restricted", t, func(t *ftt.Test) {
 		r := Restrictions{
 			targets: stringsetflag.Flag{Data: stringset.NewFromSlice("some-prefix/")},
 		}
-		So(r.CheckTargetName("some-prefix/zzz"), ShouldBeNil)
-		So(r.CheckTargetName("another"), ShouldResemble, []string{
+		assert.Loosely(t, r.CheckTargetName("some-prefix/zzz"), should.BeNil)
+		assert.Loosely(t, r.CheckTargetName("another"), should.Resemble([]string{
 			`forbidden target name "another" (allowed prefixes are ["some-prefix/"])`,
-		})
+		}))
 	})
 }
 
 func TestCheckBuildSteps(t *testing.T) {
 	t.Parallel()
 
-	Convey("Unrestricted", t, func() {
+	ftt.Run("Unrestricted", t, func(t *ftt.Test) {
 		r := Restrictions{}
-		So(r.CheckBuildSteps([]*BuildStep{
+		assert.Loosely(t, r.CheckBuildSteps([]*BuildStep{
 			{concrete: &CopyBuildStep{}},
 			{concrete: &GoBuildStep{}},
 			{concrete: &RunBuildStep{}},
 			{concrete: &GoGAEBundleBuildStep{}},
-		}), ShouldBeNil)
+		}), should.BeNil)
 	})
 
-	Convey("Restricted", t, func() {
+	ftt.Run("Restricted", t, func(t *ftt.Test) {
 		r := Restrictions{
 			steps: stringsetflag.Flag{Data: stringset.NewFromSlice("copy", "go_gae_bundle")},
 		}
-		So(r.CheckBuildSteps([]*BuildStep{
+		assert.Loosely(t, r.CheckBuildSteps([]*BuildStep{
 			{concrete: &CopyBuildStep{}},
 			{concrete: &GoGAEBundleBuildStep{}},
-		}), ShouldBeNil)
-		So(r.CheckBuildSteps([]*BuildStep{
+		}), should.BeNil)
+		assert.Loosely(t, r.CheckBuildSteps([]*BuildStep{
 			{concrete: &CopyBuildStep{}},
 			{concrete: &GoBuildStep{}},
 			{concrete: &RunBuildStep{}},
 			{concrete: &GoGAEBundleBuildStep{}},
-		}), ShouldResemble, []string{
+		}), should.Resemble([]string{
 			`forbidden build step kind "go_binary" (allowed values are ["copy" "go_gae_bundle"])`,
 			`forbidden build step kind "run" (allowed values are ["copy" "go_gae_bundle"])`,
-		})
+		}))
 	})
 }
 
@@ -89,48 +90,48 @@ func TestCheckInfra(t *testing.T) {
 		},
 	}
 
-	Convey("Unrestricted", t, func() {
+	ftt.Run("Unrestricted", t, func(t *ftt.Test) {
 		violations := call(infra, nil, nil, nil)
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Passing via direct hits", t, func() {
+	ftt.Run("Passing via direct hits", t, func(t *ftt.Test) {
 		violations := call(infra,
 			[]string{"gs://something/a/b/c", "gs://something/else"},
 			[]string{"gcr.io/something", "gcr.io/else"},
 			[]string{"git:https://repo.example.com/something/some/script.py"},
 		)
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Passing via prefix hits", t, func() {
+	ftt.Run("Passing via prefix hits", t, func(t *ftt.Test) {
 		violations := call(infra,
 			[]string{"gs://something/", "gs://something/else"},
 			[]string{"gcr.io/something"},
 			[]string{"git:https://repo.example.com/something/"},
 		)
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Bad storage", t, func() {
+	ftt.Run("Bad storage", t, func(t *ftt.Test) {
 		violations := call(infra, []string{"gs://allowed"}, nil, nil)
-		So(violations, ShouldResemble, []string{
+		assert.Loosely(t, violations, should.Resemble([]string{
 			`forbidden Google Storage destination "gs://something/a/b/c" (allowed prefixes are ["gs://allowed"])`,
-		})
+		}))
 	})
 
-	Convey("Bad registry", t, func() {
+	ftt.Run("Bad registry", t, func(t *ftt.Test) {
 		violations := call(infra, nil, []string{"gcr.io/some"}, nil)
-		So(violations, ShouldResemble, []string{
+		assert.Loosely(t, violations, should.Resemble([]string{
 			`forbidden Container Registry destination "gcr.io/something" (allowed values are ["gcr.io/some"])`,
-		})
+		}))
 	})
 
-	Convey("Bad notify config", t, func() {
+	ftt.Run("Bad notify config", t, func(t *ftt.Test) {
 		violations := call(infra, nil, nil, []string{"git:https://another"})
-		So(violations, ShouldResemble, []string{
+		assert.Loosely(t, violations, should.Resemble([]string{
 			`forbidden notification destination "git:https://repo.example.com/something/some/script.py" (allowed prefixes are ["git:https://another"])`,
-		})
+		}))
 	})
 }
 
@@ -148,25 +149,25 @@ func TestCheckCloudBuild(t *testing.T) {
 		Project: "some-project",
 	}
 
-	Convey("Unrestricted", t, func() {
+	ftt.Run("Unrestricted", t, func(t *ftt.Test) {
 		violations := call(cfg, nil)
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Passing via direct hits", t, func() {
+	ftt.Run("Passing via direct hits", t, func(t *ftt.Test) {
 		violations := call(cfg, []string{"another-project", "some-project"})
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Passing via prefix hits", t, func() {
+	ftt.Run("Passing via prefix hits", t, func(t *ftt.Test) {
 		violations := call(cfg, []string{"some-project"})
-		So(violations, ShouldBeEmpty)
+		assert.Loosely(t, violations, should.BeEmpty)
 	})
 
-	Convey("Bad project", t, func() {
+	ftt.Run("Bad project", t, func(t *ftt.Test) {
 		violations := call(cfg, []string{"some"})
-		So(violations, ShouldResemble, []string{
+		assert.Loosely(t, violations, should.Resemble([]string{
 			`forbidden Cloud Build project "some-project" (allowed values are ["some"])`,
-		})
+		}))
 	})
 }

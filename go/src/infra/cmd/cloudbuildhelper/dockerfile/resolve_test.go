@@ -6,11 +6,10 @@ package dockerfile
 
 import (
 	"fmt"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestResolve(t *testing.T) {
@@ -23,7 +22,7 @@ func TestResolve(t *testing.T) {
 
 	call := func(in string) string {
 		out, err := Resolve([]byte(in), res)
-		So(err, ShouldBeNil)
+		assert.Loosely(t, err, should.BeNil)
 		return string(out)
 	}
 
@@ -32,48 +31,48 @@ func TestResolve(t *testing.T) {
 		return err
 	}
 
-	Convey("Pass through", t, func() {
+	ftt.Run("Pass through", t, func(t *ftt.Test) {
 		same := func(in string) bool { return call(in) == in }
 
-		So(same(``), ShouldBeTrue)
-		So(same(`# Comment
+		assert.Loosely(t, same(``), should.BeTrue)
+		assert.Loosely(t, same(`# Comment
 
 And stuff
 
-`), ShouldBeTrue)
-		So(same(`
+`), should.BeTrue)
+		assert.Loosely(t, same(`
 DIRECTIVE 1
 FROMM 1
-`), ShouldBeTrue)
+`), should.BeTrue)
 	})
 
-	Convey("Resolves stuff", t, func() {
-		So(call(`FROM img1:tag1`), ShouldEqual, `FROM img1@res1`)
-		So(call(`FROM img1:tag1   AS Blarg #  Zzz  zz`), ShouldEqual, `FROM img1@res1 AS Blarg # Zzz zz`)
+	ftt.Run("Resolves stuff", t, func(t *ftt.Test) {
+		assert.Loosely(t, call(`FROM img1:tag1`), should.Equal(`FROM img1@res1`))
+		assert.Loosely(t, call(`FROM img1:tag1   AS Blarg #  Zzz  zz`), should.Equal(`FROM img1@res1 AS Blarg # Zzz zz`))
 
-		So(call(`
+		assert.Loosely(t, call(`
   FROM img1:tag1
   FROM imgZ@sha256:already_digest
   FROM scratch:wat
-  FROM img2`), ShouldEqual, `
+  FROM img2`), should.Equal(`
 FROM img1@res1
 FROM imgZ@sha256:already_digest
 FROM scratch
-FROM img2@lat`)
+FROM img2@lat`))
 
 		// Use a previous stage as a new stage.
 		// https://docs.docker.com/build/building/multi-stage/#use-a-previous-stage-as-a-new-stage
-		So(call(`FROM img1:tag1 AS builder
+		assert.Loosely(t, call(`FROM img1:tag1 AS builder
 FROM builder AS build1
-FROM builder AS build2`), ShouldEqual, `FROM img1@res1 AS builder
+FROM builder AS build2`), should.Equal(`FROM img1@res1 AS builder
 FROM builder AS build1
-FROM builder AS build2`)
+FROM builder AS build2`))
 	})
 
-	Convey("Errors", t, func() {
-		So(callErr(`from`), ShouldErrLike, `line 1: expecting 'FROM <image>', got only FROM`)
-		So(callErr(`from # blah`), ShouldErrLike, `line 1: resolving "#:latest": no such tag`)
-		So(callErr(`FROM base:${CODE_VERSION}`), ShouldErrLike, `line 1: bad FROM reference "base:${CODE_VERSION}", ARGs in FROM are not supported by cloudbuildhelper`)
+	ftt.Run("Errors", t, func(t *ftt.Test) {
+		assert.Loosely(t, callErr(`from`), should.ErrLike(`line 1: expecting 'FROM <image>', got only FROM`))
+		assert.Loosely(t, callErr(`from # blah`), should.ErrLike(`line 1: resolving "#:latest": no such tag`))
+		assert.Loosely(t, callErr(`FROM base:${CODE_VERSION}`), should.ErrLike(`line 1: bad FROM reference "base:${CODE_VERSION}", ARGs in FROM are not supported by cloudbuildhelper`))
 	})
 }
 

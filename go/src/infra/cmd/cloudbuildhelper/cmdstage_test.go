@@ -12,8 +12,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/manifest"
 )
@@ -28,21 +29,21 @@ pins:
 func TestStage(t *testing.T) {
 	t.Parallel()
 
-	Convey("With temp", t, func() {
+	ftt.Run("With temp", t, func(t *ftt.Test) {
 		ctx := context.Background()
 
 		write := func(root, path, body string) string {
 			p := filepath.Join(root, path)
-			So(os.WriteFile(p, []byte(body), 0600), ShouldBeNil)
+			assert.Loosely(t, os.WriteFile(p, []byte(body), 0600), should.BeNil)
 			return p
 		}
 		read := func(root, path string) string {
 			blob, err := os.ReadFile(filepath.Join(root, path))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return string(blob)
 		}
 
-		Convey("Bunch of files", func() {
+		t.Run("Bunch of files", func(t *ftt.Test) {
 			ctxDir := t.TempDir()
 			outDir := t.TempDir()
 
@@ -58,12 +59,12 @@ func TestStage(t *testing.T) {
 				},
 			)
 
-			So(err, ShouldBeNil)
-			So(read(outDir, "a"), ShouldEqual, "file a")
-			So(read(outDir, "b"), ShouldEqual, "file b")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, read(outDir, "a"), should.Equal("file a"))
+			assert.Loosely(t, read(outDir, "b"), should.Equal("file b"))
 		})
 
-		Convey("Resolving explicitly set Dockerfile", func() {
+		t.Run("Resolving explicitly set Dockerfile", func(t *ftt.Test) {
 			ctxDir := t.TempDir()
 			outDir := t.TempDir()
 
@@ -80,12 +81,12 @@ func TestStage(t *testing.T) {
 				},
 			)
 
-			So(err, ShouldBeNil)
-			So(read(outDir, "Dockerfile"), ShouldEqual,
-				"FROM example.com/some/image@sha256:431d3cca5e6a1f043b48ec556a9c60876e7ae1db18e20d0b860cb9c77e4c0b1b")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, read(outDir, "Dockerfile"), should.Equal(
+				"FROM example.com/some/image@sha256:431d3cca5e6a1f043b48ec556a9c60876e7ae1db18e20d0b860cb9c77e4c0b1b"))
 		})
 
-		Convey("Resolving ${contextdir}/Dockerfile", func() {
+		t.Run("Resolving ${contextdir}/Dockerfile", func(t *ftt.Test) {
 			ctxDir := t.TempDir()
 			outDir := t.TempDir()
 
@@ -101,12 +102,12 @@ func TestStage(t *testing.T) {
 				},
 			)
 
-			So(err, ShouldBeNil)
-			So(read(outDir, "Dockerfile"), ShouldEqual,
-				"FROM example.com/some/image@sha256:431d3cca5e6a1f043b48ec556a9c60876e7ae1db18e20d0b860cb9c77e4c0b1b")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, read(outDir, "Dockerfile"), should.Equal(
+				"FROM example.com/some/image@sha256:431d3cca5e6a1f043b48ec556a9c60876e7ae1db18e20d0b860cb9c77e4c0b1b"))
 		})
 
-		Convey("Explicitly set Dockerfile is missing", func() {
+		t.Run("Explicitly set Dockerfile is missing", func(t *ftt.Test) {
 			ctxDir := t.TempDir()
 			outDir := t.TempDir()
 
@@ -120,10 +121,10 @@ func TestStage(t *testing.T) {
 				},
 			)
 
-			So(errors.Is(err, fs.ErrNotExist), ShouldBeTrue)
+			assert.Loosely(t, errors.Is(err, fs.ErrNotExist), should.BeTrue)
 		})
 
-		Convey("Using build steps", func() {
+		t.Run("Using build steps", func(t *ftt.Test) {
 			ctxDir := t.TempDir()
 			inpDir := t.TempDir()
 			outDir := t.TempDir()
@@ -142,18 +143,18 @@ func TestStage(t *testing.T) {
 					}
 				]
 			}`))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			m.ContextDir = ctxDir
 			m.InputsDir = inpDir
-			So(m.Finalize(), ShouldBeNil)
+			assert.Loosely(t, m.Finalize(), should.BeNil)
 
 			err = stage(ctx, m, func(fs *fileset.Set) error {
 				return fs.Materialize(outDir)
 			})
 
-			So(err, ShouldBeNil)
-			So(read(outDir, "a"), ShouldEqual, "file a")
-			So(read(outDir, "b"), ShouldEqual, "file b")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, read(outDir, "a"), should.Equal("file a"))
+			assert.Loosely(t, read(outDir, "b"), should.Equal("file b"))
 		})
 	})
 }

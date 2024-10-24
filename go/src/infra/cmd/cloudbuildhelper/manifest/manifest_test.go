@@ -12,10 +12,10 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"gopkg.in/yaml.v2"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestManifest(t *testing.T) {
@@ -29,123 +29,123 @@ func TestManifest(t *testing.T) {
 		return m, m.Finalize()
 	}
 
-	Convey("Minimal", t, func() {
+	ftt.Run("Minimal", t, func(t *ftt.Test) {
 		m, err := load("name: zzz\ncontextdir: ../../../blarg/", "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m, ShouldResemble, &Manifest{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m, should.Resemble(&Manifest{
 			Name:        "zzz",
 			ManifestDir: filepath.FromSlash("root/1/2/3/4"),
 			ContextDir:  filepath.FromSlash("root/1/blarg"),
 			InputsDir:   filepath.FromSlash("root/1/blarg"),
 			Sources:     []string{filepath.FromSlash("root/1/blarg")},
-		})
+		}))
 	})
 
-	Convey("No name", t, func() {
+	ftt.Run("No name", t, func(t *ftt.Test) {
 		_, err := load("", "some/dir")
-		So(err, ShouldErrLike, `bad "name" field: can't be empty, it's required`)
+		assert.Loosely(t, err, should.ErrLike(`bad "name" field: can't be empty, it's required`))
 	})
 
-	Convey("Bad name", t, func() {
+	ftt.Run("Bad name", t, func(t *ftt.Test) {
 		_, err := load(`name: cheat:tag`, "some/dir")
-		So(err, ShouldErrLike, `bad "name" field: "cheat:tag" contains forbidden symbols (any of "\\:@")`)
+		assert.Loosely(t, err, should.ErrLike(`bad "name" field: "cheat:tag" contains forbidden symbols (any of "\\:@")`))
 	})
 
-	Convey("Not yaml", t, func() {
+	ftt.Run("Not yaml", t, func(t *ftt.Test) {
 		_, err := load(`im not a YAML`, "")
-		So(err, ShouldErrLike, "unmarshal errors")
+		assert.Loosely(t, err, should.ErrLike("unmarshal errors"))
 	})
 
-	Convey("Deriving contextdir from dockerfile", t, func() {
+	ftt.Run("Deriving contextdir from dockerfile", t, func(t *ftt.Test) {
 		m, err := load("name: zzz\ndockerfile: ../../../blarg/Dockerfile", "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m, ShouldResemble, &Manifest{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m, should.Resemble(&Manifest{
 			Name:        "zzz",
 			ManifestDir: filepath.FromSlash("root/1/2/3/4"),
 			Dockerfile:  filepath.FromSlash("root/1/blarg/Dockerfile"),
 			ContextDir:  filepath.FromSlash("root/1/blarg"),
 			InputsDir:   filepath.FromSlash("root/1/blarg"),
 			Sources:     []string{filepath.FromSlash("root/1/blarg")},
-		})
+		}))
 	})
 
-	Convey("Resolving imagepins", t, func() {
+	ftt.Run("Resolving imagepins", t, func(t *ftt.Test) {
 		m, err := load("name: zzz\ncontextdir: .\nimagepins: ../../../blarg/pins.yaml", "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m, ShouldResemble, &Manifest{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m, should.Resemble(&Manifest{
 			Name:        "zzz",
 			ManifestDir: filepath.FromSlash("root/1/2/3/4"),
 			ContextDir:  filepath.FromSlash("root/1/2/3/4"),
 			InputsDir:   filepath.FromSlash("root/1/2/3/4"),
 			Sources:     []string{filepath.FromSlash("root/1/2/3/4")},
 			ImagePins:   filepath.FromSlash("root/1/blarg/pins.yaml"),
-		})
+		}))
 	})
 
-	Convey("Empty build step", t, func() {
+	ftt.Run("Empty build step", t, func(t *ftt.Test) {
 		_, err := load(`{"name": "zzz", "contextdir": ".", "build": [
 			{"dest": "zzz"}
 		]}`, "root/1/2/3/4")
-		So(err, ShouldErrLike, "bad build step #1: unrecognized or empty")
+		assert.Loosely(t, err, should.ErrLike("bad build step #1: unrecognized or empty"))
 	})
 
-	Convey("Ambiguous build step", t, func() {
+	ftt.Run("Ambiguous build step", t, func(t *ftt.Test) {
 		_, err := load(`{"name": "zzz", "contextdir": ".", "build": [
 			{"copy": "zzz", "go_binary": "zzz"}
 		]}`, "root/1/2/3/4")
-		So(err, ShouldErrLike, "bad build step #1: ambiguous")
+		assert.Loosely(t, err, should.ErrLike("bad build step #1: ambiguous"))
 	})
 
-	Convey("CopyBuildStep", t, func() {
+	ftt.Run("CopyBuildStep", t, func(t *ftt.Test) {
 		m, err := load(`{"name": "zzz", "contextdir": "ctx", "build": [
 				{"copy": "${manifestdir}/../../../blarg/zzz"}
 			]}`, "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m.Build, ShouldHaveLength, 1)
-		So(m.Build[0].Dest, ShouldEqual, filepath.FromSlash("root/1/2/3/4/ctx/zzz"))
-		So(m.Build[0].Concrete(), ShouldResemble, &CopyBuildStep{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Build, should.HaveLength(1))
+		assert.Loosely(t, m.Build[0].Dest, should.Equal(filepath.FromSlash("root/1/2/3/4/ctx/zzz")))
+		assert.Loosely(t, m.Build[0].Concrete(), should.Resemble(&CopyBuildStep{
 			Copy: filepath.FromSlash("root/1/blarg/zzz"),
-		})
+		}))
 	})
 
-	Convey("GoBuildStep", t, func() {
+	ftt.Run("GoBuildStep", t, func(t *ftt.Test) {
 		m, err := load(`{"name": "zzz", "contextdir": "ctx", "build": [
 				{"go_binary": "go.pkg/some/tool"}
 			]}`, "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m.Build, ShouldHaveLength, 1)
-		So(m.Build[0].Dest, ShouldEqual, filepath.FromSlash("root/1/2/3/4/ctx/tool"))
-		So(m.Build[0].Cwd, ShouldEqual, filepath.FromSlash("root/1/2/3/4/ctx"))
-		So(m.Build[0].Concrete(), ShouldResemble, &GoBuildStep{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Build, should.HaveLength(1))
+		assert.Loosely(t, m.Build[0].Dest, should.Equal(filepath.FromSlash("root/1/2/3/4/ctx/tool")))
+		assert.Loosely(t, m.Build[0].Cwd, should.Equal(filepath.FromSlash("root/1/2/3/4/ctx")))
+		assert.Loosely(t, m.Build[0].Concrete(), should.Resemble(&GoBuildStep{
 			GoBinary: "go.pkg/some/tool",
-		})
+		}))
 	})
 
-	Convey("RunBuildStep", t, func() {
+	ftt.Run("RunBuildStep", t, func(t *ftt.Test) {
 		m, err := load(`{"name": "zzz", "contextdir": "ctx", "build": [
 				{"run": ["a", "b"]}
 			]}`, "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m.Build, ShouldHaveLength, 1)
-		So(m.Build[0].Cwd, ShouldEqual, filepath.FromSlash("root/1/2/3/4/ctx"))
-		So(m.Build[0].Concrete(), ShouldResemble, &RunBuildStep{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Build, should.HaveLength(1))
+		assert.Loosely(t, m.Build[0].Cwd, should.Equal(filepath.FromSlash("root/1/2/3/4/ctx")))
+		assert.Loosely(t, m.Build[0].Concrete(), should.Resemble(&RunBuildStep{
 			Run: []string{"a", "b"},
-		})
+		}))
 	})
 
-	Convey("GoGAEBundleBuildStep", t, func() {
+	ftt.Run("GoGAEBundleBuildStep", t, func(t *ftt.Test) {
 		m, err := load(`{"name": "zzz", "contextdir": "ctx", "inputsdir": "in", "build": [
 				{"go_gae_bundle": "${inputsdir}/pkg", "dest": "${contextdir}/pkg"}
 			]}`, "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m.Build, ShouldHaveLength, 1)
-		So(m.Build[0].Concrete(), ShouldResemble, &GoGAEBundleBuildStep{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Build, should.HaveLength(1))
+		assert.Loosely(t, m.Build[0].Concrete(), should.Resemble(&GoGAEBundleBuildStep{
 			GoGAEBundle: filepath.FromSlash("root/1/2/3/4/in/pkg"),
-		})
-		So(m.Build[0].Dest, ShouldEqual, filepath.FromSlash("root/1/2/3/4/ctx/pkg"))
+		}))
+		assert.Loosely(t, m.Build[0].Dest, should.Equal(filepath.FromSlash("root/1/2/3/4/ctx/pkg")))
 	})
 
-	Convey("Good infra", t, func() {
+	ftt.Run("Good infra", t, func(t *ftt.Test) {
 		m, err := load(`{"name": "zzz", "contextdir": ".", "infra": {
 			"infra1": {
 				"storage": "gs://bucket",
@@ -161,8 +161,8 @@ func TestManifest(t *testing.T) {
 				"storage": "gs://bucket/path"
 			}
 		}}`, "root/1/2/3/4")
-		So(err, ShouldBeNil)
-		So(m.Infra, ShouldResemble, map[string]Infra{
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, m.Infra, should.Resemble(map[string]Infra{
 			"infra1": {
 				Storage: "gs://bucket",
 				Notify: []NotifyConfig{
@@ -174,24 +174,24 @@ func TestManifest(t *testing.T) {
 				},
 			},
 			"infra2": {Storage: "gs://bucket/path"},
-		})
+		}))
 	})
 
-	Convey("Unsupported storage", t, func() {
+	ftt.Run("Unsupported storage", t, func(t *ftt.Test) {
 		_, err := load(`{"name": "zzz", "contextdir": ".", "infra": {
 			"infra1": {"storage": "ftp://bucket"}
 		}}`, "root/1/2/3/4")
-		So(err, ShouldErrLike, `in infra section "infra1": bad storage "ftp://bucket", only gs:// is supported currently`)
+		assert.Loosely(t, err, should.ErrLike(`in infra section "infra1": bad storage "ftp://bucket", only gs:// is supported currently`))
 	})
 
-	Convey("No bucket in storage", t, func() {
+	ftt.Run("No bucket in storage", t, func(t *ftt.Test) {
 		_, err := load(`{"name": "zzz", "contextdir": ".", "infra": {
 			"infra1": {"storage": "gs:///zzz"}
 		}}`, "root/1/2/3/4")
-		So(err, ShouldErrLike, `in infra section "infra1": bad storage "gs:///zzz", bucket name is missing`)
+		assert.Loosely(t, err, should.ErrLike(`in infra section "infra1": bad storage "gs:///zzz", bucket name is missing`))
 	})
 
-	Convey("Bad notify", t, func() {
+	ftt.Run("Bad notify", t, func(t *ftt.Test) {
 		check := func(notify string) error {
 			_, err := load(fmt.Sprintf(`{"name": "zzz", "contextdir": ".", "infra": {
 			"infra1": {"notify": [%s]}
@@ -199,26 +199,26 @@ func TestManifest(t *testing.T) {
 			return err
 		}
 
-		Convey("Bad kind", func() {
-			So(check(`{"kind": "bad"}`), ShouldErrLike, `unsupported notify kind`)
+		t.Run("Bad kind", func(t *ftt.Test) {
+			assert.Loosely(t, check(`{"kind": "bad"}`), should.ErrLike(`unsupported notify kind`))
 		})
 
-		Convey("Bad repo", func() {
-			So(check(`{"kind": "git", "repo": "ftp://zzz"}`),
-				ShouldErrLike, `should be an https:// URL`)
+		t.Run("Bad repo", func(t *ftt.Test) {
+			assert.Loosely(t, check(`{"kind": "git", "repo": "ftp://zzz"}`),
+				should.ErrLike(`should be an https:// URL`))
 		})
 
-		Convey("Bad script path", func() {
+		t.Run("Bad script path", func(t *ftt.Test) {
 			for _, p := range []string{"a/../b", "", "a/./b"} {
-				So(check(fmt.Sprintf(`{"kind": "git", "repo": "https://zzz", "script": "%s"}`, p)),
-					ShouldErrLike, `should be a normalized slash-separate path`)
+				assert.Loosely(t, check(fmt.Sprintf(`{"kind": "git", "repo": "https://zzz", "script": "%s"}`, p)),
+					should.ErrLike(`should be a normalized slash-separate path`))
 			}
 		})
 
-		Convey("Not relative path", func() {
+		t.Run("Not relative path", func(t *ftt.Test) {
 			for _, p := range []string{"/", "/a/b"} {
-				So(check(fmt.Sprintf(`{"kind": "git", "repo": "https://zzz", "script": "%s"}`, p)),
-					ShouldErrLike, `not a path inside the repo`)
+				assert.Loosely(t, check(fmt.Sprintf(`{"kind": "git", "repo": "https://zzz", "script": "%s"}`, p)),
+					should.ErrLike(`not a path inside the repo`))
 			}
 		})
 	})
@@ -227,26 +227,26 @@ func TestManifest(t *testing.T) {
 func TestExtends(t *testing.T) {
 	t.Parallel()
 
-	Convey("With temp dir", t, func() {
+	ftt.Run("With temp dir", t, func(t *ftt.Test) {
 		dir, err := ioutil.TempDir("", "cloudbuildhelper")
-		So(err, ShouldBeNil)
-		Reset(func() { os.RemoveAll(dir) })
+		assert.Loosely(t, err, should.BeNil)
+		t.Cleanup(func() { os.RemoveAll(dir) })
 
 		write := func(path string, m Manifest) {
 			blob, err := yaml.Marshal(&m)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			p := filepath.Join(dir, filepath.FromSlash(path))
-			So(os.MkdirAll(filepath.Dir(p), 0777), ShouldBeNil)
-			So(ioutil.WriteFile(p, blob, 0666), ShouldBeNil)
+			assert.Loosely(t, os.MkdirAll(filepath.Dir(p), 0777), should.BeNil)
+			assert.Loosely(t, ioutil.WriteFile(p, blob, 0666), should.BeNil)
 		}
 
 		abs := func(path string) string {
 			p, err := filepath.Abs(filepath.Join(dir, filepath.FromSlash(path)))
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			return p
 		}
 
-		Convey("Works", func() {
+		t.Run("Works", func(t *ftt.Test) {
 			var falseVal = false
 
 			notifyBase := NotifyConfig{
@@ -321,14 +321,14 @@ func TestExtends(t *testing.T) {
 			})
 
 			m, err := Load(filepath.Join(dir, "deeper", "leaf.yaml"))
-			So(err, ShouldBeNil)
-			So(m.Finalize(), ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, m.Finalize(), should.BeNil)
 
 			// We'll deal with them separately below.
 			steps := m.Build
 			m.Build = nil
 
-			So(m, ShouldResemble, &Manifest{
+			assert.Loosely(t, m, should.Resemble(&Manifest{
 				Name:        "leaf",
 				ManifestDir: abs("deeper"),
 				Dockerfile:  abs("deeper/dockerfile"),
@@ -360,31 +360,31 @@ func TestExtends(t *testing.T) {
 						Notify: []NotifyConfig{notifyMid},
 					},
 				},
-			})
+			}))
 
 			var copySrc []string
 			for _, s := range steps {
 				copySrc = append(copySrc, s.Copy)
 			}
-			So(copySrc, ShouldResemble, []string{
+			assert.Loosely(t, copySrc, should.Resemble([]string{
 				abs("manifest_base.copy"),
 				abs("deeper/context-dir/context_base.copy"),
 				abs("deeper/manifest_mid.copy"),
 				abs("deeper/context-dir/context_mid.copy"),
 				abs("deeper/manifest_leaf.copy"),
 				abs("deeper/context-dir/context_leaf.copy"),
-			})
+			}))
 		})
 
-		Convey("Recursion", func() {
+		t.Run("Recursion", func(t *ftt.Test) {
 			write("a.yaml", Manifest{Name: "a", Extends: "b.yaml"})
 			write("b.yaml", Manifest{Name: "b", Extends: "a.yaml"})
 
 			_, err := Load(filepath.Join(dir, "a.yaml"))
-			So(err, ShouldErrLike, "too much nesting")
+			assert.Loosely(t, err, should.ErrLike("too much nesting"))
 		})
 
-		Convey("Deep error", func() {
+		t.Run("Deep error", func(t *ftt.Test) {
 			write("a.yaml", Manifest{Name: "a", Extends: "b.yaml"})
 			write("b.yaml", Manifest{
 				Name: "b",
@@ -394,7 +394,7 @@ func TestExtends(t *testing.T) {
 			})
 
 			_, err := Load(filepath.Join(dir, "a.yaml"))
-			So(err, ShouldErrLike, `bad storage`)
+			assert.Loosely(t, err, should.ErrLike(`bad storage`))
 		})
 	})
 }
@@ -402,29 +402,29 @@ func TestExtends(t *testing.T) {
 func TestRenderPath(t *testing.T) {
 	t.Parallel()
 
-	Convey("Works", t, func() {
+	ftt.Run("Works", t, func(t *ftt.Test) {
 		out, err := renderPath("var", "${a}", map[string]string{"a": "zzz"})
-		So(err, ShouldBeNil)
-		So(out, ShouldEqual, "zzz")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Equal("zzz"))
 
 		out, err = renderPath("var", "${a}/", map[string]string{"a": "zzz"})
-		So(err, ShouldBeNil)
-		So(out, ShouldEqual, "zzz")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Equal("zzz"))
 
 		out, err = renderPath("var", "${a}/.", map[string]string{"a": "zzz"})
-		So(err, ShouldBeNil)
-		So(out, ShouldEqual, "zzz")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Equal("zzz"))
 
 		out, err = renderPath("var", "${a}/b/c", map[string]string{"a": "zzz"})
-		So(err, ShouldBeNil)
-		So(out, ShouldEqual, filepath.FromSlash("zzz/b/c"))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Equal(filepath.FromSlash("zzz/b/c")))
 	})
 
-	Convey("Errors", t, func() {
+	ftt.Run("Errors", t, func(t *ftt.Test) {
 		_, err := renderPath("var", ".", map[string]string{"a": "zzz", "b": "yyy"})
-		So(err, ShouldErrLike, "must start with ${a} or ${b}")
+		assert.Loosely(t, err, should.ErrLike("must start with ${a} or ${b}"))
 
 		_, err = renderPath("var", "${c}", map[string]string{"a": "zzz", "b": "yyy"})
-		So(err, ShouldErrLike, "unknown dir variable ${c}, expecting ${a} or ${b}")
+		assert.Loosely(t, err, should.ErrLike("unknown dir variable ${c}, expecting ${a} or ${b}"))
 	})
 }

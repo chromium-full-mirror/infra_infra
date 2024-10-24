@@ -11,61 +11,64 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"infra/cmd/cloudbuildhelper/fileset"
+
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestExcluder(t *testing.T) {
 	t.Parallel()
 
-	Convey("findRepoRoot works", t, func(c C) {
+	ftt.Run("findRepoRoot works", t, func(c *ftt.Test) {
 		tmp := newTempDir(c)
 
-		Convey("No .git at all", func() {
+		c.Run("No .git at all", func(c *ftt.Test) {
 			root, err := findRepoRoot(tmp.join("."))
-			So(err, ShouldBeNil)
-			So(root, ShouldEqual, tmp.join("."))
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, root, should.Equal(tmp.join(".")))
 		})
 
-		Convey("Already given the root", func() {
+		c.Run("Already given the root", func(c *ftt.Test) {
 			tmp.mkdir("a/.git")
 
 			root, err := findRepoRoot(tmp.join("a"))
-			So(err, ShouldBeNil)
-			So(root, ShouldEqual, tmp.join("a"))
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, root, should.Equal(tmp.join("a")))
 		})
 
-		Convey("Discovers it few layers up", func() {
+		c.Run("Discovers it few layers up", func(c *ftt.Test) {
 			tmp.mkdir("a/.git")
 			tmp.mkdir("a/b/c")
 
 			root, err := findRepoRoot(tmp.join("a/b/c"))
-			So(err, ShouldBeNil)
-			So(root, ShouldEqual, tmp.join("a"))
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, root, should.Equal(tmp.join("a")))
 		})
 
-		Convey("Skips files", func() {
+		c.Run("Skips files", func(c *ftt.Test) {
 			tmp.mkdir("a/.git")
 			tmp.touch("a/b/.git")
 			tmp.mkdir("a/b/c")
 
 			root, err := findRepoRoot(tmp.join("a/b/c"))
-			So(err, ShouldBeNil)
-			So(root, ShouldEqual, tmp.join("a"))
+			assert.Loosely(c, err, should.BeNil)
+			assert.Loosely(c, root, should.Equal(tmp.join("a")))
 		})
 	})
 
-	Convey("scanUp works", t, func(c C) {
+	ftt.Run("scanUp works", t, func(c *ftt.Test) {
 		tmp := newTempDir(c)
-		So(scanUp(tmp.join("a/b/c"), tmp.join("."), ".gitignore"), ShouldResemble, []string{
+		assert.Loosely(c, scanUp(tmp.join("a/b/c"), tmp.join("."), ".gitignore"), should.Resemble([]string{
 			tmp.join(".gitignore"),
 			tmp.join("a/.gitignore"),
 			tmp.join("a/b/.gitignore"),
-		})
+		}))
 	})
 
-	Convey("scanDown works", t, func(c C) {
+	ftt.Run("scanDown works", t, func(c *ftt.Test) {
 		tmp := newTempDir(c)
 		tmp.touch(".gitignore")
 		tmp.touch("stuff/stuff")
@@ -74,58 +77,58 @@ func TestExcluder(t *testing.T) {
 		tmp.touch("a/d/stuff")
 
 		paths, err := scanDown(nil, tmp.join("."), ".gitignore")
-		So(err, ShouldBeNil)
-		So(paths, ShouldResemble, []string{
+		assert.Loosely(c, err, should.BeNil)
+		assert.Loosely(c, paths, should.Resemble([]string{
 			tmp.join(".gitignore"),
 			tmp.join("a/b/c/.gitignore"),
 			tmp.join("a/d/.gitignore"),
-		})
+		}))
 	})
 
-	Convey("With temp dir", t, func(c C) {
+	ftt.Run("With temp dir", t, func(c *ftt.Test) {
 		tmp := newTempDir(c)
 		tmp.mkdir(".git") // pretend to be the repo root
 
 		excluder := func(p string) fileset.Excluder {
 			cb, err := NewExcluder(tmp.join(p), ".gitignore")
-			So(err, ShouldBeNil)
+			assert.Loosely(c, err, should.BeNil)
 			return func(rel string, isDir bool) bool {
 				return cb(tmp.join(rel), isDir)
 			}
 		}
 
-		Convey("Noop excluder", func() {
+		c.Run("Noop excluder", func(c *ftt.Test) {
 			cb := excluder(".")
 
-			So(cb(".", true), ShouldBeFalse)
-			So(cb("a/b/c", false), ShouldBeFalse)
+			assert.Loosely(c, cb(".", true), should.BeFalse)
+			assert.Loosely(c, cb("a/b/c", false), should.BeFalse)
 		})
 
-		Convey("Simple excluder", func() {
+		c.Run("Simple excluder", func(c *ftt.Test) {
 			tmp.put(".gitignore", "*.out")
 			cb := excluder(".")
 
-			So(cb("abc.go", false), ShouldBeFalse)
-			So(cb("abc.out", false), ShouldBeTrue)
-			So(cb("abc.out", true), ShouldBeTrue)
-			So(cb("1/2/3/abc.go", false), ShouldBeFalse)
-			So(cb("1/2/3/abc.out", false), ShouldBeTrue)
-			So(cb("abc.out/1/2/3", false), ShouldBeTrue)
+			assert.Loosely(c, cb("abc.go", false), should.BeFalse)
+			assert.Loosely(c, cb("abc.out", false), should.BeTrue)
+			assert.Loosely(c, cb("abc.out", true), should.BeTrue)
+			assert.Loosely(c, cb("1/2/3/abc.go", false), should.BeFalse)
+			assert.Loosely(c, cb("1/2/3/abc.out", false), should.BeTrue)
+			assert.Loosely(c, cb("abc.out/1/2/3", false), should.BeTrue)
 		})
 
-		Convey("Complex excluder", func() {
+		c.Run("Complex excluder", func(c *ftt.Test) {
 			tmp.put(".gitignore", "/dir/*\n!/dir/?z")
 			cb := excluder(".")
 
-			So(cb("dir", true), ShouldBeFalse)
-			So(cb("dir/az", false), ShouldBeFalse)
-			So(cb("dir/bz", false), ShouldBeFalse)
-			So(cb("dir/ay", false), ShouldBeTrue)
-			So(cb("dir/abc", false), ShouldBeTrue)
-			So(cb("another/dir/abc", false), ShouldBeFalse)
+			assert.Loosely(c, cb("dir", true), should.BeFalse)
+			assert.Loosely(c, cb("dir/az", false), should.BeFalse)
+			assert.Loosely(c, cb("dir/bz", false), should.BeFalse)
+			assert.Loosely(c, cb("dir/ay", false), should.BeTrue)
+			assert.Loosely(c, cb("dir/abc", false), should.BeTrue)
+			assert.Loosely(c, cb("another/dir/abc", false), should.BeFalse)
 		})
 
-		Convey("Inherited .gitignore", func() {
+		c.Run("Inherited .gitignore", func(c *ftt.Test) {
 			tmp.put(".gitignore", "*.pyc")
 			tmp.put("a/.gitignore", "*.a\n/hidden")
 			tmp.put("a/z/z/b/.gitignore", "*.b")
@@ -134,27 +137,27 @@ func TestExcluder(t *testing.T) {
 			for _, start := range []string{".", "a", "a/z/z", "a/z/z/b"} {
 				cb := excluder(start)
 
-				So(cb("a/z/z/b/1.pyc", false), ShouldBeTrue)
-				So(cb("a/z/z/b/1.a", false), ShouldBeTrue)
-				So(cb("a/z/z/b/1.b", false), ShouldBeTrue)
-				So(cb("a/z/z/b/1.good", false), ShouldBeFalse)
+				assert.Loosely(c, cb("a/z/z/b/1.pyc", false), should.BeTrue)
+				assert.Loosely(c, cb("a/z/z/b/1.a", false), should.BeTrue)
+				assert.Loosely(c, cb("a/z/z/b/1.b", false), should.BeTrue)
+				assert.Loosely(c, cb("a/z/z/b/1.good", false), should.BeFalse)
 			}
 
 			// Entries relative to .gitignore location are respected.
 			cb := excluder(".")
-			So(cb("hidden", true), ShouldBeFalse)
-			So(cb("a/hidden", true), ShouldBeTrue)
-			So(cb("a/z/hidden", true), ShouldBeFalse)
+			assert.Loosely(c, cb("hidden", true), should.BeFalse)
+			assert.Loosely(c, cb("a/hidden", true), should.BeTrue)
+			assert.Loosely(c, cb("a/z/hidden", true), should.BeFalse)
 		})
 
-		Convey("#include support", func() {
+		c.Run("#include support", func(c *ftt.Test) {
 			tmp.put(".gitignore", "root-hidden\n#comment\n#!include:included")
 			tmp.put("included", "include-hidden")
 
 			cb := excluder(".")
-			So(cb("visible", false), ShouldBeFalse)
-			So(cb("root-hidden", false), ShouldBeTrue)
-			So(cb("include-hidden", false), ShouldBeTrue)
+			assert.Loosely(c, cb("visible", false), should.BeFalse)
+			assert.Loosely(c, cb("root-hidden", false), should.BeTrue)
+			assert.Loosely(c, cb("include-hidden", false), should.BeTrue)
 		})
 	})
 }
@@ -162,64 +165,70 @@ func TestExcluder(t *testing.T) {
 func TestPatternExcluder(t *testing.T) {
 	t.Parallel()
 
-	Convey("Works", t, func() {
+	ftt.Run("Works", t, func(t *ftt.Test) {
 		exc := NewPatternExcluder([]string{"*.bad", "*.worse", "hidden"})
 
-		So(exc("something.good", false), ShouldBeFalse)
-		So(exc("something.good", true), ShouldBeFalse)
-		So(exc("a/b/c/something.good", false), ShouldBeFalse)
-		So(exc("something.good/a/b/c", false), ShouldBeFalse)
+		assert.Loosely(t, exc("something.good", false), should.BeFalse)
+		assert.Loosely(t, exc("something.good", true), should.BeFalse)
+		assert.Loosely(t, exc("a/b/c/something.good", false), should.BeFalse)
+		assert.Loosely(t, exc("something.good/a/b/c", false), should.BeFalse)
 
-		So(exc("something.bad", false), ShouldBeTrue)
-		So(exc("something.bad", true), ShouldBeTrue)
-		So(exc("a/b/c/something.bad", false), ShouldBeTrue)
-		So(exc("something.bad/a/b/c", false), ShouldBeTrue)
+		assert.Loosely(t, exc("something.bad", false), should.BeTrue)
+		assert.Loosely(t, exc("something.bad", true), should.BeTrue)
+		assert.Loosely(t, exc("a/b/c/something.bad", false), should.BeTrue)
+		assert.Loosely(t, exc("something.bad/a/b/c", false), should.BeTrue)
 
-		So(exc("something.worse", false), ShouldBeTrue)
-		So(exc("something.worse", true), ShouldBeTrue)
-		So(exc("a/b/c/something.worse", false), ShouldBeTrue)
-		So(exc("something.worse/a/b/c", false), ShouldBeTrue)
+		assert.Loosely(t, exc("something.worse", false), should.BeTrue)
+		assert.Loosely(t, exc("something.worse", true), should.BeTrue)
+		assert.Loosely(t, exc("a/b/c/something.worse", false), should.BeTrue)
+		assert.Loosely(t, exc("something.worse/a/b/c", false), should.BeTrue)
 
-		So(exc("something/hidden", true), ShouldBeTrue)
-		So(exc("hidden", true), ShouldBeTrue)
-		So(exc("hidden/something", false), ShouldBeTrue)
+		assert.Loosely(t, exc("something/hidden", true), should.BeTrue)
+		assert.Loosely(t, exc("hidden", true), should.BeTrue)
+		assert.Loosely(t, exc("hidden/something", false), should.BeTrue)
 	})
 
-	Convey("Empty", t, func() {
+	ftt.Run("Empty", t, func(t *ftt.Test) {
 		exc := NewPatternExcluder(nil)
-		So(exc("stuff", false), ShouldBeFalse)
+		assert.Loosely(t, exc("stuff", false), should.BeFalse)
 	})
 }
 
 type tmpDir struct {
 	p string
-	c C
+	t testing.TB
 }
 
-func newTempDir(c C) tmpDir {
+func newTempDir(t testing.TB) tmpDir {
+	t.Helper()
+
 	tmp, err := ioutil.TempDir("", "gitignore_test")
-	c.So(err, ShouldBeNil)
-	c.Reset(func() { os.RemoveAll(tmp) })
-	return tmpDir{tmp, c}
+	assert.Loosely(t, err, should.BeNil, truth.LineContext())
+	t.Cleanup(func() { os.RemoveAll(tmp) })
+	return tmpDir{tmp, t}
 }
 
 func (t tmpDir) join(p string) string {
+	t.t.Helper()
 	return filepath.Join(t.p, filepath.FromSlash(p))
 }
 
 func (t tmpDir) mkdir(p string) {
-	t.c.So(os.MkdirAll(t.join(p), 0777), ShouldBeNil)
+	t.t.Helper()
+	assert.Loosely(t.t, os.MkdirAll(t.join(p), 0777), should.ErrLike(nil), truth.LineContext())
 }
 
 func (t tmpDir) put(p, data string) {
+	t.t.Helper()
 	t.mkdir(path.Dir(p))
 	f, err := os.Create(t.join(p))
-	t.c.So(err, ShouldBeNil)
+	assert.Loosely(t.t, err, should.ErrLike(nil), truth.LineContext())
 	_, err = f.Write([]byte(data))
-	t.c.So(err, ShouldBeNil)
-	t.c.So(f.Close(), ShouldBeNil)
+	assert.Loosely(t.t, err, should.ErrLike(nil), truth.LineContext())
+	assert.Loosely(t.t, f.Close(), should.ErrLike(nil), truth.LineContext())
 }
 
 func (t tmpDir) touch(p string) {
+	t.t.Helper()
 	t.put(p, "")
 }
