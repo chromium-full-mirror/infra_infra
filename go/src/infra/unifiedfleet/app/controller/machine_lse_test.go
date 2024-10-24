@@ -2379,6 +2379,11 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 							State:       chromeosLab.SIMProfileInfo_WORKING,
+							Features: []chromeosLab.SIMProfileInfo_Feature{
+								chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED,
+								chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+								chromeosLab.SIMProfileInfo_FEATURE_SMS,
+							},
 						},
 					},
 				},
@@ -2408,6 +2413,11 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, pi[0].GetOwnNumber(), should.Equal("3333"))
 			assert.Loosely(t, pi[0].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_ATT))
 			assert.Loosely(t, pi[0].GetState(), should.Equal(chromeosLab.SIMProfileInfo_WORKING))
+
+			features := pi[0].GetFeatures()
+			assert.Loosely(t, features[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED))
+			assert.Loosely(t, features[1], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK))
+			assert.Loosely(t, features[2], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_SMS))
 		})
 		t.Run("Update a OS machine LSE - missing SIM info in machine lse", func(t *ftt.Test) {
 			const machineName = "machine-labdata-13"
@@ -2426,6 +2436,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								OwnNumber:   "3333",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 								State:       chromeosLab.SIMProfileInfo_BROKEN,
+								Features: []chromeosLab.SIMProfileInfo_Feature{
+									chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+								},
 							},
 						},
 					},
@@ -2458,6 +2471,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, pi[0].GetOwnNumber(), should.Equal("3333"))
 			assert.Loosely(t, pi[0].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_ATT))
 			assert.Loosely(t, pi[0].GetState(), should.Equal(chromeosLab.SIMProfileInfo_BROKEN))
+
+			features := pi[0].GetFeatures()
+			assert.Loosely(t, features[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK))
 		})
 		t.Run("Update a OS machine LSE - missing SIM slot", func(t *ftt.Test) {
 			const machineName = "machine-labdata-14"
@@ -2475,6 +2491,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								OwnNumber:   "1111",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
 								State:       chromeosLab.SIMProfileInfo_NO_NETWORK,
+								Features: []chromeosLab.SIMProfileInfo_Feature{
+									chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+								},
 							},
 						},
 					},
@@ -2495,6 +2514,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 							State:       chromeosLab.SIMProfileInfo_BROKEN,
+							Features: []chromeosLab.SIMProfileInfo_Feature{
+								chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED,
+							},
 						},
 						{
 							Iccid:       "123456",
@@ -2503,6 +2525,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 							State:       chromeosLab.SIMProfileInfo_BROKEN,
+							Features: []chromeosLab.SIMProfileInfo_Feature{
+								chromeosLab.SIMProfileInfo_FEATURE_SMS,
+							},
 						},
 					},
 				},
@@ -2532,6 +2557,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, pi[0].GetOwnNumber(), should.Equal("1111"))
 			assert.Loosely(t, pi[0].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_TMOBILE))
 			assert.Loosely(t, pi[0].GetState(), should.Equal(chromeosLab.SIMProfileInfo_NO_NETWORK))
+
+			features := pi[0].GetFeatures()
+			assert.Loosely(t, features[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK))
 		})
 		t.Run("Update a OS machine LSE - Add one profile and skip one", func(t *ftt.Test) {
 			const machineName = "machine-labdata-15"
@@ -2549,6 +2577,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 								OwnNumber:   "4444",
 								CarrierName: chromeosLab.NetworkProvider_NETWORK_TMOBILE,
 								State:       chromeosLab.SIMProfileInfo_BROKEN,
+								Features: []chromeosLab.SIMProfileInfo_Feature{
+									chromeosLab.SIMProfileInfo_FEATURE_SMS,
+								},
 							},
 						},
 					},
@@ -2569,6 +2600,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							OwnNumber:   "3333",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_ATT,
 							State:       chromeosLab.SIMProfileInfo_WORKING,
+							Features: []chromeosLab.SIMProfileInfo_Feature{
+								chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED,
+							},
 						},
 						{
 							Iccid:       "123456",
@@ -2577,6 +2611,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							OwnNumber:   "0000",
 							CarrierName: chromeosLab.NetworkProvider_NETWORK_VERIZON,
 							State:       chromeosLab.SIMProfileInfo_UNSPECIFIED,
+							Features: []chromeosLab.SIMProfileInfo_Feature{
+								chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK,
+							},
 						},
 					},
 				},
@@ -2607,12 +2644,14 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, pi1[0].GetOwnNumber(), should.Equal("3333"))
 			assert.Loosely(t, pi1[0].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_ATT))
 			assert.Loosely(t, pi1[0].GetState(), should.Equal(chromeosLab.SIMProfileInfo_WORKING))
+			assert.Loosely(t, pi1[0].GetFeatures()[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_UNSPECIFIED))
 			assert.Loosely(t, pi1[1].GetIccid(), should.Equal("123456"))
 			assert.Loosely(t, pi1[1].GetSimPin(), should.Equal("2222"))
 			assert.Loosely(t, pi1[1].GetSimPuk(), should.Equal("1111"))
 			assert.Loosely(t, pi1[1].GetOwnNumber(), should.Equal("0000"))
 			assert.Loosely(t, pi1[1].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_VERIZON))
 			assert.Loosely(t, pi1[1].GetState(), should.Equal(chromeosLab.SIMProfileInfo_UNSPECIFIED))
+			assert.Loosely(t, pi1[1].GetFeatures()[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_LIVE_NETWORK))
 
 			// Check profiles on SIM slot 2
 			assert.Loosely(t, si[1].GetSlotId(), should.Equal(2))
@@ -2628,6 +2667,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			assert.Loosely(t, pi2[0].GetOwnNumber(), should.Equal("4444"))
 			assert.Loosely(t, pi2[0].GetCarrierName(), should.Equal(chromeosLab.NetworkProvider_NETWORK_TMOBILE))
 			assert.Loosely(t, pi2[0].GetState(), should.Equal(chromeosLab.SIMProfileInfo_BROKEN))
+			assert.Loosely(t, pi2[0].GetFeatures()[0], should.Equal(chromeosLab.SIMProfileInfo_FEATURE_SMS))
 		})
 		t.Run("Update a OS machine LSE - missing modem lab data", func(t *ftt.Test) {
 			const machineName = "machine-labdata-16"

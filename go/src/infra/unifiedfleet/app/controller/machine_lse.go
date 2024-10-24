@@ -1925,6 +1925,7 @@ func updateCellularSIMInfo(ctx context.Context, dut *chromeosLab.DeviceUnderTest
 				CarrierName: profile.GetCarrierName(),
 				OwnNumber:   profile.GetOwnNumber(),
 				State:       profile.GetState(),
+				Features:    profile.GetFeatures(),
 			}
 		}
 
