@@ -16,7 +16,6 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
@@ -26,6 +25,10 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/result_flow/internal/transform"
 )
@@ -157,14 +160,14 @@ func TestBuildToTestPlanRuns(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, c := range cases {
-		Convey(c.description, t, func() {
-			Convey("then CTP build is correctly converted to TestPlanRun.", func() {
+		ftt.Run(c.description, t, func(t *ftt.Test) {
+			t.Run("then CTP build is correctly converted to TestPlanRun.", func(t *ftt.Test) {
 				build, _ := transform.LoadCTPBuildBucketResp(ctx, genFakeBuild(c.in), fakeSource.Bb)
 				got := build.ToTestPlanRuns(ctx)
 				sort.Slice(got, func(i, j int) bool { return got[i].Uid < got[j].Uid })
-				So(got, ShouldNotBeNil)
+				assert.Loosely(t, got, should.NotBeNil)
 				for i := 0; i < len(got); i++ {
-					checkTestPlanRunEquality(genFakeTestPlanRun(c.out[i]), got[i])
+					checkTestPlanRunEquality(t, genFakeTestPlanRun(c.out[i]), got[i])
 				}
 
 			})
@@ -264,18 +267,20 @@ func genFakeTestPlatformRequest(board, pool, crosBuild string) *test_platform.Re
 	}
 }
 
-func checkTestPlanRunEquality(want, got *analytics.TestPlanRun) {
-	So(want.Uid, ShouldEqual, got.Uid)
-	So(want.BuildId, ShouldEqual, got.BuildId)
-	So(want.Suite, ShouldEqual, got.Suite)
-	So(want.ExecutionUrl, ShouldEqual, got.ExecutionUrl)
-	So(want.DutPool, ShouldEqual, got.DutPool)
-	So(want.BuildTarget, ShouldEqual, got.BuildTarget)
-	So(want.ChromeosBuild, ShouldEqual, got.ChromeosBuild)
-	So(want.GetStatus().GetValue(), ShouldEqual, got.GetStatus().GetValue())
-	So(got.CreateTime, ShouldEqual, want.CreateTime)
-	So(got.StartTime, ShouldEqual, want.StartTime)
-	So(got.EndTime, ShouldEqual, want.EndTime)
+func checkTestPlanRunEquality(t testing.TB, want, got *analytics.TestPlanRun) {
+	t.Helper()
+
+	assert.Loosely(t, want.Uid, should.Equal(got.Uid), truth.LineContext())
+	assert.Loosely(t, want.BuildId, should.Equal(got.BuildId), truth.LineContext())
+	assert.Loosely(t, want.Suite, should.Equal(got.Suite), truth.LineContext())
+	assert.Loosely(t, want.ExecutionUrl, should.Equal(got.ExecutionUrl), truth.LineContext())
+	assert.Loosely(t, want.DutPool, should.Equal(got.DutPool), truth.LineContext())
+	assert.Loosely(t, want.BuildTarget, should.Equal(got.BuildTarget), truth.LineContext())
+	assert.Loosely(t, want.ChromeosBuild, should.Equal(got.ChromeosBuild), truth.LineContext())
+	assert.Loosely(t, want.GetStatus().GetValue(), should.Equal(got.GetStatus().GetValue()), truth.LineContext())
+	assert.Loosely(t, got.CreateTime, should.Equal(want.CreateTime), truth.LineContext())
+	assert.Loosely(t, got.StartTime, should.Equal(want.StartTime), truth.LineContext())
+	assert.Loosely(t, got.EndTime, should.Equal(want.EndTime), truth.LineContext())
 }
 
 func ctpRequestsToInputField(requests map[string]*test_platform.Request) *bbpb.Build_Input {

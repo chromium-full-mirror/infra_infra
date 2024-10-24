@@ -11,13 +11,15 @@ import (
 	"testing"
 
 	"cloud.google.com/go/bigquery"
-	. "github.com/smartystreets/goconvey/convey"
 	bqapi "google.golang.org/api/bigquery/v2"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/result_flow/internal/bq"
 )
@@ -32,13 +34,13 @@ func TestRamBufferedBQInserter(t *testing.T) {
 		Table:   "test-table",
 	}
 
-	Convey("With mock context", t, func() {
+	ftt.Run("With mock context", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		ctx = logging.SetLevel(gologger.StdConfig.Use(ctx), logging.Debug)
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
-		Convey("verify insertIDs", func() {
+		t.Run("verify insertIDs", func(t *ftt.Test) {
 			var lock sync.Mutex
 			insertIDs := stringset.Set{}
 			fakeOptions := bq.Options{
@@ -58,13 +60,13 @@ func TestRamBufferedBQInserter(t *testing.T) {
 				entries[i] = mkTestEntry(fmt.Sprintf("given:%d", i))
 			}
 			bi, _ := bq.NewInserter(ctx, fakeOptions)
-			So(bi.Insert(ctx, entries...), ShouldBeNil)
+			assert.Loosely(t, bi.Insert(ctx, entries...), should.BeNil)
 			bi.CloseAndDrain(ctx)
 			// All rows should have non-empty insert_id.
-			So(insertIDs.Has(""), ShouldBeFalse)
+			assert.Loosely(t, insertIDs.Has(""), should.BeFalse)
 			// insert_id should be recognized.
-			So(insertIDs.HasAll("given:0", "given:1", "given:2", "given:3", "given:4"), ShouldBeTrue)
-			So(insertIDs.Len(), ShouldEqual, 5)
+			assert.Loosely(t, insertIDs.HasAll("given:0", "given:1", "given:2", "given:3", "given:4"), should.BeTrue)
+			assert.Loosely(t, insertIDs.Len(), should.Equal(5))
 		})
 	})
 }

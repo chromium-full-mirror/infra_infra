@@ -10,11 +10,13 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsub/pstest"
-	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/result_flow/internal/message"
 )
@@ -108,7 +110,7 @@ func TestMessage(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		Convey(c.description, t, func() {
+		ftt.Run(c.description, t, func(t *ftt.Test) {
 			if err := message.PublishBuild(ctx, c.in, fakeConfig, option.WithGRPCConn(newConnection(srv.Addr))); err != nil {
 				panic(err)
 			}
@@ -118,9 +120,9 @@ func TestMessage(t *testing.T) {
 				panic(err)
 			}
 			got := message.ExtractBuildIDMap(ctx, msgs)
-			So(got, ShouldContainKey, c.expected.buildID)
-			So(message.GetParentUID(got[c.expected.buildID]), ShouldEqual, c.expected.parentUID)
-			So(message.ShouldPollForCompletion(got[c.expected.buildID]), ShouldEqual, c.expected.shouldPollForCompletion)
+			assert.Loosely(t, got, should.ContainKey(c.expected.buildID))
+			assert.Loosely(t, message.GetParentUID(got[c.expected.buildID]), should.Equal(c.expected.parentUID))
+			assert.Loosely(t, message.ShouldPollForCompletion(got[c.expected.buildID]), should.Equal(c.expected.shouldPollForCompletion))
 		})
 	}
 }
