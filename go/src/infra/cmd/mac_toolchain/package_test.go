@@ -11,10 +11,12 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"gopkg.in/yaml.v2"
 
 	cipd "go.chromium.org/luci/cipd/client/cipd/builder"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 func TestMakePackages(t *testing.T) {
@@ -24,7 +26,7 @@ func TestMakePackages(t *testing.T) {
 		return filepath.Join(strings.Split(p, "/")...)
 	}
 
-	Convey("makePackage works", t, func() {
+	ftt.Run("makePackage works", t, func(t *ftt.Test) {
 		baseMakePackageArgs := MakePackageArgs{
 			cipdPackageName:   "cipdPackage",
 			cipdPackagePrefix: "cipd/package/prefix",
@@ -32,12 +34,12 @@ func TestMakePackages(t *testing.T) {
 			includePrefixes:   nil,
 			excludePrefixes:   nil,
 		}
-		Convey("makePackage works without include / exclude args", func() {
+		t.Run("makePackage works without include / exclude args", func(t *ftt.Test) {
 			makePackageArgs := baseMakePackageArgs
 			pkg, err := makePackage(makePackageArgs)
-			So(err, ShouldBeNil)
-			So(pkg.Package, ShouldEqual, "cipd/package/prefix/cipdPackage")
-			So(pkg.Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, pkg.Package, should.Equal("cipd/package/prefix/cipdPackage"))
+			assert.Loosely(t, pkg.Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/cipdPackage.cipd_version"},
 				{File: path("A/B/b")},
 				{File: path("A/B/b2")},
@@ -45,60 +47,60 @@ func TestMakePackages(t *testing.T) {
 				{File: path("C/c")},
 				{File: path("C/c2")},
 				{File: path("symlink")},
-			})
+			}))
 		})
-		Convey("makePackage works with include prefixes", func() {
+		t.Run("makePackage works with include prefixes", func(t *ftt.Test) {
 			includes := []string{"A/B", "C/c"}
 			makePackageArgs := baseMakePackageArgs
 			makePackageArgs.includePrefixes = includes
 			pkg, err := makePackage(makePackageArgs)
-			So(err, ShouldBeNil)
-			So(pkg.Package, ShouldEqual, "cipd/package/prefix/cipdPackage")
-			So(pkg.Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, pkg.Package, should.Equal("cipd/package/prefix/cipdPackage"))
+			assert.Loosely(t, pkg.Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/cipdPackage.cipd_version"},
 				{File: path("A/B/b")},
 				{File: path("A/B/b2")},
 				{File: path("C/c")},
 				{File: path("C/c2")},
-			})
+			}))
 		})
-		Convey("makePackage works with exclude prefixes", func() {
+		t.Run("makePackage works with exclude prefixes", func(t *ftt.Test) {
 			excludes := []string{"A/B", "C/c"}
 			makePackageArgs := baseMakePackageArgs
 			makePackageArgs.excludePrefixes = excludes
 			pkg, err := makePackage(makePackageArgs)
-			So(err, ShouldBeNil)
-			So(pkg.Package, ShouldEqual, "cipd/package/prefix/cipdPackage")
-			So(pkg.Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, pkg.Package, should.Equal("cipd/package/prefix/cipdPackage"))
+			assert.Loosely(t, pkg.Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/cipdPackage.cipd_version"},
 				{File: path("A/a")},
 				{File: path("symlink")},
-			})
+			}))
 		})
-		Convey("makePackage works with include & exclude prefixes", func() {
+		t.Run("makePackage works with include & exclude prefixes", func(t *ftt.Test) {
 			includes := []string{"A", "B", "C/c"}
 			excludes := []string{"A/B", "C/c2"}
 			makePackageArgs := baseMakePackageArgs
 			makePackageArgs.includePrefixes = includes
 			makePackageArgs.excludePrefixes = excludes
 			pkg, err := makePackage(makePackageArgs)
-			So(err, ShouldBeNil)
-			So(pkg.Package, ShouldEqual, "cipd/package/prefix/cipdPackage")
-			So(pkg.Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, pkg.Package, should.Equal("cipd/package/prefix/cipdPackage"))
+			assert.Loosely(t, pkg.Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/cipdPackage.cipd_version"},
 				{File: path("A/a")},
 				{File: path("C/c")},
-			})
+			}))
 		})
 	})
 
-	Convey("makeXcodePackages works", t, func() {
-		Convey("for a valid directory", func() {
+	ftt.Run("makeXcodePackages works", t, func(t *ftt.Test) {
+		t.Run("for a valid directory", func(t *ftt.Test) {
 			packages, err := makeXcodePackages("testdata/WalkDir", "test/prefix", false)
-			So(err, ShouldBeNil)
-			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
-			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
-			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packages["mac"].Package, should.Equal("test/prefix/mac"))
+			assert.Loosely(t, packages["ios"].Package, should.Equal("test/prefix/ios"))
+			assert.Loosely(t, packages["mac"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/mac.cipd_version"},
 				{File: path("A/B/b")},
 				{File: path("A/B/b2")},
@@ -106,55 +108,55 @@ func TestMakePackages(t *testing.T) {
 				{File: path("C/c")},
 				{File: path("C/c2")},
 				{File: path("symlink")},
-			})
-			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
-			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			}))
+			assert.Loosely(t, packages["mac"].Package, should.Equal("test/prefix/mac"))
+			assert.Loosely(t, packages["ios"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/ios.cipd_version"},
-			})
+			}))
 		})
 
-		Convey("for a valid real Xcode directory", func() {
+		t.Run("for a valid real Xcode directory", func(t *ftt.Test) {
 			packages, err := makeXcodePackages("testdata/Xcode-new.app", "test/prefix", false)
-			So(err, ShouldBeNil)
-			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
-			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
-			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packages["mac"].Package, should.Equal("test/prefix/mac"))
+			assert.Loosely(t, packages["ios"].Package, should.Equal("test/prefix/ios"))
+			assert.Loosely(t, packages["mac"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/mac.cipd_version"},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
 				{File: path("Contents/Developer/usr/bin/xyz.txt")},
 				{File: path("Contents/Resources/LicenseInfo.plist")},
 				{File: path("Contents/version.plist")},
-			})
-			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			}))
+			assert.Loosely(t, packages["ios"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/ios.cipd_version"},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
-			})
+			}))
 		})
 
-		Convey("for a valid real directory legacy iOS package", func() {
+		t.Run("for a valid real directory legacy iOS package", func(t *ftt.Test) {
 			packages, err := makeXcodePackages("testdata/Xcode-new.app", "test/prefix", true)
-			So(err, ShouldBeNil)
-			So(packages["mac"].Package, ShouldEqual, "test/prefix/mac")
-			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
-			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, packages["mac"].Package, should.Equal("test/prefix/mac"))
+			assert.Loosely(t, packages["ios"].Package, should.Equal("test/prefix/ios"))
+			assert.Loosely(t, packages["mac"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/mac.cipd_version"},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
 				{File: path("Contents/Developer/usr/bin/xyz.txt")},
 				{File: path("Contents/Resources/LicenseInfo.plist")},
 				{File: path("Contents/version.plist")},
-			})
-			So(packages["ios"].Data, ShouldResemble, []cipd.PackageChunkDef{
+			}))
+			assert.Loosely(t, packages["ios"].Data, should.Resemble([]cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/ios.cipd_version"},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
 				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
-			})
+			}))
 		})
 
-		Convey("for a nonexistent directory", func() {
+		t.Run("for a nonexistent directory", func(t *ftt.Test) {
 			_, err := makeXcodePackages("testdata/nonexistent", "", false)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
@@ -162,28 +164,28 @@ func TestMakePackages(t *testing.T) {
 func TestBuildCipdPackages(t *testing.T) {
 	t.Parallel()
 
-	Convey("buildCipdPackages works", t, func() {
+	ftt.Run("buildCipdPackages works", t, func(t *ftt.Test) {
 		packages := Packages{
 			"a": {Package: "path/a", Data: []cipd.PackageChunkDef{}},
 			"b": {Package: "path/b", Data: []cipd.PackageChunkDef{}},
 		}
 		buildFn := func(p PackageSpec) error {
 			name := filepath.Base(p.YamlPath)
-			So(strings.HasSuffix(name, ".yaml"), ShouldBeTrue)
+			assert.Loosely(t, strings.HasSuffix(name, ".yaml"), should.BeTrue)
 			name = name[:len(name)-len(".yaml")]
 			data, err := ioutil.ReadFile(p.YamlPath)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			var pd cipd.PackageDef
 			err = yaml.Unmarshal(data, &pd)
-			So(err, ShouldBeNil)
-			So(pd, ShouldResemble, packages[name])
-			So(pd.Package, ShouldEqual, p.Name)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, pd, should.Resemble(packages[name]))
+			assert.Loosely(t, pd.Package, should.Equal(p.Name))
 			return nil
 		}
 
-		Convey("for valid package definitions", func() {
+		t.Run("for valid package definitions", func(t *ftt.Test) {
 			err := buildCipdPackages(packages, buildFn)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 		})
 	})
 }
@@ -191,11 +193,11 @@ func TestBuildCipdPackages(t *testing.T) {
 func TestPackageXcode(t *testing.T) {
 	t.Parallel()
 
-	Convey("packageXcode works", t, func() {
+	ftt.Run("packageXcode works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("for remote upload using default credentials", func() {
+		t.Run("for remote upload using default credentials", func(t *ftt.Test) {
 			packageXcodeArgs := PackageXcodeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				cipdPackagePrefix:  "test/prefix",
@@ -205,23 +207,23 @@ func TestPackageXcode(t *testing.T) {
 				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
 			for i := 0; i < 2; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "create")
-				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldContain, "60m")
-				So(s.Calls[i].Args, ShouldContain, "cf_bundle_version:12345")
-				So(s.Calls[i].Args, ShouldContain, "xcode_version:TESTXCODEVERSION")
-				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
-				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("cf_bundle_version:12345"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("xcode_version:TESTXCODEVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("build_version:TESTBUILDVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("testbuildversion"))
 
-				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-service-account-json"))
 			}
 		})
-		Convey("for remote upload using default credentials without ref/tag", func() {
+		t.Run("for remote upload using default credentials without ref/tag", func(t *ftt.Test) {
 			packageXcodeArgs := PackageXcodeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				cipdPackagePrefix:  "test/prefix",
@@ -231,22 +233,22 @@ func TestPackageXcode(t *testing.T) {
 				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
 			for i := 0; i < 2; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "create")
-				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldContain, "60m")
-				So(s.Calls[i].Args, ShouldNotContain, "-ref")
-				So(s.Calls[i].Args, ShouldNotContain, "-tag")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-ref"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-tag"))
 
-				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-service-account-json"))
 			}
 		})
 
-		Convey("for remote upload using a service account", func() {
+		t.Run("for remote upload using a service account", func(t *ftt.Test) {
 			packageXcodeArgs := PackageXcodeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				cipdPackagePrefix:  "test/prefix",
@@ -256,24 +258,24 @@ func TestPackageXcode(t *testing.T) {
 				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
 			for i := 0; i < 2; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "create")
-				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldContain, "60m")
-				So(s.Calls[i].Args, ShouldContain, "cf_bundle_version:12345")
-				So(s.Calls[i].Args, ShouldContain, "xcode_version:TESTXCODEVERSION")
-				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
-				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("cf_bundle_version:12345"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("xcode_version:TESTXCODEVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("build_version:TESTBUILDVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("testbuildversion"))
 
-				So(s.Calls[i].Args, ShouldContain, "-service-account-json")
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-service-account-json"))
 			}
 		})
 
-		Convey("for local package creating", func() {
+		t.Run("for local package creating", func(t *ftt.Test) {
 			// Make sure `outputDir` actually exists in testdata; otherwise the test
 			// will needlessly create a directory and leave it behind.
 			packageXcodeArgs := PackageXcodeArgs{
@@ -285,21 +287,21 @@ func TestPackageXcode(t *testing.T) {
 				legacyIOSPackage:   false,
 			}
 			err := packageXcode(ctx, packageXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
-			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "ios.cipd"))
-			So(s.Calls[1].Args, ShouldContain, filepath.Join("testdata/outdir", "mac.cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "ios.cipd")))
+			assert.Loosely(t, s.Calls[1].Args, should.Contain(filepath.Join("testdata/outdir", "mac.cipd")))
 
 			for i := 0; i < 2; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "pkg-build")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("pkg-build"))
 
-				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
-				So(s.Calls[i].Args, ShouldNotContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldNotContain, "60m")
-				So(s.Calls[i].Args, ShouldNotContain, "-tag")
-				So(s.Calls[i].Args, ShouldNotContain, "-ref")
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-service-account-json"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-tag"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-ref"))
 			}
 		})
 	})
@@ -308,11 +310,11 @@ func TestPackageXcode(t *testing.T) {
 func TestPackageRuntimeAndXcode(t *testing.T) {
 	t.Parallel()
 
-	Convey("packageRuntimeAndXcode works", t, func() {
+	ftt.Run("packageRuntimeAndXcode works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("package an Xcode and runtime within it", func() {
+		t.Run("package an Xcode and runtime within it", func(t *ftt.Test) {
 			packageRuntimeAndXcodeArgs := PackageRuntimeAndXcodeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				cipdPackagePrefix:  "test/prefix",
@@ -321,36 +323,36 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 				legacyIOSPackage:   false,
 			}
 			err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 3)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(3))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:iOS 14.4")
-			So(s.Calls[0].Args, ShouldContain, "xcode_build_version:testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "type:xcode_default")
-			So(s.Calls[0].Args, ShouldContain, "testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "ios-14-4_testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "ios-14-4_latest")
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios_runtime_version:iOS 14.4"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("xcode_build_version:testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("type:xcode_default"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-14-4_testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-14-4_latest"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 
 			for i := 1; i < 3; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "create")
-				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldContain, "60m")
-				So(s.Calls[i].Args, ShouldContain, "cf_bundle_version:12345")
-				So(s.Calls[i].Args, ShouldContain, "xcode_version:TESTXCODEVERSION")
-				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
-				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("cf_bundle_version:12345"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("xcode_version:TESTXCODEVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("build_version:TESTBUILDVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("testbuildversion"))
 
-				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-service-account-json"))
 			}
 		})
 
-		Convey("package an Xcode and runtime within it legacy", func() {
+		t.Run("package an Xcode and runtime within it legacy", func(t *ftt.Test) {
 			packageRuntimeAndXcodeArgs := PackageRuntimeAndXcodeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				cipdPackagePrefix:  "test/prefix",
@@ -359,19 +361,19 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 				legacyIOSPackage:   true,
 			}
 			err := packageRuntimeAndXcode(ctx, packageRuntimeAndXcodeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
 			for i := 0; i < 2; i++ {
-				So(s.Calls[i].Executable, ShouldEqual, "cipd")
-				So(s.Calls[i].Args, ShouldContain, "create")
-				So(s.Calls[i].Args, ShouldContain, "-verification-timeout")
-				So(s.Calls[i].Args, ShouldContain, "60m")
-				So(s.Calls[i].Args, ShouldContain, "cf_bundle_version:12345")
-				So(s.Calls[i].Args, ShouldContain, "xcode_version:TESTXCODEVERSION")
-				So(s.Calls[i].Args, ShouldContain, "build_version:TESTBUILDVERSION")
-				So(s.Calls[i].Args, ShouldContain, "testbuildversion")
-				So(s.Calls[i].Args, ShouldNotContain, "-service-account-json")
+				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("60m"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("cf_bundle_version:12345"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("xcode_version:TESTXCODEVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("build_version:TESTBUILDVERSION"))
+				assert.Loosely(t, s.Calls[i].Args, should.Contain("testbuildversion"))
+				assert.Loosely(t, s.Calls[i].Args, should.NotContain("-service-account-json"))
 			}
 		})
 	})
@@ -380,11 +382,11 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 func TestPackageRuntime(t *testing.T) {
 	t.Parallel()
 
-	Convey("packageRuntime works", t, func() {
+	ftt.Run("packageRuntime works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("package an Xcode default runtime", func() {
+		t.Run("package an Xcode default runtime", func(t *ftt.Test) {
 			packageRuntimeArgs := PackageRuntimeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				runtimePath:        filepath.Join("testdata", "Xcode-new.app", XcodeIOSSimulatorRuntimeRelPath, "iOS.simruntime"),
@@ -394,24 +396,24 @@ func TestPackageRuntime(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntime(ctx, packageRuntimeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:iOS 14.4")
-			So(s.Calls[0].Args, ShouldContain, "xcode_build_version:testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "type:xcode_default")
-			So(s.Calls[0].Args, ShouldContain, "testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "ios-14-4_testbuildversion")
-			So(s.Calls[0].Args, ShouldContain, "ios-14-4_latest")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios_runtime_version:iOS 14.4"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("xcode_build_version:testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("type:xcode_default"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-14-4_testbuildversion"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-14-4_latest"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package an Xcode default runtime without refs & tags", func() {
+		t.Run("package an Xcode default runtime without refs & tags", func(t *ftt.Test) {
 			packageRuntimeArgs := PackageRuntimeArgs{
 				xcodeAppPath:       "testdata/Xcode-new.app",
 				runtimePath:        filepath.Join("testdata", "Xcode-new.app", XcodeIOSSimulatorRuntimeRelPath, "iOS.simruntime"),
@@ -421,19 +423,19 @@ func TestPackageRuntime(t *testing.T) {
 				skipRefTag:         true,
 			}
 			err := packageRuntime(ctx, packageRuntimeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package a runtime in cutomized path", func() {
+		t.Run("package a runtime in cutomized path", func(t *ftt.Test) {
 			packageRuntimeArgs := PackageRuntimeArgs{
 				xcodeAppPath:       "",
 				runtimePath:        filepath.FromSlash("testdata/runtimes/iOS 12.4.simruntime"),
@@ -443,21 +445,21 @@ func TestPackageRuntime(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntime(ctx, packageRuntimeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:iOS 12.4")
-			So(s.Calls[0].Args, ShouldContain, "type:manually_uploaded")
-			So(s.Calls[0].Args, ShouldContain, "ios-12-4")
-			So(s.Calls[0].Args, ShouldContain, "ios-12-4_latest")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios_runtime_version:iOS 12.4"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("type:manually_uploaded"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-12-4"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios-12-4_latest"))
 
 		})
 
-		Convey("for local package creating", func() {
+		t.Run("for local package creating", func(t *ftt.Test) {
 			// Make sure `outputDir` actually exists in testdata; otherwise the test
 			// will needlessly create a directory and leave it behind.
 			packageRuntimeArgs := PackageRuntimeArgs{
@@ -469,19 +471,19 @@ func TestPackageRuntime(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntime(ctx, packageRuntimeArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "ios_runtime.cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "ios_runtime.cipd")))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "pkg-build")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("pkg-build"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
-			So(s.Calls[0].Args, ShouldNotContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldNotContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
 		})
 	})
 }
@@ -489,11 +491,11 @@ func TestPackageRuntime(t *testing.T) {
 func TestPackageRuntimeDMG(t *testing.T) {
 	t.Parallel()
 
-	Convey("packageRuntimeDMG works", t, func() {
+	ftt.Run("packageRuntimeDMG works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("package a test runtime dmg", func() {
+		t.Run("package a test runtime dmg", func(t *ftt.Test) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
@@ -505,22 +507,22 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:test-ios-version")
-			So(s.Calls[0].Args, ShouldContain, "ios_runtime_build:test-ios-build")
-			So(s.Calls[0].Args, ShouldContain, "test-xcode-version")
-			So(s.Calls[0].Args, ShouldContain, "test-ios-version")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios_runtime_version:test-ios-version"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("ios_runtime_build:test-ios-build"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("test-xcode-version"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("test-ios-version"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package a test runtime dmg without refs & tags", func() {
+		t.Run("package a test runtime dmg without refs & tags", func(t *ftt.Test) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
@@ -532,19 +534,19 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				skipRefTag:         true,
 			}
 			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package a test runtime dmg with wrong file path", func() {
+		t.Run("package a test runtime dmg with wrong file path", func(t *ftt.Test) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtimes"),
 				runtimeVersion:     "test-ios-version",
@@ -556,11 +558,11 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "the runtime-path should only contain exactly one runtime DMG file")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("the runtime-path should only contain exactly one runtime DMG file"))
 		})
 
-		Convey("for local package creating", func() {
+		t.Run("for local package creating", func(t *ftt.Test) {
 			// Make sure `outputDir` actually exists in testdata; otherwise the test
 			// will needlessly create a directory and leave it behind.
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
@@ -574,19 +576,19 @@ func TestPackageRuntimeDMG(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "ios_runtime_dmg.cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "ios_runtime_dmg.cipd")))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "pkg-build")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("pkg-build"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
-			So(s.Calls[0].Args, ShouldNotContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldNotContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
 		})
 	})
 }
@@ -594,11 +596,11 @@ func TestPackageRuntimeDMG(t *testing.T) {
 func TestPackageXcodeArchive(t *testing.T) {
 	t.Parallel()
 
-	Convey("packageXcodeArchive works", t, func() {
+	ftt.Run("packageXcodeArchive works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("package a test xcode archive", func() {
+		t.Run("package a test xcode archive", func(t *ftt.Test) {
 			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
 				xcodePath:          filepath.Join("testdata", "xcode-archive"),
 				xcodeVersion:       "test-xcode-version",
@@ -608,20 +610,20 @@ func TestPackageXcodeArchive(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldContain, "xcode_version:test-xcode-version")
-			So(s.Calls[0].Args, ShouldContain, "test-xcode-version")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("xcode_version:test-xcode-version"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("test-xcode-version"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package a test xcode archive without refs & tags", func() {
+		t.Run("package a test xcode archive without refs & tags", func(t *ftt.Test) {
 			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
 				xcodePath:          filepath.Join("testdata", "xcode-archive"),
 				xcodeVersion:       "test-xcode-version",
@@ -631,19 +633,19 @@ func TestPackageXcodeArchive(t *testing.T) {
 				skipRefTag:         true,
 			}
 			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "create")
-			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("create"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
 		})
 
-		Convey("package a test xcode archive with wrong file path", func() {
+		t.Run("package a test xcode archive with wrong file path", func(t *ftt.Test) {
 			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
 				xcodePath:          filepath.Join("testdata", "runtimes"),
 				xcodeVersion:       "test-xcode-version",
@@ -653,11 +655,11 @@ func TestPackageXcodeArchive(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "the xcode-path should only contain exactly one archive file")
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("the xcode-path should only contain exactly one archive file"))
 		})
 
-		Convey("for local package creating", func() {
+		t.Run("for local package creating", func(t *ftt.Test) {
 			// Make sure `outputDir` actually exists in testdata; otherwise the test
 			// will needlessly create a directory and leave it behind.
 			packageXcodeArchiveArgs := PackageXcodeArchiveArgs{
@@ -669,19 +671,19 @@ func TestPackageXcodeArchive(t *testing.T) {
 				skipRefTag:         false,
 			}
 			err := packageXcodeArchive(ctx, packageXcodeArchiveArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
 
-			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "xcode_archive.cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "xcode_archive.cipd")))
 
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldContain, "pkg-build")
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Contain("pkg-build"))
 
-			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
-			So(s.Calls[0].Args, ShouldNotContain, "-verification-timeout")
-			So(s.Calls[0].Args, ShouldNotContain, "60m")
-			So(s.Calls[0].Args, ShouldNotContain, "-tag")
-			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-service-account-json"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-verification-timeout"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("60m"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-tag"))
+			assert.Loosely(t, s.Calls[0].Args, should.NotContain("-ref"))
 		})
 	})
 

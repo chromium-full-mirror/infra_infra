@@ -10,9 +10,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 )
 
 const ListRuntimeJson = `{
@@ -75,7 +76,7 @@ const TestRuntimeId = "1111111"
 func TestInstallXcode(t *testing.T) {
 	t.Parallel()
 
-	Convey("installXcode works", t, func() {
+	ftt.Run("installXcode works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 		installArgs := InstallArgs{
@@ -89,7 +90,7 @@ func TestInstallXcode(t *testing.T) {
 			withRuntime:            false,
 		}
 
-		Convey("for accepted license, mac", func() {
+		t.Run("for accepted license, mac", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"cipd dry run",
@@ -108,61 +109,61 @@ func TestInstallXcode(t *testing.T) {
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 12)
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(12))
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "testdata/Xcode-old.app",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
-		Convey("for already installed package with Developer mode enabled and -runFirstLaunch needs to run", func() {
+		t.Run("for already installed package with Developer mode enabled and -runFirstLaunch needs to run", func(t *ftt.Test) {
 			s.ReturnError = []error{
 				errors.Reason("check OS version error").Err(),
 				errors.Reason("CIPD package already installed").Err(),
@@ -181,57 +182,57 @@ func TestInstallXcode(t *testing.T) {
 				"Developer mode is currently enabled.\n",
 			}
 			err := installXcode(ctx, installArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 11)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(11))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
-			So(s.Calls[callCounter].Env, ShouldResemble, []string(nil))
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
+			assert.Loosely(t, s.Calls[callCounter].Env, should.Resemble([]string(nil)))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 
 		})
 
-		Convey("for already installed package with Developer mode disabled", func() {
+		t.Run("for already installed package with Developer mode disabled", func(t *ftt.Test) {
 			s.ReturnError = []error{
 				errors.Reason("check OS version error").Err(),
 				errors.Reason("already installed").Err(),
@@ -250,56 +251,56 @@ func TestInstallXcode(t *testing.T) {
 				"Developer mode is currently disabled.",
 			}
 			err := installXcode(ctx, installArgs)
-			So(err.Error(), ShouldContainSubstring, "Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.")
-			So(s.Calls, ShouldHaveLength, 11)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable."))
+			assert.Loosely(t, s.Calls, should.HaveLength(11))
 
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "original/Xcode.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
-		Convey("with a service account", func() {
+		t.Run("with a service account", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"cipd dry run",
@@ -316,66 +317,66 @@ func TestInstallXcode(t *testing.T) {
 			}
 			installArgs.serviceAccountJSON = "test/service-account.json"
 			err := installXcode(ctx, installArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 12)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(12))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 				"-service-account-json", "test/service-account.json",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 				"-service-account-json", "test/service-account.json",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "testdata/Xcode-old.app",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
-		Convey("for new license, ios", func() {
+		t.Run("for new license, ios", func(t *ftt.Test) {
 			s.ReturnError = []error{
 				errors.Reason("check OS version error").Err(),
 				errors.Reason("check OS version error").Err(),
@@ -401,64 +402,64 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForIOS.xcodeAppPath = "testdata/Xcode-new.app"
 			installArgsForIOS.kind = iosKind
 			err := installXcode(ctx, installArgsForIOS)
-			So(err, ShouldBeNil)
-			So(len(s.Calls), ShouldEqual, 13)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, len(s.Calls), should.Equal(13))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-new.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual,
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal(
 				"test/prefix/mac testVersion\n"+
-					"test/prefix/ios testVersion\n")
+					"test/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "old/xcode/path"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
 	})
 
-	Convey("install Xcode ios mode with/without ios runtime", t, func() {
+	ftt.Run("install Xcode ios mode with/without ios runtime", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 		installArgs := InstallArgs{
@@ -472,7 +473,7 @@ func TestInstallXcode(t *testing.T) {
 			withRuntime:            true,
 		}
 
-		Convey("install with runtime", func() {
+		t.Run("install with runtime", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.2.1",                // MacOS Version
 				"12.2.1",                // MacOS Version
@@ -497,94 +498,94 @@ func TestInstallXcode(t *testing.T) {
 			// Clean up the added runtime dir.
 			defer os.RemoveAll("testdata/Xcode-old.app/Contents/Developer/Platforms")
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 17)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(17))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "testdata/Xcode-old.app",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testVersion",
-			})
+			}))
 
 			// Normalize for win builder tests.
 			runtimeInstallPath := filepath.FromSlash("testdata/Xcode-old.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes")
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", runtimeInstallPath,
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", runtimeInstallPath,
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", runtimeInstallPath,
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
-		Convey("with runtime but runtime already exist", func() {
+		t.Run("with runtime but runtime already exist", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.2.1",                // MacOS Version
 				"12.2.1",                // MacOS Version
@@ -604,65 +605,65 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.withRuntime = true
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-with-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 13)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(13))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-with-runtime.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-with-runtime.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "testdata/Xcode-with-runtime.app",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 
-		Convey("without runtime", func() {
+		t.Run("without runtime", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"12.2.1",                // MacOS Version
 				"12.2.1",                // MacOS Version
@@ -682,66 +683,66 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.withRuntime = false
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-old.app"
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 13)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(13))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\ntest/prefix/ios testVersion\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "testdata/Xcode-old.app",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 	})
 
-	Convey("installXcode on MacOS 13+", t, func() {
+	ftt.Run("installXcode on MacOS 13+", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 		installArgs := InstallArgs{
@@ -755,7 +756,7 @@ func TestInstallXcode(t *testing.T) {
 			withRuntime:            false,
 		}
 
-		Convey("install iOS Xcode on MacOS13+ should only install mac package", func() {
+		t.Run("install iOS Xcode on MacOS13+ should only install mac package", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"13.2.1", // MacOS Version
@@ -775,11 +776,11 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForIOS := installArgs
 			installArgsForIOS.kind = iosKind
 			err := installXcode(ctx, installArgsForIOS)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 14)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(14))
 		})
 
-		Convey("install Xcode with runtime dmg when not already exists", func() {
+		t.Run("install Xcode with runtime dmg when not already exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"",       // No original Xcode when running xcode-select -p
@@ -814,101 +815,101 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			installArgsForTest.xcodeVersion = "TESTBUILDVERSION"
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "delete", "-d", "14"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "delete", "-d", "14"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "TESTBUILDVERSION",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-17-0",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-17-0",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list", "-j"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 		})
 
-		Convey("install Xcode with runtime dmg when already exists", func() {
+		t.Run("install Xcode with runtime dmg when already exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"",       // No original Xcode when running xcode-select -p
@@ -937,171 +938,171 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			installArgsForTest.xcodeVersion = "TESTBUILDVERSION"
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-license", "accept"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-license", "accept"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcodebuild", "-runFirstLaunch"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "delete", "-d", "14"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "delete", "-d", "14"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "TESTBUILDVERSION",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "TESTBUILDVERSION",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list", "-j"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/sbin/DevToolsSecurity"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-status"}))
 		})
 	})
 
-	Convey("describeRef works", t, func() {
+	ftt.Run("describeRef works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("ref exists", func() {
+		t.Run("ref exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"Package:       test/prefix/mac",
 			}
 			output, err := describeRef(ctx, "test/prefix/mac", "testXcodeVersion")
-			So(err, ShouldBeNil)
-			So(output, ShouldNotEqual, "")
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, output, should.NotEqual(""))
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"describe", "test/prefix/mac", "-version", "testXcodeVersion",
-			})
+			}))
 		})
-		Convey("ref doesn't exist", func() {
+		t.Run("ref doesn't exist", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("no such ref").Err()}
 			output, err := describeRef(ctx, "test/prefix/mac", "testNonExistRef")
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"describe", "test/prefix/mac", "-version", "testNonExistRef",
-			})
-			So(output, ShouldEqual, "")
-			So(err.Error(), ShouldContainSubstring, "Error when describing package path test/prefix/mac with ref testNonExistRef.")
+			}))
+			assert.Loosely(t, output, should.BeEmpty)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Error when describing package path test/prefix/mac with ref testNonExistRef."))
 		})
 	})
 
-	Convey("shouldReInstallXcode works", t, func() {
+	ftt.Run("shouldReInstallXcode works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("Xcode doesn't exists so it needs to be re-intalled", func() {
+		t.Run("Xcode doesn't exists so it needs to be re-intalled", func(t *ftt.Test) {
 			result, err := shouldReInstallXcode(ctx, "testdata/nonexistent.app", "testXcodeVersion")
-			So(err, ShouldNotBeNil)
-			So(result, ShouldEqual, true)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, result, should.Equal(true))
 		})
 
-		Convey("Xcode exists but expected version is different so it needs to be re-intalled", func() {
+		t.Run("Xcode exists but expected version is different so it needs to be re-intalled", func(t *ftt.Test) {
 			result, err := shouldReInstallXcode(ctx, "testdata/Xcode-new.app", "testXcodeVersion")
-			So(result, ShouldEqual, true)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, result, should.Equal(true))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
-		Convey("Xcode exists and expected version is the same so it doesn't need to be re-intalled", func() {
+		t.Run("Xcode exists and expected version is the same so it doesn't need to be re-intalled", func(t *ftt.Test) {
 			result, err := shouldReInstallXcode(ctx, "testdata/Xcode-new.app", "TESTBUILDVERSION")
-			So(result, ShouldEqual, false)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, result, should.Equal(false))
+			assert.Loosely(t, err, should.BeNil)
 		})
 
 	})
 
-	Convey("resolveRef works", t, func() {
+	ftt.Run("resolveRef works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("ref exists", func() {
+		t.Run("ref exists", func(t *ftt.Test) {
 			err := resolveRef(ctx, "test/prefix/ios_runtime", "testXcodeVersion", "")
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testXcodeVersion",
-			})
+			}))
 		})
-		Convey("ref doesn't exist", func() {
+		t.Run("ref doesn't exist", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("input ref doesn't exist").Err()}
 			err := resolveRef(ctx, "test/prefix/ios_runtime", "testNonExistRef", "")
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testNonExistRef",
-			})
-			So(err.Error(), ShouldContainSubstring, "Error when resolving package path test/prefix/ios_runtime with ref testNonExistRef.")
+			}))
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Error when resolving package path test/prefix/ios_runtime with ref testNonExistRef."))
 		})
 	})
 
-	Convey("resolveRuntimeRef works", t, func() {
+	ftt.Run("resolveRuntimeRef works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("only input xcode version", func() {
+		t.Run("only input xcode version", func(t *ftt.Test) {
 			resolveRuntimeRefArgs := ResolveRuntimeRefArgs{
 				runtimeVersion:     "",
 				xcodeVersion:       "testXcodeVersion",
@@ -1109,14 +1110,14 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testXcodeVersion",
-			})
-			So(ver, ShouldEqual, "testXcodeVersion")
+			}))
+			assert.Loosely(t, ver, should.Equal("testXcodeVersion"))
 		})
-		Convey("only input sim runtime version", func() {
+		t.Run("only input sim runtime version", func(t *ftt.Test) {
 			resolveRuntimeRefArgs := ResolveRuntimeRefArgs{
 				runtimeVersion:     "testSimVersion",
 				xcodeVersion:       "",
@@ -1124,14 +1125,14 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion",
-			})
-			So(ver, ShouldEqual, "testSimVersion")
+			}))
+			assert.Loosely(t, ver, should.Equal("testSimVersion"))
 		})
-		Convey("input both Xcode and sim version: default runtime exists", func() {
+		t.Run("input both Xcode and sim version: default runtime exists", func(t *ftt.Test) {
 			resolveRuntimeRefArgs := ResolveRuntimeRefArgs{
 				runtimeVersion:     "testSimVersion",
 				xcodeVersion:       "testXcodeVersion",
@@ -1139,14 +1140,14 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_testXcodeVersion",
-			})
-			So(ver, ShouldEqual, "testSimVersion_testXcodeVersion")
+			}))
+			assert.Loosely(t, ver, should.Equal("testSimVersion_testXcodeVersion"))
 		})
-		Convey("input both Xcode and sim version: fallback to uploaded runtime", func() {
+		t.Run("input both Xcode and sim version: fallback to uploaded runtime", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("default runtime doesn't exist").Err()}
 			resolveRuntimeRefArgs := ResolveRuntimeRefArgs{
 				runtimeVersion:     "testSimVersion",
@@ -1155,17 +1156,17 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 2)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(2))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_testXcodeVersion",
-			})
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			}))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion",
-			})
-			So(ver, ShouldEqual, "testSimVersion")
+			}))
+			assert.Loosely(t, ver, should.Equal("testSimVersion"))
 		})
-		Convey("input both Xcode and sim version: fallback to any latest runtime", func() {
+		t.Run("input both Xcode and sim version: fallback to any latest runtime", func(t *ftt.Test) {
 			s.ReturnError = []error{
 				errors.Reason("default runtime doesn't exist").Err(),
 				errors.Reason("uploaded runtime doesn't exist").Err(),
@@ -1177,20 +1178,20 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 3)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(3))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_testXcodeVersion",
-			})
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			}))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion",
-			})
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			}))
+			assert.Loosely(t, s.Calls[2].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_latest",
-			})
-			So(ver, ShouldEqual, "testSimVersion_latest")
+			}))
+			assert.Loosely(t, ver, should.Equal("testSimVersion_latest"))
 		})
-		Convey("input both Xcode and sim version: raise when all fallbacks fail", func() {
+		t.Run("input both Xcode and sim version: raise when all fallbacks fail", func(t *ftt.Test) {
 			s.ReturnError = []error{
 				errors.Reason("default runtime doesn't exist").Err(),
 				errors.Reason("uploaded runtime doesn't exist").Err(),
@@ -1203,46 +1204,46 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			ver, err := resolveRuntimeRef(ctx, resolveRuntimeRefArgs)
-			So(s.Calls, ShouldHaveLength, 3)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls, should.HaveLength(3))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_testXcodeVersion",
-			})
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			}))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion",
-			})
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			}))
+			assert.Loosely(t, s.Calls[2].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion_latest",
-			})
-			So(err.Error(), ShouldContainSubstring, "Failed to resolve runtime ref given runtime version: testSimVersion, xcode version: testXcodeVersion.")
-			So(ver, ShouldEqual, "")
+			}))
+			assert.Loosely(t, err.Error(), should.ContainSubstring("Failed to resolve runtime ref given runtime version: testSimVersion, xcode version: testXcodeVersion."))
+			assert.Loosely(t, ver, should.BeEmpty)
 		})
 
 	})
 
-	Convey("unzipXcodeArchive works", t, func() {
+	ftt.Run("unzipXcodeArchive works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("unzipXcodeArchive should unzip xocde", func() {
+		t.Run("unzipXcodeArchive should unzip xocde", func(t *ftt.Test) {
 			err := os.MkdirAll("test-Xcode.app", 0700)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = os.MkdirAll("./testdata/Xcode-unarchive.app", 0700)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll("./test-Xcode.app")
 			defer os.RemoveAll("./testdata/Xcode-unarchive.app")
 			err = unzipXcodeArchive(ctx, "./testdata/xcode-archive/", "./testdata/Xcode-unarchive.app")
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 1)
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(1))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"--expand", filepath.Join("./testdata/xcode-archive/", "xcode.xip"),
-			})
+			}))
 		})
 	})
 
-	Convey("installRuntime works", t, func() {
+	ftt.Run("installRuntime works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("install an Xcode default runtime", func() {
+		t.Run("install an Xcode default runtime", func(t *ftt.Test) {
 			runtimeInstallArgs := RuntimeInstallArgs{
 				runtimeVersion:     "",
 				xcodeVersion:       "testVersion",
@@ -1251,32 +1252,32 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			err := installRuntime(ctx, runtimeInstallArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 4)
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(4))
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testVersion",
-			})
+			}))
 
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[1].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[1].ConsumedStdin, should.Equal("test/prefix/ios_runtime testVersion\n"))
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[2].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[2].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[2].ConsumedStdin, should.Equal("test/prefix/ios_runtime testVersion\n"))
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[3].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[3].Args, should.Resemble([]string{
 				"-R", "u+w", "test/path/to/install/runtimes",
-			})
+			}))
 		})
 
-		Convey("install an uploaded runtime", func() {
+		t.Run("install an uploaded runtime", func(t *ftt.Test) {
 			runtimeInstallArgs := RuntimeInstallArgs{
 				runtimeVersion:     "testSimVersion",
 				xcodeVersion:       "",
@@ -1285,37 +1286,37 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			err := installRuntime(ctx, runtimeInstallArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 4)
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(4))
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testSimVersion",
-			})
+			}))
 
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[1].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[1].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testSimVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[1].ConsumedStdin, should.Equal("test/prefix/ios_runtime testSimVersion\n"))
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[2].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[2].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testSimVersion\n")
+			}))
+			assert.Loosely(t, s.Calls[2].ConsumedStdin, should.Equal("test/prefix/ios_runtime testSimVersion\n"))
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[3].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[3].Args, should.Resemble([]string{
 				"-R", "u+w", "test/path/to/install/runtimes",
-			})
+			}))
 		})
 	})
 
-	Convey("installRuntimeDMG works", t, func() {
+	ftt.Run("installRuntimeDMG works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
-		Convey("install runtime DMG without xcode-version ref", func() {
+		t.Run("install runtime DMG without xcode-version ref", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
 				"dry run ensure file returns nothing",
@@ -1329,37 +1330,37 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 4)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(4))
 
 			callCounter := 0
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-test-runtime",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg ios-test-runtime\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg ios-test-runtime\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "test/path/to/install/runtimes",
-			})
+			}))
 		})
 
-		Convey("install runtime DMG with xcode-version ref", func() {
+		t.Run("install runtime DMG with xcode-version ref", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
 				"dry run ensure file returns nothing",
@@ -1374,37 +1375,37 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 4)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(4))
 
 			callCounter := 0
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "xcode-test-version",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg xcode-test-version\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg xcode-test-version\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg xcode-test-version\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg xcode-test-version\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "test/path/to/install/runtimes",
-			})
+			}))
 		})
 
-		Convey("install runtime DMG with xcode-version ref and mismatched runtime", func() {
+		t.Run("install runtime DMG with xcode-version ref and mismatched runtime", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"describe ios_runtime_dmg returns ios_runtime_version:mismatched-runtime",
 				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
@@ -1420,47 +1421,47 @@ func TestInstallXcode(t *testing.T) {
 				serviceAccountJSON: "",
 			}
 			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 5)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(5))
 
 			callCounter := 0
-			So(s.Calls[0].Executable, ShouldEqual, "cipd")
-			So(s.Calls[0].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[0].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[0].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "xcode-test-version",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-test-runtime",
-			})
+			}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg ios-test-runtime\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
-			})
-			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+			}))
+			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/ios_runtime_dmg ios-test-runtime\n"))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("chmod"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"-R", "u+w", "test/path/to/install/runtimes",
-			})
+			}))
 		})
 	})
 
-	Convey("addRuntimeDMG works", t, func() {
+	ftt.Run("addRuntimeDMG works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
-		Convey("addRuntimeDMG should succeed", func() {
+		t.Run("addRuntimeDMG should succeed", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"testdata/Xcode-old.app",
 				"xcode-select -s prints nothing",
@@ -1471,39 +1472,39 @@ func TestInstallXcode(t *testing.T) {
 				"xcode-select -s prints nothing",
 			}
 			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 7)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(7))
 
 			callCounter := 0
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "add", "random-path/runtime.dmg"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "add", "random-path/runtime.dmg"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list", "-j"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "match", "list", "-j"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "match", "list", "-j"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "match", "set", "iphoneos17.0", "21A5248u", "--sdkBuild", "21A111112"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "match", "set", "iphoneos17.0", "21A5248u", "--sdkBuild", "21A111112"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 		})
 
-		Convey("addRuntimeDMG runtime id not found", func() {
+		t.Run("addRuntimeDMG runtime id not found", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
 				"testdata/Xcode-old.app",
 				"xcode-select -s prints nothing",
@@ -1512,77 +1513,77 @@ func TestInstallXcode(t *testing.T) {
 				"xcode-select -s prints nothing",
 			}
 			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
-			So(err, ShouldNotBeNil)
-			So(s.Calls, ShouldHaveLength, 5)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, s.Calls, should.HaveLength(5))
 
 			callCounter := 0
-			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "add", "random-path/runtime.dmg"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "add", "random-path/runtime.dmg"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("xcrun"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"simctl", "runtime", "list", "-j"}))
 
 			callCounter++
-			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("sudo"))
+			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-n", "/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"}))
 		})
 	})
 
-	Convey("removeCipdFiles works", t, func() {
-		Convey("remove cipd files whether it exists or not", func() {
+	ftt.Run("removeCipdFiles works", t, func(t *ftt.Test) {
+		t.Run("remove cipd files whether it exists or not", func(t *ftt.Test) {
 			srcPath := "testdata/"
 			tmpCipdPath, err := os.MkdirTemp(srcPath, "tmp")
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			defer os.RemoveAll(tmpCipdPath)
 
 			// folder is empty but it should still succeed
 			err = removeCipdFiles(tmpCipdPath)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// create cipd files so they can be removed
 			dotCipdPath := filepath.Join(tmpCipdPath, ".cipd")
 			dotXcodeVersionPath := filepath.Join(tmpCipdPath, ".xcode_versions")
 			err = os.MkdirAll(dotCipdPath, 0700)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 			err = os.MkdirAll(dotXcodeVersionPath, 0700)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			err = removeCipdFiles(tmpCipdPath)
-			So(err, ShouldBeNil)
+			assert.Loosely(t, err, should.BeNil)
 
 			// files should not exist after removing
 			_, err = os.Stat(dotCipdPath)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 			_, err = os.Stat(dotXcodeVersionPath)
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 
 		})
 	})
 
-	Convey("getIOSVersionWithoutPatch works", t, func() {
-		Convey("Version without patch number should return original", func() {
+	ftt.Run("getIOSVersionWithoutPatch works", t, func(t *ftt.Test) {
+		t.Run("Version without patch number should return original", func(t *ftt.Test) {
 			iosVersion := "17.0"
 			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
 
 			// folder is empty but it should still succeed
-			So(trunctedVersion, ShouldEqual, iosVersion)
+			assert.Loosely(t, trunctedVersion, should.Equal(iosVersion))
 		})
 
-		Convey("Version without patch number should return version without patch", func() {
+		t.Run("Version without patch number should return version without patch", func(t *ftt.Test) {
 			iosVersion := "17.0.1.2"
 			trunctedVersion := getIOSVersionWithoutPatch(iosVersion)
 
 			// folder is empty but it should still succeed
-			So(trunctedVersion, ShouldEqual, "17.0")
+			assert.Loosely(t, trunctedVersion, should.Equal("17.0"))
 		})
 	})
 

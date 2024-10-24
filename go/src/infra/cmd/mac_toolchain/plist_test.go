@@ -5,75 +5,76 @@
 package main
 
 import (
+	"go.chromium.org/luci/common/testing/ftt"
+	"go.chromium.org/luci/common/testing/truth/assert"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestPlistReading(t *testing.T) {
 	t.Parallel()
 
-	Convey("getXcodeVersion works", t, func() {
-		Convey("for valid plist", func() {
+	ftt.Run("getXcodeVersion works", t, func(t *ftt.Test) {
+		t.Run("for valid plist", func(t *ftt.Test) {
 			cfbv, xv, bv, err := getXcodeVersion("testdata/version.plist")
-			So(err, ShouldBeNil)
-			So(cfbv, ShouldEqual, "12345")
-			So(xv, ShouldEqual, "TESTXCODEVERSION")
-			So(bv, ShouldEqual, "TESTBUILDVERSION")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, cfbv, should.Equal("12345"))
+			assert.Loosely(t, xv, should.Equal("TESTXCODEVERSION"))
+			assert.Loosely(t, bv, should.Equal("TESTBUILDVERSION"))
 		})
-		Convey("when version is missing", func() {
+		t.Run("when version is missing", func(t *ftt.Test) {
 			_, _, _, err := getXcodeVersion("testdata/badKeys.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when version file is broken", func() {
+		t.Run("when version file is broken", func(t *ftt.Test) {
 			_, _, _, err := getXcodeVersion("testdata/broken.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when version file is missing", func() {
+		t.Run("when version file is missing", func(t *ftt.Test) {
 			_, _, _, err := getXcodeVersion("testdata/nonexistent")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 
-	Convey("getXcodeLicenseInfo works", t, func() {
-		Convey("for valid plist", func() {
+	ftt.Run("getXcodeLicenseInfo works", t, func(t *ftt.Test) {
+		t.Run("for valid plist", func(t *ftt.Test) {
 			lid, lt, err := getXcodeLicenseInfo("testdata/licenseInfoGood.plist")
-			So(err, ShouldBeNil)
-			So(lid, ShouldEqual, "TESTID")
-			So(lt, ShouldEqual, "Beta")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, lid, should.Equal("TESTID"))
+			assert.Loosely(t, lt, should.Equal("Beta"))
 		})
-		Convey("when license keys are missing", func() {
+		t.Run("when license keys are missing", func(t *ftt.Test) {
 			_, _, err := getXcodeLicenseInfo("testdata/badKeys.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when license file is broken", func() {
+		t.Run("when license file is broken", func(t *ftt.Test) {
 			_, _, err := getXcodeLicenseInfo("testdata/broken.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when license file is missing", func() {
+		t.Run("when license file is missing", func(t *ftt.Test) {
 			_, _, err := getXcodeLicenseInfo("testdata/nonexistent")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 
-	Convey("getSimulatorVersionInfo works", t, func() {
-		Convey("for valid plist", func() {
+	ftt.Run("getSimulatorVersionInfo works", t, func(t *ftt.Test) {
+		t.Run("for valid plist", func(t *ftt.Test) {
 			name, id, err := getSimulatorVersion("testdata/simulatorInfo.plist")
-			So(err, ShouldBeNil)
-			So(name, ShouldEqual, "iOS 14.4")
-			So(id, ShouldEqual, "ios-14-4")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, name, should.Equal("iOS 14.4"))
+			assert.Loosely(t, id, should.Equal("ios-14-4"))
 		})
-		Convey("when simulator version keys are missing", func() {
+		t.Run("when simulator version keys are missing", func(t *ftt.Test) {
 			_, _, err := getSimulatorVersion("testdata/badKeys.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when simulator version file is broken", func() {
+		t.Run("when simulator version file is broken", func(t *ftt.Test) {
 			_, _, err := getSimulatorVersion("testdata/broken.plist")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
-		Convey("when simulator version file is missing", func() {
+		t.Run("when simulator version file is missing", func(t *ftt.Test) {
 			_, _, err := getSimulatorVersion("testdata/nonexistent")
-			So(err, ShouldNotBeNil)
+			assert.Loosely(t, err, should.NotBeNil)
 		})
 	})
 }
