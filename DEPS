@@ -101,7 +101,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64,arm64}}',
-        'version': 'version:2@26.1',
+        'version': 'version:3@28.3',
       },
 
       {
