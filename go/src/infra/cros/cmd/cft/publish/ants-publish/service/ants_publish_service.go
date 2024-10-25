@@ -105,6 +105,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			}
 		} else if len(names) == 1 {
 			testID = &atp.TestIdentifier{
+				Module:    module.Name,
 				TestClass: module.Name,
 				Method:    names[0],
 			}
@@ -125,7 +126,10 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			AggregationDetail: &atp.AggregationDetail{
 				AggregationLevel: aggregationStatus,
 			},
-			PrimaryBuildInfo: aps.invocation.PrimaryBuild,
+		}
+
+		if aps.invocation != nil && aps.invocation.PrimaryBuild != nil {
+			tr.PrimaryBuildInfo = aps.invocation.PrimaryBuild
 		}
 
 		entries = append(entries, &atp.BatchInsertEntry{TestResult: tr, Token: token})

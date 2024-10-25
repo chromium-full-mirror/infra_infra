@@ -300,3 +300,69 @@ func TestInvocationProperties(t *testing.T) {
 		})
 	}
 }
+
+func TestResultEntries(t *testing.T) {
+	testCases := []struct {
+		name       string
+		wuName     string
+		result     *api.TestCaseResult
+		wantResult *ab_prod.TestResult
+	}{
+		{
+			name:   "crash",
+			wuName: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+			result: &api.TestCaseResult{
+				TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases"},
+				Verdict:    &api.TestCaseResult_Crash_{},
+			},
+			wantResult: &ab_prod.TestResult{
+				TestIdentifier: &ab_prod.TestIdentifier{
+					Module:    "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					TestClass: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					Method:    "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+				},
+				TestStatus: "testError",
+			},
+		},
+		{
+			name:   "Mobly_Pass",
+			wuName: "mobly.CtsWrapWrapNoDebugTestCases",
+			result: &api.TestCaseResult{
+				TestCaseId: &api.TestCase_Id{Value: "testmethod"},
+				Verdict:    &api.TestCaseResult_Pass_{},
+			},
+			wantResult: &ab_prod.TestResult{
+				TestIdentifier: &ab_prod.TestIdentifier{
+					Module:    "mobly.CtsWrapWrapNoDebugTestCases",
+					TestClass: "mobly.CtsWrapWrapNoDebugTestCases",
+					Method:    "testmethod",
+				},
+				TestStatus: "pass",
+			},
+		},
+	}
+	parentwu := "WU1"
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			wu := &ab_prod.WorkUnit{Id: parentwu, Name: tc.wuName}
+			aps := &AntsPublishService{}
+			results := []*api.TestCaseResult{tc.result}
+			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results)
+			t.Logf("%+v", gotEntries)
+			if err != nil {
+				t.Errorf("Unexpected error: %q", err)
+			}
+
+			if gotToken != int64(len(results)) {
+				t.Errorf("Unexpected token: got %d, want %d", gotToken, len(results))
+			}
+
+			tc.wantResult.WorkUnitId = parentwu
+			tc.wantResult.Timing = &ab_prod.Timing{}
+			tc.wantResult.AggregationDetail = &ab_prod.AggregationDetail{AggregationLevel: aggregationStatus}
+			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
+				t.Errorf("%s", diff)
+			}
+		})
+	}
+}
