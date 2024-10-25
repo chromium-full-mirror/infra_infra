@@ -40,7 +40,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 			taskID.Id))
 
 	servodContainerBuilder := dynamic_builders.NewContainerBuilder(
-		servodId.Id, "", updater.ServoPath,
+		servodId.Id, common.ServoNexus, updater.ServoPath,
 		"/tmp/servod", "cros-servod server -server_port 0",
 	)
 	provisionContainerBuilder := dynamic_builders.NewContainerBuilder(

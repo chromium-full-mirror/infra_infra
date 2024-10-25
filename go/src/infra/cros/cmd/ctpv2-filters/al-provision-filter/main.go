@@ -43,6 +43,10 @@ func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *l
 	if err != nil {
 		return req, err
 	}
+	pru.ServoPath, err = processContainerPath(context.Background(), dockerKeyFile, pru.ServoPath, "servo-nexus", log)
+	if err != nil {
+		return req, err
+	}
 
 	if err := GenerateDynamicProvisionUpdates(req, pru, log); err != nil {
 		log.Printf("Error while generating dynamic updates, %s", err)
@@ -78,7 +82,7 @@ func main() {
 	}
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
 	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", common.LabelProd, "SHA256 value for provision container")
-	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
+	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", common.LabelProd, "SHA256 value for servo-nexus container")
 	err := server.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
 	if err != nil {
 		os.Exit(2)
