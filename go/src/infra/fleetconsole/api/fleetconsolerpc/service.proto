@@ -11,6 +11,9 @@ option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.
   rpc Ping(PingRequest) returns (PingResponse);
+
+  // PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
+  rpc PingDeviceManager(PingDeviceManagerRequest) returns (PingDeviceManagerResponse);
 }
 
 // PingRequest intentionally contains nothing.
@@ -19,4 +22,12 @@ message PingRequest {
 
 // PingResponse intentionally contains nothing.
 message PingResponse {
+}
+
+// PingDeviceManagerRequest intentionally contains nothing.
+message PingDeviceManagerRequest {
+}
+
+// PingDeviceManagerResponse intentionally contains nothing.
+message PingDeviceManagerResponse {
 }
