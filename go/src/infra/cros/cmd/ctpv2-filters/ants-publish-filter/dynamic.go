@@ -51,6 +51,19 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 		log.Printf("Skipping ants-publish task for external partners. Found accountId: %s", metadata.AccountId)
 		return nil
 	}
+
+	if metadata.AntsInvocationId == "" {
+		// Skip if the invocation or parent workunit do not exist.
+		log.Printf("Skipping ants-publish task, AntsInvocationId is not populated")
+		return nil
+	}
+
+	if metadata.ParentWorkUnitId == "" {
+		// Skip if the invocation or parent workunit do not exist.
+		log.Printf("Skipping ants-publish task, ParentWorkUnitId is not populated")
+		return nil
+	}
+
 	antsContainerBuilder := builders.NewContainerBuilder(
 		containerID,  //  ContainerID
 		"",           //  ContainerImageKey

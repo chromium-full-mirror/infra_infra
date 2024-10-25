@@ -47,15 +47,21 @@ func TestIsInternal(t *testing.T) {
 
 func TestGeneratePublishTask(t *testing.T) {
 	testCases := []struct {
-		name string
-		du   []*api.UserDefinedDynamicUpdate
+		name             string
+		du               []*api.UserDefinedDynamicUpdate
+		antsInvocationId string
+		parentWorkUnitId string
 	}{
 		{
-			name: "existing",
-			du:   []*api.UserDefinedDynamicUpdate{{UpdateAction: &api.UpdateAction{Action: &api.UpdateAction_Insert_{}}}},
+			name:             "existing",
+			du:               []*api.UserDefinedDynamicUpdate{{UpdateAction: &api.UpdateAction{Action: &api.UpdateAction_Insert_{}}}},
+			antsInvocationId: "1234",
+			parentWorkUnitId: "1234",
 		},
 		{
-			name: "missing",
+			name:             "missing",
+			antsInvocationId: "1234",
+			parentWorkUnitId: "1234",
 		},
 	}
 
@@ -68,7 +74,7 @@ func TestGeneratePublishTask(t *testing.T) {
 					},
 				},
 			}
-			m := &metadata.PublishAntsMetadata{}
+			m := &metadata.PublishAntsMetadata{AntsInvocationId: tc.antsInvocationId, ParentWorkUnitId: tc.parentWorkUnitId}
 			log := log.New(os.Stdout, "test", 1)
 			err := GeneratePublishTask(req, m, "path", log)
 			if err != nil {
@@ -78,6 +84,98 @@ func TestGeneratePublishTask(t *testing.T) {
 			du := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
 			if len(du) != len(tc.du)+1 {
 				t.Errorf("Unexpected dynamic updates length. got %d want %d", len(du), len(tc.du)+1)
+			}
+		})
+	}
+}
+
+func TestMissingInvocationID(t *testing.T) {
+	testCases := []struct {
+		name             string
+		du               []*api.UserDefinedDynamicUpdate
+		antsInvocationId string
+		parentWorkUnitId string
+		want             int
+	}{
+		{
+			name:             "invocationExists",
+			antsInvocationId: "1234",
+			parentWorkUnitId: "1234",
+			want:             1,
+		},
+		{
+			name: "invocationMissing",
+			want: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := &api.InternalTestplan{
+				SuiteInfo: &api.SuiteInfo{
+					SuiteMetadata: &api.SuiteMetadata{
+						DynamicUpdates: tc.du,
+					},
+				},
+			}
+			m := &metadata.PublishAntsMetadata{AntsInvocationId: tc.antsInvocationId, ParentWorkUnitId: tc.parentWorkUnitId}
+			log := log.New(os.Stdout, "test", 1)
+			err := GeneratePublishTask(req, m, "path", log)
+			if err != nil {
+				t.Errorf("Unexpected error: %q", err)
+			}
+
+			du := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
+			if len(du) != tc.want {
+				t.Errorf("Unexpected dynamic updates length. got %d want %d", len(du), tc.want)
+			}
+		})
+	}
+}
+
+func TestMissingParentWorkUnitID(t *testing.T) {
+	testCases := []struct {
+		name             string
+		du               []*api.UserDefinedDynamicUpdate
+		antsInvocationId string
+		parentWorkUnitId string
+		want             int
+	}{
+		{
+			name:             "invocationExists",
+			antsInvocationId: "1234",
+			parentWorkUnitId: "1234",
+			want:             1,
+		},
+		{
+			name:             "invocationMissing",
+			antsInvocationId: "1234",
+			want:             0,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := &api.InternalTestplan{
+				SuiteInfo: &api.SuiteInfo{
+					SuiteMetadata: &api.SuiteMetadata{
+						DynamicUpdates: tc.du,
+					},
+				},
+			}
+			m := &metadata.PublishAntsMetadata{
+				AntsInvocationId: tc.antsInvocationId,
+				ParentWorkUnitId: tc.parentWorkUnitId,
+			}
+			log := log.New(os.Stdout, "test", 1)
+			err := GeneratePublishTask(req, m, "path", log)
+			if err != nil {
+				t.Errorf("Unexpected error: %q", err)
+			}
+
+			du := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
+			if len(du) != tc.want {
+				t.Errorf("Unexpected dynamic updates length. got %d want %d", len(du), tc.want)
 			}
 		})
 	}
