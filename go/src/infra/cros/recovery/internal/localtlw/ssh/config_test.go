@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/registry"
 	"go.chromium.org/luci/common/testing/truth/assert"
@@ -18,6 +19,10 @@ import (
 
 	"golang.org/x/crypto/ssh"
 )
+
+func init() {
+	registry.RegisterCmpOption(cmpopts.IgnoreUnexported(tls.Config{}))
+}
 
 func TestFromSSHConfig(t *testing.T) {
 	t.Parallel()
@@ -74,7 +79,7 @@ func TestFromSSHConfig(t *testing.T) {
 				clientConfig := c.GetSSHConfig("")
 				assert.Loosely(t, clientConfig, should.NotBeNil)
 				assert.That(t, reflect.TypeOf(clientConfig.HostKeyCallback), should.Equal(reflect.TypeOf(ssh.InsecureIgnoreHostKey())))
-				assert.That(t, clientConfig.Ciphers, should.Resemble([]string{"3des-cbc", "blowfish-cbc", "cast128-cbc"}))
+				assert.That(t, clientConfig.Ciphers, should.Match([]string{"3des-cbc", "blowfish-cbc", "cast128-cbc"}))
 				assert.That(t, clientConfig.Timeout, should.Equal(2*time.Second))
 				assert.That(t, clientConfig.User, should.Equal("root"))
 			})
@@ -108,7 +113,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -116,7 +121,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test:22")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -124,7 +129,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test:2222")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -140,7 +145,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -148,7 +153,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test:22")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -156,7 +161,7 @@ func TestFromSSHConfig(t *testing.T) {
 				pc := c.GetProxy("test:2222")
 				assert.Loosely(t, pc, should.NotBeNil)
 				assert.That(t, pc.GetAddr(), should.Equal("1.2.3.4:443"))
-				assert.That(t, pc.GetConfig(), should.Resemble(&tls.Config{
+				assert.That(t, pc.GetConfig(), should.Match(&tls.Config{
 					ServerName: "test.google.com",
 				}))
 			})
@@ -180,7 +185,7 @@ func TestFromClientConfig(t *testing.T) {
 			clientConfig := c.GetSSHConfig("")
 			assert.Loosely(t, clientConfig, should.NotBeNil)
 			assert.Loosely(t, reflect.TypeOf(clientConfig.HostKeyCallback), should.Equal(reflect.TypeOf(ssh.InsecureIgnoreHostKey())))
-			assert.Loosely(t, clientConfig.Ciphers, should.Resemble([]string{"aes128-ctr"}))
+			assert.Loosely(t, clientConfig.Ciphers, should.Match([]string{"aes128-ctr"}))
 			assert.Loosely(t, clientConfig.Timeout, should.Equal(5*time.Second))
 			assert.Loosely(t, clientConfig.User, should.Equal("user"))
 		})
