@@ -19,3 +19,8 @@ func NetworkName(dut *tlw.Dut) string {
 func ADBName(dut *tlw.Dut) string {
 	return "adb-" + dut.Name
 }
+
+// ServoNexusName generates predicable container name for servo-nexux container.
+func ServoNexusName(dut *tlw.Dut) string {
+	return "servo-nexus-" + dut.Name
+}

@@ -61,7 +61,7 @@ const (
 	minPPDut5MVWhenConnected    = 4000
 	// File flag created in logs folder to request next servod start
 	// use recovery mode by providing argument REC_MODE=1.
-	servodUseRecoveryModeFlag = "servod_use_recovery_mode"
+	ServodUseRecoveryModeFlag = "servod_use_recovery_mode"
 )
 
 // servodInitActionExec init servod options and start servod on servo-host.
@@ -83,7 +83,7 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if !useRecoveryMode {
 		// The request to use recovery mode can be specified by presence of a specific file.
 		logRoot := info.GetLogRoot()
-		flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
+		flagPath := filepath.Join(logRoot, ServodUseRecoveryModeFlag)
 		// If the call fail we think that file is not exist.
 		// The call cannot fail as part of permission issue as file is created under the same user.
 		if _, err := os.Stat(flagPath); err == nil {
@@ -141,7 +141,7 @@ func servodCreateFlagToUseRecoveryModeExec(ctx context.Context, info *execs.Exec
 	if logRoot == "" {
 		return errors.Reason("servod create flag to use recovery-mode: log root is not specified").Err()
 	}
-	flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
+	flagPath := filepath.Join(logRoot, ServodUseRecoveryModeFlag)
 	err := exec.CommandContext(ctx, "touch", flagPath).Run()
 	return errors.Annotate(err, "servod create flag to use recovery-mode").Err()
 }
