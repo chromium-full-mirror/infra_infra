@@ -6,8 +6,6 @@ package execs
 
 import (
 	"context"
-	"fmt"
-	"reflect"
 	"time"
 
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -16,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	xmlrpc_utils "infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -40,7 +39,7 @@ func (s *iServod) Call(ctx context.Context, method string, timeout time.Duration
 	res := s.a.CallServod(ctx, &tlw.CallServodRequest{
 		Resource: s.dut.Name,
 		Method:   method,
-		Args:     packToXMLRPCValues(args...),
+		Args:     xmlrpc_utils.PackArgsToXMLRPCValues(args...),
 		Timeout:  durationpb.New(timeout),
 	})
 	if res.Fault {
@@ -84,49 +83,4 @@ func (s *iServod) Has(ctx context.Context, command string) error {
 // Port provides port used for running servod daemon.
 func (s *iServod) Port() int {
 	return int(s.dut.GetChromeos().GetServo().GetServodPort())
-}
-
-// packToXMLRPCValues packs values to XMLRPC structs.
-func packToXMLRPCValues(values ...interface{}) []*xmlrpc.Value {
-	var r []*xmlrpc.Value
-	for _, val := range values {
-		if val == nil {
-			continue
-		}
-		switch v := val.(type) {
-		case string:
-			r = append(r, &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_String_{
-					String_: v,
-				},
-			})
-		case bool:
-			r = append(r, &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_Boolean{
-					Boolean: v,
-				},
-			})
-		case int:
-			r = append(r, &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_Int{
-					Int: int32(v),
-				},
-			})
-		case float64:
-			r = append(r, &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_Double{
-					Double: v,
-				},
-			})
-		default:
-			// TODO(otabek@): Extend for more type if required. For now recovery is not using these types.
-			message := fmt.Sprintf("%q is not a supported yet to be pack XMLRPC Value ", reflect.TypeOf(val))
-			r = append(r, &xmlrpc.Value{
-				ScalarOneof: &xmlrpc.Value_String_{
-					String_: message,
-				},
-			})
-		}
-	}
-	return r
 }
