@@ -322,7 +322,10 @@ func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (
 
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Get network %s", networkName))
-	defer func() { step.End(err) }()
+	defer func() {
+		step.SetSummaryMarkdown(err.Error())
+		step.End(nil)
+	}()
 
 	if ctr.CtrClient == nil {
 		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
