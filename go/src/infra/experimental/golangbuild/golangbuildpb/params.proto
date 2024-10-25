@@ -49,6 +49,12 @@ message Inputs {
   // RaceMode controls whether the build runs with the race detector enabled.
   bool race_mode = 4;
 
+  // MsanMode controls whether the build runs with MemorySanitizer enabled.
+  bool msan_mode = 32;
+
+  // AsanMode controls whether the build runs with AddressSanitizer enabled.
+  bool asan_mode = 33;
+
   // TestTimeoutScale optionally indicates what to scale test timeouts by.
   //
   // This sets the GO_TEST_TIMEOUT_SCALE environment variable for `go tool dist`.

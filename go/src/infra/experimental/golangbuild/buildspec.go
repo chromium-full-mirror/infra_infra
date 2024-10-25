@@ -309,6 +309,12 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	if b.inputs.RaceMode {
 		args = append(args, "-race")
 	}
+	if b.inputs.MsanMode {
+		args = append(args, "-msan")
+	}
+	if b.inputs.AsanMode {
+		args = append(args, "-asan")
+	}
 	if b.inputs.TestTimeoutScale != 0 {
 		timeout := time.Duration(b.inputs.TestTimeoutScale) * (10 * time.Minute)
 		args = append(args, fmt.Sprintf("-timeout=%s", timeout))
@@ -361,6 +367,12 @@ func (b *buildSpec) distTestFlags() []string {
 	}
 	if b.inputs.RaceMode {
 		args = append(args, "-race")
+	}
+	if b.inputs.MsanMode {
+		args = append(args, "-msan")
+	}
+	if b.inputs.AsanMode {
+		args = append(args, "-asan")
 	}
 	return args
 }
@@ -456,6 +468,12 @@ func (b *buildSpec) rdbStreamArgs(ctx context.Context) []string {
 	}
 	if b.inputs.RaceMode {
 		rdbArgs = append(rdbArgs, "-tag", "run_mod:race")
+	}
+	if b.inputs.MsanMode {
+		rdbArgs = append(rdbArgs, "-tag", "run_mod:msan")
+	}
+	if b.inputs.AsanMode {
+		rdbArgs = append(rdbArgs, "-tag", "run_mod:asan")
 	}
 	if b.inputs.LongTest {
 		rdbArgs = append(rdbArgs, "-tag", "run_mod:longtest")
