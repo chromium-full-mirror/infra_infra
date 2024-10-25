@@ -39,6 +39,7 @@ type FilterStateKeeper struct {
 
 	// Al run related
 	AlStateInfo *AlStateInfo
+	IsAlRun     bool
 
 	// Build related
 	BuildState *build.State

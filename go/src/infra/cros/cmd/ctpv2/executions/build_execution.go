@@ -286,6 +286,7 @@ func executeFiltersInLuciBuild(
 		DockerKeyFile:      dockerKeyFile,
 		CTPversion:         ctpVersion,
 		AlStateInfo:        alStateInfo,
+		IsAlRun:            req.IsAlRun,
 	}
 
 	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion)

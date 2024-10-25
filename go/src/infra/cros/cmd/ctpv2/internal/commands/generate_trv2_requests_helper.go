@@ -86,6 +86,7 @@ type TrV2ReqHelper struct {
 	parentRequestUID string
 	currSwarmingID   string
 	builderStr       string
+	isAlRun          bool
 }
 
 type HwTarget struct {
@@ -407,6 +408,7 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		Experiments:       trHelper.build.Build().GetInput().Experiments,
 		GerritChanges:     trHelper.build.Build().GetInput().GerritChanges,
 		ResultsConfig:     nil, // TODO (azrahman): Investigate if we need this.
+		IsALRun:           trHelper.isAlRun,
 	}
 
 	if trHelper.config.GetTestRunner().GetSwarmingPool() != "" {

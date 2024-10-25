@@ -80,6 +80,8 @@ type Args struct {
 	GerritChanges []*buildbucket_pb.GerritChange
 	// The test results mode associated with the test_runner invocation.
 	ResultsConfig *test_platform.Request_Params_ResultsUploadConfig
+	// If the current run is an AL run
+	IsALRun bool
 }
 
 // MessagePayload contains the information for Pubsub subscribers.
@@ -99,6 +101,9 @@ func (a *Args) NewBBRequest(b *buildbucket_pb.BuilderID) (*buildbucket_pb.Schedu
 		Fields: map[string]*structpb.Value{
 			"cft_is_enabled": {
 				Kind: &structpb.Value_BoolValue{BoolValue: a.CFTIsEnabled},
+			},
+			"is_al_run": {
+				Kind: &structpb.Value_BoolValue{BoolValue: a.IsALRun},
 			},
 		},
 	}

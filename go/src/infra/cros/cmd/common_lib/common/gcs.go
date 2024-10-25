@@ -72,7 +72,6 @@ func GetURLPath(gsURL string) (string, error) {
 	}
 
 	return gsURL[len("gs://"):], nil
-
 }
 
 // DownloadFile downloads a file from a designated gsURL to a given
@@ -247,4 +246,8 @@ func GetMajorBuildFromGCSPath(gcsPath string) string {
 	}
 
 	return strings.Join(Major[:2], "-")
+}
+
+func IsAndroidUrl(gsURL string) bool {
+	return strings.HasPrefix(gsURL, "android-build")
 }

@@ -39,6 +39,7 @@ type GenerateTrv2RequestsCmd struct {
 	Config           *config.Config
 	RequestKey       string
 	CredentialsFile  string
+	IsAlRun          bool
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -135,6 +136,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
 	cmd.AlStateInfo = sk.AlStateInfo
+	cmd.IsAlRun = sk.IsAlRun
 
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
@@ -290,6 +292,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		schedUnitMetadataMap: cmd.schedulingUnitsMetadataMap,
 		config:               cmd.Config,
 		credentialsFile:      cmd.CredentialsFile,
+		isAlRun:              cmd.IsAlRun,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)

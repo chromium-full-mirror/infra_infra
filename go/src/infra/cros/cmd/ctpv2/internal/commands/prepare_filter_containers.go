@@ -33,6 +33,7 @@ type PrepareFilterContainersInfoCmd struct {
 	CredsFile   string
 	CTPversion  string
 	Experiments []string
+	IsAlRun     bool
 	// Updates
 	ContainerInfoQueue   *list.List
 	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
@@ -88,6 +89,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	cmd.CTPversion = sk.CTPversion
 	cmd.CredsFile = sk.DockerKeyFile
 	cmd.CtpReq = sk.CtpReq
+	cmd.IsAlRun = sk.IsAlRun
 	return nil
 }
 
@@ -138,8 +140,12 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	buildContainerMetadata, err := common.FetchImageData(ctx, board, gcsPath)
 	if err != nil {
 		logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))
-		step.SetSummaryMarkdown("container metadata download failed: perhaps metadata doesn't exist")
-		return errors.Annotate(err, "failed to fetch container image data: ").Err()
+		if cmd.IsAlRun {
+			step.SetSummaryMarkdown("skipping; AL run doesn't require building container metadata")
+		} else {
+			step.SetSummaryMarkdown("container metadata download failed: perhaps metadata doesn't exist")
+			return errors.Annotate(err, "failed to fetch container image data: ").Err()
+		}
 	}
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 

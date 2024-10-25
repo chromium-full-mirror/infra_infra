@@ -379,6 +379,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 			{Flag: "extra_build", Value: extraBuildId},
 			{Flag: "extra_target", Value: extraBuildTarget},
 			{Flag: "extra_build_type", Value: extraBuildType},
+			{Flag: "skip_ants_upload", Value: "true"}, // TODO(srinivas/james): move this logic to ants-publish-filter
 		},
 	}
 	testSuite := &api.TestSuite{
@@ -397,13 +398,12 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 
 func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTargets {
 	primaryBoard := ""
-	primaryModel := ""
+	models := []string{}
 	swarmingDims := []string{} // TODO: (azrahman): add swarming dims support
 
-	// TODO (azrahman/TSE): remove this after making sure ctp,tr runs without Cros version; check rdb upload as well.
-	crosBuild := "brya-release/R131-16063.0.0"
-	crosBuildGcsBucket := "chromeos-image-archive"
-	crosGcsPath := fmt.Sprintf("gs://%s/%s", crosBuildGcsBucket, crosBuild) // for the container fetching to work properly
+	// build related
+	buildId := ""
+	buildTarget := ""
 	buildType := "ATP"
 
 	if testJobMsg.TestBench != nil {
@@ -412,8 +412,8 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTarg
 			if len(kv) == 2 { // needs to be exactly 2
 				key := kv[0]
 				value := kv[1]
-				if key == "models" { // TODO(azrahman): expand it to multiple models
-					primaryModel = value
+				if key == "models" {
+					models = append(models, value)
 				}
 			}
 		}
@@ -421,10 +421,25 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTarg
 		primaryBoard = testJobMsg.TestBench.RunTarget
 	}
 
-	hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: primaryModel, SwarmingDimensions: swarmingDims}}}
-	swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: crosGcsPath, KeyValues: []*api.KeyValue{{Key: "chromeos_build", Value: crosBuild}, {Key: "chromeos_build_gcs_bucket", Value: crosBuildGcsBucket}}}}}
-	targets := &api.Targets{HwTarget: hwTarget, SwTarget: swTarget}
-	return []*api.ScheduleTargets{{Targets: []*api.Targets{targets}}}
+	if testJobMsg.Build != nil {
+		buildId = testJobMsg.Build.BuildId
+		buildTarget = testJobMsg.Build.BuildTarget
+		buildType = testJobMsg.Build.BuildType
+	}
+
+	installPath := fmt.Sprintf(
+		common.AndroidBuildPathFormat,
+		buildId, buildTarget, primaryBoard, buildId)
+
+	scheduleTargetsList := []*api.ScheduleTargets{}
+	for _, model := range models {
+		hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: model, SwarmingDimensions: swarmingDims}}}
+		swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: installPath}}}
+		target := &api.Targets{HwTarget: hwTarget, SwTarget: swTarget}
+		scheduleTargetsList = append(scheduleTargetsList, &api.ScheduleTargets{Targets: []*api.Targets{target}})
+	}
+
+	return scheduleTargetsList
 }
 
 func getKarbonFilters() []*api.CTPFilter {
@@ -441,13 +456,19 @@ func getKarbonFilters() []*api.CTPFilter {
 				Container: &build_api.ContainerImageInfo{
 					Name: "foil-filter",
 				},
-				BinaryArgs: []string{"-test-path", "us-docker.pkg.dev/cros-registry/test-services/foil-test@sha256:3a4e8079fe9e183a364b4b53e53233d6e9c9532b49cded2b5ac315dac7b36579"}, // TODO (azrahman): update this after landing cros-test changes
 			},
 		},
 		{
 			ContainerInfo: &api.ContainerInfo{
 				Container: &build_api.ContainerImageInfo{
 					Name: "test-finder",
+				},
+			},
+		},
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "ants-publish-filter",
 				},
 			},
 		},

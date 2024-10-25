@@ -72,7 +72,7 @@ type DynamicTrv2Builder struct {
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
 func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
-	if builder.ContainerMetadata == nil {
+	if builder.ContainerMetadata == nil && !common.IsAndroidUrl(builder.GcsArtifactPath) {
 		if builder.GcsArtifactPath == "" {
 			return nil, fmt.Errorf("request missing `GcsArtifactPath`, can't fetch container metadata")
 		}

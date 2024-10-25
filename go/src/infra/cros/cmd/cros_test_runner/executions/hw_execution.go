@@ -20,6 +20,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -69,12 +70,12 @@ func HwExecution() {
 			var err error
 			if input.CrosTestRunnerDynamicRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
-				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
+				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 			} else if input.CftTestRequest.TranslateTrv2Request {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
 				crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
 				if err == nil {
-					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
+					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 				}
 			} else {
 				// If the request is a CrosTestRunner non-dynamic request...
@@ -241,7 +242,8 @@ func executeHwTestsV2(
 	ctrCipdVersion string,
 	gsRoot string,
 	invocationName string,
-	buildState *build.State) (*skylab_test_runner.Result, error) {
+	buildState *build.State,
+	isAlRun bool) (*skylab_test_runner.Result, error) {
 
 	// Validation
 	if err := validateDeadline(ctx, req.GetParams().GetDeadline()); err != nil {
@@ -255,26 +257,32 @@ func executeHwTestsV2(
 	// Create ctr
 	ctr := setupCtr(ctrCipdVersion)
 
+	var containerImagesMap map[string]*build_api.ContainerImageInfo
 	// Create configs
-	metadataContainers := req.GetParams().GetContainerMetadata().GetContainers()
-	metadataKey := req.GetParams().GetContainerMetadataKey()
-	metadataMap, ok := metadataContainers[metadataKey]
-	if !ok {
-		// Loop through the map to get the first value
-		for _, firstValue := range metadataContainers {
-			metadataMap = firstValue
-			break
+	// No metadata container configs required for AL run
+	if !isAlRun {
+		metadataContainers := req.GetParams().GetContainerMetadata().GetContainers()
+		metadataKey := req.GetParams().GetContainerMetadataKey()
+		metadataMap, ok := metadataContainers[metadataKey]
+		if !ok {
+			// Loop through the map to get the first value
+			for _, firstValue := range metadataContainers {
+				metadataMap = firstValue
+				break
+			}
+			if metadataMap == nil {
+				return nil, fmt.Errorf("container metadata is empty")
+			}
 		}
-		if metadataMap == nil {
-			return nil, fmt.Errorf("container metadata is empty")
-		}
+
+		containerImagesMap = metadataMap.GetImages()
+		common.PatchContainerMetadata(containerImagesMap, req.GetParams().GetKeyvals()["build"])
 	}
+
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 	}
-	containerImagesMap := metadataMap.GetImages()
-	common.PatchContainerMetadata(containerImagesMap, req.GetParams().GetKeyvals()["build"])
 	// containerCfg only exists to support VM flow.
 	// If we containerize the DutTopology fetching/parsing
 	// then VM could use its own logic for fetching DutTopology

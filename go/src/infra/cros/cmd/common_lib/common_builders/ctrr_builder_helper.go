@@ -533,6 +533,9 @@ func AppendPublishTask(
 // PatchContainerMetadata loops through each container info and applies patches
 // to certain containers based on the build version.
 func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds string) *buildapi.ContainerMetadata {
+	if metadata == nil {
+		return nil
+	}
 	containerMaps := map[string]*buildapi.ContainerImageMap{}
 	buildNumber := ExtractBuildRNumber(buildStr)
 
