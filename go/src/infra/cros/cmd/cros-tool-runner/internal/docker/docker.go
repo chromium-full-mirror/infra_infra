@@ -109,8 +109,17 @@ func (d *Docker) Auth(ctx context.Context) (err error) {
 		log.Printf("no token was provided so skipping docker auth.")
 		return nil
 	}
+	log.Printf("Token file: %s", d.TokenFile)
 	if d.Registry == "" {
 		return errors.Reason("docker auth: failed").Err()
+	}
+	err = runGcloudConfigList(ctx)
+	if err != nil {
+		log.Printf("failed to execute gcloud config list")
+	}
+	err = listAllSAOnBot(ctx)
+	if err != nil {
+		log.Printf("failed to execute list cmd")
 	}
 
 	token, err := GCloudToken(ctx, d.TokenFile, false)
@@ -135,6 +144,9 @@ func (d *Docker) Auth(ctx context.Context) (err error) {
 // auth authorizes the current process to the given registry, using keys on the drone.
 // This will give permissions for pullImage to work :)
 func auth(ctx context.Context, registry string, token string) error {
+	if token == "" {
+		log.Printf("token is missing")
+	}
 	cmd := exec.Command("docker", "login", "-u", "oauth2accesstoken",
 		"-p", token, registry)
 	logStr := fmt.Sprintf("docker login -u oauth2accesstoken -p %s %s", "<redacted from logs token>", registry)
@@ -462,6 +474,7 @@ func maybeFindToken(forceNewAuth bool) (string, error) {
 		log.Println("Previously authenticated authorization token found. Skipping auth.")
 		return readToken(authFileDir)
 	}
+	log.Printf(err.Error())
 	return "", err
 }
 
@@ -523,6 +536,32 @@ func configureDockerToGcloudAuth(ctx context.Context) error {
 	return nil
 }
 
+// runGcloudConfigList logs the gcloud config on the bot. This will help understand why sometimes bot fails to generate token
+func runGcloudConfigList(ctx context.Context) error {
+	cmd := exec.Command("gcloud", "config", "list")
+	logStr := fmt.Sprintf("gcloud config list")
+	stdout, stderr, err := common.RunWithTimeoutSpecialLog(ctx, cmd, 1*time.Minute, true, logStr)
+	common.PrintToLog("gcloud config list", stdout, stderr)
+	if err != nil {
+		return errors.Annotate(err, "failed to execute gcloud config list").Err()
+	}
+	return nil
+}
+
+// listAllSAOnBot lists all the SA present on the bot.
+func listAllSAOnBot(ctx context.Context) error {
+	// Prepare the 'ls -l' command with the provided directory
+	cmd := exec.Command("ls", "-l", "/creds/service_accounts")
+
+	logStr := fmt.Sprintf("ls -l /creds/service_accounts")
+	stdout, stderr, err := common.RunWithTimeoutSpecialLog(ctx, cmd, 1*time.Minute, true, logStr)
+	common.PrintToLog("ls -l /creds/service_accounts", stdout, stderr)
+	if err != nil {
+		return errors.Annotate(err, "failed on ls -l /creds/service_accounts").Err()
+	}
+	return nil
+}
+
 // authFile returns the gcloud auth file if found, else ""
 func authFile(forceNewAuth bool) (error, string) {
 	if forceNewAuth {
@@ -542,6 +581,7 @@ func authFile(forceNewAuth bool) (error, string) {
 			log.Println("Found Auth file.")
 			return nil, dir
 		} else if errors.Is(err, os.ErrNotExist) {
+			log.Printf("file doesn't exists: %s\n", dir)
 			continue
 		} else {
 			return err, ""
