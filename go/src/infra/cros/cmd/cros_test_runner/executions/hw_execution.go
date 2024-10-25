@@ -71,7 +71,7 @@ func HwExecution() {
 			if input.CrosTestRunnerDynamicRequest != nil {
 				// If the request is a CrosTestRunner dynamic request...
 				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
-			} else if input.CftTestRequest.TranslateTrv2Request {
+			} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
 				// If the request is a CrosTestRunner non-dynamic request with translation flag...
 				crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
 				if err == nil {
@@ -133,6 +133,14 @@ func HwExecution() {
 
 		return eg.Wait()
 	})
+}
+
+func shouldRunDynamic(cftTestRequest *skylab_test_runner.CFTTestRequest) bool {
+	if cftTestRequest.GetCompanionDuts() != nil && len(cftTestRequest.GetCompanionDuts()) > 0 {
+		return true
+	}
+
+	return false
 }
 
 // executeHwTests executes hw tests
