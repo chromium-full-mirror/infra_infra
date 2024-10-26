@@ -27,7 +27,8 @@ func crosBasePlan(pt basePlanType) *Plan {
 	ca = append(ca,
 		"DUT has board info",
 		"DUT has model info",
-		"Start ADB container",
+		"Start ADB-base",
+		"Start Servo-Nexus",
 	)
 	return &Plan{
 		CriticalActions: ca,
@@ -52,7 +53,7 @@ func crosBaseActions() map[string]*Action {
 			},
 			ExecName: "ctr_is_up",
 		},
-		"Start ADB container": {
+		"Start ADB-base": {
 			Docs: []string{
 				"Pull and run adb-base container",
 			},
@@ -62,9 +63,38 @@ func crosBaseActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				// Always first stop in case somethine left out from last run.
-				"Stop ADB container",
+				"Stop ADB-base",
 			},
 			ExecName:               "ctr_start_adb_container",
+			AllowFailAfterRecovery: true,
+		},
+		"Stop ADB-base": {
+			Docs: []string{
+				"Stop adb-base container",
+			},
+			ExecName:               "ctr_stop_adb_container",
+			AllowFailAfterRecovery: true,
+		},
+		"Start Servo-Nexus": {
+			Docs: []string{
+				"Pull and run servo-nexus container",
+			},
+			Conditions: []string{
+				"Testbed has Servo",
+				"CrosToolRunner is up",
+			},
+			Dependencies: []string{
+				// Always first stop in case somethine left out from last run.
+				"Stop Servo-Nexus",
+			},
+			ExecName:               "ctr_servo_nexus_start_container",
+			AllowFailAfterRecovery: true,
+		},
+		"Stop Servo-Nexus": {
+			Docs: []string{
+				"Stop Servo-Nexus container",
+			},
+			ExecName:               "ctr_servo_nexus_stop_container",
 			AllowFailAfterRecovery: true,
 		},
 		"Is not cloudbot": {
@@ -72,13 +102,6 @@ func crosBaseActions() map[string]*Action {
 				"Check if the process doesn't run on cloudbot.",
 			},
 			ExecName: "env_is_not_cloudbot",
-		},
-		"Stop ADB container": {
-			Docs: []string{
-				"Stop adb-base container",
-			},
-			ExecName:               "ctr_stop_adb_container",
-			AllowFailAfterRecovery: true,
 		},
 		"Set state: needs_deploy": {
 			Docs: []string{
@@ -109,6 +132,12 @@ func crosBaseActions() map[string]*Action {
 				"state:needs_repair",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Testbed has Servo": {
+			ExecName: "dut_servo_host_present",
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
 		},
 	}
 }

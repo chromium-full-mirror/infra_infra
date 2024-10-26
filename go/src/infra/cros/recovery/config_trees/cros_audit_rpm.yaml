@@ -11,7 +11,7 @@ plans:
           exec_name: dut_has_board_name
         - name: DUT has model info
           exec_name: dut_has_model_name
-        - name: Start ADB container (Allow to fail)
+        - name: Start ADB-base (Allow to fail)
           exec_name: ctr_start_adb_container
           docs:
             - Pull and run adb-base container
@@ -26,10 +26,27 @@ plans:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
           dependencies:
-            - name: Stop ADB container (Allow to fail)
+            - name: Stop ADB-base (Allow to fail)
               exec_name: ctr_stop_adb_container
               docs:
                 - Stop adb-base container
+        - name: Start Servo-Nexus (Allow to fail)
+          exec_name: ctr_servo_nexus_start_container
+          docs:
+            - Pull and run servo-nexus container
+          conditions:
+            - name: Testbed has Servo
+              exec_name: dut_servo_host_present
+            - name: CrosToolRunner is up
+              exec_name: ctr_is_up
+              docs:
+                - 'Verify that cros-tool-runner service is up and running, '
+                - the tool expected to start as part of system preparation.
+          dependencies:
+            - name: Stop Servo-Nexus (Allow to fail)
+              exec_name: ctr_servo_nexus_stop_container
+              docs:
+                - Stop Servo-Nexus container
     - name: servo (Allow to fail)
       criticalactions:
         - name: Set state:MISSING_CONFIG (ALWAYS_RUN)
