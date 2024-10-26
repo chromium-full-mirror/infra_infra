@@ -9,12 +9,14 @@ import (
 	"context"
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/recovery/ctr"
 	"infra/cros/recovery/internal/components/cft"
+	xmlrpc_utils "infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
@@ -98,6 +100,44 @@ func StopServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Du
 	}
 	log.Debugf(ctx, "Stop servod response: %v.", res)
 	return nil
+}
+
+// CallServod calls servod methods with args.
+func CallServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Dut, method string, args ...interface{}) (*xmlrpc.Value, error) {
+	if client == nil {
+		return nil, errors.Reason("servo-nexus call servod: client is not provided").Err()
+	}
+	sh := dut.GetChromeos().GetServo()
+	if sh == nil {
+		return nil, errors.Reason("servo-nexus call servod: servo-host is not provided").Err()
+	}
+	var callMethod api.CallServodRequest_Method
+	if v, ok := api.CallServodRequest_Method_value[strings.ToUpper(method)]; ok {
+		callMethod = api.CallServodRequest_Method(v)
+	} else {
+		return nil, errors.Reason("servo-nexus call servod: unsupported method %q", method).Err()
+	}
+	req := &api.CallServodRequest{
+		Method:                    callMethod,
+		Args:                      xmlrpc_utils.PackArgsToXMLRPCValues(args...),
+		ServoHostPath:             sh.GetName() + servoHostPort,
+		ServodDockerContainerName: sh.GetContainerName(),
+		ServodPort:                sh.GetServodPort(),
+	}
+	log.Debugf(ctx, "Calling servod with request %v.", req)
+	res, err := client.CallServod(ctx, req)
+	if err != nil {
+		return nil, errors.Annotate(err, "servo-nexus call servod: call failure").Err()
+	}
+	switch result := res.GetResult().(type) {
+	case *api.CallServodResponse_Failure_:
+		return nil, errors.Reason("servo-nexus call servod: %s", result.Failure.GetErrorMessage()).Err()
+	case *api.CallServodResponse_Success_:
+		log.Debugf(ctx, "CallServod Call succeeded with response %v", result.Success.GetResult())
+		return result.Success.GetResult(), nil
+	default:
+		return nil, errors.Reason("servo-nexus call servod: unexpected result type").Err()
+	}
 }
 
 // Client creates service client to the service running on CFT container.

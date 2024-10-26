@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
@@ -127,9 +128,92 @@ func stopServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
+func callServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := servonexus.FromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("call get servod by servo-nexus: client is not found").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	method := actionArgs.AsString(ctx, "method", "")
+	command := actionArgs.AsString(ctx, "command", "")
+	value := actionArgs.AsString(ctx, "value", "")
+	var res *xmlrpc.Value
+	if value == "" {
+		res, err = servonexus.CallServod(ctx, client, info.GetDut(), method, command)
+	} else {
+		res, err = servonexus.CallServod(ctx, client, info.GetDut(), method, command, value)
+	}
+	if err != nil {
+		return errors.Annotate(err, "call get servod by servo-nexus").Err()
+	}
+	log.Debugf(ctx, "Get servod %q: %s", command, res)
+	return nil
+}
+
+func callServodGetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := servonexus.FromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("call get servod by servo-nexus: client is not found").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	command := actionArgs.AsString(ctx, "command", "")
+	res, err := servonexus.CallServod(ctx, client, info.GetDut(), "get", command)
+	if err != nil {
+		return errors.Annotate(err, "call get servod by servo-nexus").Err()
+	}
+	log.Debugf(ctx, "Get servod %q: %s", command, res)
+	return nil
+}
+
+func callServodSetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := servonexus.FromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("call set servod by servo-nexus: client is not found").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	command := actionArgs.AsString(ctx, "command", "")
+	value := actionArgs.AsString(ctx, "value", "")
+	if _, err := servonexus.CallServod(ctx, client, info.GetDut(), "set", command, value); err != nil {
+		return errors.Annotate(err, "call set servod by servo-nexus").Err()
+	}
+	return nil
+}
+
+func callServodDocByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := servonexus.FromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("call doc servod by servo-nexus: client is not found").Err()
+	}
+	actionArgs := info.GetActionArgs(ctx)
+	command := actionArgs.AsString(ctx, "command", "")
+	res, err := servonexus.CallServod(ctx, client, info.GetDut(), "doc", command)
+	if err != nil {
+		return errors.Annotate(err, "call doc servod by servo-nexus").Err()
+	}
+	log.Debugf(ctx, "Doc servod %q: %s", command, res.GetString_())
+	return nil
+}
+
+func callServodHwinitByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := servonexus.FromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("call doc servod by servo-nexus: client is not found").Err()
+	}
+	if _, err := servonexus.CallServod(ctx, client, info.GetDut(), "hwinit", true); err != nil {
+		return errors.Annotate(err, "call doc servod by servo-nexus").Err()
+	}
+	log.Debugf(ctx, "Doc servod 'hwinit' with out issues!")
+	return nil
+}
+
 func init() {
 	execs.Register("ctr_servo_nexus_start_container", startServoNexusContainerExec)
 	execs.Register("ctr_servo_nexus_stop_container", stopServoNexusExec)
 	execs.Register("ctr_servo_nexus_start_servod", startServodByServoNexusExec)
 	execs.Register("ctr_servo_nexus_stop_servod", stopServodByServoNexusExec)
+	execs.Register("ctr_servo_nexus_servod_call", callServodByServoNexusExec)
+	execs.Register("ctr_servo_nexus_servod_get", callServodGetByServoNexusExec)
+	execs.Register("ctr_servo_nexus_servod_set", callServodSetByServoNexusExec)
+	execs.Register("ctr_servo_nexus_servod_doc", callServodDocByServoNexusExec)
+	execs.Register("ctr_servo_nexus_servod_hwinit", callServodHwinitByServoNexusExec)
 }
