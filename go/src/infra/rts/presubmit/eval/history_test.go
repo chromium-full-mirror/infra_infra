@@ -10,11 +10,10 @@ import (
 	"testing"
 
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/encoding/protojson"
 
-	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	evalpb "infra/rts/presubmit/eval/proto"
@@ -42,7 +41,7 @@ func TestReadDurationData(t *testing.T) {
 		assert.Loosely(t, eg.Wait(), should.BeNil)
 
 		assert.Loosely(t, records, should.HaveLength(2))
-		assert.Loosely(t, records[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+		assert.That(t, records[0], should.Match(mustParseTestDurationRecord(`{
 			"patchsets": [
 				{
 					"change": {
@@ -89,8 +88,8 @@ func TestReadDurationData(t *testing.T) {
 					"duration": "1.575000s"
 				}
 			]
-		}`))
-		assert.Loosely(t, records[1], convey.Adapt(ShouldResembleProtoJSON)(`{
+		}`)))
+		assert.That(t, records[1], should.Match(mustParseTestDurationRecord(`{
 			"patchsets": [
 				{
 					"change": {
@@ -121,6 +120,14 @@ func TestReadDurationData(t *testing.T) {
 					"duration": "2.096000s"
 				}
 			]
-		}`))
+		}`)))
 	})
+}
+
+func mustParseTestDurationRecord(msg string) *evalpb.TestDurationRecord {
+	var data evalpb.TestDurationRecord
+	if err := protojson.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
 }

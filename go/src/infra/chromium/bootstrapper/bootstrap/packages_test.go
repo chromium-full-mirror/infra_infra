@@ -10,12 +10,11 @@ import (
 	"testing"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/chromium/bootstrapper/clients/cas"
 	"infra/chromium/bootstrapper/clients/cipd"
@@ -134,7 +133,7 @@ func TestDownloadPackages(t *testing.T) {
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, exe, convey.Adapt(ShouldResembleProtoJSON)(`{
+				assert.That(t, exe, should.Match(mustParseBootstrappedExe(`{
 					"cipd": {
 						"server": "https://chrome-infra-packages.appspot.com",
 						"package": "fake-exe-package",
@@ -146,7 +145,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg1",
 						"fake-arg2"
 					]
-				}`))
+				}`)))
 				assert.Loosely(t, cmd, should.Match([]string{filepath.Join(fakePackagesRoot, "cipd", "exe", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
@@ -224,7 +223,7 @@ func TestDownloadPackages(t *testing.T) {
 				exe, cmd, err := DownloadPackages(ctx, input, fakePackagesRoot, packageChannels)
 
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, exe, convey.Adapt(ShouldResembleProtoJSON)(`{
+				assert.That(t, exe, should.Match(mustParseBootstrappedExe(`{
 					"cas": {
 						"cas_instance": "fake-cas-instance",
 						"digest": {
@@ -237,7 +236,7 @@ func TestDownloadPackages(t *testing.T) {
 						"fake-arg1",
 						"fake-arg2"
 					]
-				}`))
+				}`)))
 				assert.Loosely(t, cmd, should.Match([]string{filepath.Join(fakePackagesRoot, "cas", "fake-binary"), "fake-arg1", "fake-arg2"}))
 			})
 
@@ -273,4 +272,12 @@ func TestDownloadPackages(t *testing.T) {
 
 	})
 
+}
+
+func mustParseBootstrappedExe(msg string) *BootstrappedExe {
+	var data BootstrappedExe
+	if err := protojson.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
 }

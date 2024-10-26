@@ -7,14 +7,14 @@ package bootstrap
 import (
 	"testing"
 
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
+	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 func TestInput(t *testing.T) {
@@ -122,11 +122,13 @@ func TestInput(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, input.commits, should.BeEmpty)
 				assert.Loosely(t, input.changes, should.BeEmpty)
-				assert.Loosely(t, input.buildProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
-					"foo": "bar"
-				}`))
+				assert.That(t, input.buildProperties, should.Match(&structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"foo": structpb.NewStringValue("bar"),
+					},
+				}))
 				assert.Loosely(t, input.buildRequestedProperties, should.BeNil)
-				assert.Loosely(t, input.propsProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
+				assert.That(t, input.propsProperties, should.Match(mustParseBootstrapPropertiesProperties(`{
 					"top_level_project": {
 						"repo": {
 							"host": "chromium.googlesource.com",
@@ -135,14 +137,14 @@ func TestInput(t *testing.T) {
 						"ref": "refs/heads/top-level"
 					},
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
-				}`))
-				assert.Loosely(t, input.exeProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
+				}`)))
+				assert.That(t, input.exeProperties, should.Match(mustParseBootstrapExeProperties(`{
 					"exe": {
 						"cipd_package": "fake-package",
 						"cipd_version": "fake-version",
 						"cmd": ["fake-exe"]
 					}
-				}`))
+				}`)))
 				assert.Loosely(t, input.casRecipeBundle, should.BeNil)
 				assert.Loosely(t, input.ledEditedProperties, should.BeNil)
 				assert.Loosely(t, input.ledRemovedProperties, should.BeNil)
@@ -163,9 +165,11 @@ func TestInput(t *testing.T) {
 				input, err := opts.NewInput(build)
 
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, input.buildRequestedProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
-					"foo": "bar"
-				}`))
+				assert.Loosely(t, input.buildRequestedProperties, should.Match(&structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"foo": structpb.NewStringValue("bar"),
+					},
+				}))
 			})
 
 			t.Run("for shadow build", func(t *ftt.Test) {
@@ -206,7 +210,7 @@ func TestInput(t *testing.T) {
 
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, input.propertiesOptional, should.BeTrue)
-				assert.Loosely(t, input.propsProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
+				assert.Loosely(t, input.propsProperties, should.Match(mustParseBootstrapPropertiesProperties(`{
 					"top_level_project": {
 						"repo": {
 							"host": "chromium.googlesource.com",
@@ -215,7 +219,7 @@ func TestInput(t *testing.T) {
 						"ref": "refs/heads/top-level"
 					},
 					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
-				}`))
+				}`)))
 			})
 
 			t.Run("with commits set if build has commit", func(t *ftt.Test) {
@@ -356,13 +360,13 @@ func TestInput(t *testing.T) {
 				input, err := opts.NewInput(build)
 
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, input.casRecipeBundle, convey.Adapt(ShouldResembleProtoJSON)(`{
-					"cas_instance": "fake-instance",
-					"digest": {
-						"hash": "fake-hash",
-						"size_bytes": 42
-					}
-				}`))
+				assert.Loosely(t, input.casRecipeBundle, should.Match(&apipb.CASReference{
+					CasInstance: "fake-instance",
+					Digest: &apipb.Digest{
+						Hash:      "fake-hash",
+						SizeBytes: 42,
+					},
+				}))
 				assert.Loosely(t, input.buildProperties.Fields, should.NotContainKey("led_cas_recipe_bundle"))
 				// Make sure the build wasn't modified
 				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("led_cas_recipe_bundle"))
@@ -377,10 +381,12 @@ func TestInput(t *testing.T) {
 				input, err := opts.NewInput(build)
 
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, input.ledEditedProperties, convey.Adapt(ShouldResembleProtoJSON)(`{
-					"foo": "led-foo-value",
-					"bar": "led-bar-value"
-				}`))
+				assert.That(t, input.ledEditedProperties, should.Match(&structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"foo": structpb.NewStringValue("led-foo-value"),
+						"bar": structpb.NewStringValue("led-bar-value"),
+					},
+				}))
 				assert.Loosely(t, input.buildProperties.Fields, should.NotContainKey("led_edited_properties"))
 				// Make sure the build wasn't modified
 				assert.Loosely(t, build.Input.Properties.Fields, should.ContainKey("led_edited_properties"))
@@ -405,4 +411,20 @@ func TestInput(t *testing.T) {
 		})
 
 	})
+}
+
+func mustParseBootstrapPropertiesProperties(msg string) *BootstrapPropertiesProperties {
+	var data BootstrapPropertiesProperties
+	if err := protojson.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
+}
+
+func mustParseBootstrapExeProperties(msg string) *BootstrapExeProperties {
+	var data BootstrapExeProperties
+	if err := protojson.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
 }

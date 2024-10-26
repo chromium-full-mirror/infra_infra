@@ -21,10 +21,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 
@@ -184,7 +182,7 @@ func TestPerformBootstrap(t *testing.T) {
 			}))
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, build, should.Match(mustParseBBProto(`{
 				"input": {
 					"gitiles_commit": {
 						"host": "fake-host",
@@ -224,7 +222,7 @@ func TestPerformBootstrap(t *testing.T) {
 						"foo": "builder-value"
 					}
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("succeeds for polymorphic with build properties prioritized over builder properties", func(t *ftt.Test) {
@@ -242,7 +240,7 @@ func TestPerformBootstrap(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, build, should.Match(mustParseBBProto(`{
 				"input": {
 					"gitiles_commit": {
 						"host": "fake-host",
@@ -282,7 +280,7 @@ func TestPerformBootstrap(t *testing.T) {
 						"foo": "build-value"
 					}
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("succeeds for properties-optional without $bootstrap/properties", func(t *ftt.Test) {
@@ -311,7 +309,7 @@ func TestPerformBootstrap(t *testing.T) {
 			}))
 			build := &buildbucketpb.Build{}
 			proto.Unmarshal(exeInput, build)
-			assert.Loosely(t, build, convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.Loosely(t, build, should.Match(mustParseBBProto(`{
 				"input": {
 					"properties": {
 						"$build/chromium_bootstrap": {
@@ -327,7 +325,7 @@ func TestPerformBootstrap(t *testing.T) {
 						}
 					}
 				}
-			}`))
+			}`)))
 		})
 
 	})
@@ -438,17 +436,17 @@ func TestBootstrapMain(t *testing.T) {
 			assert.Loosely(t, err, should.ErrLike(cmdErr))
 			assert.Loosely(t, sleepDuration, should.BeZero)
 			assert.Loosely(t, len(records.builds), should.Equal(2))
-			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, records.builds[0], should.Match(mustParseBBProto(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`))
-			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
+			}`)))
+			assert.That(t, records.builds[1], should.Match(mustParseBBProto(`{
 				"summary_markdown": "<pre>test cmd execution failure</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("updates build on failure of non-bootstrapped exe process", func(t *ftt.Test) {
@@ -463,17 +461,17 @@ func TestBootstrapMain(t *testing.T) {
 			assert.Loosely(t, err, should.ErrLike(cmdErr))
 			assert.Loosely(t, sleepDuration, should.BeZero)
 			assert.Loosely(t, len(records.builds), should.Equal(2))
-			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, records.builds[0], should.Match(mustParseBBProto(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`))
-			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(fmt.Sprintf(`{
+			}`)))
+			assert.Loosely(t, records.builds[1], should.Match(mustParseBBProto(fmt.Sprintf(`{
 				"summary_markdown": "<pre>%s</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`, cmdErr)))
+			}`, cmdErr))))
 		})
 
 		t.Run("updates build for generic bootstrap failure", func(t *ftt.Test) {
@@ -485,17 +483,17 @@ func TestBootstrapMain(t *testing.T) {
 			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
 			assert.Loosely(t, sleepDuration, should.BeZero)
 			assert.Loosely(t, len(records.builds), should.Equal(2))
-			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, records.builds[0], should.Match(mustParseBBProto(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`))
-			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
+			}`)))
+			assert.That(t, records.builds[1], should.Match(mustParseBBProto(`{
 				"summary_markdown": "<pre>test bootstrap failure</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("updates build for patch rejected failure", func(t *ftt.Test) {
@@ -508,12 +506,12 @@ func TestBootstrapMain(t *testing.T) {
 			assert.Loosely(t, err, should.ErrLike(bootstrapErr))
 			assert.Loosely(t, sleepDuration, should.BeZero)
 			assert.Loosely(t, len(records.builds), should.Equal(2))
-			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, records.builds[0], should.Match(mustParseBBProto(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`))
-			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
+			}`)))
+			assert.Loosely(t, records.builds[1], should.Match(mustParseBBProto(`{
 				"summary_markdown": "<pre>Patch failure: See build stderr log. Try rebasing?</pre>",
 				"output": {
 					"status": "FAILURE",
@@ -521,7 +519,7 @@ func TestBootstrapMain(t *testing.T) {
 						"failure_type": "PATCH_FAILURE"
 					}
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("returns sleep duration for sleep tagged error", func(t *ftt.Test) {
@@ -534,17 +532,17 @@ func TestBootstrapMain(t *testing.T) {
 			assert.Loosely(t, err, should.ErrLike("test error"))
 			assert.Loosely(t, sleepDuration, should.Equal(20*time.Second))
 			assert.Loosely(t, len(records.builds), should.Equal(2))
-			assert.Loosely(t, records.builds[0], convey.Adapt(ShouldResembleProtoJSON)(`{
+			assert.That(t, records.builds[0], should.Match(mustParseBBProto(`{
 				"output": {
 					"status": "STARTED"
 				}
-			}`))
-			assert.Loosely(t, records.builds[1], convey.Adapt(ShouldResembleProtoJSON)(`{
+			}`)))
+			assert.That(t, records.builds[1], should.Match(mustParseBBProto(`{
 				"summary_markdown": "<pre>test error</pre>",
 				"output": {
 					"status": "INFRA_FAILURE"
 				}
-			}`))
+			}`)))
 		})
 
 		t.Run("returns original error if getting stream fails", func(t *ftt.Test) {
@@ -584,4 +582,12 @@ func TestBootstrapMain(t *testing.T) {
 		})
 
 	})
+}
+
+func mustParseBBProto(msg string) *buildbucketpb.Build {
+	var data buildbucketpb.Build
+	if err := protojson.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
 }

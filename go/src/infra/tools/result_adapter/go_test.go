@@ -20,11 +20,11 @@ import (
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
-	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
+	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+	"google.golang.org/protobuf/encoding/prototext"
 )
 
 func TestEnsureArgsValid(t *testing.T) {
@@ -79,7 +79,7 @@ func TestGenerateTestResults(t *testing.T) {
 		)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, trs, should.HaveLength(2))
-		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id:  "infra/tools/result_adapter"
 			expected:  true
 			status:  PASS
@@ -96,8 +96,8 @@ func TestGenerateTestResults(t *testing.T) {
 		  		value:  {
 					contents:  "PASS\nok  	infra/tools/result_adapter	0.143s\n"
 		  		}
-			}`))
-		assert.Loosely(t, trs[1], convey.Adapt(assertions.ShouldResembleProtoText)(
+			}`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id:  "infra/tools/result_adapter.TestEnsureArgsValid"
 			expected:  true
 			status:  PASS
@@ -112,7 +112,7 @@ func TestGenerateTestResults(t *testing.T) {
 		  		value:  {
 					contents:  "=== RUN   TestEnsureArgsValid\n=== PAUSE TestEnsureArgsValid\n=== CONT  TestEnsureArgsValid\n--- PASS: TestEnsureArgsValid (0.00s)\n"
 		  		}
-			}`))
+			}`)))
 	})
 
 	// Test that output is associated with the test that produced it, and only that test.
@@ -165,7 +165,7 @@ func TestGenerateTestResults(t *testing.T) {
 		)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, trs, should.HaveLength(4))
-		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "example/pkg"
 			expected: true
 			status: PASS
@@ -182,8 +182,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 				contents:  "PASS\nok  	example/pkg	0.228s\n"
 			  }
-			}`))
-		assert.Loosely(t, trs[1], convey.Adapt(assertions.ShouldResembleProtoText)(
+			}`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "example/pkg.TestA"
 			expected: true
 			status: PASS
@@ -198,8 +198,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 			    contents: "=== RUN   TestA\n    main_test.go:6: TestA line 1 of 1\n--- PASS: TestA (0.00s)\n"
 			  }
-			}`))
-		assert.Loosely(t, trs[2], convey.Adapt(assertions.ShouldResembleProtoText)(
+			}`)))
+		assert.That(t, trs[2], should.Match(mustParseTestResult(
 			`test_id: "example/pkg.TestB"
 			expected: true
 			status: PASS
@@ -214,8 +214,8 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 			    contents: "=== RUN   TestB\n    main_test.go:10: TestB line 1 of 2\n    main_test.go:11: TestB line 2 of 2\n--- PASS: TestB (0.00s)\n"
 			  }
-			}`))
-		assert.Loosely(t, trs[3], convey.Adapt(assertions.ShouldResembleProtoText)(
+			}`)))
+		assert.That(t, trs[3], should.Match(mustParseTestResult(
 			`test_id:  "example/pkg.TestAB"
 			expected:  true
 			status:  PASS
@@ -230,7 +230,7 @@ func TestGenerateTestResults(t *testing.T) {
 			  value:  {
 			    contents:  "=== RUN   TestAB\n    main_test.go:15: TestAB line 1 of 3\n    main_test.go:16: TestAB line 2 of 3\n    main_test.go:17: TestAB line 3 of 3\n--- PASS: TestAB (0.00s)\n"
 			  }
-			}`))
+			}`)))
 	})
 
 	ftt.Run(`parses skipped package`, t, func(t *ftt.Test) {
@@ -240,7 +240,7 @@ func TestGenerateTestResults(t *testing.T) {
 		)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, trs, should.HaveLength(1))
-		assert.Loosely(t, trs[0], convey.Adapt(assertions.ShouldResembleProtoText)(
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "go.chromium.org/luci/resultdb/internal/permissions"
 			expected: true
 			status: SKIP
@@ -251,7 +251,7 @@ func TestGenerateTestResults(t *testing.T) {
 			  value: {
 				contents:  "?   	go.chromium.org/luci/resultdb/internal/permissions	[no test files]\n"
 			  }
-			}`))
+			}`)))
 	})
 }
 
@@ -409,4 +409,12 @@ hello world!
 			}
 		})
 	}
+}
+
+func mustParseTestResult(msg string) *sinkpb.TestResult {
+	var data sinkpb.TestResult
+	if err := prototext.Unmarshal([]byte(msg), &data); err != nil {
+		panic(err)
+	}
+	return &data
 }
