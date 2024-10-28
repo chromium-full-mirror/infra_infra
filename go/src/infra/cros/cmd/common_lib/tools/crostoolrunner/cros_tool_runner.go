@@ -323,7 +323,9 @@ func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Get network %s", networkName))
 	defer func() {
-		step.SetSummaryMarkdown(err.Error())
+		if err != nil {
+			step.SetSummaryMarkdown(err.Error())
+		}
 		step.End(nil)
 	}()
 
