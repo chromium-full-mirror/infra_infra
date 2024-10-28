@@ -23,6 +23,7 @@ const (
 	runCmd            = "ants-publish server -port 0"
 	containerID       = "ants-publish"
 	internalAccountID = 1
+	dynamicIdentifier = "ants-publish"
 )
 
 func isInternal(accountID string) bool {
@@ -45,22 +46,29 @@ func isInternal(accountID string) bool {
 	return id == internalAccountID
 }
 
-func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
-	if !isInternal(metadata.AccountId) {
-		// Skip calling ants-publish for external partners.
-		log.Printf("Skipping ants-publish task for external partners. Found accountId: %s", metadata.AccountId)
-		return nil
-	}
-
+func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
 	if metadata.AntsInvocationId == "" {
-		// Skip if the invocation or parent workunit do not exist.
-		log.Printf("Skipping ants-publish task, AntsInvocationId is not populated")
-		return nil
+		log.Printf("AntsInvocationId is not populated.")
+		return true
 	}
 
 	if metadata.ParentWorkUnitId == "" {
-		// Skip if the invocation or parent workunit do not exist.
-		log.Printf("Skipping ants-publish task, ParentWorkUnitId is not populated")
+		log.Printf("ParentWorkUnitId is not populated.")
+		return true
+	}
+
+	if !isInternal(metadata.AccountId) {
+		// Skip calling ants-publish for external partners.
+		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
+		return true
+	}
+
+	return false
+}
+
+func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
+	if skipAntsPublish(metadata) {
+		log.Printf("Skipping ants-publish task.")
 		return nil
 	}
 
@@ -80,7 +88,7 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 		},
 	)
 
-	log.Printf("publishMetadata %+v", metadata)
+	log.Printf("publishMetadata: %+v", metadata)
 	publishRequestMetadata := &anypb.Any{}
 	if err := publishRequestMetadata.MarshalFrom(metadata); err != nil {
 		log.Printf("Failed to marshal request, %s", err)
@@ -89,7 +97,6 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 
 	dynamicDepsDefinition := defineDynamicDeps(antsContainerBuilder)
 	log.Printf("dynamicDepsDefinition: %+v", dynamicDepsDefinition)
-	dynamicIdentifier := "ants-publish"
 
 	generator := generators.NewInsertGenerator()
 	generator.AddInsertion(
