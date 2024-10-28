@@ -379,5 +379,26 @@ func crosRepairClosingActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"Stop CFT containers": {
+			Dependencies: []string{
+				"Stop Servo-Nexus",
+				"Stop ADB-base",
+			},
+			ExecName: "sample_pass",
+		},
+		"Stop ADB-base": {
+			Docs: []string{
+				"Stop adb-base container",
+			},
+			ExecName:               "ctr_stop_adb_container",
+			AllowFailAfterRecovery: true,
+		},
+		"Stop Servo-Nexus": {
+			Docs: []string{
+				"Stop Servo-Nexus container",
+			},
+			ExecName:               "ctr_servo_nexus_stop_container",
+			AllowFailAfterRecovery: true,
+		},
 	}
 }

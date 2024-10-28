@@ -6396,3 +6396,14 @@ plans:
                   dependencies:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
+        - name: Stop CFT containers
+          exec_name: sample_pass
+          dependencies:
+            - name: Stop Servo-Nexus (Allow to fail)
+              exec_name: ctr_servo_nexus_stop_container
+              docs:
+                - Stop Servo-Nexus container
+            - name: Stop ADB-base (Allow to fail)
+              exec_name: ctr_stop_adb_container
+              docs:
+                - Stop adb-base container

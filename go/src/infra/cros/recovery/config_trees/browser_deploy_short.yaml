@@ -33545,3 +33545,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+        - name: Stop CFT containers ('sample_pass')
+          dependencies:
+            - name: Stop Servo-Nexus (Allow to fail) ('ctr_servo_nexus_stop_container')
+            - name: Stop ADB-base (Allow to fail) ('ctr_stop_adb_container')

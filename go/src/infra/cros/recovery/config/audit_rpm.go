@@ -28,6 +28,7 @@ func CrosAuditRPMConfig() *Configuration {
 			PlanClosing: {
 				CriticalActions: []string{
 					"Close Servo-host",
+					"Stop CFT containers",
 				},
 				Actions:   crosRepairClosingActions(),
 				AllowFail: true,
