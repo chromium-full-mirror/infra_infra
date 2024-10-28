@@ -27,6 +27,7 @@ func Application() *cli.Application {
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
 			commands.PingCommand,
+			commands.PingDeviceManagerCommand,
 		},
 	}
 }
