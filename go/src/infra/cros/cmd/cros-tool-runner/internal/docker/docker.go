@@ -29,6 +29,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
 
+	common_lib "infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 	"infra/cros/internal/env"
 )
@@ -637,6 +638,11 @@ func readToken(dir string) (string, error) {
 
 // activateAccount actives the gcloud service account using the given keyfile
 func activateAccount(ctx context.Context, keyfile string) error {
+	keyfile, err := common_lib.LocateFile([]string{keyfile, common_lib.VmLabDockerKeyFileLocation})
+	if err != nil {
+		log.Printf("Skipping gcloud auth as keyfile does not exist")
+		return nil
+	}
 	log.Println("Obtaining oath token from gcloud auth.")
 	if _, err := os.Stat(keyfile); err == nil {
 		// keyfile exists
