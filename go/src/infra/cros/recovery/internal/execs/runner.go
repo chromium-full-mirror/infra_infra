@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/cft/adb"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -139,7 +140,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	// TODO(otabek): apply code logic from SSH run.
 	adbRun := func() (components.SSHRunResponse, *errors.Annotator) {
 		fullCmd = "adb shell " + fullCmd
-		client, err := adb.FromScope(ctx, b.dut)
+		client, err := cft.ADBClientFromScope(ctx, b.dut)
 		if err != nil {
 			return &adbResponse{
 				err:  err.Error(),

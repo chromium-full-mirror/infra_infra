@@ -67,11 +67,11 @@ func startServoNexusContainerExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "start servo-nexus container").Err()
 	}
 	log.Infof(ctx, "Container %q started!", req.Name)
-	client, err := servonexus.Client(ctx, ctrInfo, dut)
+	client, err := servonexus.ServiceClient(ctx, ctrInfo, dut)
 	if err != nil {
 		return errors.Annotate(err, "start servo-nexus container").Err()
 	}
-	err = servonexus.ToScope(ctx, dut, client)
+	err = cft.ClientToScope(ctx, dut, client, containerName)
 	return errors.Annotate(err, "start servo-nexus container").Err()
 }
 
@@ -93,7 +93,7 @@ func stopServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func startServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("start servod by servo-nexus: client is not found").Err()
 	}
@@ -117,7 +117,7 @@ func startServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) erro
 }
 
 func stopServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("start servod by servo-nexus: client is not found").Err()
 	}
@@ -129,7 +129,7 @@ func stopServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error
 }
 
 func callServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("call get servod by servo-nexus: client is not found").Err()
 	}
@@ -151,7 +151,7 @@ func callServodByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error
 }
 
 func callServodGetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("call get servod by servo-nexus: client is not found").Err()
 	}
@@ -166,7 +166,7 @@ func callServodGetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) er
 }
 
 func callServodSetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("call set servod by servo-nexus: client is not found").Err()
 	}
@@ -180,7 +180,7 @@ func callServodSetByServoNexusExec(ctx context.Context, info *execs.ExecInfo) er
 }
 
 func callServodDocByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("call doc servod by servo-nexus: client is not found").Err()
 	}
@@ -195,7 +195,7 @@ func callServodDocByServoNexusExec(ctx context.Context, info *execs.ExecInfo) er
 }
 
 func callServodHwinitByServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := servonexus.FromScope(ctx, info.GetDut())
+	client, err := cft.ServoClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("call doc servod by servo-nexus: client is not found").Err()
 	}

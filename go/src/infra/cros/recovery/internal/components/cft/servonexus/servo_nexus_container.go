@@ -140,8 +140,8 @@ func CallServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Du
 	}
 }
 
-// Client creates service client to the service running on CFT container.
-func Client(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (api.ServodServiceClient, error) {
+// ServiceClient creates service client to the service running on CFT container.
+func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (api.ServodServiceClient, error) {
 	if dut == nil {
 		return nil, errors.Reason("servo-nexus service client: dut is not provided").Err()
 	}

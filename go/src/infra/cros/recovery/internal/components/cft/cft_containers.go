@@ -24,3 +24,8 @@ func ADBName(dut *tlw.Dut) string {
 func ServoNexusName(dut *tlw.Dut) string {
 	return "servo-nexus-" + dut.Name
 }
+
+// CrosDUTName generates predicable container name for cros-dut container.
+func CrosDUTName(dut *tlw.Dut) string {
+	return "cros-dut-" + dut.Name
+}

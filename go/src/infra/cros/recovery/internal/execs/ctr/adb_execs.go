@@ -72,7 +72,7 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
-	err = adb.ToScope(ctx, dut, adbClient)
+	err = cft.ClientToScope(ctx, dut, adbClient, containerName)
 	return errors.Annotate(err, "start adb container").Err()
 }
 
@@ -95,7 +95,7 @@ func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // adbCommandExec execs custom command with arguments.
 func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := adb.FromScope(ctx, info.GetDut())
+	client, err := cft.ADBClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "adb command").Err()
 	}
@@ -113,7 +113,7 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	if dut == nil {
 		return errors.Reason("adb connect: dut is not provided").Err()
 	}
-	client, err := adb.FromScope(ctx, dut)
+	client, err := cft.ADBClientFromScope(ctx, dut)
 	if err != nil {
 		return errors.Annotate(err, "adb connect").Err()
 	}
