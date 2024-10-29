@@ -29,3 +29,8 @@ func ServoNexusName(dut *tlw.Dut) string {
 func CrosDUTName(dut *tlw.Dut) string {
 	return "cros-dut-" + dut.Name
 }
+
+// FoilProvisionName generates predicable container name for foil-provision container.
+func FoilProvisionName(dut *tlw.Dut) string {
+	return "foil-provision-" + dut.Name
+}

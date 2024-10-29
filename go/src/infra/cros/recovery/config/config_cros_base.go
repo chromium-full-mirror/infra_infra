@@ -37,7 +37,7 @@ func crosBasePlan(pt basePlanType) *Plan {
 }
 
 func crosBaseActions() map[string]*Action {
-	return map[string]*Action{
+	actions := map[string]*Action{
 		"DUT has board info": {
 			ExecName:      "dut_has_board_name",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -45,63 +45,6 @@ func crosBaseActions() map[string]*Action {
 		"DUT has model info": {
 			ExecName:      "dut_has_model_name",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"CrosToolRunner is up": {
-			Docs: []string{
-				"Verify that cros-tool-runner service is up and running, ",
-				"the tool expected to start as part of system preparation.",
-			},
-			ExecName: "ctr_is_up",
-		},
-		"Start ADB-base": {
-			Docs: []string{
-				"Pull and run adb-base container",
-			},
-			Conditions: []string{
-				"Is not cloudbot",
-				"CrosToolRunner is up",
-			},
-			Dependencies: []string{
-				// Always first stop in case somethine left out from last run.
-				"Stop ADB-base",
-			},
-			ExecName:               "ctr_start_adb_container",
-			AllowFailAfterRecovery: true,
-		},
-		"Stop ADB-base": {
-			Docs: []string{
-				"Stop adb-base container",
-			},
-			ExecName:               "ctr_stop_adb_container",
-			AllowFailAfterRecovery: true,
-		},
-		"Start Servo-Nexus": {
-			Docs: []string{
-				"Pull and run servo-nexus container",
-			},
-			Conditions: []string{
-				"Testbed has Servo",
-				"CrosToolRunner is up",
-			},
-			Dependencies: []string{
-				// Always first stop in case somethine left out from last run.
-				"Stop Servo-Nexus",
-			},
-			ExecName:               "ctr_servo_nexus_start_container",
-			AllowFailAfterRecovery: true,
-		},
-		"Stop Servo-Nexus": {
-			Docs: []string{
-				"Stop Servo-Nexus container",
-			},
-			ExecName:               "ctr_servo_nexus_stop_container",
-			AllowFailAfterRecovery: true,
-		},
-		"Is not cloudbot": {
-			Docs: []string{
-				"Check if the process doesn't run on cloudbot.",
-			},
-			ExecName: "env_is_not_cloudbot",
 		},
 		"Set state: needs_deploy": {
 			Docs: []string{
@@ -140,4 +83,6 @@ func crosBaseActions() map[string]*Action {
 			},
 		},
 	}
+	addCrosCftContainers(actions)
+	return actions
 }
