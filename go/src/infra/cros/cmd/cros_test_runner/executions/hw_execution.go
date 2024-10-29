@@ -82,6 +82,8 @@ func HwExecution() {
 				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 			}
 			if skylabResult != nil {
+				setMarkdown(skylabResult, st, resp)
+
 				m, _ := proto.Marshal(skylabResult)
 				var b bytes.Buffer
 				w := zlib.NewWriter(&b)
@@ -513,4 +515,35 @@ func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
 		Host: "cr-buildbucket.appspot.com",
 	}
 	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
+}
+
+func setMarkdown(skylabResult *skylab_test_runner.Result, st *build.State, resp *steps.RunTestsResponse) {
+	if skylabResult.GetAutotestResult() != nil {
+		// Currently test_runner.py handles this. Don't break it for now.
+		return
+	} else if skylabResult.GetAndroidGenericResult() != nil {
+		if skylabResult.GetPrejob().GetStep()[0].GetVerdict() != skylab_test_runner.Result_Prejob_Step_VERDICT_PASS {
+			err := fmt.Errorf("prejob failed")
+			st.SetSummaryMarkdown(err.Error())
+			resp.ErrorSummaryMarkdown = err.Error()
+			return
+		}
+
+		// If prejob goes well, check the tests.
+		tc := skylabResult.GetAndroidGenericResult().GetGivenTestCases()
+		for _, t := range tc {
+			children := t.GetChildTestCases()
+			for _, child := range children {
+				v := child.GetVerdict()
+				// for now, if a test is undefined, or passed, we won't blow up the builder. Otherwise, do.
+				if v != skylab_test_runner.Result_Autotest_TestCase_VERDICT_UNDEFINED && v != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+					err := fmt.Errorf("test(s) failed")
+					st.SetSummaryMarkdown(err.Error())
+					resp.ErrorSummaryMarkdown = err.Error()
+					return
+				}
+			}
+
+		}
+	}
 }
