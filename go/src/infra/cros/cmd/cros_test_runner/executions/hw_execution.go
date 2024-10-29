@@ -522,11 +522,13 @@ func setMarkdown(skylabResult *skylab_test_runner.Result, st *build.State, resp 
 		// Currently test_runner.py handles this. Don't break it for now.
 		return
 	} else if skylabResult.GetAndroidGenericResult() != nil {
-		if skylabResult.GetPrejob().GetStep()[0].GetVerdict() != skylab_test_runner.Result_Prejob_Step_VERDICT_PASS {
-			err := fmt.Errorf("prejob failed")
-			st.SetSummaryMarkdown(err.Error())
-			resp.ErrorSummaryMarkdown = err.Error()
-			return
+		if len(skylabResult.GetPrejob().GetStep()) > 0 {
+			if skylabResult.GetPrejob().GetStep()[0].GetVerdict() != skylab_test_runner.Result_Prejob_Step_VERDICT_PASS {
+				err := fmt.Errorf("prejob failed")
+				st.SetSummaryMarkdown(err.Error())
+				resp.ErrorSummaryMarkdown = err.Error()
+				return
+			}
 		}
 
 		// If prejob goes well, check the tests.
