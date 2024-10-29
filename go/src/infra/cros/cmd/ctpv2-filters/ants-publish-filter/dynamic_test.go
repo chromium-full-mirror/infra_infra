@@ -8,9 +8,35 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
+	"google.golang.org/protobuf/testing/protocmp"
 )
+
+func TestSkipTFUpload(t *testing.T) {
+	req := &api.InternalTestplan{
+		SuiteInfo: &api.SuiteInfo{
+			SuiteMetadata: &api.SuiteMetadata{
+				ExecutionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{{Flag: "foo", Value: "test"}},
+				},
+			},
+		},
+	}
+
+	skipTFUpload(req)
+
+	gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	if len(gotArgs) != 2 {
+		t.Errorf("Unexpected number of args: got %d want 2", len(gotArgs))
+	}
+
+	wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
+	if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
+		t.Errorf("Unexpected diff: %s", diff)
+	}
+}
 
 func TestIsInternal(t *testing.T) {
 	testCases := []struct {
@@ -66,7 +92,8 @@ func TestGeneratePublishTask(t *testing.T) {
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
-						DynamicUpdates: tc.du,
+						DynamicUpdates:    tc.du,
+						ExecutionMetadata: &api.ExecutionMetadata{},
 					},
 				},
 			}
@@ -134,7 +161,8 @@ func TestSkipAntsPublish(t *testing.T) {
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
-						DynamicUpdates: []*api.UserDefinedDynamicUpdate{},
+						DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
+						ExecutionMetadata: &api.ExecutionMetadata{},
 					},
 				},
 			}

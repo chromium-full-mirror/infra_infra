@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
@@ -24,6 +24,7 @@ const (
 	containerID       = "ants-publish"
 	internalAccountID = 1
 	dynamicIdentifier = "ants-publish"
+	skipTFUploadFlag  = "skip_ants_upload"
 )
 
 func isInternal(accountID string) bool {
@@ -66,11 +67,21 @@ func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
 	return false
 }
 
-func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
+func skipTFUpload(req *api.InternalTestplan) {
+	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
+	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
+}
+
+func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
 	if skipAntsPublish(metadata) {
 		log.Printf("Skipping ants-publish task.")
 		return nil
 	}
+
+	// Skip uploading to Ants using TF plugin.
+	log.Printf("Skipping Ants upload through Tf plugin.")
+	skipTFUpload(req)
 
 	antsContainerBuilder := builders.NewContainerBuilder(
 		containerID,  //  ContainerID
@@ -82,7 +93,7 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 
 	//  Add test artifacts directory for container.
 	antsContainerBuilder.DynamicDeps = append(antsContainerBuilder.DynamicDeps,
-		&testapi.DynamicDep{
+		&api.DynamicDep{
 			Key:   "generic.additionalVolumes",
 			Value: "FMT=${env-TEMPDIR}:/tmp/artifacts",
 		},
@@ -100,14 +111,14 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 
 	generator := generators.NewInsertGenerator()
 	generator.AddInsertion(
-		&testapi.CrosTestRunnerDynamicRequest_Task{
-			OrderedContainerRequests: []*testapi.ContainerRequest{
+		&api.CrosTestRunnerDynamicRequest_Task{
+			OrderedContainerRequests: []*api.ContainerRequest{
 				antsContainerBuilder.Build(),
 			},
-			Task: &testapi.CrosTestRunnerDynamicRequest_Task_Publish{
-				Publish: &testapi.PublishTask{
+			Task: &api.CrosTestRunnerDynamicRequest_Task_Publish{
+				Publish: &api.PublishTask{
 					ServiceAddress: &labapi.IpEndpoint{},
-					PublishRequest: &testapi.PublishRequest{
+					PublishRequest: &api.PublishRequest{
 						Metadata: publishRequestMetadata,
 					},
 					DynamicDeps:       dynamicDepsDefinition,
@@ -116,15 +127,15 @@ func GeneratePublishTask(req *testapi.InternalTestplan, metadata *metadata.Publi
 			},
 			Required: true,
 		},
-		dynamic_common.AppendTaskWrapper(dynamic_common.FindLast(testapi.FocalTaskFinder_PUBLISH)))
+		dynamic_common.AppendTaskWrapper(dynamic_common.FindLast(api.FocalTaskFinder_PUBLISH)))
 
 	// The dynamic updates are passed by reference and need the full path.
 	// Do not use another var or substitution here.
 	return dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 }
 
-func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*testapi.DynamicDep {
-	dynamicDeps := []*testapi.DynamicDep{
+func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*api.DynamicDep {
+	dynamicDeps := []*api.DynamicDep{
 		{
 			Key:   dynamic_common.ServiceAddress,
 			Value: antsContainerBuilder.ContainerId,
