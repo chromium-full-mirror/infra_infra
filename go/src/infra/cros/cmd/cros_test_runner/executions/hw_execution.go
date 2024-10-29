@@ -13,11 +13,8 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
 
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
@@ -25,12 +22,10 @@ import (
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
-	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
@@ -58,82 +53,52 @@ func HwExecution() {
 		input := ioProps.GetInput(ctx)
 
 		log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
-		innerFunc := func(ctx context.Context) error {
-			logging.Infof(ctx, "have input %v", input)
-			ctrCipdInfo := ctrInputProp.GetInput(ctx)
-			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
-			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp := &steps.RunTestsResponse{}
-			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
-			var skylabResult *skylab_test_runner.Result
-			var crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
-			var err error
-			if input.CrosTestRunnerDynamicRequest != nil {
-				// If the request is a CrosTestRunner dynamic request...
-				skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
-			} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
-				// If the request is a CrosTestRunner non-dynamic request with translation flag...
-				crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
-				if err == nil {
-					skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
-				}
+
+		logging.Infof(ctx, "have input %v", input)
+		ctrCipdInfo := ctrInputProp.GetInput(ctx)
+		logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
+		logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
+		resp := &steps.RunTestsResponse{}
+		// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
+		var skylabResult *skylab_test_runner.Result
+		var crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
+		var err error
+		if input.CrosTestRunnerDynamicRequest != nil {
+			// If the request is a CrosTestRunner dynamic request...
+			skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
+		} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
+			// If the request is a CrosTestRunner non-dynamic request with translation flag...
+			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
+			if err == nil {
+				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
+			}
+		} else {
+			// If the request is a CrosTestRunner non-dynamic request...
+			skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
+		}
+		if skylabResult != nil {
+			setMarkdown(skylabResult, st, resp)
+
+			m, _ := proto.Marshal(skylabResult)
+			var b bytes.Buffer
+			w := zlib.NewWriter(&b)
+			_, _ = w.Write(m)
+			_ = w.Close()
+			resp.CompressedResult = base64.StdEncoding.EncodeToString(b.Bytes())
+		}
+		if err != nil {
+			if common.GlobalNonInfraError != nil {
+				err = common.GlobalNonInfraError
 			} else {
-				// If the request is a CrosTestRunner non-dynamic request...
-				skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
+				err = build.AttachStatus(err, buildbucketpb.Status_INFRA_FAILURE, nil)
 			}
-			if skylabResult != nil {
-				setMarkdown(skylabResult, st, resp)
-
-				m, _ := proto.Marshal(skylabResult)
-				var b bytes.Buffer
-				w := zlib.NewWriter(&b)
-				_, _ = w.Write(m)
-				_ = w.Close()
-				resp.CompressedResult = base64.StdEncoding.EncodeToString(b.Bytes())
-			}
-			if err != nil {
-				if common.GlobalNonInfraError != nil {
-					err = common.GlobalNonInfraError
-				} else {
-					err = build.AttachStatus(err, buildbucketpb.Status_INFRA_FAILURE, nil)
-				}
-				logging.Infof(ctx, "error found: %s", err)
-				st.SetSummaryMarkdown(err.Error())
-				resp.ErrorSummaryMarkdown = err.Error()
-			}
-
-			ioProps.SetOutput(ctx, resp)
-			return err
+			logging.Infof(ctx, "error found: %s", err)
+			st.SetSummaryMarkdown(err.Error())
+			resp.ErrorSummaryMarkdown = err.Error()
 		}
 
-		ctx, cancel := context.WithCancel(ctx)
-		eg, ctx := errgroup.WithContext(ctx)
-
-		// Start parent build watcher in background.
-		eg.Go(func() error {
-			if err := watchParentBuild(ctx, st.Build()); err != nil {
-				// If the parent build watcher returns an error, panic to end the build
-				// as there is no way to end the main loop gracefully.
-				err = errors.Annotate(err, "parent build watcher loop").Err()
-				logging.Errorf(ctx, "encountered error %w; panicking to end build", err)
-				panic(err)
-			}
-			return nil
-		})
-
-		// Start main loop.
-		eg.Go(func() error {
-			err := innerFunc(ctx)
-			// Cancel the build watcher once this loop finishes.
-			logging.Infof(ctx, "main loop finished; cancelling parent build watcher loop")
-			cancel()
-			if err != nil {
-				return errors.Annotate(err, "main loop").Err()
-			}
-			return err
-		})
-
-		return eg.Wait()
+		ioProps.SetOutput(ctx, resp)
+		return err
 	})
 }
 
@@ -425,68 +390,6 @@ func validateDeadline(ctx context.Context, deadline *timestamppb.Timestamp) erro
 	return err
 }
 
-// watchParentBuild polls BB for the parent build's status on a loop until the
-// given outer context is cancelled, sending a BB CancelBuild request for this
-// build if the parent build has ended.
-func watchParentBuild(outerCtx context.Context, ownBuild *buildbucketpb.Build) error {
-	innerCtx := context.Background()
-	parentBBID, err := getParentBBID(ownBuild)
-	if err != nil {
-		return errors.Annotate(err, "getting parent BBID").Err()
-	}
-	logging.Infof(innerCtx, "Parent BBID: %d", parentBBID)
-
-	bc, err := newBBClient(innerCtx)
-	if err != nil {
-		return errors.Annotate(err, "initializing BB client to watch parent build").Err()
-	}
-	getParentBuildReq := &buildbucketpb.GetBuildRequest{
-		Id: parentBBID,
-		Mask: &buildbucketpb.BuildMask{
-			Fields: &fieldmaskpb.FieldMask{Paths: []string{"status", "infra"}},
-		},
-	}
-	parentBuild, err := bc.GetBuild(innerCtx, getParentBuildReq)
-	if err != nil {
-		return errors.Annotate(err, "getting parent build").Err()
-	}
-	thisIsLED := ownBuild.GetInfra().GetLed() != nil
-	// Don't watch the parent build if this build is a LED job.
-	if thisIsLED {
-		return nil
-	}
-
-	loopInterval := 1 * time.Second
-	pollInterval := 30 * time.Second
-	lastPollTime := time.Now()
-	for {
-		if outerCtx.Err() != nil {
-			logging.Infof(innerCtx, "outer context cancelled externally; exiting parent build watcher loop")
-			return nil
-		}
-
-		if time.Since(lastPollTime) >= pollInterval {
-			parentBuild, err = bc.GetBuild(innerCtx, getParentBuildReq)
-			if err != nil {
-				return errors.Annotate(err, "getting parent build").Err()
-			}
-			s := parentBuild.GetStatus()
-			logging.Infof(innerCtx, "got status %s for parent build %d", s.String(), parentBBID)
-			if parentBuild.GetStatus() != buildbucketpb.Status_STARTED {
-				cancelOwnBuildReq := &buildbucketpb.CancelBuildRequest{
-					Id:              ownBuild.GetId(),
-					SummaryMarkdown: fmt.Sprintf("Cancelled self after parent build ended with status %s", s.String()),
-				}
-				_, err := bc.CancelBuild(innerCtx, cancelOwnBuildReq)
-				return err
-			}
-			lastPollTime = time.Now()
-		}
-
-		time.Sleep(loopInterval)
-	}
-}
-
 // getParentBBID gets the parent build ID from the given Buildbucket build.
 func getParentBBID(b *buildbucketpb.Build) (int64, error) {
 	ts := b.GetTags()
@@ -501,25 +404,6 @@ func getParentBBID(b *buildbucketpb.Build) (int64, error) {
 		return parentBBID, nil
 	}
 	return 0, fmt.Errorf("no parent BBID found in build tags: %v", ts)
-}
-
-// newBBClient initializes a Buildbucket client.
-func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
-	a := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{
-		Scopes: []string{auth.OAuthScopeEmail},
-	})
-	hc, err := a.Client()
-	if err != nil {
-		return nil, errors.Annotate(err, "initializing http client").Err()
-	}
-	if err != nil {
-		return nil, errors.Annotate(err, "initializing BB client").Err()
-	}
-	pClient := &prpc.Client{
-		C:    hc,
-		Host: "cr-buildbucket.appspot.com",
-	}
-	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
 }
 
 func setMarkdown(skylabResult *skylab_test_runner.Result, st *build.State, resp *steps.RunTestsResponse) {
