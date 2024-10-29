@@ -1539,11 +1539,7 @@ func validateDistro(finalAssignments map[uint64][][]string, flatUUIDLoadingMap m
 
 		flatTcs := []string{}
 		for _, innerTcs := range tc {
-			if _, found := hwCount[hw]; found {
-				hwCount[hw]++
-			} else {
-				hwCount[hw] = 1
-			}
+			hwCount[hw]++
 			if len(innerTcs) > cfg.maxInShard {
 				return false, "Shard size exceeded"
 			}
