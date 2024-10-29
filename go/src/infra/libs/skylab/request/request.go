@@ -64,6 +64,8 @@ type Args struct {
 	Priority               int64
 	ParentTaskID           string
 	ParentRequestUID       string
+	// Parent build's BBID
+	ParentBuildID int64
 	// Pubsub Topic for status updates on the tests run for the request
 	StatusTopic string
 	// If CFT is enabled.
@@ -170,6 +172,7 @@ func (a *Args) NewBBRequest(b *buildbucket_pb.BuilderID) (*buildbucket_pb.Schedu
 		Swarming: &buildbucket_pb.ScheduleBuildRequest_Swarming{
 			ParentRunId: a.ParentTaskID,
 		},
+		ParentBuildId: a.ParentBuildID,
 	}
 	if a.StatusTopic != "" {
 		br.Notify = &buildbucket_pb.NotificationConfig{
