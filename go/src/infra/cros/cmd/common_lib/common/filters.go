@@ -103,7 +103,7 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experim
 
 		}
 	}
-	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) {
+	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) && isSuiteSchedulerConfig(suiteReq) {
 		filters = append(filters, AutoVMTestShifterFilterContainerName)
 	}
 
@@ -316,6 +316,14 @@ func isExperimentEnabled(exp string, experiments []string) bool {
 		if e == exp {
 			return true
 		}
+	}
+	return false
+}
+
+// isSuiteSchedulerConfig checks is a given request is coming from Suite scheduler config
+func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
+	if suiteReq.GetAnalyticsName() != "" {
+		return true
 	}
 	return false
 }
