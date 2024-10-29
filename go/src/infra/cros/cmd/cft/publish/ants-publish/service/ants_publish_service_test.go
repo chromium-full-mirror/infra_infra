@@ -359,7 +359,6 @@ func TestResultEntries(t *testing.T) {
 
 			tc.wantResult.WorkUnitId = parentwu
 			tc.wantResult.Timing = &ab_prod.Timing{}
-			tc.wantResult.AggregationDetail = &ab_prod.AggregationDetail{AggregationLevel: aggregationStatus}
 			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
 				t.Errorf("%s", diff)
 			}

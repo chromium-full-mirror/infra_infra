@@ -26,8 +26,7 @@ import (
 )
 
 const (
-	artifactsDir      = "/tmp/artifacts/"
-	aggregationStatus = "method"
+	artifactsDir = "/tmp/artifacts/"
 )
 
 type AntsPublishService struct {
@@ -122,9 +121,6 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			Timing: &atp.Timing{
 				CreationTimestamp: startTime,
 				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
-			},
-			AggregationDetail: &atp.AggregationDetail{
-				AggregationLevel: aggregationStatus,
 			},
 		}
 
