@@ -475,7 +475,9 @@ func maybeFindToken(forceNewAuth bool) (string, error) {
 		log.Println("Previously authenticated authorization token found. Skipping auth.")
 		return readToken(authFileDir)
 	}
-	log.Printf(err.Error())
+	if err != nil {
+		log.Printf(err.Error())
+	}
 	return "", err
 }
 
