@@ -10,6 +10,7 @@ import (
 	"fmt"
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -194,26 +195,35 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 		return
 	}
 	currTestJobEvent := cmd.AlStateInfo.CurrentTestJobEvent
+	testJobEventState := common.TaskCompletedState
 
 	// Get test counts
 	totalTestCount := 0
 	totalFailedTestCount := 0
-	totalFailedTestRunCount := 0 // TODO (azrahman:atp): add run count when available; currently returning 0
+	totalFailedTestRunCount := 0
 
 	tasks := []*common.TestTaskMessage{}
 	// TODO (azrahman): handle rety logic when ctp level retries are enabled
-	totalShards := int64(len(cmd.TestResults))
 	for _, results := range cmd.TestResults {
+		totalShards := cmd.findTotalShards(results.Key)
 		currTestCount, currFailedTestCount, currFailedTestRunCount := results.GetTestCounts()
 		totalTestCount = totalTestCount + currTestCount
 		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
 		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
+		taskState := common.TaskCompletedState
+		if err := results.GetProvisionErrIfAny(); err != nil {
+			// TODO (azrahman): mark as error for crashes/container failures etc
+			// mark it as error on provisioning failure
+			summary = err.Error()
+			taskState = common.TaskErrorState
+			testJobEventState = common.TaskErrorState
+		}
 
-		// As no rety is enabled now, different results means different shards
+		// As no rety is enabled now, different results means different shards/requests
 		task := &common.TestTaskMessage{
 			Id:                results.Key,
-			TestTaskState:     "COMPLETED",
+			TestTaskState:     taskState,
 			Shards:            totalShards,
 			ShardIndex:        int64(results.ShardIndex),
 			CreationTimestamp: results.CreationTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
@@ -223,7 +233,7 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 			Attempts: []*common.TestTaskAttemptMessage{
 				{
 					Id:                   fmt.Sprintf("%s_%d", results.Key, results.BuildID),
-					TestTaskAttemptState: "COMPLETED",
+					TestTaskAttemptState: taskState,
 					TotalTestCount:       int64(totalTestCount),
 					FailedTestCount:      int64(totalFailedTestCount),
 					FailedTestRunCount:   int64(totalFailedTestRunCount),
@@ -241,14 +251,28 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 
 	// update test job event
 	// TODO (azrahman:atp): curate the states based on real state of test results
-	currTestJobEvent.State = "COMPLETED"
+	currTestJobEvent.State = testJobEventState
 	currTestJobEvent.TotalTestCount = int64(totalTestCount)
 	currTestJobEvent.FailedTestCount = int64(totalFailedTestCount)
 	currTestJobEvent.FailedTestRunCount = int64(totalFailedTestRunCount)
-	currTestJobEvent.Summary = "test_job_completed"
 	currTestJobEvent.TestJob.EndTimestamp = time.Now().UTC().Format(common.ATPSupportedTimeFormat)
-	currTestJobEvent.TestJob.TestJobState = "COMPLETED"
+	currTestJobEvent.TestJob.TestJobState = testJobEventState
 	currTestJobEvent.TestJob.Tasks = tasks
+	currTestJobEvent.TestJob.Id = strconv.FormatInt(cmd.BuildState.Build().Id, 10)
+}
+
+func (cmd *ScheduleTasksCmd) findTotalShards(key string) int64 {
+	prefixedKey := common.GetPrefixBasedOnDelim(key, "-shard")
+	if prefixedKey == "" {
+		return 1 // shouldn't happen but if there is no "-shard",that means it's a one off request
+	}
+	shardCount := 0
+	for _, results := range cmd.TestResults {
+		if strings.HasPrefix(results.Key, prefixedKey) {
+			shardCount++
+		}
+	}
+	return int64(shardCount)
 }
 
 // Execute executes the command.
@@ -285,7 +309,9 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 				return err
 			}
 
-			runNode = runNodes[0]
+			if len(runNodes) > 0 {
+				runNode = runNodes[0]
+			}
 		}
 	}
 
@@ -411,7 +437,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	defer func() { step.End(err) }()
 
 	// Construct test results
-	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s-shard-%d", suiteName, buildReq.ShardNum), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now()}
+	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s_%s", suiteName, key), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now()}
 
 	if buildReq.Err != nil {
 		err = buildReq.Err

@@ -210,24 +210,30 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		return nil
 	}
 
+	step, ctx := build.StartStep(ctx, "Al Status Update")
+	defer func() { step.End(err) }()
+
 	// WORK UNIT MAINTENANCE
 	err = cmd.initRunLayer()
 	if err != nil {
-		return err
+		logging.Infof(ctx, "error while initing run layer: %s", err.Error())
+		if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
+			return err
+		}
 	}
 
 	if cmd.AlStateInfo.DoneTesting {
 		err = cmd.closeWUTree()
 		if err != nil {
-			return err
+			logging.Infof(ctx, "error while closing WU tree: %s", err.Error())
+			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
+				return err
+			}
 		}
 	}
 	// WORK UNIT MAINTENANCE
 
 	currTestJobEvent := cmd.AlStateInfo.CurrentTestJobEvent
-
-	step, ctx := build.StartStep(ctx, "Al Status Update")
-	defer func() { step.End(err) }()
 
 	// Publish to pub/sub
 	common.WriteAnyObjectToStepLog(ctx, step, currTestJobEvent, "current test job event state")

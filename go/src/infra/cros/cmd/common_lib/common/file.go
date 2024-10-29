@@ -483,3 +483,11 @@ func DecodeTestJobMsg(ctx context.Context, encodedMsg string) (*TestJobMessage, 
 	}
 	return &testJobMsg, nil
 }
+
+func GetPrefixBasedOnDelim(str, delim string) string {
+	index := strings.Index(str, delim)
+	if index == -1 {
+		return "" // Delimiter not found
+	}
+	return str[:index]
+}

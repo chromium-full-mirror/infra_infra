@@ -84,6 +84,14 @@ const (
 	ATPSwitcherProjectIDAlpha      = "google.com:atp-switcher-alpha"
 	ATPSwitcherProjectIDProd       = "google.com:atp-switcher"
 	ATPSwitcherTestJobEventTopicID = "test_job_event"
+
+	TaskCanceledState  = "CANCELED"
+	TaskCompletedState = "COMPLETED"
+	TaskErrorState     = "ERROR"
+	TaskFatalState     = "FATAL"
+	TaskQueuedState    = "QUEUED"
+	TaskRunningState   = "RUNNING"
+	TaskUnknownState   = "UNKNOWN"
 )
 
 // Constants relating to dynamic dependency storage.

@@ -6,9 +6,11 @@ package data
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"infra/cros/cmd/common_lib/tools/suitelimits"
@@ -25,6 +27,7 @@ type TestResults struct {
 	BuildID       int64
 	RequestKey    string // this is used to link back the results to original request
 	Name          string
+	TestCases     []*api.CTPTestCase
 
 	// For ATP reporting
 	CreationTimestamp time.Time
@@ -32,9 +35,30 @@ type TestResults struct {
 	EndTimestamp      time.Time
 }
 
+func (t *TestResults) GetProvisionErrIfAny() error {
+	if t.Results.GetPrejob() != nil && len(t.Results.GetPrejob().GetStep()) > 0 {
+		for _, step := range t.Results.GetPrejob().GetStep() {
+			if step.GetName() == "provision" && step.GetVerdict() != skylab_test_runner.Result_Prejob_Step_VERDICT_PASS {
+				failureMsg := "provision failed"
+				if step.GetHumanReadableSummary() != "" {
+					failureMsg = fmt.Sprintf("%s: %s", failureMsg, step.GetHumanReadableSummary())
+				}
+				return fmt.Errorf(failureMsg)
+			}
+		}
+	}
+
+	return nil
+}
+
 func (t *TestResults) GetFailureErr() error {
 	if t.TopLevelError != nil {
 		return t.TopLevelError
+	}
+
+	// Propagate provision failure if any
+	if err := t.GetProvisionErrIfAny(); err != nil {
+		return err
 	}
 
 	if t.Results.GetAutotestResults() == nil && t.Results.GetAndroidGenericResult() == nil {
@@ -51,7 +75,7 @@ func (t *TestResults) GetFailureErr() error {
 
 		for _, testCase := range testResults.GetTestCases() {
 			if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
-				return fmt.Errorf("test(s) failure")
+				return fmt.Errorf("test(s) failed")
 			}
 		}
 
@@ -62,7 +86,7 @@ func (t *TestResults) GetFailureErr() error {
 		for _, givenTestCase := range t.Results.GetAndroidGenericResult().GetGivenTestCases() {
 			for _, testCase := range givenTestCase.GetChildTestCases() {
 				if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
-					return fmt.Errorf("test(s) failure")
+					return fmt.Errorf("test(s) failed")
 				}
 			}
 		}
@@ -75,16 +99,43 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 		return 0, 0, 0
 	}
 
+	totalTestCount := 0
+	totalFailedTestCount := 0
+	totalFailedTestRunCount := 0
+	testCasesNames := []string{}
+	testCasesFoundInResutls := 0
+
+	for _, testCase := range t.TestCases {
+		testCasesNames = append(testCasesNames, testCase.GetName())
+	}
+
+	// Handle android generic results
+	genericResults := t.Results.GetAndroidGenericResult().GetGivenTestCases()
+	if len(genericResults) > 0 {
+		for _, givenTestCase := range genericResults {
+			if slices.Contains(testCasesNames, givenTestCase.ParentTest) {
+				testCasesFoundInResutls++
+			}
+			for _, testCase := range givenTestCase.GetChildTestCases() {
+				totalTestCount++
+				if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+					totalFailedTestCount++
+				}
+			}
+		}
+
+		totalFailedTestRunCount = len(testCasesNames) - testCasesFoundInResutls
+
+		return totalTestCount, totalFailedTestCount, totalFailedTestRunCount
+	}
+
+	// Handle legacy autotest format
 	testResults, ok := t.Results.GetAutotestResults()["original_test"]
 	if !ok {
 		// the test results from trv2 should be here, if not,
 		// something else failed before test execution. so fail.
 		return 0, 0, 0
 	}
-
-	totalTestCount := 0
-	totalFailedTestCount := 0
-	totalFailedTestRunCount := 0 // TODO: add run count when available; currently returning 0
 
 	for _, testCase := range testResults.GetTestCases() {
 		totalTestCount++
