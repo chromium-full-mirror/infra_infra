@@ -69,6 +69,13 @@ func collectFingerprint(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	if mcu == "" {
 		mcu = "None"
+	} else {
+		// handle mcu running zephyr which may have more specific name.
+		if strings.HasPrefix(mcu, "stm32f412") {
+			mcu = "stm32f412"
+		} else if strings.HasPrefix(mcu, "stm32h7") {
+			mcu = "stm32h7x3"
+		}
 	}
 
 	// command to grab the fingerprint sensor and vendor from dut
