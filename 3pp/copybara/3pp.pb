@@ -14,7 +14,7 @@ create {
   build {
     install: "install.sh"
     tool: "tools/bazel_bootstrap"
-    external_dep: "chromium/third_party/jdk@2@jdk-21.0.4+7.8fb6cd615f.cr4"
+    external_dep: "chromium/third_party/jdk@2@jdk-17.0.9+9.d7535e05e6.cr4"
   }
 }
 
