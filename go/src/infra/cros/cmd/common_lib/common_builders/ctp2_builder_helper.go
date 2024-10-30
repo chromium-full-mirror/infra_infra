@@ -474,7 +474,12 @@ func mapSoftwareDeps(softwareDeps []*test_platform.Request_Params_SoftwareDepend
 
 // getSchedulingPool parses the v1 request tags for the label-pool.
 func getSchedulingPool(v1 *test_platform.Request) string {
-	return getTag(v1.GetParams().GetDecorations().GetTags(), common.LabelPool)
+	v1Pool := getTag(v1.GetParams().GetDecorations().GetTags(), common.LabelPool)
+	// TODO (TSE): remove this when upstreams are fixed
+	if strings.ToLower(v1Pool) == "managed_pool_quota" || strings.ToLower(v1Pool) == "quota" {
+		return "DUT_POOL_QUOTA"
+	}
+	return v1Pool
 }
 
 // getAnalyticsName parses the v1 request tags for the analytics_name.
