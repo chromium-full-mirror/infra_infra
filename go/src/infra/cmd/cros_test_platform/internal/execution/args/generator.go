@@ -188,7 +188,6 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		Dimensions:                       dims,
 		ParentTaskID:                     g.ParentTaskID,
 		ParentRequestUID:                 g.ParentRequestUID,
-		ParentBuildID:                    g.ParentBuildID,
 		Priority:                         g.Params.GetScheduling().GetPriority(),
 		ProvisionableDimensions:          provisionableDimensions,
 		ProvisionableDimensionExpiration: provisionableDimensionExpiration,
