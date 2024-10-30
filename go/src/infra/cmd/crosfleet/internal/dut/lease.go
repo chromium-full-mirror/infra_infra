@@ -154,7 +154,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		// Get the lease ID before the lease is obtained, in case the user wants to
 		// cancel the lease.
 		leaseID := <-leaseIDChan
-		c.printer.WriteTextStderr("Internal Scheduke lase ID (can be used for cancellation): %d", leaseID)
+		c.printer.WriteTextStderr("Internal Scheduke lease ID (can be used for cancellation): %d", leaseID)
 		wg.Wait()
 		if err != nil {
 			return err
