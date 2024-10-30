@@ -218,7 +218,7 @@ func TestArtifactType(t *testing.T) {
 	}
 }
 
-func TestInvocationProperties(t *testing.T) {
+func TestWorkUnitProperties(t *testing.T) {
 	testCases := []struct {
 		name      string
 		dut       *labapi.Dut
@@ -292,7 +292,7 @@ func TestInvocationProperties(t *testing.T) {
 					},
 				},
 			}
-			got, err := aps.invocationProperties()
+			got, err := aps.workunitProperties()
 			if err != nil {
 				t.Errorf("error calling invocation properties: %q", err)
 			}
@@ -309,16 +309,31 @@ func TestResultEntries(t *testing.T) {
 	defer mockCtl.Finish()
 
 	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
+	parentwuID := "WU1"
+	executionInfo := &artifact.ExecutionInfo{
+		DutInfo: &artifact.DutInfo{
+			Dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{BuildTarget: "brya", ModelName: "vell"},
+					},
+				},
+			},
+		},
+	}
 	aps := &AntsPublishService{
 		service: &androidlib.Service{
 			WorkUnitService: mockWU,
+		},
+		metadata: &metadata.PublishAntsMetadata{
+			PrimaryExecutionInfo: executionInfo,
 		},
 	}
 
 	testCases := []struct {
 		name       string
 		wuName     string
-		insertWU   bool
+		expectWU   *ab_prod.WorkUnit
 		result     *api.TestCaseResult
 		wantResult *ab_prod.TestResult
 	}{
@@ -361,7 +376,15 @@ func TestResultEntries(t *testing.T) {
 				TestCaseId: &api.TestCase_Id{Value: "testcase#testname"},
 				Verdict:    &api.TestCaseResult_Pass_{},
 			},
-			insertWU: true,
+			expectWU: &ab_prod.WorkUnit{
+				Name:     "testcase",
+				ParentId: parentwuID,
+				Type:     "TF_TEST_RUN",
+				Properties: []*ab_prod.Property{
+					{Name: "board", Value: "brya"},
+					{Name: "model", Value: "vell"},
+				},
+			},
 			wantResult: &ab_prod.TestResult{
 				TestIdentifier: &ab_prod.TestIdentifier{
 					Module:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
@@ -372,17 +395,15 @@ func TestResultEntries(t *testing.T) {
 			},
 		},
 	}
-	parentwu := "WU1"
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wu := &ab_prod.WorkUnit{Id: parentwu, Name: tc.wuName}
+			wu := &ab_prod.WorkUnit{Id: parentwuID, Name: tc.wuName}
 			results := []*api.TestCaseResult{tc.result}
-			if tc.insertWU {
-				mockWU.EXPECT().Insert(gomock.Any()).Return(wu, nil)
+			if tc.expectWU != nil {
+				mockWU.EXPECT().Insert(tc.expectWU).Return(wu, nil)
 			}
 
 			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results)
-			t.Logf("%+v", gotEntries)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
@@ -391,7 +412,7 @@ func TestResultEntries(t *testing.T) {
 				t.Errorf("Unexpected token: got %d, want %d", gotToken, len(results))
 			}
 
-			tc.wantResult.WorkUnitId = parentwu
+			tc.wantResult.WorkUnitId = parentwuID
 			tc.wantResult.Timing = &ab_prod.Timing{}
 			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
 				t.Errorf("%s", diff)

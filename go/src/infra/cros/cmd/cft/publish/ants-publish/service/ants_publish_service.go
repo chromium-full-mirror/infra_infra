@@ -66,11 +66,17 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 }
 
 func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
+	dutProps, err := aps.dutProperties()
+	if err != nil {
+		return nil, err
+	}
+
 	wu := &atp.WorkUnit{
 		Name:         name,
 		Type:         wuType,
 		ParentId:     parent,
 		InvocationId: aps.metadata.GetAntsInvocationId(),
+		Properties:   dutProps,
 	}
 
 	return aps.service.WorkUnitService.Insert(wu)
@@ -139,6 +145,11 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
+	log.Printf("Update parent workunit properties.")
+	if err := aps.uploadParentWorkUnitProperties(); err != nil {
+		return err
+	}
+
 	var entries []*atp.BatchInsertEntry
 	token := int64(0)
 	for _, result := range aps.results {
@@ -169,10 +180,10 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	}
 	log.Printf("BatchInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
 
-	return aps.uploadInvocationProperties()
+	return nil
 }
 
-func (aps *AntsPublishService) invocationProperties() ([]*atp.Property, error) {
+func (aps *AntsPublishService) dutProperties() ([]*atp.Property, error) {
 	var props []*atp.Property
 	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
 
@@ -193,6 +204,15 @@ func (aps *AntsPublishService) invocationProperties() ([]*atp.Property, error) {
 		props = append(props, &atp.Property{Name: k, Value: v})
 	}
 
+	return props, nil
+}
+
+func (aps *AntsPublishService) workunitProperties() ([]*atp.Property, error) {
+	props, err := aps.dutProperties()
+	if err != nil {
+		return nil, err
+	}
+
 	if aps.metadata.GetLuciInvocationId() != "" {
 		props = append(props, &atp.Property{Name: "luci-invocation-id", Value: aps.metadata.GetLuciInvocationId()})
 	}
@@ -200,20 +220,20 @@ func (aps *AntsPublishService) invocationProperties() ([]*atp.Property, error) {
 	return props, nil
 }
 
-func (aps *AntsPublishService) uploadInvocationProperties() error {
-	props, err := aps.invocationProperties()
+func (aps *AntsPublishService) uploadParentWorkUnitProperties() error {
+	pwu, err := aps.service.WorkUnitService.Get(aps.metadata.ParentWorkUnitId)
 	if err != nil {
 		return err
 	}
 
-	aps.invocation.Properties = append(aps.invocation.Properties, props...)
-	inv, err := aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
+	props, err := aps.workunitProperties()
 	if err != nil {
 		return err
 	}
 
-	aps.invocation = inv
-	return nil
+	pwu.Properties = append(pwu.Properties, props...)
+	_, err = aps.service.WorkUnitService.Update(pwu.Id, pwu)
+	return err
 }
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
