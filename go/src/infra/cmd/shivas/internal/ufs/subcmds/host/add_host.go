@@ -142,6 +142,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 			return errors.New("json must have one of these fields defined: chromeBrowserMachineLse, chromeosMachineLse, attachedDeviceLse")
 		}
 	} else {
+		machinelse = &ufspb.MachineLSE{}
 		machine, err := ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, c.machineName)})
 		if err != nil {
 			return errors.New(fmt.Sprintf("Fail to find machine %s", c.machineName))
