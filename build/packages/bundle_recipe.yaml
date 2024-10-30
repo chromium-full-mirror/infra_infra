@@ -1,0 +1,17 @@
+package: infra/tools/luci/bundle_recipe/${platform}
+description:
+  bundle_recipe bundles a recipe repo
+platforms:
+  - linux-amd64
+  - linux-arm64
+  - linux-armv6l
+  - mac-amd64
+  - mac-arm64
+  - windows-amd64
+  - windows-arm64
+go_packages:
+  - go.chromium.org/luci/recipes_py/bundle_recipe
+root: ../../go/bin
+data:
+  - file: bundle_recipe${exe_suffix}
+  - version_file: .versions/bundle_recipe${exe_suffix}.cipd_version
