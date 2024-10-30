@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -50,6 +51,7 @@ type GenerateTrv2RequestsCmd struct {
 	BQClient          *bigquery.Client
 	StartCmdTime      time.Time
 	StartTrReqGenTime time.Time
+	DynamicExperiment bool
 
 	// Helper structures
 	schedulingUnitsMetadataMap map[string][]*api.SchedulingUnit
@@ -129,9 +131,10 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
 	}
 
+	cmd.DynamicExperiment = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), "chromeos.cros_infra_config.dynamic_trv2")
 	cmd.CredentialsFile = sk.DockerKeyFile
 	cmd.RequestKey = sk.RequestKey
-	cmd.DynamicRun = sk.CtpReq.RunDynamic
+	cmd.DynamicRun = sk.CtpReq.RunDynamic || cmd.DynamicExperiment
 	cmd.MiddledOutResp = sk.MiddledOutResp
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
@@ -199,6 +202,11 @@ func (cmd *GenerateTrv2RequestsCmd) Execute(ctx context.Context) error {
 // GenerateRequests generates trv2 requests
 func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *build.Step) (map[string]*data.BuildRequest, error) {
 	var err error
+
+	// Set step summary for dynamic experiment
+	if cmd.DynamicExperiment {
+		step.SetSummaryMarkdown("Test Runner request set to dynamic mode by experiment")
+	}
 
 	// Generate reqs
 	errCount := 0
