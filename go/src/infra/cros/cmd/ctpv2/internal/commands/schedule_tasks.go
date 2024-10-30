@@ -549,11 +549,10 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.Attempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
-			return err
+			return setTopLevelError(ctx, step, result, resultsChan, err)
 		}
 
 		fmt.Printf("ATTEMPT Node %s-%s#%d: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
-
 	}
 
 	cmd.ObserveTrSchedulingStart(ctx, buildReq)
@@ -698,14 +697,16 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			return setTopLevelError(ctx, step, result, resultsChan, err)
 		}
 
-		trResult, err := extractResult(buildInfo)
+		trResult, err := extractResult(buildInfo, buildReq)
+		// there can be incomplete result even with an error so let's set it first
+		if trResult != nil {
+			result.Results = trResult
+		}
 		if err != nil {
 			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
 			summaries = append(summaries, fmt.Sprintf("* %s", err))
 			err = fmt.Errorf(strings.Join(summaries, "\n"))
 			return setTopLevelError(ctx, step, result, resultsChan, err)
-		} else {
-			result.Results = trResult
 		}
 		common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
 
@@ -906,10 +907,11 @@ func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestRe
 	return err
 }
 
-func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error) {
+func extractResult(from *buildbucketpb.Build, buildReq *data.BuildRequest) (*skylab_test_runner.Result, error) {
 	op := from.GetOutput().GetProperties().GetFields()
 	if op == nil {
-		return nil, fmt.Errorf("output props is empty")
+		// return incomplete results so that we don't completely ignore this failure in recipes summarize
+		return getIncompleteRunResults(buildReq), fmt.Errorf("output props is empty")
 	}
 	cr := op["compressed_result"].GetStringValue()
 	if cr == "" {
@@ -924,6 +926,27 @@ func extractResult(from *buildbucketpb.Build) (*skylab_test_runner.Result, error
 		return nil, errors.Annotate(err, "extract results from build %d", from.Id).Err()
 	}
 	return &r, nil
+}
+
+func getIncompleteRunResults(buildReq *data.BuildRequest) *skylab_test_runner.Result {
+	reqTestCases := buildReq.OriginalTrReq.Tcs
+	testCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+	for _, testCase := range reqTestCases {
+		testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
+			Name:    testCase.GetName(),
+			Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
+		})
+	}
+
+	return &skylab_test_runner.Result{
+		Harness: &skylab_test_runner.Result_AutotestResult{
+			AutotestResult: &skylab_test_runner.Result_Autotest{
+				TestCases:  testCases,
+				Incomplete: true,
+			},
+		},
+	}
+
 }
 
 // FindBuildName finds build name from suite info.

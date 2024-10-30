@@ -116,7 +116,10 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 	// Call the TF client.
 	findTestResp, err := TFServiceClient.FindTests(ctx, req, maxRecvSizeOption, maxSendSizeOption)
 	if err != nil {
-		return nil, errors.Annotate(err, "filter grpc execution failure: ").Err()
+		err = errors.Annotate(err, "filter grpc execution failure: ").Err()
+		// log error but don't return it as we want enumeration error happening for this
+		logging.Infof(ctx, err.Error())
+		return filterReq, nil
 	}
 
 	logging.Infof(ctx, "Backfilling results")

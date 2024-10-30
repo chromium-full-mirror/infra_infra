@@ -366,9 +366,6 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 
 	executionMetadata := &api.ExecutionMetadata{
 		Args: []*api.Arg{
-			{Flag: "ants_invocation_id", Value: antsInvId},
-			{Flag: "ants_work_unit_id", Value: antsWuId},
-			{Flag: "android_build_environment", Value: buildEnv},
 			{Flag: "branch", Value: branch},
 			{Flag: "build_flavor", Value: buildFlavor},
 			{Flag: "build_id", Value: buildId},
@@ -379,9 +376,19 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 			{Flag: "extra_build", Value: extraBuildId},
 			{Flag: "extra_target", Value: extraBuildTarget},
 			{Flag: "extra_build_type", Value: extraBuildType},
-			{Flag: "skip_ants_upload", Value: "true"}, // TODO(srinivas/james): move this logic to ants-publish-filter
 		},
 	}
+	// add ants info if they are not null
+	if antsInvId != "" {
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvId})
+	}
+	if antsWuId != "" {
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuId})
+	}
+	if buildEnv != "" {
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android_build_environment", Value: buildEnv})
+	}
+
 	testSuite := &api.TestSuite{
 		Name:              suiteName,
 		Spec:              &api.TestSuite_TestCaseTagCriteria_{TestCaseTagCriteria: testCaseTagCriteria},

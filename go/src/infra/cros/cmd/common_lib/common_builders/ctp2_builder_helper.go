@@ -267,6 +267,7 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
 		RunDynamic: v1.GetParams().GetTranslateTrv2Request(),
+		IsAlRun:    getIsALRun(v1),
 	}
 }
 
@@ -578,7 +579,7 @@ func getImageGcsPath(softwareDeps []*test_platform.Request_Params_SoftwareDepend
 	return fmt.Sprintf("gs://%s/%s", chromeosBuildGcsBucket, chromeosBuild)
 }
 
-// getTag parses a list of tags in the format of "k:v".
+// getTag parses a list of tags in the format of "k:v"
 func getTag(tags []string, targetTag string) string {
 	for _, tag := range tags {
 		splitTag := strings.Split(tag, ":")
@@ -587,4 +588,12 @@ func getTag(tags []string, targetTag string) string {
 		}
 	}
 	return ""
+}
+
+func getIsALRun(v1 *test_platform.Request) bool {
+	suites := v1.GetTestPlan().GetSuite()
+	if len(suites) > 0 && strings.HasPrefix(strings.ToLower(suites[0].GetName()), "al.") {
+		return true
+	}
+	return false
 }
