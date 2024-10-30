@@ -12,6 +12,8 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	androidlib "infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
 	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 
 	storage_path "go.chromium.org/chromiumos/config/go"
@@ -20,6 +22,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -302,24 +305,35 @@ func TestInvocationProperties(t *testing.T) {
 }
 
 func TestResultEntries(t *testing.T) {
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
+
+	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
+	aps := &AntsPublishService{
+		service: &androidlib.Service{
+			WorkUnitService: mockWU,
+		},
+	}
+
 	testCases := []struct {
 		name       string
 		wuName     string
+		insertWU   bool
 		result     *api.TestCaseResult
 		wantResult *ab_prod.TestResult
 	}{
 		{
 			name:   "crash",
-			wuName: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+			wuName: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 			result: &api.TestCaseResult{
-				TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases"},
+				TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.CtsWrapWrapNoDebugTestCases"},
 				Verdict:    &api.TestCaseResult_Crash_{},
 			},
 			wantResult: &ab_prod.TestResult{
 				TestIdentifier: &ab_prod.TestIdentifier{
-					Module:    "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					TestClass: "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					Method:    "tradefed.cts.tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					Module:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					TestClass: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					Method:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 				},
 				TestStatus: "testError",
 			},
@@ -340,13 +354,33 @@ func TestResultEntries(t *testing.T) {
 				TestStatus: "pass",
 			},
 		},
+		{
+			name:   "TF_Pass",
+			wuName: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+			result: &api.TestCaseResult{
+				TestCaseId: &api.TestCase_Id{Value: "testcase#testname"},
+				Verdict:    &api.TestCaseResult_Pass_{},
+			},
+			insertWU: true,
+			wantResult: &ab_prod.TestResult{
+				TestIdentifier: &ab_prod.TestIdentifier{
+					Module:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					TestClass: "testcase",
+					Method:    "testname",
+				},
+				TestStatus: "pass",
+			},
+		},
 	}
 	parentwu := "WU1"
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			wu := &ab_prod.WorkUnit{Id: parentwu, Name: tc.wuName}
-			aps := &AntsPublishService{}
 			results := []*api.TestCaseResult{tc.result}
+			if tc.insertWU {
+				mockWU.EXPECT().Insert(gomock.Any()).Return(wu, nil)
+			}
+
 			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results)
 			t.Logf("%+v", gotEntries)
 			if err != nil {
