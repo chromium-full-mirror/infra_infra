@@ -60,7 +60,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true, false),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		assert.Loosely(t, result.GetRequests(), should.HaveLength(2))

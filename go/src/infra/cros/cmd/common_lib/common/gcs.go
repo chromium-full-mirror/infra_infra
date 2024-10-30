@@ -14,6 +14,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -27,6 +28,8 @@ import (
 
 var ErrBucketNotExist = errors.New("bucket does not exist")
 var ErrObjectNotExist = errors.New("object does not exist")
+
+var execLock sync.Mutex
 
 // actionTimeout is the timeout that pertains to reading or writing
 // a single file from/to GCS.
@@ -152,6 +155,8 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 		logging.Infof(ctx, "container metadata path created: %s", gcsPath)
 	}
 
+	// fix for b/375974548. Parallel execution call this fucntion, causing bot to get stuck and eventually die.
+	execLock.Lock()
 	cat := exec.CommandContext(ctx, "gsutil", "cat", gcsPath)
 
 	catOut, err := cat.Output()
@@ -159,6 +164,7 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 		logging.Infof(ctx, "error while downloading container metadata: %s", err)
 		return nil, errors.Annotate(err, "error while downloading container metadata: ").Err()
 	}
+	execLock.Unlock()
 
 	metadata := &api.ContainerMetadata{}
 	err = protojson.Unmarshal(catOut, metadata)
