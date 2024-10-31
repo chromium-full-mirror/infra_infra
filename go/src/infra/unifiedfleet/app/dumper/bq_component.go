@@ -73,7 +73,7 @@ var configurationDumpToolkit = map[string]getAllFunc{
 	"dhcps":                  getAllDHCPMsgs,
 	"ips":                    getAllIPMsgs,
 	"hwid_data":              getAllHwidData,
-	"device_config":          getAllDeviceConfigMsgs,
+	"device_configs":         getAllDeviceConfigMsgs,
 }
 
 func uploadDumpToBQ(ctx context.Context, bqClient *bigquery.Client, msgs []proto.Message, tableName string) error {
