@@ -27,11 +27,11 @@ func ClientToScope[C comparable](ctx context.Context, dut *tlw.Dut, client C, co
 	if containerName == "" {
 		return errors.Reason("client to scopes: container name is not provided").Err()
 	}
-	scopes.PutConfigParam(ctx, containerName, client)
+	scopes.PutConfigParam(ctx, clientScopeKey(containerName), client)
 	if _, err := ClientFromScope[C](ctx, dut, containerName); err != nil {
-		return errors.Annotate(err, "servo-nexus client to scopes").Err()
+		return errors.Annotate(err, "client to scopes").Err()
 	}
-	log.Debugf(ctx, "servo-nexus client saved to the scope context!")
+	log.Debugf(ctx, "Client of %q saved to the scope context!", containerName)
 	return nil
 }
 
@@ -44,7 +44,7 @@ func ClientFromScope[C comparable](ctx context.Context, dut *tlw.Dut, containerN
 	if containerName == "" {
 		return empty, errors.Reason("client from scopes: container name is not provided").Err()
 	}
-	if v, ok := scopes.ReadConfigParam(ctx, containerName); ok {
+	if v, ok := scopes.ReadConfigParam(ctx, clientScopeKey(containerName)); ok {
 		if v != nil {
 			if c, ok := v.(C); ok && c != empty {
 				return c, nil
