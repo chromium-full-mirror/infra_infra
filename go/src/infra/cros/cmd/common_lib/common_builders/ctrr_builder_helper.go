@@ -532,7 +532,7 @@ func AppendPublishTask(
 
 // PatchContainerMetadata loops through each container info and applies patches
 // to certain containers based on the build version.
-func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds string) *buildapi.ContainerMetadata {
+func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds, envVersion string) *buildapi.ContainerMetadata {
 	if metadata == nil {
 		return nil
 	}
@@ -553,7 +553,7 @@ func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMet
 
 		for _, firestoreDocName := range PullFromFirestore {
 			// TODO(cdelagarza): replace `LabelProd` with string pulled from input.
-			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, creds, common.LabelProd, firestoreDocName)
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, creds, envVersion, firestoreDocName)
 			common.LogWarningIfErr(ctx, err)
 			if containerInfo != nil {
 				containers[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()

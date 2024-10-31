@@ -41,6 +41,9 @@ type GenerateTrv2RequestsCmd struct {
 	RequestKey       string
 	CredentialsFile  string
 	IsAlRun          bool
+	// EnvVersion denotes whether the environment
+	// is prod or something else.
+	EnvVersion string
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -140,6 +143,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.Config = sk.Config
 	cmd.AlStateInfo = sk.AlStateInfo
 	cmd.IsAlRun = sk.IsAlRun
+	cmd.EnvVersion = sk.CTPversion
 
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
@@ -301,6 +305,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		config:               cmd.Config,
 		credentialsFile:      cmd.CredentialsFile,
 		isAlRun:              cmd.IsAlRun,
+		envVersion:           cmd.EnvVersion,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)

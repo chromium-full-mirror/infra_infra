@@ -68,6 +68,9 @@ type DynamicTrv2Builder struct {
 	Keyvals              map[string]string
 	OrderedTaskBuilders  []DynamicTaskBuilder
 	CredentialsFile      string
+	// EnvVersion denotes whether the environment
+	// is prod or something else.
+	EnvVersion string
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
@@ -109,7 +112,7 @@ func (builder *DynamicTrv2Builder) buildStartRequest() *api.CrosTestRunnerDynami
 // buildParams constructs the CrosTestRunnerParams.
 func (builder *DynamicTrv2Builder) buildParams(ctx context.Context) *api.CrosTestRunnerParams {
 	return &api.CrosTestRunnerParams{
-		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile),
+		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile, builder.EnvVersion),
 		ContainerMetadataKey: builder.ContainerMetadataKey,
 		Keyvals:              builder.Keyvals,
 		PrimaryDut:           builder.PrimaryDut,

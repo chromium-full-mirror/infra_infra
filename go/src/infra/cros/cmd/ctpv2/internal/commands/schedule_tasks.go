@@ -57,6 +57,9 @@ type ScheduleTasksCmd struct {
 	Scheduler       interfaces.SchedulerInterface
 	DynamicRun      bool
 	CredentialsFile string
+	// EnvVersion denotes whether the environment
+	// is prod or something else.
+	EnvVersion string
 
 	// Deps
 	InternalTestPlan *api.InternalTestplan
@@ -156,6 +159,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.CredentialsFile = sk.DockerKeyFile
+	cmd.EnvVersion = sk.CTPversion
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.BuildState = sk.BuildState
@@ -803,6 +807,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		schedUnitMetadataMap: buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo()),
 		config:               cmd.Config,
 		credentialsFile:      cmd.CredentialsFile,
+		envVersion:           cmd.EnvVersion,
 	}
 
 	req, err := GenerateTrv2Req(ctx, true, helper)

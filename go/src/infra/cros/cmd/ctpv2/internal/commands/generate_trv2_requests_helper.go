@@ -72,6 +72,9 @@ type TrV2ReqHelper struct {
 	schedUnitMetadataMap map[string][]*testapi.SchedulingUnit
 	config               *config.Config
 	credentialsFile      string
+	// envVersion denotes whether the environment
+	// is prod or something else.
+	envVersion string
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -692,6 +695,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		GcsArtifactPath:      trHelper.primaryTarget.gcsArtifactPath,
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		CredentialsFile:      trHelper.credentialsFile,
+		EnvVersion:           trHelper.envVersion,
 		BuildString:          trHelper.builderStr,
 		Deadline:             timestamppb.New(deadline),
 		TestSuites:           testSuites,
@@ -792,7 +796,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		ParentBuildId:                trHelper.currBBID,
 		PrimaryDut:                   primaryDut,
 		CompanionDuts:                companionDuts,
-		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile),
+		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile, trHelper.envVersion),
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
 		AutotestKeyvals:              keyvals,
