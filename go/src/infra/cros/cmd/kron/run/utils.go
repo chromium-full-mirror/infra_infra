@@ -776,11 +776,6 @@ func fetchTriggeredConfigs(kronBuilds []*kronpb.Build, fetchConfigsByBuildTarget
 		}
 	}
 
-	// Remove any configs which havent been migrated to Kron
-	//
-	// TODO(b/338128764): Remove when migration is fully complete.
-	buildToConfigsMap = filterUnmigratedConfigs(buildToConfigsMap)
-
 	common.Stdout.Printf("%d builds being sent", len(buildToConfigsMap))
 	return buildToConfigsMap, nil
 }

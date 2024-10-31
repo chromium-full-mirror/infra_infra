@@ -333,12 +333,6 @@ func (c *CrOSTimedEventCommand) FetchTriggeredConfigs(executionTime common.KronT
 		return nil, err
 	}
 
-	// Filter out configs which we have not migrated yet.
-	//
-	// TODO(b/319273876): Remove slow migration logic upon completion of
-	// transition from SuiteScheduler to Kron.
-	timedConfigs = filterConfigs(timedConfigs)
-
 	common.Stdout.Println("Determining what buildTargets/Milestones to fetch from PSQL")
 	requiredBuildMap, err := determineRequiredBuilds(timedConfigs, c.suiteSchedulerConfigs)
 	if err != nil {

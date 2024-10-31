@@ -184,28 +184,6 @@ func (c *CrOSNewBuildCommand) FetchBuilds() ([]*kronpb.Build, error) {
 	return c.kronBuilds, nil
 }
 
-// filterUnmigratedConfigs checks all configs to be ran and removes configs
-// which have not migrated to Kron yet.
-//
-// TODO(b/338128764): Remove once we are fully migrated to Kron.
-func filterUnmigratedConfigs(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerConfig) map[*kronpb.Build][]*suschpb.SchedulerConfig {
-	filteredMap := map[*kronpb.Build][]*suschpb.SchedulerConfig{}
-
-	common.Stdout.Println("Filtering out SuSch configs not on migration allowlist.")
-	for build, configList := range buildToConfigsMap {
-		filteredList := filterConfigs(configList)
-
-		// If the filtered list returns empty log a notice and continue.
-		if len(filteredList) == 0 {
-			common.Stdout.Printf("Build %s of buildTarget %s had all it's triggered configs filtered from by migration rules.", build.BuildUuid, build.BuildTarget)
-			continue
-		}
-
-		filteredMap[build] = filteredList
-	}
-	return filteredMap
-}
-
 // FetchTriggeredConfigs takes in a list of kron builds and finds which
 // SuiteScheduler Configs they trigger. This is then organized into a map to be
 // used by the next stage in the pipeline.
