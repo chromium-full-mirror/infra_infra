@@ -488,10 +488,11 @@ var data = ufspb.ChromeOSDeviceData{
 	LabConfig: &lse,
 	DutState:  &devUFSState,
 	HwidData: &ufspb.HwidData{
-		Sku:      "test_sku",
-		Variant:  "test_variant",
-		Stylus:   true,
-		Touchpad: true,
+		Sku:               "test_sku",
+		Variant:           "test_variant",
+		Stylus:            true,
+		Touchpad:          true,
+		RaccEnabledStatus: "TOT_ENABLED",
 	},
 	ManufacturingConfig: &manufacturing.ManufacturingConfig{
 		ManufacturingId: &manufacturing.ConfigID{
@@ -779,7 +780,8 @@ common {
 		critical_pools: DUT_POOL_QUOTA
 		self_serve_pools: "hotrod"
 		wifi_chip: "",
-		wifi_on_site: true
+		wifi_on_site: true,
+		racc_enabled_status: "TOT_ENABLED"
 	}
 }
 `
@@ -900,7 +902,8 @@ common {
 				use_lid: false
 		}
 		wifi_chip: "",
-		wifi_on_site: true
+		wifi_on_site: true,
+		racc_enabled_status: ""
 	}
 }
 `

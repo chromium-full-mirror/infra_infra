@@ -39,6 +39,7 @@ wifi_on_site: true
 hwid_component: [
 	"cellular/fake_cellular"
 ]
+racc_enabled_status: "TOT_ENABLED"
 platform: "platformval"
 phase: 8
 peripherals: {
@@ -225,6 +226,7 @@ wifi_on_site: true
 hwid_component: [
 	"cellular/fake_cellular"
 ]
+racc_enabled_status: "TOT_ENABLED"
 platform: "platformval"
 phase: 8
 peripherals: {
@@ -460,6 +462,7 @@ var fullDimensions = Dimensions{
 	"label-platform":                {"platformval"},
 	"label-pool":                    {"DUT_POOL_CQ", "DUT_POOL_BVT", "poolval"},
 	"label-power":                   {"powerval"},
+	"label-racc_enabled_status":     {"TOT_ENABLED"},
 	"label-recovery_test":           {"True"},
 	"label-reference_design":        {"reef"},
 	"label-touchpad":                {"True"},

@@ -34,6 +34,7 @@ test_coverage_hints {
 }
 self_serve_pools: "poolval"
 stability: false
+racc_enabled_status: ""
 reference_design: "reef"
 hwid_component: [
 	"cellular/fake_cellular"
@@ -700,6 +701,7 @@ test_coverage_hints {
 }
 self_serve_pools: "poolval"
 stability: false
+racc_enabled_status: ""
 reference_design: "reef"
 wifi_chip: "wireless_xxxx"
 wifi_on_site: false

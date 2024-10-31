@@ -143,7 +143,7 @@ message Shard {
 //
 // Keep sorted by field name.
 //
-// NEXT TAG: 43
+// NEXT TAG: 44
 message SchedulableLabels {
   // Whether this device supports ARC execution environment.
   optional bool arc = 20;
@@ -281,6 +281,9 @@ message SchedulableLabels {
   // TODO(pprabhu) This should be an enum shared with stable_versions.proto
   // But there are 171 of them...
   optional string platform = 1;
+
+  // The RACC enabled status of the DUT.
+  optional string racc_enabled_status = 43;
 
   optional string reference_design = 24;
 

@@ -384,6 +384,8 @@ func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
 	l.Variant = []string{
 		h.GetVariant(),
 	}
+	raccEnabledStatus := h.GetRaccEnabledStatus()
+	l.RaccEnabledStatus = &raccEnabledStatus
 
 	p := l.GetPeripherals()
 	if h.GetStylus() {
@@ -902,6 +904,7 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *dev
 	ecTypeInvalid := inventory.SchedulableLabels_EC_TYPE_INVALID
 	labels.EcType = &ecTypeInvalid
 	labels.WifiChip = &emptyString
+	labels.RaccEnabledStatus = &emptyString
 
 	labels.Peripherals = &inventory.Peripherals{
 		AudioBoard:          &falseValue,

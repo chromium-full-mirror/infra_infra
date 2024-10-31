@@ -45,6 +45,9 @@ func basicConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	if v := ls.GetWifiChip(); v != "" {
 		dims["label-wifi_chip"] = []string{v}
 	}
+	if v := ls.GetRaccEnabledStatus(); v != "" {
+		dims["label-racc_enabled_status"] = []string{v}
+	}
 	if v := ls.GetEcType(); v != inventory.SchedulableLabels_EC_TYPE_INVALID {
 		dims["label-ec_type"] = []string{v.String()}
 	}
@@ -87,6 +90,7 @@ func basicReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
 	d = assignLastStringValueAndDropKey(d, ls.Platform, "label-platform")
 	d = assignLastStringValueAndDropKey(d, ls.ReferenceDesign, "label-reference_design")
 	d = assignLastStringValueAndDropKey(d, ls.WifiChip, "label-wifi_chip")
+	d = assignLastStringValueAndDropKey(d, ls.RaccEnabledStatus, "label-racc_enabled_status")
 	if v, ok := getLastStringValue(d, "label-cellular_modem"); ok {
 		ls.HwidComponent = append(ls.HwidComponent, fmt.Sprintf("cellular/%s", v))
 		delete(d, "label-cellular_modem")
