@@ -183,10 +183,48 @@ func IsAnyTestFailure(testResults []*apipb.TestCaseResult) bool {
 }
 
 func GetTaskStateVerdict(trResult *skylab_test_runner.Result) test_platform.TaskState_Verdict {
-	if trResult == nil || trResult.GetAutotestResult() == nil {
+	if trResult == nil {
 		return test_platform.TaskState_VERDICT_UNSPECIFIED
 	}
+
+	switch trResult.Harness.(type) {
+	case *skylab_test_runner.Result_AutotestResult:
+		return getAutotestResultTaskStateVerdict(trResult)
+	case *skylab_test_runner.Result_AndroidGenericResult:
+		return getAndroidGenericResultTaskStateVerdict(trResult)
+	default:
+	}
+
+	return test_platform.TaskState_VERDICT_UNSPECIFIED
+}
+
+func getAndroidGenericResultTaskStateVerdict(trResult *skylab_test_runner.Result) test_platform.TaskState_Verdict {
+	androidGenericResult := trResult.GetAndroidGenericResult()
+	if androidGenericResult == nil {
+		return test_platform.TaskState_VERDICT_UNSPECIFIED
+	}
+
+	// By default (if no test cases ran), then there is no verdict.
+	verdict := test_platform.TaskState_VERDICT_NO_VERDICT
+	for _, testCase := range androidGenericResult.GetGivenTestCases() {
+		for _, childTestCase := range testCase.GetChildTestCases() {
+			outVerdict, returnVerdict := handleVerdict(childTestCase.GetVerdict())
+			if returnVerdict != test_platform.TaskState_VERDICT_UNSPECIFIED {
+				return returnVerdict
+			}
+			if outVerdict != test_platform.TaskState_VERDICT_UNSPECIFIED {
+				verdict = outVerdict
+			}
+		}
+	}
+	return verdict
+}
+
+func getAutotestResultTaskStateVerdict(trResult *skylab_test_runner.Result) test_platform.TaskState_Verdict {
 	autoTestResult := trResult.GetAutotestResult()
+	if autoTestResult == nil {
+		return test_platform.TaskState_VERDICT_UNSPECIFIED
+	}
 	if autoTestResult.Incomplete {
 		return test_platform.TaskState_VERDICT_FAILED
 	}
@@ -194,24 +232,36 @@ func GetTaskStateVerdict(trResult *skylab_test_runner.Result) test_platform.Task
 	// By default (if no test cases ran), then there is no verdict.
 	verdict := test_platform.TaskState_VERDICT_NO_VERDICT
 	for _, c := range autoTestResult.GetTestCases() {
-		switch c.Verdict {
-		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:
-			// Any case failing means the flat verdict is a failure.
-			return test_platform.TaskState_VERDICT_FAILED
-		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:
-			// Any case failing means the flat verdict is a failure.
-			return test_platform.TaskState_VERDICT_FAILED
-		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
-			// Any case failing means the flat verdict is a failure.
-			return test_platform.TaskState_VERDICT_FAILED
-		case skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
-			// Otherwise, at least 1 passing verdict means a pass.
-			verdict = test_platform.TaskState_VERDICT_PASSED
-		default: // VERDICT_UNDEFINED and VERDICT_NO_VERDICT
-			// Treat as no-op and do not affect flat verdict.
+		outVerdict, returnVerdict := handleVerdict(c.GetVerdict())
+		if returnVerdict != test_platform.TaskState_VERDICT_UNSPECIFIED {
+			return returnVerdict
+		}
+		if outVerdict != test_platform.TaskState_VERDICT_UNSPECIFIED {
+			verdict = outVerdict
 		}
 	}
 	return verdict
+}
+
+func handleVerdict(inVerdict skylab_test_runner.Result_Autotest_TestCase_Verdict) (outVerdict, returnVerdict test_platform.TaskState_Verdict) {
+	switch inVerdict {
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:
+		// Any case failing means the flat verdict is a failure.
+		returnVerdict = test_platform.TaskState_VERDICT_FAILED
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:
+		// Any case failing means the flat verdict is a failure.
+		returnVerdict = test_platform.TaskState_VERDICT_FAILED
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:
+		// Any case failing means the flat verdict is a failure.
+		returnVerdict = test_platform.TaskState_VERDICT_FAILED
+	case skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:
+		// Otherwise, at least 1 passing verdict means a pass.
+		outVerdict = test_platform.TaskState_VERDICT_PASSED
+	default: // VERDICT_UNDEFINED and VERDICT_NO_VERDICT
+		// Treat as no-op and do not affect flat verdict.
+	}
+
+	return
 }
 
 var liftTestCaseRunnerVerdict = map[skylab_test_runner.Result_Autotest_TestCase_Verdict]test_platform.TaskState_Verdict{
@@ -222,11 +272,43 @@ var liftTestCaseRunnerVerdict = map[skylab_test_runner.Result_Autotest_TestCase_
 	skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT: test_platform.TaskState_VERDICT_NO_VERDICT,
 }
 
-func TestCasesToTestCaseResult(tcs []*skylab_test_runner.Result_Autotest_TestCase) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
-	if len(tcs) == 0 {
+func TestCasesToTestCaseResult(trResult *skylab_test_runner.Result) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	switch trResult.Harness.(type) {
+	case *skylab_test_runner.Result_AutotestResult:
+		return autotestTestCasesToTestCaseResult(trResult)
+	case *skylab_test_runner.Result_AndroidGenericResult:
+		return androidGenericTestCasesToTestCaseResult(trResult)
+	default:
+	}
+	return nil
+}
+
+func androidGenericTestCasesToTestCaseResult(trResult *skylab_test_runner.Result) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	androidGeneric := trResult.GetAndroidGenericResult()
+	if androidGeneric == nil || len(androidGeneric.GetGivenTestCases()) == 0 {
 		// Prefer a nil over an empty slice since it's the proto default.
 		return nil
 	}
+	ret := []*steps.ExecuteResponse_TaskResult_TestCaseResult{}
+	for _, testCase := range androidGeneric.GetGivenTestCases() {
+		for _, childTestCase := range testCase.GetChildTestCases() {
+			ret = append(ret, &steps.ExecuteResponse_TaskResult_TestCaseResult{
+				Name:                 testCase.GetParentTest() + "." + childTestCase.GetName(),
+				Verdict:              liftTestCaseRunnerVerdict[childTestCase.GetVerdict()],
+				HumanReadableSummary: childTestCase.GetHumanReadableSummary(),
+			})
+		}
+	}
+	return ret
+}
+
+func autotestTestCasesToTestCaseResult(trResult *skylab_test_runner.Result) []*steps.ExecuteResponse_TaskResult_TestCaseResult {
+	autotestResult := trResult.GetAutotestResult()
+	if autotestResult == nil || len(autotestResult.GetTestCases()) == 0 {
+		// Prefer a nil over an empty slice since it's the proto default.
+		return nil
+	}
+	tcs := autotestResult.GetTestCases()
 	ret := make([]*steps.ExecuteResponse_TaskResult_TestCaseResult, len(tcs))
 	for i, tc := range tcs {
 		ret[i] = &steps.ExecuteResponse_TaskResult_TestCaseResult{

@@ -412,7 +412,7 @@ func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse
 			Verdict:   common.GetTaskStateVerdict(testResult.Results),
 		},
 		TaskUrl:     testResult.BuildUrl,
-		TestCases:   common.TestCasesToTestCaseResult(testResult.Results.GetAutotestResult().GetTestCases()),
+		TestCases:   common.TestCasesToTestCaseResult(testResult.Results),
 		PrejobSteps: common.PrejobStepsToTestCaseResult(testResult.Results.GetPrejob().GetStep()),
 		Attempt:     int32(testResult.Attempt),
 	}
