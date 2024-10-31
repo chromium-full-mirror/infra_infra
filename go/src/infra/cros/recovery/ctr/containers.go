@@ -23,6 +23,7 @@ type BaseContainer interface {
 	Close(ctx context.Context) error
 	IsClosed() bool
 	GetClient(ctx context.Context) (*grpc.ClientConn, error)
+	ServiceAddress(ctx context.Context) (string, error)
 }
 type baseContainerImpl struct {
 	name string
@@ -70,7 +71,7 @@ func (c *baseContainerImpl) GetClient(ctx context.Context) (*grpc.ClientConn, er
 	if c.conn != nil {
 		return c.conn, nil
 	}
-	addr, err := c.serviceAddress(ctx)
+	addr, err := c.ServiceAddress(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "get client %q", c.Name()).Err()
 	}
@@ -84,7 +85,7 @@ func (c *baseContainerImpl) GetClient(ctx context.Context) (*grpc.ClientConn, er
 }
 
 // serviceAddress reads an address of the service running in the container.
-func (c *baseContainerImpl) serviceAddress(ctx context.Context) (string, error) {
+func (c *baseContainerImpl) ServiceAddress(ctx context.Context) (string, error) {
 	if c.IsClosed() {
 		return "", errors.Reason("service address: container is closed").Err()
 	}
@@ -100,6 +101,9 @@ func (c *baseContainerImpl) serviceAddress(ctx context.Context) (string, error) 
 			c.serviceAddr = fmt.Sprintf("%s:%d", p.GetHostIp(), p.GetHostPort())
 			log.Debugf(ctx, "Container %q: service runs on %q address", c.Name(), c.serviceAddr)
 			break
+		}
+		if c.serviceAddr == "" {
+			return "", errors.Reason("service address of %q: not found", c.Name()).Err()
 		}
 	}
 	return c.serviceAddr, nil
