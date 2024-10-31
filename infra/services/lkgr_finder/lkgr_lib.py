@@ -273,28 +273,42 @@ def FetchBuildbucketBuilds(buckets, max_threads=0):  # pragma: no cover
 
 def _FetchBuilds(config, fetch_fn, max_threads=0):  # pragma: no cover
   build_data = {key: {} for key in config}
-  fetch_q = queue.Queue()
+  fetch_configs = []
   for key, config_data in config.items():
     builders = config_data['builders']
     for builder in builders:
+      fetch_configs.append((key, builder))
+
+  def fetch(fetch_configs, max_threads):
+    fetch_q = queue.Queue()
+    for key, builder in fetch_configs:
       fetch_q.put((key, builder, build_data[key]))
-  fetch_threads = set()
-  if not max_threads:
-    max_threads = fetch_q.qsize()
-  for _ in range(max_threads):
-    th = threading.Thread(target=FetchBuildsWorker,
-                          args=(fetch_q, fetch_fn))
-    th.start()
-    fetch_threads.add(th)
-  for th in fetch_threads:
-    th.join()
+    fetch_threads = set()
+    if not max_threads:
+      max_threads = fetch_q.qsize()
+    for _ in range(max_threads):
+      th = threading.Thread(target=FetchBuildsWorker, args=(fetch_q, fetch_fn))
+      th.start()
+      fetch_threads.add(th)
+    for th in fetch_threads:
+      th.join()
+
+    failed_configs = []
+    for key, builders in build_data.items():
+      for builder, builds in builders.items():
+        if builds is None:
+          failed_configs.append((key, builder))
+    return failed_configs
+
+  attempts = 3
+  while fetch_configs and attempts > 0:
+    attempts -= 1
+    fetch_configs = fetch(fetch_configs, max_threads)
 
   failures = 0
-  for key, builders in build_data.items():
-    for builder, builds in builders.items():
-      if builds is None:
-        failures += 1
-        LOGGER.error('Failed to fetch builds for %s:%s' % (key, builder))
+  for key, builder in fetch_configs:
+    failures += 1
+    LOGGER.error('Failed to fetch builds for %s:%s' % (key, builder))
 
   return build_data, failures
 

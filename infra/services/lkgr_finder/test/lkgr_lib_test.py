@@ -29,6 +29,42 @@ import six
 
 # Note that many parts of lkgr_lib are not tested due to insufficient mocks.
 
+
+class FetchBuildbucketBuilds(unittest.TestCase):
+
+  @mock.patch(
+      'infra.services.lkgr_finder.lkgr_lib.FetchBuildbucketBuildsForBuilder')
+  def testFetchBuildsRepeats(self, mocked_fetch):
+
+    def fake_fetch_fun(bucket, builder):
+      if builder == 'failing_builder':
+        return None
+      else:
+        return ['passed']
+
+    mocked_fetch.side_effect = fake_fetch_fun
+
+    config = {
+        'dummy.bucket': {
+            'builders': ['passing_builder', 'failing_builder'],
+        },
+    }
+
+    build_data, failures = lkgr_lib.FetchBuildbucketBuilds(config)
+    expected_build_data = {
+        'dummy.bucket': {
+            'passing_builder': ['passed'],
+            'failing_builder': None,
+        },
+    }
+
+    self.assertEquals(build_data, expected_build_data)
+    self.assertEquals(failures, 1)
+
+    # One attempt for the passing builder and three attempts for the failing.
+    self.assertEquals(len(mocked_fetch.mock_calls), 4)
+
+
 class FetchBuildbucketBuildsForBuilderTest(unittest.TestCase):
 
   @mock.patch('infra.services.lkgr_finder.lkgr_lib._FetchFromBuildbucketImpl')
