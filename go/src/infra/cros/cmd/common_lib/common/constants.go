@@ -32,6 +32,7 @@ const (
 	TesthausURLPrefix                      = "https://tests.chromeos.goog/p/chromeos/logs/unified/"
 	GcsURLPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
+	HwTestTrInputPropertyName              = "$chromeos/cros_test_runner"
 	HwTestCtpv2InputPropertyName           = "$chromeos/ctpv2"
 	CftServiceMetadataFileName             = ".cftmeta"
 	CftServiceMetadataLineContentSeparator = "="

@@ -13,7 +13,9 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -32,6 +34,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_builders"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/analytics"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
 	"infra/cros/cmd/cros_test_runner/protos"
@@ -39,6 +42,7 @@ import (
 
 var ioProps = build.RegisterSplitProperty[*steps.RunTestsRequest, *steps.RunTestsResponse]("")
 var ctrInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
+var trInputProp = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestTrInputPropertyName)
 
 // TODO : Re-structure different execution flow properly later.
 // HwExecution represents hw executions.
@@ -56,6 +60,7 @@ func HwExecution() {
 
 		logging.Infof(ctx, "have input %v", input)
 		ctrCipdInfo := ctrInputProp.GetInput(ctx)
+		trCipdInfo := trInputProp.GetInput(ctx)
 		logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 		logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 		resp := &steps.RunTestsResponse{}
@@ -63,10 +68,21 @@ func HwExecution() {
 		var skylabResult *skylab_test_runner.Result
 		var crosTestRunnerRequest *api.CrosTestRunnerDynamicRequest
 		var err error
+		startTime := time.Now()
+		metrics := &analytics.TrInstanceBqData{
+			BBID:      fmt.Sprint(st.Build().GetId()),
+			CIPDLabel: trCipdInfo.GetVersion().GetCipdLabel(),
+			Bucket:    st.Build().GetBuilder().GetBucket(),
+			IsLed:     st.Build().GetInfra().GetLed() != nil,
+		}
+		defer handleAnalytics(ctx, st, &metrics, startTime, &err, &skylabResult)
+
 		if input.CrosTestRunnerDynamicRequest != nil {
+			metrics.IsDynamic = true
 			// If the request is a CrosTestRunner dynamic request...
 			skylabResult, err = executeHwTestsV2(ctx, nil, input.CrosTestRunnerDynamicRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 		} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
+			metrics.IsDynamic = true
 			// If the request is a CrosTestRunner non-dynamic request with translation flag...
 			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx)
 			if err == nil {
@@ -437,4 +453,56 @@ func setMarkdown(skylabResult *skylab_test_runner.Result, st *build.State, resp 
 
 		}
 	}
+}
+
+func handleAnalytics(ctx context.Context, st *build.State, metrics **analytics.TrInstanceBqData, startTime time.Time, err *error, skylabResult **skylab_test_runner.Result) {
+	for _, tag := range st.Build().GetTags() {
+		switch tag.GetKey() {
+		case "suite", "label-suite":
+			(*metrics).SuiteName = tag.GetValue()
+		case "analytics-name":
+			(*metrics).AnalyticsName = tag.GetValue()
+		case "label-pool", "pool":
+			(*metrics).Pool = tag.GetValue()
+		}
+	}
+	(*metrics).Date = civil.DateTimeOf(startTime)
+	(*metrics).Duration = time.Since(startTime).Seconds()
+	(*metrics).Status, (*metrics).Summary = determineStatusAndSummary(*skylabResult, *err)
+
+	bqClient := analytics.TrAnalyticsBQClient(ctx)
+	analytics.SoftInsertTrInstanceMetrics(ctx, bqClient, (*metrics))
+}
+
+func determineStatusAndSummary(skylabResult *skylab_test_runner.Result, err error) (status, summary string) {
+	status = "SUCCESS"
+
+	if skylabResult != nil {
+		for _, prejobStep := range skylabResult.GetPrejob().GetStep() {
+			if prejobStep.GetVerdict() != skylab_test_runner.Result_Prejob_Step_VERDICT_PASS {
+				status = "FAILURE"
+				summary = fmt.Sprintf("prejob %s failed: %s", prejobStep.Name, prejobStep.HumanReadableSummary)
+				return
+			}
+		}
+
+		for _, testCase := range skylabResult.GetAutotestResult().GetTestCases() {
+			if testCase.GetVerdict() == skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
+				continue
+			}
+			status = "FAILURE"
+			summary = "test failed"
+		}
+	}
+
+	if err != nil {
+		status = "FAILURE"
+		summary = err.Error()
+		if common.GlobalNonInfraError == nil {
+			status = "INFRA_ERROR"
+		}
+		return
+	}
+
+	return
 }
