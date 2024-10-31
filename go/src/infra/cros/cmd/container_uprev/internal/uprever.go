@@ -72,7 +72,7 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 	// Multiple filters may upload to the same container name.
 	// Differentiate between prod and staging in this situation
 	// by adding the unique config name as a suffix.
-	if imageTag == common.LabelPool || imageTag == common.LabelStaging {
+	if imageTag == common.LabelProd || imageTag == common.LabelStaging {
 		imageTag = fmt.Sprintf("%s_%s", imageTag, config.Name)
 	}
 	if sha, err = buildAndPush(ctx, dir, host, project, config.ContainerName, imageTag); err != nil {
