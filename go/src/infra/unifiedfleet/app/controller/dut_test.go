@@ -84,24 +84,62 @@ func addMockDolosToDUT(machinelse *ufspb.MachineLSE, dolosHost, dolosSerialCable
 	}
 }
 
-func mockLabstation(hostname, machine string) *ufspb.MachineLSE {
+type mockLabstationBuilderRpm struct {
+	Name   string
+	Outlet string
+}
+
+type MockLabstationBuilder struct {
+	Hostname string
+	Machine  string
+	Rpm      *mockLabstationBuilderRpm
+}
+
+func (b *MockLabstationBuilder) withRpm(name, outlet string) *MockLabstationBuilder {
+	b.Rpm = &mockLabstationBuilderRpm{
+		Name:   name,
+		Outlet: outlet,
+	}
+
+	return b
+}
+
+func (b *MockLabstationBuilder) build() *ufspb.MachineLSE {
+	var rpm *chromeosLab.OSRPM
+
+	if b.Rpm != nil {
+		rpm = &chromeosLab.OSRPM{
+			PowerunitName:   b.Rpm.Name,
+			PowerunitOutlet: b.Rpm.Outlet,
+			PowerunitType:   chromeosLab.OSRPM_TYPE_UNKNOWN,
+		}
+	}
+
 	return &ufspb.MachineLSE{
-		Name:     hostname,
-		Hostname: hostname,
-		Machines: []string{machine},
+		Name:     b.Hostname,
+		Hostname: b.Hostname,
+		Machines: []string{b.Machine},
 		Lse: &ufspb.MachineLSE_ChromeosMachineLse{
 			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
 				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
 					DeviceLse: &ufspb.ChromeOSDeviceLSE{
 						Device: &ufspb.ChromeOSDeviceLSE_Labstation{
 							Labstation: &chromeosLab.Labstation{
-								Hostname: hostname,
+								Hostname: b.Hostname,
+								Rpm:      rpm,
 							},
 						},
 					},
 				},
 			},
 		},
+	}
+}
+
+func newMockLabstationBuilder(hostname, machine string) *MockLabstationBuilder {
+	return &MockLabstationBuilder{
+		Hostname: hostname,
+		Machine:  machine,
 	}
 }
 
@@ -144,7 +182,7 @@ func createValidDUTWithLabstation(ctx context.Context, t *ftt.Test, dutName, dut
 	if err != nil {
 		return err
 	}
-	labstation1 := mockLabstation(labstationName, labstationMachine)
+	labstation1 := newMockLabstationBuilder(labstationName, labstationMachine).build()
 	_, err = CreateLabstation(ctx, labstation1)
 	if err != nil {
 		return err
@@ -201,7 +239,7 @@ func createValidDUTWithDolos(ctx context.Context, t *ftt.Test, dutName, dutMachi
 	if err != nil {
 		return err
 	}
-	labstation1 := mockLabstation(labstationName, labstationMachine)
+	labstation1 := newMockLabstationBuilder(labstationName, labstationMachine).build()
 	_, err = CreateLabstation(ctx, labstation1)
 	if err != nil {
 		return err
@@ -278,7 +316,7 @@ func TestCreateDUT(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-1", "machine-20")
+			labstation1 := newMockLabstationBuilder("labstation-1", "machine-20").build()
 			_, err = CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-2", "machine-21", "labstation-1", "serial-1", "dut-2-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -326,7 +364,7 @@ func TestCreateDUT(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(ctx, machine3)
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-3", "machine-30")
+			labstation1 := newMockLabstationBuilder("labstation-3", "machine-30").build()
 			_, err = CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-3", "machine-40", "labstation-3", "serial-2", "dut-3-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -379,7 +417,7 @@ func TestCreateDUT(t *testing.T) {
 			assert.Loosely(t, merr, should.BeNil)
 			_, merr = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, merr, should.BeNil)
-			labstation1 := mockLabstation("labstation-520", "machine-521")
+			labstation1 := newMockLabstationBuilder("labstation-520", "machine-521").build()
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-520", "machine-520", "labstation-520", "serial-520", "dut-520-power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -417,7 +455,7 @@ func TestCreateDUT(t *testing.T) {
 			assert.Loosely(t, merr, should.BeNil)
 			_, merr = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, merr, should.BeNil)
-			labstation1 := mockLabstation("labstation-5", "machine-90")
+			labstation1 := newMockLabstationBuilder("labstation-5", "machine-90").build()
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-7", "machine-00", "labstation-5", "serial-1", "dut-7-power-3", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -458,7 +496,7 @@ func TestCreateDUT(t *testing.T) {
 			assert.Loosely(t, merr, should.BeNil)
 			_, merr = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, merr, should.BeNil)
-			labstation1 := mockLabstation("labstation-6", "machine-01")
+			labstation1 := newMockLabstationBuilder("labstation-6", "machine-01").build()
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-8", "machine-02", "labstation-6", "serial-1", "dut-8-power-3", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -497,7 +535,7 @@ func TestCreateDUT(t *testing.T) {
 			}
 			_, merr := registration.CreateMachine(ctx, machine1)
 			assert.Loosely(t, merr, should.BeNil)
-			labstation1 := mockLabstation("labstation-7", "machine-03")
+			labstation1 := newMockLabstationBuilder("labstation-7", "machine-03").build()
 			_, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-9", "machine-03", "labstation-7", "serial-1", "dut-9-power-3", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -1427,7 +1465,7 @@ func TestUpdateDUT(t *testing.T) {
 			assert.Loosely(t, s.GetState(), should.Equal(ufspb.State_STATE_REGISTERED))
 		})
 
-		t.Run("UpdateDUT - RPM powerunit_name and powerunit_outlet conflict", func(t *ftt.Test) {
+		t.Run("UpdateDUT - RPM powerunit_name and powerunit_outlet conflict when changing powerunit_name", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name: "machine-101",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -1457,10 +1495,46 @@ func TestUpdateDUT(t *testing.T) {
 			_, err = inventory.CreateMachineLSE(ctx, dut2)
 			assert.Loosely(t, err, should.BeNil)
 			// Update rpm powerunit_name to to dut-16-power-1 creating conflict with dut-16 rpm powerunit_name.
-			dut3 := mockDUT("dut-17", "machine-102", "", "", "dut-16-power-1", ".A1", int32(0), []string{"DUT_POOL_QUOTA"}, "")
+			dut3 := mockDUT("dut-17", "machine-102", "", "", "dut-16-power-1", "", int32(0), []string{"DUT_POOL_QUOTA"}, "")
 			_, err = UpdateDUT(ctx, dut3, nil)
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("The rpm powerunit_name and powerunit_outlet is already in use by dut-16"))
+		})
+
+		t.Run("UpdateDUT - RPM powerunit_name and powerunit_outlet conflict when changing powerunit_outlet", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name: "machine-145",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.Loosely(t, err, should.BeNil)
+			machine2 := &ufspb.Machine{
+				Name: "machine-146",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			}
+			_, err = registration.CreateMachine(ctx, machine2)
+			assert.Loosely(t, err, should.BeNil)
+			dut1 := mockDUT("dut-45", "machine-145", "", "", "dut-45-power-1", ".A1", 0, nil, "")
+			_, err = inventory.CreateMachineLSE(ctx, dut1)
+			assert.Loosely(t, err, should.BeNil)
+			dut2 := mockDUT("dut-46", "machine-146", "", "", "dut-45-power-1", ".A2", 0, nil, "")
+			_, err = inventory.CreateMachineLSE(ctx, dut2)
+			assert.Loosely(t, err, should.BeNil)
+			// Update rpm powerunit_name to to dut-16-power-1 creating conflict with dut-16 rpm powerunit_name.
+			dut3 := mockDUT("dut-46", "machine-146", "", "", "", ".A1", int32(0), []string{"DUT_POOL_QUOTA"}, "")
+			_, err = UpdateDUT(ctx, dut3, nil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("The rpm powerunit_name and powerunit_outlet is already in use by dut-45"))
 		})
 
 		t.Run("UpdateDUT - RPM powerunit_name and powerunit_outlet conflict with multiple DUTs", func(t *ftt.Test) {
@@ -2540,7 +2614,7 @@ func TestUpdateDUT(t *testing.T) {
 			err = inventory.DeleteMachineLSE(ctx, "labstation-32")
 			assert.Loosely(t, err, should.BeNil)
 			// Create another valid labstation
-			labstation1 := mockLabstation("labstation-33", "machine-72")
+			labstation1 := newMockLabstationBuilder("labstation-33", "machine-72").build()
 			_, err = CreateMachineLSE(ctx, labstation1, nil)
 			assert.Loosely(t, err, should.BeNil)
 			// Update servo on DUT to point to new labstation
@@ -2695,7 +2769,7 @@ func TestUpdateDUT(t *testing.T) {
 			_, err = inventory.CreateMachineLSE(ctx, dut1)
 			assert.Loosely(t, err, should.BeNil)
 			// Create a labstation
-			lab1 := mockLabstation("labstation-y", "machine-106")
+			lab1 := newMockLabstationBuilder("labstation-y", "machine-106").build()
 			_, err = inventory.CreateMachineLSE(ctx, lab1)
 			assert.Loosely(t, err, should.BeNil)
 			// Update the dut to use labstation instead of servod on docker

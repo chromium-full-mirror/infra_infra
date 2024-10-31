@@ -55,6 +55,9 @@ func (fs *FleetServerImpl) CreateMachineLSE(ctx context.Context, req *ufsAPI.Cre
 	if err := verifyLSEPrototype(ctx, req.GetMachineLSE()); err != nil {
 		return nil, err
 	}
+
+	logging.Infof(ctx, "Create MachineLSE requested. Id: %s, Hostname: %s", req.MachineLSEId, req.MachineLSE.Hostname)
+
 	req.MachineLSE.Name = util.FormatDHCPHostname(req.MachineLSEId)
 	req.MachineLSE.Hostname = util.FormatDHCPHostname(req.MachineLSE.Hostname)
 	req.NetworkOption = updateNetworkOpt(req.MachineLSE.GetVlan(), req.MachineLSE.GetIp(), req.GetNetworkOption())
@@ -76,6 +79,9 @@ func (fs *FleetServerImpl) UpdateMachineLSE(ctx context.Context, req *ufsAPI.Upd
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
+
+	logging.Infof(ctx, "Update MachineLSE requested. Hostname: %s", req.MachineLSE.Hostname)
+
 	req.MachineLSE.Name = util.FormatDHCPHostname(util.RemovePrefix(req.MachineLSE.Name))
 	req.MachineLSE.Hostname = util.FormatDHCPHostname(req.MachineLSE.Hostname)
 	nwOpt := req.GetNetworkOptions()[req.MachineLSE.Name]

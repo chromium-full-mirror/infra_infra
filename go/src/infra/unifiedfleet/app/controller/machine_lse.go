@@ -85,7 +85,7 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 				return machineLSE, err
 			case *ufspb.ChromeOSDeviceLSE_Labstation:
 				// The machinelse update is of type chromeos dut
-				logging.Debugf(ctx, "CreateMachineLSE[%T]: Called CreateLabstation", z)
+				logging.Debugf(ctx, "CreateMachineLSE[%T]: Called CreateLabstation. Hostname: %s", z, machinelse.GetHostname())
 				machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hostname = machinelse.GetHostname()
 				return CreateLabstation(ctx, machinelse)
 			case nil:
@@ -123,6 +123,8 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 func createBrowserServer(ctx context.Context, lse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption) (*ufspb.MachineLSE, error) {
 	vms := lse.GetChromeBrowserMachineLse().GetVms()
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Creating browser server. Hostname: %s", lse.Hostname)
+
 		hc := getHostHistoryClient(lse)
 
 		// Get machine to get zone and rack info for machinelse table indexing
@@ -714,6 +716,8 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 	// Used for logging the deletion of a MachineLSE
 	existingMachinelse, _ := inventory.GetMachineLSE(ctx, id)
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Deleting MachineLSE. Id: %s", id)
+
 		hc := getHostHistoryClient(&ufspb.MachineLSE{
 			Name: id,
 		})
@@ -1411,21 +1415,38 @@ func validateUpdateMachineLSE(ctx context.Context, oldMachinelse *ufspb.MachineL
 	}
 
 	// 3. Check if the OS MachineLSE DUT/Labstation is trying to use an already used rpm name and rpm port
-	rpmName, rpmPort := getRPMNamePortForOSMachineLSE(machinelse)
-	if rpmName != "" && rpmPort != "" {
-		lses, err := inventory.QueryMachineLSEByPropertyNames(ctx, map[string]string{"rpm_id": rpmName, "rpm_port": rpmPort}, true)
+	if err := validateRpmUpdate(ctx, oldMachinelse, machinelse); err != nil {
+		return err
+	}
+
+	// validate update mask
+	return validateMachineLSEUpdateMask(machinelse, machine, mask)
+}
+
+func validateRpmUpdate(ctx context.Context, oldMachineLse, newMachineLse *ufspb.MachineLSE) error {
+	effectiveRpmName, effectiveRpmPort := getRPMNamePortForOSMachineLSE(oldMachineLse)
+	newRpmName, newRpmPort := getRPMNamePortForOSMachineLSE(newMachineLse)
+
+	if newRpmName != "" {
+		effectiveRpmName = newRpmName
+	}
+	if newRpmPort != "" {
+		effectiveRpmPort = newRpmPort
+	}
+
+	if effectiveRpmName != "" && effectiveRpmPort != "" {
+		lses, err := inventory.QueryMachineLSEByPropertyNames(ctx, map[string]string{"rpm_id": effectiveRpmName, "rpm_port": effectiveRpmPort}, true)
 		if err != nil {
-			return errors.Annotate(err, "Failed to query machinelses for rpm name and port %s:%s", rpmName, rpmPort).Err()
+			return errors.Annotate(err, "Failed to query machinelses for rpm name and port %s:%s", effectiveRpmName, effectiveRpmPort).Err()
 		}
 		for _, lse := range lses {
-			if lse.GetName() != machinelse.Name {
+			if lse.GetName() != newMachineLse.Name {
 				return status.Errorf(codes.FailedPrecondition, fmt.Sprintf("The rpm powerunit_name and powerunit_outlet is already in use by %s.", lse.GetName()))
 			}
 		}
 	}
 
-	// validate update mask
-	return validateMachineLSEUpdateMask(machinelse, machine, mask)
+	return nil
 }
 
 // validateMachineLSEUpdateMask validates the update mask for machinelse update
@@ -2041,6 +2062,8 @@ func extractServoComponents(st *chromeosLab.ServoTopology) []string {
 func RenameMachineLSE(ctx context.Context, oldName, newName string) (*ufspb.MachineLSE, error) {
 	var newLSE *ufspb.MachineLSE
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Renaming MachineLSE. Old name: %s, New name: %s", oldName, newName)
+
 		// Check if the host exists
 		lse, err := inventory.GetMachineLSE(ctx, oldName)
 		if err != nil {

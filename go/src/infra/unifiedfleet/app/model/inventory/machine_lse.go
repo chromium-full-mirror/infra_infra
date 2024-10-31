@@ -117,7 +117,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
 		hive = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
 	} else if p.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
-		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
+		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitName()
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
 		rpmType = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitType()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetPools()

@@ -35,6 +35,8 @@ var deployLabstationMaskPaths = []string{
 // CreateLabstation creates a new labstation entry in UFS.
 func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.MachineLSE, error) {
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Creating labstation. Hostname: %s", lse.Hostname)
+
 		hc := getHostHistoryClient(lse)
 
 		// Get machine to get zone and rack info for machinelse table indexing
@@ -90,6 +92,7 @@ func CreateLabstation(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Machin
 // UpdateLabstation validates and updates the given labstation machine LSE.
 func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) (*ufspb.MachineLSE, error) {
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Updating labstation. Name: %s", machinelse.GetName())
 
 		hc := getHostHistoryClient(machinelse)
 

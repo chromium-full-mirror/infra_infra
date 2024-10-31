@@ -24,13 +24,64 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
+func TestCreateLabstation(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ftt.Run("CreateLabstation", t, func(t *ftt.Test) {
+		t.Run("CreateLabstation - RPM conflict", func(t *ftt.Test) {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-101",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			_, err2 := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-102",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, err2, should.BeNil)
+			labstation1 := newMockLabstationBuilder("labstation-101", "machine-101").withRpm("rpm-101", ".A1").build()
+			res, err := CreateLabstation(ctx, labstation1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.Resemble(labstation1))
+
+			// Create 2nd labstation with the same RPM details - should fail
+			labstation2 := newMockLabstationBuilder("labstation-102", "machine-102").withRpm("rpm-101", ".A1").build()
+			res2, err2 := CreateLabstation(ctx, labstation2)
+			assert.Loosely(t, res2, should.BeNil)
+			assert.Loosely(t, err2, should.NotBeNil)
+			assert.Loosely(t, err2.Error(), should.ContainSubstring("The rpm powerunit_name and powerunit_outlet is already in use by labstation-101"))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-102")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.BeEmpty)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-102")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.BeEmpty)
+			labstation3, err := GetMachineLSE(ctx, "labstation-102")
+			assert.Loosely(t, labstation3, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+		})
+	})
+}
+
 func TestUpdateLabstation(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	ctx = external.WithTestingContext(ctx)
 	ftt.Run("UpdateLabstation", t, func(t *ftt.Test) {
 		t.Run("UpdateLabstation - Non-existent labstation", func(t *ftt.Test) {
-			labstation1 := mockLabstation("labstation-1", "machine-1")
+			labstation1 := newMockLabstationBuilder("labstation-1", "machine-1").build()
 			// Labstation doesn't exist. Must return error
 			res, err := UpdateLabstation(ctx, labstation1, nil)
 			assert.Loosely(t, err, should.NotBeNil)
@@ -54,12 +105,12 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation2 := mockLabstation("labstation-2", "machine-2")
+			labstation2 := newMockLabstationBuilder("labstation-2", "machine-2").build()
 			res, err := CreateLabstation(ctx, labstation2)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation2))
-			labstation2 = mockLabstation("labstation-2", "")
+			labstation2 = newMockLabstationBuilder("labstation-2", "").build()
 			// Attempt to delete machine. Should fail.
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("machines"))
 			assert.Loosely(t, res, should.BeNil)
@@ -88,12 +139,12 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-3", "machine-3")
+			labstation1 := newMockLabstationBuilder("labstation-3", "machine-3").build()
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation1 = mockLabstation("labstation-3", "")
+			labstation1 = newMockLabstationBuilder("labstation-3", "").build()
 			// Attempt to delete the machine in maskless update. Should fail.
 			res, err = UpdateLabstation(ctx, labstation1, nil)
 			assert.Loosely(t, res, should.BeNil)
@@ -122,7 +173,7 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-4", "machine-4")
+			labstation1 := newMockLabstationBuilder("labstation-4", "machine-4").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-4",
 				PowerunitOutlet: ".A4",
@@ -133,7 +184,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
 			// rpm of labstation2 is nil by default.
-			labstation2 := mockLabstation("labstation-4", "machine-4")
+			labstation2 := newMockLabstationBuilder("labstation-4", "machine-4").build()
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.host"))
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm(), should.BeNil)
@@ -169,7 +220,7 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-5", "machine-5")
+			labstation1 := newMockLabstationBuilder("labstation-5", "machine-5").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{
 				PowerunitName:   "rpm-5",
 				PowerunitOutlet: ".A5",
@@ -179,7 +230,7 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation2 := mockLabstation("labstation-5", "machine-5")
+			labstation2 := newMockLabstationBuilder("labstation-5", "machine-5").build()
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Rpm = &chromeosLab.OSRPM{PowerunitOutlet: ".A6"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.rpm.host", "labstation.rpm.outlet"))
 			assert.Loosely(t, res, should.BeNil)
@@ -247,11 +298,11 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-6", "machine-6")
+			labstation1 := newMockLabstationBuilder("labstation-6", "machine-6").build()
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			labstation2 := mockLabstation("labstation-6", "machine-6")
+			labstation2 := newMockLabstationBuilder("labstation-6", "machine-6").build()
 			// Add a pool to the labstation.
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.pools"))
@@ -302,11 +353,11 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-13", "machine-13")
+			labstation1 := newMockLabstationBuilder("labstation-13", "machine-13").build()
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
-			labstation2 := mockLabstation("labstation-13", "machine-13")
+			labstation2 := newMockLabstationBuilder("labstation-13", "machine-13").build()
 			// Add a hive to the labstation.
 			labstation2.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Hive = "test-hive"
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("labstation.hive"))
@@ -357,13 +408,13 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-7", "machine-7")
+			labstation1 := newMockLabstationBuilder("labstation-7", "machine-7").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation2 := mockLabstation("labstation-7", "machine-7")
+			labstation2 := newMockLabstationBuilder("labstation-7", "machine-7").build()
 			// Add a tag to the labstation.
 			labstation2.Tags = []string{"decommission"}
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("tags"))
@@ -425,13 +476,13 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-8", "machine-8")
+			labstation1 := newMockLabstationBuilder("labstation-8", "machine-8").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation2 := mockLabstation("labstation-8", "machine-8")
+			labstation2 := newMockLabstationBuilder("labstation-8", "machine-8").build()
 			// Add a description  to the labstation.
 			labstation2.Description = "[12 Jan 2021] crbug.com/35007"
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("description"))
@@ -481,13 +532,13 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-9", "machine-9")
+			labstation1 := newMockLabstationBuilder("labstation-9", "machine-9").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation2 := mockLabstation("labstation-9", "machine-9")
+			labstation2 := newMockLabstationBuilder("labstation-9", "machine-9").build()
 			// Add a deployment ticket to the labstation.
 			labstation2.DeploymentTicket = "crbug.com/35007"
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("deploymentTicket"))
@@ -537,13 +588,13 @@ func TestUpdateLabstation(t *testing.T) {
 				},
 			})
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-10", "machine-10")
+			labstation1 := newMockLabstationBuilder("labstation-10", "machine-10").build()
 			labstation1.GetChromeosMachineLse().GetDeviceLse().GetLabstation().Pools = []string{"labstation_main"}
 			res, err := CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.NotBeNil)
 			assert.Loosely(t, res, should.Match(labstation1))
-			labstation2 := mockLabstation("labstation-10", "machine-10")
+			labstation2 := newMockLabstationBuilder("labstation-10", "machine-10").build()
 			// Set labstation state to serving.
 			labstation2.ResourceState = ufspb.State_STATE_SERVING
 			res, err = UpdateLabstation(ctx, labstation2, mockFieldMask("resourceState"))
@@ -563,6 +614,110 @@ func TestUpdateLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			// No update to machines of rpm. Should not be in needs_deploy.
 			assert.Loosely(t, s.GetState(), should.NotEqual(ufspb.State_STATE_DEPLOYED_PRE_SERVING))
+		})
+
+		t.Run("UpdateLabstation - RPM conflict when changing rpm name", func(t *ftt.Test) {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-11",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			_, err2 := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-12",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, err2, should.BeNil)
+			labstation1 := newMockLabstationBuilder("labstation-11", "machine-11").withRpm("rpm-11", ".A1").build()
+			res, err := CreateLabstation(ctx, labstation1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.Resemble(labstation1))
+			labstation2 := newMockLabstationBuilder("labstation-12", "machine-12").withRpm("rpm-12", ".A1").build()
+			res2, err2 := CreateLabstation(ctx, labstation2)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, res2, should.NotBeNil)
+			assert.Loosely(t, res2, should.Resemble(labstation2))
+
+			// When updating via shivas the machineLSE is filled only with the updated data
+			updatedLabstation2 := newMockLabstationBuilder("labstation-12", "machine-12").withRpm("rpm-11", "").build()
+
+			// Attempt to update machine. Should fail.
+			res, err = UpdateLabstation(ctx, updatedLabstation2, nil)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("The rpm powerunit_name and powerunit_outlet is already in use by labstation-11"))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-12")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].NewValue, should.Equal("REGISTRATION"))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-12")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			labstation3, err := GetMachineLSE(ctx, "labstation-12")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, labstation3.GetMachines(), should.Resemble([]string{"machine-12"}))
+		})
+
+		t.Run("UpdateLabstation - RPM conflict when changing rpm outlet", func(t *ftt.Test) {
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-14",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			_, err2 := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-15",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, err2, should.BeNil)
+			labstation1 := newMockLabstationBuilder("labstation-14", "machine-14").withRpm("rpm-14", ".A1").build()
+			res, err := CreateLabstation(ctx, labstation1)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res, should.Resemble(labstation1))
+			labstation2 := newMockLabstationBuilder("labstation-15", "machine-15").withRpm("rpm-14", ".A2").build()
+			res2, err2 := CreateLabstation(ctx, labstation2)
+			assert.Loosely(t, err2, should.BeNil)
+			assert.Loosely(t, res2, should.NotBeNil)
+			assert.Loosely(t, res2, should.Resemble(labstation2))
+
+			// When updating via shivas the machineLSE is filled only with the updated data
+			updatedLabstation2 := newMockLabstationBuilder("labstation-15", "machine-15").withRpm("", ".A1").build()
+
+			// Attempt to update machine. Should fail.
+			res, err = UpdateLabstation(ctx, updatedLabstation2, nil)
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring("The rpm powerunit_name and powerunit_outlet is already in use by labstation-14"))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-15")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].NewValue, should.Equal("REGISTRATION"))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/labstation-15")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			labstation3, err := GetMachineLSE(ctx, "labstation-15")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, labstation3.GetMachines(), should.Resemble([]string{"machine-15"}))
 		})
 	})
 }
@@ -611,7 +766,7 @@ func TestRenameLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, err, should.BeNil)
-			labstation1 := mockLabstation("labstation-1", "machine-1l")
+			labstation1 := newMockLabstationBuilder("labstation-1", "machine-1l").build()
 			_, err = CreateLabstation(ctx, labstation1)
 			assert.Loosely(t, err, should.BeNil)
 			dut1 := mockDUT("dut-1", "machine-1d", "labstation-1", "serial-1", "power-1", ".A1", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -660,7 +815,7 @@ func TestRenameLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, err, should.BeNil)
-			labstation2 := mockLabstation("labstation-2", "machine-2l")
+			labstation2 := newMockLabstationBuilder("labstation-2", "machine-2l").build()
 			_, err = CreateLabstation(ctx, labstation2)
 			assert.Loosely(t, err, should.BeNil)
 			dut2 := mockDUT("dut-2", "machine-2d", "labstation-2", "serial-2", "power-2", ".A2", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -708,7 +863,7 @@ func TestRenameLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(createCtx, machine2)
 			assert.Loosely(t, err, should.BeNil)
-			labstation2 := mockLabstation("labstation-3", "machine-3l")
+			labstation2 := newMockLabstationBuilder("labstation-3", "machine-3l").build()
 			_, err = CreateLabstation(createCtx, labstation2)
 			assert.Loosely(t, err, should.BeNil)
 			dut2 := mockDUT("dut-3", "machine-3d", "labstation-3", "serial-3", "power-3", ".A3", int32(9999), []string{"DUT_POOL_QUOTA"}, "")
@@ -766,7 +921,7 @@ func TestRenameLabstation(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			_, err = registration.CreateMachine(ctx, machine2)
 			assert.Loosely(t, err, should.BeNil)
-			labstation2 := mockLabstation("labstation-4", "machine-4l")
+			labstation2 := newMockLabstationBuilder("labstation-4", "machine-4l").build()
 			_, err = CreateLabstation(ctx, labstation2)
 			assert.Loosely(t, err, should.BeNil)
 			dut2 := mockDUT("dut-4", "machine-4d", "labstation-4", "serial-4", "power-4", ".A4", int32(9999), []string{"DUT_POOL_QUOTA"}, "")

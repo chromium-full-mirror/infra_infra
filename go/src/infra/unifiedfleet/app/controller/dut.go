@@ -54,6 +54,8 @@ var defaultPools = []string{"DUT_POOL_QUOTA"}
 // Labstation(with new Servo info from DUT)
 func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.MachineLSE, error) {
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Creating DUT. Hostname: %s", machinelse.Hostname)
+
 		hc := getHostHistoryClient(machinelse)
 		machinelses := []*ufspb.MachineLSE{machinelse}
 
@@ -163,6 +165,8 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 		}
 	}
 	f := func(ctx context.Context) error {
+		logging.Infof(ctx, "Updating DUT. Name: %s", machinelse.GetName())
+
 		hc := getHostHistoryClient(machinelse)
 
 		// Get the existing MachineLSE(DUT).
