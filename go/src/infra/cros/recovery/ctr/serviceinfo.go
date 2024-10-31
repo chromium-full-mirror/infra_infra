@@ -198,7 +198,11 @@ func (c *serviceInfoImpl) CreateContainer(ctx context.Context, req *api.StartTem
 		name: req.GetName(),
 		ci:   c,
 	}
-	req.ArtifactDir = c.artifactsDir
+	if aDir, err := c.createDir(req.GetName() + "-logs"); err != nil {
+		return nil, errors.Reason("create container %q", req.GetName()).Err()
+	} else {
+		req.ArtifactDir = aDir
+	}
 	res, err := c.ctr.StartTemplatedContainer(ctx, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "get container %q", container.name).Err()
