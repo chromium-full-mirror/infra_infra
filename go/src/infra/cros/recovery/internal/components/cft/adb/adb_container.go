@@ -76,17 +76,17 @@ func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (
 	if ctrInfo == nil {
 		return nil, errors.Reason("adb service client: ctr client is not provided").Err()
 	}
-	adbContainer, err := ctrInfo.GetContainer(ctx, cft.ADBName(dut))
+	container, err := ctrInfo.GetContainer(ctx, cft.ADBName(dut))
 	if err != nil {
 		return nil, errors.Annotate(err, "adb service client").Err()
 	}
-	conn, err := adbContainer.GetClient(ctx)
+	conn, err := container.GetClient(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "adb service client").Err()
 	}
-	adbClient := api.NewADBServiceClient(conn)
-	if adbClient == nil {
+	client := api.NewADBServiceClient(conn)
+	if client == nil {
 		return nil, errors.Reason("adb service client: fail to create client").Err()
 	}
-	return adbClient, nil
+	return client, nil
 }

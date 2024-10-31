@@ -24,17 +24,17 @@ func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (
 	if ctrInfo == nil {
 		return nil, errors.Reason("foil-provision service client: ctr client is not provided").Err()
 	}
-	adbContainer, err := ctrInfo.GetContainer(ctx, cft.FoilProvisionName(dut))
+	container, err := ctrInfo.GetContainer(ctx, cft.FoilProvisionName(dut))
 	if err != nil {
 		return nil, errors.Annotate(err, "foil-provision service client").Err()
 	}
-	conn, err := adbContainer.GetClient(ctx)
+	conn, err := container.GetClient(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "foil-provision service client").Err()
 	}
-	adbClient := api.NewGenericProvisionServiceClient(conn)
-	if adbClient == nil {
+	client := api.NewGenericProvisionServiceClient(conn)
+	if client == nil {
 		return nil, errors.Reason("foil-provision service client: fail to create client").Err()
 	}
-	return adbClient, nil
+	return client, nil
 }

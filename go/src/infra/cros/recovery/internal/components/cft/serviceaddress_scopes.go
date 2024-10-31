@@ -78,6 +78,19 @@ func ServoServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.I
 	return ip, nil
 }
 
+// FoilProvisionServiceAddressFromScope read foil-provision service client from scope.
+func FoilProvisionServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpEndpoint, error) {
+	addr, err := AddressFromScope(ctx, FoilProvisionName(dut))
+	if err != nil {
+		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
+	}
+	ip, err := addressToIPEndpoint(addr)
+	if err != nil {
+		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
+	}
+	return ip, nil
+}
+
 func addressToIPEndpoint(addr string) (*lab_api.IpEndpoint, error) {
 	addr = strings.Trim(strings.TrimSpace(addr), ":")
 	if addr == "" {

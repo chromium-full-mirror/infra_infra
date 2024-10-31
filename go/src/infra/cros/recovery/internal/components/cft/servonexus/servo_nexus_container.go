@@ -28,11 +28,11 @@ const (
 // StartServod starts servod daemon.
 func StartServod(ctx context.Context, client api.ServodServiceClient, dut *tlw.Dut, useRecoveryMode bool) error {
 	if client == nil {
-		return errors.Reason("servo-nexus stop servod: client is not provided").Err()
+		return errors.Reason("servo-nexus start servod: client is not provided").Err()
 	}
 	sh := dut.GetChromeos().GetServo()
 	if sh == nil {
-		return errors.Reason("servo-nexus stop servod: servo-host is not provided").Err()
+		return errors.Reason("servo-nexus start servod: servo-host is not provided").Err()
 	}
 	req := &api.StartServodRequest{
 		ServoHostPath:             sh.GetName() + servoHostPort,

@@ -71,8 +71,13 @@ func startServoNexusContainerExec(ctx context.Context, info *execs.ExecInfo) err
 	if err != nil {
 		return errors.Annotate(err, "start servo-nexus container").Err()
 	}
-	err = cft.ClientToScope(ctx, dut, client, containerName)
-	return errors.Annotate(err, "start servo-nexus container").Err()
+	if err := cft.ClientToScope(ctx, dut, client, containerName); err != nil {
+		return errors.Annotate(err, "start servo-nexus container").Err()
+	}
+	if err := cft.AddressToScope(ctx, ctrInfo, containerName); err != nil {
+		return errors.Annotate(err, "start servo-nexus container").Err()
+	}
+	return nil
 }
 
 func stopServoNexusExec(ctx context.Context, info *execs.ExecInfo) error {

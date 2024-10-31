@@ -63,3 +63,8 @@ func ADBClientFromScope(ctx context.Context, dut *tlw.Dut) (api.ADBServiceClient
 func ServoClientFromScope(ctx context.Context, dut *tlw.Dut) (api.ServodServiceClient, error) {
 	return ClientFromScope[api.ServodServiceClient](ctx, dut, ServoNexusName(dut))
 }
+
+// FoilProvisionClientFromScope read foil-provision service client from scope.
+func FoilProvisionClientFromScope(ctx context.Context, dut *tlw.Dut) (api.GenericProvisionServiceClient, error) {
+	return ClientFromScope[api.GenericProvisionServiceClient](ctx, dut, FoilProvisionName(dut))
+}

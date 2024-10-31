@@ -68,12 +68,17 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	log.Infof(ctx, "Container %q started!", req.Name)
-	adbClient, err := adb.ServiceClient(ctx, ctrInfo, dut)
+	client, err := adb.ServiceClient(ctx, ctrInfo, dut)
 	if err != nil {
 		return errors.Annotate(err, "start adb container").Err()
 	}
-	err = cft.ClientToScope(ctx, dut, adbClient, containerName)
-	return errors.Annotate(err, "start adb container").Err()
+	if err := cft.ClientToScope(ctx, dut, client, containerName); err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
+	if err := cft.AddressToScope(ctx, ctrInfo, containerName); err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
+	return nil
 }
 
 func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {

@@ -66,8 +66,13 @@ func startFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) 
 	if err != nil {
 		return errors.Annotate(err, "start foil-provision container").Err()
 	}
-	err = cft.ClientToScope(ctx, dut, client, containerName)
-	return errors.Annotate(err, "start foil-provision container").Err()
+	if err := cft.ClientToScope(ctx, dut, client, containerName); err != nil {
+		return errors.Annotate(err, "start foil-provision container").Err()
+	}
+	if err := cft.AddressToScope(ctx, ctrInfo, containerName); err != nil {
+		return errors.Annotate(err, "start foil-provision container").Err()
+	}
+	return nil
 }
 
 func stopFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) error {
