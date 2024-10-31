@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
