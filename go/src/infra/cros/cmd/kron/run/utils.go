@@ -187,14 +187,14 @@ func limitStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
 
 // buildPerModelConfigs builds a CTP request per model (if it exists) for the
 // given config.
-func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, build *kronpb.Build, branch string) ([]*ctpEvent, error) {
+func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, build *kronpb.Build, branch string, isStaging bool) ([]*ctpEvent, error) {
 	ctpRequests := []*ctpEvent{}
 	// If provided, build a CTP request per model, otherwise leave the model
 	// field absent.
 	if len(models) > 0 {
 		// Generate a CTP Request for each model.
 		for _, model := range models {
-			ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), model, build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
+			ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), model, build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch, isStaging)
 
 			event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), model, build.GetBuildTarget())
 			if err != nil {
@@ -209,7 +209,7 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 			ctpRequests = append(ctpRequests, request)
 		}
 	} else {
-		ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), "", build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch)
+		ctpRequest := ctprequest.BuildCTPRequest(config, build.GetBoard(), "", build.GetBuildTarget(), strconv.FormatInt(build.GetMilestone(), 10), build.GetVersion(), branch, isStaging)
 
 		event, err := metrics.GenerateEventMessage(config, nil, 0, build.GetBuildUuid(), build.GetBoard(), "", build.GetBuildTarget())
 		if err != nil {
@@ -229,7 +229,7 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 
 // buildCTPRequests iterates through all the provided triggered configs and
 // generates BuildBucket CTP requests for all triggered configs.
-func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerConfig, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs) ([]*ctpEvent, error) {
+func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerConfig, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs, isStaging bool) ([]*ctpEvent, error) {
 	requests := []*ctpEvent{}
 
 	// Iterate through the wrapped builds and insert CTP request and their
@@ -250,7 +250,7 @@ func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerCo
 				return nil, err
 			}
 
-			ctpRequests, err := buildPerModelConfigs(boardTargetOption.Models, triggeredConfig, kronBuild, suschpb.Branch_name[int32(branch)])
+			ctpRequests, err := buildPerModelConfigs(boardTargetOption.Models, triggeredConfig, kronBuild, suschpb.Branch_name[int32(branch)], isStaging)
 			if err != nil {
 				return nil, err
 			}
@@ -385,7 +385,7 @@ func generateGenericBBProperties(requests []*ctpEvent) (*structpb.Struct, error)
 }
 
 // buildCTPRequestsFor3dConfigs creates list of ctp requests for each config per branch.
-func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList, newBuild3dMap map[*suschpb.SchedulerConfig]map[configparser.BuildTarget]bool) (map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, error) {
+func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList, newBuild3dMap map[*suschpb.SchedulerConfig]map[configparser.BuildTarget]bool, isStaging bool) (map[*suschpb.SchedulerConfig][]ctpEventsPerBranch, error) {
 	ctpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
 
 	// processing each config
@@ -412,7 +412,7 @@ func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, al
 						common.Stdout.Printf("3dConfig:%s, skipping build target:%s\n", config.Name, kronBuild.BuildTarget)
 						continue
 					}
-					ctpRequests, err := buildPerModelConfigs(nil, config, kronBuild, suschpb.Branch_name[int32(buildPackage3d.Branch)])
+					ctpRequests, err := buildPerModelConfigs(nil, config, kronBuild, suschpb.Branch_name[int32(buildPackage3d.Branch)], isStaging)
 					if err != nil {
 						return nil, err
 					}
@@ -814,7 +814,7 @@ func formatAndBatchCTPRequests(isProd, dryRun bool, ctpRequests []*ctpEvent) ([]
 // NEW_BUILD and TIMED_EVENT command types.
 func scheduleRequests(kronBuildMap map[*kronpb.Build][]*suschpb.SchedulerConfig, suiteSchedulerConfigs *configparser.SuiteSchedulerConfigs, authOpts *authcli.Flags, projectID string, isProd, dryRun bool) error {
 	// Build CTP Requests for all triggered configs.
-	ctpRequests, err := buildCTPRequests(kronBuildMap, suiteSchedulerConfigs)
+	ctpRequests, err := buildCTPRequests(kronBuildMap, suiteSchedulerConfigs, !isProd)
 	if err != nil {
 		return err
 	}

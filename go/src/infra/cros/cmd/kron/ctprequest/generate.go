@@ -177,7 +177,7 @@ func formGCSPath(config *suschpb.SchedulerConfig, items ...string) string {
 
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
-func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion, branchTrigger string) *requestpb.Request {
+func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion, branchTrigger string, isStaging bool) *requestpb.Request {
 	buildImage := formBuildImage(buildTarget, buildMilestone, buildVersion)
 
 	request := &requestpb.Request{
@@ -220,6 +220,7 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 			RunViaCft:            config.GetRunOptions().GetRunViaCft(),
 			RunViaTrv2:           config.GetRunOptions().GetRunViaTrv2(),
 			TranslateTrv2Request: config.GetRunOptions().GetDynamicTrv2(),
+			DryRunCtpv2:          isStaging,
 			UserDefinedFilters:   append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
 		},
 		TestPlan: getTestPlan(config),
@@ -251,11 +252,11 @@ func BuildAllCTPRequests(config *suschpb.SchedulerConfig, targets configparser.T
 
 			if len(target.Models) > 0 {
 				for _, model := range target.Models {
-					request := BuildCTPRequest(config, string(target.Board), model, string(buildTarget), "", "", "")
+					request := BuildCTPRequest(config, string(target.Board), model, string(buildTarget), "", "", "", false)
 					requests = append(requests, request)
 				}
 			} else {
-				request := BuildCTPRequest(config, string(target.Board), "", string(buildTarget), "", "", "")
+				request := BuildCTPRequest(config, string(target.Board), "", string(buildTarget), "", "", "", false)
 				requests = append(requests, request)
 			}
 		}
