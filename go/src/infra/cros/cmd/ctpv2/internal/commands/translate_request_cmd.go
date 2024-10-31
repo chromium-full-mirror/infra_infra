@@ -300,7 +300,7 @@ func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 		k := ""
 		v := ""
 		for _, innerkv := range strings.Split(kv, "=") {
-			if k == "resultdb_settings" {
+			if k == "resultdb_settings" || k == "test_args_b64" {
 				// force split to 2 (since the value may have multiple '='s)
 				rdbKVs := strings.SplitN(kv, "=", 2)
 				k = rdbKVs[0]
@@ -310,7 +310,7 @@ func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 			} else if v == "" {
 				v = innerkv
 			} else {
-				fmt.Println("too many values to unpack, skipping ", innerkv)
+				fmt.Printf("too many values to unpack, skipping. bad %v from %v\n", innerkv, kv)
 				k = ""
 				v = ""
 			}
