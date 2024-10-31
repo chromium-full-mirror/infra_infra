@@ -404,6 +404,7 @@ func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, 
 		Dimensions:        createFreeformDims(trHelper),
 		ParentTaskID:      trHelper.currSwarmingID,
 		ParentRequestUID:  trHelper.parentRequestUID,
+		ParentBuildID:     trHelper.currBBID,
 		Priority:          10,
 		TestRunnerRequest: nil,  // Always nil for CFT.
 		CFTIsEnabled:      true, // Always true
