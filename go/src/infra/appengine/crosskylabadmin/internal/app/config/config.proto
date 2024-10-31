@@ -251,6 +251,9 @@ message RolloutConfig {
   // 300. If prod is 20 and legacy is 1, then legacy is implicitly 979.
   int32 latest_permille = 7;
 
+  // skip_hosts contains a pool of hostnames.
+  repeated string skip_hosts = 9;
+
   // A Pattern associates a regex identifier to a prod_permille and
   // latest_permille.
   message Pattern {
