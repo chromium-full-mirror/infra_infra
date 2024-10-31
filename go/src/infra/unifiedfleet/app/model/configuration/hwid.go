@@ -177,6 +177,8 @@ func SetHwidDataWithDutLabels(hwidData *ufspb.HwidData) *ufspb.HwidData {
 			hwidData.Touchpad = true
 		case "touchscreen":
 			hwidData.Touchscreen = true
+		case "racc_enabled_status":
+			hwidData.RaccEnabledStatus = l.GetValue()
 		}
 	}
 	return hwidData

@@ -42,4 +42,5 @@ message HwidData {
   bool stylus = 5;
   bool touchpad = 6;
   bool touchscreen = 7;
+  string racc_enabled_status = 8;
 }

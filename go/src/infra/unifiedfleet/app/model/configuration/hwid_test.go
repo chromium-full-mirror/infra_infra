@@ -570,6 +570,10 @@ func TestSetHwidDataWithDutLabels(t *testing.T) {
 			{
 				Name: "touchpad",
 			},
+			{
+				Name:  "racc_enabled_status",
+				Value: "TOT_ENABLED",
+			},
 		}
 		res := SetHwidDataWithDutLabels(hwidData)
 		if !res.GetStylus() {
@@ -580,6 +584,9 @@ func TestSetHwidDataWithDutLabels(t *testing.T) {
 		}
 		if res.GetTouchscreen() {
 			t.Errorf("SetHwidDataWithDutLabels set wrong flag for touchscreen: want false, got %v\n", res.GetTouchscreen())
+		}
+		if res.GetRaccEnabledStatus() != "TOT_ENABLED" {
+			t.Errorf("SetHwidDataWithDutLabels set wrong flag for racc_enabled_status: want TOT_ENABLED, got %v\n", res.GetRaccEnabledStatus())
 		}
 	})
 }
