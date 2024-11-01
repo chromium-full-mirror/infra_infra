@@ -27,23 +27,27 @@ func SetUp() {
 }
 
 func TestLimitStagingRequestsUnderMax(t *testing.T) {
-	t.Parallel()
+	common.StagingConfigsAllowList = map[string]struct{}{
+		"abc": {},
+	}
 
 	requests := []*ctpEvent{
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config: &suschpb.SchedulerConfig{
+				Name: "abc",
+			},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 	}
 
@@ -54,38 +58,42 @@ func TestLimitStagingRequestsUnderMax(t *testing.T) {
 	}
 }
 func TestLimitStagingRequestsOverMax(t *testing.T) {
-	t.Parallel()
+	common.StagingConfigsAllowList = map[string]struct{}{
+		"abc": {},
+	}
 
 	requests := []*ctpEvent{
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config: &suschpb.SchedulerConfig{
+				Name: "abc",
+			},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{},
+			config:     &suschpb.SchedulerConfig{Name: "abc"},
 		},
 	}
 

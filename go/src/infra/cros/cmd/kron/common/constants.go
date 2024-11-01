@@ -96,3 +96,8 @@ const (
 	KronBuildsConnectionNameSecretVersionStaging = 1
 	KronBuildsConnectionNameSecretVersionProd    = 1
 )
+
+// StagingConfigsAllowList is the list of all configs that we will allow to
+// execute in staging. This will ensure that we are testing specific CUJs in
+// staging.
+var StagingConfigsAllowList = map[string]struct{}{}

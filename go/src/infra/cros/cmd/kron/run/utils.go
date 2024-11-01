@@ -179,6 +179,10 @@ func limitStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
 			break
 		}
 
+		if _, ok := common.StagingConfigsAllowList[configWrapper.config.Name]; !ok {
+			continue
+		}
+
 		limitedRequests = append(limitedRequests, configWrapper)
 	}
 
@@ -440,24 +444,47 @@ func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, al
 	return ctpMapByConfig, nil
 }
 
-// limitStagingRequests3d limits the number of CTP requests to 5 per branch for a given config.
 func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsPerBranch) map[*suschpb.SchedulerConfig][]ctpEventsPerBranch {
 	// Create a new map to hold the result
-	resultCtpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
+	resultCtpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{}
 
-	// Iterate over the input map
+	// Keep track of the total number of configs being sent in this staging run.
+	totalConfigs := 0
+
+	// Iterate over the input map.
 	for config, ctpEventsPerBranchList := range ctpMapByConfig {
-		// Create a new list to hold the limited events per branch
-		newCtpEventsPerBranchList := make([]ctpEventsPerBranch, len(ctpEventsPerBranchList))
-		for i, ctpEvents := range ctpEventsPerBranchList {
-			if len(ctpEvents.events) > 5 {
-				newCtpEventsPerBranchList[i] = ctpEventsPerBranch{
-					events: ctpEvents.events[:5],
-					branch: ctpEvents.branch,
-				}
-			} else {
-				newCtpEventsPerBranchList[i] = ctpEvents
+		if totalConfigs > common.StagingMaxRequests {
+			break
+		}
+
+		// Create a new list to hold the limited events per branch.
+		newCtpEventsPerBranchList := []ctpEventsPerBranch{}
+		for _, ctpEvents := range ctpEventsPerBranchList {
+			if totalConfigs > common.StagingMaxRequests {
+				break
 			}
+
+			// Create a new branch config list.
+			branchConfigs := ctpEventsPerBranch{
+				events: []*ctpEvent{},
+				branch: ctpEvents.branch,
+			}
+
+			// Add the events to the tracking list.
+			for _, ctpEvent := range ctpEvents.events {
+				if totalConfigs > common.StagingMaxRequests {
+					break
+				}
+
+				// Only add configs that are in the allowlist.
+				if _, ok := common.StagingConfigsAllowList[ctpEvent.config.Name]; !ok {
+					continue
+				}
+
+				branchConfigs.events = append(branchConfigs.events, ctpEvent)
+				totalConfigs += 1
+			}
+			newCtpEventsPerBranchList = append(newCtpEventsPerBranchList, branchConfigs)
 		}
 		resultCtpMapByConfig[config] = newCtpEventsPerBranchList
 	}
