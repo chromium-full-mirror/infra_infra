@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 )
@@ -64,4 +65,13 @@ func CreateStepWithStatus(
 	}
 
 	return err
+}
+
+func GetFlattenedTestCases(ctpTestCases []*api.CTPTestCase) []string {
+	testCasesNames := []string{}
+	for _, testCase := range ctpTestCases {
+		testCasesNames = append(testCasesNames, testCase.GetName())
+	}
+
+	return testCasesNames
 }

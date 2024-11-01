@@ -239,6 +239,8 @@ func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string]
 		links := []string{}
 
 		for _, result := range resultsList {
+			// regardless of error/non-error, log the testCases
+			LogTestCasesIfAny(ctx, result, step)
 			err = result.GetFailureErr()
 			if result.TopLevelError != nil {
 				DisplayError(ctx, result, step)
@@ -329,6 +331,14 @@ func addToMap(inMap map[string][]*data.TestResults, key string, result *data.Tes
 	inMap[key] = append(inMap[key], result)
 
 	return inMap
+}
+
+func LogTestCasesIfAny(ctx context.Context, result *data.TestResults, step *build.Step) {
+	testCasesNames := common.GetFlattenedTestCases(result.TestCases)
+	if len(testCasesNames) > 0 {
+		log := step.Log(fmt.Sprintf("testcases for '%s'", result.Key))
+		log.Write([]byte(fmt.Sprintf("%s", strings.Join(testCasesNames, "\n"))))
+	}
 }
 
 func DisplayError(ctx context.Context, result *data.TestResults, step *build.Step) {

@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/suitelimits"
 )
 
@@ -65,6 +66,7 @@ func (t *TestResults) GetFailureErr() error {
 		return fmt.Errorf("no test result found")
 	}
 
+	// Handle autotest results
 	if t.Results.GetAutotestResults() != nil {
 		testResults, ok := t.Results.GetAutotestResults()["original_test"]
 		if !ok {
@@ -82,6 +84,7 @@ func (t *TestResults) GetFailureErr() error {
 		return nil
 	}
 
+	// Handle android generic results
 	if t.Results.GetAndroidGenericResult() != nil {
 		for _, givenTestCase := range t.Results.GetAndroidGenericResult().GetGivenTestCases() {
 			for _, testCase := range givenTestCase.GetChildTestCases() {
@@ -102,12 +105,8 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 	totalTestCount := 0
 	totalFailedTestCount := 0
 	totalFailedTestRunCount := 0
-	testCasesNames := []string{}
 	testCasesFoundInResutls := 0
-
-	for _, testCase := range t.TestCases {
-		testCasesNames = append(testCasesNames, testCase.GetName())
-	}
+	testCasesNames := common.GetFlattenedTestCases(t.TestCases)
 
 	// Handle android generic results
 	genericResults := t.Results.GetAndroidGenericResult().GetGivenTestCases()
