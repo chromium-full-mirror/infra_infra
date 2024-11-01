@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package dashboard;
 
+option go_package = "infra/appengine/dashboard/api/dashboard";
+
 import "google/protobuf/timestamp.proto";
 
 // The ChromeOps statuses service definition.

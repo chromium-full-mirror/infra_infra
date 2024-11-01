@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/common/testing/ftt"
@@ -60,7 +59,7 @@ func TestEndpointsInsertIssue(t *testing.T) {
 			}))
 			defer insertIssueServer.Close()
 
-			httpClient := &http.Client{Timeout: time.Second}
+			httpClient := &http.Client{}
 			client := NewEndpointsClient(httpClient, insertIssueServer.URL)
 			actualRes, err := client.InsertIssue(ctx, req)
 			assert.Loosely(t, err, should.BeNil)
@@ -77,7 +76,7 @@ func TestEndpointsInsertIssue(t *testing.T) {
 				},
 			}
 
-			httpClient := &http.Client{Timeout: time.Second}
+			httpClient := &http.Client{}
 			client := NewEndpointsClient(httpClient, "https://example.com")
 			_, err := client.InsertIssue(ctx, req)
 			assert.Loosely(t, err, should.ErrLike("no projectId"))
@@ -202,7 +201,7 @@ func TestEndpointsListComments(t *testing.T) {
 			}))
 			defer srv.Close()
 
-			client := NewEndpointsClient(&http.Client{Timeout: time.Second}, srv.URL)
+			client := NewEndpointsClient(&http.Client{}, srv.URL)
 			res, err := client.ListComments(ctx, req)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, res, should.Resemble(&ListCommentsResponse{

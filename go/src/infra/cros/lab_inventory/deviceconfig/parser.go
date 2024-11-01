@@ -5,14 +5,10 @@
 package deviceconfig
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"reflect"
 	"sort"
 	"strings"
-
-	"github.com/golang/protobuf/jsonpb"
 
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
@@ -22,10 +18,6 @@ import (
 	luciproto "go.chromium.org/luci/common/proto"
 
 	"infra/libs/git"
-)
-
-var (
-	unmarshaller = jsonpb.Unmarshaler{AllowUnknownFields: true}
 )
 
 type gitilesInfo struct {
@@ -51,16 +43,6 @@ type Repo struct {
 	ConfigPath string `json:"configPath,omitempty"`
 }
 
-func fixFieldMaskForConfigBundleList(b []byte) ([]byte, error) {
-	var payload payload.ConfigBundleList
-	t := reflect.TypeOf(payload)
-	buf, err := luciproto.FixFieldMasksBeforeUnmarshal(b, t)
-	if err != nil {
-		return nil, err
-	}
-	return buf, nil
-}
-
 func getDeviceConfigs(ctx context.Context, gc git.ClientInterface, joinedConfigPath string) ([]*device.Config, error) {
 	logging.Infof(ctx, "reading device configs from %s", joinedConfigPath)
 	content, err := gc.GetFile(ctx, joinedConfigPath)
@@ -68,11 +50,7 @@ func getDeviceConfigs(ctx context.Context, gc git.ClientInterface, joinedConfigP
 		return nil, err
 	}
 	var payloads payload.ConfigBundleList
-	buf, err := fixFieldMaskForConfigBundleList([]byte(content))
-	if err != nil {
-		return nil, errors.Annotate(err, "fail to fix field mask for %s", joinedConfigPath).Err()
-	}
-	if err := unmarshaller.Unmarshal(bytes.NewBuffer(buf), &payloads); err != nil {
+	if err := luciproto.UnmarshalJSONWithNonStandardFieldMasks([]byte(content), &payloads); err != nil {
 		return nil, errors.Annotate(err, "fail to unmarshal %s", joinedConfigPath).Err()
 	}
 

@@ -12,6 +12,8 @@ syntax = "proto3";
 
 package monorail;
 
+option go_package = "infra/monorail";
+
 // Monorail service can manipulate issues.
 service Monorail {
     // Creates an issue.

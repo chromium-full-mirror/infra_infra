@@ -5,15 +5,13 @@
 package deviceconfig
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"testing"
 
-	"github.com/golang/protobuf/jsonpb"
-
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+	luciproto "go.chromium.org/luci/common/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -22,13 +20,10 @@ import (
 func TestParseConfigBundle(t *testing.T) {
 	ftt.Run("Test config bundle parsing", t, func(t *ftt.Test) {
 		var payloads payload.ConfigBundleList
-		unmarshaller := &jsonpb.Unmarshaler{AllowUnknownFields: false}
 		// Refer to https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/test/project/fake/fake/config.star for unittest check
 		b, err := ioutil.ReadFile("test_device_config_v2.jsonproto")
 		assert.Loosely(t, err, should.BeNil)
-		buf, err := fixFieldMaskForConfigBundleList([]byte(b))
-		assert.Loosely(t, err, should.BeNil)
-		err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &payloads)
+		err = luciproto.UnmarshalJSONWithNonStandardFieldMasks([]byte(b), &payloads)
 		assert.Loosely(t, err, should.BeNil)
 		t.Run("Happy path", func(t *ftt.Test) {
 			assert.Loosely(t, payloads.GetValues(), should.HaveLength(1))
