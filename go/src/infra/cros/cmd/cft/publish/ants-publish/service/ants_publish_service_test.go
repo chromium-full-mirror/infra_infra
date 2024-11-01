@@ -310,6 +310,11 @@ func TestResultEntries(t *testing.T) {
 
 	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
 	parentwuID := "WU1"
+	dutProps := []*ab_prod.Property{
+		{Name: "board", Value: "brya"},
+		{Name: "model", Value: "vell"},
+	}
+
 	executionInfo := &artifact.ExecutionInfo{
 		DutInfo: &artifact.DutInfo{
 			Dut: &labapi.Dut{
@@ -346,9 +351,10 @@ func TestResultEntries(t *testing.T) {
 			},
 			wantResult: &ab_prod.TestResult{
 				TestIdentifier: &ab_prod.TestIdentifier{
-					Module:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					TestClass: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					Method:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					ModuleParameters: dutProps,
+					TestClass:        "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 				},
 				TestStatus: "testError",
 				Properties: []*ab_prod.Property{
@@ -366,15 +372,13 @@ func TestResultEntries(t *testing.T) {
 			},
 			wantResult: &ab_prod.TestResult{
 				TestIdentifier: &ab_prod.TestIdentifier{
-					Module:    "mobly.CtsWrapWrapNoDebugTestCases",
-					TestClass: "mobly.CtsWrapWrapNoDebugTestCases",
-					Method:    "testmethod",
+					Module:           "mobly.CtsWrapWrapNoDebugTestCases",
+					ModuleParameters: dutProps,
+					TestClass:        "mobly.CtsWrapWrapNoDebugTestCases",
+					Method:           "testmethod",
 				},
 				TestStatus: "pass",
-				Properties: []*ab_prod.Property{
-					{Name: "board", Value: "brya"},
-					{Name: "model", Value: "vell"},
-				},
+				Properties: dutProps,
 			},
 		},
 		{
@@ -385,25 +389,20 @@ func TestResultEntries(t *testing.T) {
 				Verdict:    &api.TestCaseResult_Pass_{},
 			},
 			expectWU: &ab_prod.WorkUnit{
-				Name:     "testcase",
-				ParentId: parentwuID,
-				Type:     "TF_TEST_RUN",
-				Properties: []*ab_prod.Property{
-					{Name: "board", Value: "brya"},
-					{Name: "model", Value: "vell"},
-				},
+				Name:       "testcase",
+				ParentId:   parentwuID,
+				Type:       "TF_TEST_RUN",
+				Properties: dutProps,
 			},
 			wantResult: &ab_prod.TestResult{
 				TestIdentifier: &ab_prod.TestIdentifier{
-					Module:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					TestClass: "testcase",
-					Method:    "testname",
+					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					ModuleParameters: dutProps,
+					TestClass:        "testcase",
+					Method:           "testname",
 				},
 				TestStatus: "pass",
-				Properties: []*ab_prod.Property{
-					{Name: "board", Value: "brya"},
-					{Name: "model", Value: "vell"},
-				},
+				Properties: dutProps,
 			},
 		},
 	}

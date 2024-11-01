@@ -109,15 +109,17 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			}
 
 			testID = &atp.TestIdentifier{
-				Module:    module.Name,
-				TestClass: names[0],
-				Method:    names[1],
+				Module:           module.Name,
+				ModuleParameters: dutProps,
+				TestClass:        names[0],
+				Method:           names[1],
 			}
 		} else if len(names) == 1 {
 			testID = &atp.TestIdentifier{
-				Module:    module.Name,
-				TestClass: module.Name,
-				Method:    names[0],
+				Module:           module.Name,
+				ModuleParameters: dutProps,
+				TestClass:        module.Name,
+				Method:           names[0],
 			}
 		} else {
 			return nil, token, fmt.Errorf("unexpected testcaseid: %s", result.GetTestCaseId().GetValue())
