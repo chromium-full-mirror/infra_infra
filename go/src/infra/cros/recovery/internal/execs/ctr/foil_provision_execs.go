@@ -8,7 +8,9 @@ package ctr
 import (
 	"context"
 
+	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/ctr"
@@ -92,7 +94,71 @@ func stopFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) e
 	return nil
 }
 
+func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := cft.FoilProvisionClientFromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("setup foil-provision service: client is not found").Err()
+	}
+	dut := info.GetDut()
+	if dut.GetChromeos() == nil {
+		return errors.Reason("setup foil-provision service: dut is not detected").Err()
+	}
+	var servoNexusAddr, cachingAddress *lab_api.IpEndpoint
+	argsMap := info.GetActionArgs(ctx)
+	if argsMap.AsBool(ctx, "provide_servo_nexus", true) {
+		if addr, err := cft.ServoServiceAddressFromScope(ctx, dut); err != nil {
+			return errors.Annotate(err, "start servo-nexus container").Err()
+		} else {
+			servoNexusAddr = addr
+		}
+	}
+	// TODO(b/376048814): get cache address. For testing use
+	cachingAddress = &lab_api.IpEndpoint{
+		Address: "192.168.100.1",
+		Port:    8082,
+	}
+	if err := foilprovision.Setup(ctx, client, dut, toLabDut(dut, cachingAddress), servoNexusAddr); err != nil {
+		return errors.Annotate(err, "setup foil-provision service").Err()
+	}
+	log.Debugf(ctx, "Foil-provision setup pass for %q!", info.GetDut().Name)
+	return nil
+}
+
+// List of images used for now. before migrate to recovery-version.
+var androidImages = map[string]string{
+	"brya": "android-build/build_explorer/artifacts_list/12563288/brya-trunk_staging-userdebug/brya-ota-12563288.zip",
+}
+
+func installFoilProvisionExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := cft.FoilProvisionClientFromScope(ctx, info.GetDut())
+	if err != nil {
+		return errors.Reason("install foil-provision service: client is not found").Err()
+	}
+	dut := info.GetDut()
+	if dut.GetChromeos() == nil {
+		return errors.Reason("install foil-provision service: dut is not detected").Err()
+	}
+	board := info.GetChromeos().GetBoard()
+	targetImage, hasImage := androidImages[board]
+	if !hasImage {
+		return errors.Reason("install foil-provision service: image not found for %q", board).Err()
+	}
+	argsMap := info.GetActionArgs(ctx)
+	preventReboot := argsMap.AsBool(ctx, "prevent_reboot", false)
+	imagePath := &lab_go.StoragePath{
+		HostType: lab_go.StoragePath_GS,
+		Path:     targetImage,
+	}
+	if err := foilprovision.Install(ctx, client, imagePath, preventReboot); err != nil {
+		return errors.Annotate(err, "install foil-provision service").Err()
+	}
+	log.Debugf(ctx, "Foil-provision install pass for %q!", info.GetDut().Name)
+	return nil
+}
+
 func init() {
 	execs.Register("ctr_start_foil_provision_container", startFoilProvisionContainerExec)
 	execs.Register("ctr_stop_foil_provision_container", stopFoilProvisionContainerExec)
+	execs.Register("ctr_foil_provision_setup_service", setupFoilProvisionServiceExec)
+	execs.Register("ctr_foil_provision_install", installFoilProvisionExec)
 }

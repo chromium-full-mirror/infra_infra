@@ -8,13 +8,76 @@ package foilprovision
 import (
 	"context"
 
+	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/recovery/ctr"
 	"infra/cros/recovery/internal/components/cft"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
+
+// Setup sets the service for future provision calls.
+func Setup(ctx context.Context, client api.GenericProvisionServiceClient, dut *tlw.Dut, labDut *lab_api.Dut, servoNexusAddr *lab_api.IpEndpoint) error {
+	if client == nil {
+		return errors.Reason("foil-provision setup: client is not provided").Err()
+	}
+	if dut == nil {
+		return errors.Reason("foil-provision setup: dut is not provided").Err()
+	}
+	if labDut == nil {
+		return errors.Reason("foil-provision setup: lab-dut is not provided").Err()
+	}
+	req := &api.ProvisionStartupRequest{
+		Dut:            labDut,
+		ServoNexusAddr: servoNexusAddr,
+	}
+	log.Debugf(ctx, "Foil-provision setup: call with request %v.", req)
+	res, err := client.StartUp(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "foil-provision setup: call failure").Err()
+	}
+	switch res.GetStatus() {
+	case api.ProvisionStartupResponse_STATUS_SUCCESS:
+		log.Debugf(ctx, "foil-rpovision setup: successed!")
+		return nil
+	default:
+		return errors.Reason("foils-provision setup: status %s", res.GetStatus()).Err()
+	}
+}
+
+// Install performs provision OS on the DUT.
+func Install(ctx context.Context, client api.GenericProvisionServiceClient, imagePath *lab_go.StoragePath, preventReboot bool) error {
+	if client == nil {
+		return errors.Reason("foil-provision install: client is not provided").Err()
+	}
+	req := &api.InstallRequest{
+		ImagePath:     imagePath,
+		PreventReboot: preventReboot,
+	}
+	log.Debugf(ctx, "Foil-provision install: call with request %v.", req)
+	op, err := client.Install(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "foil-provision install").Err()
+	}
+	opRes, err := common.ProcessDoneLro(ctx, op)
+	if err != nil {
+		return errors.Annotate(err, "foil-provision install: lro failure").Err()
+	}
+	res := &api.InstallResponse{}
+	if err := opRes.UnmarshalTo(res); err != nil {
+		return errors.Annotate(err, "foil-provision install: lro response unmarshalling failed").Err()
+	}
+	if res.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+		log.Debugf(ctx, "foil-provision install: metadata %v", res.Metadata)
+		return errors.Reason("foil-provision install: status %s", res.GetStatus()).Err()
+	}
+	log.Infof(ctx, "Foil-rpovision status %s!", res.GetStatus())
+	return nil
+}
 
 // ServiceClient creates service client to the service running on CFT container.
 func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (api.GenericProvisionServiceClient, error) {
