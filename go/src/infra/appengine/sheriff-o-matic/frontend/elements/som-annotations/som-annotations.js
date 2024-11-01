@@ -1,3 +1,7 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 'use strict';
 
 // Default snooze times per tree in minutes.
@@ -338,22 +342,7 @@ class SomAnnotations extends Polymer.mixinBehaviors([
     return [];
   }
 
-  // Parse the url object to read back the project name
-  // ex: crbug.com/p/monorail/123 will return monorail
-  // ex: crbug.com/123 will return chromium
-  // ex: crbug.com/monorail/123 will return monorail
-  // ex: bugs.chromium.org/p/monorail/issues/detail?id=1024028
-  // will return monorail
-  _getProjectNameFromUrl(url) {
-    const paths = url.pathname.split('/');
-    if (paths.length > 2) {
-      if (url.hostname == 'bugs.chromium.org') {
-        return paths[2];
-      }
-      return paths[paths.length - 2];
-    }
-    return 'chromium';
-  }
+
 
   // Checks if url begins with http or https, if not, prepend "http://".
   _cleanupUrl(url) {
@@ -364,55 +353,14 @@ class SomAnnotations extends Polymer.mixinBehaviors([
   }
 
   _getBugDataFromURL(url) {
-    let projectName = '';
-    let bugID = '';
-
-    // Check if input is in the format "chromium:1234"
-    const bugInfo = this._getBugIDFromString(url);
-    if (bugInfo.length == 2) {
-      projectName = bugInfo[0];
-      bugID = bugInfo[1];
-    } else if (!isNaN(parseInt(url))) {
-      // If input is numerical, default to chromium project.
-      projectName = 'chromium';
-      bugID = url;
-    } else {
-      // If input is url, parse both path and query fields for
-      // project and bug id.
-      const _url = new URL(this._cleanupUrl(url));
-      switch (_url.hostname) {
-        case 'fxb':
-        case 'bugs.fuchsia.dev':
-          projectName = 'fuchsia';
-          break;
-        case 'crbug.com':
-        case 'crbug':
-        case 'bugs.chromium.org':
-          // Parse url path for project
-          projectName = this._getProjectNameFromUrl(_url);
-          break;
-        case 'b':
-        case 'b.corp.google.com':
-          projectName = 'b';
-          break;
-        default:
-          projectName = 'chromium';
-      }
-      bugID = this._getBugIDFromURL(_url);
-      if (isNaN(bugID)) {
-        throw Error('Input ' + url + ' is not a valid Bug ID or URL. ' +
-          'Allowed formats are: \n' +
-          ' <id> (ex:1234, defaults to chromium project) \n' +
-          ' <project>:<id> (ex: chromium:1234) \n' +
-          ' <hostName>/<id> (ex: bugs.chromium.org/1234) \n' +
-          ' <shortName>/<id> (ex: crbugs.com/1234) \n' +
-          ' <FullURL> (ex: https://bugs.fuchsia.dev/p/fuchsia/issues/detail?id=1234) \n');
-      }
+    if (isNaN(parseInt(url))) {
+      throw Error('Bug number must be an integer');
     }
+
     return {
       bugs: [{
-        id: bugID,
-        projectId: projectName,
+        id: url,
+        projectId: 'b',
       }],
     };
   }
