@@ -406,7 +406,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTargets {
 	primaryBoard := ""
 	models := []string{}
-	swarmingDims := []string{} // TODO: (azrahman): add swarming dims support
+	swarmingDims := []string{}
 
 	// build related
 	buildId := ""
@@ -421,6 +421,9 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTarg
 				value := kv[1]
 				if key == "models" {
 					models = append(models, value)
+				}
+				if key == "swarming_dimensions" {
+					swarmingDims = append(swarmingDims, value)
 				}
 			}
 		}
