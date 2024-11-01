@@ -45,11 +45,17 @@ func Modules() []module.Module {
 	}
 }
 
+// ConfigLoader returns the config loader used by UFS.
+func ConfigLoader() *config.Loader {
+	cfgLoader := &config.Loader{}
+	cfgLoader.RegisterFlags(flag.CommandLine)
+	return cfgLoader
+}
+
 func main() {
 	modules := Modules()
 
-	cfgLoader := config.Loader{}
-	cfgLoader.RegisterFlags(flag.CommandLine)
+	cfgLoader := ConfigLoader()
 
 	server.Main(nil, modules, func(srv *server.Server) error {
 		// We closely follow the profiler-enabling documentation available at the following URL:
