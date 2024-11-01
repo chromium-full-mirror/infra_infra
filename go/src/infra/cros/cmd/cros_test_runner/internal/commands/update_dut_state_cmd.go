@@ -88,10 +88,11 @@ func (cmd *UpdateDutStateCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Update dut states if required")
 	defer func() { step.End(err) }()
 
-	if cmd.SkipReason != "" {
-		step.SetSummaryMarkdown(fmt.Sprintf("Skipped: %s", cmd.SkipReason))
-		return nil
-	}
+	// TODO(cdelagarza): remove commented out code when confident with auto_repair
+	// if cmd.SkipReason != "" {
+	// 	step.SetSummaryMarkdown(fmt.Sprintf("Skipped: %s", cmd.SkipReason))
+	// 	return nil
+	// }
 
 	for deviceId := range cmd.ProvisionDevices {
 		err := cmd.updateDevice(ctx, deviceId)
@@ -173,6 +174,7 @@ func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		cmd.UfsNameSpace = sk.CommonConfig.GetUfsConfig().GetUfsNamespace()
 	}
 
+	// TODO(cdelagarza): remove when confident in auto_repair
 	pool := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, common.LabelPool)
 	if slices.Contains(poolsDisallowed, pool) {
 		cmd.SkipReason = fmt.Sprintf("pool %s has been marked disallowed for dut state updates", pool)
