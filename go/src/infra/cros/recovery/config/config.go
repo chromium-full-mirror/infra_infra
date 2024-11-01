@@ -60,8 +60,10 @@ func Validate(ctx context.Context, c *Configuration, execsExist ExecsExist) (*Co
 			createMissingActions(p, a.GetDependencies())
 			createMissingActions(p, a.GetRecoveryActions())
 		}
-		if err := setAndVerifyExecs(p, execsExist); err != nil {
-			return nil, errors.Annotate(err, "load configuration").Err()
+		for _, actionName := range p.GetCriticalActions() {
+			if err := setAndVerifyExecs(p, execsExist, actionName, true); err != nil {
+				return nil, errors.Annotate(err, "load configuration").Err()
+			}
 		}
 		// Check for cycle in dependency.
 		if err := verifyPlanAcyclic(p); err != nil {
@@ -127,13 +129,29 @@ func verifyPlanAcyclic(plan *Plan) error {
 
 // setAndVerifyExecs sets exec-name if missing and validate whether exec is present
 // in recovery-lib.
-func setAndVerifyExecs(p *Plan, execsExist ExecsExist) error {
-	for an, a := range p.GetActions() {
-		if a.GetExecName() == "" {
-			a.ExecName = an
+func setAndVerifyExecs(p *Plan, execsExist ExecsExist, actionName string, checkRecoveries bool) error {
+	a := p.GetActions()[actionName]
+	if a.GetExecName() == "" {
+		a.ExecName = actionName
+	}
+	if !execsExist(a.GetExecName()) {
+		return errors.Reason("exec %q is not exist", a.GetExecName()).Err()
+	}
+	for _, an := range a.GetConditions() {
+		if err := setAndVerifyExecs(p, execsExist, an, false); err != nil {
+			return err
 		}
-		if !execsExist(a.GetExecName()) {
-			return errors.Reason("exec %q is not exist", a.GetExecName()).Err()
+	}
+	for _, an := range a.GetDependencies() {
+		if err := setAndVerifyExecs(p, execsExist, an, checkRecoveries); err != nil {
+			return err
+		}
+	}
+	if checkRecoveries {
+		for _, an := range a.GetRecoveryActions() {
+			if err := setAndVerifyExecs(p, execsExist, an, false); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
