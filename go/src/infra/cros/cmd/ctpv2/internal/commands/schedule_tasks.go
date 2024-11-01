@@ -8,12 +8,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	androidapi "infra/cros/cmd/common_lib/android_api"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	androidapi "infra/cros/cmd/common_lib/android_api"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -810,7 +811,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		envVersion:           cmd.EnvVersion,
 	}
 
-	req, err := GenerateTrv2Req(ctx, true, helper)
+	req, err := GenerateTrv2Req(ctx, false, helper)
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()

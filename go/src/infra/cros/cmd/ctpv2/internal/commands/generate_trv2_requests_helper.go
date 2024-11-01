@@ -134,6 +134,11 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 	if err != nil {
 		return nil, err
 	}
+	if canOutliveParent {
+		req.CanOutliveParent = buildbucketpb.Trinary_YES
+	} else {
+		req.CanOutliveParent = buildbucketpb.Trinary_NO
+	}
 
 	if runAsVM {
 		req.Dimensions = []*buildbucketpb.RequestedDimension{
