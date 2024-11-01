@@ -85,8 +85,12 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 
 func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
-	var entries []*atp.BatchInsertEntry
+	dutProps, err := aps.dutProperties()
+	if err != nil {
+		log.Printf("Cannot find dut properties due to: %q", err)
+	}
 
+	var entries []*atp.BatchInsertEntry
 	for _, result := range results {
 		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
 		parentwu := module
@@ -129,6 +133,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 				CreationTimestamp: startTime,
 				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
 			},
+			Properties: dutProps,
 		}
 
 		if aps.invocation != nil && aps.invocation.PrimaryBuild != nil {

@@ -351,6 +351,10 @@ func TestResultEntries(t *testing.T) {
 					Method:    "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 				},
 				TestStatus: "testError",
+				Properties: []*ab_prod.Property{
+					{Name: "board", Value: "brya"},
+					{Name: "model", Value: "vell"},
+				},
 			},
 		},
 		{
@@ -367,6 +371,10 @@ func TestResultEntries(t *testing.T) {
 					Method:    "testmethod",
 				},
 				TestStatus: "pass",
+				Properties: []*ab_prod.Property{
+					{Name: "board", Value: "brya"},
+					{Name: "model", Value: "vell"},
+				},
 			},
 		},
 		{
@@ -392,6 +400,10 @@ func TestResultEntries(t *testing.T) {
 					Method:    "testname",
 				},
 				TestStatus: "pass",
+				Properties: []*ab_prod.Property{
+					{Name: "board", Value: "brya"},
+					{Name: "model", Value: "vell"},
+				},
 			},
 		},
 	}
