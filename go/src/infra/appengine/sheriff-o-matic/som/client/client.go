@@ -18,12 +18,9 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/info"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
 	"infra/monitoring/messages"
-	"infra/monorail"
 )
 
 const (
@@ -224,49 +221,8 @@ func getAsSelfOAuthClient(c context.Context) (*http.Client, error) {
 	return &http.Client{Transport: t}, nil
 }
 
-// NewMonorail registers a new Monorail client instance pointed at baseURL.
-func NewMonorail(c context.Context, baseURL string) monorail.MonorailClient {
-	client, err := getAsSelfOAuthClient(c)
-
-	if err != nil {
-		panic("No OAuth client in context")
-	}
-
-	mr := monorail.NewEndpointsClient(client, baseURL+"/_ah/api/monorail/v1/")
-
-	return mr
-}
-
-// NewMonorailV3ClientByHost creates a Monorail V3 prpc client given host
-// host is something like api-dot-monorail-staging.appspot.com
-// audience is something like https://monorail-staging.appspot.com
-func NewMonorailV3ClientByHost(c context.Context, host string, audience string) (*prpc.Client, error) {
-	c, cancel := context.WithTimeout(c, 5*time.Minute)
-	defer cancel()
-	t, err := auth.GetRPCTransport(c, auth.AsSelf, auth.WithIDTokenAudience(audience))
-	if err != nil {
-		return nil, err
-	}
-	// httpClient is able to make HTTP requests authenticated with
-	// ID tokens.
-	httpClient := &http.Client{Transport: t}
-	return &prpc.Client{
-		C:    httpClient,
-		Host: host,
-	}, nil
-}
-
-// NewMonorailV3Client creates a Monorail V3 prpc client
-func NewMonorailV3Client(c context.Context) (*prpc.Client, error) {
-	if info.AppID(c) == "sheriff-o-matic" {
-		return NewMonorailV3ClientByHost(c, "api-dot-monorail-prod.appspot.com", "https://monorail-prod.appspot.com")
-	}
-	return NewMonorailV3ClientByHost(c, "api-dot-monorail-staging.appspot.com", "https://monorail-staging.appspot.com")
-}
-
 // ProdClients returns a set of service clients pointed at production.
-func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection) {
-	monorailClient := NewMonorail(ctx, "https://monorail-prod.appspot.com")
+func ProdClients(ctx context.Context) (CrBug, Bisection) {
 	crBugs := &CrBugs{}
 
 	var bisectionClient *BisectionClient
@@ -281,13 +237,12 @@ func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection
 		}
 	}
 
-	return crBugs, monorailClient, bisectionClient
+	return crBugs, bisectionClient
 }
 
 // StagingClients returns a set of service clients pointed at instances suitable for a
 // staging environment.
-func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection) {
-	monorailClient := NewMonorail(ctx, "https://monorail-staging.appspot.com")
+func StagingClients(ctx context.Context) (CrBug, Bisection) {
 	crBugs := &CrBugs{}
 
 	var bisectionClient *BisectionClient
@@ -302,5 +257,5 @@ func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisect
 		}
 	}
 
-	return crBugs, monorailClient, bisectionClient
+	return crBugs, bisectionClient
 }

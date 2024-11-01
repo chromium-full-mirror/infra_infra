@@ -10,10 +10,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
 
 	"go.chromium.org/luci/auth/identity"
-	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
@@ -30,9 +28,7 @@ import (
 
 	sompb "infra/appengine/sheriff-o-matic/proto/v1"
 	"infra/appengine/sheriff-o-matic/rpc"
-	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/handler"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 const (
@@ -176,76 +172,12 @@ func getXSRFToken(ctx *router.Context) {
 	w.Write(txt)
 }
 
-func newBugQueueHandler(c context.Context, options *SOMHandlers) *handler.BugQueueHandler {
-	var issueClientV3 handler.IssueClient
-	if options.IsDevAppServer {
-		issueClientV3 = client.FakeMonorailIssueClient{}
-	} else {
-		monorailV3Client, _ := client.NewMonorailV3Client(c)
-		issueClientV3 = monorailv3.NewIssuesPRPCClient(monorailV3Client)
-	}
-	// TODO (nqmtuan): Handle error here
-	bqh := &handler.BugQueueHandler{
-		MonorailIssueClient:    issueClientV3,
-		DefaultMonorailProject: "",
-	}
-	return bqh
-}
-
-func (s *SOMHandlers) refreshBugQueuePeriodically(ctx context.Context) {
-	for {
-		bqh := newBugQueueHandler(ctx, s)
-		if err := bqh.RefreshBugQueueHandler(ctx); err != nil {
-			logging.Warningf(ctx, "Failed to refresh bug queue: %s", err)
-		}
-		if r := <-clock.After(ctx, 4*time.Minute); r.Err != nil {
-			return // the context is canceled
-		}
-	}
-}
-
-func (s *SOMHandlers) getBugQueueHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Request.Context(), s)
-	bqh.GetBugQueueHandler(ctx)
-}
-
-func (s *SOMHandlers) getUncachedBugsHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Request.Context(), s)
-	bqh.GetUncachedBugsHandler(ctx)
-}
-
-func newAnnotationHandler(ctx context.Context, options *SOMHandlers) *handler.AnnotationHandler {
-	bqh := newBugQueueHandler(ctx, options)
-	var issueClient handler.AnnotationsIssueClient
-
-	if options.IsDevAppServer {
-		// Disable monorail calls for locally run servers.
-		issueClient = &client.FakeMonorailIssueClient{}
-	} else {
-		// TODO (nqmtuan): Handle error here
-		monorailV3Client, _ := client.NewMonorailV3Client(ctx)
-		issueClient = monorailv3.NewIssuesPRPCClient(monorailV3Client)
-	}
-	return &handler.AnnotationHandler{
-		Bqh:                 bqh,
-		MonorailIssueClient: issueClient,
-	}
-}
-
-func (s *SOMHandlers) refreshAnnotationsPeriodically(ctx context.Context) {
-	for {
-		ah := newAnnotationHandler(ctx, s)
-		if err := ah.RefreshAnnotationsHandler(ctx); err != nil {
-			logging.Warningf(ctx, "Failed to refresh bug queue: %s", err)
-		}
-		if r := <-clock.After(ctx, 4*time.Minute); r.Err != nil {
-			return // the context is canceled
-		}
-	}
+func newAnnotationHandler() *handler.AnnotationHandler {
+	return &handler.AnnotationHandler{}
 }
 
 func (s *SOMHandlers) getAnnotationsHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx.Request.Context(), s)
+	ah := newAnnotationHandler()
 	activeKeys := map[string]interface{}{}
 	activeAlerts := handler.GetAlertsCommonHandler(ctx, true, false)
 	for _, alrt := range activeAlerts.Alerts {
@@ -255,7 +187,7 @@ func (s *SOMHandlers) getAnnotationsHandler(ctx *router.Context) {
 }
 
 func (s *SOMHandlers) postAnnotationsHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx.Request.Context(), s)
+	ah := newAnnotationHandler()
 	ah.PostAnnotationsHandler(ctx)
 }
 
@@ -299,8 +231,6 @@ func main() {
 		})
 
 		sompb.RegisterAlertsServer(srv, rpc.NewAlertsServer())
-		srv.RunInBackground("som.refresh_annotations", somHandlers.refreshAnnotationsPeriodically)
-		srv.RunInBackground("som.refresh_bugqueue", somHandlers.refreshBugQueuePeriodically)
 
 		srv.Routes.GET("/api/v1/alerts/:tree", protected, handler.GetAlertsHandler)
 		srv.Routes.GET("/api/v1/unresolved/:tree", protected, handler.GetUnresolvedAlertsHandler)
@@ -308,8 +238,6 @@ func main() {
 		srv.Routes.GET("/api/v1/xsrf_token", protected, getXSRFToken)
 		srv.Routes.GET("/api/v1/annotations/:tree", protected, somHandlers.getAnnotationsHandler)
 		srv.Routes.POST("/api/v1/annotations/:tree/:action", protected, somHandlers.postAnnotationsHandler)
-		srv.Routes.GET("/api/v1/bugqueue/:label", protected, somHandlers.getBugQueueHandler)
-		srv.Routes.GET("/api/v1/bugqueue/:label/uncached/", protected, somHandlers.getUncachedBugsHandler)
 		srv.Routes.GET("/api/v1/revrange/:host/:repo", basemw, handler.GetRevRangeHandler)
 		srv.Routes.GET("/api/v1/testexpectations", protected, handler.GetLayoutTestsHandler)
 		srv.Routes.POST("/api/v1/testexpectation", protected, handler.PostLayoutTestExpectationChangeHandler)

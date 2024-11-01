@@ -100,11 +100,11 @@ func CreateAnalyzer(c context.Context) *Analyzer {
 
 func setServiceClients(c context.Context, a *Analyzer) {
 	if info.AppID(c) == prodAppID {
-		crBug, _, bisection := client.ProdClients(c)
+		crBug, bisection := client.ProdClients(c)
 		a.CrBug = crBug
 		a.Bisection = bisection
 	} else {
-		crBug, _, bisection := client.StagingClients(c)
+		crBug, bisection := client.StagingClients(c)
 		a.CrBug = crBug
 		a.Bisection = bisection
 	}

@@ -73,102 +73,6 @@ func TestFilterAnnotations(t *testing.T) {
 	})
 }
 
-func TestFilterDuplicateBugs(t *testing.T) {
-	ftt.Run("Test filter annotation", t, func(t *ftt.Test) {
-		bugs := []model.MonorailBug{
-			{
-				BugID:     "bug_1",
-				ProjectID: "project_1",
-			},
-			{
-				BugID:     "bug_2",
-				ProjectID: "project_2",
-			},
-			{
-				BugID:     "bug_1",
-				ProjectID: "project_1",
-			},
-			{
-				BugID:     "bug_3",
-				ProjectID: "project_3",
-			},
-		}
-
-		result := filterDuplicateBugs(bugs)
-		assert.Loosely(t, len(result), should.Equal(3))
-		assert.Loosely(t, result[0].BugID, should.Equal("bug_1"))
-		assert.Loosely(t, result[1].BugID, should.Equal("bug_2"))
-		assert.Loosely(t, result[2].BugID, should.Equal("bug_3"))
-	})
-}
-
-func TestCreateProjectChunksMapping(t *testing.T) {
-	ftt.Run("Test create project chunk mapping", t, func(t *ftt.Test) {
-		bugs := []model.MonorailBug{
-			{
-				BugID:     "bug_1",
-				ProjectID: "project_1",
-			},
-			{
-				BugID:     "bug_2",
-				ProjectID: "project_2",
-			},
-			{
-				BugID:     "bug_3",
-				ProjectID: "project_1",
-			},
-			{
-				BugID:     "bug_4",
-				ProjectID: "project_3",
-			},
-			{
-				BugID:     "bug_5",
-				ProjectID: "project_1",
-			},
-			{
-				BugID:     "bug_6",
-				ProjectID: "b",
-			},
-		}
-
-		result := createMonorailProjectChunksMapping(bugs, 100)
-		assert.Loosely(t,
-			result,
-			should.Match(
-				map[string][][]string{
-					"project_1": {{"bug_1", "bug_3", "bug_5"}},
-					"project_2": {{"bug_2"}},
-					"project_3": {{"bug_4"}},
-				},
-			))
-
-		result = createMonorailProjectChunksMapping(bugs, 2)
-		assert.Loosely(t,
-			result,
-			should.Match(
-				map[string][][]string{
-					"project_1": {{"bug_1", "bug_3"}, {"bug_5"}},
-					"project_2": {{"bug_2"}},
-					"project_3": {{"bug_4"}},
-				},
-			))
-	})
-}
-
-func TestBreakToChunk(t *testing.T) {
-	ftt.Run("Test break bug ids to chunk", t, func(t *ftt.Test) {
-		bugIDs := []string{"bug1", "bug2", "bug3", "bug4", "bug5"}
-		chunks := breakToChunks(bugIDs, 1)
-		assert.Loosely(t, chunks, should.Match([][]string{{"bug1"}, {"bug2"}, {"bug3"}, {"bug4"}, {"bug5"}}))
-		chunks = breakToChunks(bugIDs, 3)
-		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3"}, {"bug4", "bug5"}}))
-		chunks = breakToChunks(bugIDs, 5)
-		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
-		chunks = breakToChunks(bugIDs, 6)
-		assert.Loosely(t, chunks, should.Match([][]string{{"bug1", "bug2", "bug3", "bug4", "bug5"}}))
-	})
-}
-
 func TestMakeAnnotationResponse(t *testing.T) {
 	ftt.Run("Test make annotation response successful", t, func(t *ftt.Test) {
 		annotations := &model.Annotation{
@@ -283,10 +187,7 @@ func TestAnnotations(t *testing.T) {
 		tok, err := xsrf.Token(c)
 		assert.Loosely(t, err, should.BeNil)
 
-		ah := &AnnotationHandler{
-			Bqh:                 &BugQueueHandler{},
-			MonorailIssueClient: FakeIC{},
-		}
+		ah := &AnnotationHandler{}
 
 		t.Run("GET", func(t *ftt.Test) {
 			t.Run("no annotations yet", func(t *ftt.Test) {
@@ -467,33 +368,5 @@ func TestAnnotations(t *testing.T) {
 			})
 		})
 
-		t.Run("refreshAnnotations", func(t *ftt.Test) {
-			t.Run("handler", func(t *ftt.Test) {
-				c, _ := newContext()
-				err := ah.RefreshAnnotationsHandler(c)
-				assert.Loosely(t, err, should.BeNil)
-			})
-
-			ann := &model.Annotation{
-				KeyDigest: fmt.Sprintf("%x", sha1.Sum([]byte("foobar"))),
-				Key:       "foobar",
-				Bugs:      []model.MonorailBug{{BugID: "333", ProjectID: "chromium"}, {BugID: "444", ProjectID: "chromium"}},
-			}
-
-			ann1 := &model.Annotation{
-				KeyDigest: fmt.Sprintf("%x", sha1.Sum([]byte("foobar1"))),
-				Key:       "foobar1",
-				Bugs:      []model.MonorailBug{{BugID: "555", ProjectID: "fuchsia"}, {BugID: "666", ProjectID: "fuchsia"}},
-			}
-
-			assert.Loosely(t, datastorePutAnnotation(c, ann), should.BeNil)
-			assert.Loosely(t, datastorePutAnnotation(c, ann1), should.BeNil)
-			datastore.GetTestable(c).CatchupIndexes()
-
-			t.Run("query alerts which have multiple bugs", func(t *ftt.Test) {
-				err := ah.RefreshAnnotationsHandler(c)
-				assert.Loosely(t, err, should.BeNil)
-			})
-		})
 	})
 }
