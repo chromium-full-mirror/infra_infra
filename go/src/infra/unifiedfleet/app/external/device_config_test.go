@@ -71,6 +71,15 @@ func TestGetDeviceConfig(t *testing.T) {
 		wantErr bool
 	}{
 		{
+			name:    "empty config",
+			inUFS:   true,
+			invResp: nil,
+			invErr:  true,
+			cfgID:   configuration.GetConfigID("", "", ""),
+			want:    nil,
+			wantErr: true,
+		},
+		{
 			name:    "config in UFS",
 			inUFS:   true,
 			invResp: nil,

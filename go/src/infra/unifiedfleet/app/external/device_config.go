@@ -6,6 +6,7 @@ package external
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
@@ -44,6 +45,9 @@ type DualDeviceConfigClient struct {
 //
 // Query UFS first, if no response, fallback to call inventoryv2.
 func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *deviceconfig.ConfigId) (*deviceconfig.Config, error) {
+	if cfgID.GetPlatformId().GetValue() == "" && cfgID.GetModelId().GetValue() == "" {
+		return nil, fmt.Errorf("cannot fetch device config for empty platform and model")
+	}
 	resp, err := configuration.GetDeviceConfigACL(ctx, cfgID)
 	if err == nil {
 		return resp, nil
