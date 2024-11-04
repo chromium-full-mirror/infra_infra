@@ -52,12 +52,9 @@ func ConfigLoader() *config.Loader {
 	return cfgLoader
 }
 
-func main() {
-	modules := Modules()
-
-	cfgLoader := ConfigLoader()
-
-	server.Main(nil, modules, func(srv *server.Server) error {
+// ServerMain runs the main server process.
+func ServerMain(cfgLoader *config.Loader) func(*server.Server) error {
+	return func(srv *server.Server) error {
 		// We closely follow the profiler-enabling documentation available at the following URL:
 		// https://cloud.google.com/profiler/docs/profiling-go#enabling-profiler-api
 		cfg := profiler.Config{
@@ -113,7 +110,13 @@ func main() {
 		frontend.InstallHandlers(srv.Routes, router.NewMiddlewareChain(openIDCheck.GetMiddleware()))
 		untrusted.EnsureVerifierSubscription(srv.Context)
 		return nil
-	})
+	}
+}
+
+func main() {
+	modules := Modules()
+	cfgLoader := ConfigLoader()
+	server.Main(nil, modules, ServerMain(cfgLoader))
 }
 
 // namespaceInterceptor interceptor to set namespace for the datastore
