@@ -7,6 +7,7 @@ package executions
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -65,7 +66,7 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 
 	if !runAsAdmin {
 		// Do not update the sha storage on local execution.
-		UpdateShaStorage = func(ctx context.Context, containerSHAs map[string]*common.ContainerInfoItem, creds, label string) (err error) {
+		UpdateShaStorage = func(ctx context.Context, _ string, _ map[string]*common.ContainerInfoItem, _, _ string) (_ error) {
 			logging.Infof(ctx, "Local execution, skipping sha storage update")
 			return nil
 		}
@@ -85,32 +86,67 @@ func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bo
 // executeContainerUprev steps through the uprev configs, creates a new container,
 // and uploads its sha to the storage.
 func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageTag, targetConfig string) (err error) {
-	containerInfos := map[string]*common.ContainerInfoItem{}
+	containerInfosByFirestore := map[string]internal.ContainerInfosMap{}
 	configs := internal.GetConfigs()
+
+	configsByRepoHostname := map[string][]*internal.UprevConfig{}
 	for _, config := range configs {
 		if targetConfig != "" && config.Name != targetConfig {
 			logging.Infof(ctx, "Skipping build of %q", config.Name)
 			continue
 		}
-		logging.Infof(ctx, "Running build for %q", config.Name)
-		if err = internal.GcloudAuth(ctx, config.RepositoryHostname, dockerKeyFile); err != nil {
+		for _, repo := range config.Repositories {
+			if _, ok := configsByRepoHostname[repo.Hostname]; !ok {
+				configsByRepoHostname[repo.Hostname] = []*internal.UprevConfig{}
+			}
+			configsByRepoHostname[repo.Hostname] = append(configsByRepoHostname[repo.Hostname], &internal.UprevConfig{
+				Name:          config.Name,
+				Repositories:  []*internal.Repository{repo},
+				ContainerName: config.ContainerName,
+				CIPDPackages:  config.CIPDPackages,
+				Prepper:       config.Prepper,
+				Resources:     config.Resources,
+			})
+		}
+	}
+
+	// Keep track of already built container images.
+	imageCache := map[string]any{}
+	for repoHostname, repoConfigs := range configsByRepoHostname {
+		step, ctx := build.StartStep(ctx, fmt.Sprintf("Repository: %s", repoHostname))
+		if err = internal.GcloudAuth(ctx, repoHostname, dockerKeyFile); err != nil {
 			err = errors.Annotate(err, "failed to Gcloud auth").Err()
 			return
 		}
 
-		sha, uprevErr := internal.UprevContainer(ctx, config, cipdLabel, imageTag)
-		if uprevErr != nil {
-			err = errors.Append(err, uprevErr)
-		} else {
-			containerInfo := common.NewContainerInfoItem(config.RepositoryHostname, config.RepositoryProject, sha, config.ContainerName)
-			containerInfos[config.Name] = containerInfo
+		for _, config := range repoConfigs {
+			logging.Infof(ctx, "Running build for %q", config.Name)
+			// Will have exactly one repository after upstream mapping.
+			repo := config.Repositories[0]
+			containerInfo, uprevErr := internal.UprevContainer(ctx, imageCache, config, cipdLabel, imageTag)
+			if uprevErr != nil {
+				logging.Infof(ctx, "error while upreving: %s", uprevErr)
+				err = errors.Append(err, uprevErr)
+			}
+			if _, ok := containerInfosByFirestore[repo.FirestoreHost]; !ok {
+				containerInfosByFirestore[repo.FirestoreHost] = internal.ContainerInfosMap{}
+			}
+			containerInfosByFirestore[repo.FirestoreHost][config.Name] = containerInfo
 		}
+
+		step.End(err)
 	}
 
-	if shaErr := UpdateShaStorage(ctx, containerInfos, dockerKeyFile, imageTag); shaErr != nil {
-		shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()
-		err = errors.Append(err, shaErr)
-		return
+	for firestoreHost, containerInfos := range containerInfosByFirestore {
+		step, ctx := build.StartStep(ctx, fmt.Sprintf("Firestore: %s", firestoreHost))
+
+		if shaErr := UpdateShaStorage(ctx, firestoreHost, containerInfos, dockerKeyFile, imageTag); shaErr != nil {
+			shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()
+			err = errors.Append(err, shaErr)
+			return
+		}
+
+		step.End(err)
 	}
 
 	return

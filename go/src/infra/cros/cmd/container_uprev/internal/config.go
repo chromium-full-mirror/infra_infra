@@ -23,6 +23,17 @@ var (
 	Dockerfiles embed.FS
 	//go:embed resources/*
 	Resources embed.FS
+
+	DefaultRepository = &Repository{
+		Hostname:      common.DefaultDockerHost,
+		Project:       common.DefaultDockerProject,
+		FirestoreHost: common.TestPlatformFireStore,
+	}
+	PartnerRepository = &Repository{
+		Hostname:      common.DefaultDockerHost,
+		Project:       common.PartnerDockerProject,
+		FirestoreHost: common.PartnerTestPlatformFireStore,
+	}
 )
 
 // WriteDockerfile writes the embedded dockerfile to the temporary directory.
@@ -69,12 +80,12 @@ func NewCIPDPackage(name string) *CIPDPackage {
 type UprevConfig struct {
 	// Dockerfile found by: Dockerfile_<Name>
 	Name string
-	// Optional repository information.
-	// Defaults to
+	// Repository information.
+	// If empty, defaults to
 	// 	host: us-docker.pkg.dev
 	// 	project: cros-registry/test-services
-	RepositoryHostname string
-	RepositoryProject  string
+	//  firestoreHost: test-platform-store
+	Repositories []*Repository
 	// Defaults to Name, but can be separately set if
 	// container name is different than the uprev name.
 	ContainerName string
@@ -84,6 +95,12 @@ type UprevConfig struct {
 	// any custom work needed by the Dockerfile.
 	Prepper   func(ctx context.Context, dir string) error
 	Resources []string
+}
+
+type Repository struct {
+	Hostname      string
+	Project       string
+	FirestoreHost string
 }
 
 // GetConfigs returns the uprev configs.
@@ -109,6 +126,10 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/foil-filter/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "cros-legacy-hw-filter",
@@ -127,6 +148,10 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/al-provision-filter/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "adb-base",
@@ -140,11 +165,19 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/publish/ants-publish/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "ants-publish-filter",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/ants-publish-filter/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
 			},
 		},
 		{
@@ -154,11 +187,19 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackageWithRef("infra/tools/result_adapter/linux-amd64", "prod"),
 				NewCIPDPackageWithRef("infra/tools/rdb/linux-amd64", "latest"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "gcs-publish",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/publish/gcs-publish/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
 			},
 		},
 		{
@@ -171,6 +212,10 @@ func GetConfigs() []*UprevConfig {
 			Name: "servo-nexus",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/dut/cros-servod/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
 			},
 		},
 		{
@@ -194,6 +239,10 @@ func CleanConfigs(configs []*UprevConfig) []*UprevConfig {
 	for _, config := range configs {
 		if config.ContainerName == "" {
 			config.ContainerName = config.Name
+		}
+
+		if config.Repositories == nil || len(config.Repositories) == 0 {
+			config.Repositories = []*Repository{DefaultRepository}
 		}
 	}
 

@@ -15,7 +15,7 @@ import (
 )
 
 // ManualExecution represents manual executions.
-func ManualExecution(name string, containerItem *common.ContainerInfoItem, isProd bool) {
+func ManualExecution(name, firestoreDatabaseName string, containerItem *common.ContainerInfoItem, isProd bool) {
 	ctx := context.Background()
 
 	logCfg := common.LoggerConfig{Out: log.Default().Writer()}
@@ -30,7 +30,7 @@ func ManualExecution(name string, containerItem *common.ContainerInfoItem, isPro
 		name: containerItem,
 	}
 
-	if shaErr := UpdateShaStorage(ctx, containerInfos, "", tag); shaErr != nil {
+	if shaErr := UpdateShaStorage(ctx, firestoreDatabaseName, containerInfos, "", tag); shaErr != nil {
 		shaErr = errors.Annotate(shaErr, "failed to update SHAs").Err()
 		return
 	}

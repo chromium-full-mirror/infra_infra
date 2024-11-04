@@ -23,6 +23,7 @@ const (
 	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
 	DefaultDockerHost                      = "us-docker.pkg.dev"
 	DefaultDockerProject                   = "cros-registry/test-services"
+	PartnerDockerProject                   = "cros-registry/partner-test-services"
 	LroTimeout                             = 1 * time.Minute
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
@@ -49,6 +50,7 @@ const (
 	ContainerMetadataPath                  = "/metadata/containers.jsonpb"
 	TestPlatformDataProjectID              = "chromeos-test-platform-data"
 	TestPlatformFireStore                  = "test-platform-store"
+	PartnerTestPlatformFireStore           = "partner-test-platform-store"
 	FireStoreContainersStagingCollection   = "containers-staging"
 	FireStoreContainersProdCollection      = "containers-prod"
 	LabelStaging                           = "staging"

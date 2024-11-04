@@ -27,6 +27,7 @@ type manualArgs struct {
 	digest        string
 	hostname      string
 	project       string
+	firestoreHost string
 	prod          bool
 }
 
@@ -52,8 +53,9 @@ func (cc *ManualCommand) Init(args []string) error {
 	cc.flagSet.StringVar(&a.containerName, "container-name", "", "The name of the container. If empty, use the firestore name")
 	cc.flagSet.BoolVar(&a.prod, "prod", false, "Send to production firestore")
 	cc.flagSet.StringVar(&a.digest, "digest", "", "(Required) The sha256 value of the container being stored")
-	cc.flagSet.StringVar(&a.hostname, "hostname", "us-docker.pkg.dev", "Repository's hostname of where the container is stored")
-	cc.flagSet.StringVar(&a.project, "project", "cros-registry/test-services", "Repository's project of where the container is stored")
+	cc.flagSet.StringVar(&a.hostname, "hostname", common.DefaultDockerHost, "Repository's hostname of where the container is stored")
+	cc.flagSet.StringVar(&a.project, "project", common.DefaultDockerProject, "Repository's project of where the container is stored")
+	cc.flagSet.StringVar(&a.firestoreHost, "firestore", common.TestPlatformFireStore, "The firestore database name that where the container's info is stored")
 
 	err := cc.flagSet.Parse(args)
 	if err != nil {
@@ -81,6 +83,6 @@ func (cc *ManualCommand) Run() error {
 		Digest:             cc.args.digest,
 		ContainerName:      cc.args.containerName,
 	}
-	executions.ManualExecution(cc.args.name, containerItem, cc.args.prod)
+	executions.ManualExecution(cc.args.name, cc.args.firestoreHost, containerItem, cc.args.prod)
 	return nil
 }

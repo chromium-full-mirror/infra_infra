@@ -9,6 +9,7 @@ import (
 	"flag"
 	"strings"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/container_uprev/executions"
 )
 
@@ -20,6 +21,7 @@ type RevertCommand struct {
 
 type revertArgs struct {
 	containerNames string
+	firestoreHost  string
 	isProd         bool
 }
 
@@ -43,6 +45,7 @@ func (cc *RevertCommand) Init(args []string) error {
 	a := revertArgs{}
 	cc.args = &a
 	cc.flagSet.StringVar(&a.containerNames, "containers", "all", "the containers to be reverted")
+	cc.flagSet.StringVar(&a.firestoreHost, "firestore", common.TestPlatformFireStore, "The firestore database name that where the container's info is stored")
 	cc.flagSet.BoolVar(&a.isProd, "prod", false, "indicates to revert prod")
 
 	err := cc.flagSet.Parse(args)
@@ -55,6 +58,6 @@ func (cc *RevertCommand) Init(args []string) error {
 
 func (cc *RevertCommand) Run() error {
 	containerNames := strings.Split(cc.args.containerNames, ",")
-	executions.RevertExecution(containerNames, cc.args.isProd)
+	executions.RevertExecution(containerNames, cc.args.isProd, cc.args.firestoreHost)
 	return nil
 }

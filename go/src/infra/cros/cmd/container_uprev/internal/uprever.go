@@ -21,7 +21,7 @@ import (
 // UprevContainer performs the logic for upreving a container.
 // This involves creating a temporary directory for the container to
 // modify by writing its Dockerfile and ensuring its CIPD packages.
-func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTag string) (sha string, err error) {
+func UprevContainer(ctx context.Context, imageCache map[string]any, config *UprevConfig, cipdLabel, imageTag string) (containerInfoItem *common.ContainerInfoItem, err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Uprev %s", config.Name))
 	defer func() { step.End(err) }()
 
@@ -61,21 +61,15 @@ func UprevContainer(ctx context.Context, config *UprevConfig, cipdLabel, imageTa
 		}
 	}
 
-	host := config.RepositoryHostname
-	project := config.RepositoryProject
-	if host == "" {
-		host = common.DefaultDockerHost
-	}
-	if project == "" {
-		project = common.DefaultDockerProject
-	}
 	// Multiple filters may upload to the same container name.
 	// Differentiate between prod and staging in this situation
 	// by adding the unique config name as a suffix.
 	if imageTag == common.LabelProd || imageTag == common.LabelStaging {
 		imageTag = fmt.Sprintf("%s_%s", imageTag, config.Name)
 	}
-	if sha, err = buildAndPush(ctx, dir, host, project, config.ContainerName, imageTag); err != nil {
+	// Will have exactly one repository after upstream mapping.
+	repo := config.Repositories[0]
+	if containerInfoItem, err = buildAndPush(ctx, imageCache, repo, dir, config.ContainerName, imageTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
 	}

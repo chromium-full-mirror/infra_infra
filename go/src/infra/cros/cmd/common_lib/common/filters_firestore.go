@@ -47,7 +47,7 @@ func NewContainerInfoItem(host, project, digest, name string) *ContainerInfoItem
 // FetchFiltersFromFirestore grabs every filter stored within the
 // the firestore database.
 func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters []*api.CTPFilter, err error) {
-	firestoreClient, err := EstablishFirestoreConnection(ctx, creds)
+	firestoreClient, err := EstablishFirestoreConnection(ctx, TestPlatformFireStore, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -72,7 +72,7 @@ func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters 
 }
 
 func FetchContainerInfoFromFirestore(ctx context.Context, creds, tag, name string) (containerInfo *api.ContainerInfo, err error) {
-	firestoreClient, err := EstablishFirestoreConnection(ctx, creds)
+	firestoreClient, err := EstablishFirestoreConnection(ctx, TestPlatformFireStore, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return

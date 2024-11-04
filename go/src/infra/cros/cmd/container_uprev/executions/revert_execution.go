@@ -15,7 +15,7 @@ import (
 )
 
 // RevertExecution goes through each container and reverts its sha.
-func RevertExecution(configNames []string, isProd bool) {
+func RevertExecution(configNames []string, isProd bool, firestoreDatabaseName string) {
 	ctx := context.Background()
 
 	logCfg := common.LoggerConfig{Out: log.Default().Writer()}
@@ -34,7 +34,7 @@ func RevertExecution(configNames []string, isProd bool) {
 		}
 	}
 
-	err := internal.RevertShas(ctx, configNames, "", tag)
+	err := internal.RevertShas(ctx, configNames, firestoreDatabaseName, "", tag)
 	if err != nil {
 		logging.Infof(ctx, "failed to revert some or all SHAs, %s", err)
 		return

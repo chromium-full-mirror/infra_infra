@@ -121,6 +121,12 @@ func buildImage(ctx context.Context, dir, fullname string) (stdout string, stder
 	return execCommand(ctx, "Build Image", "docker", args, "", dir)
 }
 
+// tagImage runs the `docker tag` command.
+func tagImage(ctx context.Context, localname, fullname string) (stdout string, stderr string, err error) {
+	args := []string{"tag", localname, fullname}
+	return execCommand(ctx, "Tag Image", "docker", args, "", "")
+}
+
 // pushImage runs the `docker push` command.
 func pushImage(ctx context.Context, fullname string) (stdout string, stderr string, err error) {
 	args := []string{"push", fullname}
@@ -129,29 +135,48 @@ func pushImage(ctx context.Context, fullname string) (stdout string, stderr stri
 
 // buildAndPush builds and pushes the docker image to the artifact
 // directory and returns the sha produced.
-func buildAndPush(ctx context.Context, dir, host, project, name, tag string) (sha string, err error) {
+func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Repository, dir, name, tag string) (containerInfoItem *common.ContainerInfoItem, err error) {
 	step, ctx := build.StartStep(ctx, "Build and Push")
 	defer func() { step.End(err) }()
 
-	fullname := fmt.Sprintf(ContainerFormat, host, project, name, tag)
-	_, _, err = buildImage(ctx, dir, fullname)
-	if err != nil {
-		err = errors.Annotate(err, "failed to build image").Err()
+	localname := fmt.Sprintf("local/%s:%s", name, tag)
+	fullname := fmt.Sprintf(ContainerFormat, repo.Hostname, repo.Project, name, tag)
+
+	// Build if not already built.
+	if _, exists := imageCache[localname]; !exists {
+		_, _, err = buildImage(ctx, dir, localname)
+		if err != nil {
+			err = errors.Annotate(err, "failed to build image").Err()
+			return
+		}
+		imageCache[localname] = struct{}{}
+	}
+
+	// Tag to match repository info.
+	stdout, _, innerErr := tagImage(ctx, localname, fullname)
+	if innerErr != nil {
+		innerErr = errors.Annotate(err, "failed to push image").Err()
+		err = errors.Append(err, innerErr)
 		return
 	}
 
-	stdout, _, err := pushImage(ctx, fullname)
-	if err != nil {
-		err = errors.Annotate(err, "failed to push image").Err()
+	// Push image to the repository.
+	stdout, _, innerErr = pushImage(ctx, fullname)
+	if innerErr != nil {
+		innerErr = errors.Annotate(err, "failed to push image").Err()
+		err = errors.Append(err, innerErr)
 		return
 	}
 
-	sha, err = extractDigestFromPushOutput(stdout)
-	if err != nil {
-		err = errors.Annotate(err, "name").Err()
+	sha, innerErr := extractDigestFromPushOutput(stdout)
+	if innerErr != nil {
+		innerErr = errors.Annotate(err, "name").Err()
+		err = errors.Append(err, innerErr)
 		return
 	}
+	logging.Infof(ctx, "DIGEST: %s", sha)
 
+	containerInfoItem = common.NewContainerInfoItem(repo.Hostname, repo.Project, sha, name)
 	return
 }
 

@@ -16,13 +16,15 @@ import (
 	"infra/cros/cmd/common_lib/common"
 )
 
+type ContainerInfosMap = map[string]*common.ContainerInfoItem
+
 // UpdateShaStorage connects the the firestore and uploads the SHAs produced
 // during the uprev service.
-func UpdateShaStorage(ctx context.Context, containerInfo map[string]*common.ContainerInfoItem, creds, tag string) (err error) {
+func UpdateShaStorage(ctx context.Context, firestoreDatabaseName string, containerInfo ContainerInfosMap, creds, tag string) (err error) {
 	step, ctx := build.StartStep(ctx, "Update SHAs")
 	defer func() { step.End(err) }()
 
-	firestoreClient, err := common.EstablishFirestoreConnection(ctx, creds)
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -46,8 +48,8 @@ func UpdateShaStorage(ctx context.Context, containerInfo map[string]*common.Cont
 
 // RevertShas swaps the previous sha with the current sha
 // and updates the firestore.
-func RevertShas(ctx context.Context, containerNames []string, creds, tag string) (err error) {
-	firestoreClient, err := common.EstablishFirestoreConnection(ctx, creds)
+func RevertShas(ctx context.Context, containerNames []string, firestoreDatabaseName, creds, tag string) (err error) {
+	firestoreClient, err := common.EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
