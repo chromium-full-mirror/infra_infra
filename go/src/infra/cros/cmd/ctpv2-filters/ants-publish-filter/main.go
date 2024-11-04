@@ -35,6 +35,13 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *m
 			DutInfo: &artifact.DutInfo{
 				Dut: &labapi.Dut{},
 			},
+			EnvInfo: &artifact.ExecutionInfo_SkylabInfo{
+				SkylabInfo: &artifact.SkylabInfo{
+					BuildbucketInfo: &artifact.BuildbucketInfo{
+						AncestorIds: []int64{},
+					},
+				},
+			},
 		},
 	}
 
