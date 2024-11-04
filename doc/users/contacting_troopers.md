@@ -127,5 +127,5 @@ Common Non-Trooper Requests:
 [Machine restart requests]: http://go/chrome-labs-fixit-bug
 [Mobile device restart requests]: http://go/chrome-labs-fixit-bug
 [Contact a Git Admin (go/git-admin-bug)]: http://go/git-admin-bug
-[File Chrome OS infra bug (go/cros-infra-bug)]: http://go/cros-infra-bug
+[File Chrome OS infra bug (go/cros-triage-bug)]: http://go/cros-triage-bug
 [Check the Chrome OS on-call channel (go/crosoncall)]: http://go/crosoncall
