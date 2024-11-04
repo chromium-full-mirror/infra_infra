@@ -13,7 +13,7 @@ DEPS_PREFIX="$2"
 # Bazel requires USER to be set, see this bug:
 # https://github.com/bazelbuild/bazel/issues/16500
 export USER="unused_placeholder_user"
-export JAVA_HOME=$DEPS_PREFIX
+export JAVA_HOME=$DEPS_PREFIX/current
 
 # The source is the GitHub repo: https://github.com/google/copybara
 cd copybara

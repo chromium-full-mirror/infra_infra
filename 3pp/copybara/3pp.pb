@@ -7,14 +7,14 @@ create {
   source {
     git {
       repo: "https://github.com/google/copybara.git"
-      fixed_commit: "4db1f09fd48deed940d03e8b1e2a355a301f3c53"
+      fixed_commit: "1f70a5bce39ffc842b7633b5683d9891339f0a86"
     }
     patch_version: "cr0"
   }
   build {
     install: "install.sh"
     tool: "tools/bazel_bootstrap"
-    external_dep: "chromium/third_party/jdk@2@jdk-17.0.9+9.d7535e05e6.cr4"
+    external_dep: "chromium/third_party/jdk@2@jdk-11.0.17+8.fb2337e598"
   }
 }
 
