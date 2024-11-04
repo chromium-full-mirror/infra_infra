@@ -453,14 +453,14 @@ func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEve
 
 	// Iterate over the input map.
 	for config, ctpEventsPerBranchList := range ctpMapByConfig {
-		if totalConfigs > common.StagingMaxRequests {
+		if totalConfigs >= common.StagingMaxRequests {
 			break
 		}
 
 		// Create a new list to hold the limited events per branch.
 		newCtpEventsPerBranchList := []ctpEventsPerBranch{}
 		for _, ctpEvents := range ctpEventsPerBranchList {
-			if totalConfigs > common.StagingMaxRequests {
+			if totalConfigs >= common.StagingMaxRequests {
 				break
 			}
 
@@ -472,7 +472,7 @@ func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEve
 
 			// Add the events to the tracking list.
 			for _, ctpEvent := range ctpEvents.events {
-				if totalConfigs > common.StagingMaxRequests {
+				if totalConfigs >= common.StagingMaxRequests {
 					break
 				}
 
@@ -484,9 +484,15 @@ func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEve
 				branchConfigs.events = append(branchConfigs.events, ctpEvent)
 				totalConfigs += 1
 			}
-			newCtpEventsPerBranchList = append(newCtpEventsPerBranchList, branchConfigs)
+
+			if len(branchConfigs.events) > 0 {
+				newCtpEventsPerBranchList = append(newCtpEventsPerBranchList, branchConfigs)
+			}
 		}
-		resultCtpMapByConfig[config] = newCtpEventsPerBranchList
+
+		if len(newCtpEventsPerBranchList) > 0 {
+			resultCtpMapByConfig[config] = newCtpEventsPerBranchList
+		}
 	}
 
 	return resultCtpMapByConfig
