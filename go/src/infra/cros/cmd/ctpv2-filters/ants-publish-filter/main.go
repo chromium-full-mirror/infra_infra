@@ -29,7 +29,7 @@ type ANTSPublishUpdater struct {
 	AccountID    string
 }
 
-func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *metadata.PublishAntsMetadata {
+func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetadata {
 	publishMetadata := &metadata.PublishAntsMetadata{
 		PrimaryExecutionInfo: &artifact.ExecutionInfo{
 			DutInfo: &artifact.DutInfo{
@@ -45,15 +45,11 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata(req *api.InternalTestplan) *m
 		},
 	}
 
-	if apu.InvocationID == "" {
-		publishMetadata.AntsInvocationId = suiteExecutionMetadataArgValue(req, "ants_invocation_id")
-	} else {
+	if apu.InvocationID != "" {
 		publishMetadata.AntsInvocationId = apu.InvocationID
 	}
 
-	if apu.WorkUnitID == "" {
-		publishMetadata.ParentWorkUnitId = suiteExecutionMetadataArgValue(req, "ants_work_unit_id")
-	} else {
+	if apu.WorkUnitID != "" {
 		publishMetadata.ParentWorkUnitId = apu.WorkUnitID
 	}
 
@@ -90,7 +86,7 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 	}
 
 	// Add request to publish using ants-publish container.
-	if err := GeneratePublishTask(req, apu.antsPublishMetadata(req), apu.PublishPath, log); err != nil {
+	if err := GeneratePublishTask(req, apu.antsPublishMetadata(), apu.PublishPath, log); err != nil {
 		log.Printf("Error while generating publish task, %s", err)
 		return req, err
 	}

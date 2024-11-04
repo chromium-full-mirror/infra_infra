@@ -48,16 +48,6 @@ func isInternal(accountID string) bool {
 }
 
 func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
-	if metadata.AntsInvocationId == "" {
-		log.Printf("AntsInvocationId is not populated.")
-		return true
-	}
-
-	if metadata.ParentWorkUnitId == "" {
-		log.Printf("ParentWorkUnitId is not populated.")
-		return true
-	}
-
 	if !isInternal(metadata.AccountId) {
 		// Skip calling ants-publish for external partners.
 		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
@@ -68,8 +58,13 @@ func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
 }
 
 func skipTFUpload(req *api.InternalTestplan) {
+	skipTFUploadValue := "true"
+	if suiteExecutionMetadataArgValue(req, "ants_invocation_id") == "" {
+		skipTFUploadValue = "false"
+	}
+
 	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
-	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
+	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: skipTFUploadValue})
 	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
 }
 
@@ -159,6 +154,14 @@ func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*api.D
 		{
 			Key:   "publishRequest.metadata.primaryExecutionInfo.envInfo.skylabInfo.buildbucketInfo.ancestorIds",
 			Value: "parentBBID",
+		},
+		{
+			Key:   "publishRequest.metadata.antsInvocationId",
+			Value: "ants_invocation_id",
+		},
+		{
+			Key:   "publishRequest.metadata.parentWorkUnitId",
+			Value: "parent_work_unit_id",
 		},
 	}
 	return dynamicDeps

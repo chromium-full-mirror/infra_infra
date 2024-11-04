@@ -19,7 +19,7 @@ func TestSkipTFUpload(t *testing.T) {
 		SuiteInfo: &api.SuiteInfo{
 			SuiteMetadata: &api.SuiteMetadata{
 				ExecutionMetadata: &api.ExecutionMetadata{
-					Args: []*api.Arg{{Flag: "foo", Value: "test"}},
+					Args: []*api.Arg{{Flag: "ants_invocation_id", Value: "test"}},
 				},
 			},
 		},
@@ -33,6 +33,30 @@ func TestSkipTFUpload(t *testing.T) {
 	}
 
 	wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
+	if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
+		t.Errorf("Unexpected diff: %s", diff)
+	}
+}
+
+func TestPerformTFUpload(t *testing.T) {
+	req := &api.InternalTestplan{
+		SuiteInfo: &api.SuiteInfo{
+			SuiteMetadata: &api.SuiteMetadata{
+				ExecutionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{{Flag: "foo", Value: "test"}},
+				},
+			},
+		},
+	}
+
+	skipTFUpload(req)
+
+	gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	if len(gotArgs) != 2 {
+		t.Errorf("Unexpected number of args: got %d want 2", len(gotArgs))
+	}
+
+	wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "false"}
 	if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
 		t.Errorf("Unexpected diff: %s", diff)
 	}
@@ -97,10 +121,7 @@ func TestGeneratePublishTask(t *testing.T) {
 					},
 				},
 			}
-			m := &metadata.PublishAntsMetadata{
-				AntsInvocationId: "I1234",
-				ParentWorkUnitId: "WU123",
-			}
+			m := &metadata.PublishAntsMetadata{}
 			log := log.New(os.Stdout, "test", 1)
 
 			err := GeneratePublishTask(req, m, "path", log)
@@ -123,36 +144,16 @@ func TestSkipAntsPublish(t *testing.T) {
 		wantDu   int
 	}{
 		{
-			name: "exists",
-			metadata: &metadata.PublishAntsMetadata{
-				AntsInvocationId: "I1234",
-				ParentWorkUnitId: "WU1234",
-			},
-			wantDu: 1,
+			name:     "exists",
+			metadata: &metadata.PublishAntsMetadata{},
+			wantDu:   1,
 		},
 		{
 			name: "externalPartner",
 			metadata: &metadata.PublishAntsMetadata{
-				AntsInvocationId: "I1234",
-				ParentWorkUnitId: "WU1234",
-				AccountId:        "2",
+				AccountId: "2",
 			},
 			wantDu: 0,
-		},
-		{
-			name:     "bothMissing",
-			metadata: &metadata.PublishAntsMetadata{},
-			wantDu:   0,
-		},
-		{
-			name:     "invocationMissing",
-			metadata: &metadata.PublishAntsMetadata{ParentWorkUnitId: "WU1234"},
-			wantDu:   0,
-		},
-		{
-			name:     "parentWUMissing",
-			metadata: &metadata.PublishAntsMetadata{AntsInvocationId: "I1234"},
-			wantDu:   0,
 		},
 	}
 
