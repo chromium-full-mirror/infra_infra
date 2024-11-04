@@ -315,7 +315,7 @@ func executeHwTestsV2(
 	if err != nil {
 		logging.Infof(ctx, fmt.Sprintf("Warning: %s", err))
 	}
-	common.LogWarningIfErr(ctx, sk.Injectables.Set("parentBBID", fmt.Sprint(parentBBID)))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("parentBBID", parentBBID))
 
 	populateRequestQueues(sk, req)
 
