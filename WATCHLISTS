@@ -9,12 +9,8 @@
     'findit': {
       'filepath': 'appengine/findit',
     },
-    # For more info, see: go/fleet-console
     'fleet_console_backend': {
       'filepath': 'go/src/infra/fleetconsole',
-    },
-    'fleet_console_client': {
-      'filepath': 'go/src/go.chromium.org/luci/milo/ui/src/fleet',
     },
     'rotang': {
       'filepath': 'go/src/infra/appengine/rotang',
@@ -38,7 +34,6 @@
     'chromium_status': ['chops-tfs-team+reviews@google.com'],
     'findit': ['chops-tfs-team+reviews@google.com'],
     'fleet_console_backend': ['fleet-console-reviews+backend@google.com'],
-    'fleet_console_client': ['fleet-console-reviews+client@google.com'],
     'rotang': ['chops-tfs-team+reviews@google.com'],
     'rotation_proxy': ['chops-tfs-team+reviews@google.com'],
     'sheriff_o_matic': ['chops-tfs-team+reviews@google.com'],
