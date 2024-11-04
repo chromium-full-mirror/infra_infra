@@ -303,13 +303,6 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 			continue
 		}
 
-		// TODO(xixuan): b/243448732, remove this check after VM prototype
-		model, err := util.ExtractSingleValuedDimension(dims, clients.DutModelDimensionKey)
-		// Exclude betty bots for audit
-		if err == nil && model == "betty" {
-			continue
-		}
-
 		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
 		if err != nil {
 			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
