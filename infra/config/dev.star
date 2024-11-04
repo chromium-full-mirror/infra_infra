@@ -503,3 +503,120 @@ luci.realm(
         ),
     ],
 )
+
+################################################################################
+## loadtest builders to test Buildbucket datastore in OPTIMISTIC mode.
+
+luci.realm(
+    name = "pools/loadtest",
+    bindings = [
+        # For led.
+        luci.binding(
+            roles = "role/swarming.poolUser",
+            groups = ["mdb/chrome-troopers", "mdb/chrome-sre-ops-syd-interns"],
+            users = "swarming-bot@luci-backend-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
+            users = "swarming-bot@luci-backend-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/swarming.poolViewer",
+            projects = "infra",
+        ),
+    ],
+)
+
+luci.bucket(
+    name = "loadtest",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = "mdb/chrome-troopers",
+            users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    shadows = "loadtest",
+)
+
+def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, sleep_max_sec, build_numbers, schedule = None, wait_for_children = False):
+    luci.builder(
+        name = name,
+        bucket = "loadtest",
+        executable = luci.executable(
+            name = "fakebuild",
+            cipd_package = "infra/experimental/swarming/fakebuild/${platform}",
+            cipd_version = "latest",
+            cmd = ["fakebuild"],
+        ),
+        dimensions = {
+            "os": "Linux",
+            "cpu": "x86-64",
+            "pool": "infra.loadtest.0",
+        },
+        properties = {
+            "child_builds": {
+                "builder": {
+                    "project": "infra",
+                    "bucket": "loadtest",
+                    "builder": builder,
+                },
+                "children": children,
+                "batch_size": batch_size,
+                "sleep_min_sec": sleep_min_sec,
+                "sleep_max_sec": sleep_max_sec,
+                "wait_for_children": wait_for_children,
+            },
+        },
+        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
+        schedule = schedule,
+    )
+
+# Total build in one build tree:
+# 1 + 10 + 10*20 + 10*20*20 = 4211
+fakebuild_tree_builder("fake-tree-0", 10, 0, "fake-tree-1", 2, 10, True)
+fakebuild_tree_builder("fake-tree-1", 20, 0, "fake-tree-2", 2, 10, True)
+fakebuild_tree_builder("fake-tree-2", 20, 2, "fake-search", 2, 10, True)
+
+def fakebuild_search_builder(name, steps, search_steps, sleep_min_sec, sleep_max_sec, build_numbers):
+    luci.builder(
+        name = name,
+        bucket = "loadtest",
+        executable = luci.executable(
+            name = "fakebuild",
+            cipd_package = "infra/experimental/swarming/fakebuild/${platform}",
+            cipd_version = "latest",
+            cmd = ["fakebuild"],
+        ),
+        dimensions = {
+            "os": "Linux",
+            "cpu": "x86-64",
+            "pool": "infra.loadtest.0",
+        },
+        properties = {
+            "steps": steps,
+            "sleep_min_sec": sleep_min_sec,
+            "sleep_max_sec": sleep_max_sec,
+            "search_builds": {
+                "steps": search_steps,
+                "sleep_min_sec": sleep_min_sec,
+                "sleep_max_sec": sleep_max_sec,
+            },
+        },
+        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
+    )
+
+# Builders run 100 sleep steps then do 10 search builds.
+fakebuild_search_builder("fake-search", 100, 10, 2, 10, True)
