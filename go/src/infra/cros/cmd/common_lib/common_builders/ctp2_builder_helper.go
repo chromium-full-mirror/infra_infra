@@ -498,11 +498,8 @@ func IsDDDSuite(v1 *test_platform.Request) bool {
 func GetRetryCount(v1 *test_platform.Request) int64 {
 	if v1.GetParams().GetRetry().GetAllow() {
 		retries := int64(v1.GetParams().GetRetry().GetMax())
-		if v1.GetParams().GetTestExecutionBehavior() == test_platform.Request_Params_CRITICAL {
-			// Limit to one retry per shard if critical. Remain zero if zero.
-			return min(retries, 1)
-		}
-		return retries
+		// (b/377368071): hardcoding to max 1 temporarily to stop bleeding
+		return min(retries, 1)
 	}
 
 	return 0
