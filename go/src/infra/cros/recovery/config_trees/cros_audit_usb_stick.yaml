@@ -7,28 +7,19 @@ plans:
             - state:needs_repair
           docs:
             - The action set devices with state means that DUT requires repair.
-        - name: DUT has board info (RUN_ONCE)
+        - name: DUT has board info
           exec_name: dut_has_board_name
-        - name: DUT has model info (RUN_ONCE)
+        - name: DUT has model info
           exec_name: dut_has_model_name
         - name: Start ADB-base (Allow to fail)
           exec_name: ctr_start_adb_container
           docs:
             - Pull and run adb-base container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Is not cloudbot
               exec_name: env_is_not_cloudbot
               docs:
-                - Check that the process is not running on cloudbot.
-            - name: Is not a partner side (RUN_ONCE)
-              exec_name: env_is_not_os_partner_namespace
-              docs:
-                - Check if the process run for partner.
-                - Detection based on usage namespace of the context.
-            - name: Is not cloudbot (RUN_ONCE)
-              exec_name: env_is_not_cloudbot
-              docs:
-                - Check that the process is not running on cloudbot.
+                - Check if the process doesn't run on cloudbot.
             - name: CrosToolRunner is up
               exec_name: ctr_is_up
               docs:
@@ -44,16 +35,7 @@ plans:
           docs:
             - Pull and run servo-nexus container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
-              exec_name: env_is_not_cloudbot
-              docs:
-                - Check that the process is not running on cloudbot.
-            - name: Is not a partner side (RUN_ONCE)
-              exec_name: env_is_not_os_partner_namespace
-              docs:
-                - Check if the process run for partner.
-                - Detection based on usage namespace of the context.
-            - name: Testbed has Servo (RUN_ONCE)
+            - name: Testbed has Servo
               exec_name: dut_servo_host_present
             - name: CrosToolRunner is up
               exec_name: ctr_is_up
@@ -6166,10 +6148,10 @@ plans:
           docs:
             - Mark DUT as Android, based on ADB responses.
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Is not cloudbot
               exec_name: env_is_not_cloudbot
               docs:
-                - Check that the process is not running on cloudbot.
+                - Check if the process doesn't run on cloudbot.
             - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
               exec_name: cros_set_as_chrome_based
               docs:

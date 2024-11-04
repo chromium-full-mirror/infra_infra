@@ -34,7 +34,7 @@ func crosRepairCriticalActions() []string {
 }
 
 func crosRepairActions() map[string]*Action {
-	actions := map[string]*Action{
+	return map[string]*Action{
 		"Android OS checks": {
 			Docs: []string{
 				"Run DUT readiness checks for Android based DUTs.",
@@ -47,25 +47,10 @@ func crosRepairActions() map[string]*Action {
 				"ADB set Android as always awake",
 				"Read bootId",
 				"Device Uptime",
-				"Provision try",
 				"Reset provisioned info",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
-		},
-		"Provision try": {
-			Dependencies: []string{
-				"Start Foil-provision",
-				"ctr_foil_provision_setup_service",
-				"Android install",
-			},
-			ExecName: "sample_pass",
-		},
-		"Android install": {
-			ExecName: "ctr_foil_provision_install",
-			ExecTimeout: &durationpb.Duration{
-				Seconds: 7200,
-			},
 		},
 		"Chrome OS checks": {
 			Docs: []string{
@@ -146,6 +131,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_set_as_android_based",
 			AllowFailAfterRecovery: true,
+		},
+		"Is not cloudbot": {
+			Docs: []string{
+				"Check if the process doesn't run on cloudbot.",
+			},
+			ExecName: "env_is_not_cloudbot",
 		},
 		"Mark as Chrome based OS": {
 			Docs: []string{
@@ -5007,7 +4998,4 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
-	addCrosCftContainers(actions)
-	addEnvActions(actions)
-	return actions
 }

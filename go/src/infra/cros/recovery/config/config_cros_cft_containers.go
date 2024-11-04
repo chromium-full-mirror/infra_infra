@@ -20,8 +20,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Is not cloudbot",
-				"Is not a partner side",
-				"Is not cloudbot",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
@@ -43,8 +41,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run servo-nexus container",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
-				"Is not a partner side",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
@@ -67,8 +63,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run foil-provision container",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
-				"Is not a partner side",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
@@ -85,10 +79,16 @@ func addCrosCftContainers(actions map[string]*Action) {
 			ExecName:               "ctr_stop_foil_provision_container",
 			AllowFailAfterRecovery: true,
 		},
+		"Is not cloudbot": {
+			Docs: []string{
+				"Check if the process doesn't run on cloudbot.",
+			},
+			ExecName: "env_is_not_cloudbot",
+		},
 	}
 	for k, v := range am {
 		if _, ok := actions[k]; ok {
-			panic("duplicate key:" + k + " in actions map")
+			panic("duplicate key:" + k + " in actions")
 		}
 		actions[k] = v
 	}

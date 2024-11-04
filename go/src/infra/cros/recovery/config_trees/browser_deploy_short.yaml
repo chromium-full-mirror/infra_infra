@@ -2,21 +2,17 @@ plans:
     - name: cros_base
       criticalactions:
         - name: 'Set state: needs_deploy (''dut_set_state'')'
-        - name: DUT has board info ('dut_has_board_name') (RUN_ONCE)
-        - name: DUT has model info ('dut_has_model_name') (RUN_ONCE)
+        - name: DUT has board info ('dut_has_board_name')
+        - name: DUT has model info ('dut_has_model_name')
         - name: Start ADB-base (Allow to fail) ('ctr_start_adb_container')
           conditions:
-            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
-            - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
-            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Is not cloudbot ('env_is_not_cloudbot')
             - name: CrosToolRunner is up ('ctr_is_up')
           dependencies:
             - name: Stop ADB-base (Allow to fail) ('ctr_stop_adb_container')
         - name: Start Servo-Nexus (Allow to fail) ('ctr_servo_nexus_start_container')
           conditions:
-            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
-            - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
-            - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
+            - name: Testbed has Servo ('dut_servo_host_present')
             - name: CrosToolRunner is up ('ctr_is_up')
           dependencies:
             - name: Stop Servo-Nexus (Allow to fail) ('ctr_servo_nexus_stop_container')
@@ -7208,7 +7204,7 @@ plans:
                 - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
         - name: Is Android based (Allow to fail) ('cros_set_as_android_based')
           conditions:
-            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Is not cloudbot ('env_is_not_cloudbot')
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
           dependencies:
             - name: ADB Connect DUT ('ctr_adb_connect')
@@ -33317,17 +33313,6 @@ plans:
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
-            - name: Provision try ('sample_pass')
-              dependencies:
-                - name: Start Foil-provision (Allow to fail) ('ctr_start_foil_provision_container')
-                  conditions:
-                    - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
-                    - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
-                    - name: CrosToolRunner is up ('ctr_is_up')
-                  dependencies:
-                    - name: Stop Foil-provision (Allow to fail) ('ctr_stop_foil_provision_container')
-                - name: ctr_foil_provision_setup_service
-                - name: Android install ('ctr_foil_provision_install') (time:'2h0m0s')
             - name: Reset provisioned info ('cros_reset_provision_info')
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')

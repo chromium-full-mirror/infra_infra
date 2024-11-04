@@ -38,6 +38,14 @@ func crosBasePlan(pt basePlanType) *Plan {
 
 func crosBaseActions() map[string]*Action {
 	actions := map[string]*Action{
+		"DUT has board info": {
+			ExecName:      "dut_has_board_name",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"DUT has model info": {
+			ExecName:      "dut_has_model_name",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Set state: needs_deploy": {
 			Docs: []string{
 				"The action set devices with request to be redeployed.",
@@ -68,9 +76,13 @@ func crosBaseActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"Testbed has Servo": {
+			ExecName: "dut_servo_host_present",
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 	}
 	addCrosCftContainers(actions)
-	addEnvActions(actions)
-	addDUTActions(actions)
 	return actions
 }
