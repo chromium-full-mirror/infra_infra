@@ -226,7 +226,7 @@ func TestWorkUnitProperties(t *testing.T) {
 		wantProps []*ab_prod.Property
 	}{
 		{
-			name: "dutOnly",
+			name: "crosDut",
 			dut: &labapi.Dut{
 				DutType: &labapi.Dut_Chromeos{
 					Chromeos: &labapi.Dut_ChromeOS{
@@ -243,7 +243,7 @@ func TestWorkUnitProperties(t *testing.T) {
 			},
 		},
 		{
-			name: "AndroiddutOnly",
+			name: "AndroidDut",
 			dut: &labapi.Dut{
 				DutType: &labapi.Dut_Android_{
 					Android: &labapi.Dut_Android{
@@ -257,25 +257,6 @@ func TestWorkUnitProperties(t *testing.T) {
 			wantProps: []*ab_prod.Property{
 				{Name: "board", Value: "brya"},
 				{Name: "model", Value: "mithrax"},
-			},
-		},
-		{
-			name:      "dutAndLuci",
-			luciInvID: "test-inv",
-			dut: &labapi.Dut{
-				DutType: &labapi.Dut_Chromeos{
-					Chromeos: &labapi.Dut_ChromeOS{
-						DutModel: &labapi.DutModel{
-							BuildTarget: "brya",
-							ModelName:   "mithrax",
-						},
-					},
-				},
-			},
-			wantProps: []*ab_prod.Property{
-				{Name: "board", Value: "brya"},
-				{Name: "model", Value: "mithrax"},
-				{Name: "luci-invocation-id", Value: "test-inv"},
 			},
 		},
 	}
@@ -302,6 +283,113 @@ func TestWorkUnitProperties(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestUploadInvocationProperties(t *testing.T) {
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
+
+	mockInv := mock_androidapi.NewMockInvocationService(mockCtl)
+	testCases := []struct {
+		name    string
+		exeInfo *artifact.ExecutionInfo
+		wantInv *ab_prod.Invocation
+	}{
+		{
+			name: "satlab",
+			exeInfo: &artifact.ExecutionInfo{
+				EnvInfo: &artifact.ExecutionInfo_SatlabInfo{
+					SatlabInfo: &artifact.SatlabInfo{
+						BuildbucketInfo: &artifact.BuildbucketInfo{
+							AncestorIds: []int64{int64(123)},
+						},
+					},
+				},
+			},
+			wantInv: &ab_prod.Invocation{
+				InvocationId: "I987654321",
+				Properties: []*ab_prod.Property{
+					{Name: ancestorsPropName, Value: "123"},
+				},
+			},
+		},
+		{
+			name: "moreAncestorsSatlab",
+			exeInfo: &artifact.ExecutionInfo{
+				EnvInfo: &artifact.ExecutionInfo_SatlabInfo{
+					SatlabInfo: &artifact.SatlabInfo{
+						BuildbucketInfo: &artifact.BuildbucketInfo{
+							AncestorIds: []int64{int64(123), int64(456)},
+						},
+					},
+				},
+			},
+			wantInv: &ab_prod.Invocation{
+				InvocationId: "I987654321",
+				Properties: []*ab_prod.Property{
+					{Name: ancestorsPropName, Value: "123,456"},
+				},
+			},
+		},
+		{
+			name: "skylab",
+			exeInfo: &artifact.ExecutionInfo{
+				EnvInfo: &artifact.ExecutionInfo_SkylabInfo{
+					SkylabInfo: &artifact.SkylabInfo{
+						BuildbucketInfo: &artifact.BuildbucketInfo{
+							AncestorIds: []int64{int64(123)},
+						},
+					},
+				},
+			},
+			wantInv: &ab_prod.Invocation{
+				InvocationId: "I987654321",
+				Properties: []*ab_prod.Property{
+					{Name: ancestorsPropName, Value: "123"},
+				},
+			},
+		},
+		{
+			name: "missing",
+			exeInfo: &artifact.ExecutionInfo{
+				EnvInfo: &artifact.ExecutionInfo_SatlabInfo{
+					SatlabInfo: &artifact.SatlabInfo{
+						BuildbucketInfo: &artifact.BuildbucketInfo{
+							AncestorIds: []int64{},
+						},
+					},
+				},
+			},
+			wantInv: &ab_prod.Invocation{
+				InvocationId: "I987654321",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			inv := &ab_prod.Invocation{
+				InvocationId: "I987654321",
+			}
+			aps := &AntsPublishService{
+				metadata: &metadata.PublishAntsMetadata{
+					PrimaryExecutionInfo: tc.exeInfo,
+				},
+				service:    &androidlib.Service{InvocationService: mockInv},
+				invocation: inv,
+			}
+
+			// Verify that we get correct args for update call
+			mockInv.EXPECT().Update(inv.InvocationId, tc.wantInv).Return(tc.wantInv, nil)
+
+			err := aps.uploadInvocationProperties()
+			if err != nil {
+				t.Errorf("Error uploading invocation props: %q", err)
+			}
+
+		})
+	}
+
 }
 
 func TestResultEntries(t *testing.T) {

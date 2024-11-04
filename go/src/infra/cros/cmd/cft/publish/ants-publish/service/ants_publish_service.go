@@ -13,12 +13,14 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
+	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
@@ -27,7 +29,8 @@ import (
 )
 
 const (
-	artifactsDir = "/tmp/artifacts/"
+	artifactsDir      = "/tmp/artifacts/"
+	ancestorsPropName = "ancestor_buildbucket_ids"
 )
 
 type AntsPublishService struct {
@@ -149,9 +152,41 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 	return entries, token, nil
 }
 
+func (aps *AntsPublishService) uploadInvocationProperties() error {
+	var bbInfo *artifact.BuildbucketInfo
+	switch aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo().(type) {
+	case *artifact.ExecutionInfo_SatlabInfo:
+		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSatlabInfo().GetBuildbucketInfo()
+	case *artifact.ExecutionInfo_SkylabInfo:
+		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSkylabInfo().GetBuildbucketInfo()
+	default:
+		return fmt.Errorf("unsupported envInfo: %v", aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo())
+	}
+
+	ancestorIDs := bbInfo.GetAncestorIds()
+	if len(ancestorIDs) > 0 {
+		ancestors := make([]string, 0, len(ancestorIDs))
+		for _, ancID := range ancestorIDs {
+			ancestors = append(ancestors, strconv.Itoa(int(ancID)))
+		}
+
+		ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
+		aps.invocation.Properties = append(aps.invocation.Properties, ancestorsProp)
+	}
+
+	var err error
+	aps.invocation, err = aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
+	return err
+}
+
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
+
+	log.Printf("Update invocation properties.")
+	if err := aps.uploadInvocationProperties(); err != nil {
+		return err
+	}
 
 	log.Printf("Update parent workunit properties.")
 	if err := aps.uploadParentWorkUnitProperties(); err != nil {
@@ -219,10 +254,6 @@ func (aps *AntsPublishService) workunitProperties() ([]*atp.Property, error) {
 	props, err := aps.dutProperties()
 	if err != nil {
 		return nil, err
-	}
-
-	if aps.metadata.GetLuciInvocationId() != "" {
-		props = append(props, &atp.Property{Name: "luci-invocation-id", Value: aps.metadata.GetLuciInvocationId()})
 	}
 
 	return props, nil
