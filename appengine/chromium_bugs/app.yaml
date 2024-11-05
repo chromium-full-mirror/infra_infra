@@ -1,9 +1,0 @@
-application: chromiumbugs-hr
-runtime: python38
-app_engine_apis: false
-
-handlers:
-
-- url: /.*
-  script: main.app
-  secure: always
