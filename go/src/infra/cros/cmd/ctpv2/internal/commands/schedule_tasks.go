@@ -848,10 +848,11 @@ func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestRe
 	if attemptNode != nil {
 		wu := attemptNode.GetWorkUnit()
 		wu.State = common.TaskErrorState
-		wu.DebugInfo.ErrorMessage = err.Error()
-
-		// TODO: Populate this with a wider range of error codes.
-		wu.DebugInfo.ErrorCode = 1
+		wu.DebugInfo = &androidbuildinternal.DebugInfo{
+			// TODO: Populate this with a wider range of error codes.
+			ErrorCode:    1,
+			ErrorMessage: err.Error(),
+		}
 	}
 
 	return err
