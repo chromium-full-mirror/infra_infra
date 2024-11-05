@@ -1,0 +1,10 @@
+package: experimental/infra/paris/${platform}
+description: PARIS (auto-repair/deploy) cli runs task locally to recover DUTs and peripherals.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/paris
+root: ../../go/bin
+data:
+  - file: paris${exe_suffix}
+  - version_file: .versions/paris${exe_suffix}.cipd_version
