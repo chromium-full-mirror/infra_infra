@@ -5,6 +5,7 @@
 package service
 
 import (
+	"context"
 	androidlib "infra/cros/cmd/common_lib/android_api"
 	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
 	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
@@ -13,11 +14,13 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -483,6 +486,76 @@ func TestResultEntries(t *testing.T) {
 			tc.wantResult.Timing = &atp.Timing{}
 			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
 				t.Errorf("%s", diff)
+			}
+		})
+	}
+}
+
+func TestUploadResults(t *testing.T) {
+	ctx := context.Background()
+	invID := "I123"
+	okResp := &atp.TestResultBatchInsertResponse{ServerResponse: googleapi.ServerResponse{HTTPStatusCode: 200}}
+
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
+
+	mockTRService := mock_androidapi.NewMockTestResultService(mockCtl)
+	aps := &AntsPublishService{
+		metadata: &metadata.PublishAntsMetadata{AntsInvocationId: invID},
+		service:  &androidlib.Service{TestResultService: mockTRService},
+	}
+	testCases := []struct {
+		name         string
+		entries      []*atp.BatchInsertEntry
+		chunkSize    int
+		expectations func()
+	}{
+		{
+			name: "evenChunks",
+			entries: []*atp.BatchInsertEntry{
+				{TestResult: &atp.TestResult{AttemptNumber: 1}},
+				{TestResult: &atp.TestResult{AttemptNumber: 2}},
+			},
+			chunkSize: 1,
+			expectations: func() {
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(2)
+			},
+		},
+		{
+			name: "oddChunks",
+			entries: []*atp.BatchInsertEntry{
+				{TestResult: &atp.TestResult{AttemptNumber: 1}},
+				{TestResult: &atp.TestResult{AttemptNumber: 2}},
+				{TestResult: &atp.TestResult{AttemptNumber: 3}},
+			},
+			chunkSize: 2,
+			expectations: func() {
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(2)
+			},
+		},
+		{
+			name: "noChunks",
+			entries: []*atp.BatchInsertEntry{
+				{TestResult: &atp.TestResult{AttemptNumber: 1}},
+				{TestResult: &atp.TestResult{AttemptNumber: 2}},
+				{TestResult: &atp.TestResult{AttemptNumber: 3}},
+			},
+			chunkSize: 5,
+			expectations: func() {
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(1)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.expectations != nil {
+				tc.expectations()
+			}
+
+			err := aps.uploadResults(ctx, tc.entries, tc.chunkSize)
+			if err != nil {
+				t.Errorf("Unexpected error for uploadResults(): %q", err)
 			}
 		})
 	}

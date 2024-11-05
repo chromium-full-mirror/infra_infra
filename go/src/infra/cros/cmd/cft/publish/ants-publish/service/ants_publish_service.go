@@ -31,6 +31,7 @@ import (
 const (
 	artifactsDir      = "/tmp/artifacts/"
 	ancestorsPropName = "ancestor_buildbucket_ids"
+	defaultChunkSize  = 1000
 )
 
 type AntsPublishService struct {
@@ -179,6 +180,32 @@ func (aps *AntsPublishService) uploadInvocationProperties() error {
 	return err
 }
 
+func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
+	var chunks [][]*atp.BatchInsertEntry
+	for i := 0; i < len(entries); i += chunkSize {
+		end := i + chunkSize
+		if end > len(entries) {
+			end = len(entries)
+		}
+		chunks = append(chunks, entries[i:end])
+	}
+
+	for i, chunk := range chunks {
+		request := &atp.TestResultBatchInsertRequest{
+			TestResults:     chunk,
+			InsertBatchSize: int64(len(chunk)),
+		}
+
+		result, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
+		if err != nil {
+			return err
+		}
+		log.Printf("BatchInsert test results response for chunk %d: %d", i, result.ServerResponse.HTTPStatusCode)
+	}
+
+	return nil
+}
+
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
@@ -212,18 +239,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		entries = append(entries, childEntries...)
 	}
 
-	request := &atp.TestResultBatchInsertRequest{
-		TestResults:     entries,
-		InsertBatchSize: int64(len(entries)),
-	}
-
-	result, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
-	if err != nil {
-		return err
-	}
-	log.Printf("BatchInsert test results response: %d", result.ServerResponse.HTTPStatusCode)
-
-	return nil
+	return aps.uploadResults(ctx, entries, defaultChunkSize)
 }
 
 func (aps *AntsPublishService) dutProperties() ([]*atp.Property, error) {
