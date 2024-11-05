@@ -275,22 +275,22 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 
 	// System error in looking up device
 	if err != nil && !errors.Is(err, model.ErrDeviceNotFound) {
-		logging.Errorf(ctx, "Failed to get Device %s: %s", deviceModel.ID, err)
+		logging.Errorf(ctx, "Failed to get Device %s dut_id %s: %s", deviceModel.ID, deviceModel.DutID, err)
 		getDeviceErrN++
 		return
 	}
 
 	// Device found and not different
 	if !errors.Is(err, model.ErrDeviceNotFound) && !areLabelsOrActiveStateDifferent(ctx, dbDevice, deviceModel) {
-		logging.Debugf(ctx, "Device %s did not change. Did not update Device in database", deviceModel.ID)
+		logging.Debugf(ctx, "Device %s dut_id %s did not change. Did not update Device in database", deviceModel.ID, deviceModel.DutID)
 		return
 	}
 
 	// Either Device was not found and is new or it is different
-	logging.Debugf(ctx, "Found changes for Device %s. Upserting to DB", deviceModel.ID)
+	logging.Debugf(ctx, "Found changes for Device %s dut_id %s. Upserting to DB", deviceModel.ID, deviceModel.DutID)
 	err = model.UpsertDeviceFromUFS(ctx, serviceClients.DBClient.Conn, deviceModel)
 	if err != nil {
-		logging.Errorf(ctx, "Failed to upsert Device %s: %s", deviceModel.ID, err)
+		logging.Errorf(ctx, "Failed to upsert Device %s dut_id %s: %s", deviceModel.ID, deviceModel.DutID, err)
 		upsertDeviceErrN++
 		return
 	}
@@ -299,7 +299,7 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	// Re-fetch the Device after the upsert to get the updated Device
 	dbDevice, err = model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
 	if err != nil {
-		logging.Errorf(ctx, "Failed to re-fetch Device %s: %s", deviceModel.ID, err)
+		logging.Errorf(ctx, "Failed to re-fetch Device %s dut_id %s: %s", deviceModel.ID, deviceModel.DutID, err)
 		refetchDeviceErrN++
 		return
 	}
