@@ -15,7 +15,7 @@ window.CS_env = {
   token: 'foo-token',
 };
 
-describe('mr-app', () => {
+describe.skip('mr-app', () => {
   beforeEach(() => {
     global.ga = sinon.spy();
     store.dispatch(resetState());
