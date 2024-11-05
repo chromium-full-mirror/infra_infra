@@ -122,13 +122,14 @@ func main() {
 		}
 
 		srv.RunInBackground("device_manager.notifier", func(ctx context.Context) {
-			for {
+			for ctx.Err() == nil {
 				controller.SendNotifications(
 					ctx,
 					deviceLeaseServer.ServiceClients.DBClient.Conn,
 					deviceLeaseServer.ServiceClients.PubSubClient,
 					&notifierOpts,
 				)
+				time.Sleep(time.Second)
 			}
 		})
 		return nil
