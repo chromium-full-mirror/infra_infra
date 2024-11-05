@@ -150,6 +150,7 @@ func BulkLeaseDevices(ctx context.Context, db *sql.DB, r *api.BulkLeaseDevicesRe
 			ErrorString: fmt.Sprintf("BulkLeaseDevices: failed to start database transaction: %v", err),
 		}, nil
 	}
+	defer tx.Rollback()
 
 	// Update DB to reflect that the devices are leased.
 	logging.Debugf(ctx, "BulkLeaseDevices: bulk updating Devices to leased")
@@ -203,7 +204,6 @@ func BulkLeaseDevices(ctx context.Context, db *sql.DB, r *api.BulkLeaseDevicesRe
 	// we don't mark Devices as leased without creating an actual lease.
 	leaseErrCnt := 0
 	for deviceID, err := range createRecordErrs {
-		logging.Errorf(ctx, "BulkLeaseDevices: lease record error detected; abort transaction")
 		if err != nil {
 			respMap[deviceID].ErrorType = api.LeaseDeviceResponseErrorType_LEASE_ERROR_TYPE_DEVICE_ALREADY_LEASED
 			respMap[deviceID].ErrorString = err.Error()
@@ -213,6 +213,7 @@ func BulkLeaseDevices(ctx context.Context, db *sql.DB, r *api.BulkLeaseDevicesRe
 
 	// Return errored request if there is one failed leasing request.
 	if leaseErrCnt > 0 {
+		logging.Errorf(ctx, "BulkLeaseDevices: lease record errors detected; abort transaction")
 		bulkResp.ErrorType = api.BulkLeaseDevicesResponseErrorType_BULK_LEASE_ERROR_TYPE_PARTIAL_LEASE_FAILURE
 		bulkResp.ErrorString = fmt.Sprintf("BulkLeaseDevices: lease record error detected; aborting bulk operation: %v; Devices: %v", err, deviceIDs)
 		return bulkResp, nil
