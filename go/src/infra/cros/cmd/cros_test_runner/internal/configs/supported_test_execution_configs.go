@@ -142,6 +142,7 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 	// Provision commands
 	if !cftHwStepsConfig.GetSkipProvision() {
 		mainConfigs = append(mainConfigs,
+			ContainerStart_ContainerExecutor.WithRequired(true),
 			ProvisionServerStart_CrosProvisionExecutor,
 			ProvisionInstall_CrosProvisionExecutor)
 		if isAndroidProvisionRequired {

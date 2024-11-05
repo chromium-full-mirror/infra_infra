@@ -41,7 +41,10 @@ func (ex *CrosProvisionExecutor) ExecuteCommand(
 
 	switch cmd := cmdInterface.(type) {
 	case *commands.ProvisionServiceStartCmd:
-		return ex.provisionStartCommandExecution(ctx, cmd)
+		if err := ex.provisionStartCommandExecution(ctx, cmd); err != nil {
+			return err
+		}
+		return ex.provisionStartupCommandExecution(ctx, cmd)
 	case *commands.ProvisionInstallCmd:
 		return ex.provisionInstallCommandExecution(ctx, cmd)
 	default:
@@ -75,6 +78,27 @@ func (ex *CrosProvisionExecutor) provisionStartCommandExecution(
 	}
 
 	return err
+}
+
+func (ex *CrosProvisionExecutor) provisionStartupCommandExecution(
+	ctx context.Context,
+	cmd *commands.ProvisionServiceStartCmd) error {
+	step, ctx := build.StartStep(ctx, "Provision StartUp")
+	defer func() { step.End(nil) }()
+
+	startupReq := &testapi.ProvisionStartupRequest{
+		Dut:            cmd.PrimaryDut,
+		DutServer:      cmd.DutServerAddress,
+		ServoNexusAddr: cmd.ServoNexusAddress,
+	}
+	common.WriteProtoToStepLog(ctx, step, startupReq, "startup request")
+	resp, err := ex.StartUp(ctx, startupReq)
+	if err != nil {
+		step.SetSummaryMarkdown(err.Error())
+	}
+	common.WriteProtoToStepLog(ctx, step, resp, "startup response")
+
+	return nil
 }
 
 // provisionInstallCommandExecution executes the provision install command.
@@ -166,6 +190,25 @@ func (ex *CrosProvisionExecutor) Start(
 	ex.CrosProvisionServiceClient = provisionClient
 
 	return nil
+}
+
+func (ex *CrosProvisionExecutor) StartUp(
+	ctx context.Context,
+	startupReq *testapi.ProvisionStartupRequest) (*testapi.ProvisionStartupResponse, error) {
+
+	if startupReq == nil {
+		return nil, fmt.Errorf("Cannot execution provision startup for nil startup request")
+	}
+	if ex.CrosProvisionServiceClient == nil {
+		return nil, fmt.Errorf("CrosProvisionServiceClient is nil in CrosProvisionExecutor")
+	}
+
+	startupResp, err := ex.CrosProvisionServiceClient.StartUp(ctx, startupReq, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "provision startup failure: ").Err()
+	}
+
+	return startupResp, nil
 }
 
 // Install invokes the provision install endpoint of cros-provision.

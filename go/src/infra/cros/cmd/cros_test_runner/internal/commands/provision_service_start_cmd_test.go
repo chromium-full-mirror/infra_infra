@@ -72,15 +72,16 @@ func TestProvisionStartCmd_ExtractDepsSuccess(t *testing.T) {
 
 	ftt.Run("ProvisionStartCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{
-			CftTestRequest: &skylab_test_runner.CFTTestRequest{
-				PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
-					ProvisionState: &api.ProvisionState{},
-				},
+		sk := data.NewHwTestStateKeeper()
+		sk.CftTestRequest = &skylab_test_runner.CFTTestRequest{
+			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+				ProvisionState: &api.ProvisionState{},
 			},
-			PrimaryDevice: &api.CrosTestRequest_Device{
-				Dut: &labapi.Dut{},
-			}, DutServerAddress: &labapi.IpEndpoint{}}
+		}
+		sk.PrimaryDevice = &api.CrosTestRequest_Device{
+			Dut: &labapi.Dut{},
+		}
+		sk.DutServerAddress = &labapi.IpEndpoint{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)

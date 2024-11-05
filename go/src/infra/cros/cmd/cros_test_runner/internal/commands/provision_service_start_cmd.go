@@ -12,6 +12,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -21,9 +22,10 @@ type ProvisionServiceStartCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	ProvisionState   *testapi.ProvisionState
-	DutServerAddress *labapi.IpEndpoint
-	PrimaryDut       *labapi.Dut
+	ProvisionState    *testapi.ProvisionState
+	DutServerAddress  *labapi.IpEndpoint
+	PrimaryDut        *labapi.Dut
+	ServoNexusAddress *labapi.IpEndpoint
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -70,6 +72,13 @@ func (cmd *ProvisionServiceStartCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	cmd.DutServerAddress = sk.DutServerAddress
+	cmd.ServoNexusAddress = &labapi.IpEndpoint{}
+	common.LogWarningIfErr(ctx, common.InjectDependencies(cmd.ServoNexusAddress, sk.Injectables, []*testapi.DynamicDep{
+		{
+			Key:   "",
+			Value: common.NewTaskIdentifier(common.ServoNexus).AddDeviceId(common.NewPrimaryDeviceIdentifier()).Id,
+		},
+	}))
 
 	return nil
 }
