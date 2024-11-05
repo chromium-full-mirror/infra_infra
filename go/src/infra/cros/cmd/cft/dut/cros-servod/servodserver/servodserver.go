@@ -245,6 +245,32 @@ func getErrorMessage(bErr bytes.Buffer, err error) string {
 	return errorMessage
 }
 
+// LogCheckPoint will create checkpoint certain files so that some files
+// can be saved partially when SaveLogs is called.
+// For example, /var/log/messages in a labstation can be
+// very big and include information from a few days ago.
+// Getting the checkpoint of the current /var/log/messages will
+// allow SaveLogs to save the portion only relevant to the current
+// testing session.
+func (s *ServodService) LogCheckPoint(ctx context.Context, req *api.LogCheckPointRequest) (*api.LogCheckPointResponse, error) {
+	s.logger.Printf("Received api.LogCheckPointRequest: %#v\n", req)
+	return nil, errors.New("the service LogCheckPoint has not be implemented")
+}
+
+// SaveLogs will save servod related logs on the host that this service
+// is running.
+// Logs include:
+//
+//	/var/log/message from the servod host.
+//	/var/log/servod_<port>/ latest.DEBUG from servod host.
+//	/var/log/servod_<port>.STARTUP.log from servod host.
+//	The output of  "dmesg -H"  from the servod host.
+//	The extraction of the MCU console logs from latest.DEBUG
+func (s *ServodService) SaveLogs(ctx context.Context, req *api.SaveLogsRequest) (*api.SaveLogsResponse, error) {
+	s.logger.Printf("Received api.SaveLogsRequest: %#v\n", req)
+	return nil, errors.New("the service SaveLogs has not be implemented")
+}
+
 // getExitInfo extracts exit info from Session Run's error
 func getExitInfo(runError error) *api.ExecCmdResponse_ExitInfo {
 	// If no error, command succeeded
