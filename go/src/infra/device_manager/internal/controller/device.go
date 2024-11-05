@@ -69,24 +69,18 @@ func ListDevices(ctx context.Context, db *sql.DB, r *api.ListDevicesRequest) (*a
 func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, device *model.Device) error {
 	// Send message to PubSub Device events stream
 	topic := psClient.DeviceEventsPubSubTopic
-
-	dutID, err := device.DUTID()
-	if err != nil {
-		return errors.Annotate(err, "PublishDeviceEvent").Err()
-	}
-
 	marshalOpts := protojson.MarshalOptions{EmitUnpopulated: true}
 
 	deviceEvent := &schedulingAPI.DeviceEvent{
 		EventTime:        time.Now().Unix(),
-		DeviceId:         dutID,
+		DeviceId:         device.DutID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, device.DeviceState),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
 		DeviceName:       device.ID,
 	}
 
 	var msg []byte
-	msg, err = marshalOpts.Marshal(deviceEvent)
+	msg, err := marshalOpts.Marshal(deviceEvent)
 	if err != nil {
 		return fmt.Errorf("protojson.Marshal err: %w", err)
 	}
@@ -100,7 +94,7 @@ func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, dev
 		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
 		return err
 	}
-	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent %v", deviceEvent)
+	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent for Device %s dut_id %s: %v", device.ID, device.DutID, deviceEvent)
 	return nil
 }
 
@@ -125,6 +119,7 @@ func SendNotifications(
 		query     = `
 			SELECT
 				id,
+				dut_id,
 				device_address,
 				device_type,
 				device_state,
@@ -167,6 +162,7 @@ func SendNotifications(
 		var device model.Device
 		err = rows.Scan(
 			&device.ID,
+			&device.DutID,
 			&device.DeviceAddress,
 			&device.DeviceType,
 			&device.DeviceState,

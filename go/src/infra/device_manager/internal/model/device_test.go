@@ -1034,26 +1034,6 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 	})
 }
 
-func TestDUTID(t *testing.T) {
-	t.Parallel()
-	ftt.Run("DUTID should return dut_id label", t, func(t *ftt.Test) {
-		d := Device{
-			ID: "foo",
-			SchedulableLabels: SchedulableLabels{
-				"dut_id": LabelValues{
-					Values: []string{"bar"},
-				},
-				"hostname": LabelValues{
-					Values: []string{"baz", "lol"},
-				},
-			},
-		}
-		dutID, err := d.DUTID()
-		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, dutID, should.Match("bar"))
-	})
-}
-
 func TestSetDutIDFromLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

@@ -650,18 +650,6 @@ func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
 	return nil
 }
 
-// DUTID returns the DUT ID (i.e. Swarming asset tag) for the given device.
-func (d *Device) DUTID() (string, error) {
-	idLabel, ok := d.SchedulableLabels[string(IDTypeDutID)]
-	if !ok || len(idLabel.Values) == 0 {
-		return "", fmt.Errorf("found no DUT ID for device %v", d.ID)
-	}
-	if len(idLabel.Values) > 1 {
-		return "", fmt.Errorf("found multiple DUT IDs for device %v", d.ID)
-	}
-	return idLabel.Values[0], nil
-}
-
 // SetDutIDFromLabels takes dut_id (asset tag) from the schedulable labels.
 //
 // SetDutIDFromLabels take the label and sets it to the Device model. If no
