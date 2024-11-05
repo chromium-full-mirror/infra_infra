@@ -6175,13 +6175,6 @@ plans:
           conditions:
             - name: Is Chrome based (ALWAYS_RUN)
               exec_name: cros_is_chrome_based
-            - name: Not a Chrome DUT
-              exec_name: dut_not_in_pool
-              exec_args:
-                - chrome
-                - chromium
-              docs:
-                - The pool cannot check RPM due to error b/373752791.
             - name: 'RPM set state: MISSING_CONFIG'
               exec_name: set_rpm_state
               exec_args:
