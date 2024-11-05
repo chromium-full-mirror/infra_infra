@@ -7,13 +7,13 @@ package commands
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/outputprops"
@@ -25,6 +25,8 @@ type AlStatusUpdateCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	BuildState *build.State
+
+	BuildsMap map[string]*data.BuildRequest
 
 	// Deps
 	AlStateInfo *data.AlStateInfo
@@ -91,6 +93,7 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 
 	cmd.AlStateInfo = sk.AlStateInfo
 	cmd.BuildState = sk.BuildState
+	cmd.BuildsMap = sk.BuildsMap
 
 	return nil
 }
@@ -108,92 +111,143 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromPrePostStateKeeper(
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) initRunLayer() error {
-	top := cmd.AlStateInfo.WorkUnitTrees["test"]
-	if top == nil {
-		return fmt.Errorf("WU tree was not initialized")
+func (cmd *AlStatusUpdateCmd) getWorkUnitTree() *androidapi.WorkUnitTree {
+	if cmd.AlStateInfo == nil {
+		return nil
 	}
 
-	runs, err := top.FetchRunLayer()
-	if err != nil {
-		return err
+	if cmd.AlStateInfo.WorkUnitTrees == nil {
+		return nil
 	}
 
-	if len(runs) == 0 {
-		fmt.Printf("top Parent %s-%s#%d: %+v\n", top.GetWorkUnit().Id, top.GetWorkUnit().Name, top.GetIndex(), top)
-
-		// Generate and insert the Run Node into the WU tree.
-		runNode, err := androidapi.NewWorkUnitNode(top.GetWorkUnit().Id, top.GetWorkUnit().InvocationId, androidapi.Run, top, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
+	if tree, ok := cmd.AlStateInfo.WorkUnitTrees["test"]; ok {
+		return tree
 	}
 
 	return nil
 }
 
-func patchRunsAndTestJob(service *androidapi.Service, top *androidapi.WorkUnitNode) error {
-	runNodes, err := top.FetchRunLayer()
+func (cmd *AlStatusUpdateCmd) initRunAndShards() error {
+	if cmd.BuildsMap == nil {
+		return nil
+	}
+
+	tree := cmd.getWorkUnitTree()
+	if tree == nil {
+		return fmt.Errorf("WU tree was not initialized")
+	}
+
+	head := tree.Head
+
+	runs, err := head.FetchRunLayer()
 	if err != nil {
 		return err
 	}
 
-	allRunsSuccessful := true
-	for _, run := range runNodes {
-		allSuccess := true
-		for _, attempt := range run.GetChildren() {
-			if strings.ToLower(attempt.GetWorkUnit().State) != "completed" {
-				allSuccess = false
-				break
+	// Only run this command once.
+	if len(runs) > 0 {
+		return nil
+	}
+
+	fmt.Printf("top Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
+
+	// Generate and insert the Run Node into the WU tree.
+	runNode, err := androidapi.NewWorkUnitNode(head.GetWorkUnit().Id, head.GetWorkUnit().InvocationId, androidapi.WULayerRun, head, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	if err != nil {
+		return err
+	}
+	fmt.Printf("NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
+
+	for key := range cmd.BuildsMap {
+		// NOTE: Shards are unique for a given tree/run. When we migrate to
+		// multiple runs this will not collide since they'll be in separate
+		// trees.
+		if _, ok := tree.ShardsByKey[key]; !ok {
+			fmt.Printf("Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
+
+			// Generate and insert the Run Node into the WU tree.
+			shardNode, err := androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.WULayerShard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+			if err != nil {
+				return err
 			}
-		}
 
-		if !allSuccess {
-			allRunsSuccessful = false
-			run.GetWorkUnit().State = "ERROR"
-		} else {
-			run.GetWorkUnit().State = "COMPLETED"
+			fmt.Printf("NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+			tree.ShardsByKey[key] = shardNode
 		}
+	}
 
-		patchedRunWU, err := service.WorkUnitService.Patch(run.GetWorkUnit().Id, run.GetWorkUnit())
+	return nil
+}
+
+// updateAllNodes recursively iterates through the tree updating the status of
+// each node from the bottom layers upward.
+//
+// NOTE: This leverages the fact that we set the state for the attempt nodes
+// inside the schedule_tasks command.
+func updateAllNodes(service *androidapi.Service, head *androidapi.WorkUnitNode) error {
+	children := head.GetChildren()
+	// Once we've reached the attempt layer update the WU and return.
+	if children.Len() == 0 {
+		newWU, err := service.WorkUnitService.Update(head.GetWorkUnit().Id, head.GetWorkUnit())
+		if err != nil {
+			return err
+		}
+		head.SetWorkUnit(newWU)
+
+		return nil
+	}
+
+	// Determine if all child nodes passed.
+	allPassed := true
+	for _, child := range children {
+		// Recursively call on all children so they can update their statuses
+		err := updateAllNodes(service, child)
 		if err != nil {
 			return err
 		}
 
-		run.SetWorkUnit(patchedRunWU)
+		if child.GetWorkUnit().State != common.TaskCompletedState {
+			allPassed = false
+		}
 	}
 
-	if !allRunsSuccessful {
-		top.GetWorkUnit().State = "ERROR"
+	// Update the state of the current node based on the child nodes.
+	if allPassed {
+		head.GetWorkUnit().State = common.TaskCompletedState
 	} else {
-		top.GetWorkUnit().State = "COMPLETED"
+		head.GetWorkUnit().State = common.TaskErrorState
+		head.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
+			ErrorCode:    1,
+			ErrorMessage: "Not all children WUs passed",
+			ErrorName:    "Failed Children",
+		}
 	}
 
-	patchedTopWU, err := service.WorkUnitService.Patch(top.GetWorkUnit().Id, top.GetWorkUnit())
+	// Send the WU to the ATP API to be updated.
+	newWU, err := service.WorkUnitService.Update(head.GetWorkUnit().Id, head.GetWorkUnit())
 	if err != nil {
 		return err
 	}
 
-	top.SetWorkUnit(patchedTopWU)
+	// Insert the returned (updated) WU into the current node.
+	head.SetWorkUnit(newWU)
 
 	return nil
 }
 
 func (cmd *AlStatusUpdateCmd) closeWUTree() error {
-	top := cmd.AlStateInfo.WorkUnitTrees["test"]
-	if top == nil {
+	tree := cmd.getWorkUnitTree()
+	if tree == nil {
 		return fmt.Errorf("wu tree was removed unexpectedly")
 	}
 
-	// TODO(b/372507028): Pass this in rather than create a new one each time
 	service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}
 
-	err = patchRunsAndTestJob(service, top)
+	// Update the status of each WU.
+	err = updateAllNodes(service, tree.Head)
 	if err != nil {
 		return err
 	}
@@ -214,7 +268,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	defer func() { step.End(err) }()
 
 	// WORK UNIT MAINTENANCE
-	err = cmd.initRunLayer()
+	err = cmd.initRunAndShards()
 	if err != nil {
 		logging.Infof(ctx, "error while initing run layer: %s", err.Error())
 		if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
@@ -225,13 +279,16 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	if cmd.AlStateInfo.DoneTesting {
 		err = cmd.closeWUTree()
 		if err != nil {
-			logging.Infof(ctx, "error while closing WU tree: %s", err.Error())
+			logging.Errorf(ctx, "error while closing WU tree: %s", err.Error())
+
+			// If this is being ran inside of a LED run then ignore the update
+			// failures.
 			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
 				return err
 			}
 		}
 	}
-	// WORK UNIT MAINTENANCE
+	// WORK UNIT MAINTENANCE END
 
 	currTestJobEvent := cmd.AlStateInfo.CurrentTestJobEvent
 

@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"net/url"
 	"strconv"
 	"strings"
@@ -304,83 +305,12 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	}
 	cmd.ObserveSchedulerSetupSuccess(ctx)
 
-	// If we are inside of an AL run that has built a WU tree then generate and
-	// insert a run node.
-	var runNode *androidapi.WorkUnitNode
-	if cmd.AlStateInfo != nil && cmd.AlStateInfo.WorkUnitTrees != nil {
-		if top := cmd.AlStateInfo.WorkUnitTrees["test"]; top != nil {
-			runNodes, err := top.FetchRunLayer()
-			if err != nil {
-				return err
-			}
-
-			if len(runNodes) > 0 {
-				runNode = runNodes[0]
-			}
-		}
-	}
-
 	// Todo: batch call
 	resultsChan := make(chan *data.TestResults)
 	wg := &sync.WaitGroup{}
 	for k, v := range cmd.BuildsMap {
 		wg.Add(1)
-
-		go func(runNode *androidapi.WorkUnitNode) {
-			// Generate a shard node if there is a WU tree already in progress. This
-			// means that we are running inside an AL run. If we are passing in a shard
-			// node than that means we have one already made and are not wanting to add
-			// another child to the tree.
-			var shardNode *androidapi.WorkUnitNode
-			if runNode != nil {
-				// Generate and insert the Shard Node into the WU tree.
-				shardNode, err = androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.Shard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-				if err != nil {
-					logging.Errorf(ctx, err.Error())
-				}
-			}
-
-			err := cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0, dmc, runNode, shardNode)
-
-			// Exit early because we are not in an AL run.
-			if shardNode == nil {
-				return
-			}
-
-			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-			if err != nil {
-				logging.Errorf(ctx, err.Error())
-				return
-			}
-
-			if err != nil {
-				shardNode.GetWorkUnit().State = "ERROR"
-				shardNode.GetWorkUnit().DebugInfo.ErrorMessage = err.Error()
-
-				for _, attempt := range shardNode.GetChildren() {
-					attempt.GetWorkUnit().State = "ERROR"
-					attempt.GetWorkUnit().DebugInfo.ErrorMessage = err.Error()
-
-					patchedAttemptWU, err := service.WorkUnitService.Patch(attempt.GetWorkUnit().Id, attempt.GetWorkUnit())
-					if err != nil {
-						logging.Errorf(ctx, err.Error())
-						return
-					}
-
-					attempt.SetWorkUnit(patchedAttemptWU)
-				}
-
-			} else {
-				shardNode.GetWorkUnit().State = "COMPLETED"
-			}
-			patchedShardWU, err := service.WorkUnitService.Patch(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit())
-			if err != nil {
-				logging.Errorf(ctx, err.Error())
-				return
-			}
-
-			shardNode.SetWorkUnit(patchedShardWU)
-		}(runNode)
+		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0, dmc)
 	}
 
 	go func() {
@@ -429,7 +359,19 @@ func formatBotListURL(dims []*buildbucketpb.RequestedDimension) (string, error) 
 	return swarmingURL.String(), nil
 }
 
-func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, runNode, shardNode *androidapi.WorkUnitNode) error {
+func (cmd *ScheduleTasksCmd) getATPShardFromCMDState(key string) *androidapi.WorkUnitNode {
+	if cmd.AlStateInfo != nil && cmd.AlStateInfo.WorkUnitTrees != nil {
+		if tree, ok := cmd.AlStateInfo.WorkUnitTrees["test"]; !ok {
+			return nil
+		} else {
+			return tree.ShardsByKey[key]
+		}
+	}
+
+	return nil
+}
+
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client) error {
 	defer wg.Done()
 	var err error
 
@@ -444,9 +386,23 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Construct test results
 	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s_%s", suiteName, key), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now(), TestCases: buildReq.OriginalTrReq.Tcs}
 
+	// If we are inside of an AL run that has built a WU tree then generate and
+	// insert an attempt node.
+	var attemptNode *androidapi.WorkUnitNode
+	if shardNode := cmd.getATPShardFromCMDState(key); shardNode != nil {
+		fmt.Printf("Shard Node Parent %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+
+		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+		if err != nil {
+			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
+		}
+
+		fmt.Printf("ATTEMPT Node %s-%s#%d: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
+	}
+
 	if buildReq.Err != nil {
 		err = buildReq.Err
-		return setTopLevelError(ctx, step, result, resultsChan, buildReq.Err)
+		return setTopLevelError(ctx, step, result, resultsChan, buildReq.Err, attemptNode)
 	}
 	req := buildReq.ScheduleBuildRequest
 
@@ -483,7 +439,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
-		return setTopLevelError(ctx, step, result, resultsChan, err)
+		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
 	if leaseID != "" {
 		step.Log(fmt.Sprintf("Device Manager lease ID: %s", leaseID))
@@ -517,7 +473,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		err = fmt.Errorf(errStr)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
 
-		return setTopLevelError(ctx, step, result, resultsChan, err)
+		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
 	// Log the successful start.
 	cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()))
@@ -546,20 +502,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		Id: scheduledBuild.GetId(),
 	}
 
-	// If we are inside of an AL run that has built a WU tree then generate and
-	// insert an attempt node.
-	var attemptNode *androidapi.WorkUnitNode
-	if shardNode != nil {
-		fmt.Printf("Shard Node Parent %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
-
-		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.Attempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-		if err != nil {
-			return setTopLevelError(ctx, step, result, resultsChan, err)
-		}
-
-		fmt.Printf("ATTEMPT Node %s-%s#%d: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
-	}
-
 	cmd.ObserveTrSchedulingStart(ctx, buildReq)
 
 	for {
@@ -583,7 +525,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
 					summaries = append(summaries, fmt.Sprintf("* %s", err))
 					err = fmt.Errorf(strings.Join(summaries, "\n"))
-					return setTopLevelError(ctx, step, result, resultsChan, err)
+					return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 				}
 				lastLeaseExtensionTime = time.Now()
 			}
@@ -640,33 +582,26 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		if attemptNode != nil {
 			switch buildInfo.GetStatus() {
 			case buildbucketpb.Status_SUCCESS:
-				attemptNode.GetWorkUnit().State = "completed"
+				attemptNode.GetWorkUnit().State = common.TaskCompletedState
 			case buildbucketpb.Status_FAILURE:
-				attemptNode.GetWorkUnit().State = "ERROR"
-			case buildbucketpb.Status_INFRA_FAILURE:
-				attemptNode.GetWorkUnit().State = "ERROR"
-			case buildbucketpb.Status_CANCELED:
-				attemptNode.GetWorkUnit().State = "CANCELLED"
-			default:
-				attemptNode.GetWorkUnit().State = "SCHEDULER_STATE_UNSPECIFIED"
-			}
-
-			// TODO(b/372507028): Pass this in rather than create a new one each time
-			service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-			if err != nil {
-				logging.Infof(ctx, "err while creating android build service: %s", err)
-				return setTopLevelError(ctx, step, result, resultsChan, err)
-			}
-			newWU, err := service.WorkUnitService.Patch(attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit())
-			if err != nil {
-				logging.Infof(ctx, "err while patching workunit: %s", err)
-				// TODO (julio): make the wu code led friendly for closed invocation
-				// fail only for real run
-				if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
-					return setTopLevelError(ctx, step, result, resultsChan, err)
+				attemptNode.GetWorkUnit().State = common.TaskErrorState
+				attemptNode.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
+					ErrorCode: 1,
+					// TODO: add a proper error message here propagated from
+					// TestRunner.
+					ErrorMessage: "TESTING FAILURE",
 				}
+			case buildbucketpb.Status_INFRA_FAILURE:
+				attemptNode.GetWorkUnit().State = common.TaskErrorState
+				attemptNode.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
+					ErrorCode:    1,
+					ErrorMessage: "TESTING INFRA_FAILURE",
+				}
+			case buildbucketpb.Status_CANCELED:
+				attemptNode.GetWorkUnit().State = common.TaskCanceledState
+			default:
+				attemptNode.GetWorkUnit().State = common.TaskUnknownState
 			}
-			attemptNode.SetWorkUnit(newWU)
 		}
 
 		// Check the TestRunner build's step summary to see if the task was cancelled by
@@ -674,19 +609,19 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		suiteLimited, slErr := suitelimits.ExceededLimit(cmd.RequestKey, target)
 		if slErr != nil {
 			logging.Infof(ctx, "suite limit exceed error: %s", slErr)
-			return setTopLevelError(ctx, step, result, resultsChan, slErr)
+			return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode)
 		}
 
 		slExempt, slErr := suitelimits.HasExemption(cmd.RequestKey, target)
 		if slErr != nil {
 			logging.Infof(ctx, "suite limit exemption check error: %s", slErr)
-			return setTopLevelError(ctx, step, result, resultsChan, slErr)
+			return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode)
 		}
 		if suiteLimited && !slExempt {
 			totalDUTHours, slErr := suitelimits.GetTotalDUTHours(cmd.RequestKey, target)
 			if slErr != nil {
 				logging.Infof(ctx, "err while getting total dut hours: %s", slErr)
-				return setTopLevelError(ctx, step, result, resultsChan, slErr)
+				return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode)
 			}
 
 			common.WriteAnyObjectToStepLog(ctx, step, fmt.Sprintf("total DUT hour runtime: %.2f", totalDUTHours.Hours()), "SUITE EXECUTION TIME LIMIT EXCEEDED")
@@ -699,7 +634,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			// TODO(b/360406127): This still is leaving the step green. This
 			// needs to be fixed so that the step ends in a red failure state.
 			err = build.AttachStatus(err, buildbucketpb.Status_FAILURE, nil)
-			return setTopLevelError(ctx, step, result, resultsChan, err)
+			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 		}
 
 		trResult, err := extractResult(buildInfo, buildReq)
@@ -711,7 +646,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
 			summaries = append(summaries, fmt.Sprintf("* %s", err))
 			err = fmt.Errorf(strings.Join(summaries, "\n"))
-			return setTopLevelError(ctx, step, result, resultsChan, err)
+			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 		}
 		common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
 
@@ -722,7 +657,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				logging.Infof(ctx, "total retry left after current retry: %d", buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount()-int64(retryNum))
 				// Schedule retry
 				wg.Add(1)
-				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc, runNode, shardNode)
+				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc)
 			}
 		}
 
@@ -903,13 +838,22 @@ func IsTcRetriable(verdict skylab_test_runner.Result_Autotest_TestCase_Verdict) 
 	}
 }
 
-func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error) error {
+func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error, attemptNode *androidapi.WorkUnitNode) error {
 	logging.Infof(ctx, err.Error())
 	step.SetSummaryMarkdown(err.Error())
 	result.TopLevelError = err
 
 	// Send the result via channel
 	resultsChan <- result
+	if attemptNode != nil {
+		wu := attemptNode.GetWorkUnit()
+		wu.State = common.TaskErrorState
+		wu.DebugInfo.ErrorMessage = err.Error()
+
+		// TODO: Populate this with a wider range of error codes.
+		wu.DebugInfo.ErrorCode = 1
+	}
+
 	return err
 }
 

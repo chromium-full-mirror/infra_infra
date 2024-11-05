@@ -149,7 +149,7 @@ func executeRequests(
 		keyReqMap = sk.V1KeyToCTPv2Req
 	}
 
-	var workUnitTrees map[string]*androidapi.WorkUnitNode
+	var workUnitTrees map[string]*androidapi.WorkUnitTree
 	if sk.AlStateInfo != nil && sk.AlStateInfo.WorkUnitTrees != nil {
 		workUnitTrees = sk.AlStateInfo.WorkUnitTrees
 	}
@@ -177,7 +177,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitNode) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -231,7 +231,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitNode) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)

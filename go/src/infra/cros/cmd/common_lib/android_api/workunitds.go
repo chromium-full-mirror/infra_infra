@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"sort"
 
-	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"infra/cros/cmd/common_lib/common"
 )
 
@@ -18,35 +18,44 @@ type WULayer int
 
 func (w WULayer) String() string {
 	switch w {
-	case Unknown:
+	case WULayerUnknown:
 		return "UNKNOWN"
-	case TestJob:
+	case WULayerTestJob:
 		return "TEST_JOB"
-	case Run:
+	case WULayerRun:
 		return "RUN"
-	case Shard:
+	case WULayerShard:
 		return "SHARD"
-	case Attempt:
+	case WULayerAttempt:
 		return "ATTEMPT"
 	default:
-		return "ERROR"
+		return ""
 	}
 }
 
 const (
-	Unknown WULayer = iota
-	TestJob
-	Run
-	Shard
-	Attempt
+	WULayerUnknown WULayer = iota
+	WULayerTestJob
+	WULayerRun
+	WULayerShard
+	WULayerAttempt
 )
+
+type WorkUnitTree struct {
+	Head *WorkUnitNode
+
+	// ShardsByKey will be used to map shard nodes by the BuildsMap keys. This
+	// will allow us to remove the requirement of including the shards as
+	// arguments to scheduleAndMonitor().
+	ShardsByKey map[string]*WorkUnitNode
+}
 
 // WorkUnitNode encapsulates an ATP WorkUnit and associated metadata to keep the
 // tree in memory in a sensible way. Struct fields are not exposed to keep
 // access of the tree limited to the exposed functions.
 type WorkUnitNode struct {
 	// workUnit contains the actual ATP Work Unit of the node.
-	workUnit *ab_prod.WorkUnit
+	workUnit *atp.WorkUnit
 
 	// layer describes the which stage in the tree this work unit represents
 	layer WULayer
@@ -64,11 +73,11 @@ type WorkUnitNode struct {
 	Service WorkUnitService
 }
 
-func (w *WorkUnitNode) GetWorkUnit() *ab_prod.WorkUnit {
+func (w *WorkUnitNode) GetWorkUnit() *atp.WorkUnit {
 	return w.workUnit
 }
 
-func (w *WorkUnitNode) SetWorkUnit(newWU *ab_prod.WorkUnit) {
+func (w *WorkUnitNode) SetWorkUnit(newWU *atp.WorkUnit) {
 	w.workUnit = newWU
 }
 
@@ -94,19 +103,19 @@ func (w *WorkUnitNode) GetChildren() ChildNodes {
 func (w *WorkUnitNode) AddChild(node *WorkUnitNode) error {
 	// Enforce the layer hierarchy rules
 	switch w.layer {
-	case TestJob:
-		if node.layer != Run {
+	case WULayerTestJob:
+		if node.layer != WULayerRun {
 			return fmt.Errorf("only RUN type nodes can be added under TEST_JOB")
 		}
-	case Run:
-		if node.layer != Shard {
+	case WULayerRun:
+		if node.layer != WULayerShard {
 			return fmt.Errorf("only SHARD type nodes can be added under RUN")
 		}
-	case Shard:
-		if node.layer != Attempt {
+	case WULayerShard:
+		if node.layer != WULayerAttempt {
 			return fmt.Errorf("only ATTEMPT type nodes can be added under SHARD")
 		}
-	case Attempt:
+	case WULayerAttempt:
 		return fmt.Errorf("nodes cannot be added under ATTEMPT nodes")
 	default:
 		return fmt.Errorf("unexpected node type received")
@@ -123,7 +132,7 @@ func (w *WorkUnitNode) AddChild(node *WorkUnitNode) error {
 	return nil
 }
 
-func (w *WorkUnitNode) FetchTop() (*WorkUnitNode, error) {
+func (w *WorkUnitNode) FetchHead() (*WorkUnitNode, error) {
 	cycleChecker := map[*WorkUnitNode]struct{}{}
 
 	top := w
@@ -144,7 +153,7 @@ func (w *WorkUnitNode) FetchTop() (*WorkUnitNode, error) {
 }
 
 func (w *WorkUnitNode) FetchRunLayer() ([]*WorkUnitNode, error) {
-	topNode, err := w.FetchTop()
+	topNode, err := w.FetchHead()
 	if err != nil {
 		return nil, err
 	}
@@ -219,11 +228,11 @@ func NewWorkUnitNode(parentWUId, InvocationID string, nodeType WULayer, parent *
 		runNumber = 0
 	}
 	switch nodeType {
-	case Run:
+	case WULayerRun:
 		childRunNumber = runNumber
-	case Shard:
+	case WULayerShard:
 		childShardNumber = runNumber
-	case Attempt:
+	case WULayerAttempt:
 		childAttemptNumber = runNumber
 	}
 

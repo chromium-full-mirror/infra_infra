@@ -99,7 +99,7 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 	if cmd.AlStateInfo == nil {
 		cmd.AlStateInfo = &data.AlStateInfo{
 			IsAlRun:       false,
-			WorkUnitTrees: map[string]*androidapi.WorkUnitNode{},
+			WorkUnitTrees: map[string]*androidapi.WorkUnitTree{},
 		}
 	}
 
@@ -189,16 +189,15 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 			cmd.AlStateInfo.IsAlRun = true
 
 			// Generate the top of the tree node to begin the ATP WU tree.
-			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.TestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 			if err != nil {
 				return err
 			}
 
-			// TODO: Set the cached tree inside of the State keeper rather than
-			// inside of the API. We also likely want to pass along which node
-			// dependant steps should be using rather than giving them the full
-			// tree to traverse.
-			cmd.AlStateInfo.WorkUnitTrees["test"] = top
+			cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{
+				Head:        top,
+				ShardsByKey: map[string]*androidapi.WorkUnitNode{},
+			}
 
 			fmt.Printf("top %s: %+v\n", top.GetWorkUnit().Id, top)
 		}

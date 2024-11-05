@@ -5,10 +5,10 @@
 package data
 
 import (
+	"cloud.google.com/go/pubsub"
+
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
-
-	"cloud.google.com/go/pubsub"
 )
 
 // AlStateInfo captures the state info for Al runs
@@ -29,5 +29,5 @@ type AlStateInfo struct {
 	//
 	// NOTE: For the time being this map will only contain one tree until we
 	// begin to support multiple ATP requests per CTP build.
-	WorkUnitTrees map[string]*androidapi.WorkUnitNode
+	WorkUnitTrees map[string]*androidapi.WorkUnitTree
 }

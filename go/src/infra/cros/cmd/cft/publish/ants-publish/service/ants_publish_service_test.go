@@ -1,29 +1,25 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 // Package service provides the API handlers for ants publish.
 package service
 
 import (
+	androidlib "infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"slices"
 	"testing"
 
-	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/anypb"
-
-	androidlib "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	ab_prod "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-
+	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-
-	"github.com/golang/mock/gomock"
-	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func TestAntsStatus(t *testing.T) {
@@ -53,7 +49,6 @@ func TestAntsStatus(t *testing.T) {
 			want: "assumptionFailure",
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := antsTestStatus(tc.result)
@@ -65,7 +60,6 @@ func TestAntsStatus(t *testing.T) {
 		})
 	}
 }
-
 func TestValidateAntsPublishRequest(t *testing.T) {
 	defaultResult := &api.TestCaseResult{TestCaseId: &api.TestCase_Id{Value: "test"}}
 	testCases := []struct {
@@ -111,7 +105,6 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			metadata := &anypb.Any{}
@@ -119,7 +112,6 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-
 			req := &api.PublishRequest{
 				ArtifactDirPath: &storage_path.StoragePath{Path: "gs://test", HostType: storage_path.StoragePath_LOCAL},
 				Metadata:        metadata,
@@ -127,7 +119,6 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 					GivenTestResults: []*api.CrosTestResponse_GivenTestResult{tc.gtr},
 				},
 			}
-
 			gotErr := validateAntsPublishRequest(req)
 			if (tc.wantErr && gotErr == nil) || (gotErr != nil && !tc.wantErr) {
 				t.Errorf("Unexpected error. want: %v, got %v", tc.wantErr, gotErr)
@@ -135,7 +126,6 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 		})
 	}
 }
-
 func TestArtifactMetadata(t *testing.T) {
 	testCases := []struct {
 		name      string
@@ -156,7 +146,6 @@ func TestArtifactMetadata(t *testing.T) {
 			wantTypes: []string{"application/xml", "text/xml"},
 		},
 	}
-
 	aps := &AntsPublishService{
 		metadata: &metadata.PublishAntsMetadata{AntsInvocationId: "I123", ParentWorkUnitId: "WU1"},
 	}
@@ -166,14 +155,12 @@ func TestArtifactMetadata(t *testing.T) {
 			if got.Name != tc.wantName {
 				t.Errorf("Unexpected name. want %s got %s", tc.wantName, got.Name)
 			}
-
 			if !slices.Contains(tc.wantTypes, got.ContentType) {
 				t.Errorf("Unexpected content type. want %s got %s", tc.wantTypes, got.ContentType)
 			}
 		})
 	}
 }
-
 func TestArtifactType(t *testing.T) {
 	testCases := []struct {
 		name     string
@@ -206,24 +193,21 @@ func TestArtifactType(t *testing.T) {
 			wantType: "xml",
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			gotType := artifactType(tc.path)
-
 			if gotType != tc.wantType {
 				t.Errorf("Unexpected artifact type. want %s got %s", tc.wantType, gotType)
 			}
 		})
 	}
 }
-
 func TestWorkUnitProperties(t *testing.T) {
 	testCases := []struct {
 		name      string
 		dut       *labapi.Dut
 		luciInvID string
-		wantProps []*ab_prod.Property
+		wantProps []*atp.Property
 	}{
 		{
 			name: "crosDut",
@@ -237,7 +221,7 @@ func TestWorkUnitProperties(t *testing.T) {
 					},
 				},
 			},
-			wantProps: []*ab_prod.Property{
+			wantProps: []*atp.Property{
 				{Name: "board", Value: "brya"},
 				{Name: "model", Value: "mithrax"},
 			},
@@ -254,13 +238,12 @@ func TestWorkUnitProperties(t *testing.T) {
 					},
 				},
 			},
-			wantProps: []*ab_prod.Property{
+			wantProps: []*atp.Property{
 				{Name: "board", Value: "brya"},
 				{Name: "model", Value: "mithrax"},
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			aps := &AntsPublishService{
@@ -277,23 +260,20 @@ func TestWorkUnitProperties(t *testing.T) {
 			if err != nil {
 				t.Errorf("error calling invocation properties: %q", err)
 			}
-
 			if diff := cmp.Diff(tc.wantProps, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Unexpected diff: diff: %s", diff)
 			}
 		})
 	}
 }
-
 func TestUploadInvocationProperties(t *testing.T) {
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
-
 	mockInv := mock_androidapi.NewMockInvocationService(mockCtl)
 	testCases := []struct {
 		name    string
 		exeInfo *artifact.ExecutionInfo
-		wantInv *ab_prod.Invocation
+		wantInv *atp.Invocation
 	}{
 		{
 			name: "satlab",
@@ -306,9 +286,9 @@ func TestUploadInvocationProperties(t *testing.T) {
 					},
 				},
 			},
-			wantInv: &ab_prod.Invocation{
+			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
-				Properties: []*ab_prod.Property{
+				Properties: []*atp.Property{
 					{Name: ancestorsPropName, Value: "123"},
 				},
 			},
@@ -324,9 +304,9 @@ func TestUploadInvocationProperties(t *testing.T) {
 					},
 				},
 			},
-			wantInv: &ab_prod.Invocation{
+			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
-				Properties: []*ab_prod.Property{
+				Properties: []*atp.Property{
 					{Name: ancestorsPropName, Value: "123,456"},
 				},
 			},
@@ -342,9 +322,9 @@ func TestUploadInvocationProperties(t *testing.T) {
 					},
 				},
 			},
-			wantInv: &ab_prod.Invocation{
+			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
-				Properties: []*ab_prod.Property{
+				Properties: []*atp.Property{
 					{Name: ancestorsPropName, Value: "123"},
 				},
 			},
@@ -360,15 +340,14 @@ func TestUploadInvocationProperties(t *testing.T) {
 					},
 				},
 			},
-			wantInv: &ab_prod.Invocation{
+			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
 			},
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			inv := &ab_prod.Invocation{
+			inv := &atp.Invocation{
 				InvocationId: "I987654321",
 			}
 			aps := &AntsPublishService{
@@ -378,31 +357,24 @@ func TestUploadInvocationProperties(t *testing.T) {
 				service:    &androidlib.Service{InvocationService: mockInv},
 				invocation: inv,
 			}
-
 			// Verify that we get correct args for update call
 			mockInv.EXPECT().Update(inv.InvocationId, tc.wantInv).Return(tc.wantInv, nil)
-
 			err := aps.uploadInvocationProperties()
 			if err != nil {
 				t.Errorf("Error uploading invocation props: %q", err)
 			}
-
 		})
 	}
-
 }
-
 func TestResultEntries(t *testing.T) {
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
-
 	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
 	parentwuID := "WU1"
-	dutProps := []*ab_prod.Property{
+	dutProps := []*atp.Property{
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
 	}
-
 	executionInfo := &artifact.ExecutionInfo{
 		DutInfo: &artifact.DutInfo{
 			Dut: &labapi.Dut{
@@ -422,13 +394,12 @@ func TestResultEntries(t *testing.T) {
 			PrimaryExecutionInfo: executionInfo,
 		},
 	}
-
 	testCases := []struct {
 		name       string
 		wuName     string
-		expectWU   *ab_prod.WorkUnit
+		expectWU   *atp.WorkUnit
 		result     *api.TestCaseResult
-		wantResult *ab_prod.TestResult
+		wantResult *atp.TestResult
 	}{
 		{
 			name:   "crash",
@@ -437,15 +408,15 @@ func TestResultEntries(t *testing.T) {
 				TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.CtsWrapWrapNoDebugTestCases"},
 				Verdict:    &api.TestCaseResult_Crash_{},
 			},
-			wantResult: &ab_prod.TestResult{
-				TestIdentifier: &ab_prod.TestIdentifier{
+			wantResult: &atp.TestResult{
+				TestIdentifier: &atp.TestIdentifier{
 					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					ModuleParameters: dutProps,
 					TestClass:        "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 				},
 				TestStatus: "testError",
-				Properties: []*ab_prod.Property{
+				Properties: []*atp.Property{
 					{Name: "board", Value: "brya"},
 					{Name: "model", Value: "vell"},
 				},
@@ -458,8 +429,8 @@ func TestResultEntries(t *testing.T) {
 				TestCaseId: &api.TestCase_Id{Value: "testmethod"},
 				Verdict:    &api.TestCaseResult_Pass_{},
 			},
-			wantResult: &ab_prod.TestResult{
-				TestIdentifier: &ab_prod.TestIdentifier{
+			wantResult: &atp.TestResult{
+				TestIdentifier: &atp.TestIdentifier{
 					Module:           "mobly.CtsWrapWrapNoDebugTestCases",
 					ModuleParameters: dutProps,
 					TestClass:        "mobly.CtsWrapWrapNoDebugTestCases",
@@ -476,14 +447,14 @@ func TestResultEntries(t *testing.T) {
 				TestCaseId: &api.TestCase_Id{Value: "testcase#testname"},
 				Verdict:    &api.TestCaseResult_Pass_{},
 			},
-			expectWU: &ab_prod.WorkUnit{
+			expectWU: &atp.WorkUnit{
 				Name:       "testcase",
 				ParentId:   parentwuID,
 				Type:       "TF_TEST_RUN",
 				Properties: dutProps,
 			},
-			wantResult: &ab_prod.TestResult{
-				TestIdentifier: &ab_prod.TestIdentifier{
+			wantResult: &atp.TestResult{
+				TestIdentifier: &atp.TestIdentifier{
 					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					ModuleParameters: dutProps,
 					TestClass:        "testcase",
@@ -496,23 +467,20 @@ func TestResultEntries(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wu := &ab_prod.WorkUnit{Id: parentwuID, Name: tc.wuName}
+			wu := &atp.WorkUnit{Id: parentwuID, Name: tc.wuName}
 			results := []*api.TestCaseResult{tc.result}
 			if tc.expectWU != nil {
 				mockWU.EXPECT().Insert(tc.expectWU).Return(wu, nil)
 			}
-
 			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
-
 			if gotToken != int64(len(results)) {
 				t.Errorf("Unexpected token: got %d, want %d", gotToken, len(results))
 			}
-
 			tc.wantResult.WorkUnitId = parentwuID
-			tc.wantResult.Timing = &ab_prod.Timing{}
+			tc.wantResult.Timing = &atp.Timing{}
 			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
 				t.Errorf("%s", diff)
 			}

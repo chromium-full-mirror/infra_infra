@@ -77,6 +77,21 @@ const (
 	Dev
 )
 
+func (e Environment) String() string {
+	switch e {
+	case Unknown:
+		return "UNKNOWN"
+	case Prod:
+		return "PROD"
+	case Staging:
+		return "STAGING"
+	case Dev:
+		return "DEV"
+	default:
+		return ""
+	}
+}
+
 func GetCTPEnvironment(builderID *buildbucketpb.BuilderID) Environment {
 	if strings.Contains(builderID.Builder, "dev") {
 		return Dev
