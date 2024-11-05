@@ -485,7 +485,10 @@ func getKarbonFilters() []*api.CTPFilter {
 }
 
 func buildSchedulerInfo(testJobMsg *common.TestJobMessage) *api.SchedulerInfo {
-	return &api.SchedulerInfo{Scheduler: api.SchedulerInfo_SCHEDUKE}
+	return &api.SchedulerInfo{
+		QsAccount: common.ATPBlockingQuotaAccount,
+		Scheduler: api.SchedulerInfo_SCHEDUKE,
+	}
 }
 
 func getSchedulingPool(testJobMsg *common.TestJobMessage) string {

@@ -20,6 +20,7 @@ import (
 )
 
 const (
+	ATPBlockingQuotaAccount = "atp-blocking"
 	// Higher integer value means lower priority.
 	noAccountPriority int64 = 10
 	// DefaultQuotaPool is the main Swarming pool, and the default for leases.
@@ -36,36 +37,38 @@ const (
 
 var (
 	asapQSAccounts = []string{
+		ATPBlockingQuotaAccount,
 		"pcq",
 	}
 	quotaAccountPriorities = map[string]int64{
-		"bisector":             2,
-		"bvt-sync":             3,
-		"cq":                   1,
-		"cts":                  5,
-		"deputy":               3,
-		"lacros":               3,
-		"lacros_fyi":           5,
-		"leases":               1,
-		"legacypool-bvt":       4,
-		"legacypool-suites":    5,
-		"p0_cq_unmanaged":      1,
-		"pcq":                  1,
-		"pfq":                  1,
-		"postsubmit":           2,
-		"pupr":                 2,
-		"release_direct_sched": 2,
-		"release_high_prio":    2,
-		"release_low_prio":     3,
-		"release_med_prio":     4,
-		"release_p0":           2,
-		"toolchain":            3,
-		"unmanaged_p0":         2,
-		"unmanaged_p1":         3,
-		"unmanaged_p2":         4,
-		"unmanaged_p3":         5,
-		"unmanaged_p4":         10,
-		"wificell":             3,
+		ATPBlockingQuotaAccount: 1,
+		"bisector":              2,
+		"bvt-sync":              3,
+		"cq":                    1,
+		"cts":                   5,
+		"deputy":                3,
+		"lacros":                3,
+		"lacros_fyi":            5,
+		"leases":                1,
+		"legacypool-bvt":        4,
+		"legacypool-suites":     5,
+		"p0_cq_unmanaged":       1,
+		"pcq":                   1,
+		"pfq":                   1,
+		"postsubmit":            2,
+		"pupr":                  2,
+		"release_direct_sched":  2,
+		"release_high_prio":     2,
+		"release_low_prio":      3,
+		"release_med_prio":      4,
+		"release_p0":            2,
+		"toolchain":             3,
+		"unmanaged_p0":          2,
+		"unmanaged_p1":          3,
+		"unmanaged_p2":          4,
+		"unmanaged_p3":          5,
+		"unmanaged_p4":          10,
+		"wificell":              3,
 	}
 	dutLeaserBuilder = &buildbucketpb.BuilderID{
 		Project: "chromeos",
