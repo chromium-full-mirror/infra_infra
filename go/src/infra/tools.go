@@ -28,4 +28,7 @@ import (
 
 	// Used exclusively to build a CIPD package out of it.
 	_ "go.skia.org/infra/gold-client/cmd/goldctl" // noinstall
+
+	// Delve is a go debugger. It is useful. Install it here as an end-user convenience.
+	_ "github.com/go-delve/delve/cmd/dlv"
 )
