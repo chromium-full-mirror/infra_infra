@@ -16,7 +16,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/cros/cellular"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
+	"infra/cros/recovery/tlw"
 )
 
 // getDevice gets the starfish device path.
@@ -40,6 +44,97 @@ func getDevice(ctx context.Context, runner components.Runner) (string, error) {
 		return "", errors.Annotate(err, "get device: failed to find device with starfish in id").Err()
 	}
 	return strings.TrimSpace(devPath), nil
+}
+
+// EjectSIM ejects any connected SIM.
+func EjectSIM(ctx context.Context, runner components.Runner) error {
+	device, err := getDevice(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "eject sim: failed to find starfish device").Err()
+	}
+
+	if _, err := sendCmd(ctx, runner, "sim eject", device); err != nil {
+		return errors.Annotate(err, "eject sim: failed to send eject command").Err()
+	}
+	return nil
+}
+
+// InsertSIM inserts the SIM in the given slot.
+func InsertSIM(ctx context.Context, runner components.Runner, slot int) error {
+	device, err := getDevice(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "insert sim: failed to find starfish device").Err()
+	}
+	cmd := fmt.Sprintf("sim connect -n %d", slot)
+	if out, err := sendCmd(ctx, runner, cmd, device); err != nil {
+		return errors.Annotate(err, "insert sim: failed to switch SIM slot").Err()
+	} else if !strings.Contains(out, fmt.Sprintf("Mux set to %d", slot)) {
+		return errors.Reason("insert sim: failed to verify that device was set to correct slot").Err()
+	}
+
+	// Normally, when you insert a SIM the device is able to detect the SIM being
+	// physically inserted into the slot. Since this is an electronic switch the
+	// device may not notice the new SIM. Power cycle it to ensure we have the correct SIM.
+	if err := cros.Reboot(ctx, runner, 5*time.Second); err != nil {
+		// cros reboot will always time out.
+		log.Infof(ctx, "Error received during reboot: %v", err)
+	}
+	if err := cros.WaitUntilSSHable(ctx, 120*time.Second, 5*time.Second, runner, log.Get(ctx)); err != nil {
+		return errors.Annotate(err, "insert sim: failed to connect to device after rebooting").Err()
+	}
+
+	// Make sure we're on a PSIM slot first.
+	predicate := func(sim *tlw.Cellular_SIMInfo) bool {
+		return sim.GetType() == tlw.Cellular_SIM_PHYSICAL
+	}
+
+	// Wait for the SIM to be detected.
+	return retry.WithTimeout(ctx, time.Second, 60*time.Second, func() error {
+		if err := cellular.SwitchToMatchingSIMSlot(ctx, runner, predicate); err != nil {
+			return errors.Annotate(err, "failed to switch to psim slot").Err()
+		}
+		simInfo, err := cellular.GetSIMInfo(ctx, runner)
+		if err != nil {
+			return errors.Annotate(err, "failed to query info for sim slot: %d", slot).Err()
+		}
+		// If the SIM slot is empty, it may just not be detected yet.
+		if simInfo == nil || len(simInfo.GetProfileInfos()) == 0 {
+			return errors.Reason("sim info is empty").Err()
+		}
+		return nil
+	}, "insert sim")
+}
+
+// GetAllSIMInfo switches to all occupied starfish slots and queries the SIM info.
+func GetAllSIMInfo(ctx context.Context, runner components.Runner) ([]*tlw.Cellular_SIMInfo, error) {
+	slots, err := GetOccupiedSlots(ctx, runner)
+	if err != nil {
+		return nil, errors.Annotate(err, "get all sim info: failed to determine occupied SIM slots").Err()
+	}
+
+	// Try to eject the SIM as cleanup.
+	defer func() {
+		if err := EjectSIM(ctx, runner); err != nil {
+			log.Errorf(ctx, "Failed to eject SIM from starfish: %v", err)
+		}
+	}()
+
+	infos := make([]*tlw.Cellular_SIMInfo, 0)
+	for _, slot := range slots {
+		if err := InsertSIM(ctx, runner, slot); err != nil {
+			return nil, errors.Annotate(err, "get all sim info: failed to insert sim into starfish").Err()
+		}
+
+		simInfo, err := cellular.GetSIMInfo(ctx, runner)
+		if err != nil {
+			return nil, errors.Annotate(err, "get all sim info: failed to query info for sim slot: %d", slot).Err()
+		}
+
+		// Starfish 0 indexes while ModemManager 1 indexes SIM slots.
+		simInfo.SlotId = int32(slot) + 1
+		infos = append(infos, simInfo)
+	}
+	return infos, nil
 }
 
 // GetOccupiedSlots returns a list of the occupied SIM slots on the starfish.

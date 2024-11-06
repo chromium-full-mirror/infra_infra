@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros/cellular"
+	"infra/cros/recovery/internal/components/cros/cellular/starfish"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
@@ -424,9 +425,18 @@ func updateCellularSIMLabelsExec(ctx context.Context, info *execs.ExecInfo) erro
 	// Fetch available SIMs on device, if we fail to fetch any required information for a SIM then
 	// we should fail without updating as we would still want to know which SIM are not being properly
 	// populated.
-	simInfos, err := cellular.GetAllSIMInfo(ctx, info.DefaultRunner())
-	if err != nil {
-		return errors.Annotate(err, "audit cellular sim labels: failed to query sim info").Err()
+	var simInfos []*tlw.Cellular_SIMInfo
+	var err error
+	if strings.Contains(c.GetCarrier(), "STARFISH") {
+		simInfos, err = starfish.GetAllSIMInfo(ctx, info.DefaultRunner())
+		if err != nil {
+			return errors.Annotate(err, "audit cellular sim labels: failed to query sim info").Err()
+		}
+	} else {
+		simInfos, err = cellular.GetAllSIMInfo(ctx, info.DefaultRunner())
+		if err != nil {
+			return errors.Annotate(err, "audit cellular sim labels: failed to query sim info").Err()
+		}
 	}
 
 	simInfosBySlot := make(map[int32]*tlw.Cellular_SIMInfo)

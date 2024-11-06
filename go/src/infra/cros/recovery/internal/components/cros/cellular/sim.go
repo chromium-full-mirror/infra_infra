@@ -178,6 +178,38 @@ func (s *simInfo) CarrierName() tlw.Cellular_NetworkProvider {
 	}
 }
 
+// SwitchToMatchingSIMSlot switches to a SIM slot that matches the predicate.
+func SwitchToMatchingSIMSlot(ctx context.Context, runner components.Runner, predicate func(*tlw.Cellular_SIMInfo) bool) error {
+	// Check if the current SIM slot matches before moving on.
+	simInfo, err := GetSIMInfo(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "get all sim info: failed to query info for current SIM slot").Err()
+	}
+	if predicate(simInfo) {
+		return nil
+	}
+
+	modemInfo, err := WaitForModemInfo(ctx, runner, 15*time.Second)
+	if err != nil {
+		return errors.Annotate(err, "get all sim info: wait for ModemManager to export modem").Err()
+	}
+	for i := int32(0); i < modemInfo.SIMSlotCount(); i++ {
+		if err := SwitchSIMSlot(ctx, runner, i+1); err != nil {
+			return errors.Annotate(err, "get all sim info: switch to requested SIM slot").Err()
+		}
+
+		simInfo, err := GetSIMInfo(ctx, runner)
+		if err != nil {
+			return errors.Annotate(err, "get all sim info: failed to query info for sim slot: %d", i+1).Err()
+		}
+
+		if predicate(simInfo) {
+			return nil
+		}
+	}
+	return errors.Reason("switch to sim slot matching: failed to find a SIM slot matching predicate").Err()
+}
+
 // GetAllSIMInfo queries all SIM cards on the DUT and populates their information.
 func GetAllSIMInfo(ctx context.Context, runner components.Runner) ([]*tlw.Cellular_SIMInfo, error) {
 	modemInfo, err := WaitForModemInfo(ctx, runner, 15*time.Second)
