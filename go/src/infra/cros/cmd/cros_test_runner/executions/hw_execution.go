@@ -190,7 +190,11 @@ func executeHwTests(
 
 	// Cros-provision uses servo-nexus as a container now.
 	// Hack the command/executor into non-dynamic.
-	sk.ContainerQueue.PushBack(common_builders.BuildServoNexusContainerRequest(common.NewPrimaryDeviceIdentifier()))
+	if common.GetBotProvider() != common.BotProviderGce {
+		if _, ok := containerImagesMap[common.ServoNexus]; ok {
+			sk.ContainerQueue.PushBack(common_builders.BuildServoNexusContainerRequest(common.NewPrimaryDeviceIdentifier()))
+		}
+	}
 	// Post process was only included in the dynamic format.
 	// Hack the command/executor into non-dynamic.
 	sk.ContainerQueue.PushBack(common_builders.BuildPostProcessContainerRequest(common.PostProcess))
