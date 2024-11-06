@@ -221,7 +221,7 @@ func getXcodePath(ctx context.Context) string {
 }
 
 func setXcodePath(ctx context.Context, xcodeAppPath string) error {
-	err := RunCommand(ctx, "sudo", "-n", "/usr/bin/xcode-select", "-s", xcodeAppPath)
+	err := RunCommand(ctx, "sudo", "/usr/bin/xcode-select", "-s", xcodeAppPath)
 	if err != nil {
 		return errors.Annotate(err, "failed xcode-select -s %s", xcodeAppPath).Err()
 	}
@@ -246,7 +246,7 @@ func RunWithXcodeSelect(ctx context.Context, xcodeAppPath string, f func() error
 
 func acceptLicense(ctx context.Context, xcodeAppPath string) error {
 	err := RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
-		return RunCommand(ctx, "sudo", "-n", "/usr/bin/xcodebuild", "-license", "accept")
+		return RunCommand(ctx, "sudo", "/usr/bin/xcodebuild", "-license", "accept")
 	})
 	if err != nil {
 		return errors.Annotate(err, "failed to accept new license").Err()
@@ -256,7 +256,7 @@ func acceptLicense(ctx context.Context, xcodeAppPath string) error {
 
 func finalizeInstall(ctx context.Context, xcodeAppPath, xcodeVersion, packageInstallerOnBots string) error {
 	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
-		err := RunCommand(ctx, "sudo", "-n", "/usr/bin/xcodebuild", "-runFirstLaunch")
+		err := RunCommand(ctx, "sudo", "/usr/bin/xcodebuild", "-runFirstLaunch")
 		if err != nil {
 			return errors.Annotate(err, "failed when invoking xcodebuild -runFirstLaunch").Err()
 		}
