@@ -25,6 +25,7 @@ const (
 	internalAccountID = 1
 	dynamicIdentifier = "ants-publish"
 	skipTFUploadFlag  = "skip_ants_upload"
+	InvocationIDKey   = "ants_invocation_id"
 )
 
 func isInternal(accountID string) bool {
@@ -47,8 +48,14 @@ func isInternal(accountID string) bool {
 	return id == internalAccountID
 }
 
-func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
-	if !isInternal(metadata.AccountId) {
+func skipAntsPublish(metadata *metadata.PublishAntsMetadata, invID string) bool {
+	if invID == "" {
+		// Skip calling ants-publish for non-ATP runs.
+		log.Print("Empty invocation id found.")
+		return true
+	}
+
+	if !isInternal(metadata.GetAccountId()) {
 		// Skip calling ants-publish for external partners.
 		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
 		return true
@@ -58,18 +65,16 @@ func skipAntsPublish(metadata *metadata.PublishAntsMetadata) bool {
 }
 
 func skipTFUpload(req *api.InternalTestplan) {
-	skipTFUploadValue := "true"
-	if suiteExecutionMetadataArgValue(req, "ants_invocation_id") == "" {
-		skipTFUploadValue = "false"
+	invID := suiteExecutionMetadataArgValue(req, InvocationIDKey)
+	if invID != "" {
+		em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+		args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
+		req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
 	}
-
-	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
-	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: skipTFUploadValue})
-	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
 }
 
 func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
-	if skipAntsPublish(metadata) {
+	if skipAntsPublish(metadata, suiteExecutionMetadataArgValue(req, InvocationIDKey)) {
 		log.Printf("Skipping ants-publish task.")
 		return nil
 	}
