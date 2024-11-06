@@ -137,16 +137,18 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 	build := getBuildFromGCSPath(gcsPath)
 
-	buildContainerMetadata, err := common.FetchImageData(ctx, board, gcsPath)
-	if err != nil {
-		logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))
-		if cmd.IsAlRun {
-			step.SetSummaryMarkdown("skipping; AL run doesn't require building container metadata")
-		} else {
+	var buildContainerMetadata map[string]*buildapi.ContainerImageInfo
+	if cmd.IsAlRun {
+		step.SetSummaryMarkdown("skipping; AL run doesn't require building container metadata")
+	} else {
+		buildContainerMetadata, err = common.FetchImageData(ctx, board, gcsPath)
+		if err != nil {
+			logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))
 			step.SetSummaryMarkdown("container metadata download failed: perhaps metadata doesn't exist")
 			return errors.Annotate(err, "failed to fetch container image data: ").Err()
 		}
 	}
+
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 
 	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)

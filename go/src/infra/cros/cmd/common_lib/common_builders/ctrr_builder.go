@@ -34,7 +34,7 @@ func NewDynamicTrv2FromCftBuilder(cft *skylab_test_runner.CFTTestRequest) *Dynam
 
 // BuildRequest extracts necessary information from the cft test request to build out the
 // dynamic trv2 request.
-func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
+func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
 	dynamic := builder.buildDynamicRequest()
 
 	builder.tryAppendProvisionTask(dynamic)
@@ -46,7 +46,7 @@ func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context) (*api.CrosT
 		dynamic.CompanionDuts = append(dynamic.CompanionDuts, companionDut.GetDutModel())
 	}
 
-	return dynamic.BuildRequest(ctx)
+	return dynamic.BuildRequest(ctx, isALRun)
 }
 
 type DynamicTaskBuilder func(*DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task
@@ -74,8 +74,8 @@ type DynamicTrv2Builder struct {
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
-func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context) (*api.CrosTestRunnerDynamicRequest, error) {
-	if builder.ContainerMetadata == nil && !common.IsAndroidUrl(builder.GcsArtifactPath) {
+func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context, isALRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
+	if builder.ContainerMetadata == nil && !isALRun {
 		if builder.GcsArtifactPath == "" {
 			return nil, fmt.Errorf("request missing `GcsArtifactPath`, can't fetch container metadata")
 		}

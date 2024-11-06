@@ -715,7 +715,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		},
 	}
 
-	dynamicRequest, err := builder.BuildRequest(ctx)
+	dynamicRequest, err := builder.BuildRequest(ctx, trHelper.isAlRun)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to build base dynamic request").Err()
 	}
