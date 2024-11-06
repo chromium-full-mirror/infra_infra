@@ -79,8 +79,14 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 		return
 	}
 
-	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", installResp.GetStatus().String()))
+	if installResp.GetMessage() != "" {
+		step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s provision state: %s", installResp.GetStatus().String(), installResp.GetMessage()))
+	} else {
+		step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", installResp.GetStatus().String()))
+	}
+
 	step.AddTagValue("provision_status", installResp.GetStatus().String())
+	step.AddTagValue("provision_message", installResp.GetMessage())
 	cmd.InstallResp = installResp
 	common.WriteProtoToStepLog(ctx, step, installResp, "provision response")
 
