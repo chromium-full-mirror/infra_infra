@@ -18,6 +18,12 @@ import (
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_builders"
+)
+
+var (
+	DefaultBranch = "git_main-al-dev"
+	PDKBranch     = "partner-brya-temp-main-al-dev-fs"
 )
 
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
@@ -99,10 +105,11 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		if !ok {
 			log.Printf("board not found")
 		}
+		branch := getBranch(su, log)
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.CONTAINER_GCE, buildGetReq(board))
+			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.CONTAINER_GCE, buildGetReq(board, branch))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				continue
@@ -122,13 +129,26 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 
 }
 
-func buildGetReq(board string) androidapi.BuildGetRequest {
+func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
 	return androidapi.BuildGetRequest{
 		BuildType:   "submitted",
 		Board:       board,
 		MaxResults:  "1",
-		Branch:      "git_main-al-dev",
+		Branch:      branch,
 		SortingType: "creationTimestamp",
 		Successful:  "true",
 	}
+}
+
+func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
+	kvs := su.GetPrimaryTarget().GetSwReq().GetKeyValues()
+	if kvs == nil {
+		log.Printf("KeyValues found nil")
+	}
+	for _, kv := range kvs {
+		if kv.Key == common_builders.ChromeosBuildGcsBucket && kv.Value != common_builders.DefaultChromeosBuildGcsBucket {
+			return PDKBranch
+		}
+	}
+	return DefaultBranch
 }
