@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -163,27 +164,20 @@ func fetchTimedEvents(currTime common.KronTime, ingestedConfigs *configparser.Su
 	return timedConfigs, nil
 }
 
-// limitStagingRequests scrubs outs ctp requests to ensure that only
-// common.StagingMaxRequests maximum requests can be sent to CTP-staging. This
-// limits the pressure that kron places on our staging pools while allowing us a
-// functional staging environment.
-func limitStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
-	common.Stdout.Printf("limiting staging requests to %d max, starting with %d", common.StagingMaxRequests, len(ctpRequests))
+// onlyStagingRequests scrubs out ctp requests to ensure that only staging
+// configs are be sent to CTP-staging.
+func onlyStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
+	common.Stdout.Printf("limiting staging requests to those prefixed with %s", common.StagingConfigsPrefix)
 	if len(ctpRequests) == 0 {
 		return nil
 	}
 
-	limitedRequests := []*ctpEvent{}
+	var limitedRequests []*ctpEvent
 	for _, configWrapper := range ctpRequests {
-		if len(limitedRequests) == common.StagingMaxRequests {
-			break
+		// Only add configs with the staging config prefix.
+		if strings.HasPrefix(configWrapper.config.Name, common.StagingConfigsPrefix) {
+			limitedRequests = append(limitedRequests, configWrapper)
 		}
-
-		if _, ok := common.StagingConfigsAllowList[configWrapper.config.Name]; !ok {
-			continue
-		}
-
-		limitedRequests = append(limitedRequests, configWrapper)
 	}
 
 	return limitedRequests
@@ -444,26 +438,18 @@ func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, al
 	return ctpMapByConfig, nil
 }
 
-func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsPerBranch) map[*suschpb.SchedulerConfig][]ctpEventsPerBranch {
+// onlyStagingRequests3d scrubs out ctp requests to ensure that only staging
+// configs are be sent to CTP-staging.
+func onlyStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEventsPerBranch) map[*suschpb.SchedulerConfig][]ctpEventsPerBranch {
+	common.Stdout.Printf("limiting staging requests to those prefixed with %s", common.StagingConfigsPrefix)
 	// Create a new map to hold the result
 	resultCtpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{}
 
-	// Keep track of the total number of configs being sent in this staging run.
-	totalConfigs := 0
-
 	// Iterate over the input map.
 	for config, ctpEventsPerBranchList := range ctpMapByConfig {
-		if totalConfigs >= common.StagingMaxRequests {
-			break
-		}
-
 		// Create a new list to hold the limited events per branch.
-		newCtpEventsPerBranchList := []ctpEventsPerBranch{}
+		var newCtpEventsPerBranchList []ctpEventsPerBranch
 		for _, ctpEvents := range ctpEventsPerBranchList {
-			if totalConfigs >= common.StagingMaxRequests {
-				break
-			}
-
 			// Create a new branch config list.
 			branchConfigs := ctpEventsPerBranch{
 				events: []*ctpEvent{},
@@ -472,17 +458,10 @@ func limitStagingRequests3d(ctpMapByConfig map[*suschpb.SchedulerConfig][]ctpEve
 
 			// Add the events to the tracking list.
 			for _, ctpEvent := range ctpEvents.events {
-				if totalConfigs >= common.StagingMaxRequests {
-					break
+				// Only add configs with the staging config prefix.
+				if strings.HasPrefix(ctpEvent.config.Name, common.StagingConfigsPrefix) {
+					branchConfigs.events = append(branchConfigs.events, ctpEvent)
 				}
-
-				// Only add configs that are in the allowlist.
-				if _, ok := common.StagingConfigsAllowList[ctpEvent.config.Name]; !ok {
-					continue
-				}
-
-				branchConfigs.events = append(branchConfigs.events, ctpEvent)
-				totalConfigs += 1
 			}
 
 			if len(branchConfigs.events) > 0 {
@@ -816,10 +795,9 @@ func fetchTriggeredConfigs(kronBuilds []*kronpb.Build, fetchConfigsByBuildTarget
 // formatAndBatchCTPRequests limits total request count in staging and merges
 // all requests into batches.
 func formatAndBatchCTPRequests(isProd, dryRun bool, ctpRequests []*ctpEvent) ([]*ctpEventBatch, error) {
-	// Limit the number of requests we launch if running in the staging
-	// environment.
+	// Only send staging requests to the staging environment.
 	if !isProd {
-		ctpRequests = limitStagingRequests(ctpRequests)
+		ctpRequests = onlyStagingRequests(ctpRequests)
 	}
 
 	if len(ctpRequests) == 0 {

@@ -7,6 +7,7 @@ package run
 import (
 	"io"
 	"log"
+	"strings"
 	"testing"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -26,102 +27,48 @@ func SetUp() {
 	common.Stderr = log.New(io.Discard, "", log.Lshortfile|log.LstdFlags)
 }
 
-func TestLimitStagingRequestsUnderMax(t *testing.T) {
-	common.StagingConfigsAllowList = map[string]struct{}{
-		"abc": {},
-	}
-
+func TestOnlyStagingRequests(t *testing.T) {
 	requests := []*ctpEvent{
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config: &suschpb.SchedulerConfig{
-				Name: "abc",
-			},
+			config:     &suschpb.SchedulerConfig{Name: "TSEStagingFoo"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
+			config:     &suschpb.SchedulerConfig{Name: "TSEStagingBar"},
 		},
 		{
 			event:      &kronpb.Event{},
 			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
+			config:     &suschpb.SchedulerConfig{Name: "ProdConfigBaz"},
 		},
 	}
-
-	limitedRequests := limitStagingRequests(requests)
-
-	if len(limitedRequests) != len(requests) {
-		t.Errorf("%d requests expected, got %d", len(limitedRequests), len(requests))
+	gotStagingRequests := onlyStagingRequests(requests)
+	if len(gotStagingRequests) != 2 {
+		t.Errorf("2 requests expected, got %d", len(gotStagingRequests))
 	}
-}
-func TestLimitStagingRequestsOverMax(t *testing.T) {
-	common.StagingConfigsAllowList = map[string]struct{}{
-		"abc": {},
-	}
-
-	requests := []*ctpEvent{
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config: &suschpb.SchedulerConfig{
-				Name: "abc",
-			},
-		},
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
-		},
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
-		},
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
-		},
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
-		},
-		{
-			event:      &kronpb.Event{},
-			ctpRequest: &test_platform.Request{},
-			config:     &suschpb.SchedulerConfig{Name: "abc"},
-		},
-	}
-
-	limitedRequests := limitStagingRequests(requests)
-
-	if len(limitedRequests) != common.StagingMaxRequests {
-		t.Errorf("%d requests expected, got %d", len(limitedRequests), common.StagingMaxRequests)
+	for _, e := range gotStagingRequests {
+		if !strings.HasPrefix(e.config.GetName(), common.StagingConfigsPrefix) {
+			t.Errorf("%s config was incorrectly allowlisted", e.config.GetName())
+		}
 	}
 }
 
-func TestLimitStagingEvents3d(t *testing.T) {
-	common.StagingConfigsAllowList = map[string]struct{}{
-		"abc":    {},
-		"abc123": {},
-	}
-
+func TestOnlyStagingRequests3d(t *testing.T) {
 	ctpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{
 		{Name: "abc"}: {
 			{
 				events: []*ctpEvent{
 					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
+						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
 					},
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
 					},
 					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
+						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
 					},
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
@@ -132,7 +79,7 @@ func TestLimitStagingEvents3d(t *testing.T) {
 			{
 				events: []*ctpEvent{
 					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
+						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
 					},
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
@@ -148,23 +95,11 @@ func TestLimitStagingEvents3d(t *testing.T) {
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
 					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
 				},
 				branch: 3,
 			},
 			{
 				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
 					},
@@ -180,12 +115,6 @@ func TestLimitStagingEvents3d(t *testing.T) {
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc123"},
 					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
 				},
 				branch: 1,
 			},
@@ -194,83 +123,36 @@ func TestLimitStagingEvents3d(t *testing.T) {
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc123"},
 					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
 				},
 				branch: 2,
 			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 3,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-			},
 		},
 	}
-
-	newMap := limitStagingRequests3d(ctpMapByConfig)
+	gotStagingMap := onlyStagingRequests3d(ctpMapByConfig)
 
 	eventCount := 0
-	for config, eventsByBranch := range newMap {
-		if _, ok := common.StagingConfigsAllowList[config.Name]; !ok {
-			t.Errorf("%s config was incorrectly allowlisted", config.Name)
-			return
-		}
-
+	for _, eventsByBranch := range gotStagingMap {
 		for _, eventByBranch := range eventsByBranch {
-			for range eventByBranch.events {
+			for _, e := range eventByBranch.events {
+				if !strings.HasPrefix(e.config.GetName(), common.StagingConfigsPrefix) {
+					t.Errorf("%s config was incorrectly allowlisted", e.config.GetName())
+					return
+				}
 				eventCount += 1
 			}
 		}
 	}
-
-	if eventCount != common.StagingMaxRequests {
-		t.Errorf("Expected %d events, got %d", common.StagingMaxRequests, eventCount)
+	if eventCount != 3 {
+		t.Errorf("Expected 3 events, got %d", eventCount)
 		return
 	}
 }
 
-func TestLimitStagingEvents3dEmpty(t *testing.T) {
-	common.StagingConfigsAllowList = map[string]struct{}{}
-
+func TestOnlyStagingRequests3dEmpty(t *testing.T) {
 	ctpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{
 		{Name: "abc"}: {
 			{
 				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc"},
 					},
@@ -287,36 +169,6 @@ func TestLimitStagingEvents3dEmpty(t *testing.T) {
 					},
 				},
 				branch: 2,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 3,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
 			},
 		},
 		{Name: "abc123"}: {
@@ -325,80 +177,14 @@ func TestLimitStagingEvents3dEmpty(t *testing.T) {
 					{
 						config: &suschpb.SchedulerConfig{Name: "abc123"},
 					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
 				},
 				branch: 1,
 			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 2,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 3,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-			},
 		},
 	}
-
-	newMap := limitStagingRequests3d(ctpMapByConfig)
-
-	eventCount := 0
-	for config, eventsByBranch := range newMap {
-		if _, ok := common.StagingConfigsAllowList[config.Name]; !ok {
-			t.Errorf("%s config was incorrectly allowlisted", config.Name)
-			return
-		}
-
-		for _, eventByBranch := range eventsByBranch {
-			for range eventByBranch.events {
-				eventCount += 1
-			}
-		}
-	}
-
-	if eventCount != 0 {
-		t.Errorf("Expected %d events, got %d", 0, eventCount)
+	gotStagingMap := onlyStagingRequests3d(ctpMapByConfig)
+	if len(gotStagingMap) != 0 {
+		t.Errorf("Expected 0 events, got %d", len(gotStagingMap))
 		return
 	}
 }

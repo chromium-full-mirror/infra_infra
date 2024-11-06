@@ -198,7 +198,7 @@ func (c *CrOSNewBuild3dCommand) ScheduleRequests() error {
 	}
 
 	if !c.isProd {
-		ctpMapByConfig = limitStagingRequests3d(ctpMapByConfig)
+		ctpMapByConfig = onlyStagingRequests3d(ctpMapByConfig)
 	}
 
 	// Create batches request for scheduling. Each batch represents one config per branch

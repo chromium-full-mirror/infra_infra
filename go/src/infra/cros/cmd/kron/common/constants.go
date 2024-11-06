@@ -66,8 +66,6 @@ const (
 	// combine per CTP builder run.
 	MultirequestSize = 25
 
-	StagingMaxRequests = 5
-
 	// Names are shared across environments but versions may have skew depending
 	// on individual key recycling. If a different version needs to be targeted
 	// then the version number will need to be updated here.
@@ -95,9 +93,9 @@ const (
 	KronBuildsConnectionNameSecret               = "kron-builds-connection-name"
 	KronBuildsConnectionNameSecretVersionStaging = 1
 	KronBuildsConnectionNameSecretVersionProd    = 1
-)
 
-// StagingConfigsAllowList is the list of all configs that we will allow to
-// execute in staging. This will ensure that we are testing specific CUJs in
-// staging.
-var StagingConfigsAllowList = map[string]struct{}{}
+	// StagingConfigsPrefix is the prefix for all configs that we will allow to
+	// execute in staging. This will ensure that we are testing specific CUJs in
+	// staging.
+	StagingConfigsPrefix = "TSEStaging"
+)
