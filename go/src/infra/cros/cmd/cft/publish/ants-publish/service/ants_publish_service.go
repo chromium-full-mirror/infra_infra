@@ -154,17 +154,24 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 }
 
 func (aps *AntsPublishService) uploadInvocationProperties() error {
+	envInfo := aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo()
+	if envInfo == nil {
+		log.Println("No env info found. Skipping.")
+		return nil
+	}
+
 	var bbInfo *artifact.BuildbucketInfo
-	switch aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo().(type) {
+	switch envInfo.(type) {
 	case *artifact.ExecutionInfo_SatlabInfo:
 		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSatlabInfo().GetBuildbucketInfo()
 	case *artifact.ExecutionInfo_SkylabInfo:
 		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSkylabInfo().GetBuildbucketInfo()
 	default:
-		return fmt.Errorf("unsupported envInfo: %v", aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo())
+		return fmt.Errorf("unsupported envInfo: %v", envInfo)
 	}
 
 	ancestorIDs := bbInfo.GetAncestorIds()
+	var err error
 	if len(ancestorIDs) > 0 {
 		ancestors := make([]string, 0, len(ancestorIDs))
 		for _, ancID := range ancestorIDs {
@@ -173,10 +180,9 @@ func (aps *AntsPublishService) uploadInvocationProperties() error {
 
 		ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
 		aps.invocation.Properties = append(aps.invocation.Properties, ancestorsProp)
+		aps.invocation, err = aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
 	}
 
-	var err error
-	aps.invocation, err = aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
 	return err
 }
 

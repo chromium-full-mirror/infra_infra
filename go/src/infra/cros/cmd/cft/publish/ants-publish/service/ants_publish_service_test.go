@@ -343,9 +343,10 @@ func TestUploadInvocationProperties(t *testing.T) {
 					},
 				},
 			},
-			wantInv: &atp.Invocation{
-				InvocationId: "I987654321",
-			},
+		},
+		{
+			name:    "envInfoMissing",
+			exeInfo: &artifact.ExecutionInfo{EnvInfo: nil},
 		},
 	}
 	for _, tc := range testCases {
@@ -361,7 +362,9 @@ func TestUploadInvocationProperties(t *testing.T) {
 				invocation: inv,
 			}
 			// Verify that we get correct args for update call
-			mockInv.EXPECT().Update(inv.InvocationId, tc.wantInv).Return(tc.wantInv, nil)
+			if tc.wantInv != nil {
+				mockInv.EXPECT().Update(inv.InvocationId, tc.wantInv).Return(tc.wantInv, nil)
+			}
 			err := aps.uploadInvocationProperties()
 			if err != nil {
 				t.Errorf("Error uploading invocation props: %q", err)
