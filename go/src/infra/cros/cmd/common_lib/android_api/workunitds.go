@@ -208,6 +208,7 @@ func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *
 		index:    0,
 		parent:   parent,
 		children: ChildNodes{},
+		Service:  service.WorkUnitService,
 	}
 
 	// If parent is nil then that means we are at the top node and do not need

@@ -211,6 +211,15 @@ func updateAllNodes(service *androidapi.Service, head *androidapi.WorkUnitNode) 
 		}
 	}
 
+	// If the WU changed in anyway inside TestRunner then our current WU
+	// is going to be outdated. This will refresh the CTP WU so that we
+	// can make updates without conflict.
+	refreshedWU, err := head.Service.Get(head.GetWorkUnit().Id)
+	if err != nil {
+		return err
+	}
+	head.SetWorkUnit(refreshedWU)
+
 	// Update the state of the current node based on the child nodes.
 	if allPassed {
 		head.GetWorkUnit().State = common.TaskCompletedState

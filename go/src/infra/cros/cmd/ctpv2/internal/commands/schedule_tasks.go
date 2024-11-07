@@ -619,6 +619,15 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		// TODO(b/372507028): For a richer experience, attach errors to the
 		// metadata of the WU. For now focus on the "success" path.
 		if attemptNode != nil {
+			// If the WU changed in anyway inside TestRunner then our current WU
+			// is going to be outdated. This will refresh the CTP WU so that we
+			// can make updates without conflict.
+			refreshedAttemptWU, err := attemptNode.Service.Get(attemptNode.GetWorkUnit().Id)
+			if err != nil {
+				return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
+			}
+			attemptNode.SetWorkUnit(refreshedAttemptWU)
+
 			switch buildInfo.GetStatus() {
 			case buildbucketpb.Status_SUCCESS:
 				attemptNode.GetWorkUnit().State = common.TaskCompletedState
