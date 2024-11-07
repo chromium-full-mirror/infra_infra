@@ -1,4 +1,8 @@
 # Fleet Shared Infra Software
+set noparent
+
+include chromiumos/owners:v1:/infra/OWNERS.fleetplatform
+
 justinsuen@google.com
 ashishgandhi@google.com
 xianuowang@chromium.org
