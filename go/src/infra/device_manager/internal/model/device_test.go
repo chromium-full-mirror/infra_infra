@@ -821,6 +821,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 				WHERE
 					dut_id=$1
 					AND device_state='DEVICE_STATE_AVAILABLE'
+					AND is_active=TRUE
 				RETURNING
 					id,
 					dut_id,
@@ -925,6 +926,7 @@ func TestUpdateDeviceToLeased(t *testing.T) {
 				WHERE
 					id=$1
 					AND device_state='DEVICE_STATE_AVAILABLE'
+					AND is_active=TRUE
 				RETURNING
 					id,
 					dut_id,

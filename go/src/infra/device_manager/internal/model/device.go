@@ -430,6 +430,7 @@ func UpdateDeviceToLeased(ctx context.Context, tx *sql.Tx, device Device, idType
 	}
 	query += `
 				AND device_state='DEVICE_STATE_AVAILABLE'
+				AND is_active=TRUE
 			RETURNING
 				id,
 				dut_id,
@@ -518,6 +519,7 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 			WHERE
 				dut_id IN (%s)
 				AND device_state='DEVICE_STATE_AVAILABLE'
+				AND is_active=TRUE
 			RETURNING
 				id,
 				dut_id,
@@ -534,18 +536,24 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 	// Put quotes around IDs and prepopulate errors
 	var deviceIDsQuoted []string
 	for _, deviceID := range deviceIDs {
-		updateErrs[deviceID] = ErrDeviceAlreadyLeased
-		deviceIDsQuoted = append(deviceIDsQuoted, fmt.Sprintf("'%s'", deviceID))
+		// Dedup the device IDs and use the exact count to verify the update result.
+		if _, ok := updateErrs[deviceID]; !ok {
+			updateErrs[deviceID] = ErrDeviceAlreadyLeased
+			deviceIDsQuoted = append(deviceIDsQuoted, fmt.Sprintf("'%s'", deviceID))
+		} else {
+			logging.Debugf(ctx, "BulkUpdateDevicesToLeased: duplicated device ID found: %s", deviceID)
+		}
 	}
 
-	logging.Debugf(ctx, "UpdateDeviceToLeased: update statement: %s\n with Devices %+v", query, deviceIDs)
+	logging.Debugf(ctx, "BulkUpdateDeviceToLeased: update statement: %s\n with Devices %+v", query, deviceIDs)
 	query = fmt.Sprintf(query, strings.Join(deviceIDsQuoted, ", "))
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
+		logging.Debugf(ctx, "BulkUpdateDeviceToLeased: rolling back: %s", err)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			return nil, nil, fmt.Errorf("unable to rollback: %w", rollbackErr)
+			return nil, nil, fmt.Errorf("bulk update devices to leased: rollback: %w", rollbackErr)
 		}
-		return nil, nil, fmt.Errorf("failed to execute query: %w", err)
+		return nil, nil, fmt.Errorf("bulk update devices to leased: execute query: %w", err)
 	}
 	defer rows.Close()
 
@@ -582,12 +590,16 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 		}
 
 		if err != nil {
-			logging.Errorf(ctx, "UpdateDeviceToLeased: failed to update Device to DB: %w", err)
+			logging.Errorf(ctx, "BulkUpdateDeviceToLeased: failed to update Device to DB: %w", err)
 			var pgErr *pgconn.PgError
 			if errors.As(err, &pgErr) {
-				logging.Debugf(ctx, "UpdateDeviceToLeased: SQLSTATE:", pgErr.Code)
-				logging.Debugf(ctx, "UpdateDeviceToLeased:", pgErr.Message)
+				logging.Debugf(ctx, "BulkUpdateDeviceToLeased: SQLSTATE:", pgErr.Code)
+				logging.Debugf(ctx, "BulkUpdateDeviceToLeased:", pgErr.Message)
 			}
+			continue
+		}
+		if d, ok := updateSuccess[updatedDevice.DutID]; ok {
+			logging.Errorf(ctx, "BulkUpdateDeviceToLeased: duplicated DUT id: %v vs %v", d, updatedDevice)
 			continue
 		}
 		updateSuccess[updatedDevice.DutID] = &updatedDevice
