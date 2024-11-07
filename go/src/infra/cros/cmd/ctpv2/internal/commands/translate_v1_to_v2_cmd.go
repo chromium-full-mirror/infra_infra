@@ -271,23 +271,38 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 	common.WriteAnyObjectToStepLog(ctx, step, testJobMsg, "decoded atp test job msg")
 
 	// populate the fields from received atp test job msg
-	populateCtpRequest(ctpReq, testJobMsg)
-
+	err = populateCtpRequest(ctx, ctpReq, testJobMsg)
+	if err != nil {
+		step.SetSummaryMarkdown(err.Error())
+		return errors.Annotate(err, "err while populating ctp request from testJobMsg: %s", err.Error()).Err()
+	}
 	common.WriteProtoToStepLog(ctx, step, ctpReq, "populated_ctp_req")
 
 	return nil
 }
 
-func populateCtpRequest(ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage) {
-	ctpReq.SuiteRequest = buildSuiteRequest(testJobMsg)
-	ctpReq.ScheduleTargets = buildScheduleTargets(testJobMsg)
+func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage) error {
+	var err error
+	ctpReq.SuiteRequest, err = buildSuiteRequest(testJobMsg)
+	if err != nil {
+		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
+	}
+	ctpReq.ScheduleTargets, err = buildScheduleTargets(ctx, testJobMsg)
+	if err != nil {
+		return errors.Annotate(err, "build schedule targets err: %s", err.Error()).Err()
+	}
 	ctpReq.SchedulerInfo = buildSchedulerInfo(testJobMsg)
 	ctpReq.Pool = getSchedulingPool(testJobMsg)
+	if ctpReq.Pool == "" {
+		return fmt.Errorf("no pool found")
+	}
 	ctpReq.KarbonFilters = getKarbonFilters()
 	ctpReq.RunDynamic = true
+
+	return nil
 }
 
-func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
+func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -314,7 +329,10 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 	extraBuildTarget := ""
 
 	if testJobMsg.Test != nil {
-		suiteName = testJobMsg.Test.Name
+		if testJobMsg.Test.Name != "" {
+			suiteName = testJobMsg.Test.Name
+		}
+
 		for _, arg := range testJobMsg.Test.Args {
 			if arg.Key == "tag_include_list" {
 				testCaseTagCriteria.Tags = append(testCaseTagCriteria.Tags, arg.Values...)
@@ -388,6 +406,21 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android_build_environment", Value: buildEnv})
 	}
 
+	// Validations
+	if antsInvId == "" {
+		return nil, fmt.Errorf("no ants invocation id found")
+	}
+	if antsWuId == "" {
+		return nil, fmt.Errorf("no ants workunit id found")
+	}
+	if buildEnv == "" {
+		return nil, fmt.Errorf("no build env found")
+	}
+
+	if !testCaseTagCriteria.ProtoReflect().IsValid() {
+		return nil, fmt.Errorf("no test case tag criteria found")
+	}
+
 	testSuite := &api.TestSuite{
 		Name:              suiteName,
 		Spec:              &api.TestSuite_TestCaseTagCriteria_{TestCaseTagCriteria: testCaseTagCriteria},
@@ -399,10 +432,10 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) *api.SuiteRequest {
 		MaximumDuration: maxDuration,
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
-		RetryCount:      int64(retryCount)}
+		RetryCount:      int64(retryCount)}, nil
 }
 
-func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTargets {
+func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage) ([]*api.ScheduleTargets, error) {
 	primaryBoard := ""
 	models := []string{}
 	swarmingDims := []string{}
@@ -440,7 +473,22 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTarg
 		common.AndroidBuildPathFormat,
 		buildId, buildTarget, primaryBoard, buildId)
 
+	// Validations
+	if primaryBoard == "" {
+		return nil, fmt.Errorf("no board info found")
+	}
+	if buildId == "" {
+		return nil, fmt.Errorf("no buildid found")
+	}
+	if buildTarget == "" {
+		return nil, fmt.Errorf("no buildTarget found")
+	}
+
 	scheduleTargetsList := []*api.ScheduleTargets{}
+	if len(models) == 0 {
+		// add empty models so that request with board moves forward
+		models = append(models, "")
+	}
 	for _, model := range models {
 		hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: model, SwarmingDimensions: swarmingDims}}}
 		swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: installPath}}}
@@ -448,7 +496,7 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage) []*api.ScheduleTarg
 		scheduleTargetsList = append(scheduleTargetsList, &api.ScheduleTargets{Targets: []*api.Targets{target}})
 	}
 
-	return scheduleTargetsList
+	return scheduleTargetsList, nil
 }
 
 func getKarbonFilters() []*api.CTPFilter {
