@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
@@ -645,7 +646,7 @@ func populateTestRun(
 
 	populateTimeInfo(testRun, testCaseResult, build)
 
-	populateExecutionMetadata(testRun, sk.CftTestRequest)
+	populateExecutionMetadata(testRun, sk.CftTestRequest, sk.CrosTestRunnerRequest)
 }
 
 // populateTestCaseInfo populates test case info per test run.
@@ -713,14 +714,23 @@ func populateTimeInfo(
 }
 
 // populateExecutionMetadata populates execution metadata per test run.
-func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skylab_test_runner.CFTTestRequest) {
+func populateExecutionMetadata(testRun *artifactpb.TestRun, cftTestRequest *skylab_test_runner.CFTTestRequest, dynamicRequest *api.CrosTestRunnerDynamicRequest) {
+	if dynamicRequest != nil {
+		populateExecutionMetadataForTestSuites(testRun, dynamicRequest.GetParams().GetTestSuites())
+	}
+	if cftTestRequest != nil {
+		populateExecutionMetadataForTestSuites(testRun, cftTestRequest.GetTestSuites())
+	}
+}
+
+func populateExecutionMetadataForTestSuites(testRun *artifactpb.TestRun, testSuites []*testapipb.TestSuite) {
 	// Returns early if no test suite is provided.
-	if len(cftTestRequest.GetTestSuites()) == 0 {
+	if len(testSuites) == 0 {
 		return
 	}
 
 	// Returns early if the first test suite is empty.
-	firstTestSuite := cftTestRequest.GetTestSuites()[0]
+	firstTestSuite := testSuites[0]
 	if firstTestSuite == nil || len(firstTestSuite.GetTestCaseIds().GetTestCaseIds()) == 0 {
 		return
 	}
