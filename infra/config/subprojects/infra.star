@@ -71,32 +71,12 @@ def try_builder(
             location_filters = location_filters,
         )
 
-# Linux as the main platform to test with the most recent Go version (aka
-# "bleeding_edge"). It was picked arbitrarily.
-#
-# All OSX builders are testing specifically with the older Go version
-# (aka "legacy") to reflect the fact that OSX amd64 binaries we build need to
-# run on relatively ancient OSX versions that don't support the bleeding edge
-# Go.
-
 # CI Linux.
-ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
-    "go_version_variant": "bleeding_edge",
-})
-ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "arm64", console_category = "linux|22.04|ARM", pool = "luci.flex.ci", properties = {
-    "go_version_variant": "bleeding_edge",
-})
+ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True)
+ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "arm64", console_category = "linux|22.04|ARM", pool = "luci.flex.ci")
 
 # CI OSX.
-ci_builder(name = "infra-continuous-mac-10.13-64", os = "Mac-10.13", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
-ci_builder(name = "infra-continuous-mac-10.14-64", os = "Mac-10.14", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
-ci_builder(name = "infra-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
+ci_builder(name = "infra-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True)
 
 # CI Win.
 ci_builder(name = "infra-continuous-win10-64", os = "Windows-10", tree_closing = True)
@@ -116,21 +96,8 @@ ci_builder(
 )
 
 # All trybots.
-try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", properties = {
-    "go_version_variant": "bleeding_edge",
-})
-
-try_builder(name = "infra-try-mac", os = "Mac-10.15", properties = {
-    "go_version_variant": "legacy",
-})
-
-# It is occasionally useful to test code on OSX 10.14, but we don't have enough
-# capacity to have this trybot in CQ by default. It can be triggered manually
-# though.
-try_builder(name = "infra-try-mac-10.14", os = "Mac-10.14", properties = {
-    "go_version_variant": "legacy",
-}, in_cq = False)
-
+try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04")
+try_builder(name = "infra-try-mac", os = "Mac-10.15")
 try_builder(name = "infra-try-win", os = "Windows-10")
 
 try_builder(

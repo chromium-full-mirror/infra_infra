@@ -66,36 +66,16 @@ def try_builder(
             mode_allowlist = mode_allowlist,
         )
 
-# Linux as the main platform to test with the most recent Go version (aka
-# "bleeding_edge"). It was picked arbitrarily.
-#
-# All OSX builders are testing specifically with the older Go version
-# (aka "legacy") to reflect the fact that OSX amd64 binaries we build need to
-# run on relatively ancient OSX versions that don't support the bleeding edge
-# Go.
-
 ci_builder(name = "luci-go-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = True, properties = {
-    "go_version_variant": "bleeding_edge",
     "run_integration_tests": True,
 })
-ci_builder(name = "luci-go-continuous-mac-10.13-64", os = "Mac-10.13", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
-ci_builder(name = "luci-go-continuous-mac-10.14-64", os = "Mac-10.14", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
-ci_builder(name = "luci-go-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True, properties = {
-    "go_version_variant": "legacy",
-})
+ci_builder(name = "luci-go-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True)
 ci_builder(name = "luci-go-continuous-win10-64", os = "Windows-10", tree_closing = True)
 
 try_builder(name = "luci-go-try-linux", os = "Ubuntu-22.04", properties = {
     "run_integration_tests": True,
-    "go_version_variant": "bleeding_edge",
 })
-try_builder(name = "luci-go-try-mac", os = "Mac-10.15", properties = {
-    "go_version_variant": "legacy",
-})
+try_builder(name = "luci-go-try-mac", os = "Mac-10.15")
 try_builder(name = "luci-go-try-win", os = "Windows-10")
 
 try_builder(
