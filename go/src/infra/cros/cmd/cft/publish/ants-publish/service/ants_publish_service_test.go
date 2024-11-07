@@ -107,6 +107,14 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 				ChildTestCaseResults: []*api.TestCaseResult{defaultResult},
 			},
 		},
+		{
+			name: "missingResults",
+			request: &metadata.PublishAntsMetadata{
+				ParentWorkUnitId: "WU1",
+				AntsInvocationId: "I1234",
+				AccountId:        "1",
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

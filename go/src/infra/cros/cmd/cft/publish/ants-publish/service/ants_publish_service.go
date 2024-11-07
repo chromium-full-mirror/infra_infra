@@ -226,6 +226,11 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		return err
 	}
 
+	if len(aps.results) == 0 {
+		log.Println("no given test results to upload. Skipping results upload")
+		return nil
+	}
+
 	var entries []*atp.BatchInsertEntry
 	token := int64(0)
 	for _, result := range aps.results {
@@ -391,10 +396,6 @@ func antsTestStatus(result *api.TestCaseResult) string {
 }
 
 func validateAntsPublishRequest(req *api.PublishRequest) error {
-	if len(req.GetTestResponse().GetGivenTestResults()) == 0 {
-		return fmt.Errorf("no given test results to upload")
-	}
-
 	m, err := unpackMetadata(req)
 	if err != nil {
 		return errors.Wrap(err, "could not unpack metadata")
