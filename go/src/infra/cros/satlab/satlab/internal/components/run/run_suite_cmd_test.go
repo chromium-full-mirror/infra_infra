@@ -26,10 +26,35 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // no test no suite no desktop
+				runFlags: runFlags{
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					desktop:   false,
+					pool:      "pool"},
+			},
+		},
+		{
 			&run{ // test and suite
 				runFlags: runFlags{
 					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
 					suite:     "rlz",
+					harness:   "tauto",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					pool:      "pool"},
+			},
+		},
+		{
+			&run{ // test and desktop
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					desktop:   true,
 					harness:   "tauto",
 					board:     "zork",
 					model:     "gumboz",
@@ -90,6 +115,54 @@ func TestValidateArgs(t *testing.T) {
 					satlabId:    "satlab-0wgatfqi21118003",
 					pool:        "pool",
 					harness:     "tast",
+					dynamicTrv2: true,
+					cft:         false},
+			},
+		},
+		{
+			&run{ // desktop test not with -suite
+				runFlags: runFlags{
+					test:        "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					dynamicTrv2: true,
+					desktop:     true,
+					cft:         true},
+			},
+		},
+		{
+			&run{ // desktop test without DynamicTRv2
+				runFlags: runFlags{
+					suite:       "tradefed.cft.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					desktop:     true,
+					dynamicTrv2: false,
+					cft:         true},
+			},
+		},
+		{
+			&run{ // desktop test without cft
+				runFlags: runFlags{
+					suite:       "tradefed.cft.should_send_rlz_ping_missing",
+					board:       "zork",
+					model:       "gumboz",
+					milestone:   "111",
+					build:       "15329.6.0",
+					satlabId:    "satlab-0wgatfqi21118003",
+					pool:        "pool",
+					harness:     "tast",
+					desktop:     true,
 					dynamicTrv2: true,
 					cft:         false},
 			},

@@ -45,6 +45,8 @@ const (
 	incrementalRunContainer = "pvs-incremental-run-filter"
 	incrementalRunDigest    = "sha256:815065a0f464c3f64d6dee321ef9abff9530fc8ca5d8808fc225ccca8ff37ecb"
 	prodTag                 = "prod"
+	desktopPrefix           = "AL."
+	dummySuiteName          = "TestSuite"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -62,6 +64,7 @@ type Run struct {
 	Harness       string
 	TestArgs      string
 	SatlabId      string
+	Desktop       bool
 	CFT           bool
 	// TRV2 determines whether we will use Test Runner V2
 	TRV2             bool
@@ -297,6 +300,33 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 			},
 		})
 	}
+	if c.Desktop {
+		userDefinedFilters = append(userDefinedFilters, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: "al-provision-filter",
+				},
+			},
+		}, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: "foil-filter",
+				},
+			},
+		}, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: "test-finder",
+				},
+			},
+		}, &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: "ants-publish-filter",
+				},
+			},
+		})
+	}
 	return userDefinedFilters
 }
 
@@ -364,7 +394,9 @@ func (c *Run) setTimeout() int {
 
 func (c *Run) createTestPlan() (*satlabrpcserver.CftMixTestplan, error) {
 	var tp *test_platform.Request_TestPlan
-
+	if c.Desktop {
+		c.adaptSuiteName()
+	}
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
 		if len(c.TagIncludes) > 0 || len(c.TagExcludes) > 0 || len(c.TestNameIncludes) > 0 || len(c.TestNameExcludes) > 0 {
@@ -563,4 +595,13 @@ func (c *Run) readMixedTestPlan(path string) (*satlabrpcserver.CftMixTestplan, e
 		return nil, fmt.Errorf("readMixedTestPlan: %s is not a mixed testplan", path)
 	}
 	return mixedTestPlan, nil
+}
+
+// adaptSuiteName ensures that suite has correct name for desktop test.
+func (c *Run) adaptSuiteName() {
+	if c.Suite == "" {
+		c.Suite = desktopPrefix + dummySuiteName
+	} else if !strings.HasPrefix(c.Suite, desktopPrefix) {
+		c.Suite = desktopPrefix + c.Suite
+	}
 }

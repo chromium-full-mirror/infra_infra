@@ -69,6 +69,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Harness:          c.harness,
 		TestArgs:         c.testArgs,
 		SatlabId:         c.satlabId,
+		Desktop:          c.desktop,
 		CFT:              c.cft,
 		TRV2:             c.trv2,
 		DynamicTRV2:      c.dynamicTrv2,
@@ -93,7 +94,7 @@ func (c *run) validateArgs() error {
 	if c.testplanLocal != "" {
 		executionTarget++
 	}
-	if c.suite != "" {
+	if c.suite != "" || c.desktop {
 		executionTarget++
 	}
 	if c.test != "" {
@@ -111,7 +112,13 @@ func (c *run) validateArgs() error {
 	if !c.cft && c.dynamicTrv2 {
 		return errors.Reason("-cft is required for dynamic test runner v2").Err()
 	}
-	if c.suite == "" && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
+	if !c.cft && c.desktop {
+		return errors.Reason("-cft is required for desktop test").Err()
+	}
+	if !c.dynamicTrv2 && c.desktop {
+		return errors.Reason("-dynamic-trv2 is required for desktop test").Err()
+	}
+	if c.suite == "" && !c.desktop && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
 		return errors.Reason("-tags-includes/-tags-excludes/-test-name-includes/-test-name-excludes can run only with -suite").Err()
 	}
 	if c.board == "" {
