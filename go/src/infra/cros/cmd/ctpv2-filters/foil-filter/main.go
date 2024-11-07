@@ -24,7 +24,7 @@ type FoilRequestUpdater struct {
 	FilterTests    bool
 }
 
-func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()
@@ -34,15 +34,15 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	ru.TestPath, err = processContainerPath(ctx, dockerKeyFile, ru.TestPath, "foil-test")
+	ru.TestPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.TestPath, "foil-test")
 	if err != nil {
 		return req, err
 	}
-	ru.GcsPublishPath, err = processContainerPath(ctx, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
+	ru.GcsPublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
 	if err != nil {
 		return req, err
 	}
-	ru.RdbPublishPath, err = processContainerPath(ctx, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
+	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
 	if err != nil {
 		return req, err
 	}
@@ -56,10 +56,10 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 	return req, nil
 }
 
-func processContainerPath(ctx context.Context, creds, path, firestoreName string) (processedPath string, err error) {
+func processContainerPath(ctx context.Context, firestoreDatabasename, creds, path, firestoreName string) (processedPath string, err error) {
 	switch path {
 	case common.LabelProd, common.LabelStaging:
-		testContainer, err := common.FetchFilterFromFirestore(ctx, creds, path, firestoreName)
+		testContainer, err := common.FetchFilterFromFirestore(ctx, firestoreDatabasename, creds, path, firestoreName)
 		if err != nil {
 			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
 		}

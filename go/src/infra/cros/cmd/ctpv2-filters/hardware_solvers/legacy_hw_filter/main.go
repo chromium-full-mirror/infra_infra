@@ -97,7 +97,7 @@ func tcDepsToSwarmingLabels(tcDeps []string) []string {
 	return swarmingLabels
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Step 1. Get all the HWTargets from the suite metadata
 	// these might contain provision info.
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()

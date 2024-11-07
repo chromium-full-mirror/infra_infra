@@ -363,7 +363,9 @@ func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, c
 			continue
 		}
 		// Fetch the filter from the firestore.
-		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
+		// TODO(aziz): replace TestPlaformFireStore with passed in variable
+		// based on whether we are in a partner run.
+		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestFinderContainerName, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", filterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = filterName

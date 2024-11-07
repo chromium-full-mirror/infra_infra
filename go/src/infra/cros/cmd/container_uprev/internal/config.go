@@ -114,6 +114,10 @@ func GetConfigs() []*UprevConfig {
 			Resources: []string{
 				"provision-filter-q.txt",
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "firmware-filter",
@@ -136,11 +140,19 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/hardware_solvers/legacy_hw_filter/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "use_flag_filter",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/use_flag_filter/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
 			},
 		},
 		{
@@ -207,6 +219,10 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/dut/cros-dut/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 		},
 		{
 			Name: "servo-nexus",
@@ -222,6 +238,10 @@ func GetConfigs() []*UprevConfig {
 			Name: "cros-provision",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/provision/cros-provision/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
 			},
 		},
 		{

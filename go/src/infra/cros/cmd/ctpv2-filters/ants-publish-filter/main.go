@@ -71,7 +71,7 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 	return ""
 }
 
-func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 	log.Println("Executing ants publish request-updater filter")
 
@@ -80,7 +80,7 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	apu.PublishPath, err = processContainerPath(ctx, dockerKeyFile, apu.PublishPath, "ants-publish")
+	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, apu.PublishPath, "ants-publish")
 	if err != nil {
 		return req, err
 	}
@@ -93,24 +93,6 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 
 	log.Println("Finished generating publish task.")
 	return req, nil
-}
-
-func processContainerPath(ctx context.Context, creds, path, firestoreName string) (processedPath string, err error) {
-	switch path {
-	case common.LabelProd, common.LabelStaging:
-		testContainer, err := common.FetchFilterFromFirestore(ctx, creds, path, firestoreName)
-		if err != nil {
-			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
-		}
-		processedPath, err = common.CreateImagePath(testContainer.GetContainerInfo().GetContainer())
-		if err != nil {
-			return "", fmt.Errorf("failed to create image path, %w", err)
-		}
-	default:
-		processedPath = path
-	}
-
-	return
 }
 
 func main() {

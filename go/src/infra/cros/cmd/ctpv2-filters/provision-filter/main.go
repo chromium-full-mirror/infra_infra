@@ -17,7 +17,7 @@ import (
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 )
 
-func executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Will be the map of hardware which we can make provisionInfo for directly
 	foundHW := make(map[string]bool)
 

@@ -518,7 +518,7 @@ func handleAnalytics(ctx context.Context, st *build.State, metrics **analytics.T
 		switch tag.GetKey() {
 		case "suite", "label-suite":
 			(*metrics).SuiteName = tag.GetValue()
-		case "analytics-name":
+		case "analytics_name":
 			(*metrics).AnalyticsName = tag.GetValue()
 		case "label-pool", "pool":
 			(*metrics).Pool = tag.GetValue()

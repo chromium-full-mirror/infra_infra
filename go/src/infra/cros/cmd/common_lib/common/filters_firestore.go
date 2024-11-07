@@ -71,8 +71,8 @@ func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters 
 	return
 }
 
-func FetchContainerInfoFromFirestore(ctx context.Context, creds, tag, name string) (containerInfo *api.ContainerInfo, err error) {
-	firestoreClient, err := EstablishFirestoreConnection(ctx, TestPlatformFireStore, creds)
+func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName, creds, tag, name string) (containerInfo *api.ContainerInfo, err error) {
+	firestoreClient, err := EstablishFirestoreConnection(ctx, firestoreDatabaseName, creds)
 	if err != nil {
 		err = errors.Annotate(err, "failed to initialize firestore client").Err()
 		return
@@ -91,8 +91,8 @@ func FetchContainerInfoFromFirestore(ctx context.Context, creds, tag, name strin
 	return
 }
 
-func FetchFilterFromFirestore(ctx context.Context, creds, tag, name string) (filter *api.CTPFilter, err error) {
-	containerInfo, err := FetchContainerInfoFromFirestore(ctx, creds, tag, name)
+func FetchFilterFromFirestore(ctx context.Context, firestoreDatabaseName, creds, tag, name string) (filter *api.CTPFilter, err error) {
+	containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDatabaseName, creds, tag, name)
 	filter = &api.CTPFilter{
 		ContainerInfo: containerInfo,
 	}

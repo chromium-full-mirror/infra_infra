@@ -35,16 +35,6 @@ var (
 	// Deprecated: Falls under KarbonFilters.
 	DefaultKoffeeFilterNames = []string{}
 
-	// Default shas for backwards compatibility
-	defaultTTCPSha                    = "5591ef53fc3f8f91c858de10a21d00d94cb74d768066616f2c8dbd9ead043f50"
-	defaultPreProcessFilterSha        = "8cd110f391e6c82c93cbd7f4f5e383b27b743928f6e67fb0bc879ed64c447b0d"
-	defaultAutoVMTestShifterFilterSha = "a0201a0fd51db2387f0efab13847d6260c664da988abb05347d83eff78e6ba23"
-	prodShas                          = map[string]string{
-		TtcpContainerName:                    defaultTTCPSha,
-		PreProcessFilterContainerName:        defaultPreProcessFilterSha,
-		AutoVMTestShifterFilterContainerName: defaultAutoVMTestShifterFilterSha,
-	}
-
 	binaryLookup = map[string]string{
 		TtcpContainerName:                    "solver_service",
 		TestFinderContainerName:              "test_finder_filter",
@@ -59,17 +49,11 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 	for _, defaultFilterName := range defaultFilterNames {
 		logging.Infof(ctx, "Getting default filter for %s", defaultFilterName)
 
-		// Check for prodSha first. If defined, this value
-		// takes highest priority.
-		if digest, ok := prodShas[defaultFilterName]; ok {
-			logging.Infof(ctx, "Found default digest value for %s", defaultFilterName)
-			defaultFilters[defaultFilterName] = CreateTestServicesContainer(defaultFilterName, digest)
-			continue
-		}
-
 		// Try and grab the filter from the firestore DB
 		// of infra/infra containers.
-		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
+		// TODO(aziz): replace TestPlaformFireStore with passed in variable
+		// based on whether we are in a partner run.
+		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, TestPlatformFireStore, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", defaultFilterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = defaultFilterName
@@ -120,8 +104,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 
 		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
 		// Attempt to map the filter from the known container metadata.
-		_, ok := prodShas[filterName]
-		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, !ok)
+		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -326,4 +309,24 @@ func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
 		return true
 	}
 	return false
+}
+
+// ProcessContainerPath processes a provided path and determines whether it needs to
+// pull from the firestoreDatabase provided.
+func ProcessContainerPath(ctx context.Context, firestoreDatabaseName, creds, path, firestoreName string) (processedPath string, err error) {
+	switch path {
+	case LabelProd, LabelStaging:
+		testContainer, err := FetchFilterFromFirestore(ctx, firestoreDatabaseName, creds, path, firestoreName)
+		if err != nil {
+			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
+		}
+		processedPath, err = CreateImagePath(testContainer.GetContainerInfo().GetContainer())
+		if err != nil {
+			return "", fmt.Errorf("failed to create image path, %w", err)
+		}
+	default:
+		processedPath = path
+	}
+
+	return
 }

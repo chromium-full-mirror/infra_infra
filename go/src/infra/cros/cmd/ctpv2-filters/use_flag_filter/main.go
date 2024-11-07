@@ -308,7 +308,7 @@ func updateTestCases(req *api.InternalTestplan, useFlagDict map[string]map[strin
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	// parses the request and generates the use flag set for each board+variant

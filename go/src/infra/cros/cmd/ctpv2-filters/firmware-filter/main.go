@@ -51,7 +51,7 @@ const saProject = "chromeos-bot"
 
 var saFile string
 
-func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing firmware filter")
 
 	if specs.FirmwareBuilds == nil {

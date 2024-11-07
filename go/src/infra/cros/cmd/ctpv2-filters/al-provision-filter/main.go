@@ -32,18 +32,18 @@ type ALProvisionRequestUpdater struct {
 	LatestBuildsByBoard map[string]int
 }
 
-func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {
+func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing AL provision Filter - Updates provision request.")
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	pru.ProvisionPath, err = processContainerPath(context.Background(), dockerKeyFile, pru.ProvisionPath, "foil-provision", log)
+	pru.ProvisionPath, err = common.ProcessContainerPath(context.Background(), commonParams.FirestoreDatabaseName, dockerKeyFile, pru.ProvisionPath, "foil-provision")
 	if err != nil {
 		return req, err
 	}
-	pru.ServoPath, err = processContainerPath(context.Background(), dockerKeyFile, pru.ServoPath, "servo-nexus", log)
+	pru.ServoPath, err = common.ProcessContainerPath(context.Background(), commonParams.FirestoreDatabaseName, dockerKeyFile, pru.ServoPath, "servo-nexus")
 	if err != nil {
 		return req, err
 	}
@@ -56,24 +56,6 @@ func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *l
 
 	return req, nil
 
-}
-
-func processContainerPath(ctx context.Context, creds, path, firestoreName string, log *log.Logger) (processedPath string, err error) {
-	switch path {
-	case common.LabelProd, common.LabelStaging:
-		testContainer, err := common.FetchFilterFromFirestore(ctx, creds, path, firestoreName)
-		if err != nil {
-			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
-		}
-		processedPath, err = common.CreateImagePath(testContainer.GetContainerInfo().GetContainer())
-		if err != nil {
-			return "", fmt.Errorf("failed to create image path, %w", err)
-		}
-	default:
-		processedPath = path
-	}
-
-	return
 }
 
 func main() {
