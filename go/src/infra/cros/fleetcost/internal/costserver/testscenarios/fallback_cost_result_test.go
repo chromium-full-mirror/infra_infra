@@ -44,7 +44,7 @@ func TestFallbackCostResult(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	if cost := result.GetResult().GetDedicatedCost(); cost != 1056 {
+	if cost := result.GetDedicatedCost(); cost != 1056 {
 		t.Errorf("unexpected cost: %f", cost)
 	}
 }

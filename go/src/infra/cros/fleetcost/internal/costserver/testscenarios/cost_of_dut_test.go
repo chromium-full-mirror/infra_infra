@@ -50,12 +50,10 @@ func TestTotalCostOfDUT(t *testing.T) {
 	sharedCost := (rackNetworking + droneServer + rackSetup + labstationCost + usbHub) / amortizationTimeYears / hoursPerYear
 	cloudServiceCost := cloudCosts / hoursPerYear
 	totalCost := dedicatedCost + sharedCost + cloudServiceCost
-	expected := &fleetcostAPI.GetCostResultResponse{
-		Result: &fleetcostpb.CostResult{
-			DedicatedCost:    dedicatedCost,
-			SharedCost:       sharedCost,
-			CloudServiceCost: cloudServiceCost,
-		},
+	expected := &fleetcostpb.CostResult{
+		DedicatedCost:    dedicatedCost,
+		SharedCost:       sharedCost,
+		CloudServiceCost: cloudServiceCost,
 		Report: &fleetcostpb.CostReport{
 			Total: totalCost,
 			Expr: &fleetcostpb.CostReportExpr{

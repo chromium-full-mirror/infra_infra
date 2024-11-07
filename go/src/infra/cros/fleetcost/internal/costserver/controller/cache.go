@@ -21,11 +21,10 @@ import (
 var cacheTTL = 4 * time.Hour
 
 // StoreCachedCostResult stores a cached cost result.
-func StoreCachedCostResult(ctx context.Context, hostname string, result *models.CostResult, report *models.CostReport) error {
+func StoreCachedCostResult(ctx context.Context, hostname string, result *models.CostResult) error {
 	return datastore.Put(ctx, &entities.CachedCostResultEntity{
 		Hostname:       hostname,
 		CostResult:     result,
-		CostReport:     report,
 		ExpirationTime: clock.Get(ctx).Now().UTC().Add(cacheTTL),
 	})
 }

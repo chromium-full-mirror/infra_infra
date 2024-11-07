@@ -15,6 +15,7 @@ import (
 
 	// TODO, move shared util to a standalone directory.
 	shivasUtil "infra/cmd/shivas/utils"
+	fleetcostModels "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
 	"infra/cros/fleetcost/internal/costserver/controller"
 	"infra/cros/fleetcost/internal/costserver/entities"
@@ -29,7 +30,7 @@ import (
 //
 //		 Include "missing entries forgiveness" disposition in the cache.
 //	         We don't want strict and lax cache entries interfering with each other.
-func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
+func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostModels.CostResult, error) {
 	logging.Infof(ctx, "Begin GetCostResult for hostname=%q", req.GetHostname())
 	if req.GetNoUfs() || req.GetForceUpdate() {
 		return f.getCostResultImpl(ctx, req)
@@ -37,10 +38,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 	ent, readErr := controller.ReadValidCachedCostResult(ctx, req.GetHostname())
 	if entHasCostResult(readErr, ent) {
 		logging.Infof(ctx, "Return GetCostResult result from cache for hostname=%q", req.GetHostname())
-		return &fleetcostAPI.GetCostResultResponse{
-			Result: ent.CostResult,
-			Report: ent.CostReport,
-		}, nil
+		return ent.CostResult, nil
 	}
 	if readErr != nil && !datastore.IsErrNoSuchEntity(readErr) {
 		logging.Errorf(ctx, "Unexpected error while reading from cache for hostname=%q: %s", req.GetHostname(), readErr)
@@ -54,7 +52,7 @@ func (f *FleetCostFrontend) GetCostResult(ctx context.Context, req *fleetcostAPI
 // Function getCostResultImpl calculates a cost result and saves it to the database.
 //
 // We assume that either GetForceUpdate has been applied or that there's no cache entry that's recent enough to use instead.
-func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostAPI.GetCostResultResponse, error) {
+func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcostAPI.GetCostResultRequest) (*fleetcostModels.CostResult, error) {
 	// Handling OS namespace request only at MVP.
 	logging.Infof(ctx, "begin cost result request for dut %q Id %q", req.GetHostname(), req.GetDeviceId())
 	ctx = shivasUtil.SetupContext(ctx, ufsUtil.OSNamespace)
@@ -69,20 +67,14 @@ func (f *FleetCostFrontend) getCostResultImpl(ctx context.Context, req *fleetcos
 			return nil, errors.Annotate(err, "get cost result").Err()
 		}
 	}
-	res, rep, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, deviceDataRes, req)
+	res, err := controller.CalculateCostForOsResource(ctx, f.fleetClient, deviceDataRes, req)
 	if err != nil {
 		return nil, fleetcosterror.WithDefaultCode(codes.Aborted, errors.Annotate(err, "get cost result").Err())
 	}
-	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res, rep); err != nil {
+	if err := controller.StoreCachedCostResult(ctx, req.GetHostname(), res); err != nil {
 		logging.Errorf(ctx, "%s\n", errors.Annotate(err, "caching get cost result").Err())
 	}
-	if rep == nil {
-		logging.Infof(ctx, "cost result request for dut %q produced an empty report\n")
-	}
-	return &fleetcostAPI.GetCostResultResponse{
-		Result: res,
-		Report: rep,
-	}, nil
+	return res, nil
 }
 
 // entHasCostResult returns true if and only if we read a valid entity out of datastore.

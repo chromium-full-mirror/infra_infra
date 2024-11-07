@@ -12,7 +12,6 @@ import "google/protobuf/any.proto";
 import "google/protobuf/field_mask.proto";
 import "infra/cros/fleetcost/api/models/indicator.proto";
 import "infra/cros/fleetcost/api/models/result.proto";
-import "infra/cros/fleetcost/api/models/cost_report.proto";
 import "infra/cros/fleetcost/api/models/variable.proto";
 
 option go_package = "infra/cros/fleetcost/api/rpc;fleetcostpb";
@@ -69,7 +68,7 @@ service FleetCost {
   }
 
   // GetCostResult gets the cost breakdown for a given device.
-  rpc GetCostResult(GetCostResultRequest) returns (GetCostResultResponse) {
+  rpc GetCostResult(GetCostResultRequest) returns (models.CostResult) {
     option (google.api.http) = {
       post: "/v1/get-cost-result"
     };
@@ -187,12 +186,6 @@ message GetCostResultRequest {
   // -- "chromeos"  (says that the DUT is an ordinary chromeos device)
   // -- "pool:" ... (controls the pool)
   repeated string analysis_hint = 6;
-}
-
-// GetCostResultResponse is the cost detail information obtained by GetCostResult.
-message GetCostResultResponse {
-  models.CostResult result = 1;
-  models.CostReport report = 2;
 }
 
 // DeleteCostIndicatorRequest deletes a cost_indicator

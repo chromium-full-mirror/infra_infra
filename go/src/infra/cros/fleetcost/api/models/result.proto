@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package fleetcost.api.models;
 
+import "infra/cros/fleetcost/api/models/cost_report.proto";
+
 option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
 
 // CostResult is a breakdown of cost for a given device.
@@ -16,4 +18,7 @@ message CostResult {
     double shared_cost = 2;
     // Cloud service cost is the pro-rated share of cloud-service-related costs for the device in question.
     double cloud_service_cost = 3;
+
+    // CostReport is an output-only field
+    fleetcost.api.models.CostReport report = 4;
 }

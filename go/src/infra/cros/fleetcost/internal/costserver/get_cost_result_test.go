@@ -92,7 +92,7 @@ func TestGetCostResultWithStaleCacheEntry(t *testing.T) {
 
 	if err := controller.StoreCachedCostResult(tf.Ctx, "fake-hostname", &fleetcostModels.CostResult{
 		DedicatedCost: 30,
-	}, nil); err != nil {
+	}); err != nil {
 		t.Errorf("unexpected error when filling cache: %s", err)
 	}
 	tf.AdvanceClock(5 * time.Hour)

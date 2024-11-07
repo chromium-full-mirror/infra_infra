@@ -26,7 +26,8 @@ type CachedCostResultEntity struct {
 	// ExpirationTime is the time that the cache entry is no longer valid.
 	ExpirationTime time.Time               `gae:"expiration_time"`
 	CostResult     *fleetcostpb.CostResult `gae:"cost_result"`
-	CostReport     *fleetcostpb.CostReport `gae:"cost_report"`
+	// deprecated! Do not use.
+	CostReport *fleetcostpb.CostReport `gae:"cost_report"`
 }
 
 // For better hygiene, and to give us flexibility in the future to read old schemas, we make CachedDUTEntity a PropertyLoadSaver.

@@ -12,7 +12,6 @@ import (
 
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"go.chromium.org/luci/common/testing/typed"
 
 	fleetcostpb "infra/cros/fleetcost/api/models"
 	fleetcostAPI "infra/cros/fleetcost/api/rpc"
@@ -73,18 +72,14 @@ func TestCalculateCostForSingleChromeosDut(t *testing.T) {
 		panic(err)
 	}
 
-	resp, _, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true, false)
+	resp, err := controller.CalculateCostForSingleChromeosDut(tf.Ctx, tf.MockUFS, req, true, false)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
 
-	if diff := typed.Got(resp).Want(&fleetcostpb.CostResult{
-		DedicatedCost:    12.0,
-		SharedCost:       0.0,
-		CloudServiceCost: 0.0,
-	}).Diff(); diff != "" {
-		t.Errorf("unexpected error (-want +got): %s", diff)
-	}
+	assert.That(t, resp.GetDedicatedCost(), should.Equal(12.0))
+	assert.That(t, resp.GetSharedCost(), should.Equal(0.0))
+	assert.That(t, resp.GetCloudServiceCost(), should.Equal(0.0))
 }
 
 func TestCalculateCostForOsResource_NoUfs(t *testing.T) {
@@ -99,8 +94,7 @@ func TestCalculateCostForOsResource_NoUfs(t *testing.T) {
 		AnalysisHint:          []string{"chromeos"},
 	}
 
-	result, report, err := controller.CalculateCostForOsResource(tf.Ctx, nil, nil, req)
+	result, err := controller.CalculateCostForOsResource(tf.Ctx, nil, nil, req)
 	assert.Loosely(t, err, should.BeNil)
 	assert.Loosely(t, result, should.NotBeNil)
-	assert.Loosely(t, report, should.NotBeNil)
 }
