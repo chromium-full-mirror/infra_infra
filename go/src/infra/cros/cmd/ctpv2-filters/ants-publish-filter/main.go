@@ -38,7 +38,8 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetada
 			EnvInfo: &artifact.ExecutionInfo_SkylabInfo{
 				SkylabInfo: &artifact.SkylabInfo{
 					BuildbucketInfo: &artifact.BuildbucketInfo{
-						AncestorIds: []int64{},
+						//  Default value required to bypass protobufs omitempty.
+						AncestorIds: []int64{0},
 					},
 				},
 			},

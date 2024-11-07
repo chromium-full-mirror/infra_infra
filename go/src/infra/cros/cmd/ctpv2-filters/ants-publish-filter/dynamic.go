@@ -157,7 +157,7 @@ func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*api.D
 			Value: "device_primary.dut",
 		},
 		{
-			Key:   "publishRequest.metadata.primaryExecutionInfo.envInfo.skylabInfo.buildbucketInfo.ancestorIds",
+			Key:   "publishRequest.metadata.primaryExecutionInfo.skylabInfo.buildbucketInfo.ancestorIds.0",
 			Value: "parentBBID",
 		},
 		{
