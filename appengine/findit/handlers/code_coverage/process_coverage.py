@@ -854,7 +854,10 @@ class ProcessCodeCoverageData(BaseHandler):
                 'Code-Coverage': -1
             },
             'message': "\n".join([msg_header, msg_body, "", msg_footer]),
-            'notify': 'OWNER'
+            'notify': 'OWNER',
+            'add_to_attention_set': {
+                'notify': 'OWNER'
+            }
         }
         logging.info(('Adding CodeCoverage-1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
