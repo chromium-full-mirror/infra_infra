@@ -71,7 +71,8 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			// TODO(b/251357069): Move the invocation-level info and
 			// result-level info to the new JSON type columns accordingly when
 			// the new JSON type columns are ready in place.
-			Tags: genTestResultTags(ctx, testRun, r.TestResult.GetTestInvocation()),
+			Tags:         genTestResultTags(ctx, testRun, r.TestResult.GetTestInvocation()),
+			TestMetadata: &pb.TestMetadata{Name: testId},
 		}
 
 		if len(testCaseResult.Errors) > 0 &&

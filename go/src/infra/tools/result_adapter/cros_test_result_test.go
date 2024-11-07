@@ -197,6 +197,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("multiduts", "False"),
 						pbutil.StringPair("phase", "DVT_2"),
 					}),
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 				{
 					TestId:   "power_Resume",
@@ -225,6 +226,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("multiduts", "False"),
 						pbutil.StringPair("phase", "DVT_2"),
 					}),
+					TestMetadata: &pb.TestMetadata{Name: "power_Resume"},
 				},
 			}
 
@@ -314,8 +316,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 							{Message: "Test was skipped expectedly"},
 						},
 					},
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 60},
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 60},
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 				{
 					TestId:   "power_Resume",
@@ -327,8 +330,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 							{Message: "Test has not run yet"},
 						},
 					},
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 120, Nanos: 100000000},
+					TestMetadata: &pb.TestMetadata{Name: "power_Resume"},
 				},
 			}
 
@@ -358,9 +362,10 @@ func TestCrosTestResultConversions(t *testing.T) {
 					// Warning results are reported as pass, and without
 					// the failure reason set. Warning messages are included
 					// in the test result properties.
-					Status:    pb.TestStatus_PASS,
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 60},
+					Status:       pb.TestStatus_PASS,
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 60},
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 			}
 
@@ -393,8 +398,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 							{Message: "Failed to start Chrome: login failed: context timeout"},
 						},
 					},
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 60},
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 60},
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 				{
 					TestId:   "power_Resume",
@@ -408,8 +414,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 							{Message: "Error three"},
 						},
 					},
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 120, Nanos: 100000000},
+					TestMetadata: &pb.TestMetadata{Name: "power_Resume"},
 				},
 			}
 
@@ -529,6 +536,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("wifi_chip", "marvell"),
 						pbutil.StringPair("wifi_router_models", "gale"),
 					}),
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 			}
 			err = PopulateProperties(expected[0], results.TestResult.TestRuns[0])
@@ -575,6 +583,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("secondary_models", "gimble"),
 						pbutil.StringPair("secondary_phases", "DVT_2"),
 					}),
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 			}
 
@@ -615,9 +624,10 @@ func TestCrosTestResultConversions(t *testing.T) {
 					// Warning results are reported as pass, and without
 					// the failure reason set. Warning messages are included
 					// in the test result properties.
-					Status:    pb.TestStatus_PASS,
-					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
-					Duration:  &duration.Duration{Seconds: 60},
+					Status:       pb.TestStatus_PASS,
+					StartTime:    timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
+					Duration:     &duration.Duration{Seconds: 60},
+					TestMetadata: &pb.TestMetadata{Name: "rlz_CheckPing"},
 				},
 			}
 
