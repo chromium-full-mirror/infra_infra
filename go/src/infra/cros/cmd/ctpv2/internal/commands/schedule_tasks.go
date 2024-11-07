@@ -390,14 +390,53 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// insert an attempt node.
 	var attemptNode *androidapi.WorkUnitNode
 	if shardNode := cmd.getATPShardFromCMDState(key); shardNode != nil {
-		fmt.Printf("Shard Node Parent %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+		logging.Debugf(ctx, "SHARD Node Parent %s-%s: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
 
 		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 		}
 
-		fmt.Printf("ATTEMPT Node %s-%s#%d: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
+		logging.Debugf(ctx, "ATTEMPT Node %s-%s: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
+
+		head, err := attemptNode.FetchHead()
+		if err != nil {
+			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
+		}
+
+		invocationID := attemptNode.GetWorkUnit().InvocationId
+		attemptWUID := attemptNode.GetWorkUnit().Id
+		// The head of the tree points directly to the ATP WU which kicked off
+		// testing.
+		atpWUID := head.GetWorkUnit().ParentId
+
+		alTags := []*buildbucketpb.StringPair{
+			{
+				Key:   "ants_invocation_id",
+				Value: invocationID,
+			},
+			{
+				Key:   "atp_work_unit_id",
+				Value: atpWUID,
+			},
+			{
+				Key:   "attempt_wu_id",
+				Value: attemptWUID,
+			},
+		}
+
+		// If we have a proper build request then add the atp tags to the req.
+		if attemptNode.GetWorkUnit() != nil {
+			if scheduleBuild := buildReq.ScheduleBuildRequest; scheduleBuild != nil {
+				if scheduleBuild.Tags != nil {
+					// Append
+					scheduleBuild.Tags = append(scheduleBuild.Tags, alTags...)
+				} else {
+					scheduleBuild.Tags = alTags
+				}
+			}
+		}
+
 	}
 
 	if buildReq.Err != nil {

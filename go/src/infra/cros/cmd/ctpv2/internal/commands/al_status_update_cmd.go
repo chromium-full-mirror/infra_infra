@@ -127,7 +127,7 @@ func (cmd *AlStatusUpdateCmd) getWorkUnitTree() *androidapi.WorkUnitTree {
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) initRunAndShards() error {
+func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 	if cmd.BuildsMap == nil {
 		return nil
 	}
@@ -149,21 +149,21 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards() error {
 		return nil
 	}
 
-	fmt.Printf("top Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
+	logging.Debugf(ctx, "TOP Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
 
 	// Generate and insert the Run Node into the WU tree.
 	runNode, err := androidapi.NewWorkUnitNode(head.GetWorkUnit().Id, head.GetWorkUnit().InvocationId, androidapi.WULayerRun, head, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}
-	fmt.Printf("NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
+	logging.Debugf(ctx, "NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
 
 	for key := range cmd.BuildsMap {
 		// NOTE: Shards are unique for a given tree/run. When we migrate to
 		// multiple runs this will not collide since they'll be in separate
 		// trees.
 		if _, ok := tree.ShardsByKey[key]; !ok {
-			fmt.Printf("Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
+			logging.Debugf(ctx, "Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
 
 			// Generate and insert the Run Node into the WU tree.
 			shardNode, err := androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.WULayerShard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
@@ -171,7 +171,7 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards() error {
 				return err
 			}
 
-			fmt.Printf("NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+			logging.Debugf(ctx, "NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
 			tree.ShardsByKey[key] = shardNode
 		}
 	}
@@ -268,7 +268,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	defer func() { step.End(err) }()
 
 	// WORK UNIT MAINTENANCE
-	err = cmd.initRunAndShards()
+	err = cmd.initRunAndShards(ctx)
 	if err != nil {
 		logging.Infof(ctx, "error while initing run layer: %s", err.Error())
 		if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
