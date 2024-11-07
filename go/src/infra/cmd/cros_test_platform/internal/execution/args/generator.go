@@ -32,6 +32,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_builders"
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/inventory/autotest/labels"
 	swarming "infra/libs/skylab/inventory/swarming"
@@ -956,6 +958,8 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		shouldTranslate = ShouldTranslateTrv2Req(ctx, suite)
 	}
 
+	containerMetadata := g.Params.GetExecutionParam().GetContainerMetadata()
+	PatchContainerMetadata(ctx, containerMetadata)
 	// TODO(b/220801220): Pass in companion duts info for multi-duts cases.
 	return &skylab_test_runner.CFTTestRequest{
 		Deadline:         deadline,
@@ -967,7 +971,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 			ContainerMetadataKey: buildTargetInferred,
 		},
 		CompanionDuts:                companionDuts,
-		ContainerMetadata:            g.Params.GetExecutionParam().GetContainerMetadata(),
+		ContainerMetadata:            containerMetadata,
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: g.Params.GetTestExecutionBehavior(),
 		AutotestKeyvals:              kv,
@@ -975,6 +979,27 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		StepsConfig:                  g.Params.GetTrv2StepsConfig(),
 		TranslateTrv2Request:         shouldTranslate,
 	}, nil
+}
+
+func PatchContainerMetadata(ctx context.Context, containerMetadata *gobuildapi.ContainerMetadata) {
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	if err != nil {
+		err = fmt.Errorf("unable to locate dockerKeyFile: %w", err)
+		logging.Infof(ctx, err.Error())
+		return
+	}
+	for _, container := range containerMetadata.GetContainers() {
+		if container.Images == nil {
+			container.Images = map[string]*gobuildapi.ContainerImageInfo{}
+		}
+		for _, firestoreDocName := range common_builders.PullFromFirestore {
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestPlatformFireStore, dockerKeyFile, common.LabelProd, firestoreDocName)
+			common.LogWarningIfErr(ctx, err)
+			if containerInfo != nil {
+				container.Images[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()
+			}
+		}
+	}
 }
 
 // ShouldRunViaTrv2 decides if the request should run via trv2 flow based on provided suite.
