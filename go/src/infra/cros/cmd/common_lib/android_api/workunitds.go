@@ -193,7 +193,7 @@ func (w *WorkUnitNode) FetchAttemptLayer() ([][]*WorkUnitNode, error) {
 
 // NewWorkUnitNode Creates and registers a Work Unit using the ATP API and
 // inserts it into the local Work Unit tree.
-func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
+func NewWorkUnitNode(parentWUId, InvocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
 	// TODO: Pass this in rather than create a new one each time
 	service, err := NewAndroidBuildService(context.Background(), SERVICEACCOUNT, env)
 	if err != nil {
@@ -239,7 +239,7 @@ func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *
 	// Create the work unit "request" then insert it using the ATP API. The API
 	// will return a WU that has a registered WUID. We do not set that in code
 	// here.
-	workUnit := NewWorkUnit(parentWUId, invocationID, fmt.Sprintf("%s #%d", nodeType.String(), runNumber), childRunNumber, childShardNumber, childAttemptNumber)
+	workUnit := NewWorkUnit(parentWUId, InvocationID, fmt.Sprintf("%s #%d", nodeType.String(), runNumber), childRunNumber, childShardNumber, childAttemptNumber)
 	workUnit, err = service.WorkUnitService.Insert(workUnit)
 	if err != nil {
 		return nil, err

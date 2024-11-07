@@ -230,48 +230,6 @@ func executeHwTests(
 	return sk.SkylabResult, nil
 }
 
-// getATPIDs gets the invocation and parent work unit IDs from either the build
-// tags or the execution metadata.
-func getATPIDs(b *buildbucketpb.Build, input *steps.RunTestsRequest) (invocationID, workUnitID string) {
-	if b == nil && input == nil {
-		// This returns with "", ""
-		return
-	}
-
-	// First fetch the values from the execution metadata. This will serve as
-	// the "default" values in case we weren't able to add them to the build
-	// tags.
-	for _, suite := range input.GetCrosTestRunnerDynamicRequest().GetParams().GetTestSuites() {
-		for _, args := range suite.ExecutionMetadata.GetArgs() {
-			switch args.GetFlag() {
-			case "ants_invocation_id":
-				invocationID = args.GetValue()
-			case "ants_work_unit_id":
-				workUnitID = args.GetValue()
-
-			}
-		}
-	}
-
-	// Search through the build tags to see if we were provided with the atp
-	// information. If provided we will use these values as they indicate a
-	// successful ATTEMPT work unit creation.
-	for _, tag := range b.GetTags() {
-		switch tag.GetKey() {
-		case "ants_invocation_id":
-			invocationID = tag.GetValue()
-		case "attempt_wu_id":
-			workUnitID = tag.GetValue()
-		}
-	}
-
-	// Golang naked return. This will return the current value of the named
-	// return values.
-	//
-	// NOTE: This can be "", "" if no values were set.
-	return
-}
-
 // executeHwTestsV2 uses the dynamic CrosTestRunner request to construct
 // a hardware test execution environment.
 func executeHwTestsV2(
@@ -365,15 +323,6 @@ func executeHwTestsV2(
 		logging.Infof(ctx, fmt.Sprintf("Warning: %s", err))
 	}
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("parentBBID", parentBBID))
-
-	// Set the ATP information if provided in the build tags
-	invocationID, attemptWUID := getATPIDs(buildState.Build(), ioProps.GetInput(ctx))
-	if invocationID != "" {
-		common.LogWarningIfErr(ctx, sk.Injectables.Set("ants_invocation_id", invocationID))
-	}
-	if attemptWUID != "" {
-		common.LogWarningIfErr(ctx, sk.Injectables.Set("parent_work_unit_id", attemptWUID))
-	}
 
 	populateRequestQueues(sk, req)
 
