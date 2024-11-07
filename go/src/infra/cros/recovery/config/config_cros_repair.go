@@ -1955,7 +1955,6 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is in cellular pool",
 				"has_cellular_info",
-				"Is not starfish device",
 				"cros_sim_info_empty",
 			},
 			Dependencies: []string{

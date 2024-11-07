@@ -20028,10 +20028,6 @@ plans:
                   conditions:
                     - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
                     - name: has_cellular_info
-                    - name: Is not starfish device ('carrier_not_in') (RUN_ONCE)
-                      conditions:
-                        - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
-                        - name: has_cellular_info
                     - name: cros_sim_info_empty
                   dependencies:
                     - name: Cellular modem is up ('cros_audit_cellular_modem') (time:'3m0s')

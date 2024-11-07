@@ -52975,21 +52975,6 @@ plans:
                         - Verify that DUT is not in a cellular pool.
                     - name: has_cellular_info
                       exec_name: has_cellular_info
-                    - name: Is not starfish device (RUN_ONCE)
-                      exec_name: carrier_not_in
-                      exec_args:
-                        - carriers:STARFISH,STARFISH_PLUS
-                      docs:
-                        - Verify that DUT is not a starfish device
-                      conditions:
-                        - name: Is in cellular pool (RUN_ONCE)
-                          exec_name: dut_is_in_pool_regex
-                          exec_args:
-                            - regex:(?i)^cellular
-                          docs:
-                            - Verify that DUT is not in a cellular pool.
-                        - name: has_cellular_info
-                          exec_name: has_cellular_info
                     - name: cros_sim_info_empty
                       exec_name: cros_sim_info_empty
                   dependencies:
