@@ -213,7 +213,7 @@ func TestBuildPerModelConfigsMultipleModels(t *testing.T) {
 
 	testBranch := "CANARY"
 
-	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch, false)
+	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch)
 	if err != nil {
 		t.Error(err)
 		return
@@ -272,7 +272,7 @@ func TestBuildPerModelConfigsNoModels(t *testing.T) {
 
 	testBranch := "CANARY"
 
-	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch, false)
+	events, err := buildPerModelConfigs(models, testConfig, testBuild, testBranch)
 	if err != nil {
 		t.Error(err)
 		return

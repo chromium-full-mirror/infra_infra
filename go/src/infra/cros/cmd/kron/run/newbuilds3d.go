@@ -186,7 +186,7 @@ func (c *CrOSNewBuild3dCommand) FetchTriggeredConfigs() error {
 // requests, and Schedules them via the BuildBucket API.
 func (c *CrOSNewBuild3dCommand) ScheduleRequests() error {
 	// Build CTP Requests for all 3d configs.
-	ctpMapByConfig, err := buildCTPRequestsFor3dConfigs(c.buildPackagesMap, c.all3dConfigs, c.suiteSchedulerConfigs.FetchNewBuild3dMap(), !c.isProd)
+	ctpMapByConfig, err := buildCTPRequestsFor3dConfigs(c.buildPackagesMap, c.all3dConfigs, c.suiteSchedulerConfigs.FetchNewBuild3dMap())
 	if err != nil {
 		return err
 	}
