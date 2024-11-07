@@ -104,7 +104,7 @@ func GetDefaultFilters(ctx context.Context, defaultFilterNames []string, contMet
 
 		logging.Infof(ctx, "Checking container metadata map for %s", filterName)
 		// Attempt to map the filter from the known container metadata.
-		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, true)
+		ctpFilter, err = CreateCTPFilterWithContainerName(ctx, filterName, contMetadataMap, build, false)
 		if err == nil {
 			defaultFilters = append(defaultFilters, ctpFilter)
 			continue
@@ -139,8 +139,6 @@ func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*
 func defaultName(ctx context.Context, name string) bool {
 	logging.Infof(ctx, "checking name: ", name)
 	for fn, defName := range binaryLookup {
-		logging.Infof(ctx, "checking name: ", name)
-
 		if name == defName || name == fn {
 			return true
 		}
@@ -152,7 +150,7 @@ func defaultName(ctx context.Context, name string) bool {
 func CreateCTPFilterWithContainerName(ctx context.Context, name string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, buildCheck bool) (*api.CTPFilter, error) {
 	// This error will be caught and pushed into the default prod container flow.
 	if defaultName(ctx, name) && buildCheck && needBackwardsCompatibility(build) {
-		return nil, fmt.Errorf("incompatible metadata build")
+		return nil, fmt.Errorf("incompatible metadata build for name: %s, build: %d", name, build)
 	}
 	if _, ok := contMetadataMap[name]; !ok {
 		return nil, errors.Reason("could not find container image info for %s in provided map", name).Err()

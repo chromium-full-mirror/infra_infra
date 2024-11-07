@@ -554,7 +554,7 @@ func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMet
 		for _, firestoreDocName := range PullFromFirestore {
 			// TODO(aziz): replace TestPlaformFireStore with passed in variable
 			// based on whether we are in a partner run.
-			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestFinderContainerName, creds, envVersion, firestoreDocName)
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestPlatformFireStore, creds, envVersion, firestoreDocName)
 			common.LogWarningIfErr(ctx, err)
 			if containerInfo != nil {
 				containers[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()
