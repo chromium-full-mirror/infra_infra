@@ -4,6 +4,8 @@
 
 package config
 
+import "google.golang.org/protobuf/types/known/durationpb"
+
 // Actions to start and stop cft containers.
 func addCrosCftContainers(actions map[string]*Action) {
 	am := map[string]*Action{
@@ -20,10 +22,10 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Is not cloudbot",
+				"Is not a partner side",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
-				// Always first stop in case somethine left out from last run.
 				"Stop ADB-base",
 			},
 			ExecName:               "ctr_start_adb_container",
@@ -41,11 +43,12 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run servo-nexus container",
 			},
 			Conditions: []string{
+				"Is not cloudbot",
+				"Is not a partner side",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
-				// Always first stop in case somethine left out from last run.
 				"Stop Servo-Nexus",
 			},
 			ExecName:               "ctr_servo_nexus_start_container",
@@ -63,14 +66,34 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run foil-provision container",
 			},
 			Conditions: []string{
+				"Is not cloudbot",
+				"Is not a partner side",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
-				// Always first stop in case somethine left out from last run.
 				"Stop Foil-provision",
 			},
-			ExecName:               "ctr_start_foil_provision_container",
-			AllowFailAfterRecovery: true,
+			ExecName: "ctr_start_foil_provision_container",
+		},
+		"Foil-provision Setup service": {
+			Docs: []string{
+				"The setup method needs to be called once before performing install.",
+			},
+			ExecName: "ctr_foil_provision_setup_service",
+		},
+		"Foil-provision Install Android OS": {
+			Docs: []string{
+				"The install performs real install Android on the DUT.",
+			},
+			Dependencies: []string{
+				"Start Foil-provision",
+				"Foil-provision Setup service",
+			},
+			ExecName: "ctr_foil_provision_install",
+			ExecTimeout: &durationpb.Duration{
+				// The provisioning process may take not more than 1 hour.
+				Seconds: 3600,
+			},
 		},
 		"Stop Foil-provision": {
 			Docs: []string{
@@ -79,16 +102,10 @@ func addCrosCftContainers(actions map[string]*Action) {
 			ExecName:               "ctr_stop_foil_provision_container",
 			AllowFailAfterRecovery: true,
 		},
-		"Is not cloudbot": {
-			Docs: []string{
-				"Check if the process doesn't run on cloudbot.",
-			},
-			ExecName: "env_is_not_cloudbot",
-		},
 	}
 	for k, v := range am {
 		if _, ok := actions[k]; ok {
-			panic("duplicate key:" + k + " in actions")
+			panic("duplicate key:" + k + " in actions map")
 		}
 		actions[k] = v
 	}

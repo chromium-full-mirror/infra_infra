@@ -2,17 +2,20 @@ plans:
     - name: cros_base
       criticalactions:
         - name: 'Set state: needs_repair (''dut_set_state'')'
-        - name: DUT has board info ('dut_has_board_name')
-        - name: DUT has model info ('dut_has_model_name')
+        - name: DUT has board info ('dut_has_board_name') (RUN_ONCE)
+        - name: DUT has model info ('dut_has_model_name') (RUN_ONCE)
         - name: Start ADB-base (Allow to fail) ('ctr_start_adb_container')
           conditions:
-            - name: Is not cloudbot ('env_is_not_cloudbot')
+            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
           dependencies:
             - name: Stop ADB-base (Allow to fail) ('ctr_stop_adb_container')
         - name: Start Servo-Nexus (Allow to fail) ('ctr_servo_nexus_start_container')
           conditions:
-            - name: Testbed has Servo ('dut_servo_host_present')
+            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
+            - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
           dependencies:
             - name: Stop Servo-Nexus (Allow to fail) ('ctr_servo_nexus_stop_container')
@@ -2101,7 +2104,7 @@ plans:
         - name: Device is pingable (simple) ('cros_ping') (ALWAYS_RUN) (time:'15s')
         - name: Is Android based (Allow to fail) ('cros_set_as_android_based')
           conditions:
-            - name: Is not cloudbot ('env_is_not_cloudbot')
+            - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
           dependencies:
             - name: ADB Connect DUT ('ctr_adb_connect')
