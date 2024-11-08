@@ -261,6 +261,14 @@ message PerfMode {
   //
   // Note: this property is mutable in the builder configuration.
   string baseline = 1;
+
+  // Pgo indicates whether we should run with PGO as well. Note that
+  // this multiplies the number of runs we do by 3: half the runs to
+  // collect profiles, then run baseline and experiment with PGO enabled,
+  // on top of the regular non-PGO collection. We do all at once because
+  // it's often useful to compare PGO vs. non-PGO, especially to look for
+  // regressions.
+  bool pgo = 2;
 }
 
 // Output properties.

@@ -58,13 +58,17 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) 
 	}
 
 	// Summarize results with benchstat.
-	benchstatCmd := toolCmd(ctx, "benchstat", "-col", "toolchain@(baseline experiment)", "-ignore", "pgo,pkg,shortname", "-")
-	benchstatCmd.Stdin = bytes.NewReader(results)
-	formattedResults, err := cmdStepOutput(ctx, "benchstat", benchstatCmd, true)
-	if err != nil {
-		return err
+	//
+	// Ignore errors from benchstat. It'll still be reported as a failing step, but it won't fail
+	// the whole build, since we don't propagate it.
+	if r.props.Pgo {
+		_ = reportBenchstat(ctx, "base v. exp, no pgo", results, "-col", "toolchain@(baseline experiment)", "-filter", "pgo:off", "-ignore", "pkg,shortname")
+		_ = reportBenchstat(ctx, "base v. exp, pgo", results, "-col", "toolchain@(baseline experiment)", "-filter", "pgo:on", "-ignore", "pkg,shortname")
+		_ = reportBenchstat(ctx, "pgo vs. no pgo, base", results, "-col", "pgo@(off on)", "-filter", "toolchain:baseline", "-ignore", "pkg,shortname")
+		_ = reportBenchstat(ctx, "pgo vs. no pgo, exp", results, "-col", "pgo@(off on)", "-filter", "toolchain:experiment", "-ignore", "pkg,shortname")
+	} else {
+		_ = reportBenchstat(ctx, "", results, "-col", "toolchain@(baseline experiment)", "-ignore", "pgo,pkg,shortname")
 	}
-	topLevelLog(ctx, "benchmark results").Write(formattedResults)
 
 	// Prepend extraAttrs. Note: we don't do this before benchstat, because it simplifies the "-ignore" pattern
 	// and also because it more closely matches running benchstat on the output of the command, making it a bit
@@ -77,6 +81,22 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) 
 
 	// Upload benchmark results to perfdata.golang.org.
 	return uploadBenchmarkResults(ctx, spec.auth, buf.Bytes())
+}
+
+func reportBenchstat(ctx context.Context, description string, results []byte, args ...string) error {
+	args = append(args, "-") // Use stdin for results.
+	benchstatCmd := toolCmd(ctx, "benchstat", args...)
+	benchstatCmd.Stdin = bytes.NewReader(results)
+	suffix := ""
+	if description != "" {
+		suffix = " (" + description + ")"
+	}
+	formattedResults, err := cmdStepOutput(ctx, "benchstat"+suffix, benchstatCmd, true)
+	if err != nil {
+		return err
+	}
+	_, _ = topLevelLog(ctx, "benchmark results"+suffix).Write(formattedResults)
+	return nil
 }
 
 func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode, opts runOptions) ([]byte, map[string]string, error) {
@@ -114,13 +134,18 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 	}
 
 	// Construct benchmark command.
-	benchCmd := spec.goCmd(ctx, benchmarksRoot, "run",
+	goRunArgs := []string{
+		"run",
 		"./cmd/bench",
 		"-goroot", spec.goroot,
 		"-goroot-baseline", gorootBaseline,
 		"-branch", spec.goSrc.branch,
 		"-repository", "go",
-	)
+	}
+	if perfProps.Pgo {
+		goRunArgs = append(goRunArgs, "-pgo")
+	}
+	benchCmd := spec.goCmd(ctx, benchmarksRoot, goRunArgs...)
 
 	var extraAttrs map[string]string
 	if spec.goSrc.commit != nil {
@@ -143,6 +168,10 @@ func runGoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuil
 }
 
 func runSubrepoBenchmarks(ctx context.Context, spec *buildSpec, perfProps *golangbuildpb.PerfMode, opts runOptions) ([]byte, map[string]string, error) {
+	if perfProps.Pgo {
+		return nil, nil, fmt.Errorf("PGO benchmarks not yet supported for subrepos")
+	}
+
 	// Fetch the subrepo at whatever we were triggered on.
 	subrepoExperimentDir := filepath.Join(spec.workdir, spec.inputs.Project)
 	if err := fetchRepo(ctx, spec.subrepoSrc, subrepoExperimentDir, spec.inputs); err != nil {
