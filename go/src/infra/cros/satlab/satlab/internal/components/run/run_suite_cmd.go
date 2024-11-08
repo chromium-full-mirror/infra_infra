@@ -115,16 +115,13 @@ func (c *run) validateArgs() error {
 	if !c.cft && c.desktop {
 		return errors.Reason("-cft is required for desktop test").Err()
 	}
-	if !c.dynamicTrv2 && c.desktop {
-		return errors.Reason("-dynamic-trv2 is required for desktop test").Err()
-	}
 	if c.suite == "" && !c.desktop && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
 		return errors.Reason("-tags-includes/-tags-excludes/-test-name-includes/-test-name-excludes can run only with -suite").Err()
 	}
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()
 	}
-	if c.image == "" {
+	if c.image == "" && !c.desktop {
 		if c.model == "" {
 			return errors.Reason("-model must be specified if -image is not provided").Err()
 		}

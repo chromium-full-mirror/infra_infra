@@ -188,8 +188,8 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 				TestRunnerBuildTags: tags,
 				TimeoutMins:         c.setTimeout(),
 				CTPBuildTags:        tags,
-				TRV2:                c.TRV2 || c.DynamicTRV2,
-				DynamicTRV2:         c.DynamicTRV2,
+				TRV2:                c.TRV2 || c.DynamicTRV2 || c.Desktop,
+				DynamicTRV2:         c.DynamicTRV2 || c.Desktop,
 				CpconPublish:        c.UploadToCpcon,
 				UserDefinedFilters:  c.userDefinedFilters(),
 			})

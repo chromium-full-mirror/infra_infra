@@ -120,6 +120,21 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // 'non-cft' test with desktop (indirect DynamicTRv2 & TRv2)
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool",
+					harness:   "tast",
+					desktop:   true,
+					cft:       false},
+			},
+		},
+		{
 			&run{ // desktop test not with -suite
 				runFlags: runFlags{
 					test:        "rlz_CheckPing.should_send_rlz_ping_missing",
@@ -132,22 +147,6 @@ func TestValidateArgs(t *testing.T) {
 					harness:     "tast",
 					dynamicTrv2: true,
 					desktop:     true,
-					cft:         true},
-			},
-		},
-		{
-			&run{ // desktop test without DynamicTRv2
-				runFlags: runFlags{
-					suite:       "tradefed.cft.should_send_rlz_ping_missing",
-					board:       "zork",
-					model:       "gumboz",
-					milestone:   "111",
-					build:       "15329.6.0",
-					satlabId:    "satlab-0wgatfqi21118003",
-					pool:        "pool",
-					harness:     "tast",
-					desktop:     true,
-					dynamicTrv2: false,
 					cft:         true},
 			},
 		},
