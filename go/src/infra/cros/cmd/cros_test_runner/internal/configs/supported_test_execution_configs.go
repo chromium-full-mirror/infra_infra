@@ -74,18 +74,18 @@ var GenericService_GenericServiceExecutor = &common_configs.CommandExecutorPaire
 var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
 	platform := common.GetBotProvider()
 	if inputV2 != nil {
 		return hwConfigsForPlatformV2(cftHwStepsConfig, inputV2, platform)
 	}
-	return hwConfigsForPlatform(cftHwStepsConfig, platform, isAndroidProvisionRequired)
+	return hwConfigsForPlatform(cftHwStepsConfig, sk, platform, isAndroidProvisionRequired)
 }
 
 // hwConfigsForPlatform generates platform-specific configs.
 // GCE platform will get configs for VM test on GCE.
 // Non-GCE platforms (Drone and Unknown) will get configs for HW test on Drone.
-func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform common.SwarmingBotProvider, isAndroidProvisionRequired bool) *common_configs.Configs {
+func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, platform common.SwarmingBotProvider, isAndroidProvisionRequired bool) *common_configs.Configs {
 	// Overwrite configs that don't apply to VM test
 	if platform == common.BotProviderGce {
 		if cftHwStepsConfig == nil {
@@ -141,8 +141,12 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 
 	// Provision commands
 	if !cftHwStepsConfig.GetSkipProvision() {
+		if sk != nil {
+			if _, ok := sk.ContainerImages[common.ServoNexus]; ok {
+				mainConfigs = append(mainConfigs, ContainerStart_ContainerExecutor.WithRequired(true))
+			}
+		}
 		mainConfigs = append(mainConfigs,
-			ContainerStart_ContainerExecutor.WithRequired(true),
 			ProvisionServerStart_CrosProvisionExecutor,
 			ProvisionInstall_CrosProvisionExecutor)
 		if isAndroidProvisionRequired {

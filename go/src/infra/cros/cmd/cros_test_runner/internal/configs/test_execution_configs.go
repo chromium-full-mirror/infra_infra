@@ -60,7 +60,7 @@ func (trv2cfg *Trv2ExecutionConfig) GenerateConfig(ctx context.Context) error {
 	switch configType := trv2cfg.GetConfigType(); configType {
 	case HwTestExecutionConfigType:
 		isAndroidProvisionRequired := trv2cfg.isAndroidProvisioningRequired(ctx)
-		trv2cfg.Configs = GenerateHwConfigs(ctx, trv2cfg.cftStepsConfig.GetHwTestConfig(), trv2cfg.StateKeeper.(*data.HwTestStateKeeper).CrosTestRunnerRequest, isAndroidProvisionRequired)
+		trv2cfg.Configs = GenerateHwConfigs(ctx, trv2cfg.cftStepsConfig.GetHwTestConfig(), trv2cfg.StateKeeper.(*data.HwTestStateKeeper), trv2cfg.StateKeeper.(*data.HwTestStateKeeper).CrosTestRunnerRequest, isAndroidProvisionRequired)
 	case LocalTestExecutionConfigType:
 		trv2cfg.Configs = GenerateLocalConfigs(ctx, trv2cfg.StateKeeper.(*data.LocalTestStateKeeper))
 	case PreLocalTestExecutionConfigType:

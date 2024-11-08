@@ -27,7 +27,7 @@ func init() {
 func TestGenerateHwConfigs(t *testing.T) {
 	ftt.Run("GenerateHwConfigs", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		hwConfigs := GenerateHwConfigs(ctx, nil, nil, false)
+		hwConfigs := GenerateHwConfigs(ctx, nil, nil, nil, false)
 
 		assert.Loosely(t, hwConfigs, should.NotBeNil)
 		assert.Loosely(t, hwConfigs.MainConfigs, should.NotBeNil)
@@ -50,7 +50,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 				},
 			},
 		}
-		hwConfigs := GenerateHwConfigs(ctx, nil, req, false)
+		hwConfigs := GenerateHwConfigs(ctx, nil, nil, req, false)
 
 		assert.Loosely(t, hwConfigs, should.NotBeNil)
 		assert.Loosely(t, hwConfigs.MainConfigs, should.NotBeNil)
@@ -59,7 +59,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	})
 
 	ftt.Run("hwConfigsForPlatform for VM", t, func(t *ftt.Test) {
-		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce, false)
+		hwConfigs := hwConfigsForPlatform(nil, nil, common.BotProviderGce, false)
 
 		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(VMProvisionRelease_CrosVMProvisionExecutor.WithRequired(true)))
 		assert.Loosely(t, hwConfigs.MainConfigs, should.NotContain(DutServerStart_CrosDutExecutor))
@@ -67,7 +67,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	})
 
 	ftt.Run("hwConfigsForPlatform for HW", t, func(t *ftt.Test) {
-		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone, false)
+		hwConfigs := hwConfigsForPlatform(nil, nil, common.BotProviderDrone, false)
 
 		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(DutServerStart_CrosDutExecutor))
 		assert.Loosely(t, hwConfigs.MainConfigs, should.ContainMatch(UpdateDutState_NoExecutor.WithRequired(true)))
