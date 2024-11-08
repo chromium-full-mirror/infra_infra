@@ -390,14 +390,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// insert an attempt node.
 	var attemptNode *androidapi.WorkUnitNode
 	if shardNode := cmd.getATPShardFromCMDState(key); shardNode != nil {
-		logging.Debugf(ctx, "SHARD Node Parent %s-%s: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+		fmt.Printf("SHARD Node Parent %s-%s: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex())
 
 		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 		}
 
-		logging.Debugf(ctx, "ATTEMPT Node %s-%s: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex(), attemptNode)
+		fmt.Printf("ATTEMPT Node %s-%s: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex())
 
 		head, err := attemptNode.FetchHead()
 		if err != nil {
@@ -631,8 +631,10 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			switch buildInfo.GetStatus() {
 			case buildbucketpb.Status_SUCCESS:
 				attemptNode.GetWorkUnit().State = common.TaskCompletedState
+				fmt.Printf("WU %s-%s completed testing in %s status", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetWorkUnit().State)
 			case buildbucketpb.Status_FAILURE:
 				attemptNode.GetWorkUnit().State = common.TaskErrorState
+				fmt.Printf("WU %s-%s completed testing in %s status", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetWorkUnit().State)
 				attemptNode.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
 					ErrorCode: 1,
 					// TODO: add a proper error message here propagated from
@@ -641,14 +643,17 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				}
 			case buildbucketpb.Status_INFRA_FAILURE:
 				attemptNode.GetWorkUnit().State = common.TaskErrorState
+				fmt.Printf("WU %s-%s completed testing in %s status", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetWorkUnit().State)
 				attemptNode.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
 					ErrorCode:    1,
 					ErrorMessage: "TESTING INFRA_FAILURE",
 				}
 			case buildbucketpb.Status_CANCELED:
 				attemptNode.GetWorkUnit().State = common.TaskCanceledState
+				fmt.Printf("WU %s-%s completed testing in %s status", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetWorkUnit().State)
 			default:
 				attemptNode.GetWorkUnit().State = common.TaskUnknownState
+				fmt.Printf("WU %s-%s completed testing in %s status", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetWorkUnit().State)
 			}
 		}
 

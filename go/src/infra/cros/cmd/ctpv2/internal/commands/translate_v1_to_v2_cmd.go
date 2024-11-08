@@ -199,7 +199,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 				ShardsByKey: map[string]*androidapi.WorkUnitNode{},
 			}
 
-			logging.Debugf(ctx, "TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
+			fmt.Printf("TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
 		}
 
 		return nil
