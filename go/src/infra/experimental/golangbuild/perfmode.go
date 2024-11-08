@@ -58,7 +58,7 @@ func (r *perfRunner) Run(ctx context.Context, spec *buildSpec, opts runOptions) 
 	}
 
 	// Summarize results with benchstat.
-	benchstatCmd := toolCmd(ctx, "benchstat", "-col", "toolchain@(baseline experiment)", "-ignore", "pkg,shortname", "-")
+	benchstatCmd := toolCmd(ctx, "benchstat", "-col", "toolchain@(baseline experiment)", "-ignore", "pgo,pkg,shortname", "-")
 	benchstatCmd.Stdin = bytes.NewReader(results)
 	formattedResults, err := cmdStepOutput(ctx, "benchstat", benchstatCmd, true)
 	if err != nil {
