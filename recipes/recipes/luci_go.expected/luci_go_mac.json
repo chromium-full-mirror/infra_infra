@@ -426,6 +426,7 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
     "env": {
+      "CGO_ENABLED": "1",
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
