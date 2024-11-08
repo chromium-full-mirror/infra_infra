@@ -27,7 +27,6 @@ func TestDownloadHandler(t *testing.T) {
 		gsClient: &fakeGSClient{
 			objects: map[string]*fakeGSObject{
 				"bucket/path/to/file": {
-					exists: true,
 					attrs: &storage.ObjectAttrs{
 						Size:        99,
 						ContentType: "text",
@@ -158,7 +157,6 @@ func TestExtracHandler(t *testing.T) {
 			}
 		}
 		fakeObjects[tarName] = &fakeGSObject{
-			exists: true,
 			attrs: &storage.ObjectAttrs{
 				Size:        int64(len(buf.String())),
 				ContentType: "tar",
@@ -176,7 +174,6 @@ func TestExtracHandler(t *testing.T) {
 			}
 		}()
 		fakeObjects[gzTarName] = &fakeGSObject{
-			exists: true,
 			attrs: &storage.ObjectAttrs{
 				Size: int64(len(zbuf.String())),
 				//ContentType: "tgz",
@@ -419,7 +416,6 @@ func TestDecompressGZIPHandler(t *testing.T) {
 			}
 		}()
 		objects[fName] = &fakeGSObject{
-			exists: true,
 			attrs: &storage.ObjectAttrs{
 				Size:        int64(len(buf.String())),
 				ContentType: "gzip",
@@ -501,7 +497,6 @@ func TestDecompressXZHandler(t *testing.T) {
 			}
 		}()
 		objects[fName] = &fakeGSObject{
-			exists: true,
 			attrs: &storage.ObjectAttrs{
 				Size:        int64(buf.Len()),
 				ContentType: "xz",
@@ -560,25 +555,33 @@ func TestDecompressXZHandler(t *testing.T) {
 type fakeGSObject struct {
 	attrs   *storage.ObjectAttrs
 	content string
-	exists  bool
+	state   int
 }
 
+const (
+	objStateNormal int = iota
+	objStateNotExist
+)
+
 func (c *fakeGSObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error) {
-	if !c.exists {
-		return nil, storage.ErrObjectNotExist
+	m := map[int]error{
+		objStateNotExist: storage.ErrObjectNotExist,
+	}
+	if err, ok := m[c.state]; ok {
+		return nil, err
 	}
 	return c.attrs, nil
 }
 
 func (c *fakeGSObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
-	if !c.exists {
+	if c.state == objStateNotExist {
 		return nil, fmt.Errorf("storage: object doesn't exist")
 	}
 	return io.NopCloser(strings.NewReader(c.content)), nil
 }
 
 func (c *fakeGSObject) NewRangeReader(ctx context.Context, offset, length int64) (io.ReadCloser, error) {
-	if !c.exists {
+	if c.state == objStateNotExist {
 		return nil, fmt.Errorf("storage: object doesn't exist")
 	}
 	return io.NopCloser(strings.NewReader(c.content[offset : offset+length])), nil
@@ -590,10 +593,10 @@ type fakeGSClient struct {
 
 func (c *fakeGSClient) getObject(name *storageObjectName) storageObject {
 	key := name.bucket + "/" + name.path
-	if _, ok := c.objects[key]; !ok {
-		c.objects[key] = &fakeGSObject{}
+	if v, ok := c.objects[key]; ok {
+		return v
 	}
-	return c.objects[key]
+	return &fakeGSObject{state: objStateNotExist}
 }
 
 func (*fakeGSClient) close() error {
