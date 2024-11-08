@@ -736,12 +736,14 @@ func (cmd *ScheduleTasksCmd) RetryReqIfQualifies(ctx context.Context, trResult *
 	common.WriteAnyObjectToStepLog(ctx, step, newBuildReq, "new build req for retry")
 
 	// Generate a new req
-	req, err := cmd.GenerateReqForRetry(ctx, newBuildReq)
-	if err != nil {
-		newBuildReq.Err = err
-		logging.Infof(ctx, "no more retry will take place for %s since trv2 req generation failed: %s", newBuildReq.Key, err)
-	} else {
-		newBuildReq.ScheduleBuildRequest = req
+	if newBuildReq.ScheduleBuildRequest == nil {
+		req, err := cmd.GenerateReqForRetry(ctx, newBuildReq)
+		if err != nil {
+			newBuildReq.Err = err
+			logging.Infof(ctx, "no more retry will take place for %s since trv2 req generation failed: %s", newBuildReq.Key, err)
+		} else {
+			newBuildReq.ScheduleBuildRequest = req
+		}
 	}
 
 	return newBuildReq
@@ -841,10 +843,17 @@ func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildReques
 
 	// dereference so that we can make changes
 	retryBuildReq := *buildReq
-	retryBuildReq.ScheduleBuildRequest = nil
 	retryBuildReq.Err = nil
-
 	testCases := retryBuildReq.OriginalTrReq.Tcs
+
+	// If any tauto.tast failure, rerun all the test cases
+	if IsAnyTautoTastTestCase(testCases) && len(retriableTests) > 0 {
+		return &retryBuildReq
+	}
+
+	// Otherwise create new request with new test cases
+	retryBuildReq.ScheduleBuildRequest = nil
+
 	newTcs := []*api.CTPTestCase{}
 	for _, tc := range testCases {
 		// append the retriable tests and ignore others
@@ -855,6 +864,15 @@ func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildReques
 
 	retryBuildReq.OriginalTrReq.Tcs = newTcs
 	return &retryBuildReq
+}
+
+func IsAnyTautoTastTestCase(testCases []*api.CTPTestCase) bool {
+	for _, tc := range testCases {
+		if strings.HasPrefix(strings.ToLower(tc.GetName()), "tauto.tast") {
+			return true
+		}
+	}
+	return false
 }
 
 func determineRetriablity(trResult *skylab_test_runner.Result) map[string]bool {
