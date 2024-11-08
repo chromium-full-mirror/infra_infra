@@ -216,6 +216,9 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 		totalTestCount = totalTestCount + currTestCount
 		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
+		// driver isn't reporting module name right so hardcode to 0 temporarily
+		currFailedTestRunCount = 0
+		totalFailedTestRunCount = 0
 		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
 		taskState := common.TaskCompletedState
 		if err := results.GetProvisionErrIfAny(); err != nil {
@@ -226,6 +229,8 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 			testJobEventState = common.TaskErrorState
 		}
 
+		// driver isn't reporting module name right so hardcode to 0 temporarily
+		totalFailedTestRunCount = 0
 		// As no rety is enabled now, different results means different shards/requests
 		task := &common.TestTaskMessage{
 			Id:                results.Key,
