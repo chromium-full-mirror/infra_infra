@@ -35,7 +35,7 @@ func checkCronAccess(ctx context.Context, rpcName string, _ proto.Message) (cont
 	group := []string{"mdb/chrome-fleet-software-team", "mdb/chromeos-distributed-fleet-platform"}
 	allow, err := auth.IsMember(ctx, group...)
 	if err != nil {
-		logging.Errorf(ctx, "Check group '%s' membership failed: %s", group, err.Error())
+		logging.Errorf(ctx, "Check group %q membership failed: %s", group, err.Error())
 		return ctx, status.Errorf(codes.Internal, "can't check access group membership: %s", err)
 	}
 	if !allow {
