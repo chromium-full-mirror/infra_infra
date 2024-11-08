@@ -58,7 +58,7 @@ func (ps *AntsPublishServer) Start() error {
 	ps.manager = lro.New()
 	defer ps.manager.Close()
 
-	ps.server = grpc.NewServer()
+	ps.server = grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*32), grpc.MaxSendMsgSize(1024*1024*32))
 	api.RegisterGenericPublishServiceServer(ps.server, ps)
 	//longrunning.RegisterOperationsServer(ps.server, ps.manager)
 	reflection.Register(ps.server)
