@@ -8,14 +8,12 @@ package env
 import (
 	"context"
 
-	"google.golang.org/grpc/metadata"
-
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/internal/env"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"infra/cros/recovery/namespace"
 )
 
 func isCloudbot(ctx context.Context, info *execs.ExecInfo) error {
@@ -35,15 +33,8 @@ func isNotCloudbot(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func isNotCrosPartnerNamespaceExec(ctx context.Context, info *execs.ExecInfo) error {
-	md, ok := metadata.FromOutgoingContext(ctx)
-	if !ok {
-		return errors.Reason("is cros partner namespace: no metadata found in context").Err()
-	}
-	for _, nsValue := range md.Get(ufsUtil.Namespace) {
-		log.Debugf(ctx, "Context namespace value: %q", nsValue)
-		if nsValue == ufsUtil.OSPartnerNamespace {
-			return errors.Reason("is not cros partner namespace: detected %q value", ufsUtil.OSPartnerNamespace).Err()
-		}
+	if namespace.IsPartner(ctx) {
+		return errors.Reason("is not cros partner namespace: is partner namespace detected").Err()
 	}
 	return nil
 }

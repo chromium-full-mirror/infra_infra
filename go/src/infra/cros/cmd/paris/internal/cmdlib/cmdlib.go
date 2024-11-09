@@ -9,14 +9,11 @@ import (
 	"context"
 	"flag"
 
-	"google.golang.org/grpc/metadata"
-
 	lflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/paris/internal/site"
 	rem "infra/libs/skylab/inventory/removalreason"
-	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // DefaultTaskPriority is the default priority for a swarming task.
@@ -65,10 +62,4 @@ func RegisterRemovalReason(rr *rem.RemovalReason, f *flag.FlagSet) {
 	f.StringVar(&rr.Bug, "bug", "", "Bug link for why DUT is being removed.  Required.")
 	f.StringVar(&rr.Comment, "comment", "", "Short comment about why DUT is being removed.")
 	f.Var(lflag.RelativeTime{T: &rr.Expire}, "expires-in", "Expire removal reason in `days`.")
-}
-
-// SetupContext sets up context with namespace
-func SetupContext(ctx context.Context, namespace string) context.Context {
-	md := metadata.Pairs(ufsUtil.Namespace, namespace)
-	return metadata.NewOutgoingContext(ctx, md)
 }

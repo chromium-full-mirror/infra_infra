@@ -13,7 +13,6 @@ import (
 	"sync/atomic"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -33,10 +32,10 @@ import (
 	"infra/cros/recovery/dev"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/namespace"
 	"infra/cros/recovery/scopes"
 	"infra/libs/skylab/buildbucket"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // defaultDUTSSHKeyPathLocal returns the recommended local DUT ssh keyfile path.
@@ -86,6 +85,7 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
 		c.Flags.BoolVar(&c.devOptionActive, "dev-active", true, `Set DevOption Active. Default true.`)
+		c.Flags.StringVar(&c.namespace, "namespace", "os", `Specify which namespace to use. The default is "os".`)
 		return c
 	},
 }
@@ -107,6 +107,7 @@ type localRecoveryRun struct {
 	showSteps             bool
 	generateLogFiles      bool
 	taskName              string
+	namespace             string
 
 	devPrintProto   bool
 	devOptionActive bool
@@ -166,7 +167,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		return errors.Annotate(err, "local recovery: create logger").Err()
 	}
 	defer logger.Close()
-	ctx = setupContextNamespace(ctx, ufsUtil.OSNamespace)
+	ctx = namespace.Set(ctx, c.namespace)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create http client").Err()
@@ -284,12 +285,6 @@ func (c *localRecoveryRun) getLogRoot() (string, error) {
 	}
 	err = os.MkdirAll(logRoot, 0755)
 	return logRoot, errors.Annotate(err, "get log root").Err()
-}
-
-// setupContextNamespace sets namespace to the context for UFS client.
-func setupContextNamespace(ctx context.Context, namespace string) context.Context {
-	md := metadata.Pairs(ufsUtil.Namespace, namespace)
-	return metadata.NewOutgoingContext(ctx, md)
 }
 
 // recoveryLogger represents local recovery logger implementation.
