@@ -6,23 +6,24 @@ package service
 
 import (
 	"context"
-	androidlib "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"slices"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"google.golang.org/api/googleapi"
-	"google.golang.org/protobuf/testing/protocmp"
-	"google.golang.org/protobuf/types/known/anypb"
+
+	androidlib "infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
+	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 func TestAntsStatus(t *testing.T) {

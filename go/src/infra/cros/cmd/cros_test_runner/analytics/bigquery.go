@@ -6,12 +6,14 @@ package analytics
 
 import (
 	"context"
-	"infra/cros/cmd/common_lib/common"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
+
+	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 const saProject = "chromeos-test-platform-data"

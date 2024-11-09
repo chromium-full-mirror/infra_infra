@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // servodStateRecord holds state of servod before apply preparation of programmer.

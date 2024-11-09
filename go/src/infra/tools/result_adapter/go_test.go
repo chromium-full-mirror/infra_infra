@@ -20,11 +20,12 @@ import (
 	"strings"
 	"testing"
 
+	"google.golang.org/protobuf/encoding/prototext"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
-	"google.golang.org/protobuf/encoding/prototext"
 )
 
 func TestEnsureArgsValid(t *testing.T) {

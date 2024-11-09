@@ -10,8 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/errors"
 	yaml "gopkg.in/yaml.v3"
+
+	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/linux"

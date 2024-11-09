@@ -13,9 +13,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/yaml.v3"
 
 	"infra/cros/recovery/config/tree"
 	"infra/cros/recovery/tlw"

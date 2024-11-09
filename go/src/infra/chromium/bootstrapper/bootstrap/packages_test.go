@@ -9,12 +9,13 @@ import (
 	"path/filepath"
 	"testing"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/chromium/bootstrapper/clients/cas"
 	"infra/chromium/bootstrapper/clients/cipd"

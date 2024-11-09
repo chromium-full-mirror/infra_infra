@@ -15,13 +15,14 @@ import (
 	"strconv"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )

@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	goversion "go/version"
 	"hash/crc32"
 	"io"
 	"io/fs"
@@ -20,6 +19,7 @@ import (
 	"runtime"
 	"strings"
 
+	goversion "go/version"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/sync/errgroup"

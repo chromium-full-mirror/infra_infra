@@ -8,13 +8,13 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/dutstate"
-
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/dutstate"
 )
 
 func TestUpdateDutStateCmd_UnsupportedSK(t *testing.T) {

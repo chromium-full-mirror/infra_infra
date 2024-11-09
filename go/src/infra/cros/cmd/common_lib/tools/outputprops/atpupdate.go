@@ -7,9 +7,9 @@
 package outputprops
 
 import (
-	"infra/cros/cmd/common_lib/common"
-
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // The luciexe/build API will handle the actual definition of these functions.

@@ -10,9 +10,10 @@ import (
 	"os"
 	"path"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/option"
 
 	"infra/cros/cmd/common_lib/common"
 )

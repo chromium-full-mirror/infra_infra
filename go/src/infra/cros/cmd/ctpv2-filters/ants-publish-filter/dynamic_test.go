@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
-	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func TestSkipTFUpload(t *testing.T) {

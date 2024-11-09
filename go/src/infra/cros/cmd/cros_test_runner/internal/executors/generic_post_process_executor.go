@@ -7,16 +7,18 @@ package executors
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
+
+	"google.golang.org/grpc"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/grpc"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
 )
 
 // GenericPostProcessExecutor represents executor for all post process related
