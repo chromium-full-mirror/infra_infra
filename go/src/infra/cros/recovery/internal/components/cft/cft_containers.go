@@ -9,6 +9,14 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
+// Container names.
+const (
+	ADBBase       = "adb-base"
+	ServoNexux    = "servo-nexus"
+	CrosDUT       = "cros-dut"
+	FoilProvision = "foil-provision"
+)
+
 // NetworkName generates predicable name for custom Docker network.
 func NetworkName(dut *tlw.Dut) string {
 	// Only use one network for all containers.
