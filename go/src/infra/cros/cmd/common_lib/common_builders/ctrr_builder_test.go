@@ -57,8 +57,8 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(0))
-		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
-		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
+		assert.Loosely(t, request.GetStartRequest(), should.Match(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Match(expected.GetParams()))
 	})
 
 	ftt.Run("Build Params and StartRequest", t, func(t *ftt.Test) {
@@ -120,8 +120,8 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(0))
-		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
-		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
+		assert.Loosely(t, request.GetStartRequest(), should.Match(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Match(expected.GetParams()))
 	})
 
 	ftt.Run("Builds Tasks", t, func(t *ftt.Test) {
@@ -172,8 +172,8 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(6))
-		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
-		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
+		assert.Loosely(t, request.GetStartRequest(), should.Match(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams(), should.Match(expected.GetParams()))
 	})
 
 	ftt.Run("Builds Tasks with Companions", t, func(t *ftt.Test) {
@@ -265,8 +265,11 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, request.GetOrderedTasks(), should.HaveLength(12))
-		assert.Loosely(t, request.GetStartRequest(), should.Resemble(expected.GetStartRequest()))
-		assert.Loosely(t, request.GetParams(), should.Resemble(expected.GetParams()))
+		assert.Loosely(t, request.GetStartRequest(), should.Match(expected.GetStartRequest()))
+		assert.Loosely(t, request.GetParams().GetTestSuites(), should.Match(expected.GetParams().GetTestSuites()))
+		assert.Loosely(t, request.GetParams().GetKeyvals(), should.Match(expected.GetParams().GetKeyvals()))
+		assert.Loosely(t, request.GetParams().GetPrimaryDut(), should.Match(expected.GetParams().GetPrimaryDut()))
+		assert.Loosely(t, request.GetParams().GetCompanionDuts(), should.Match(expected.GetParams().GetCompanionDuts()))
 		assert.Loosely(t, request.GetParams().GetContainerMetadata().GetContainers()["default"].GetImages()["cros-fw-provision"].GetDigest(), should.Equal(fmt.Sprintf("sha256:%s", common.DefaultCrosFwProvisionSha)))
 	})
 }

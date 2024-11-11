@@ -55,7 +55,7 @@ func FetchFiltersFromFirestore(ctx context.Context, creds, tag string) (filters 
 	defer func() {
 		closeErr := firestoreClient.Close()
 		if closeErr != nil {
-			logging.Infof(ctx, "failed to close firestore client, %w", closeErr)
+			logging.Infof(ctx, "failed to close firestore client, %s", closeErr)
 		}
 	}()
 
@@ -78,9 +78,8 @@ func FetchContainerInfoFromFirestore(ctx context.Context, firestoreDatabaseName,
 		return
 	}
 	defer func() {
-		closeErr := firestoreClient.Close()
-		if closeErr != nil {
-			logging.Infof(ctx, "failed to close firestore client, %w", &closeErr)
+		if closeErr := firestoreClient.Close(); closeErr != nil {
+			logging.Infof(ctx, "failed to close firestore client, %s", &closeErr)
 		}
 	}()
 
@@ -107,7 +106,7 @@ func FetchContainerInfoFromFirestoreDoc(ctx context.Context, docRef *firestore.D
 
 	doc, err := docRef.Get(ctx)
 	if err != nil {
-		logging.Infof(ctx, "failed to get document %s, %w", docRef.ID, err)
+		logging.Infof(ctx, "failed to get document %s, %s", docRef.ID, err)
 		return items
 	}
 	data := doc.Data()
@@ -117,7 +116,7 @@ func FetchContainerInfoFromFirestoreDoc(ctx context.Context, docRef *firestore.D
 	}
 	err = json.Unmarshal([]byte(jsonStr), &items)
 	if err != nil {
-		logging.Infof(ctx, "failed to unmarshal %s, %w", docRef.ID, err)
+		logging.Infof(ctx, "failed to unmarshal %s, %s", docRef.ID, err)
 		return items
 	}
 
@@ -188,5 +187,19 @@ func buildContainerInfoFromDocumentRef(ctx context.Context, documentRef *firesto
 func fetchContainerInfoFromFirestoreCollection(ctx context.Context, collection *firestore.CollectionRef, containerName string) (containerInfo *api.ContainerInfo, err error) {
 	documentRef := collection.Doc(containerName)
 	containerInfo, err = buildContainerInfoFromDocumentRef(ctx, documentRef)
+	defer func() {
+		if err != nil && collection != nil {
+			// Print the list of available containers if we fail.
+			iter := collection.DocumentRefs(ctx)
+			if docs, allErr := iter.GetAll(); allErr != nil {
+				logging.Infof(ctx, "Failed to list available containers due to error: %s", allErr)
+			} else {
+				logging.Infof(ctx, "Available containers under the connection:")
+				for _, doc := range docs {
+					logging.Infof(ctx, "Container: %s", doc.ID)
+				}
+			}
+		}
+	}()
 	return
 }
