@@ -1,15 +1,8 @@
 module infra
 
-// Keep this at the `.0` patch level when upgrading to a newer Go version.
-// App Engine is slow to add support for newer patch releases and our
-// deployments break if it's not available there yet.
 go 1.22.7
 
 toolchain go1.22.9
-
-// Don't add a `toolchain` directive here. We manage the version of our Go
-// toolchain with a different mechanism (see `TOOLSET_VERSIONS` in
-// `infra/go/bootstrap.py`).
 
 require (
 	cloud.google.com/go v0.115.1

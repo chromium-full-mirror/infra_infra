@@ -52,11 +52,16 @@ TOOLS_SPEC_FILE = '.tools_spec.json'
 # Version of Go CIPD package (infra/3pp/tools/go/${platform}) to install per
 # value of INFRA_GO_VERSION_VARIANT env var.
 #
-# Some builders use "legacy" and "bleeding_edge" variants.
+# Some builders use "legacy" and "bleeding_edge" variants. This mechanism is
+# sometimes used to test new toolsets. Most of the time all variants are set
+# to the same version.
+#
+# A value of `go.mod` means to read the version from `toolchain` directive in
+# the main module's go.mod file.
 TOOLSET_VERSIONS = {
-    'default': '1.22.9',
-    'legacy': '1.22.9',
-    'bleeding_edge': '1.22.9',
+    'default': 'go.mod',
+    'legacy': 'go.mod',
+    'bleeding_edge': 'go.mod',
 }
 
 # Layout is the layout of the bootstrap installation.
@@ -68,6 +73,9 @@ Layout = collections.namedtuple(
 
         # The workspace path.
         'workspace',
+
+        # Path to the main module's go.mod file.
+        'go_mod',
 
         # The list of paths to tools.go files which are parsed to figure out
         # what binaries to "go install ..." into the GOBIN.
@@ -81,13 +89,18 @@ Layout = collections.namedtuple(
 
 # A base empty Layout.
 _EMPTY_LAYOUT = Layout(
-    toolset_root=None, workspace=None, go_tools_specs=None, cleanup_dirs=None)
+    toolset_root=None,
+    workspace=None,
+    go_mod=None,
+    go_tools_specs=None,
+    cleanup_dirs=None)
 
 
 # Infra standard layout.
 LAYOUT = Layout(
     toolset_root=os.path.join(WORKSPACE, 'golang'),
     workspace=WORKSPACE,
+    go_mod=os.path.join(WORKSPACE, 'src', 'infra', 'go.mod'),
     # Note: order is important, a tool is installed only the first time it is
     # mentioned, using go.mod matching the corresponding tools.go for
     # dependencies.
@@ -175,6 +188,18 @@ def remove_directory(p):
     func(path)
 
   shutil.rmtree(p, onerror=onerror)
+
+
+def read_toolchain(p):
+  """Reads `toolchain ...` directive from go.mod."""
+  with open(p, 'r') as f:
+    for line in f:
+      if line.startswith('toolchain '):
+        val = line.split(' ')[1].strip()
+        if not val.startswith('go'):
+          raise ValueError('Bad toolchain directive: %s' % line.strip())
+        return val[2:]
+  raise ValueError('%s doesn\'t have toolchain directive' % p)
 
 
 def install_toolset(toolset_root, version):
@@ -525,6 +550,8 @@ def bootstrap(layout, logging_level, args=None):
   toolset_version = TOOLSET_VERSIONS.get(variant)
   if not toolset_version:
     raise Failure('Unrecognized INFRA_GO_VERSION_VARIANT %r' % variant)
+  if toolset_version == 'go.mod':
+    toolset_version = read_toolchain(layout.go_mod)
 
   # We may need to build Go binaries during bootstrap, so make sure
   # cross-compilation mode is disabled . Restore it back once done.
