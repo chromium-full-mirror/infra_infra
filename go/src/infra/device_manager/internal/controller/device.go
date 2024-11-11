@@ -91,10 +91,16 @@ func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, dev
 
 	_, err = rsp.Get(ctx)
 	if err != nil {
-		logging.Debugf(ctx, "PublishDeviceEvent: failed to publish to PubSub %s", err)
+		logging.Debugf(ctx, "PublishDeviceEvent: failed: %s", err)
 		return err
 	}
-	logging.Debugf(ctx, "PublishDeviceEvent: successfully published DeviceEvent for Device %s dut_id %s: %v", device.ID, device.DutID, deviceEvent)
+
+	var latency time.Duration
+	if !device.LastUpdatedTime.IsZero() {
+		latency = time.Since(device.LastUpdatedTime)
+	}
+	// For better log parsing, we tuncate the latency to seconds.
+	logging.Debugf(ctx, "PublishDeviceEvent: published in %.0f sec: Device %q dut_id %q: %v", latency.Seconds(), device.ID, device.DutID, deviceEvent)
 	return nil
 }
 
