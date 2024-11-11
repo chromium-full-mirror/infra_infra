@@ -107,17 +107,17 @@ func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) er
 	}
 	var servoNexusAddr, cachingAddress *lab_api.IpEndpoint
 	argsMap := info.GetActionArgs(ctx)
-	if argsMap.AsBool(ctx, "provide_servo_nexus", true) {
+	if argsMap.AsBool(ctx, "provide_servo_nexus", false) {
 		if addr, err := cft.ServoServiceAddressFromScope(ctx, dut); err != nil {
 			return errors.Annotate(err, "start servo-nexus container").Err()
 		} else {
 			servoNexusAddr = addr
 		}
 	}
-	// TODO(b/376048814): get cache address. For testing use
-	cachingAddress = &lab_api.IpEndpoint{
-		Address: "192.168.100.1",
-		Port:    8082,
+	if addr, err := cft.CacheServiceAddressFromScope(ctx); err != nil {
+		return errors.Annotate(err, "setup foil-provision service").Err()
+	} else {
+		cachingAddress = addr
 	}
 	if err := foilprovision.Setup(ctx, client, dut, toLabDut(dut, cachingAddress), servoNexusAddr); err != nil {
 		return errors.Annotate(err, "setup foil-provision service").Err()
