@@ -119,7 +119,7 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 	if runMetric != nil {
 		metricsApplyBoardModel(ctx, dut, runMetric, resource)
 		runMetric.Observations = append(runMetric.Observations,
-			metrics.NewStringObservation("device_type", string(dut.SetupType)),
+			metrics.NewStringObservation("device_type", dut.SetupType.String()),
 			metrics.NewStringObservation("start_dut_state", string(dut.State)),
 		)
 		defer func() {
