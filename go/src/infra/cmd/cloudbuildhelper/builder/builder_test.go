@@ -268,6 +268,15 @@ handlers:
       url: /.*
 runtime: go111
 `))
+
+				goMod, err := byName["_gomod/go.mod"].ReadAll()
+				assert.Loosely(t, err, should.BeNil)
+				assert.Loosely(t, string(goMod), should.Equal(`module testpkg
+
+go 1.21
+
+require example.com v1.0.0
+`))
 			})
 		})
 	})

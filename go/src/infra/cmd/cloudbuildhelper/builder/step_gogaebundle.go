@@ -594,6 +594,17 @@ func prepareModDeps(main *packages.Module, out *fileset.Set) (*godep.Deps, error
 		return nil, errors.Annotate(err, "parsing main module's go.mod").Err()
 	}
 
+	// GAE Cloud Build deployer uses a concrete toolchain version hardcoded in its
+	// configuration. Attempting to ask for another toolchain via go.mod directive
+	// results in a deployment error. Remove references to custom toolchains and
+	// Go patch versions from go.mod to avoid that.
+	mainMod.Toolchain = nil
+	if mainMod.Go != nil {
+		if chunks := strings.Split(mainMod.Go.Version, "."); len(chunks) > 2 {
+			mainMod.Go.Version = fmt.Sprintf("%s.%s", chunks[0], chunks[1])
+		}
+	}
+
 	deps := godep.NewDeps(mainMod)
 
 	// Load the existing state in the bundle, if any, to append to it.
