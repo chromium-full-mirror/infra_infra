@@ -17,6 +17,7 @@ import (
 	"infra/cros/internal/env"
 	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/namespace"
 	"infra/cros/recovery/scopes"
 )
 
@@ -34,6 +35,7 @@ type ServiceInfo interface {
 	CreateContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (BaseContainer, error)
 	GetContainer(ctx context.Context, name string) (BaseContainer, error)
 	StopContainer(ctx context.Context, name string) error
+	GenerateContainerImagePath(ctx context.Context, imageName, tag string) (string, error)
 	IsUp() bool
 }
 
@@ -41,9 +43,10 @@ type ServiceInfo interface {
 // If it fails to start or authorize then it will be closed.
 func Init(ctx context.Context, rootDir string) (ServiceInfo, error) {
 	i := &serviceInfoImpl{
-		ctr:            nil,
-		rootDir:        rootDir,
-		containerCache: make(map[string]BaseContainer),
+		ctr:                   nil,
+		rootDir:               rootDir,
+		containerCache:        make(map[string]BaseContainer),
+		dockerKeyFileLocation: dockerKeyFileLocation(ctx),
 	}
 	if metadataDir, err := i.createDir(metadateDirName); err != nil {
 		return nil, errors.Annotate(err, "new CTR").Err()
@@ -91,8 +94,44 @@ type serviceInfoImpl struct {
 	metadataDir  string
 	artifactsDir string
 
+	// Path to local docker file.
+	dockerKeyFileLocation string
+
 	// All container need to be listed here to be sure they closed or use started one if needed.
 	containerCache map[string]BaseContainer
+}
+
+// GenerateContainerImagePath generate container image name with tag.
+func (c *serviceInfoImpl) GenerateContainerImagePath(ctx context.Context, imageName, tag string) (string, error) {
+	if c == nil || c.ctr == nil || c.ctr.Version == "" {
+		return "", errors.Reason("generate container name: service is not started").Err()
+	}
+	if imageName == "" {
+		return "", errors.Reason("generate container name: image name is not provided").Err()
+	}
+	if tag == "" {
+		return "", errors.Reason("generate container name: tag is not provided").Err()
+	}
+	log.Infof(ctx, "Using DockerKeyFile: %s", c.dockerKeyFileLocation)
+	datastoreName := common.TestPlatformFireStore
+	if namespace.IsPartner(ctx) {
+		datastoreName = common.PartnerTestPlatformFireStore
+	}
+	containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, datastoreName, c.dockerKeyFileLocation, c.ctr.Version, imageName)
+	if err != nil {
+		return "", errors.Annotate(err, "generate container name: fail to fetch container info").Err()
+	}
+	if containerInfo == nil || containerInfo.GetContainer().GetRepository() == nil {
+		return "", errors.Reason("generate container name: received empty container info").Err()
+	}
+	repoPath := filepath.Join(
+		containerInfo.GetContainer().GetRepository().GetHostname(),
+		containerInfo.GetContainer().GetRepository().GetProject(),
+		imageName,
+	)
+	image := repoPath + ":" + tag
+	log.Infof(ctx, "Generate Container image path: %s", image)
+	return image, nil
 }
 
 // Stop stops CTR service.
@@ -268,16 +307,9 @@ func (c *serviceInfoImpl) gcloudAuth(ctx context.Context) error {
 	if c.ctr == nil || c.serverAddress == "" {
 		return errors.Reason("gcloud auth: service is not started").Err()
 	}
-	var dockerFileLocation string
 	useDockerKey := false
-	if dev.IsActive(ctx) {
-		dockerFileLocation = ""
-	} else if env.IsCloudBot() {
-		dockerFileLocation = common.VmLabDockerKeyFileLocation
-	} else {
-		dockerFileLocation = common.LabDockerKeyFileLocation
-	}
-	res, err := c.ctr.GcloudAuth(ctx, dockerFileLocation, useDockerKey)
+	log.Infof(ctx, "Using DockerKeyFile: %s", c.dockerKeyFileLocation)
+	res, err := c.ctr.GcloudAuth(ctx, c.dockerKeyFileLocation, useDockerKey)
 	if err != nil {
 		return errors.Annotate(err, "gcloud auth").Err()
 	}
@@ -294,4 +326,14 @@ func (c *serviceInfoImpl) createDir(name string) (string, error) {
 		return "", errors.Annotate(err, "create directory %q", name).Err()
 	}
 	return newDir, nil
+}
+
+func dockerKeyFileLocation(ctx context.Context) string {
+	if dev.IsActive(ctx) {
+		return ""
+	}
+	if env.IsCloudBot() {
+		return common.VmLabDockerKeyFileLocation
+	}
+	return common.LabDockerKeyFileLocation
 }

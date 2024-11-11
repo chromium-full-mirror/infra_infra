@@ -37,11 +37,13 @@ func startServoNexusContainerExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "start servo-nexus container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerRepo := argsMap.AsString(ctx, "container_repo", "us-docker.pkg.dev/cros-registry/test-services/servo-nexus")
-	containerTag := argsMap.AsString(ctx, "container_tag", "prod") //oct_18_b
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/servod")
-	containerImage := containerRepo + ":" + containerTag
+	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.ServoNexux, containerTag)
+	if err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
 	containerName := cft.ServoNexusName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,

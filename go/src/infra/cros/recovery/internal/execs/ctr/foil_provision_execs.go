@@ -34,11 +34,13 @@ func startFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) 
 		return errors.Annotate(err, "start foil-provision container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerRepo := argsMap.AsString(ctx, "container_repo", "us-docker.pkg.dev/cros-registry/test-services/foil-provision")
 	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/provisionservice")
-	containerImage := containerRepo + ":" + containerTag
+	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.FoilProvision, containerTag)
+	if err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
 	containerName := cft.FoilProvisionName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,

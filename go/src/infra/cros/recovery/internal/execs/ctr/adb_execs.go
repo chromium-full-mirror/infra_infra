@@ -36,11 +36,13 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerRepo := argsMap.AsString(ctx, "container_repo", "us-docker.pkg.dev/cros-registry/test-services/adb-base")
 	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/base-adb")
-	containerImage := containerRepo + ":" + containerTag
+	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.ADBBase, containerTag)
+	if err != nil {
+		return errors.Annotate(err, "start adb container").Err()
+	}
 	containerName := cft.ADBName(dut)
 	req := &api.StartTemplatedContainerRequest{
 		Name:           containerName,
