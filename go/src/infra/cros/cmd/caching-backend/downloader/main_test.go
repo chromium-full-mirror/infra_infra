@@ -19,6 +19,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/ulikunitz/xz"
+	"google.golang.org/api/googleapi"
 )
 
 func TestDownloadHandler(t *testing.T) {
@@ -34,6 +35,9 @@ func TestDownloadHandler(t *testing.T) {
 						CRC32C:      uint32(1984),
 					},
 					content: "this is the content",
+				},
+				"bucket/quota/exceeded": {
+					state: objStateQuotaExceeded,
 				},
 			},
 		},
@@ -77,6 +81,14 @@ func TestDownloadHandler(t *testing.T) {
 			wantContentType:   "text",
 			wantMD5:           base64.StdEncoding.EncodeToString([]byte("randomHashString")),
 			wantCRC32C:        "AAAHwA==",
+		},
+		{
+			method:            "HEAD",
+			url:               "/download/bucket/quota/exceeded",
+			wantStatusCode:    429,
+			wantContentLength: -1,
+			wantBody:          "HEAD/download/bucket/quota/exceeded  swarming_task_id= bbid= Obj \"quota/exceeded\": quota: exceeded: googleapi: got HTTP response code 429 with body: \n",
+			wantContentType:   "text/plain; charset=utf-8",
 		},
 	}
 	for _, tc := range tests {
@@ -561,11 +573,13 @@ type fakeGSObject struct {
 const (
 	objStateNormal int = iota
 	objStateNotExist
+	objStateQuotaExceeded
 )
 
 func (c *fakeGSObject) Attrs(ctx context.Context) (*storage.ObjectAttrs, error) {
 	m := map[int]error{
-		objStateNotExist: storage.ErrObjectNotExist,
+		objStateNotExist:      storage.ErrObjectNotExist,
+		objStateQuotaExceeded: fmt.Errorf("quota: %w", fmt.Errorf("exceeded: %w", &googleapi.Error{Code: 429})),
 	}
 	if err, ok := m[c.state]; ok {
 		return nil, err
