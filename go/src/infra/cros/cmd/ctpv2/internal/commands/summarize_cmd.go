@@ -369,6 +369,7 @@ func ToExecuteResponses(testResultMap map[string][]*data.TestResults) *steps.Exe
 		consolidatedResults := []*steps.ExecuteResponse_ConsolidatedResult{}
 		taskResults := []*steps.ExecuteResponse_TaskResult{}
 		verdict := test_platform.TaskState_VERDICT_NO_VERDICT
+		sort.Sort(data.ByAttempt(results))
 		for _, testResult := range results {
 			taskResult := TrResultToErTaskResult(testResult)
 			if taskResult != nil {
