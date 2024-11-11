@@ -148,7 +148,7 @@ func main() {
 		srv.ConfigurePRPC(func(p *prpc.Server) {
 			p.AccessControl = prpc.AllowOriginAll
 			// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
-			p.HackFixFieldMasksForJSON = true
+			p.EnableNonStandardFieldMasks = true
 		})
 		proto.RegisterAssetServer(srv, &service.AssetHandler{})
 		proto.RegisterResourceServer(srv, &service.ResourceHandler{})
