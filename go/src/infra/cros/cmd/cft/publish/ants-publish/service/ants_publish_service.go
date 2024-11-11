@@ -35,10 +35,9 @@ const (
 )
 
 type AntsPublishService struct {
-	metadata   *metadata.PublishAntsMetadata
-	results    []*api.CrosTestResponse_GivenTestResult
-	service    *androidlib.Service
-	invocation *atp.Invocation
+	metadata *metadata.PublishAntsMetadata
+	results  []*api.CrosTestResponse_GivenTestResult
+	service  *androidlib.Service
 }
 
 // NewAntsPublishService creates a new publish service to interact with Ants.
@@ -57,16 +56,10 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 		return nil, err
 	}
 
-	inv, err := s.InvocationService.Get(m.AntsInvocationId)
-	if err != nil {
-		log.Printf("Cannot get primary invocation for: %s", m.AntsInvocationId)
-	}
-
 	return &AntsPublishService{
-		metadata:   m,
-		results:    req.GetTestResponse().GetGivenTestResults(),
-		service:    s,
-		invocation: inv,
+		metadata: m,
+		results:  req.GetTestResponse().GetGivenTestResults(),
+		service:  s,
 	}, nil
 }
 
@@ -87,7 +80,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	return aps.service.WorkUnitService.Insert(wu)
 }
 
-func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult) ([]*atp.BatchInsertEntry, int64, error) {
+func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
 	dutProps, err := aps.dutProperties()
 	if err != nil {
@@ -131,19 +124,16 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 
 		startTime := result.GetStartTime().AsTime().Unix()
 		tr := &atp.TestResult{
-			InvocationId:   aps.metadata.GetAntsInvocationId(),
-			WorkUnitId:     parentwu.Id,
-			TestIdentifier: testID,
-			TestStatus:     antsTestStatus(result),
+			InvocationId:     aps.metadata.GetAntsInvocationId(),
+			WorkUnitId:       parentwu.Id,
+			PrimaryBuildInfo: buildInfo,
+			TestIdentifier:   testID,
+			TestStatus:       antsTestStatus(result),
 			Timing: &atp.Timing{
 				CreationTimestamp: startTime,
 				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
 			},
 			Properties: dutProps,
-		}
-
-		if aps.invocation != nil && aps.invocation.PrimaryBuild != nil {
-			tr.PrimaryBuildInfo = aps.invocation.PrimaryBuild
 		}
 
 		entries = append(entries, &atp.BatchInsertEntry{TestResult: tr, Token: token})
@@ -154,6 +144,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 }
 
 func (aps *AntsPublishService) uploadInvocationProperties() error {
+	var props []*atp.Property
 	envInfo := aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo()
 	if envInfo == nil {
 		log.Println("No env info found. Skipping.")
@@ -179,8 +170,21 @@ func (aps *AntsPublishService) uploadInvocationProperties() error {
 		}
 
 		ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
-		aps.invocation.Properties = append(aps.invocation.Properties, ancestorsProp)
-		aps.invocation, err = aps.service.InvocationService.Update(aps.invocation.InvocationId, aps.invocation)
+		props = append(props, ancestorsProp)
+	}
+
+	inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
+	if err != nil {
+		return err
+	}
+
+	if len(props) > 0 {
+		inv.Properties = append(inv.Properties, props...)
+		_, err = aps.service.InvocationService.Update(aps.metadata.AntsInvocationId, inv)
+		if err != nil {
+			return err
+		}
+		log.Printf("Added properties to invocation: %v", props)
 	}
 
 	return err
@@ -231,6 +235,14 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		return nil
 	}
 
+	var buildInfo *atp.BuildDescriptor
+	inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
+	if err != nil {
+		log.Printf("Could not get invocation id. skipping adding build info to results due to: %q. ", err)
+	} else {
+		buildInfo = inv.PrimaryBuild
+	}
+
 	var entries []*atp.BatchInsertEntry
 	token := int64(0)
 	for _, result := range aps.results {
@@ -243,7 +255,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		}
 
 		var childEntries []*atp.BatchInsertEntry
-		childEntries, token, err = aps.resultEntries(mwu, token, result.GetChildTestCaseResults())
+		childEntries, token, err = aps.resultEntries(mwu, token, result.GetChildTestCaseResults(), buildInfo)
 		if err != nil {
 			return err
 		}

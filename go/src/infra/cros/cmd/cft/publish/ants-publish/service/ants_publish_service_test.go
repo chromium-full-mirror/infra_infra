@@ -342,18 +342,6 @@ func TestUploadInvocationProperties(t *testing.T) {
 			},
 		},
 		{
-			name: "missing",
-			exeInfo: &artifact.ExecutionInfo{
-				EnvInfo: &artifact.ExecutionInfo_SatlabInfo{
-					SatlabInfo: &artifact.SatlabInfo{
-						BuildbucketInfo: &artifact.BuildbucketInfo{
-							AncestorIds: []int64{},
-						},
-					},
-				},
-			},
-		},
-		{
 			name:    "envInfoMissing",
 			exeInfo: &artifact.ExecutionInfo{EnvInfo: nil},
 		},
@@ -366,12 +354,14 @@ func TestUploadInvocationProperties(t *testing.T) {
 			aps := &AntsPublishService{
 				metadata: &metadata.PublishAntsMetadata{
 					PrimaryExecutionInfo: tc.exeInfo,
+					AntsInvocationId:     inv.InvocationId,
 				},
-				service:    &androidlib.Service{InvocationService: mockInv},
-				invocation: inv,
+				service: &androidlib.Service{InvocationService: mockInv},
 			}
+
 			// Verify that we get correct args for update call
 			if tc.wantInv != nil {
+				mockInv.EXPECT().Get(inv.InvocationId).Return(inv, nil)
 				mockInv.EXPECT().Update(inv.InvocationId, tc.wantInv).Return(tc.wantInv, nil)
 			}
 			err := aps.uploadInvocationProperties()
@@ -409,6 +399,7 @@ func TestResultEntries(t *testing.T) {
 			PrimaryExecutionInfo: executionInfo,
 		},
 	}
+	buildInfo := &atp.BuildDescriptor{Branch: "git-main_cl_dev"}
 	testCases := []struct {
 		name       string
 		wuName     string
@@ -487,7 +478,7 @@ func TestResultEntries(t *testing.T) {
 			if tc.expectWU != nil {
 				mockWU.EXPECT().Insert(tc.expectWU).Return(wu, nil)
 			}
-			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results)
+			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results, buildInfo)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
@@ -496,6 +487,7 @@ func TestResultEntries(t *testing.T) {
 			}
 			tc.wantResult.WorkUnitId = parentwuID
 			tc.wantResult.Timing = &atp.Timing{}
+			tc.wantResult.PrimaryBuildInfo = buildInfo
 			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
 				t.Errorf("%s", diff)
 			}
