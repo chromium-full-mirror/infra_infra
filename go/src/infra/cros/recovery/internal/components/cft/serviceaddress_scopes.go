@@ -18,7 +18,7 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// AddressToScope puts servic address of cft container to context scope.
+// AddressToScope puts service address of cft container to context scope.
 func AddressToScope(ctx context.Context, ctrInfo ctr.ServiceInfo, containerName string) error {
 	if ctrInfo == nil {
 		return errors.Reason("cft address to scopes: ctr client is not provided").Err()
@@ -28,14 +28,31 @@ func AddressToScope(ctx context.Context, ctrInfo ctr.ServiceInfo, containerName 
 		return errors.Annotate(err, "cft address to scopes").Err()
 	}
 	address, err := container.ServiceAddress(ctx)
-	if address == "" {
-		return errors.Annotate(err, "cft address to scopes: address is empty").Err()
-	}
-	scopes.PutConfigParam(ctx, addressScopeKey(containerName), address)
-	if _, err := AddressFromScope(ctx, containerName); err != nil {
+	if err != nil {
 		return errors.Annotate(err, "cft address to scopes").Err()
 	}
-	log.Debugf(ctx, "Address of %q saved to the scope context!", containerName)
+	if err := ServiceAddressToScope(ctx, containerName, address); err != nil {
+		return errors.Annotate(err, "cft address to scopes").Err()
+	}
+	return nil
+}
+
+const CacheService = "cache-service"
+
+// ServiceAddressToScope puts service address to context scope.
+func ServiceAddressToScope(ctx context.Context, serviceName, address string) error {
+	if address == "" {
+		return errors.Reason("service address to scopes: address is not provided").Err()
+	}
+	if serviceName == "" {
+		return errors.Reason("service address to scopes: service name is not provided").Err()
+	}
+	key := addressScopeKey(serviceName)
+	scopes.PutConfigParam(ctx, key, address)
+	if _, err := AddressFromScope(ctx, serviceName); err != nil {
+		return errors.Annotate(err, "cft address to scopes").Err()
+	}
+	log.Debugf(ctx, "Address of %q saved to the scope context by key:%s!", address, key)
 	return nil
 }
 
@@ -81,6 +98,19 @@ func ServoServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.I
 // FoilProvisionServiceAddressFromScope read foil-provision service client from scope.
 func FoilProvisionServiceAddressFromScope(ctx context.Context, dut *tlw.Dut) (*lab_api.IpEndpoint, error) {
 	addr, err := AddressFromScope(ctx, FoilProvisionName(dut))
+	if err != nil {
+		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
+	}
+	ip, err := addressToIPEndpoint(addr)
+	if err != nil {
+		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
+	}
+	return ip, nil
+}
+
+// CacheServiceAddressFromScope read cache service client from scope.
+func CacheServiceAddressFromScope(ctx context.Context) (*lab_api.IpEndpoint, error) {
+	addr, err := AddressFromScope(ctx, CacheService)
 	if err != nil {
 		return nil, errors.Annotate(err, "foil-provision service address from scope").Err()
 	}

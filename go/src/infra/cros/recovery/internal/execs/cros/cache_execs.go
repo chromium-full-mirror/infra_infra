@@ -6,19 +6,27 @@ package cros
 
 import (
 	"context"
+	"fmt"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/recovery/internal/components/cache"
+	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
 
+const (
+	cacheTestFilePath = "gs://cros-lab-servers/caching-backend/downloading-test.txt"
+)
+
 // cacheDownloadCheckExec performs download check by cache service.
 func cacheDownloadCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
-	testFilePath := argsMap.AsString(ctx, "test_path", "gs://cros-lab-servers/caching-backend/downloading-test.txt")
+	testFilePath := argsMap.AsString(ctx, "test_path", cacheTestFilePath)
 	log.Debugf(ctx, "Used file: %s", testFilePath)
 	// Requesting convert GC path to caches service path.
 	// Example: `http://Addr:8082/download/....`
@@ -42,6 +50,56 @@ func cacheDownloadCheckExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "cache download check").Err()
 }
 
+const (
+	defaultLabServiceAddress = "localhost:1485" // lab-service address
+)
+
+func cacheAddressDetectionkExec(ctx context.Context, info *execs.ExecInfo) error {
+	scopeAddr := func(addr string) error {
+		log.Infof(ctx, "Cache address: %q", addr)
+		if err := cft.ServiceAddressToScope(ctx, cft.CacheService, addr); err != nil {
+			return errors.Annotate(err, "start foil-provision container").Err()
+		}
+		return nil
+	}
+	argsMap := info.GetActionArgs(ctx)
+	cacheAddr := argsMap.AsString(ctx, "labservice_address", "")
+	if cacheAddr != "" {
+		return scopeAddr(cacheAddr)
+	}
+	labServiceAddr := argsMap.AsString(ctx, "labservice_address", defaultLabServiceAddress)
+	conn, err := common.ConnectWithService(ctx, labServiceAddr)
+	if err != nil {
+		return errors.Annotate(err, "cache address detection").Err()
+	}
+	client := labapi.NewInventoryServiceClient(conn)
+	if client == nil {
+		return errors.Annotate(err, "cache address detection: fail to crceate client").Err()
+	}
+	stream, err := client.GetDutTopology(ctx,
+		&labapi.GetDutTopologyRequest{
+			Id: &labapi.DutTopology_Id{
+				Value: info.GetDut().Name,
+			},
+		},
+	)
+	if err != nil {
+		return errors.Annotate(err, "cache address detection: get dut topology").Err()
+	}
+	response := &labapi.GetDutTopologyResponse{}
+	if err := stream.RecvMsg(response); err != nil {
+		return errors.Annotate(err, "cache address detection: parse response").Err()
+	}
+	for _, dut := range response.GetSuccess().GetDutTopology().GetDuts() {
+		if a := dut.GetCacheServer().GetAddress(); a != nil && a.GetAddress() != "" {
+			cacheAddr := fmt.Sprintf("%s:%d", a.GetAddress(), a.GetPort())
+			return scopeAddr(cacheAddr)
+		}
+	}
+	return errors.Reason("cache address detection: could not get the address").Err()
+}
+
 func init() {
 	execs.Register("cache_download_check", cacheDownloadCheckExec)
+	execs.Register("cache_service_address_detection", cacheAddressDetectionkExec)
 }
