@@ -170,6 +170,10 @@ func GetConfigs() []*UprevConfig {
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/base-adb/${platform}"),
 			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
 			Prepper: preppers.AdbBase,
 		},
 		{
