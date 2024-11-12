@@ -8,8 +8,8 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "gs://chromium-browser-official/chromium-117.0.5884.0.tar.xz",
-      "[START_DIR]/build_dir/chromium-117.0.5884.0.tar.xz"
+      "gs://chromium-browser-official/chromium-130.0.6723.117.tar.xz",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117.tar.xz"
     ],
     "infra_step": true,
     "name": "gsutil download_url"
@@ -18,7 +18,7 @@
     "cmd": [
       "tar",
       "-xJf",
-      "[START_DIR]/build_dir/chromium-117.0.5884.0.tar.xz",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117.tar.xz",
       "-C",
       "[START_DIR]/build_dir"
     ],
@@ -54,10 +54,10 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/build/linux/sysroot_scripts/install-sysroot.py",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/build/linux/sysroot_scripts/install-sysroot.py",
       "--arch=amd64"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -67,12 +67,12 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/tools/clang/scripts/build.py",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/tools/clang/scripts/build.py",
       "--skip-checkout",
       "--without-android",
       "--without-fuchsia"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -82,10 +82,10 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/tools/rust/build_rust.py",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/tools/rust/build_rust.py",
       "--skip-checkout"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -95,9 +95,9 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/tools/rust/build_bindgen.py"
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/tools/rust/build_bindgen.py"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -107,16 +107,15 @@
   },
   {
     "cmd": [
-      "python3",
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/tools/gn/bootstrap/bootstrap.py",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/tools/gn/bootstrap/bootstrap.py",
       "--gn-gen-args=is_debug=false enable_nacl=false is_official_build=true enable_distro_version_check=false use_system_libjpeg=true use_v8_context_snapshot=false",
       "--use-custom-libcxx"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env": {
-      "AR": "[START_DIR]/build_dir/chromium-117.0.5884.0/third_party/llvm-build/Release+Asserts/bin/llvm-ar",
-      "CC": "[START_DIR]/build_dir/chromium-117.0.5884.0/third_party/llvm-build/Release+Asserts/bin/clang",
-      "CXX": "[START_DIR]/build_dir/chromium-117.0.5884.0/third_party/llvm-build/Release+Asserts/bin/clang++",
+      "AR": "[START_DIR]/build_dir/chromium-130.0.6723.117/third_party/llvm-build/Release+Asserts/bin/llvm-ar",
+      "CC": "[START_DIR]/build_dir/chromium-130.0.6723.117/third_party/llvm-build/Release+Asserts/bin/clang",
+      "CXX": "[START_DIR]/build_dir/chromium-130.0.6723.117/third_party/llvm-build/Release+Asserts/bin/clang++",
       "LDFLAGS": "-fuse-ld=lld"
     },
     "env_suffixes": {
@@ -128,9 +127,9 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/third_party/node/update_node_binaries"
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/third_party/node/update_node_binaries"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -140,7 +139,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/build_dir/chromium-117.0.5884.0/build/linux/unbundle/replace_gn_files.py",
+      "[START_DIR]/build_dir/chromium-130.0.6723.117/build/linux/unbundle/replace_gn_files.py",
       "--system-libraries",
       "fontconfig",
       "freetype",
@@ -149,7 +148,7 @@
       "libwebp",
       "opus"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"
@@ -164,7 +163,7 @@
       "out/Release",
       "chrome/installer/linux"
     ],
-    "cwd": "[START_DIR]/build_dir/chromium-117.0.5884.0",
+    "cwd": "[START_DIR]/build_dir/chromium-130.0.6723.117",
     "env_suffixes": {
       "PATH": [
         "[CACHE]/cipd"

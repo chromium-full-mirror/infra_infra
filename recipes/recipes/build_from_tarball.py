@@ -37,10 +37,6 @@ def RunSteps(api):
         'infra/3pp/tools/ninja/${platform}', 'version:2@1.8.2.chromium.3')
     api.cipd.ensure(cipd_root, ensure_file)
 
-    # The Rust sources are included in the tarball only from M117 on.
-    # See https://crrev.com/c/4681637.
-    enable_rust = int(version.split('.')[0]) >= 117
-
     with api.context(
         cwd=src_dir,
         env_suffixes={'PATH': [cipd_root]}):
@@ -64,16 +60,6 @@ def RunSteps(api):
           'use_system_libjpeg=true',
           'use_v8_context_snapshot=false',
       ]
-
-      # Until the release above (https://crrev.com/c/4108258), this defaulted
-      # to true on Linux but requires the checked-out Java binary in
-      # third_party/jdk/current/bin/java to be present, which is not the case
-      # here.
-      if [int(x) for x in version.split('.')] < [111, 0, 5483, 0]:
-        gn_args.append('enable_js_type_check=false')
-
-      if not enable_rust:
-        gn_args.append('enable_rust=false')
 
       unbundle_libs = [
           'fontconfig',
@@ -135,27 +121,18 @@ def RunSteps(api):
           '--skip-checkout', '--without-android', '--without-fuchsia'
       ])
 
-      if enable_rust:
-        api.step('Build rustc.', [
-            api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
-            '--skip-checkout'
-        ])
-        api.step('Build bindgen.',
-                 [api.path.join(src_dir, 'tools', 'rust', 'build_bindgen.py')])
+      api.step('Build rustc.', [
+          api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
+          '--skip-checkout'
+      ])
+      api.step('Build bindgen.',
+               [api.path.join(src_dir, 'tools', 'rust', 'build_bindgen.py')])
 
       with api.context(env=gn_bootstrap_env):
-        api.step(
-            'Bootstrap gn.',
-            [
-                # Explicitly using python3 is not required as of
-                # https://crrev.com/c/4231332, but there are old versions going a
-                # few milestones back that still need to work.
-                'python3',
-                api.path.join(src_dir, 'tools', 'gn', 'bootstrap',
-                              'bootstrap.py'),
-                '--gn-gen-args=%s' % ' '.join(gn_args),
-                '--use-custom-libcxx'
-            ])
+        api.step('Bootstrap gn.', [
+            api.path.join(src_dir, 'tools', 'gn', 'bootstrap', 'bootstrap.py'),
+            '--gn-gen-args=%s' % ' '.join(gn_args), '--use-custom-libcxx'
+        ])
 
       api.step('Download nodejs.', [
           api.path.join(src_dir, 'third_party', 'node', 'update_node_binaries')
@@ -173,8 +150,8 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield (api.test('basic') + api.properties.generic(version='117.0.5884.0') +
+  yield (api.test('basic') + api.properties.generic(version='130.0.6723.117') +
          api.platform('linux', 64))
   yield (api.test('basic-with-js_type_check-gn-arg') +
-         api.properties.generic(version='80.0.3987.76') +
+         api.properties.generic(version='130.0.6723.117') +
          api.platform('linux', 64))
