@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"infra/cros/cmd/common_lib/common"
+
 	"github.com/gogo/protobuf/jsonpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -47,8 +49,21 @@ func (cmd *BuildInputValidationCmd) ExtractDependencies(ctx context.Context, ski
 	return nil
 }
 
-// Execute executes the command.
+// Execute executes the command by wrapping unwrappedExecute with a custom error
+// message.
 func (cmd *BuildInputValidationCmd) Execute(ctx context.Context) error {
+	err := cmd.unwrappedExecute(ctx)
+	if err != nil {
+		return &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_INPUT_VALIDATION,
+			Err:  err,
+		}
+	}
+	return nil
+}
+
+// unwrappedExecute executes the command and returns a regular error.
+func (cmd *BuildInputValidationCmd) unwrappedExecute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Inputs validation")
 	defer func() { step.End(err) }()

@@ -92,6 +92,30 @@ func HwExecution() {
 			// If the request is a CrosTestRunner non-dynamic request...
 			skylabResult, err = executeHwTests(ctx, input.CftTestRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st)
 		}
+		if err != nil {
+			errString := err.Error()
+			if common.GlobalNonInfraError != nil {
+				err = common.GlobalNonInfraError
+			} else {
+				err = build.AttachStatus(err, buildbucketpb.Status_INFRA_FAILURE, nil)
+			}
+			logging.Infof(ctx, "error found: %s", err)
+			st.SetSummaryMarkdown(errString)
+			resp.ErrorSummaryMarkdown = errString
+
+			// Parse the test_runner error type and add it to the skylab result if any
+			// was found.
+			errType := skylab_test_runner.TestRunnerErrorType_OTHER
+			var tre *common.TestRunnerError
+			if ok := errors.As(err, tre); ok {
+				errType = tre.Type
+			}
+			if skylabResult == nil {
+				skylabResult = &skylab_test_runner.Result{}
+			}
+			skylabResult.ErrorType = errType
+			skylabResult.ErrorString = errString
+		}
 		if skylabResult != nil {
 			setMarkdown(skylabResult, st, resp)
 
@@ -101,16 +125,6 @@ func HwExecution() {
 			_, _ = w.Write(m)
 			_ = w.Close()
 			resp.CompressedResult = base64.StdEncoding.EncodeToString(b.Bytes())
-		}
-		if err != nil {
-			if common.GlobalNonInfraError != nil {
-				err = common.GlobalNonInfraError
-			} else {
-				err = build.AttachStatus(err, buildbucketpb.Status_INFRA_FAILURE, nil)
-			}
-			logging.Infof(ctx, "error found: %s", err)
-			st.SetSummaryMarkdown(err.Error())
-			resp.ErrorSummaryMarkdown = err.Error()
 		}
 
 		ioProps.SetOutput(ctx, resp)
@@ -287,11 +301,17 @@ func executeHwTestsV2(
 
 	// Validation
 	if err := validateDeadline(ctx, req.GetParams().GetDeadline()); err != nil {
-		return nil, err
+		return nil, &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_INPUT_VALIDATION,
+			Err:  err,
+		}
 	}
 	err := validateHwExecution(ctrCipdVersion, gsRoot)
 	if err != nil {
-		return nil, err
+		return nil, &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_INPUT_VALIDATION,
+			Err:  err,
+		}
 	}
 
 	// Create ctr
@@ -311,7 +331,10 @@ func executeHwTestsV2(
 				break
 			}
 			if metadataMap == nil {
-				return nil, fmt.Errorf("container metadata is empty")
+				return nil, &common.TestRunnerError{
+					Type: skylab_test_runner.TestRunnerErrorType_OTHER,
+					Err:  fmt.Errorf("container metadata is empty"),
+				}
 			}
 		}
 
@@ -321,7 +344,10 @@ func executeHwTestsV2(
 
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
-		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
+		return nil, &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_OTHER,
+			Err:  fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err),
+		}
 	}
 	// containerCfg only exists to support VM flow.
 	// If we containerize the DutTopology fetching/parsing
@@ -381,7 +407,10 @@ func executeHwTestsV2(
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, &api_common.CftStepsConfig{})
 	err = hwTestConfig.GenerateConfig(ctx)
 	if err != nil {
-		return sk.SkylabResult, errors.Annotate(err, "error during generating hw test configs: ").Err()
+		return sk.SkylabResult, &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_TEST_HARNESS,
+			Err:  errors.Annotate(err, "error during generating hw test configs").Err(),
+		}
 	}
 
 	// Execute config

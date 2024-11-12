@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -58,30 +59,39 @@ func NewCrosPublishExecutor(
 func (ex *CrosPublishExecutor) ExecuteCommand(
 	ctx context.Context,
 	cmdInterface interfaces.CommandInterface) error {
+	var err error
 
 	switch cmd := cmdInterface.(type) {
 	case *commands.GcsPublishServiceStartCmd:
-		return ex.gcsPublishStartCommandExecution(ctx, cmd)
+		err = ex.gcsPublishStartCommandExecution(ctx, cmd)
 	case *commands.GcsPublishUploadCmd:
-		return ex.gcsPublishUploadCommandExecution(ctx, cmd)
+		err = ex.gcsPublishUploadCommandExecution(ctx, cmd)
 	case *commands.RdbPublishServiceStartCmd:
-		return ex.rdbPublishStartCommandExecution(ctx, cmd)
+		err = ex.rdbPublishStartCommandExecution(ctx, cmd)
 	case *commands.RdbPublishUploadCmd:
-		return ex.rdbPublishUploadCommandExecution(ctx, cmd)
+		err = ex.rdbPublishUploadCommandExecution(ctx, cmd)
 	case *commands.TkoPublishServiceStartCmd:
-		return ex.tkoPublishStartCommandExecution(ctx, cmd)
+		err = ex.tkoPublishStartCommandExecution(ctx, cmd)
 	case *commands.TkoPublishUploadCmd:
-		return ex.tkoPublishUploadCommandExecution(ctx, cmd)
+		err = ex.tkoPublishUploadCommandExecution(ctx, cmd)
 	case *commands.CpconPublishServiceStartCmd:
-		return ex.cpconPublishStartCommandExecution(ctx, cmd)
+		err = ex.cpconPublishStartCommandExecution(ctx, cmd)
 	case *commands.CpconPublishUploadCmd:
-		return ex.cpconPublishUploadCommandExecution(ctx, cmd)
+		err = ex.cpconPublishUploadCommandExecution(ctx, cmd)
 	default:
-		return fmt.Errorf(
-			"Command type %s is not supported by %s executor type!",
+		err = fmt.Errorf(
+			"command type %s is not supported by %s executor type",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
+
+	if err != nil {
+		return &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_PUBLISH,
+			Err:  err,
+		}
+	}
+	return nil
 }
 
 // -- GCS Commands --
