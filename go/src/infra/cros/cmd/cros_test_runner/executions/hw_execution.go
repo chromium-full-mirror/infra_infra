@@ -21,6 +21,7 @@ import (
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	api_common "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
@@ -391,6 +392,7 @@ func executeHwTestsV2(
 		logging.Infof(ctx, fmt.Sprintf("Warning: %s", err))
 	}
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("parentBBID", parentBBID))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set("schedulingMetadata", getSchedulingMetadata(buildState.Build())))
 
 	// Set the ATP information if provided in the build tags
 	invocationID, attemptWUID := getATPIDs(buildState.Build(), ioProps.GetInput(ctx))
@@ -491,6 +493,18 @@ func validateDeadline(ctx context.Context, deadline *timestamppb.Timestamp) erro
 	common.GlobalNonInfraError = err
 
 	return err
+}
+
+// getSchedulingMetadata gets all the build scheduling metadata from the Buildbucket build tags
+func getSchedulingMetadata(b *buildbucketpb.Build) *artifactpb.SchedulingMetadata {
+	buildTags := map[string]string{}
+	for _, tag := range b.GetTags() {
+		buildTags[tag.GetKey()] = tag.Value
+	}
+	schedulingMetadata := &artifactpb.SchedulingMetadata{
+		SchedulingArgs: buildTags,
+	}
+	return schedulingMetadata
 }
 
 // getParentBBID gets the parent build ID from the given Buildbucket build.
