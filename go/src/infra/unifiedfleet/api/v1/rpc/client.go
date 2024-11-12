@@ -19,7 +19,7 @@ type Option func(*config)
 // NewClient creates a new Client instance to access UFS.
 // The context is saved and used internally by the authenticator. Canceling it
 // will cause request authentication to fail.
-// need the authentication.
+//
 // Usage example:
 // c, err:= NewClient(ctx, ServiceAccountJSONPath("/path/to/json"), UserAgent("agent/3.0.0"))
 // It's the caller's responsibility to specify the namespace in metadata of an
