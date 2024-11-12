@@ -8,14 +8,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
-
-	androidapi "infra/cros/cmd/common_lib/android_api"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -30,6 +27,8 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/analytics"
+	androidapi "infra/cros/cmd/common_lib/android_api"
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/schedulers"
@@ -492,8 +491,11 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// Don't poll for build status if this is a dry-run.
 	dryRun := cmd.Scheduler.GetSchedulerType() == schedulers.DryRunSchedulerType
 	if dryRun {
-		step.SetSummaryMarkdown("Task launch skipped in dry-run mode")
-		return nil
+		// Return incomplete results so that we don't completely ignore this failure
+		// in the recipe summary step.
+		result.Results = getIncompleteRunResults(buildReq)
+		err = fmt.Errorf("dry run skipped running TR")
+		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
 
 	summaries := []string{}
