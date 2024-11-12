@@ -74,6 +74,7 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 
 func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
+
 	log.Println("Executing ants publish request-updater filter")
 
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
@@ -110,6 +111,7 @@ func main() {
 	//  Start the server
 	err := server.ServerWithFlagSet(fs, publishRequestUpdater.executor, "request-updater")
 	if err != nil {
+		log.Println(fmt.Errorf("error when running server, %w", err))
 		os.Exit(2)
 	}
 	os.Exit(0)

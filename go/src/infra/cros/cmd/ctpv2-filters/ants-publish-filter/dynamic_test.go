@@ -25,8 +25,9 @@ func TestSkipTFUpload(t *testing.T) {
 			},
 		},
 	}
+	log := log.New(os.Stdout, "test", 1)
 
-	skipTFUpload(req)
+	skipTFUpload(req, log)
 
 	gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
 	if len(gotArgs) != 2 {
@@ -62,9 +63,11 @@ func TestIsInternal(t *testing.T) {
 		},
 	}
 
+	log := log.New(os.Stdout, "test", 1)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := isInternal(tc.accountID)
+			got := isInternal(tc.accountID, log)
 			if got != tc.want {
 				t.Errorf("Unexpected. want %v got %v", tc.want, got)
 			}
@@ -167,9 +170,11 @@ func TestSkipAntsPublish(t *testing.T) {
 		},
 	}
 
+	log := log.New(os.Stdout, "test", 1)
+
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotSkip := skipAntsPublish(tc.metadata, tc.invID)
+			gotSkip := skipAntsPublish(tc.metadata, tc.invID, log)
 
 			if gotSkip != tc.wantSkip {
 				t.Errorf("Unexpected error: got %v want %v", gotSkip, tc.wantSkip)
