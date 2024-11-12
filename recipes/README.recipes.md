@@ -58,6 +58,7 @@
   * [infra_repo_trybot](#recipes-infra_repo_trybot)
   * [luci_go](#recipes-luci_go)
   * [luci_py](#recipes-luci_py)
+  * [luci_ui_promoter](#recipes-luci_ui_promoter)
   * [powershell:examples/test](#recipes-powershell_examples_test)
   * [qemu:examples/basic](#recipes-qemu_examples_basic)
   * [qemu:examples/create_disk](#recipes-qemu_examples_create_disk)
@@ -1790,6 +1791,12 @@ This function runs UI tests in the `luci-go` project.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/luci_py.py#27)(api):**
+### *recipes* / [luci\_ui\_promoter](/recipes/recipes/luci_ui_promoter.py)
+
+[DEPS](/recipes/recipes/luci_ui_promoter.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+
+&mdash; **def [RunSteps](/recipes/recipes/luci_ui_promoter.py#22)(api):**
 ### *recipes* / [powershell:examples/test](/recipes/recipe_modules/powershell/examples/test.py)
 
 [DEPS](/recipes/recipe_modules/powershell/examples/test.py#7): [powershell](#recipe_modules-powershell), [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
