@@ -806,7 +806,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		envVersion:           cmd.EnvVersion,
 	}
 
-	req, err := GenerateTrv2Req(ctx, false, helper)
+	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		logging.Infof(ctx, "error while generating req: %s", err)
 		return nil, errors.Annotate(err, "error while generating req:").Err()

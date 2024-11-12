@@ -112,7 +112,7 @@ func FakeHwTarget(board, model, variant string) *HwTarget {
 }
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
-func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper) (*buildbucketpb.ScheduleBuildRequest, error) {
+func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper, isLED bool) (*buildbucketpb.ScheduleBuildRequest, error) {
 	populateHelper(ctx, trHelper)
 	err := populateHelper(ctx, trHelper)
 	if err != nil {
@@ -146,6 +146,12 @@ func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2R
 				Key:   "role",
 				Value: "vmlab",
 			},
+		}
+	}
+
+	if isLED {
+		req.ShadowInput = &buildbucketpb.ScheduleBuildRequest_ShadowInput{
+			InheritFromParent: true,
 		}
 	}
 
