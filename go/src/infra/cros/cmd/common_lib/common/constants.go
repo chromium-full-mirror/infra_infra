@@ -65,7 +65,8 @@ const (
 	OtherErrKey                            = "Other Error"
 	CTPBucket                              = "testplatform"
 	CTPBucketShadow                        = "testplatform.shadow"
-	AndroidBuildPathFormat                 = "android-build/build_explorer/artifacts_list/%s/%s/%s-ota-%s.zip"
+	AndroidBuildPrefix                     = "android-build/build_explorer/artifacts_list/"
+	AndroidBuildPathFormat                 = AndroidBuildPrefix + "%s/%s/%s-ota-%s.zip"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.

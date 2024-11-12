@@ -96,6 +96,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	for _, su := range schedulingUnits {
 		gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
 		if strings.HasPrefix(gcsPath, "android-build") {
+			applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
 			su.DynamicUpdateLookupTable["installPath"] = gcsPath
 			continue
 		}
@@ -121,12 +122,38 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		log.Println("Setting build target and latest green build number")
 		boardTarget := board + "-trunk_staging-userdebug"
 		installPath := fmt.Sprintf(
-			"android-build/build_explorer/artifacts_list/%s/%s/%s-ota-%s.zip",
+			common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
 			strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
 		log.Printf("InstallPath value: %s", installPath)
 		su.DynamicUpdateLookupTable["installPath"] = installPath
+		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
+		applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), installPath)
 	}
 
+}
+
+// applyBuildInfoFromInstallPathToTarget extracts the buildId and buildTarget
+// from the provided installPath and applies their values into the target's
+// software request key values.
+func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath string) {
+	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
+	splitPath := strings.Split(trimmedPath, "/")
+	if len(splitPath) < 2 {
+		log.Printf("Warning: could not extract buildId and buildTarget from installPath")
+		return
+	}
+	// Indexes 0 and 1 correspond to buildId and buildTarget.
+	buildId, buildTarget := splitPath[0], splitPath[1]
+	target.GetSwReq().KeyValues = append(target.GetSwReq().KeyValues, []*api.KeyValue{
+		{
+			Key:   "al_build_id",
+			Value: buildId,
+		},
+		{
+			Key:   "al_build_target",
+			Value: buildTarget,
+		},
+	}...)
 }
 
 func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
