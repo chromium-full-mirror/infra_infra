@@ -263,13 +263,17 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 	r := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
 	dims, err := device.GetOSResourceDims(ctx, serviceClients.UFSClient, r, name)
 	if err != nil {
-		return
-	}
-	deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
-	err = deviceModel.SetDutIDFromLabels(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "Failed to set DUT ID using schedulable labels for Device %s: %s", deviceModel.ID, err)
-		return
+		// We may not able to get dimensions for devices which is, e.g. decomm'ed
+		// from UFS, or renamed, or a SU component. In this case, we ignore the
+		// error here and mark the device as inactive.
+		logging.Debugf(ctx, "upsertDeviceData: ignore GetOSResourceDims error: %s", err)
+	} else {
+		deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
+		err = deviceModel.SetDutIDFromLabels(ctx)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to set DUT ID using schedulable labels for Device %s: %s", deviceModel.ID, err)
+			return
+		}
 	}
 	dbDevice, err := model.GetDeviceByID(ctx, serviceClients.DBClient.Conn, model.IDTypeHostname, deviceModel.ID)
 
@@ -286,6 +290,13 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		return
 	}
 
+	// When the device is removed from UFS, we cannot get the schedulable labels,
+	// which is needed in below. Thus we use the data from the database as a hack.
+	// TODO(guocb): remove the hack and don't check schedulable labels when upsert
+	// the data to database.
+	if deviceModel.SchedulableLabels == nil && dbDevice.SchedulableLabels != nil {
+		deviceModel.SchedulableLabels = dbDevice.SchedulableLabels
+	}
 	// Either Device was not found and is new or it is different
 	logging.Debugf(ctx, "Found changes for Device %s dut_id %s. Upserting to DB", deviceModel.ID, deviceModel.DutID)
 	err = model.UpsertDeviceFromUFS(ctx, serviceClients.DBClient.Conn, deviceModel)
