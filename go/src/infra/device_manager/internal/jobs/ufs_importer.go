@@ -21,7 +21,6 @@ import (
 	shivasUtil "infra/cmd/shivas/utils"
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/metrics"
 	"infra/device_manager/internal/model"
@@ -48,12 +47,6 @@ var (
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients, project string) error {
 	start := time.Now()
-	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
-	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
-	if err != nil {
-		return err
-	}
-	serviceClients.UFSClient = ufsClient
 	lses, err := getAllMachineLSEs(ctx, serviceClients.UFSClient)
 	if err != nil {
 		return err
