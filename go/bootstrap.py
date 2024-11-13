@@ -437,14 +437,14 @@ def get_go_environ_diff(layout):
       # https://github.com/golang/tools/blob/54c614fe050cac95ace393a63f164149942ecbde/go/packages/external.go#L49
       'GOPACKAGESDRIVER': 'off',
 
+      # Disable cgo by default to make the dev environment closer to what is
+      # the production build environment to avoid surprises.
+      'CGO_ENABLED': '0',
+
       # Instruct `gae.py deploy` to use modules-aware cloudbuildhelper to
       # stage *.go files before deployment.
       'GAE_PY_USE_CLOUDBUILDHELPER': '1',
   }
-
-  if sys.platform == 'win32':
-    # Windows doesn't have gcc.
-    env['CGO_ENABLED'] = '0'
 
   return EnvironDiff(
       env=env,

@@ -433,11 +433,143 @@ class PackageDef(collections.namedtuple(
     return on_change_tags, pkg_path
 
 
+class GoToolset(
+    collections.namedtuple(
+        'GoToolset',
+        [
+            'env',  # env vars to assign as {str => str}
+            'env_prefixes',  # paths to prepend to existing vars {str => [str]}
+            'env_suffixes',  # paths to append to existing vars {str => [str]}
+            'version',  # go version
+            'go_env',  # full 'go env' dict captured when installing the toolset
+        ])):
+  """Represents a Go build environment.
+
+  Carries os.environ modifications necessary to activate a Go toolset.
+  """
+
+  def _apply_toolset_env(self):
+    """Modifies current os.environ to activate the Go toolset."""
+    for k, v in self.env.items():
+      if v is not None:
+        os.environ[k] = v
+      else:
+        os.environ.pop(k, None)
+    def split_path(env_val, filter_out):
+      if not env_val:
+        return []
+      return [p for p in env_val.split(os.pathsep) if p not in filter_out]
+    # env_prefixes['PATH'] is e.g. `["/.../a/bin", ".../b/bin"]. Need to prepend
+    # these paths to `PATH` to get "/.../a/bin:/.../b/bin:$PATH". Cleanup dups
+    # while at it. Same for suffixes.
+    for k, v in self.env_prefixes.items():
+      cur = split_path(os.environ.get(k, ''), v)
+      os.environ[k] = os.pathsep.join(v + cur)
+    for k, v in self.env_suffixes.items():
+      cur = split_path(os.environ.get(k, ''), v)
+      os.environ[k] = os.pathsep.join(cur + v)
+
+  @contextlib.contextmanager
+  def build_env(self, go_environ):
+    """Prepares os.environ to build Go code.
+
+    Args:
+      go_environ: instance of GoEnviron object with go related env vars.
+    """
+    orig_cwd = os.getcwd()
+    orig_environ = os.environ.copy()
+
+    # Note: the order is important, we want to allow go_environ to override
+    # env vars present in the default Go environ (in particular CGO_ENABLED).
+    self._apply_toolset_env()
+    go_environ.apply()
+
+    try:
+      yield
+    finally:
+      os.chdir(orig_cwd)
+      # Apparently 'os.environ = orig_environ' doesn't actually modify process
+      # environment, only modifications of os.environ object itself do.
+      for k, v in orig_environ.items():
+        os.environ[k] = v
+      for k in os.environ.keys():
+        if k not in orig_environ:
+          os.environ.pop(k)
+
+  def clean(self, go_environ, packages):
+    """Removes object files and executables left from building given packages.
+
+    Transitively cleans all dependencies (including stdlib!) and removes
+    executables from GOBIN. In Go modules mode this also appears to be
+    downloading modules.
+
+    Args:
+      go_environ: instance of GoEnviron object with go related env vars.
+      packages: list of go packages to clean (can include '...' patterns).
+    """
+    with self.build_env(go_environ):
+      print_go_step_title('Preparing:\n  %s' % '\n  '.join(packages))
+      subprocess.check_call(
+          args=['go', 'clean', '-i', '-r'] + list(packages),
+          stderr=subprocess.STDOUT)
+      # Above command is either silent (without '-x') or too verbose
+      # (with '-x'). Prefer the silent version, but add a note that it's
+      # alright.
+      print('Done.')
+
+  def install(self, go_environ, packages):
+    """Builds (and installs) Go packages into GOBIN via 'go install ...'.
+
+    Compiles and installs packages into default GOBIN, which is
+    <go_workspace>/bin (it is setup by go/env.py).
+
+    Args:
+      go_environ: instance of GoEnviron object with go related env vars.
+      packages: list of go packages to build (can include '...' patterns).
+      rebuild: if True, will forcefully rebuild all dependences.
+    """
+    args = [
+        'go', 'install', '-trimpath', '-ldflags=-buildid=', '-buildvcs=false',
+        '-v'
+    ]
+    if go_environ.with_race:
+      args.append('-race')
+
+    args += list(packages)
+    with self.build_env(go_environ):
+      print_go_step_title('Building:\n  %s' % '\n  '.join(packages))
+      subprocess.check_call(args=args, stderr=subprocess.STDOUT)
+
+  def build(self, go_environ, package, output):
+    """Builds a single Go package.
+
+    Args:
+      go_environ: instance of GoEnviron object with go related env vars.
+      package: go package to build.
+      output: where to put the resulting binary.
+    """
+    args = [
+        'go', 'build', '-trimpath', '-ldflags=-buildid=', '-buildvcs=false',
+        '-v', '-o', output
+    ]
+    if go_environ.with_race:
+      args.append('-race')
+
+    args.append(package)
+    with self.build_env(go_environ):
+      print_go_step_title('Building %s' % (package,))
+      subprocess.check_call(args=args, stderr=subprocess.STDOUT)
+
+
 class GoEnviron(
     collections.namedtuple('GoEnviron',
                            ['cipd_platform', 'cgo_enabled', 'with_race', 'cwd'])
 ):
-  """Defines the Go build environment (at least the part we care about)."""
+  """Defines a per-package Go build environment modification.
+
+  It is applied on top of the default Go toolset environment from GoToolset
+  before building the package.
+  """
 
   @staticmethod
   def new(cipd_platform):
@@ -573,13 +705,6 @@ def create_mac_bundle(pkg_root, bundle_def):
   }
 
 
-def get_env_dot_py():
-  if os.environ.get('GOOS') == 'android':
-    return 'mobile_env.py'
-  else:
-    return 'env.py'
-
-
 def find_cipd():
   """Finds a CIPD client in PATH."""
   exts = ('.exe', '.bat') if sys.platform == 'win32' else ('',)
@@ -652,159 +777,59 @@ def print_go_step_title(title):
   print_title(title)
 
 
-@contextlib.contextmanager
-def workspace_env(go_environ):
-  """Puts Go env vars from go_environ into os.environ and changes cwd.
-
-  Args:
-    go_environ: instance of GoEnviron object with go related env vars.
-  """
-  orig_cwd = os.getcwd()
-  orig_environ = os.environ.copy()
-
-  go_environ.apply()
+def bootstrap_go_toolset(go_workspace):
+  """Makes sure the go toolset is installed and returns it as GoToolset."""
+  print_title('Making sure Go toolset is installed')
 
   # Do not install tools from tools.go, they are used only during development.
   # This saves a bit of time.
-  os.environ['INFRA_GO_SKIP_TOOLS_INSTALL'] = '1'
+  bootstrap_env = os.environ.copy()
+  bootstrap_env['INFRA_GO_SKIP_TOOLS_INSTALL'] = '1'
 
-  try:
-    yield
-  finally:
-    os.chdir(orig_cwd)
-    # Apparently 'os.environ = orig_environ' doesn't actually modify process
-    # environment, only modifications of os.environ object itself do.
-    for k, v in orig_environ.items():
-      os.environ[k] = v
-    for k in os.environ.keys():
-      if k not in orig_environ:
-        os.environ.pop(k)
+  # bootstrap.py installs Go toolset if it is missing. It returns what changes
+  # to os.environ are necessary to use the installed toolset.
+  output = json.loads(
+      check_output(
+          args=[
+              sys.executable,
+              '-u',
+              os.path.join(go_workspace, 'bootstrap.py'),
+              '-',  # emit JSON with environ modification into stdout
+          ],
+          env=bootstrap_env))
+  go_toolset = GoToolset(
+      output['env'],
+      output['env_prefixes'],
+      output['env_suffixes'],
+      None,  # don't know the version yet
+      None,  # don't know the full env yet
+  )
 
+  with go_toolset.build_env(GoEnviron.new(get_host_cipd_platform())):
+    # This would be something like "go version go1.15.8 darwin/amd64".
+    output = check_output(['go', 'version'])
+    print(output.strip())
+    print()
 
-def bootstrap_go_toolset(go_workspace):
-  """Makes sure go is installed and returns its 'go env' and version.
+    # We want only "go1.15.8" part.
+    version = re.match(r'go version (go[\d\.]+)', output).group(1)
 
-  Used to verify that our platform detection in get_host_package_vars() matches
-  the Go toolset being used.
-  """
-  with workspace_env(GoEnviron.new(get_host_cipd_platform())):
-    print_go_step_title('Making sure Go toolset is installed')
-    # env.py does the actual job of bootstrapping if the toolset is missing.
-    output = check_output(
-        args=[
-            sys.executable, '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'env'
-        ])
     # See https://github.com/golang/go/blob/master/src/cmd/go/env.go for format
     # of the output.
-    print('Go environ:')
+    output = check_output(['go', 'env'])
     print(output.strip())
-    env = {}
+    go_env = {}
     for line in output.splitlines():
       k, _, v = line.lstrip('set ').partition('=')
       if v.startswith('"') and v.endswith('"'):
         v = v.strip('"')
       elif v.startswith("'") and v.endswith("'"):
         v = v.strip("'")
-      env[k] = v
+      go_env[k] = v
+    assert go_env['GOBIN']
 
-    # This would be something like "go version go1.15.8 darwin/amd64".
-    print_go_step_title('Go version')
-    output = check_output(
-        args=[
-            sys.executable, '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'version'
-        ])
-    print(output.strip())
-
-    # We want only "go1.15.8" part.
-    version = re.match(r'go version (go[\d\.]+)', output).group(1)
-
-    return env, version
-
-
-def run_go_clean(go_workspace, go_environ, packages):
-  """Removes object files and executables left from building given packages.
-
-  Transitively cleans all dependencies (including stdlib!) and removes
-  executables from GOBIN. In Go modules mode this also appears to be downloading
-  modules.
-
-  Args:
-    go_workspace: path to 'infra/go' or 'infra_internal/go'.
-    go_environ: instance of GoEnviron object with go related env vars.
-    packages: list of go packages to clean (can include '...' patterns).
-  """
-  with workspace_env(go_environ):
-    print_go_step_title('Preparing:\n  %s' % '\n  '.join(packages))
-    subprocess.check_call(
-        args=[
-            sys.executable, '-u',
-            os.path.join(go_workspace, get_env_dot_py()), 'go', 'clean', '-i',
-            '-r'
-        ] + list(packages),
-        stderr=subprocess.STDOUT)
-    # Above command is either silent (without '-x') or too verbose (with '-x').
-    # Prefer silent version, but add a note that it's alright.
-    print('Done.')
-
-
-def run_go_install(go_workspace, go_environ, packages):
-  """Builds (and installs) Go packages into GOBIN via 'go install ...'.
-
-  Compiles and installs packages into default GOBIN, which is <go_workspace>/bin
-  (it is setup by go/env.py).
-
-  Args:
-    go_workspace: path to 'infra/go' or 'infra_internal/go'.
-    go_environ: instance of GoEnviron object with go related env vars.
-    packages: list of go packages to build (can include '...' patterns).
-    rebuild: if True, will forcefully rebuild all dependences.
-  """
-  args = [
-      sys.executable, '-u',
-      os.path.join(go_workspace, get_env_dot_py()), 'go', 'install',
-      '-trimpath',
-      '-ldflags=-buildid=',
-      '-buildvcs=false',
-      '-v'
-  ]
-  if go_environ.with_race:
-    args.append('-race')
-
-  args += list(packages)
-  with workspace_env(go_environ):
-    print_go_step_title('Building:\n  %s' % '\n  '.join(packages))
-    subprocess.check_call(
-        args=args, stderr=subprocess.STDOUT)
-
-
-def run_go_build(go_workspace, go_environ, package, output):
-  """Builds single Go package.
-
-  Args:
-    go_workspace: path to 'infra/go' or 'infra_internal/go'.
-    go_environ: instance of GoEnviron object with go related env vars.
-    package: go package to build.
-    output: where to put the resulting binary.
-  """
-  args = [
-      sys.executable, '-u',
-      os.path.join(go_workspace, get_env_dot_py()), 'go', 'build',
-      '-trimpath',
-      '-ldflags=-buildid=',
-      '-buildvcs=false',
-      '-v',
-      '-o', output
-  ]
-  if go_environ.with_race:
-    args.append('-race')
-
-  args.append(package)
-  with workspace_env(go_environ):
-    print_go_step_title('Building %s' % (package,))
-    subprocess.check_call(
-        args=args, stderr=subprocess.STDOUT)
+    return GoToolset(go_toolset.env, go_toolset.env_prefixes,
+                     go_toolset.env_suffixes, version, go_env)
 
 
 def find_main_module(module_map, pkg):
@@ -829,14 +854,14 @@ def find_main_module(module_map, pkg):
   return list(matches)[0]
 
 
-def build_go_code(go_workspace, cipd_platform, module_map, pkg_defs):
+def build_go_code(go_toolset, cipd_platform, module_map, pkg_defs):
   """Builds and installs all Go packages used by the given PackageDefs.
 
-  In the end <go_workspace>/bin will have all built binaries, and only them
-  (regardless of whether we are cross-compiling or not).
+  In the end $GOBIN will have all built binaries, and only them (regardless of
+  whether we are cross-compiling or not).
 
   Args:
-    go_workspace: path to 'infra/go' or 'infra_internal/go'.
+    go_toolset: instance of GoToolset object to use in the build.
     cipd_platform: target CIPD platform to build for.
     module_map: a dict "go package prefix => directory with main module".
     pkg_defs: list of PackageDef objects that define what to build.
@@ -892,7 +917,7 @@ def build_go_code(go_workspace, cipd_platform, module_map, pkg_defs):
       continue
 
     # Make sure there are no stale files in the workspace.
-    run_go_clean(go_workspace, pkg_env, to_install)
+    go_toolset.clean(pkg_env, to_install)
 
     if cipd_platform == get_host_cipd_platform():
       # If not cross-compiling, build all Go code in a single "go install" step,
@@ -900,21 +925,20 @@ def build_go_code(go_workspace, cipd_platform, module_map, pkg_defs):
       # 'go install' isn't supposed to be used for cross-compilation and the
       # toolset actively complains with "go install: cannot install
       # cross-compiled binaries when GOBIN is set".
-      run_go_install(go_workspace, pkg_env, to_install)
+      go_toolset.install(pkg_env, to_install)
     else:
       # Prebuild stdlib once. 'go build' calls below are discarding build
       # results, so it's better to install as much shared stuff as possible
       # beforehand.
-      run_go_install(go_workspace, pkg_env, ['std'])
+      go_toolset.install(pkg_env, ['std'])
 
       # Build packages one by one and put the resulting binaries into GOBIN, as
       # if they were installed there. It's where the rest of the build.py code
       # expects them to be (see also 'root' property in package definition
       # YAMLs).
-      go_bin = os.path.join(go_workspace, 'bin')
+      go_bin = go_toolset.go_env['GOBIN']
       for pkg in to_install:
-        run_go_build(go_workspace, pkg_env, pkg,
-                     os.path.join(go_bin, binary_name(pkg)))
+        go_toolset.build(pkg_env, pkg, os.path.join(go_bin, binary_name(pkg)))
 
 
 def enumerate_packages(package_def_dir, package_def_files):
@@ -1365,12 +1389,12 @@ def run(
   # good. In theory we can use any toolset, since we are going to be setting all
   # GOOS, GOARCH etc env vars explicitly, enabling cross-compilation, but an
   # extra check won't hurt.
-  go_env, go_ver = bootstrap_go_toolset(go_workspace)
+  go_toolset = bootstrap_go_toolset(go_workspace)
   expected_host_env = cipd_platform_to_go_env(get_host_cipd_platform())
-  if go_env['GOHOSTARCH'] != expected_host_env['GOARCH']:
+  if go_toolset.go_env['GOHOSTARCH'] != expected_host_env['GOARCH']:
     print(
         'Go toolset GOHOSTARCH (%s) doesn\'t match expected architecture (%s)' %
-        (go_env['GOHOSTARCH'], expected_host_env['GOARCH']),
+        (go_toolset.go_env['GOHOSTARCH'], expected_host_env['GOARCH']),
         file=sys.stderr)
     return 1
 
@@ -1380,7 +1404,7 @@ def run(
   tags = list(tags)
   tags.append('build_host_hostname:' + socket.gethostname().split('.')[0])
   tags.append('build_host_platform:' + get_host_cipd_platform())
-  tags.append('go_version:' + go_ver)
+  tags.append('go_version:' + go_toolset.version)
 
   print_title('Overview')
   print('CIPD platform:')
@@ -1434,7 +1458,7 @@ def run(
 
   # Build the world.
   if build:
-    build_go_code(go_workspace, cipd_platform, module_map, packages_to_visit)
+    build_go_code(go_toolset, cipd_platform, module_map, packages_to_visit)
 
   # Package it.
   failed = []
