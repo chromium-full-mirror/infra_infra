@@ -6,6 +6,9 @@ package common
 
 import (
 	"context"
+	"sort"
+	"strings"
+	"sync"
 
 	"google.golang.org/api/option"
 
@@ -15,6 +18,8 @@ import (
 
 	"infra/cmdsupport/cmdlib"
 )
+
+var BotCountCache sync.Map
 
 // CreateNewSwarmingService creates new swarming service.
 func CreateNewSwarmingService(ctx context.Context) (*swarm_v1.Service, error) {
@@ -43,6 +48,13 @@ func CreateNewSwarmingService(ctx context.Context) (*swarm_v1.Service, error) {
 // GetBotCount gets total bot count for provided dims.
 // dims example: {"label-board:zork", "label-model:morphius", "dut_state:ready"}
 func GetBotCount(ctx context.Context, dims []string, swarmingService *swarm_v1.Service) (int64, error) {
+	// Check cache.
+	sort.Strings(dims)
+	cacheKey := strings.Join(dims, "-")
+	if botCount, found := BotCountCache.Load(cacheKey); found {
+		logging.Infof(ctx, "Bot count cache hit : %s,%d", cacheKey, botCount)
+		return botCount.(int64), nil
+	}
 	// Create new swarming service if not provided.
 	if swarmingService == nil {
 		newSwarmingService, err := CreateNewSwarmingService(ctx)
@@ -71,6 +83,8 @@ func GetBotCount(ctx context.Context, dims []string, swarmingService *swarm_v1.S
 		"bot count: %d for dims: %v",
 		botReply.Count, dims)
 
+	// cache response
+	BotCountCache.Store(cacheKey, botReply.Count)
 	return botReply.Count, nil
 }
 

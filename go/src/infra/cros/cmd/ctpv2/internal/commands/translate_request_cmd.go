@@ -125,6 +125,8 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
 	}
 
+	updateSchedulingTargetsBasedOnBotAvailability(ctx, cmd.CtpReq)
+
 	// new field that supports multi-dut
 	suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
 
@@ -147,6 +149,61 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	cmd.InternalTestPlan = internalStruct
 
 	return err
+}
+
+func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *testapi.CTPRequest) {
+	swarmingServ, err := common.CreateNewSwarmingService(context.Background())
+	if err != nil {
+		logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
+		return
+	}
+	pool := ctpReq.GetPool()
+	botAvailabilityCache := make(map[string]bool)
+
+	// this will hold all new available schedule targets
+	newSchedulingTargets := []*testapi.ScheduleTargets{}
+
+	for _, schedulingTargets := range ctpReq.GetScheduleTargets() {
+		newTargets := []*testapi.Targets{}
+		for _, target := range schedulingTargets.GetTargets() {
+			model := target.HwTarget.GetLegacyHw().GetModel()
+			board := target.HwTarget.GetLegacyHw().GetBoard()
+			dimsForCache := fmt.Sprintf("%s-%s-%s", model, board, pool)
+			if _, ok := botAvailabilityCache[dimsForCache]; !ok {
+				dims := []string{}
+				dims = append(dims, fmt.Sprintf("label-pool:%s", pool))
+				dims = append(dims, fmt.Sprintf("label-board:%s", strings.ToLower(target.HwTarget.GetLegacyHw().GetBoard())))
+				if target.HwTarget.GetLegacyHw().GetModel() != "" {
+					dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(target.HwTarget.GetLegacyHw().GetModel())))
+				}
+				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
+				if err != nil {
+					logging.Infof(ctx, fmt.Sprintf("error found while getting bot count: %s", err))
+					// add target instead of stopping execution
+					newTargets = append(newTargets, target)
+				}
+				// only add if bots available
+				if botCount > 0 {
+					botAvailabilityCache[dimsForCache] = true
+					newTargets = append(newTargets, target)
+				} else {
+					botAvailabilityCache[dimsForCache] = false
+					logging.Infof(ctx, fmt.Sprintf("dropping : %s", dimsForCache))
+				}
+			} else {
+				if botAvailabilityCache[dimsForCache] {
+					newTargets = append(newTargets, target)
+				}
+			}
+
+		}
+
+		if len(newTargets) > 0 {
+			newSchedulingTarget := &testapi.ScheduleTargets{Targets: newTargets}
+			newSchedulingTargets = append(newSchedulingTargets, newSchedulingTarget)
+		}
+	}
+	ctpReq.ScheduleTargets = newSchedulingTargets
 }
 
 func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
