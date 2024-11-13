@@ -39,7 +39,7 @@ func ExpireLeases(ctx context.Context, serviceClients frontend.ServiceClients) e
 
 	// Mark releases as expired, and read expired lease IDs and their associated
 	// device IDs.
-	leaseIDs, deviceIDs, err := model.ExpireLeases(ctx, tx, readTime)
+	leaseIDs, deviceIDs, err := model.ExpireLeasesCron(ctx, tx, readTime)
 	if err != nil {
 		err = errors.Annotate(err, "ExpireLeases: attempting to expire leases in DB").Err()
 		logging.Errorf(ctx, err.Error())

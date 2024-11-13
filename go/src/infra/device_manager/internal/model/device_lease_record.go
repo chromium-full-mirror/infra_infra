@@ -14,6 +14,7 @@ import (
 
 	"github.com/jackc/pgconn"
 
+	lucierr "go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/database"
@@ -559,4 +560,44 @@ func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) e
 
 	logging.Debugf(ctx, "ReleaseLease: DeviceLeaseRecord %s released successfully (%d row affected)", leaseRec.ID, rowsAffected)
 	return nil
+}
+
+// ExpireLeases expires all leases that haven't been modified since the given
+// timestamp, and returns the expired lease IDs and associated device IDs.
+func ExpireLeases(ctx context.Context, tx *sql.Tx, t time.Time) (releasedLeases []DeviceLeaseRecord, err error) {
+	query := `
+		UPDATE "DeviceLeaseRecords"
+		SET
+			released_time = NOW(),
+			last_updated_time = NOW()
+		WHERE
+			expiration_time <= $1 AND
+			released_time IS NULL
+		RETURNING
+			id,
+			dut_id,
+			device_id;`
+
+	releasedLeaseRows, err := tx.QueryContext(ctx, query, t)
+	if err != nil {
+		err = lucierr.Annotate(err, "executing PSQL query to release leases").Err()
+		return nil, err
+	}
+	defer releasedLeaseRows.Close()
+
+	// Read expired lease IDs and their associated device IDs
+	for releasedLeaseRows.Next() {
+		var rec DeviceLeaseRecord
+		err := releasedLeaseRows.Scan(
+			&rec.ID,
+			&rec.DutID,
+			&rec.DeviceID,
+		)
+		if err != nil {
+			err = lucierr.Annotate(err, "reading released leases").Err()
+			return nil, err
+		}
+		releasedLeases = append(releasedLeases, rec)
+	}
+	return releasedLeases, nil
 }

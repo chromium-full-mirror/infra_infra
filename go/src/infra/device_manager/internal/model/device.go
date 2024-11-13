@@ -224,9 +224,10 @@ func ListDevices(ctx context.Context, db *sql.DB, pageToken database.PageToken, 
 	return results, nextPageToken, nil
 }
 
-// ExpireLeases expires all leases that haven't been modified since the given
-// timestamp, and returns the expired lease IDs and associated device IDs.
-func ExpireLeases(ctx context.Context, tx *sql.Tx, t time.Time) (leaseIDs, deviceIDs []string, err error) {
+// ExpireLeasesCron expires all leases that haven't been modified since the
+// given timestamp, and returns the expired lease IDs and associated device IDs
+// within a cron job.
+func ExpireLeasesCron(ctx context.Context, tx *sql.Tx, t time.Time) (leaseIDs, deviceIDs []string, err error) {
 	query := `
 		UPDATE "DeviceLeaseRecords"
 		SET
@@ -383,9 +384,6 @@ func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (De
 
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to update Device %s to DB: %s", updatedDevice.ID, err)
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "UpdateDeviceToAvailable: unable to rollback: %v", rollbackErr)
-		}
 		return Device{}, err
 	}
 

@@ -9,6 +9,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,11 +18,13 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	lucierr "go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
 	"infra/libs/fleet/device"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -395,6 +398,9 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	d, err := model.UpdateDeviceToAvailable(ctx, tx, toReleaseDevice)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s dut_id %s: %s", record.DeviceID, record.DutID, err)
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "UpdateDeviceToAvailable: unable to rollback: %v", rollbackErr)
+		}
 		return nil, err
 	}
 
@@ -462,7 +468,112 @@ func CheckExtensionIdempotency(ctx context.Context, db *sql.DB, idemKey string) 
 	return &api.ExtendLeaseResponse{}, nil
 }
 
-// ExpireLeases marks expired leases as released and released Devices in the DB.
+// ExpireLeases marks expired leases as released and releases Devices in the DB.
 func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
+	var (
+		// queryTime is what will be used as expiration time. It is important to
+		// get this before sending the query to guard against lease updates during
+		// this expiry op.
+		queryTime = time.Now()
+	)
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		err = lucierr.Annotate(err, "ExpireLeases: starting database transaction").Err()
+		logging.Errorf(ctx, err.Error())
+		return err
+	}
+
+	releasedLeases, err := model.ExpireLeases(ctx, tx, queryTime)
+	if err != nil {
+		return err
+	}
+
+	// Pull device data from UFS
+	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
+	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
+	if err != nil {
+		return err
+	}
+
+	var (
+		releaseDeviceChan = make(chan *model.Device, *opts.ExpirationWorkersN)
+		successChan       = make(chan *model.Device, len(releasedLeases))
+		failureChan       = make(chan *model.Device, len(releasedLeases))
+		wg                sync.WaitGroup
+	)
+	defer close(successChan)
+	defer close(failureChan)
+
+	wg.Add(*opts.ExpirationWorkersN)
+	for range *opts.ExpirationWorkersN {
+		go getDeviceUFSDataWorker(ctx, &wg, tx, ufsClient, releaseDeviceChan, successChan, failureChan)
+	}
+
+	for _, lease := range releasedLeases {
+		// Update device and device lease state to available after release
+		toReleaseDevice := model.Device{
+			ID:       lease.DeviceID,
+			DutID:    lease.DutID,
+			IsActive: true,
+		}
+		releaseDeviceChan <- &toReleaseDevice
+		logging.Debugf(ctx, "Queued to pull UFS data for Device %s", toReleaseDevice.ID)
+	}
+	close(releaseDeviceChan)
+
+	// Wait for all Devices to be processed before committing transaction.
+	wg.Wait()
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	if len(successChan) > 0 || len(failureChan) > 0 {
+		logging.Debugf(ctx, "ExpireLeases: successfully released %d expired Devices: %v", len(successChan), successChan)
+		logging.Debugf(ctx, "ExpireLeases: failed to release %d expired Devices: %v", len(failureChan), failureChan)
+	}
 	return nil
+}
+
+// getDeviceUFSDataWorker takes a queue of Devices and pulls UFS data for them
+// one by one. Devices are queued and dequeued continuously.
+func getDeviceUFSDataWorker(
+	ctx context.Context,
+	wg *sync.WaitGroup,
+	tx *sql.Tx,
+	ufsClient ufsAPI.FleetClient,
+	devices <-chan *model.Device,
+	success chan<- *model.Device,
+	failure chan<- *model.Device,
+) {
+	for d := range devices {
+		// Try to pull dimensions from Device. Mark as inactive if not found.
+		reportFunc := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
+		dims, err := device.GetOSResourceDims(ctx, ufsClient, reportFunc, d.ID)
+		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				// Not found indicates that the Device no longer exists in UFS meaning
+				// it is inactive i.e. decommed
+				d.IsActive = false
+			}
+			logging.Warningf(ctx, "Failed to find dimensions for Device %s: %v", d.ID, err)
+			failure <- d
+			continue
+		}
+
+		if dims != nil {
+			d.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
+		}
+
+		updatedDevice, err := model.UpdateDeviceToAvailable(ctx, tx, *d)
+		if err != nil {
+			logging.Errorf(ctx, "ExpireLeases: failed to release Device %s dut_id %s: %s", d.ID, d.DutID, err)
+			failure <- d
+			continue
+		}
+		success <- &updatedDevice
+
+		logging.Debugf(ctx, "getDeviceUFSDataWorker: pending release of Device %s dut_id %s", updatedDevice.ID, updatedDevice.DutID)
+	}
+	wg.Done()
 }
