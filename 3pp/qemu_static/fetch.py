@@ -8,8 +8,8 @@ import sys
 import json
 
 # Update these when upgrading QEMU static.
-_VERSION = "9.0.2"
-_DEB_PACKAGE = f"qemu-user-static_{_VERSION}+ds-1_amd64.deb"
+_VERSION = "9.1.1"
+_DEB_PACKAGE = f"qemu-user-static_{_VERSION}+ds-4_amd64.deb"
 _URL = f"http://http.us.debian.org/debian/pool/main/q/qemu/{_DEB_PACKAGE}"
 
 
