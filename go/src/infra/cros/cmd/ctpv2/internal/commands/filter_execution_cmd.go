@@ -72,6 +72,8 @@ func (cmd *FilterExecutionCmd) UpdateStateKeeper(
 	if err != nil {
 		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
 	}
+	// set cmd to nil, to release memory
+	cmd = nil
 
 	return nil
 }
@@ -126,8 +128,7 @@ func (cmd *FilterExecutionCmd) updateFilterStateKeeper(ctx context.Context, sk *
 	}
 
 	// Add the validated output testplan to test plan states.
-	sk.TestPlanStates = append(sk.TestPlanStates, cmd.OutputTestPlan)
-
+	sk.TestPlanStates = []*testapi.InternalTestplan{cmd.OutputTestPlan}
 	return nil
 }
 

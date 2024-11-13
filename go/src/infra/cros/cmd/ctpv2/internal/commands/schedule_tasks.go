@@ -861,10 +861,10 @@ func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildReques
 	// Otherwise create new request with new test cases
 	retryBuildReq.ScheduleBuildRequest = nil
 
-	newTcs := []*api.CTPTestCase{}
+	newTcs := []*api.TestCase_Id{}
 	for _, tc := range testCases {
 		// append the retriable tests and ignore others
-		if _, ok := retriableTests[tc.GetName()]; ok {
+		if _, ok := retriableTests[tc.GetValue()]; ok {
 			newTcs = append(newTcs, tc)
 		}
 	}
@@ -873,9 +873,9 @@ func GenerateNewBuildReqForRetry(ctx context.Context, buildReq *data.BuildReques
 	return &retryBuildReq
 }
 
-func IsAnyTautoTastTestCase(testCases []*api.CTPTestCase) bool {
+func IsAnyTautoTastTestCase(testCases []*api.TestCase_Id) bool {
 	for _, tc := range testCases {
-		if strings.HasPrefix(strings.ToLower(tc.GetName()), "tauto.tast") {
+		if strings.HasPrefix(strings.ToLower(tc.GetValue()), "tauto.tast") {
 			return true
 		}
 	}
@@ -962,7 +962,7 @@ func getIncompleteRunResults(buildReq *data.BuildRequest) *skylab_test_runner.Re
 	testCases := []*skylab_test_runner.Result_Autotest_TestCase{}
 	for _, testCase := range reqTestCases {
 		testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
-			Name:    testCase.GetName(),
+			Name:    testCase.GetValue(),
 			Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
 		})
 	}

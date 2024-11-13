@@ -65,7 +65,7 @@ type TrV2ReqHelper struct {
 	// Top Level Variables
 	schedUnit            *testapi.SchedulingUnit
 	trReqHWDef           *testapi.SwarmingDefinition // TODO (oldProto-azrahman): remove when new proto fully rolls in
-	testCases            []*testapi.CTPTestCase
+	testCases            []*testapi.TestCase_Id
 	suiteInfo            *testapi.SuiteInfo
 	shardNum             int
 	build                *build.State
@@ -667,16 +667,12 @@ func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
 }
 
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
-	testCaseIds := []*testapi.TestCase_Id{}
-	for _, testCase := range trHelper.testCases {
-		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
-	}
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: trHelper.suiteName,
 			Spec: &testapi.TestSuite_TestCaseIds{
 				TestCaseIds: &testapi.TestCaseIdList{
-					TestCaseIds: testCaseIds,
+					TestCaseIds: trHelper.testCases,
 				},
 			},
 			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
@@ -754,16 +750,12 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		return nil, err
 	}
 
-	testCaseIds := []*testapi.TestCase_Id{}
-	for _, testCase := range trHelper.testCases {
-		testCaseIds = append(testCaseIds, testCase.GetMetadata().GetTestCase().GetId())
-	}
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: trHelper.suiteName,
 			Spec: &testapi.TestSuite_TestCaseIds{
 				TestCaseIds: &testapi.TestCaseIdList{
-					TestCaseIds: testCaseIds,
+					TestCaseIds: trHelper.testCases,
 				},
 			},
 			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),

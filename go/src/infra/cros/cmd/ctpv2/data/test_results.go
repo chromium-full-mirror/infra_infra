@@ -28,7 +28,7 @@ type TestResults struct {
 	BuildID       int64
 	RequestKey    string // this is used to link back the results to original request
 	Name          string
-	TestCases     []*api.CTPTestCase
+	TestCases     []*api.TestCase_Id
 
 	// For ATP reporting
 	CreationTimestamp time.Time

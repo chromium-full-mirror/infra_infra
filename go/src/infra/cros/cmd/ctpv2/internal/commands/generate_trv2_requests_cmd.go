@@ -97,6 +97,8 @@ func (cmd *GenerateTrv2RequestsCmd) UpdateStateKeeper(
 	if err != nil {
 		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
 	}
+	// set cmd to nil, to release memory
+	cmd = nil
 
 	return nil
 }

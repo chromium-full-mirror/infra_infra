@@ -67,10 +67,10 @@ func CreateStepWithStatus(
 	return err
 }
 
-func GetFlattenedTestCases(ctpTestCases []*api.CTPTestCase) []string {
+func GetFlattenedTestCases(ctpTestCases []*api.TestCase_Id) []string {
 	testCasesNames := []string{}
 	for _, testCase := range ctpTestCases {
-		testCasesNames = append(testCasesNames, testCase.GetName())
+		testCasesNames = append(testCasesNames, testCase.GetValue())
 	}
 
 	return testCasesNames

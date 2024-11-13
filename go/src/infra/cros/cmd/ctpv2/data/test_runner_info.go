@@ -11,7 +11,7 @@ import "go.chromium.org/chromiumos/config/go/test/api"
 // This request will be built up to contain all needed information to make a Tr(v2) request.
 type TrRequest struct {
 	NewReq      *api.SchedulingUnitOptions
-	Tcs         []*api.CTPTestCase
+	Tcs         []*api.TestCase_Id
 	DevicesInfo *DevicesInfo
 
 	// TODO; when HwRequirements is fully deprecated, remove this.

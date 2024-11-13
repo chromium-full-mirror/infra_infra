@@ -87,6 +87,8 @@ func (cmd *MiddleOutRequestCmd) UpdateStateKeeper(
 	if err != nil {
 		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
 	}
+	// set cmd to nil, to release memory
+	cmd = nil
 
 	return nil
 }
@@ -279,6 +281,10 @@ func getName(tc *api.CTPTestCase) string {
 	return tc.GetMetadata().GetTestCase().GetId().GetValue()
 }
 
+func getTCId(tc *api.CTPTestCase) *api.TestCase_Id {
+	return tc.GetMetadata().GetTestCase().GetId()
+}
+
 func oldProto(targs []*api.HWRequirements) bool {
 	return len(targs) > 0
 }
@@ -353,13 +359,13 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 	TrRequests := []*data.TrRequest{}
 	for k, shards := range distro {
 		for _, tcs := range shards {
-			shardedtcs := []*api.CTPTestCase{}
+			shardedtcs := []*api.TestCase_Id{}
 			for _, tc := range tcs {
 				lltc, ok := solverData.tcUUIDMap[tc]
 				if !ok {
 					return TrRequests, fmt.Errorf("tc assigned but was not given, something critically wrong happened to end up here")
 				}
-				shardedtcs = append(shardedtcs, lltc)
+				shardedtcs = append(shardedtcs, getTCId(lltc))
 			}
 
 			// TODO; when HwRequirements is fully deprecated, remove `Req`.
