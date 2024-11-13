@@ -828,8 +828,8 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *deviceconf
 	// Bluetooth config will be overwritten here by DLM configs
 	setConfigsFromMachine(labels, machine)
 
-	if dut.GetHive() != "cloudbots" {
-		// All non cloudbots are running on drone which is large by default.
+	if strings.HasSuffix(dut.GetHive(), "large") || !strings.HasPrefix(dut.GetHive(), "cloudbots") {
+		// large suffix cloudbots and drone are consider large bots
 		large := inventory.SchedulableLabels_BOT_SIZE_LARGE
 		labels.BotSize = &large
 	}

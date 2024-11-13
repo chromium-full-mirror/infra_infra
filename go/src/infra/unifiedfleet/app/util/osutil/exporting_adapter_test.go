@@ -83,6 +83,7 @@ var lse = ufspb.MachineLSE{
 					Device: &ufspb.ChromeOSDeviceLSE_Dut{
 						Dut: &chromeosLab.DeviceUnderTest{
 							Hostname: "test_host",
+							Hive:     "cloudbots-canary-large",
 							Pools:    []string{"DUT_POOL_QUOTA", "hotrod"},
 							Peripherals: &chromeosLab.Peripherals{
 								Servo: &servoInV2,
