@@ -1501,6 +1501,8 @@ plans:
                   docs:
                     - Install stable OS on the device.
                   conditions:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Recovery version has OS image path
                       exec_name: has_stable_version_cros_image
                       docs:

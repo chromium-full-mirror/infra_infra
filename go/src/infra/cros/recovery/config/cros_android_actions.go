@@ -20,6 +20,7 @@ func androidActions(actions map[string]*Action) {
 				"ADB set Android as always awake",
 				"Read bootId",
 				"Device Uptime",
+				"Has repair-request for re-provision",
 				"Reset provisioned info",
 			},
 			ExecName:      "sample_pass",

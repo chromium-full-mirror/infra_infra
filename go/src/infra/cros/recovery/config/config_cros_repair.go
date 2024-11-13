@@ -533,6 +533,10 @@ func crosRepairActions() map[string]*Action {
 				"requests:PROVISION",
 			},
 			RecoveryActions: []string{
+				// Android actions.
+				"Provision Android OS",
+				"Force reimage to ChromeOS in DEV mode",
+				// Legacy actions.
 				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
@@ -1414,6 +1418,7 @@ func crosRepairActions() map[string]*Action {
 				"Perform provision OS if device is not running on it.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Recovery version has OS image path",
 				"DUT not on stable version",
 			},
@@ -2560,6 +2565,7 @@ func crosRepairActions() map[string]*Action {
 				"Install stable OS on the device.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Recovery version has OS image path",
 				"Device is SSHable",
 				"Internal storage is responsive",
@@ -3467,6 +3473,7 @@ func crosRepairActions() map[string]*Action {
 				"Install the stable test image designated for the DUT.",
 			},
 			Conditions: []string{
+				"Is Chrome based",
 				"Device is SSHable",
 				"Internal storage is responsive",
 			},

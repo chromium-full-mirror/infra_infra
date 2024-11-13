@@ -2364,6 +2364,7 @@ plans:
           recoveries:
             - name: Quick provision OS ('sample_pass')
               conditions:
+                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3022,6 +3023,7 @@ plans:
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3048,6 +3050,7 @@ plans:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Quick provision OS ('sample_pass')
               conditions:
+                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3475,6 +3478,7 @@ plans:
           recoveries:
             - name: Quick provision OS ('sample_pass')
               conditions:
+                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -4679,6 +4683,7 @@ plans:
                       dependencies:
                         - name: Provision OS if needed ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -4761,6 +4766,7 @@ plans:
                       dependencies:
                         - name: Provision OS if needed ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -9702,6 +9708,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -9714,6 +9721,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -10261,6 +10269,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -10273,6 +10282,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -10398,6 +10408,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -10410,6 +10421,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -10535,6 +10547,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -10547,6 +10560,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -10672,6 +10686,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -10684,6 +10699,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -11245,6 +11261,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -11821,6 +11838,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -11833,6 +11851,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -11975,8 +11994,128 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail) ('ctr_stop_foil_provision_container')
+                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
+                      conditions:
+                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Stable version image is missing from servo usbkey ('sample_fail')
+                          conditions:
+                            - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                      dependencies:
+                        - name: servo_servod_echo_host
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                    - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -12774,6 +12913,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -12786,6 +12926,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -13335,6 +13476,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -13347,6 +13489,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -13471,6 +13614,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -13483,6 +13627,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -13636,6 +13781,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -14433,6 +14579,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -14445,6 +14592,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -14994,6 +15142,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -15006,6 +15155,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -15130,6 +15280,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -15142,6 +15293,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -15295,6 +15447,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -15842,6 +15995,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -15854,6 +16008,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -16021,6 +16176,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -16210,6 +16366,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -16340,6 +16497,7 @@ plans:
                 - name: ChromeOS TMP recovery (not critical) (Allow to fail) ('cros_run_shell_command')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -16352,6 +16510,7 @@ plans:
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Repair by powerwash ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
@@ -16909,6 +17068,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -16921,6 +17081,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -17045,6 +17206,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -17167,6 +17329,7 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Repair by powerwash ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
@@ -17609,6 +17772,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -17621,6 +17785,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -18286,6 +18451,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -18298,6 +18464,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -18422,6 +18589,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -18434,6 +18602,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -18587,6 +18756,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -18599,6 +18769,7 @@ plans:
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Repair by powerwash ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
@@ -25517,6 +25688,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -25529,6 +25701,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -25664,6 +25837,7 @@ plans:
                           dependencies:
                             - name: Provision OS if needed ('sample_pass')
                               conditions:
+                                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -26168,6 +26342,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -26180,6 +26355,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -26315,6 +26491,7 @@ plans:
                           dependencies:
                             - name: Provision OS if needed ('sample_pass')
                               conditions:
+                                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -26857,6 +27034,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -26869,6 +27047,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -27418,6 +27597,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -27430,6 +27610,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -27554,6 +27735,7 @@ plans:
                   recoveries:
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -27566,6 +27748,7 @@ plans:
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Repair by powerwash ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
@@ -27744,6 +27927,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -27756,6 +27940,7 @@ plans:
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Repair by powerwash ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
@@ -27885,6 +28070,7 @@ plans:
                   dependencies:
                     - name: Provision OS if needed ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -27905,6 +28091,7 @@ plans:
                 - name: Restore RW VPD Keys ('cros_restore_rw_vpd_keys')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -27917,6 +28104,7 @@ plans:
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Repair by powerwash ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
@@ -28854,6 +29042,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -28866,6 +29055,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -28991,6 +29181,7 @@ plans:
                     - name: Set default boot as disk ('cros_update_crossystem')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -29452,6 +29643,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Quick provision OS ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -29464,6 +29656,7 @@ plans:
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Repair by powerwash ('sample_pass')
                           conditions:
+                            - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
@@ -29612,6 +29805,7 @@ plans:
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -30116,6 +30310,7 @@ plans:
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -30142,6 +30337,7 @@ plans:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -30617,6 +30813,7 @@ plans:
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -32707,6 +32904,7 @@ plans:
               recoveries:
                 - name: Quick provision OS ('sample_pass')
                   conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -33343,6 +33541,499 @@ plans:
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
+            - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
+              recoveries:
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail) ('ctr_stop_foil_provision_container')
+                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
+                      conditions:
+                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Stable version image is missing from servo usbkey ('sample_fail')
+                          conditions:
+                            - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                      dependencies:
+                        - name: servo_servod_echo_host
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                    - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Quick provision OS ('sample_pass')
+                  conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Internal storage is responsive ('cros_is_file_system_writable')
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                  dependencies:
+                    - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                      conditions:
+                        - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                      dependencies:
+                        - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                              dependencies:
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                            - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Stable version image is missing from servo usbkey ('sample_fail')
+                          conditions:
+                            - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                      dependencies:
+                        - name: servo_servod_echo_host
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Boot DUT in recovery and install from USB-drive (no storage check) ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Install OS in recovery mode by booting from servo USB-drive (with FW update) ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                      conditions:
+                        - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                      dependencies:
+                        - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                              dependencies:
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                            - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Stable version image is missing from servo usbkey ('sample_fail')
+                          conditions:
+                            - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                      dependencies:
+                        - name: servo_servod_echo_host
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+                    - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Device has Intel AMT ('sample_pass')
+                      dependencies:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                        - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                  dependencies:
+                    - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Servo USB-Key needs to be reflashed ('sample_pass')
+                      conditions:
+                        - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
+                      dependencies:
+                        - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                              dependencies:
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                            - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) ('sample_pass') (RUN_ONCE)
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Stable version image is missing from servo usbkey ('sample_fail')
+                          conditions:
+                            - name: Servo usbkey has stable image ('servo_usbkey_has_stable_image')
+                      dependencies:
+                        - name: servo_servod_echo_host
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
+                        - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Direct USB-drive to DUT ('servo_set') (ALWAYS_RUN) (time:'20s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Power-off the DUT using AMT ('cros_flex_set_amt_power_state') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has Intel AMT ('sample_pass')
+                          dependencies:
+                            - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Power-on the DUT using AMT ('cros_flex_set_amt_power_state') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has Intel AMT ('sample_pass')
+                          dependencies:
+                            - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
+                    - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Run chromeos-install for Flex ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
+                      dependencies:
+                        - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Power-off the DUT using AMT ('cros_flex_set_amt_power_state') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has Intel AMT ('sample_pass')
+                          dependencies:
+                            - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Power-on the DUT using AMT ('cros_flex_set_amt_power_state') (ALWAYS_RUN)
+                      conditions:
+                        - name: Device has Intel AMT ('sample_pass')
+                          dependencies:
+                            - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                            - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Install OS in DEV mode, with force to DEV-mode ('sample_pass')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                  dependencies:
+                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Install OS in DEV mode by USB-drive ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                          dependencies:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
+                        - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                          dependencies:
+                            - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')

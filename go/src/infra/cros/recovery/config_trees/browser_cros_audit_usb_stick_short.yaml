@@ -2136,6 +2136,7 @@ plans:
           recoveries:
             - name: Quick provision OS ('sample_pass')
               conditions:
+                - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
