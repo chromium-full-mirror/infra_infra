@@ -109,7 +109,7 @@ func HwExecution() {
 			// was found.
 			errType := skylab_test_runner.TestRunnerErrorType_OTHER
 			var tre *common.TestRunnerError
-			if ok := errors.As(err, tre); ok {
+			if ok := errors.As(err, &tre); ok {
 				errType = tre.Type
 			}
 			if skylabResult == nil {

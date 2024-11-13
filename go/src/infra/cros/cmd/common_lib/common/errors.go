@@ -28,5 +28,8 @@ func (t *TestRunnerError) Error() string {
 }
 
 func (t *TestRunnerError) Unwrap() error {
+	if t.Err == nil {
+		t.Err = errors.New(skylab_test_runner.TestRunnerErrorType_name[int32(t.Type)])
+	}
 	return t.Err
 }
