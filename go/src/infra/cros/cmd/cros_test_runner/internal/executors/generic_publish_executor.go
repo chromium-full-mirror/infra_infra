@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -35,16 +36,23 @@ func NewGenericPublishExecutor() *GenericPublishExecutor {
 func (ex *GenericPublishExecutor) ExecuteCommand(
 	ctx context.Context,
 	cmdInterface interfaces.CommandInterface) error {
-
+	var err error
 	switch cmd := cmdInterface.(type) {
 	case *commands.GenericPublishCmd:
-		return ex.genericPublishHandler(ctx, cmd)
+		err = ex.genericPublishHandler(ctx, cmd)
 	default:
-		return fmt.Errorf(
-			"Command type %s is not supported by %s executor type!",
+		err = fmt.Errorf(
+			"command type %s is not supported by %s executor type",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
+	if err != nil {
+		return &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_PUBLISH,
+			Err:  err,
+		}
+	}
+	return nil
 }
 
 // genericPublishHandler handles incoming PublishRequests.
