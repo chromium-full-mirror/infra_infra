@@ -22,17 +22,12 @@ type Builder interface {
 }
 
 // New creates new Builder with provided values.
-func New(board, model, pool string) Builder {
+func New(deviceType, board, model, pool string) Builder {
 	kb := NewBuilder()
-	if err := kb.Add("board", board); err != nil {
-		panic(err)
-	}
-	if err := kb.Add("model", model); err != nil {
-		panic(err)
-	}
-	if err := kb.Add("pool", pool); err != nil {
-		panic(err)
-	}
+	_ = kb.Add("deviceType", deviceType)
+	_ = kb.Add("board", board)
+	_ = kb.Add("model", model)
+	_ = kb.Add("pool", pool)
 	return kb
 }
 

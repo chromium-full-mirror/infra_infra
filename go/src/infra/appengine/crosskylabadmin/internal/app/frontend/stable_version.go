@@ -218,6 +218,7 @@ func deviceInfo(ctx context.Context, hostname string) (*ufs.DeviceInfo, error) {
 // getVersionImpl finds recovery version for request api.
 func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (*lab_platform.StableVersion, error) {
 	hostname := req.GetDeviceName()
+	deviceType := req.GetDeviceType()
 	board := req.GetBoard()
 	model := req.GetModel()
 	pools := req.GetPools()
@@ -261,7 +262,7 @@ func getVersionImpl(ctx context.Context, req *fleet.GetRecoveryVersionRequest) (
 		}
 	}
 	logging.Infof(ctx, "Finding a version for board:%q, model:%q, poools:%q", board, model, pools)
-	return dssv.FindVersion(ctx, board, model, pools)
+	return dssv.FindVersion(ctx, deviceType, board, model, pools)
 }
 
 // getStableVersionImplNoHostname returns stableversion information given a buildTarget and model

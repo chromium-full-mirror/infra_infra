@@ -103,13 +103,14 @@ func (f *FakeGetStableVersion) GetRecoveryVersion(ctx context.Context, in *fleet
 	// Add empty pool for keys when pool was not specified.
 	pools = append(pools, "")
 	for _, pool := range pools {
-		key := keys.New(in.Board, in.Model, pool).String()
+		key := keys.New(in.DeviceType, in.Board, in.Model, pool).String()
 		if v, ok := f.version[key]; ok {
 			resp.Version = &lab_platform.StableVersion{
 				Target: &lab_platform.StableVersionTarget{
-					Board: in.Board,
-					Model: in.Model,
-					Pool:  pool,
+					DeviceType: in.DeviceType,
+					Board:      in.Board,
+					Model:      in.Model,
+					Pool:       pool,
 				},
 				OsVersion:           v.OsVersion,
 				OsImagePath:         v.OsImagePath,
@@ -367,13 +368,13 @@ func TestGetStableVersionForModel(t *testing.T) {
 		nil,
 		&FakeGetStableVersion{
 			version: map[string]*lab_platform.StableVersion{
-				keys.New("fake-mode", "fake-model", "").String(): {
+				keys.New("", "fake-mode", "fake-model", "").String(): {
 					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
 					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
-				keys.New("fake-board", "fake-model", "").String(): {
+				keys.New("", "fake-board", "fake-model", "").String(): {
 					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
@@ -391,13 +392,16 @@ func TestGetStableVersionForModel(t *testing.T) {
 
 	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", nil)
 	eMsg := errToString(e)
-	out.Target = nil
-	if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
-		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
-	}
-
-	if diff := cmp.Diff(expectedErr, eMsg); diff != "" {
-		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expectedErr, eMsg, diff)
+	if e != nil {
+		t.Errorf("TestGetStableVersionForModel: unexpected error: %s", e)
+	} else {
+		out.Target = nil
+		if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
+			t.Errorf("TestGetStableVersionForModel: wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
+		}
+		if diff := cmp.Diff(expectedErr, eMsg); diff != "" {
+			t.Errorf("TestGetStableVersionForModel: wanted: (%s) got: (%s)\n(%s)", expectedErr, eMsg, diff)
+		}
 	}
 }
 
@@ -416,19 +420,19 @@ func TestGetStableVersionForModelAndPool(t *testing.T) {
 		nil,
 		&FakeGetStableVersion{
 			version: map[string]*lab_platform.StableVersion{
-				keys.New("fake-mode", "fake-model", "").String(): {
+				keys.New("", "fake-mode", "fake-model", "").String(): {
 					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
 					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
-				keys.New("fake-board", "fake-model", "").String(): {
+				keys.New("", "fake-board", "fake-model", "").String(): {
 					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
 				},
-				keys.New("fake-board", "fake-model", "fake-pool").String(): {
+				keys.New("", "fake-board", "fake-model", "fake-pool").String(): {
 					OsVersion:           "FAKE4-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE4-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE4-board-mode-FAFT-VERSION",
@@ -446,13 +450,16 @@ func TestGetStableVersionForModelAndPool(t *testing.T) {
 
 	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", []string{"fake-pool"})
 	eMsg := errToString(e)
-	out.Target = nil
-	if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
-		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
-	}
-
-	if diff := cmp.Diff(expectedErr, eMsg); diff != "" {
-		t.Errorf("wanted: (%s) got: (%s)\n(%s)", expectedErr, eMsg, diff)
+	if e != nil {
+		t.Errorf("TestGetStableVersionForModelAndPool: unexpected error %s", e)
+	} else {
+		out.Target = nil
+		if diff := cmp.Diff(protoToString(expected), protoToString(out)); diff != "" {
+			t.Errorf("TestGetStableVersionForModelAndPool: wanted: (%s) got: (%s)\n(%s)", expected, out, diff)
+		}
+		if diff := cmp.Diff(expectedErr, eMsg); diff != "" {
+			t.Errorf("TestGetStableVersionForModelAndPool: wanted: (%s) got: (%s)\n(%s)", expectedErr, eMsg, diff)
+		}
 	}
 }
 

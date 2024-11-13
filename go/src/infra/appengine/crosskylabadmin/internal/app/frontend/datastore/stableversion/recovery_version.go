@@ -41,7 +41,7 @@ func findVersion(ctx context.Context, key keys.Builder) (*lab_platform.StableVer
 }
 
 // FindVersion find a stable-version from datastore.
-func FindVersion(ctx context.Context, board, model string, pools []string) (*lab_platform.StableVersion, error) {
+func FindVersion(ctx context.Context, deviceType, board, model string, pools []string) (*lab_platform.StableVersion, error) {
 	logging.Infof(ctx, "Starting search for a version by board=%q, model=%q, pool=%v", board, model, pools)
 	if board == "" {
 		return nil, errors.Reason("find version: board cannot be empty").Err()
@@ -52,7 +52,7 @@ func FindVersion(ctx context.Context, board, model string, pools []string) (*lab
 	// Add empty pool to validate version by board and model only as last option.
 	pools = append(pools, "")
 	for _, pool := range pools {
-		key := keys.New(board, model, pool)
+		key := keys.New(deviceType, board, model, pool)
 		if v, err := findVersion(ctx, key); err != nil {
 			logging.Debugf(ctx, "find version: fail to find versio for key=%q", key)
 		} else if v != nil {
@@ -104,7 +104,7 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 }
 
 func targetToKey(v *lab_platform.StableVersion) keys.Builder {
-	return keys.New(v.GetTarget().GetBoard(), v.GetTarget().GetModel(), v.GetTarget().GetPool())
+	return keys.New(v.GetTarget().GetDeviceType(), v.GetTarget().GetBoard(), v.GetTarget().GetModel(), v.GetTarget().GetPool())
 }
 
 func validateTarget(t *lab_platform.StableVersionTarget) error {

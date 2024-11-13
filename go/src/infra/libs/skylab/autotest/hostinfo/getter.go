@@ -93,6 +93,7 @@ func (g *Getter) GetStableVersion(ctx context.Context, hostname, board, model st
 
 	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
 		DeviceName: hostname,
+		DeviceType: "",
 		Model:      model,
 		Board:      board,
 		Pools:      pools,
@@ -101,7 +102,7 @@ func (g *Getter) GetStableVersion(ctx context.Context, hostname, board, model st
 		return nil, err
 	}
 	if res.GetVersion() == nil {
-		return nil, fmt.Errorf("response do not containe version info")
+		return nil, fmt.Errorf("response does not contains a version info")
 	}
 	return res.GetVersion(), nil
 }
