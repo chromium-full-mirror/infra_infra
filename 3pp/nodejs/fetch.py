@@ -13,7 +13,7 @@ import urllib.request
 import certifi
 import packaging.version
 
-BASE_URL = 'https://nodejs.org/dist/'
+BASE_URL = 'https://nodejs.org/dist'
 
 # Make sure up-to-date root certificates are used.
 urllib.request.install_opener(
@@ -23,7 +23,7 @@ urllib.request.install_opener(
 
 
 def do_latest():
-  data = json.load(urllib.request.urlopen(BASE_URL + 'index.json'))
+  data = json.load(urllib.request.urlopen(BASE_URL + '/index.json'))
   max_version, max_string = packaging.version.parse('0'), '0'
   for release in data:
     s = release['version'].lstrip('v')

@@ -27,8 +27,13 @@ if [[ $_3PP_TOOL_PLATFORM != $_3PP_PLATFORM ]]; then
   ninja -j $(nproc)
   # Can't run tests when cross-compiling.
 else
+  if [[ $_3PP_PLATFORM == windows* ]]; then
+    CAINFO="-DCMAKE_TLS_CAINFO=$(cygpath "${ca_bundle}\\raw_source_0.pem")"
+  fi
+
   CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" cmake -Bbuild-cmake \
-        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_BUILD_TYPE=Release \
+        ${CAINFO}
   cmake --build build-cmake
   cd build-cmake
 

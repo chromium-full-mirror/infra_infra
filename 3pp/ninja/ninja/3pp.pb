@@ -40,6 +40,7 @@ create {
   platform_re: "windows-amd64"
   build {
     tool: "tools/cmake" # Required for running tests
+    tool: "build_support/ca-bundle" # CMake can't find default CA on windows
   }
 }
 

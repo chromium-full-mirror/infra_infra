@@ -15,7 +15,7 @@ index f5e056b05f..ef9ceb04c5 100644
 --- a/Tests/FortranC/CMakeLists.txt
 +++ b/Tests/FortranC/CMakeLists.txt
 @@ -1,5 +1,5 @@
- cmake_minimum_required(VERSION 3.5)
+ cmake_minimum_required(VERSION 3.10)
 -project(FortranC C Fortran)
 +project(FortranC C)
  

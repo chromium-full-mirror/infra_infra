@@ -59,6 +59,7 @@ func importDarwin(ctx context.Context, cfg *Config, bins ...string) (gs []genera
 			"bin/pkgbuild":     {Source: "/usr/bin/pkgbuild", Mode: fs.ModeSymlink},
 			"bin/productbuild": {Source: "/usr/bin/productbuild", Mode: fs.ModeSymlink},
 			"bin/sw_vers":      {Source: "/usr/bin/sw_vers", Mode: fs.ModeSymlink},
+			"bin/plutil":       {Source: "/usr/bin/plutil", Mode: fs.ModeSymlink},
 
 			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
 			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk
