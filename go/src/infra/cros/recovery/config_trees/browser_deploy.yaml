@@ -109088,6 +109088,15 @@ plans:
                 - name: Is Andoid based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
+                - name: Reboot by ADB (Allow to fail)
+                  exec_name: ctr_adb_command
+                  exec_args:
+                    - command:reboot
+                  docs:
+                    - Exec ADB connect to the DUT by ethernet on port 5555.
+                  conditions:
+                    - name: Is Andoid based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
                 - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -109135,6 +109144,48 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                - name: Provision Android OS (time:'15m0s')
+                  exec_name: ctr_foil_provision_install
+                  docs:
+                    - The install performs real install Android on the DUT.
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
+                  dependencies:
+                    - name: Detect CacheService address
+                      exec_name: cache_service_address_detection
+                      docs:
+                        - Collect address of CacheService rom labService.
+                    - name: Start Foil-provision
+                      exec_name: ctr_start_foil_provision_container
+                      docs:
+                        - Pull and run foil-provision container
+                      conditions:
+                        - name: Is not cloudbot (RUN_ONCE)
+                          exec_name: env_is_not_cloudbot
+                          docs:
+                            - Check that the process is not running on cloudbot.
+                        - name: Is not a partner side (RUN_ONCE)
+                          exec_name: env_is_not_os_partner_namespace
+                          docs:
+                            - Check if the process run for partner.
+                            - Detection based on usage namespace of the context.
+                        - name: CrosToolRunner is up
+                          exec_name: ctr_is_up
+                          docs:
+                            - 'Verify that cros-tool-runner service is up and running, '
+                            - the tool expected to start as part of system preparation.
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail)
+                          exec_name: ctr_stop_foil_provision_container
+                          docs:
+                            - Stop Foil-provision container
+                    - name: Foil-provision Setup service
+                      exec_name: ctr_foil_provision_setup_service
+                      docs:
+                        - The setup method needs to be called once before performing install.
                 - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -109793,6 +109844,15 @@ plans:
                 - name: Is Andoid based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
+                - name: Reboot by ADB (Allow to fail)
+                  exec_name: ctr_adb_command
+                  exec_args:
+                    - command:reboot
+                  docs:
+                    - Exec ADB connect to the DUT by ethernet on port 5555.
+                  conditions:
+                    - name: Is Andoid based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
                 - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -109840,6 +109900,48 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                - name: Provision Android OS (time:'15m0s')
+                  exec_name: ctr_foil_provision_install
+                  docs:
+                    - The install performs real install Android on the DUT.
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
+                  dependencies:
+                    - name: Detect CacheService address
+                      exec_name: cache_service_address_detection
+                      docs:
+                        - Collect address of CacheService rom labService.
+                    - name: Start Foil-provision
+                      exec_name: ctr_start_foil_provision_container
+                      docs:
+                        - Pull and run foil-provision container
+                      conditions:
+                        - name: Is not cloudbot (RUN_ONCE)
+                          exec_name: env_is_not_cloudbot
+                          docs:
+                            - Check that the process is not running on cloudbot.
+                        - name: Is not a partner side (RUN_ONCE)
+                          exec_name: env_is_not_os_partner_namespace
+                          docs:
+                            - Check if the process run for partner.
+                            - Detection based on usage namespace of the context.
+                        - name: CrosToolRunner is up
+                          exec_name: ctr_is_up
+                          docs:
+                            - 'Verify that cros-tool-runner service is up and running, '
+                            - the tool expected to start as part of system preparation.
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail)
+                          exec_name: ctr_stop_foil_provision_container
+                          docs:
+                            - Stop Foil-provision container
+                    - name: Foil-provision Setup service
+                      exec_name: ctr_foil_provision_setup_service
+                      docs:
+                        - The setup method needs to be called once before performing install.
                 - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -110506,7 +110608,7 @@ plans:
               exec_name: cros_uptime_print
               docs:
                 - Print uptime of the DUT.
-            - name: Reset provisioned info
+            - name: Reset provisioned info (ALWAYS_RUN)
               exec_name: cros_reset_provision_info
               docs:
                 - Reset all provision info.

@@ -32863,6 +32863,9 @@ plans:
               conditions:
                 - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
               recoveries:
+                - name: Reboot by ADB (Allow to fail) ('ctr_adb_command')
+                  conditions:
+                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32881,6 +32884,19 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail) ('ctr_stop_foil_provision_container')
+                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -33087,6 +33103,9 @@ plans:
               conditions:
                 - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
               recoveries:
+                - name: Reboot by ADB (Allow to fail) ('ctr_adb_command')
+                  conditions:
+                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -33105,6 +33124,19 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                  conditions:
+                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Is not a partner side ('env_is_not_os_partner_namespace') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                      dependencies:
+                        - name: Stop Foil-provision (Allow to fail) ('ctr_stop_foil_provision_container')
+                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -33311,7 +33343,7 @@ plans:
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
-            - name: Reset provisioned info ('cros_reset_provision_info')
+            - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Servo is in WORKING state ('servo_match_state')

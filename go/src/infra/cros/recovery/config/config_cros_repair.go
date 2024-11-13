@@ -35,23 +35,6 @@ func crosRepairCriticalActions() []string {
 
 func crosRepairActions() map[string]*Action {
 	actions := map[string]*Action{
-		"Android OS checks": {
-			Docs: []string{
-				"Run DUT readiness checks for Android based DUTs.",
-			},
-			Conditions: []string{
-				"Is Andoid based",
-			},
-			Dependencies: []string{
-				"Android is accessable",
-				"ADB set Android as always awake",
-				"Read bootId",
-				"Device Uptime",
-				"Reset provisioned info",
-			},
-			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
-		},
 		"Chrome OS checks": {
 			Docs: []string{
 				"Run DUT readiness checks for Chrome based DUTs.",
@@ -137,59 +120,9 @@ func crosRepairActions() map[string]*Action {
 				"Mark DUT as Chrome based.",
 			},
 			ExecName:               "cros_set_as_chrome_based",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
-		},
-		"ADB Connect DUT": {
-			Docs: []string{
-				"Exec ADB connect to the DUT by ethernet on port 5555.",
-			},
-			ExecName: "ctr_adb_connect",
-			ExecExtraArgs: []string{
-				"retry_count:3",
-				"retry_interval:3",
-				"timeout:5",
-				"adb_port:5555",
-			},
-		},
-		"Android is accessable": {
-			Docs: []string{
-				"Validate is Andoid OS is accessable by reading data from the host.",
-			},
-			Conditions: []string{
-				"Is Andoid based",
-			},
-			ExecName:    "cros_ssh",
-			ExecTimeout: &durationpb.Duration{Seconds: 15},
-			RunControl:  RunControl_ALWAYS_RUN,
-			RecoveryActions: []string{
-				"Cold reset by servo and wait for ping",
-				"Reset servo_v4.1 ethernet and wait for ping",
-				"Power cycle DUT by RPM and wait for ping",
-				"Force reimage to ChromeOS in DEV mode",
-				"Install OS in recovery mode by booting from servo USB-drive",
-			},
-		},
-		"ADB set Android as always awake": {
-			Docs: []string{
-				"Set Android to be awake always.",
-			},
-			Conditions: []string{
-				"Is Andoid based",
-			},
-			ExecName: "ctr_make_awake_always",
-			RecoveryActions: []string{
-				"Cold reset by servo and wait for ping",
-				"Reset servo_v4.1 ethernet and wait for ping",
-				"Power cycle DUT by RPM and wait for ping",
-				"Force reimage to ChromeOS in DEV mode",
-				"Install OS in recovery mode by booting from servo USB-drive",
-			},
-		},
-		"Is Andoid based": {
-			ExecName:      "cros_is_android_based",
-			RunControl:    RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Is Chrome based": {
 			ExecName:      "cros_is_chrome_based",
@@ -1063,7 +996,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_are_required_rw_vpd_keys_present",
 			RecoveryActions: []string{
-				// TODO(b/248630303): Need run tmp reset.
 				"Restore RW VPD Keys",
 				"Quick provision OS",
 				"Repair by powerwash",
@@ -2552,7 +2484,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Reset all provision info.",
 			},
-			ExecName: "cros_reset_provision_info",
+			ExecName:      "cros_reset_provision_info",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Switch to secure-mode and reboot": {
 			Docs: []string{
@@ -4980,7 +4914,10 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
+
+	androidActions(actions)
 	addCrosCftContainers(actions)
 	addEnvActions(actions)
+
 	return actions
 }
