@@ -7,6 +7,7 @@ package ctr
 
 import (
 	"context"
+	"strings"
 
 	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -126,9 +127,35 @@ func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
-// List of images used for now. before migrate to recovery-version.
-var androidImages = map[string]string{
-	"brya": "android-build/build_explorer/artifacts_list/12563288/brya-trunk_staging-userdebug/brya-ota-12563288.zip",
+// TODO(b/374202362): remove manage version on the service.
+// boardBuildNumber holds build number per board.
+var boardBuildNumber = map[string]string{
+	"corsola": "12645826",
+	"dedede":  "12494948",
+	"nissa":   "12645826",
+	"brya":    "12643288",
+}
+
+// TODO(b/374202362): remove manage version on the service.
+func androidImagePath(board string) (string, error) {
+	if board == "" {
+		return "", errors.Reason("android image path: board is not provided").Err()
+	}
+	buildNumber, bnOk := boardBuildNumber[board]
+	if !bnOk {
+		return "", errors.Reason("android image path: buildnumber not defined for %q", board).Err()
+	} else if buildNumber == "" {
+		return "", errors.Reason("android image path: buildnumber is not provided for %q", board).Err()
+	}
+	parts := []string{
+		"android-build",
+		"build_explorer",
+		"artifacts_list",
+		buildNumber,
+		board + "-trunk_staging-userdebug",
+		board + "-ota-" + buildNumber + ".zip",
+	}
+	return strings.Join(parts, "/"), nil
 }
 
 func installFoilProvisionExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -141,9 +168,9 @@ func installFoilProvisionExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("install foil-provision service: dut is not detected").Err()
 	}
 	board := info.GetChromeos().GetBoard()
-	targetImage, hasImage := androidImages[board]
-	if !hasImage {
-		return errors.Reason("install foil-provision service: image not found for %q", board).Err()
+	targetImage, err := androidImagePath(board)
+	if err != nil {
+		return errors.Annotate(err, "install foil-provision service").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
 	preventReboot := argsMap.AsBool(ctx, "prevent_reboot", false)
