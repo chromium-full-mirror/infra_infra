@@ -312,9 +312,29 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 	// Todo: batch call
 	resultsChan := make(chan *data.TestResults)
 	wg := &sync.WaitGroup{}
+
+	// b/377196624 - coolOffLimit defines number of test runners scheduled after which execution should stop for coolOffDuration time.
+	// this is to stop causing oom while multiple ScheduleAndMonitor goroutines are invoked
+	const coolOffLimit = 50
+	const coolOffDuration = time.Second * 2
+
+	// configure bbClient
+	bbClient, err := newBBClient(ctx)
+	if err != nil {
+		return err
+	}
+	counter := 0
 	for k, v := range cmd.BuildsMap {
 		wg.Add(1)
-		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0, dmc)
+		go cmd.ScheduleAndMonitor(ctx, k, v, wg, resultsChan, 0, dmc, len(cmd.BuildsMap), bbClient)
+
+		counter++
+		if counter >= coolOffLimit {
+			// start cool off period
+			time.Sleep(coolOffDuration)
+			// reset the counter
+			counter = 0
+		}
 	}
 
 	go func() {
@@ -375,7 +395,7 @@ func (cmd *ScheduleTasksCmd) getATPShardFromCMDState(key string) *androidapi.Wor
 	return nil
 }
 
-func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client) error {
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, buildsMapLen int, bbClient buildbucketpb.BuildsClient) error {
 	defer wg.Done()
 	var err error
 
@@ -450,38 +470,44 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	req := buildReq.ScheduleBuildRequest
 
 	// Spit out the request
-	requestData, err := json.MarshalIndent(req, "", "  ")
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during writing request data to log: %s",
-			err.Error())
-	}
-	step.Log("BB Request").Write(requestData)
+	// b/377196624 - enable log streaming for test runner requests only if there are fewer requests than number defined by logsAndAnalyticsLimit.
+	// exceeding this limit may lead to an oom issue. (This metric is when executed on a bot with 8 GB memory)
+	logsAndAnalyticsLimit := 200
+	if buildsMapLen < logsAndAnalyticsLimit {
+		// Spit out the request
+		requestData, err := json.MarshalIndent(req, "", "  ")
+		if err != nil {
+			logging.Infof(
+				ctx,
+				"error during writing request data to log: %s",
+				err.Error())
+		}
+		step.Log("BB Request").Write(requestData)
 
-	// Spit out requested dims since scheduke doesn't pass this info to swarming
-	common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
+		// Spit out requested dims since scheduke doesn't pass this info to swarming
+		common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
 
-	botListURL, err := formatBotListURL(req.GetDimensions())
-	if err != nil {
-		return err
+		botListURL, err := formatBotListURL(req.GetDimensions())
+		if err != nil {
+			return err
+		}
+		common.WriteStringToStepLog(ctx, step, botListURL, "requested dimensions bot list")
 	}
-	common.WriteStringToStepLog(ctx, step, botListURL, "requested dimensions bot list")
 
 	builderID := common.TestRunnerBuilderID(cmd.Config)
 
-	bbClient, err := newBBClient(ctx)
-	if err != nil {
-		return err
+	// b/377196624 - limit analytics to avoid bot run oom
+	if buildsMapLen < logsAndAnalyticsLimit {
+		cmd.ObserveTrSchedulingStart(ctx, buildReq)
 	}
-
-	cmd.ObserveTrSchedulingStart(ctx, buildReq)
-
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
 	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
-		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
+		// b/377196624 - limit analytics to avoid bot run oom
+		if buildsMapLen < logsAndAnalyticsLimit {
+			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
+		}
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
 	if leaseID != "" {
@@ -517,15 +543,21 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	} else {
 		errStr := "no bbid found from scheduler"
 		err = fmt.Errorf(errStr)
-		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
+		// b/377196624 - limit analytics to avoid bot run oom
+		if buildsMapLen < logsAndAnalyticsLimit {
+			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
+		}
 
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
-	// Log the successful start.
-	cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()))
+	// b/377196624 - limit analytics to avoid bot run oom
+	if buildsMapLen < logsAndAnalyticsLimit {
+		// Log the successful start.
+		cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()))
 
-	// Re-init the data for the run build step. Keep the previously populated data.
-	cmd.ObserveTrBuildStart(ctx, buildReq)
+		// Re-init the data for the run build step. Keep the previously populated data.
+		cmd.ObserveTrBuildStart(ctx, buildReq)
+	}
 
 	// Since the requests are combined in CTPv2 and untangled later we need to
 	// fetch the real request key name so that we can separate the merged
@@ -548,9 +580,15 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		Id: scheduledBuild.GetId(),
 	}
 
-	cmd.ObserveTrSchedulingStart(ctx, buildReq)
+	// b/377196624 - limit analytics to avoid bot run oom
+	if buildsMapLen < logsAndAnalyticsLimit {
+		cmd.ObserveTrSchedulingStart(ctx, buildReq)
+	}
 
 	for {
+		// b/377196624 - ease memory execution by adding sleep of 10 secs, there can be several goroutines doing same execution at same time, which may lead to oom.
+		time.Sleep(5 * time.Second)
+
 		buildInfo, err := CheckBuildInfoIfBuildEnded(ctx, statusReq, bbClient)
 		if err != nil || buildInfo == nil {
 			// this means the build didn't end
@@ -611,8 +649,11 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
 		result.EndTimestamp = time.Now()
 
-		// Log success as we found a completed build. The status is not of the child build itself.
-		cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo)
+		// b/377196624 - limit analytics to avoid bot run oom
+		if buildsMapLen < logsAndAnalyticsLimit {
+			// Log success as we found a completed build. The status is not of the child build itself.
+			cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo)
+		}
 
 		logging.Infof(ctx, "bb status: %s", buildInfo.GetStatus())
 		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
@@ -717,7 +758,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				logging.Infof(ctx, "total retry left after current retry: %d", buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount()-int64(retryNum))
 				// Schedule retry
 				wg.Add(1)
-				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc)
+				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc, buildsMapLen, bbClient)
 			}
 		}
 
