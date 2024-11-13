@@ -521,7 +521,7 @@ class GoToolset(
     """Builds (and installs) Go packages into GOBIN via 'go install ...'.
 
     Compiles and installs packages into default GOBIN, which is
-    <go_workspace>/bin (it is setup by go/env.py).
+    <go_workspace>/bin (it is setup by the bootstrap script).
 
     Args:
       go_environ: instance of GoEnviron object with go related env vars.
@@ -777,7 +777,7 @@ def print_go_step_title(title):
   print_title(title)
 
 
-def bootstrap_go_toolset(go_workspace):
+def bootstrap_go_toolset(go_bootstrap_script):
   """Makes sure the go toolset is installed and returns it as GoToolset."""
   print_title('Making sure Go toolset is installed')
 
@@ -793,7 +793,7 @@ def bootstrap_go_toolset(go_workspace):
           args=[
               sys.executable,
               '-u',
-              os.path.join(go_workspace, 'bootstrap.py'),
+              go_bootstrap_script,
               '-',  # emit JSON with environ modification into stdout
           ],
           env=bootstrap_env))
@@ -1306,7 +1306,7 @@ def get_build_out_file(package_out_dir, pkg_def, out_files_sfx):
 
 def run(
     cipd_platform,
-    go_workspace,
+    go_bootstrap_script,
     module_map,
     package_def_dir,
     package_out_dir,
@@ -1323,7 +1323,7 @@ def run(
 
   Args:
     cipd_platform: a CIPD platform to build for or "" to auto-detect.
-    go_workspace: path to 'infra/go' or 'infra_internal/go'.
+    go_bootstrap_script: a script to use to bootstrap Go environment.
     module_map: a dict "go package prefix => directory with main module".
     package_def_dir: path to build/packages dir to search for *.yaml.
     package_out_dir: where to put built packages.
@@ -1389,7 +1389,7 @@ def run(
   # good. In theory we can use any toolset, since we are going to be setting all
   # GOOS, GOARCH etc env vars explicitly, enabling cross-compilation, but an
   # extra check won't hurt.
-  go_toolset = bootstrap_go_toolset(go_workspace)
+  go_toolset = bootstrap_go_toolset(go_bootstrap_script)
   expected_host_env = cipd_platform_to_go_env(get_host_cipd_platform())
   if go_toolset.go_env['GOHOSTARCH'] != expected_host_env['GOARCH']:
     print(
@@ -1560,10 +1560,10 @@ def main(args):
       default=True,
       help='when used with --upload means upload existing *.cipd files')
   parser.add_argument(
-      '--go-workspace',
+      '--go-bootstrap-script',
       metavar='PATH',
-      default=os.path.join(ROOT, 'go'),
-      help='points at either infra.git/go or infra_internal.git/go.',
+      default=os.path.join(ROOT, 'go', 'bootstrap.py'),
+      help='a script to use to bootstrap Go environment',
   )
   parser.add_argument(
       '--package-definition-dir',
@@ -1607,7 +1607,7 @@ def main(args):
 
   return run(
       args.cipd_platform,
-      args.go_workspace,
+      args.go_bootstrap_script,
       module_map,
       args.package_definition_dir,
       args.package_out_dir,
