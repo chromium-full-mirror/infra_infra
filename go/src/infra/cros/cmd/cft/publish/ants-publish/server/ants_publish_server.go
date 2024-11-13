@@ -23,6 +23,10 @@ import (
 	"infra/cros/cmd/cft/publish/ants-publish/service"
 )
 
+const (
+	maxGRPCSize = 1024 * 1024 * 400
+)
+
 type AntsPublishServer struct {
 	options *metadata.ServerMetadata
 	manager *lro.Manager
@@ -58,9 +62,8 @@ func (ps *AntsPublishServer) Start() error {
 	ps.manager = lro.New()
 	defer ps.manager.Close()
 
-	ps.server = grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*32), grpc.MaxSendMsgSize(1024*1024*32))
+	ps.server = grpc.NewServer(grpc.MaxRecvMsgSize(maxGRPCSize), grpc.MaxSendMsgSize(maxGRPCSize))
 	api.RegisterGenericPublishServiceServer(ps.server, ps)
-	//longrunning.RegisterOperationsServer(ps.server, ps.manager)
 	reflection.Register(ps.server)
 
 	log.Println("ants-publish-service listen to request at ", l.Addr().String())
