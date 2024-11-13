@@ -56,6 +56,7 @@ func HwExecution() {
 			invocationName = rdb.GetCurrentInvocation().GetName()
 		}
 		input := ioProps.GetInput(ctx)
+		isPartnerRun := ioProps.GetInput(ctx).GetCommonConfig().GetPartnerConfig() != nil
 
 		log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 
@@ -85,7 +86,7 @@ func HwExecution() {
 		} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
 			metrics.IsDynamic = true
 			// If the request is a CrosTestRunner non-dynamic request with translation flag...
-			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun)
+			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun)
 			if err == nil {
 				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 			}

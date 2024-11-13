@@ -27,6 +27,7 @@ type PrePostFilterStateKeeper struct {
 	RequestToTargetChainMap map[string]map[string]string
 	ExecuteResponses        *steps.ExecuteResponses
 	DddTrackerMap           map[string]bool // v1 request key 3d bool map
+	IsPartnerRun            bool
 
 	// Al run related
 	AlStateInfo *AlStateInfo

@@ -43,7 +43,7 @@ var (
 	}
 )
 
-func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersion string, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int) map[string]*buildapi.ContainerImageInfo {
+func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersion string, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, firestoreDBName string) map[string]*buildapi.ContainerImageInfo {
 	defaultFilters := map[string]*buildapi.ContainerImageInfo{}
 
 	for _, defaultFilterName := range defaultFilterNames {
@@ -51,9 +51,7 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 
 		// Try and grab the filter from the firestore DB
 		// of infra/infra containers.
-		// TODO(aziz): replace TestPlaformFireStore with passed in variable
-		// based on whether we are in a partner run.
-		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, TestPlatformFireStore, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
+		if containerInfo, err := FetchContainerInfoFromFirestore(ctx, firestoreDBName, creds, ctpVersion, defaultFilterName); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", defaultFilterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = defaultFilterName

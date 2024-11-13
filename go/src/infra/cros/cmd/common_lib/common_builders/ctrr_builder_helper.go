@@ -33,7 +33,7 @@ var (
 )
 
 // buildDynamicRequest constructs the base DynamicTrv2Builder for DynamicTrv2FromCft.
-func (builder *DynamicTrv2FromCft) buildDynamicRequest() *DynamicTrv2Builder {
+func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string) *DynamicTrv2Builder {
 	keyvals := builder.Cft.GetAutotestKeyvals()
 	if keyvals == nil {
 		keyvals = make(map[string]string)
@@ -56,6 +56,7 @@ func (builder *DynamicTrv2FromCft) buildDynamicRequest() *DynamicTrv2Builder {
 		Keyvals:              keyvals,
 		CompanionDuts:        []*labapi.DutModel{},
 		OrderedTaskBuilders:  []DynamicTaskBuilder{},
+		FirestoreDBName:      firestoreDBName,
 	}
 }
 
@@ -532,7 +533,7 @@ func AppendPublishTask(
 
 // PatchContainerMetadata loops through each container info and applies patches
 // to certain containers based on the build version.
-func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds, envVersion string) *buildapi.ContainerMetadata {
+func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMetadata, buildStr, creds, envVersion string, firestoreDBName string) *buildapi.ContainerMetadata {
 	if metadata == nil {
 		return nil
 	}
@@ -552,9 +553,7 @@ func PatchContainerMetadata(ctx context.Context, metadata *buildapi.ContainerMet
 		}
 
 		for _, firestoreDocName := range PullFromFirestore {
-			// TODO(aziz): replace TestPlaformFireStore with passed in variable
-			// based on whether we are in a partner run.
-			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestPlatformFireStore, creds, envVersion, firestoreDocName)
+			containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, firestoreDBName, creds, envVersion, firestoreDocName)
 			common.LogWarningIfErr(ctx, err)
 			if containerInfo != nil {
 				containers[containerInfo.GetContainer().GetName()] = containerInfo.GetContainer()

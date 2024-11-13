@@ -90,6 +90,7 @@ type TrV2ReqHelper struct {
 	currSwarmingID   string
 	builderStr       string
 	isAlRun          bool
+	isPartnerRun     bool
 }
 
 type HwTarget struct {
@@ -792,6 +793,12 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		}
 	}
 
+	// Grab correct firestore db name to be used
+	firestoreDBName := common.TestPlatformFireStore
+	if trHelper.isAlRun && trHelper.isPartnerRun {
+		firestoreDBName = common.PartnerTestPlatformFireStore
+	}
+
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	cftTestRequest := &skylab_test_runner.CFTTestRequest{
 		Deadline:                     timestamppb.New(deadline),
@@ -799,7 +806,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		ParentBuildId:                trHelper.currBBID,
 		PrimaryDut:                   primaryDut,
 		CompanionDuts:                companionDuts,
-		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile, trHelper.envVersion),
+		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile, trHelper.envVersion, firestoreDBName),
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
 		AutotestKeyvals:              keyvals,

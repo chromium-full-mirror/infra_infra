@@ -29,11 +29,12 @@ type PrepareFilterContainersInfoCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpReq      *testapi.CTPRequest
-	CredsFile   string
-	CTPversion  string
-	Experiments []string
-	IsAlRun     bool
+	CtpReq       *testapi.CTPRequest
+	CredsFile    string
+	CTPversion   string
+	Experiments  []string
+	IsAlRun      bool
+	IsPartnerRun bool
 	// Updates
 	ContainerInfoQueue   *list.List
 	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
@@ -90,6 +91,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	cmd.CredsFile = sk.DockerKeyFile
 	cmd.CtpReq = sk.CtpReq
 	cmd.IsAlRun = sk.IsAlRun
+	cmd.IsPartnerRun = sk.IsPartnerRun
 	return nil
 }
 
@@ -151,8 +153,14 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 	logging.Infof(ctx, "ctpreq:", cmd.CtpReq)
 
+	// Grab correct firestore db name to be used
+	firestoreDBName := common.TestPlatformFireStore
+	if cmd.IsAlRun && cmd.IsPartnerRun {
+		firestoreDBName = common.PartnerTestPlatformFireStore
+	}
+
 	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)
-	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion, defK, build)
+	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion, defK, build, firestoreDBName)
 	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
 
 	cmd.ContainerMetadataMap = finalMetadataMap
@@ -175,7 +183,15 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 
 		return errors.Annotate(err, "failed to create filters: ").Err()
 	}
-	logging.Infof(ctx, "Past ctpFilters. %s", ctpFilters)
+
+	if cmd.IsAlRun && cmd.IsPartnerRun {
+		for _, filter := range ctpFilters {
+			// TODO (cdelagarza): remove this custom filter check once they are upreved
+			if filter.GetContainerInfo().GetContainer().GetName() != "cros-test-finder" && filter.GetContainerInfo().GetContainer().GetName() != "pre-process-filter" {
+				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-firestore", firestoreDBName)
+			}
+		}
+	}
 
 	filterData, err := json.MarshalIndent(ctpFilters, "", "\t")
 	if err != nil {
@@ -265,7 +281,8 @@ func createContainerImagesInfoMap(
 	buildContMetadata map[string]*buildapi.ContainerImageInfo,
 	creds, ctpVersion string,
 	defaultFilterNames []string,
-	build int) (bcm map[string]*buildapi.ContainerImageInfo) {
+	build int,
+	firestoreDBName string) (bcm map[string]*buildapi.ContainerImageInfo) {
 	// In case of any overlap of container metadata between input and build metadata,
 	// the input metadata will be prioritized.
 	bcm = make(map[string]*buildapi.ContainerImageInfo)
@@ -275,7 +292,7 @@ func createContainerImagesInfoMap(
 
 	// Write in the default filter's container image info.
 	// Overwrite any of the build's metadata.
-	defaultFilters := common.GetDefaultFilterContainerImageInfosMap(ctx, creds, ctpVersion, defaultFilterNames, buildContMetadata, build)
+	defaultFilters := common.GetDefaultFilterContainerImageInfosMap(ctx, creds, ctpVersion, defaultFilterNames, buildContMetadata, build, firestoreDBName)
 	for defaultFilterName, defaultFilter := range defaultFilters {
 		bcm[defaultFilterName] = defaultFilter
 	}

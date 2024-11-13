@@ -34,8 +34,14 @@ func NewDynamicTrv2FromCftBuilder(cft *skylab_test_runner.CFTTestRequest) *Dynam
 
 // BuildRequest extracts necessary information from the cft test request to build out the
 // dynamic trv2 request.
-func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
-	dynamic := builder.buildDynamicRequest()
+func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool, isPartnerRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
+	// Grab correct firestore db name to be used
+	firestoreDBName := common.TestPlatformFireStore
+	if isALRun && isPartnerRun {
+		firestoreDBName = common.PartnerTestPlatformFireStore
+	}
+
+	dynamic := builder.buildDynamicRequest(firestoreDBName)
 
 	builder.tryAppendProvisionTask(dynamic)
 	builder.tryAppendTestTask(dynamic)
@@ -70,7 +76,8 @@ type DynamicTrv2Builder struct {
 	CredentialsFile      string
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
-	EnvVersion string
+	EnvVersion      string
+	FirestoreDBName string
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
@@ -112,7 +119,7 @@ func (builder *DynamicTrv2Builder) buildStartRequest() *api.CrosTestRunnerDynami
 // buildParams constructs the CrosTestRunnerParams.
 func (builder *DynamicTrv2Builder) buildParams(ctx context.Context) *api.CrosTestRunnerParams {
 	return &api.CrosTestRunnerParams{
-		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile, builder.EnvVersion),
+		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile, builder.EnvVersion, builder.FirestoreDBName),
 		ContainerMetadataKey: builder.ContainerMetadataKey,
 		Keyvals:              builder.Keyvals,
 		PrimaryDut:           builder.PrimaryDut,

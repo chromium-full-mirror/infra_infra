@@ -41,6 +41,7 @@ type GenerateTrv2RequestsCmd struct {
 	RequestKey       string
 	CredentialsFile  string
 	IsAlRun          bool
+	IsPartnerRun     bool
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
 	EnvVersion string
@@ -145,6 +146,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.Config = sk.Config
 	cmd.AlStateInfo = sk.AlStateInfo
 	cmd.IsAlRun = sk.IsAlRun
+	cmd.IsPartnerRun = sk.IsPartnerRun
 	cmd.EnvVersion = sk.CTPversion
 
 	// Convert scheduling units into map for better searching.
@@ -307,6 +309,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		config:               cmd.Config,
 		credentialsFile:      cmd.CredentialsFile,
 		isAlRun:              cmd.IsAlRun,
+		isPartnerRun:         cmd.IsPartnerRun,
 		envVersion:           cmd.EnvVersion,
 	}
 

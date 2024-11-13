@@ -60,13 +60,14 @@ func LuciBuildExecution() {
 			ctpv2CipdInfo := ctpv2InputVersion.GetInput(ctx)
 			outputprops.CTPv2AtpUpdate.SetOutput(ctx, nil)
 			logging.Infof(ctx, "ctpv2 label: %s", ctpv2CipdInfo.GetVersion().GetCipdLabel())
+			logging.Infof(ctx, "partner_config: %v", input.PartnerConfig)
 			bqClient := analytics.CtpAnalyticsBQClient(ctx)
 			if bqClient != nil {
 				defer bqClient.Close()
 			}
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel())
+			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.PartnerConfig.Value)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -85,7 +86,8 @@ func executeRequests(
 	ctrCipdVersion string,
 	buildState *build.State,
 	BQClient *bigquery.Client,
-	ctpv2CipdVersion string) (*steps.CTPv2BinaryBuildOutput, error) {
+	ctpv2CipdVersion string,
+	isPartnerRun bool) (*steps.CTPv2BinaryBuildOutput, error) {
 	buildOutput := &steps.CTPv2BinaryBuildOutput{}
 
 	// Validation
@@ -118,6 +120,7 @@ func executeRequests(
 		CtpV2Request:          input.GetCtpv2Request(),
 		BQClient:              BQClient,
 		BuildState:            buildState,
+		IsPartnerRun:          isPartnerRun,
 	}
 
 	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)
@@ -154,7 +157,7 @@ func executeRequests(
 		workUnitTrees = sk.AlStateInfo.WorkUnitTrees
 	}
 
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees)
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees, isPartnerRun)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -177,7 +180,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun bool) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -203,7 +206,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees, isPartnerRun)
 	}
 	go func() {
 		wg.Wait()
@@ -231,7 +234,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun bool) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -290,9 +293,10 @@ func executeFiltersInLuciBuild(
 		CTPversion:         ctpVersion,
 		AlStateInfo:        alStateInfo,
 		IsAlRun:            req.IsAlRun,
+		IsPartnerRun:       isPartnerRun,
 	}
 
-	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion)
+	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)
 	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments), common.DefaultKoffeeFilterNames)
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
@@ -351,7 +355,7 @@ func isReqFromATP(req *api.CTPRequest) bool {
 	return req.IsAlRun && req.EncodedAtpTestJobMsg != ""
 }
 
-func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, ctpVersion string) {
+func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, ctpVersion string, isPartnerRun bool) {
 	updatedFilters := []*api.CTPFilter{}
 	for _, filter := range req.GetKarbonFilters() {
 		container := filter.GetContainerInfo().GetContainer()
@@ -362,10 +366,13 @@ func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, c
 			updatedFilters = append(updatedFilters, filter)
 			continue
 		}
+
+		fireStoreDB := common.TestPlatformFireStore
+		if isPartnerRun {
+			fireStoreDB = common.PartnerTestPlatformFireStore
+		}
 		// Fetch the filter from the firestore.
-		// TODO(aziz): replace TestPlaformFireStore with passed in variable
-		// based on whether we are in a partner run.
-		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, common.TestPlatformFireStore, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
+		if containerInfo, err := common.FetchContainerInfoFromFirestore(ctx, fireStoreDB, creds, ctpVersion, filterName); err == nil && containerInfo != nil {
 			logging.Infof(ctx, "Found filter inside the firestore for %s", filterName)
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = filterName
