@@ -2385,6 +2385,7 @@ SPECS.update({
         Universal('pyelftools', '0.29'),
         Universal('pyfakefs', '3.7.2'),
         Universal('pyfakefs', '5.5.0', pyversions=['py3']),
+        Universal('pyfakefs', '5.7.1', pyversions=['py3']),
         Universal('pyflakes', '3.0.1'),
         Universal('pyglet', '1.5.0'),
         Universal('pygments', '2.14.0', pyversions=['py3']),
