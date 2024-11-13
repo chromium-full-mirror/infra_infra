@@ -314,18 +314,35 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		err = nil
 	}
 
-	// Update output props
+	updateItems := &outputprops.UpdateItems{}
+
+	// Publish TestJobMsg
 	if cmd.AlStateInfo.CurrentTestJobEvent.TestJob != nil {
-		updateItems := &outputprops.UpdateItems{TestJobMsgJson: cmd.AlStateInfo.CurrentTestJobEvent.TestJob}
 		encodedTestJobMsg, err := common.EncodeAnyObj(cmd.AlStateInfo.CurrentTestJobEvent.TestJob)
 		if err != nil {
-			common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while encoding test job msg: %s", err.Error()), "encoding error")
+			common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while encoding test job msg: %s", err.Error()), " testJobMsg encoding error")
 			err = nil
 		} else {
-			common.WriteAnyObjectToStepLog(ctx, step, encodedTestJobMsg, "encoded msg")
+			common.WriteAnyObjectToStepLog(ctx, step, encodedTestJobMsg, "encoded testJobMsg")
 			updateItems.EncodedTestJobMsg = encodedTestJobMsg
 		}
+	}
 
+	// Publish TestJobEvent
+	if cmd.AlStateInfo.CurrentTestJobEvent != nil {
+		updateItems.TestJobEventMsgJson = cmd.AlStateInfo.CurrentTestJobEvent
+		encodedTestJobEventMsg, err := common.EncodeAnyObj(cmd.AlStateInfo.CurrentTestJobEvent)
+		if err != nil {
+			common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while encoding test job event msg: %s", err.Error()), "testJobEventMsg encoding error")
+			err = nil
+		} else {
+			common.WriteAnyObjectToStepLog(ctx, step, encodedTestJobEventMsg, "encoded testJobEventMsg")
+			updateItems.EncodedTestJobEventMsg = encodedTestJobEventMsg
+		}
+	}
+
+	// Update output props
+	if updateItems.EncodedTestJobEventMsg != "" || updateItems.EncodedTestJobMsg != "" {
 		// DO NOT CHANGE `TestJobInfo` key until multiple request support is added for ATP flow.
 		// It will be changed to SuiteName when that support will be introduced. Currently, ATP depends on this key.
 		outputprops.CTPv2AtpUpdate.SetOutput(ctx, outputprops.SummaryMap{"TestJobInfo": updateItems})

@@ -17,8 +17,10 @@ import (
 
 // UpdateItems is used capture the items that we need to update for ATP.
 type UpdateItems struct {
-	EncodedTestJobMsg string
-	TestJobMsgJson    *common.TestJobMessage
+	EncodedTestJobMsg      string
+	EncodedTestJobEventMsg string
+	// Test job event encapsulates test job msg
+	TestJobEventMsgJson *common.TestJobEventMessage
 }
 
 type SummaryMap map[string]*UpdateItems
