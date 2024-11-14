@@ -338,6 +338,67 @@
   },
   {
     "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "gs://chops-public-tarballs-prod/gae/luci-go/luci-milo-ui/b99e32bb9c91c0df857db91b0b15bf6e2e6240907eed46d2242ac0c407b42572.tar.gz",
+      "[CLEANUP]/tarball/tarball.tar.gz"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "gsutil download_url"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::archive]/resources/extract.py",
+      "--json-input",
+      "{\"archive_file\": \"[CLEANUP]/tarball/tarball.tar.gz\", \"include_files\": [], \"output\": \"[CLEANUP]/tarball/milo\", \"safe_mode\": true}",
+      "--json-output",
+      "/path/to/tmp/json"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "extract tarball",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@<br/>extracted 1337 files - 50159.75 MB@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"extracted\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"bytes\": 50159747054,@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"filecount\": 1337@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -439,39 +500,10 @@
   },
   {
     "cmd": [
-      "make",
-      "build"
-    ],
-    "cwd": "[CACHE]/luci-go/milo/ui",
-    "env": {
-      "npm_config_cache": "[CACHE]/npmcache/npm",
-      "npm_config_prefix": "[CACHE]/npmcache/pfx"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/npmcache/pfx/bin",
-        "[CACHE]/nodejs/bin"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "project:ci"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "build"
-  },
-  {
-    "cmd": [
       "rdb",
       "stream",
       "--",
+      "VITE_LOCAL_BASE_OUT_DIR=[CLEANUP]/tarball/milo/ui/out",
       "make",
       "e2e"
     ],

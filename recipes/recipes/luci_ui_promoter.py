@@ -5,6 +5,7 @@
 from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
 
 DEPS = [
+    'recipe_engine/archive',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/file',
@@ -14,6 +15,7 @@ DEPS = [
     'recipe_engine/resultdb',
     'recipe_engine/step',
     'depot_tools/git',
+    'depot_tools/gsutil',
 ]
 
 GAE_REPO_URL = 'https://chrome-internal.googlesource.com/infradata/gae'
@@ -53,6 +55,12 @@ def RunSteps(api):
       dir_path=luci_go_dir,
       submodules=False)
 
+  tarball_dir = api.path.cleanup_dir / 'tarball'
+  tarball_file = tarball_dir / 'tarball.tar.gz'
+  extract_dir = tarball_dir / 'milo'
+  api.gsutil.download_url(staging_tarball_data.get('location'), tarball_file)
+  api.archive.extract('extract tarball', tarball_file, extract_dir)
+
   # Read the desired nodejs version from <repo>/build/NODEJS_VERSION.
   version = api.file.read_text(
       'read NODEJS_VERSION',
@@ -64,10 +72,11 @@ def RunSteps(api):
   luci_ui_dir = luci_go_dir / 'milo' / 'ui'
   with api.nodejs(version), api.context(cwd=luci_ui_dir):
     api.step('npm ci', ['npm', 'ci'])
-    # TODO: run the integration tests against the tarball instead of a fresh
-    # build at the same version.
-    api.step('build', ['make', 'build'])
-    api.step('e2e', api.resultdb.wrap(['make', 'e2e']))
+    tarball_out_dir = extract_dir / 'ui' / 'out'
+    api.step(
+        'e2e',
+        api.resultdb.wrap(
+            ['VITE_LOCAL_BASE_OUT_DIR=' + str(tarball_out_dir), 'make', 'e2e']))
 
   # TODO: promote the staging version to production
 
