@@ -6,10 +6,28 @@ package jobs
 
 import (
 	"context"
+	"database/sql"
+	"database/sql/driver"
+	"fmt"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/model"
+	inventory "infra/libs/skylab/inventory"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 func Test_isDeviceNeedsUpdate(t *testing.T) {
@@ -225,5 +243,159 @@ func Test_isDeviceNeedsUpdate(t *testing.T) {
 				t.Errorf("areLabelsOrActiveStateDifferent() gotBool = %v, wantBool %v", gotBool, tt.wantBool)
 			}
 		})
+	}
+}
+
+func TestImportUFSDevices(t *testing.T) {
+	t.Parallel()
+
+	dutName := "dut1"
+	tests := []struct {
+		name    string
+		ufs     *fakeUFSClient
+		setupDB func(sqlmock.Sqlmock)
+	}{
+		{
+			name: "import a dut",
+			ufs: &fakeUFSClient{
+				lses: []string{dutName},
+				dd: map[string]*ufsAPI.GetDeviceDataResponse{
+					dutName: {
+						ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_CHROMEOS_DEVICE,
+						Resource: &ufsAPI.GetDeviceDataResponse_ChromeOsDeviceData{
+							ChromeOsDeviceData: &ufspb.ChromeOSDeviceData{
+								LabConfig: newMachineLSE(dutName),
+								SchedulableLabels: map[string]*ufspb.SchedulableLabelValues{
+									"dut_id": {LabelValues: []string{"C1111"}},
+								},
+								DutV1: &inventory.DeviceUnderTest{Common: &inventory.CommonDeviceSpecs{Id: &dutName}},
+							},
+						},
+					},
+				},
+			},
+			setupDB: func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(sqlmock.NewRows(nil))
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnError(sql.ErrNoRows)
+				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		{
+			name: "a device is removed from UFS",
+			ufs:  &fakeUFSClient{},
+			setupDB: func(m sqlmock.Sqlmock) {
+				newRows := func() *sqlmock.Rows {
+					cols := []string{
+						"id", "dut_id", "device_address", "device_type", "device_state", "schedulable_labels", "created_time", "last_updated_time", "is_active",
+					}
+					vals := []driver.Value{"dut2", "C2222", "", "DEVICE_TYPE_PHYSICAL", "DEVICE_STATE_AVAILABLE", `{"dut_id": {"Values": ["C2222"]}}`, time.Now(), time.Now(), true}
+					return sqlmock.NewRows(cols).AddRow(vals...)
+				}
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
+				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+			}
+			defer db.Close()
+
+			tc.setupDB(mock)
+			clients := frontend.ServiceClients{
+				UFSClient: *tc.ufs,
+				DBClient:  database.Client{Conn: db},
+			}
+
+			ctx := logging.SetLevel(context.Background(), logging.Debug)
+			ctx = gologger.StdConfig.Use(ctx)
+			if err := ImportUFSDevices(ctx, clients, ""); err != nil {
+				t.Errorf("importUFSDevices() = %s, want nil", err)
+			}
+			if err = mock.ExpectationsWereMet(); err != nil {
+				t.Errorf("unmet expectation error: %s", err)
+			}
+
+		})
+	}
+}
+
+type fakeUFSClient struct {
+	ufsAPI.FleetClient
+	lses []string
+	sus  map[string]*ufspb.SchedulingUnit
+	dd   map[string]*ufsAPI.GetDeviceDataResponse
+}
+
+func (c fakeUFSClient) ListMachineLSEs(ctx context.Context, in *ufsAPI.ListMachineLSEsRequest, opts ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error) {
+	lses := make([]*ufspb.MachineLSE, len(c.lses))
+	for i, name := range c.lses {
+		lses[i] = newMachineLSE(name)
+	}
+	return &ufsAPI.ListMachineLSEsResponse{MachineLSEs: lses}, nil
+}
+
+func (c fakeUFSClient) GetMachineLSE(ctx context.Context, in *ufsAPI.GetMachineLSERequest, opts ...grpc.CallOption) (*ufspb.MachineLSE, error) {
+	for _, name := range c.lses {
+		if in.GetName() == ufsutil.AddPrefix(ufsutil.MachineLSECollection, name) {
+			return newMachineLSE(name), nil
+		}
+	}
+	return nil, fmt.Errorf("no machine LSE found for %s", in.GetName())
+}
+
+func (c fakeUFSClient) ListSchedulingUnits(ctx context.Context, in *ufsAPI.ListSchedulingUnitsRequest, opts ...grpc.CallOption) (*ufsAPI.ListSchedulingUnitsResponse, error) {
+	sus := make([]*ufspb.SchedulingUnit, len(c.sus))
+	i := 0
+	for _, v := range c.sus {
+		sus[i] = proto.Clone(v).(*ufspb.SchedulingUnit)
+		i++
+	}
+	return &ufsAPI.ListSchedulingUnitsResponse{SchedulingUnits: sus}, nil
+}
+
+func (c fakeUFSClient) GetDeviceData(ctx context.Context, in *ufsAPI.GetDeviceDataRequest, opts ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error) {
+	key := ""
+	if id := in.GetDeviceId(); id != "" {
+		key = id
+	} else if name := in.GetHostname(); name != "" {
+		key = name
+	}
+	if v, ok := c.dd[key]; ok {
+		return v, nil
+	}
+	return nil, fmt.Errorf("no device %v", in)
+}
+
+func newMachineLSE(name string) *ufspb.MachineLSE {
+	return &ufspb.MachineLSE{
+		Name:     name,
+		Hostname: name,
+		Machines: []string{name},
+		Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+			ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+				ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+					DeviceLse: &ufspb.ChromeOSDeviceLSE{
+						Device: &ufspb.ChromeOSDeviceLSE_Dut{
+							Dut: &ufschromeoslab.DeviceUnderTest{
+								Hostname: name,
+							},
+						},
+					},
+				},
+			},
+		},
+		Zone:          "ZONE_CHROMEOS6",
+		ResourceState: ufspb.State_STATE_REGISTERED,
+		UpdateTime:    timestamppb.Now(),
 	}
 }

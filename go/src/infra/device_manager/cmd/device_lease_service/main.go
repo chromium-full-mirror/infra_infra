@@ -21,8 +21,10 @@ import (
 	"go.chromium.org/luci/server/secrets"
 
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/jobs"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 func main() {
@@ -125,8 +127,15 @@ func main() {
 			return err
 		}
 
+		ufsClient, err := external.NewUFSClient(srv.Context, external.UFSServiceURI)
+		if err != nil {
+			return err
+		}
+		deviceLeaseServer.ServiceClients.UFSClient = ufsClient
+
 		frontend.InstallServices(deviceLeaseServer, srv)
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
+			ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
 		})
 		cron.RegisterHandler("expire-leases", func(ctx context.Context) error {
