@@ -60,7 +60,8 @@ type ScheduleTasksCmd struct {
 	CredentialsFile string
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
-	EnvVersion string
+	EnvVersion      string
+	FirestoreDBName string
 
 	// Deps
 	InternalTestPlan *api.InternalTestplan
@@ -159,6 +160,11 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		cmd.RequestKey = sk.RequestKey
 	}
 
+	fireStoreDB := common.TestPlatformFireStore
+	if sk.IsPartnerRun && sk.IsAlRun {
+		fireStoreDB = common.PartnerTestPlatformFireStore
+	}
+	cmd.FirestoreDBName = fireStoreDB
 	cmd.CredentialsFile = sk.DockerKeyFile
 	cmd.EnvVersion = sk.CTPversion
 	cmd.DynamicRun = sk.CtpReq.RunDynamic
@@ -841,6 +847,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		config:               cmd.Config,
 		credentialsFile:      cmd.CredentialsFile,
 		envVersion:           cmd.EnvVersion,
+		firestoreDBName:      cmd.FirestoreDBName,
 	}
 
 	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))

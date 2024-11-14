@@ -49,7 +49,8 @@ type GenerateTrv2RequestsCmd struct {
 	IsPartnerRun     bool
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
-	EnvVersion string
+	EnvVersion      string
+	FirestoreDBName string
 
 	// Updates
 	BuildsMap   map[string]*data.BuildRequest
@@ -153,6 +154,11 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.IsAlRun = sk.IsAlRun
 	cmd.IsPartnerRun = sk.IsPartnerRun
 	cmd.EnvVersion = sk.CTPversion
+	fireStoreDB := common.TestPlatformFireStore
+	if sk.IsPartnerRun && sk.IsAlRun {
+		fireStoreDB = common.PartnerTestPlatformFireStore
+	}
+	cmd.FirestoreDBName = fireStoreDB
 
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
@@ -320,6 +326,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		isAlRun:              cmd.IsAlRun,
 		isPartnerRun:         cmd.IsPartnerRun,
 		envVersion:           cmd.EnvVersion,
+		firestoreDBName:      cmd.FirestoreDBName,
 	}
 
 	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))

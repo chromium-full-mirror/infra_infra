@@ -74,7 +74,8 @@ type TrV2ReqHelper struct {
 	credentialsFile      string
 	// envVersion denotes whether the environment
 	// is prod or something else.
-	envVersion string
+	envVersion      string
+	firestoreDBName string
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -704,6 +705,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		CredentialsFile:      trHelper.credentialsFile,
 		EnvVersion:           trHelper.envVersion,
+		FirestoreDBName:      trHelper.firestoreDBName,
 		BuildString:          trHelper.builderStr,
 		Deadline:             timestamppb.New(deadline),
 		TestSuites:           testSuites,
