@@ -13,14 +13,12 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
-	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	androidlib "infra/cros/cmd/common_lib/android_api"
@@ -153,55 +151,6 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 	return entries, token, nil
 }
 
-func (aps *AntsPublishService) uploadInvocationProperties() error {
-	// TODO(srinivashegde): Do not enable for all by default.
-	props := []*atp.Property{
-		{Name: "crystalball_ingest", Value: "yes"},
-	}
-
-	envInfo := aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo()
-	if envInfo == nil {
-		log.Println("No env info found. Skipping env details.")
-	} else {
-		var bbInfo *artifact.BuildbucketInfo
-		switch envInfo.(type) {
-		case *artifact.ExecutionInfo_SatlabInfo:
-			bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSatlabInfo().GetBuildbucketInfo()
-		case *artifact.ExecutionInfo_SkylabInfo:
-			bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSkylabInfo().GetBuildbucketInfo()
-		default:
-			return fmt.Errorf("unsupported envInfo: %v", envInfo)
-		}
-
-		ancestorIDs := bbInfo.GetAncestorIds()
-		if len(ancestorIDs) > 0 {
-			ancestors := make([]string, 0, len(ancestorIDs))
-			for _, ancID := range ancestorIDs {
-				ancestors = append(ancestors, strconv.Itoa(int(ancID)))
-			}
-
-			ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
-			props = append(props, ancestorsProp)
-		}
-	}
-
-	if len(props) > 0 {
-		inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
-		if err != nil {
-			return err
-		}
-
-		inv.Properties = append(inv.Properties, props...)
-		_, err = aps.service.InvocationService.Update(aps.metadata.AntsInvocationId, inv)
-		if err != nil {
-			return err
-		}
-		log.Printf("Added properties to invocation: %v", props)
-	}
-
-	return nil
-}
-
 func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
 	var chunks [][]*atp.BatchInsertEntry
 	for i := 0; i < len(entries); i += chunkSize {
@@ -231,11 +180,6 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
-
-	log.Printf("Update invocation properties.")
-	if err := aps.uploadInvocationProperties(); err != nil {
-		return err
-	}
 
 	log.Printf("Update parent workunit properties.")
 	if err := aps.uploadParentWorkUnitProperties(); err != nil {
