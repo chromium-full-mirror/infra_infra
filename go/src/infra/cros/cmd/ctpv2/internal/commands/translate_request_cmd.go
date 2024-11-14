@@ -158,6 +158,10 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 		return
 	}
 	pool := ctpReq.GetPool()
+	// skip swarming bot count check if pool is vmlab
+	if pool == "vmlab" {
+		return
+	}
 	botAvailabilityCache := make(map[string]bool)
 
 	// this will hold all new available schedule targets
