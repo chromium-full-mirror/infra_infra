@@ -68,11 +68,17 @@ func (t *TestResults) GetFailureErr() error {
 
 	// Handle autotest results
 	if t.Results.GetAutotestResults() != nil {
+
 		testResults, ok := t.Results.GetAutotestResults()["original_test"]
 		if !ok {
 			// the test results from trv2 should be here, if not,
 			// something else failed before test execution. so fail.
 			return fmt.Errorf("no test result found")
+		}
+
+		// Incomplete == err.
+		if testResults.GetIncomplete() {
+			return fmt.Errorf("test(s) incomplete")
 		}
 
 		for _, testCase := range testResults.GetTestCases() {
@@ -87,6 +93,10 @@ func (t *TestResults) GetFailureErr() error {
 	// Handle android generic results
 	if t.Results.GetAndroidGenericResult() != nil {
 		for _, givenTestCase := range t.Results.GetAndroidGenericResult().GetGivenTestCases() {
+			if givenTestCase.GetIncomplete() {
+				return fmt.Errorf("test(s) incomplete")
+			}
+
 			for _, testCase := range givenTestCase.GetChildTestCases() {
 				if testCase.GetVerdict() != skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS {
 					return fmt.Errorf("test(s) failed")
