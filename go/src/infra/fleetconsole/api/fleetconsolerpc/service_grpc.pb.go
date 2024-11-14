@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	FleetConsole_Ping_FullMethodName              = "/fleetconsole.FleetConsole/Ping"
 	FleetConsole_PingDeviceManager_FullMethodName = "/fleetconsole.FleetConsole/PingDeviceManager"
+	FleetConsole_ListDevices_FullMethodName       = "/fleetconsole.FleetConsole/ListDevices"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -35,6 +36,8 @@ type FleetConsoleClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(ctx context.Context, in *PingDeviceManagerRequest, opts ...grpc.CallOption) (*PingDeviceManagerResponse, error)
+	// ListDevices managed by Device Manager.
+	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -65,6 +68,16 @@ func (c *fleetConsoleClient) PingDeviceManager(ctx context.Context, in *PingDevi
 	return out, nil
 }
 
+func (c *fleetConsoleClient) ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListDevicesResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_ListDevices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -73,6 +86,8 @@ type FleetConsoleServer interface {
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error)
+	// ListDevices managed by Device Manager.
+	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -88,6 +103,9 @@ func (UnimplementedFleetConsoleServer) Ping(context.Context, *PingRequest) (*Pin
 }
 func (UnimplementedFleetConsoleServer) PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PingDeviceManager not implemented")
+}
+func (UnimplementedFleetConsoleServer) ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDevices not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -146,6 +164,24 @@ func _FleetConsole_PingDeviceManager_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_ListDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDevicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).ListDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_ListDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).ListDevices(ctx, req.(*ListDevicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -160,6 +196,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PingDeviceManager",
 			Handler:    _FleetConsole_PingDeviceManager_Handler,
+		},
+		{
+			MethodName: "ListDevices",
+			Handler:    _FleetConsole_ListDevices_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

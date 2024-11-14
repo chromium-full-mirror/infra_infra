@@ -14,6 +14,9 @@ service FleetConsole {
 
   // PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
   rpc PingDeviceManager(PingDeviceManagerRequest) returns (PingDeviceManagerResponse);
+
+  // ListDevices managed by Device Manager.
+  rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -30,4 +33,72 @@ message PingDeviceManagerRequest {
 
 // PingDeviceManagerResponse intentionally contains nothing.
 message PingDeviceManagerResponse {
+}
+
+message Device {
+  // In the case of VMs, device id could be the GCE instance name. For physical
+  // DUTs we use the IDs we get from UFS.
+  string id = 1;
+  // dut_id is the asset tag for a Device
+  string dut_id = 6;
+
+  DeviceAddress address = 2;
+  DeviceType type = 3;
+  DeviceState state = 4;
+
+  // // This proto contains per-DUT hardware relevant information including labels.
+  DeviceSpec device_spec = 5;
+}
+
+message DeviceAddress {
+  // IP address of the device.
+  // For physical DUTs it can be a hostname.
+  string host = 1;
+  int32 port = 2;
+}
+
+enum DeviceType {
+  DEVICE_TYPE_UNSPECIFIED = 0;
+  DEVICE_TYPE_VIRTUAL = 1;
+  DEVICE_TYPE_PHYSICAL = 2;
+}
+
+enum DeviceState {
+  DEVICE_STATE_UNSPECIFIED = 0;
+  // Default state.
+  // Device is available to be leased.
+  DEVICE_STATE_AVAILABLE = 1;
+  // Device is leased.
+  DEVICE_STATE_LEASED = 2;
+}
+
+message ListDevicesRequest {
+  // The maximum number of devices to return. The service may return fewer than
+  // this value. If unspecified, at most 50 devices will be returned.
+  int32 page_size = 1;
+
+  // A page token, received from a previous `ListDevices` call. Provide this to
+  // retrieve the subsequent page. Returns first page if omitted.
+  //
+  // When paginating, all other parameters provided to `ListDevices` must match
+  // the call that provided the page token.
+  string page_token = 2;
+}
+
+message ListDevicesResponse {
+  // List of devices to be returned.
+  repeated Device devices = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page. If
+  // this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+}
+
+message DeviceSpec {
+  message LabelValues {
+    repeated string values = 1;
+  }
+
+  // A map for schedulable labels used to request a matching device.
+  map<string, LabelValues> schedulable_labels = 1;
 }
