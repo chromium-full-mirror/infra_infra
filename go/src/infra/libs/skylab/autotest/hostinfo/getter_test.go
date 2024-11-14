@@ -305,6 +305,7 @@ func TestGetStableVersionForHostname(t *testing.T) {
 	bg := context.Background()
 
 	const hostname = "FAKE-HOSTNAME"
+	const deviceType = "cros"
 	const expectedErr = ""
 	expected := &lab_platform.StableVersion{
 		OsVersion:           "FAKE-CROS-VERSION",
@@ -339,7 +340,7 @@ func TestGetStableVersionForHostname(t *testing.T) {
 		},
 	)
 
-	out, e := g.GetStableVersion(bg, hostname, "", "", nil)
+	out, e := g.GetStableVersion(bg, deviceType, hostname, "", "", nil)
 	eMsg := errToString(e)
 	// Reset target as not important!
 	out.Target = nil
@@ -357,6 +358,7 @@ func TestGetStableVersionForModel(t *testing.T) {
 	bg := context.Background()
 
 	const expectedErr = ""
+	const deviceType = "cros"
 	expected := &lab_platform.StableVersion{
 		FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
 		FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
@@ -368,17 +370,23 @@ func TestGetStableVersionForModel(t *testing.T) {
 		nil,
 		&FakeGetStableVersion{
 			version: map[string]*lab_platform.StableVersion{
-				keys.New("", "fake-mode", "fake-model", "").String(): {
+				keys.New("cros", "fake-mode", "fake-model", "").String(): {
 					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
 					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
-				keys.New("", "fake-board", "fake-model", "").String(): {
+				keys.New("cros", "fake-board", "fake-model", "").String(): {
 					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
+				},
+				keys.New("", "fake-board", "fake-model", "").String(): {
+					OsVersion:           "FAKE6-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE6-board-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE6-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE6-board-mode-FIRMWARE-VERSION",
 				},
 				"|hostname:FAKE-HOSTNAME": {
 					OsVersion:           "FAKE3-hostname-CROS-VERSION",
@@ -390,7 +398,7 @@ func TestGetStableVersionForModel(t *testing.T) {
 		},
 	)
 
-	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", nil)
+	out, e := g.GetStableVersion(bg, deviceType, "", "fake-board", "fake-model", nil)
 	eMsg := errToString(e)
 	if e != nil {
 		t.Errorf("TestGetStableVersionForModel: unexpected error: %s", e)
@@ -409,6 +417,7 @@ func TestGetStableVersionForModelAndPool(t *testing.T) {
 	bg := context.Background()
 
 	const expectedErr = ""
+	const deviceType = "cros"
 	expected := &lab_platform.StableVersion{
 		OsVersion:           "FAKE4-board-mode-CROS-VERSION",
 		OsImagePath:         "FAKE4-board-mode-CROS-PATH",
@@ -420,23 +429,35 @@ func TestGetStableVersionForModelAndPool(t *testing.T) {
 		nil,
 		&FakeGetStableVersion{
 			version: map[string]*lab_platform.StableVersion{
-				keys.New("", "fake-mode", "fake-model", "").String(): {
+				keys.New("cros", "fake-mode", "fake-model", "").String(): {
 					OsVersion:           "FAKE1-mode-mode-CROS-VERSION",
 					OsImagePath:         "FAKE1-mode-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE1-mode-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE1-mode-mode-FIRMWARE-VERSION",
 				},
-				keys.New("", "fake-board", "fake-model", "").String(): {
+				keys.New("cros", "fake-board", "fake-model", "").String(): {
 					OsVersion:           "FAKE2-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE2-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE2-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE2-board-mode-FIRMWARE-VERSION",
 				},
-				keys.New("", "fake-board", "fake-model", "fake-pool").String(): {
+				keys.New("cros", "fake-board", "fake-model", "fake-pool").String(): {
 					OsVersion:           "FAKE4-board-mode-CROS-VERSION",
 					OsImagePath:         "FAKE4-board-mode-CROS-PATH",
 					FirmwareRoImagePath: "FAKE4-board-mode-FAFT-VERSION",
 					FirmwareRoVersion:   "FAKE4-board-mode-FIRMWARE-VERSION",
+				},
+				keys.New("android", "fake-board", "fake-model", "fake-pool").String(): {
+					OsVersion:           "FAKE5-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE5-board-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE5-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE5-board-mode-FIRMWARE-VERSION",
+				},
+				keys.New("", "fake-board", "fake-model", "fake-pool").String(): {
+					OsVersion:           "FAKE6-board-mode-CROS-VERSION",
+					OsImagePath:         "FAKE6-board-mode-CROS-PATH",
+					FirmwareRoImagePath: "FAKE6-board-mode-FAFT-VERSION",
+					FirmwareRoVersion:   "FAKE6-board-mode-FIRMWARE-VERSION",
 				},
 				"|hostname:FAKE-HOSTNAME": {
 					OsVersion:           "FAKE3-hostname-CROS-VERSION",
@@ -448,7 +469,7 @@ func TestGetStableVersionForModelAndPool(t *testing.T) {
 		},
 	)
 
-	out, e := g.GetStableVersion(bg, "", "fake-board", "fake-model", []string{"fake-pool"})
+	out, e := g.GetStableVersion(bg, deviceType, "", "fake-board", "fake-model", []string{"fake-pool"})
 	eMsg := errToString(e)
 	if e != nil {
 		t.Errorf("TestGetStableVersionForModelAndPool: unexpected error %s", e)

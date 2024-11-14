@@ -58,8 +58,9 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 	if g.ac == nil {
 		return "", fmt.Errorf("no Inventory client for stable version")
 	}
-	req := &ufsAPI.GetChromeOSDeviceDataRequest{}
-	req.Hostname = hostname
+	req := &ufsAPI.GetChromeOSDeviceDataRequest{
+		Hostname: hostname,
+	}
 	crosDeviceData, err := g.ic.GetChromeOSDeviceData(ctx, req)
 	if err != nil {
 		return "", err
@@ -69,7 +70,7 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 	// Devboard device does not have stable version.
 	// Only obtains stable version when device is not a devboard.
 	if crosDeviceData.GetMachine().GetDevboard() == nil {
-		version, err := g.GetStableVersion(ctx, hostname, "", "", nil)
+		version, err := g.GetStableVersion(ctx, "", hostname, "", "", nil)
 		if err != nil {
 			return "", err
 		}
@@ -83,7 +84,7 @@ func (g *Getter) GetContentsForHostname(ctx context.Context, hostname string) (s
 }
 
 // GetStableVersion gets the stable version info.
-func (g *Getter) GetStableVersion(ctx context.Context, hostname, board, model string, pools []string) (*lab_platform.StableVersion, error) {
+func (g *Getter) GetStableVersion(ctx context.Context, deviceType, hostname, board, model string, pools []string) (*lab_platform.StableVersion, error) {
 	if g.ac == nil {
 		return nil, fmt.Errorf("no Inventory client for stable version")
 	}
@@ -93,7 +94,7 @@ func (g *Getter) GetStableVersion(ctx context.Context, hostname, board, model st
 
 	res, err := g.ac.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
 		DeviceName: hostname,
-		DeviceType: "",
+		DeviceType: deviceType,
 		Model:      model,
 		Board:      board,
 		Pools:      pools,

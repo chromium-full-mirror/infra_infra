@@ -36,6 +36,7 @@ var GetStableVersionCmd = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 
 		c.Flags.StringVar(&c.hostname, "name", "", "Hostname which used to get version.")
+		c.Flags.StringVar(&c.deviceType, "type", "", "Type of device used to get version.")
 		c.Flags.StringVar(&c.board, "board", "", "Name of the board used to get version.")
 		c.Flags.StringVar(&c.model, "model", "", "Name of the model used to get version.")
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma separated pools used to get version.")
@@ -50,10 +51,11 @@ type getStableVersion struct {
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	board    string
-	model    string
-	pools    []string
-	hostname string
+	board      string
+	model      string
+	pools      []string
+	hostname   string
+	deviceType string
 }
 
 func (c *getStableVersion) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -94,7 +96,7 @@ func (c *getStableVersion) innerRun(a subcommands.Application, args []string, en
 	)
 	g := hostinfo.NewGetter(nil, invWithSVClient)
 
-	version, err := g.GetStableVersion(ctx, c.hostname, c.board, c.model, c.pools)
+	version, err := g.GetStableVersion(ctx, c.deviceType, c.hostname, c.board, c.model, c.pools)
 	if err != nil {
 		return err
 	}
