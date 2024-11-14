@@ -563,6 +563,63 @@
     ]
   },
   {
+    "cmd": [
+      "rdb",
+      "rpc",
+      "luci.resultdb.v1.Recorder",
+      "BatchCreateArtifacts",
+      "-include-update-token"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/infra",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra/go/bin"
+      ]
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "upload findings as an invocation artifact",
+    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-8945511751514863184\", \"contentType\": \"vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAACA5WPMQ7CMAxF1QoBClvpEDF1pBKtF+5Tpa5JLSUNSlMmbsClGDhVJwJMsLFYlr/037O4JUJqZ9SgkSvDQyj2HakOXUdlZkUlJPbeWZ5srZ3ThkbnkWp0NtvwcPIK3lPeH6tilR21g9Hj5wZomIYAaDvgMTICgeEWWhWwb5THni8UW3fL9ZzIOSlScRXbH5m4lRn+63H48lBT6JuR/IWRgO3ZgI3vmZhyePEX61zmRfoEFs2bKgwBAAA=\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@json.input@{@@@",
+      "@@@STEP_LOG_LINE@json.input@  \"requests\": [@@@",
+      "@@@STEP_LOG_LINE@json.input@    {@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"artifact\": {@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"contentType\": \"vnd.google.protobuf+gzip\",@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAACA5WPMQ7CMAxF1QoBClvpEDF1pBKtF+5Tpa5JLSUNSlMmbsClGDhVJwJMsLFYlr/037O4JUJqZ9SgkSvDQyj2HakOXUdlZkUlJPbeWZ5srZ3ThkbnkWp0NtvwcPIK3lPeH6tilR21g9Hj5wZomIYAaDvgMTICgeEWWhWwb5THni8UW3fL9ZzIOSlScRXbH5m4lRn+63H48lBT6JuR/IWRgO3ZgI3vmZhyePEX61zmRfoEFs2bKgwBAAA=\"@@@",
+      "@@@STEP_LOG_LINE@json.input@      },@@@",
+      "@@@STEP_LOG_LINE@json.input@      \"parent\": \"invocations/build:8945511751514863184\"@@@",
+      "@@@STEP_LOG_LINE@json.input@    }@@@",
+      "@@@STEP_LOG_LINE@json.input@  ]@@@",
+      "@@@STEP_LOG_LINE@json.input@}@@@",
+      "@@@STEP_LOG_END@json.input@@@"
+    ]
+  },
+  {
     "name": "$result"
   }
 ]
