@@ -215,9 +215,6 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 		totalTestCount = totalTestCount + currTestCount
 		totalFailedTestCount = totalFailedTestCount + currFailedTestCount
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
-		// driver isn't reporting module name right so hardcode to 0 temporarily
-		currFailedTestRunCount = 0
-		totalFailedTestRunCount = 0
 		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
 		taskState := common.TaskCompletedState
 		if err := results.GetProvisionErrIfAny(); err != nil {
@@ -228,8 +225,6 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 			testJobEventState = common.TaskErrorState
 		}
 
-		// driver isn't reporting module name right so hardcode to 0 temporarily
-		totalFailedTestRunCount = 0
 		// As no rety is enabled now, different results means different shards/requests
 		task := &common.TestTaskMessage{
 			Id:                results.Key,
@@ -244,9 +239,9 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 				{
 					Id:                   fmt.Sprintf("%s_%d", results.Key, results.BuildID),
 					TestTaskAttemptState: taskState,
-					TotalTestCount:       int64(totalTestCount),
-					FailedTestCount:      int64(totalFailedTestCount),
-					FailedTestRunCount:   int64(totalFailedTestRunCount),
+					TotalTestCount:       int64(currTestCount),
+					FailedTestCount:      int64(currFailedTestCount),
+					FailedTestRunCount:   int64(currFailedTestRunCount),
 					CreationTimestamp:    results.CreationTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
 					StartTimestamp:       results.StartTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
 					EndTimestamp:         results.EndTimestamp.UTC().Format(common.ATPSupportedTimeFormat),
@@ -260,7 +255,6 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	}
 
 	// update test job event
-	// TODO (azrahman:atp): curate the states based on real state of test results
 	currTestJobEvent.State = testJobEventState
 	currTestJobEvent.TotalTestCount = int64(totalTestCount)
 	currTestJobEvent.FailedTestCount = int64(totalFailedTestCount)

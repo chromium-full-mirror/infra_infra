@@ -124,6 +124,10 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 		}
 
 		totalFailedTestRunCount = len(testCasesNames) - testCasesFoundInResutls
+		// totalFailedTestRunCount cannot be negative
+		if totalFailedTestRunCount < 0 {
+			totalFailedTestRunCount = 0
+		}
 
 		return totalTestCount, totalFailedTestCount, totalFailedTestRunCount
 	}
