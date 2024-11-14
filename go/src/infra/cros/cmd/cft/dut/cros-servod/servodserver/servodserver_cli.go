@@ -30,6 +30,7 @@ import (
 const (
 	SatlabRPCServer = "satlab_rpcserver:6003"
 	dockerHost      = "tcp://192.168.231.1:2375"
+	satlab          = "satlab"
 )
 
 func (s *ServodService) getDockerClient() (*dc.Client, error) {
@@ -122,7 +123,37 @@ func (s *ServodService) startServodOnSatlab(servodDockerContainerName string) er
 	if err != nil {
 		return fmt.Errorf("could not get ip address of servod container on satlab")
 	}
-	s.logger.Println("Servod cotnainer started via satlabrpc.")
+	s.logger.Println("Servod container started via satlabrpc.")
+	return nil
+}
+
+func (s *ServodService) StartServo(a model.CliArgs) error {
+	if strings.Contains(a.ServodDockerContainerName, satlab) {
+		return s.startServodOnSatlab(a.ServodDockerContainerName)
+	}
+	return s.startServoLabStation(a)
+}
+
+func (s *ServodService) startServoLabStation(a model.CliArgs) error {
+
+	var bOut bytes.Buffer
+	var bErr bytes.Buffer
+	var err error
+	command, err := s.getStartServodCmdLabstation(a)
+	if err != nil {
+		return err
+	}
+	bOut, bErr, err = s.commandexecutor.Run(a.ServoHostPath, command, nil, false)
+	if err != nil && strings.Contains(bErr.String(), jobRunning) {
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
+	}
+	command = fmt.Sprintf("servodtool instance wait-for-active --timeout 60 -p %v", a.ServodPort)
+	bOut, bErr, err = s.commandexecutor.Run(a.ServoHostPath, command, nil, false)
+	if !strings.Contains(bOut.String(), ready) {
+		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
+	}
 	return nil
 }
 
@@ -136,21 +167,11 @@ func (s *ServodService) RunCli(cs model.CliSubcommand, a model.CliArgs, stdin io
 
 	command := ""
 	switch cs {
-	case model.CliStartServod:
-		if strings.Contains(a.ServodDockerContainerName, "satlab") {
-			s.logger.Println("Calling startServodOnSatlab")
-			return bOut, bErr, s.startServodOnSatlab(a.ServodDockerContainerName)
-		} else {
-			command, err = s.getStartServodCommand(a)
-			if err != nil {
-				return bOut, bErr, err
-			}
-		}
 	case model.CliStopServod:
 		if a.ServodDockerContainerName != "" && strings.Contains(a.ServodDockerContainerName, "satlab") {
 			return bOut, bErr, s.stopServodOnSatlab(context.Background(), a.ServodDockerContainerName)
 		}
-		command = s.getStopServodCommand(a)
+		command = fmt.Sprintf("stop servod PORT=%d", a.ServodPort)
 	case model.CliExecCmd:
 		command = s.getExecCmdCommand(a)
 	case model.CliCallServod:
@@ -169,10 +190,8 @@ func (s *ServodService) RunCli(cs model.CliSubcommand, a model.CliArgs, stdin io
 	return bOut, bErr, nil
 }
 
-// getStartServodCommand returns either a "docker run" command when
-// ServodDockerImagePath is specified or a "start servod" command
-// when ServodDockerImagePath is empty.
-func (s *ServodService) getStartServodCommand(a model.CliArgs) (string, error) {
+// getStartServodCommand returns either a start servo command for labstation
+func (s *ServodService) getStartServodCmdLabstation(a model.CliArgs) (string, error) {
 	if a.Board == "" {
 		return "", errors.Reason("Board not specified").Err()
 	}
@@ -182,17 +201,7 @@ func (s *ServodService) getStartServodCommand(a model.CliArgs) (string, error) {
 	if a.SerialName == "" {
 		return "", errors.Reason("SerialName not specified").Err()
 	}
-	command := ""
-	if a.ServodDockerImagePath != "" {
-		if a.ServodDockerContainerName == "" {
-			return "", errors.Reason("ServodDockerContainerName not specified").Err()
-		}
-		command = fmt.Sprintf("docker run -d --network host --name %s %s --cap-add=NET_ADMIN --volume=/dev:/dev --privileged %s /start_servod.sh",
-			a.ServodDockerContainerName, getStartServodEnv(a, "--env "), a.ServodDockerImagePath)
-	} else {
-		command = fmt.Sprintf("start servod %s", getStartServodEnv(a, ""))
-	}
-	return command, nil
+	return fmt.Sprintf("start servod %s", getStartServodEnv(a, "")), nil
 }
 
 // getStartServodEnv returns environment variables as a string.
@@ -215,20 +224,6 @@ func getStartServodEnv(a model.CliArgs, envPrefix string) string {
 		env = fmt.Sprintf("%s %sREC_MODE=%s", env, envPrefix, a.RecoveryMode)
 	}
 	return env
-}
-
-// getStopServodCommand returns either a "docker stop" command when
-// ServodDockerContainerName is specified or a "stop servod" command
-// when ServodDockerContainerName is empty.
-func (s *ServodService) getStopServodCommand(a model.CliArgs) string {
-	command := ""
-	if a.ServodDockerContainerName != "" {
-		command = fmt.Sprintf("docker exec -d %s /stop_servod.sh && docker stop %s",
-			a.ServodDockerContainerName, a.ServodDockerContainerName)
-	} else {
-		command = fmt.Sprintf("stop servod PORT=%d", a.ServodPort)
-	}
-	return command
 }
 
 // getExecCmdCommand returns either a "docker exec" command when

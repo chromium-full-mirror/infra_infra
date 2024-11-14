@@ -9,15 +9,16 @@ import (
 	"context"
 	"io"
 	"log"
+	"strings"
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"golang.org/x/crypto/ssh"
+	"go.chromium.org/chromiumos/test/servod/cmd/mock_commandexecutor"
 
+	"github.com/golang/mock/gomock"
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/servod/cmd/mock_commandexecutor"
 	"go.chromium.org/luci/common/errors"
+	"golang.org/x/crypto/ssh"
 )
 
 // Tests that servod starts successfully.
@@ -31,6 +32,14 @@ func TestServodServer_StartServodSuccess(t *testing.T) {
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
 			var bOut, bErr bytes.Buffer
 			bOut.Write([]byte("success!"))
+			bErr.Write([]byte("not failed!"))
+			return bOut, bErr, nil
+		},
+	)
+	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq("servodtool instance wait-for-active --timeout 60 -p 0"), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
+		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
+			var bOut, bErr bytes.Buffer
+			bOut.Write([]byte("success ready!"))
 			bErr.Write([]byte("not failed!"))
 			return bOut, bErr, nil
 		},
@@ -96,8 +105,8 @@ func TestServodServer_StartServodFailure(t *testing.T) {
 		t.Fatalf("Should have failed at api.ExecCmd.")
 	}
 
-	if err.Error() != "error message" {
-		t.Fatalf("Expecting Error to be \"error message\", instead got %v", err.Error())
+	if !strings.Contains(err.Error(), "error while running command start servod") {
+		t.Fatalf("Expecting Error to be \"error while running command start servod\", instead got %v", err.Error())
 	}
 
 	switch op.Result.(type) {

@@ -29,6 +29,11 @@ import (
 	"infra/cros/cmd/cft/dut/cros-servod/ssh"
 )
 
+const (
+	jobRunning = "Job is already running"
+	ready      = "ready"
+)
+
 // ServodService implementation of servod_service.proto
 type ServodService struct {
 	manager         *lro.Manager
@@ -75,7 +80,6 @@ func (s *ServodService) StartServod(ctx context.Context, req *api.StartServodReq
 	a := model.CliArgs{
 		ServoHostPath:             req.ServoHostPath,
 		ServodDockerContainerName: req.ServodDockerContainerName,
-		ServodDockerImagePath:     req.ServodDockerImagePath,
 		ServodPort:                req.ServodPort,
 		Board:                     req.Board,
 		Model:                     req.Model,
@@ -86,23 +90,23 @@ func (s *ServodService) StartServod(ctx context.Context, req *api.StartServodReq
 		AllowDualV4:               req.AllowDualV4,
 	}
 
-	_, bErr, err := s.RunCli(model.CliStartServod, a, nil, false)
-	if err != nil && !strings.Contains(bErr.String(), "Job is already running") {
-		s.logger.Println("Failed to run CLI: ", err)
+	err := s.StartServo(a)
+	if err != nil {
+		s.logger.Println("Failed to process StartServo request: ", err)
 		s.manager.SetResult(op.Name, &api.StartServodResponse{
 			Result: &api.StartServodResponse_Failure_{
 				Failure: &api.StartServodResponse_Failure{
-					ErrorMessage: getErrorMessage(bErr, err),
+					ErrorMessage: err.Error(),
 				},
 			},
 		})
 	} else {
+		s.logger.Println("Successfully processed StartServo request.")
 		s.manager.SetResult(op.Name, &api.StartServodResponse{
 			Result: &api.StartServodResponse_Success_{},
 		})
 		err = nil
 	}
-
 	return op, err
 }
 
@@ -236,15 +240,6 @@ func (s *ServodService) CallServod(ctx context.Context, req *api.CallServodReque
 	}, nil
 }
 
-// getErrorMessage returns either Stderr output or error message
-func getErrorMessage(bErr bytes.Buffer, err error) string {
-	errorMessage := bErr.String()
-	if errorMessage == "" {
-		errorMessage = err.Error()
-	}
-	return errorMessage
-}
-
 // LogCheckPoint will create checkpoint certain files so that some files
 // can be saved partially when SaveLogs is called.
 // For example, /var/log/messages in a labstation can be
@@ -269,6 +264,15 @@ func (s *ServodService) LogCheckPoint(ctx context.Context, req *api.LogCheckPoin
 func (s *ServodService) SaveLogs(ctx context.Context, req *api.SaveLogsRequest) (*api.SaveLogsResponse, error) {
 	s.logger.Printf("Received api.SaveLogsRequest: %#v\n", req)
 	return nil, errors.New("the service SaveLogs has not be implemented")
+}
+
+// getErrorMessage returns either Stderr output or error message
+func getErrorMessage(bErr bytes.Buffer, err error) string {
+	errorMessage := bErr.String()
+	if errorMessage == "" {
+		errorMessage = err.Error()
+	}
+	return errorMessage
 }
 
 // getExitInfo extracts exit info from Session Run's error

@@ -9,12 +9,14 @@ import (
 	"context"
 	"io"
 	"log"
+	"strings"
 	"testing"
 
-	"github.com/golang/mock/gomock"
+	"infra/cros/cmd/cft/dut/cros-servod/model"
 
 	"infra/cros/cmd/cft/dut/cros-servod/mock_commandexecutor"
-	"infra/cros/cmd/cft/dut/cros-servod/model"
+
+	"github.com/golang/mock/gomock"
 )
 
 // Tests that servod starts successfully.
@@ -35,6 +37,14 @@ func TestServodCLI_StartServodSuccess(t *testing.T) {
 		},
 	)
 
+	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq("servodtool instance wait-for-active --timeout 60 -p 0"), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
+		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
+			var bOut, bErr bytes.Buffer
+			bOut.Write([]byte("success ready!"))
+			bErr.Write([]byte("not failed!"))
+			return bOut, bErr, nil
+		},
+	)
 	ctx := context.Background()
 	var logBuf bytes.Buffer
 	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
@@ -51,17 +61,9 @@ func TestServodCLI_StartServodSuccess(t *testing.T) {
 		SerialName:    "serialname",
 	}
 
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
+	err = srv.StartServo(a)
 	if err != nil {
 		t.Fatalf("Failed at api.RunCli: %v", err)
-	}
-
-	if bErr.String() != "not failed!" {
-		t.Fatalf("Expecting bErr to be \"not failed!\", instead got %v", bErr.String())
-	}
-
-	if string(bOut.String()) != "success!" {
-		t.Fatalf("Expecting bOut to be \"success!\", instead got %v", string(bOut.String()))
 	}
 }
 
@@ -78,6 +80,14 @@ func TestServodCLI_StartServodAllParams(t *testing.T) {
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
 			var bOut, bErr bytes.Buffer
 			bOut.Write([]byte("success!"))
+			bErr.Write([]byte("not failed!"))
+			return bOut, bErr, nil
+		},
+	)
+	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq("servodtool instance wait-for-active --timeout 60 -p 0"), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
+		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
+			var bOut, bErr bytes.Buffer
+			bOut.Write([]byte("success ready!"))
 			bErr.Write([]byte("not failed!"))
 			return bOut, bErr, nil
 		},
@@ -103,109 +113,9 @@ func TestServodCLI_StartServodAllParams(t *testing.T) {
 		RecoveryMode:  "recoveryMode",
 	}
 
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
+	err = srv.StartServo(a)
 	if err != nil {
 		t.Fatalf("Failed at api.RunCli: %v", err)
-	}
-
-	if bErr.String() != "not failed!" {
-		t.Fatalf("Expecting bErr to be \"not failed!\", instead got %v", bErr.String())
-	}
-
-	if string(bOut.String()) != "success!" {
-		t.Fatalf("Expecting bOut to be \"success!\", instead got %v", string(bOut.String()))
-	}
-}
-
-// Tests that Dockerized servod starts successfully.
-func TestServodCLI_StartServodDockerizedSuccess(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
-
-	expectedCmd := "docker run -d --network host --name servodDockerContainerName --env PORT=0 --env BOARD=board --env MODEL=model --env SERIAL=serialname --cap-add=NET_ADMIN --volume=/dev:/dev --privileged servodDockerImagePath /start_servod.sh"
-
-	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
-		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
-			var bOut, bErr bytes.Buffer
-			bOut.Write([]byte("success!"))
-			bErr.Write([]byte("not failed!"))
-			return bOut, bErr, nil
-		},
-	)
-
-	ctx := context.Background()
-	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
-	defer destructor()
-	if err != nil {
-		t.Fatalf("Failed to create new ServodService: %v", err)
-	}
-
-	a := model.CliArgs{
-		ServoHostPath:             "servoHostPath",
-		ServodDockerImagePath:     "servodDockerImagePath",
-		ServodDockerContainerName: "servodDockerContainerName",
-		ServodPort:                0,
-		Board:                     "board",
-		Model:                     "model",
-		SerialName:                "serialname",
-	}
-
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
-	if err != nil {
-		t.Fatalf("Failed at api.RunCli: %v", err)
-	}
-
-	if bErr.String() != "not failed!" {
-		t.Fatalf("Expecting bErr to be \"not failed!\", instead got %v", bErr.String())
-	}
-
-	if string(bOut.String()) != "success!" {
-		t.Fatalf("Expecting bOut to be \"success!\", instead got %v", string(bOut.String()))
-	}
-}
-
-// Tests that Dockerized servod start requires ServodDockerContainerName as input parameter.
-func TestServodCLI_StartServodDockerizedWithoutContainerName(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
-
-	ctx := context.Background()
-	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
-	defer destructor()
-	if err != nil {
-		t.Fatalf("Failed to create new ServodService: %v", err)
-	}
-
-	a := model.CliArgs{
-		ServoHostPath:         "servoHostPath",
-		ServodDockerImagePath: "servodDockerImagePath",
-		ServodPort:            0,
-		Board:                 "board",
-		Model:                 "model",
-		SerialName:            "serialname",
-	}
-
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
-	if err == nil {
-		t.Fatalf("Should have failed at api.ExecCmd.")
-	}
-
-	if err.Error() != "ServodDockerContainerName not specified" {
-		t.Fatalf("Expecting error reason to be \"ServodDockerContainerName not specified\", instead got %v", err.Error())
-	}
-
-	if bErr.String() != "" {
-		t.Fatalf("Expecting bErr to be \"\", instead got %v", bErr.String())
-	}
-
-	if bOut.String() != "" {
-		t.Fatalf("Expecting bOut to be \"\", instead got %v", bOut.String())
 	}
 }
 
@@ -231,21 +141,13 @@ func TestServodCLI_StartServodWithoutBoard(t *testing.T) {
 		SerialName:    "serialname",
 	}
 
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
+	err = srv.StartServo(a)
 	if err == nil {
 		t.Fatalf("Should have failed at api.ExecCmd.")
 	}
 
 	if err.Error() != "Board not specified" {
 		t.Fatalf("Expecting error reason to be \"Board not specified\", instead got %v", err.Error())
-	}
-
-	if bErr.String() != "" {
-		t.Fatalf("Expecting bErr to be \"\", instead got %v", bErr.String())
-	}
-
-	if bOut.String() != "" {
-		t.Fatalf("Expecting bOut to be \"\", instead got %v", bOut.String())
 	}
 }
 
@@ -271,21 +173,12 @@ func TestServodCLI_StartServodWithoutModel(t *testing.T) {
 		SerialName:    "serialname",
 	}
 
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
+	err = srv.StartServo(a)
 	if err == nil {
 		t.Fatalf("Should have failed at api.ExecCmd.")
 	}
-
-	if err.Error() != "Model not specified" {
+	if !strings.Contains(err.Error(), "Model not specified") {
 		t.Fatalf("Expecting error reason to be \"Model not specified\", instead got %v", err.Error())
-	}
-
-	if bErr.String() != "" {
-		t.Fatalf("Expecting bErr to be \"\", instead got %v", bErr.String())
-	}
-
-	if bOut.String() != "" {
-		t.Fatalf("Expecting bOut to be \"\", instead got %v", bOut.String())
 	}
 }
 
@@ -311,21 +204,13 @@ func TestServodCLI_StartServodWithoutSerialName(t *testing.T) {
 		Model:         "model",
 	}
 
-	bOut, bErr, err := srv.RunCli(model.CliStartServod, a, nil, false)
+	err = srv.StartServo(a)
 	if err == nil {
 		t.Fatalf("Should have failed at api.ExecCmd.")
 	}
 
 	if err.Error() != "SerialName not specified" {
 		t.Fatalf("Expecting error reason to be \"SerialName not specified\", instead got %v", err.Error())
-	}
-
-	if bErr.String() != "" {
-		t.Fatalf("Expecting bErr to be \"\", instead got %v", bErr.String())
-	}
-
-	if bOut.String() != "" {
-		t.Fatalf("Expecting bOut to be \"\", instead got %v", bOut.String())
 	}
 }
 
@@ -358,52 +243,6 @@ func TestServodCLI_StopServodSuccess(t *testing.T) {
 	a := model.CliArgs{
 		ServoHostPath: "servoHostPath",
 		ServodPort:    0,
-	}
-
-	bOut, bErr, err := srv.RunCli(model.CliStopServod, a, nil, false)
-	if err != nil {
-		t.Fatalf("Failed at api.RunCli: %v", err)
-	}
-
-	if bErr.String() != "not failed!" {
-		t.Fatalf("Expecting bErr to be \"not failed!\", instead got %v", bErr.String())
-	}
-
-	if string(bOut.String()) != "success!" {
-		t.Fatalf("Expecting bOut to be \"success!\", instead got %v", string(bOut.String()))
-	}
-}
-
-// Tests that Dockerized servod stops successfully.
-func TestServodCLI_StopServodDockerizedSuccess(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
-
-	expectedCmd := "docker exec -d servodDockerContainerName /stop_servod.sh && docker stop servodDockerContainerName"
-
-	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
-		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
-			var bOut, bErr bytes.Buffer
-			bOut.Write([]byte("success!"))
-			bErr.Write([]byte("not failed!"))
-			return bOut, bErr, nil
-		},
-	)
-
-	ctx := context.Background()
-	var logBuf bytes.Buffer
-	srv, destructor, err := NewServodService(ctx, log.New(&logBuf, "", log.LstdFlags|log.LUTC), mce)
-	defer destructor()
-	if err != nil {
-		t.Fatalf("Failed to create new ServodService: %v", err)
-	}
-
-	a := model.CliArgs{
-		ServoHostPath:             "servoHostPath",
-		ServodDockerContainerName: "servodDockerContainerName",
-		ServodPort:                0,
 	}
 
 	bOut, bErr, err := srv.RunCli(model.CliStopServod, a, nil, false)
