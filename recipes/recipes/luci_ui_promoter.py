@@ -70,13 +70,11 @@ def RunSteps(api):
 
   # Bootstrap nodejs at that version and run LUCI UI integration tests.
   luci_ui_dir = luci_go_dir / 'milo' / 'ui'
-  with api.nodejs(version), api.context(cwd=luci_ui_dir):
+  tarball_dist_dir = extract_dir / 'service-ui' / 'ui' / 'dist'
+  with api.nodejs(version), api.context(
+      cwd=luci_ui_dir, env={'VITE_LOCAL_BASE_OUT_DIR': tarball_dist_dir}):
     api.step('npm ci', ['npm', 'ci'])
-    tarball_out_dir = extract_dir / 'ui' / 'out'
-    api.step(
-        'e2e',
-        api.resultdb.wrap(
-            ['VITE_LOCAL_BASE_OUT_DIR=' + str(tarball_out_dir), 'make', 'e2e']))
+    api.step('e2e', api.resultdb.wrap(['make', 'e2e']))
 
   # TODO: promote the staging version to production
 
