@@ -51,7 +51,7 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 		return nil, err
 	}
 
-	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Prod)
+	s, err := androidService(ctx, m.GetAtpEnvironment())
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +61,16 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 		results:  req.GetTestResponse().GetGivenTestResults(),
 		service:  s,
 	}, nil
+}
+
+func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnvironment) (*androidlib.Service, error) {
+	log.Printf("Getting android service for env: %s", env.String())
+	switch env {
+	case metadata.PublishAntsMetadata_ENV_STAGING:
+		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Staging)
+	default:
+		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Prod)
+	}
 }
 
 func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
