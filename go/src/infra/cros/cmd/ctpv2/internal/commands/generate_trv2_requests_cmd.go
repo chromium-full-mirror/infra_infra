@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -26,6 +27,10 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
 )
+
+// GenerateTrv2ReqCmdLock ensures only one instance of this cmd execution at a time between all async suite.
+// b/377196624 - to avoid bot run oom as this cmd execution is memory intensive.
+var GenerateTrv2ReqCmdLock sync.Mutex
 
 // GenerateTrv2RequestsCmd represents scheduling task(s) cmd.
 type GenerateTrv2RequestsCmd struct {
@@ -178,6 +183,10 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 
 // Execute executes the command.
 func (cmd *GenerateTrv2RequestsCmd) Execute(ctx context.Context) error {
+	// acquire lock to ensure single instance execution
+	GenerateTrv2ReqCmdLock.Lock()
+	defer GenerateTrv2ReqCmdLock.Unlock()
+
 	var err error
 	step, ctx := build.StartStep(ctx, "Generate Trv2 Requests")
 	defer func() { step.End(err) }()
