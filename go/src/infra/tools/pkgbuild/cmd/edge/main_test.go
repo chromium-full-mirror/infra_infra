@@ -33,6 +33,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tools/pkgbuild/pkg/spec"
+	"infra/tools/pkgbuild/pkg/spec/loader"
+	"infra/tools/pkgbuild/pkg/spec/source"
 	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
@@ -69,10 +71,10 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		buildPlatform := generators.CurrentPlatform()
 		cipdPlatform := platform.CurrentPlatform()
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
+		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
+		assert.Loosely(t, err, should.BeNil)
+		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
 
@@ -153,10 +155,10 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		cipdHost := "linux-amd64"
 		cipdTarget := "linux-arm64"
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
+		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
+		assert.Loosely(t, err, should.BeNil)
+		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdHost, cipdTarget}, true, false)
+		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
 
@@ -243,10 +245,10 @@ func TestRootPackges(t *testing.T) {
 		buildPlatform := generators.NewPlatform("linux", "amd64")
 		cipdPlatform := "linux-amd64"
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
+		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
+		assert.Loosely(t, err, should.BeNil)
+		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
 
@@ -312,10 +314,10 @@ func TestRootPackges(t *testing.T) {
 		cipdHost := "linux-amd64"
 		cipdTarget := "linux-arm64"
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
+		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
+		assert.Loosely(t, err, should.BeNil)
+		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdHost, cipdTarget}, true, false)
+		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
 
@@ -387,10 +389,10 @@ func TestPackageSources(t *testing.T) {
 		buildPlatform := generators.NewPlatform("linux", "amd64")
 		cipdPlatform := "linux-amd64"
 
-		loader, err := spec.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
-		if err != nil {
-			t.Fatalf("failed to init spec loader: %v", err)
-		}
+		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
+		assert.Loosely(t, err, should.BeNil)
+		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
 
@@ -437,7 +439,7 @@ func TestPackageSources(t *testing.T) {
 
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
-					Name:    "mock/sources/url/static_libs/curl/" + cipdPlatform,
+					Name:    "mock/sources/http/static_libs/curl",
 					Version: "3@7.59.0",
 				},
 				ContextInfo: "curl:arch=amd64,os=linux",
@@ -452,7 +454,7 @@ func TestPackageSources(t *testing.T) {
 
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
-					Name:    "mock/sources/script/tools/go/" + cipdPlatform,
+					Name:    "mock/sources/http/tools/go",
 					Version: "3@script-version",
 				},
 				ContextInfo: "go:arch=amd64,os=linux",
@@ -467,7 +469,7 @@ func verifySource(t testing.TB, pkgs []actions.Package, metadata *core.Action_Me
 	name := fmt.Sprintf("%s_source", pkg.Derivation.Name)
 	for _, p := range pkg.BuildDependencies {
 		if p.Derivation.Name == name {
-			assert.Loosely(t, p.Action.Metadata, should.Resemble(metadata), truth.LineContext())
+			assert.Loosely(t, p.Action.Metadata, should.Match(metadata), truth.LineContext())
 			return
 		}
 	}
@@ -476,22 +478,46 @@ func verifySource(t testing.TB, pkgs []actions.Package, metadata *core.Action_Me
 
 type MockSourceResolver struct{}
 
-func (*MockSourceResolver) ResolveGitSource(git *spec.GitSource) (spec.GitSourceInfo, error) {
-	return spec.GitSourceInfo{
-		Tag:    "git-tag",
-		Commit: "commit",
-	}, nil
-}
-func (*MockSourceResolver) ResolveScriptSource(cipdHostPlatform, dir string, script *spec.ScriptSource) (spec.ScriptSourceInfo, error) {
-	return spec.ScriptSourceInfo{
-		Version: "script-version",
-		URL:     []string{"url"},
-		Name:    []string{"name"},
-	}, nil
+func (*MockSourceResolver) Resolve(ctx context.Context, plat, dir string, src *spec.Spec_Create_Source) (*source.SourceInfo, error) {
+	switch src.Method.(type) {
+	case *spec.Spec_Create_Source_Git:
+		git := src.GetGit()
+		return &source.SourceInfo{
+			Version: "git-tag",
+			Source: &source.SourceInfo_Git_{
+				Git: &source.SourceInfo_Git{
+					Url:    git.Repo,
+					Commit: "git-commit",
+				},
+			},
+		}, nil
+	case *spec.Spec_Create_Source_Script:
+		return &source.SourceInfo{
+			Version: "script-version",
+			Source: &source.SourceInfo_Http{
+				Http: &source.SourceInfo_HTTP{
+					Url:  []string{"url"},
+					Name: []string{"name"},
+				},
+			},
+		}, nil
+	case *spec.Spec_Create_Source_Url:
+		u := src.GetUrl()
+		return &source.SourceInfo{
+			Version: u.Version,
+			Source: &source.SourceInfo_Http{
+				Http: &source.SourceInfo_HTTP{
+					Url: []string{u.DownloadUrl},
+					Ext: u.Extension,
+				},
+			},
+		}, nil
+	}
+	return nil, fmt.Errorf("unkown source type")
 }
 
-func MockSpecLoaderConfig(targetPlatform string) *spec.SpecLoaderConfig {
-	return &spec.SpecLoaderConfig{
+func MockSpecLoaderConfig(targetPlatform string) *loader.SpecLoaderConfig {
+	return &loader.SpecLoaderConfig{
 		CIPDPackagePrefix:     "mock",
 		CIPDSourceCachePrefix: "sources",
 		CIPDTargetPlatform:    targetPlatform,

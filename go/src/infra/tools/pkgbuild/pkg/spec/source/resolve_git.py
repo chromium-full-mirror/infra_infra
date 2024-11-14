@@ -12,11 +12,13 @@ import operator
 import re
 import subprocess
 import sys
+
+from pkg_resources.extern import packaging
+
 from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Tuple
-from pkg_resources.extern import packaging
 
 
 class Operator(enum.Enum):
@@ -228,12 +230,15 @@ def main() -> int:
   src = GitSource(**raw)
 
   if src.fixed_commit:
-    tag, commit = src.fixed_commit, src.fixed_commit
+    version, commit = src.fixed_commit, src.fixed_commit
   else:
     versions = get_versions(src)
-    tag, commit = resolve_latest(versions)
+    version, commit = resolve_latest(versions)
 
-  json.dump({'tag': tag, 'commit': commit}, sys.stdout)
+  json.dump({
+      'version': version,
+      'git': {'url': raw['repo'], 'commit': commit},
+  }, sys.stdout)
   return 0
 
 

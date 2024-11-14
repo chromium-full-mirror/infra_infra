@@ -19,10 +19,20 @@ message Input {
   // Spec pool directory for finding 3pp specs.
   string spec_pool = 4;
 
-  // CIPD service URL for downloading and uploading packages.
-  string cipd_service = 5;
+  // If true, packages will check new versions. Otherwise source lock will be
+  // used. If the package is without both update and source lock, build will
+  // failed.
+  bool update = 10;
+  // If true, packages will be built.
+  bool build = 11;
   // If true, upload packages to CIPD service.
   bool upload = 6;
+
+  // If true, source lock file under the package spec directory will be updated.
+  bool update_source_lock = 9;
+
+  // CIPD service URL for downloading and uploading packages.
+  string cipd_service = 5;
   // The prefix to use for uploading built packages.
   string cipd_package_prefix = 7;
 

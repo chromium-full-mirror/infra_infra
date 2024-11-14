@@ -1,0 +1,36 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package source;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "infra/tools/pkgbuild/pkg/spec/source;source";
+
+// Proto message which reflects the input properties fora the pkgbuild recipe.
+// See more detailed description for each field there.
+message SourceLockFile {
+  map<string, SourceInfo> infos = 1;
+  google.protobuf.Timestamp last_updated = 2;
+}
+
+message SourceInfo {
+  string version = 1;
+  oneof source {
+    Git git = 2;
+    HTTP http = 3;
+  }
+
+  message Git {
+    string url = 1;
+    string commit = 2;
+  }
+  message HTTP {
+    repeated string url = 1;
+    repeated string name = 2;
+    string ext = 3;
+  }
+}

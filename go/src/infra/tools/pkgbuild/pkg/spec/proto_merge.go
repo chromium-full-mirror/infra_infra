@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-// protoMerge merges src into dst, which must be a message with the same descriptor.
+// ProtoMerge merges src into dst, which must be a message with the same descriptor.
 //
 // Populated scalar fields in src are copied to dst, while populated
 // singular messages in src are merged into dst by recursively calling Merge.
@@ -24,7 +24,7 @@ import (
 // list fields in dst. The entries of every map field in src is copied into
 // the corresponding map field in dst, possibly replacing existing entries.
 // The unknown fields of src are appended to the unknown fields of dst.
-func protoMerge(dst, src proto.Message) {
+func ProtoMerge(dst, src proto.Message) {
 	if src == nil {
 		return
 	}

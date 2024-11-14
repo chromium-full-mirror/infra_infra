@@ -4,4 +4,4 @@
 
 //go:generate cproto
 
-package main
+package source

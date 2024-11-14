@@ -34,13 +34,17 @@ func main() {
 	ctx = gologger.StdConfig.Use(ctx)
 	ctx = logging.SetLevel(ctx, logging.Error)
 
+	// TODO(fancl): set update to false by default after we committed locks.
 	app := &Application{
 		LoggingLevel: logging.Error,
 		Input: &Input{
-			TargetPlatform: platform.CurrentPlatform(),
-			CipdService:    chromeinfra.CIPDServiceURL,
-			Upload:         false,
-			SnoopyService:  "http://localhost:11000",
+			TargetPlatform:   platform.CurrentPlatform(),
+			Update:           true,
+			Build:            true,
+			Upload:           false,
+			UpdateSourceLock: false,
+			CipdService:      chromeinfra.CIPDServiceURL,
+			SnoopyService:    "http://localhost:11000",
 		},
 	}
 
@@ -84,27 +88,35 @@ func Main(ctx context.Context, app *Application, args []string) error {
 		names = b.SpecLoader.ListAllByFullName()
 	}
 
-	for _, name := range names {
-		if err := b.Load(ctx, name); err != nil {
-			// Only skip a package if it's directly unavailable without checking
-			// inner errors. A package marked as available on the target platform has
-			// any dependency unavailable shouldn't be skipped.
-			if err == spec.ErrPackageNotAvailable {
-				logging.Infof(ctx, "skip package %s on %s", name, app.TargetPlatform)
-				continue
-			}
-			return errors.Annotate(err, "failed to add %s", name).Err()
-		}
+	// TODO(fancl): for update bot we need all platform listed here, not only
+	// cipd host and cipd target.
+	if err := b.SpecLoader.LoadSourceInfos(ctx, names, []string{b.CIPDHost, b.CIPDTarget}, app.Update, app.UpdateSourceLock); err != nil {
+		return err
 	}
 
-	// Collect errors from build and upload.
-	// We do best effort upload for all built packages even in case BuildAll
-	// returns error.
-	var errs []error
+	var (
+		pkgs []actions.Package
+		errs []error
+	)
 
-	pkgs, err := b.BuildAll(ctx, true)
-	if err != nil {
-		errs = append(errs, errors.Annotate(err, "failed to build some packages").Err())
+	if app.Build {
+		for _, name := range names {
+			if err := b.Load(ctx, name); err != nil {
+				// Only skip a package if it's directly unavailable without checking
+				// inner errors. A package marked as available on the target platform has
+				// any dependency unavailable shouldn't be skipped.
+				if err == spec.ErrPackageNotAvailable {
+					logging.Debugf(ctx, "skip package %s on %s", name, app.TargetPlatform)
+					continue
+				}
+				return errors.Annotate(err, "failed to add %s", name).Err()
+			}
+		}
+
+		pkgs, err = b.BuildAll(ctx, true)
+		if err != nil {
+			errs = append(errs, errors.Annotate(err, "failed to build some packages").Err())
+		}
 	}
 
 	if app.Upload {

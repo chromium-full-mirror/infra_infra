@@ -33,7 +33,7 @@ import (
 	"go.chromium.org/luci/provenance/api/snooperpb/v1"
 	"go.chromium.org/luci/provenance/client"
 
-	"infra/tools/pkgbuild/pkg/spec"
+	"infra/tools/pkgbuild/pkg/spec/loader"
 )
 
 type Application struct {
@@ -70,8 +70,12 @@ func (a *Application) Parse(args []string) error {
 	fs.StringVar(&a.StorageDir, "storage-dir", a.StorageDir, "Required; Local storage directory for build and cache packages.")
 	fs.StringVar(&a.SpecPool, "spec-pool", a.SpecPool, "Required; Spec pool directory for finding 3pp specs.")
 
+	fs.BoolVar(&a.Update, "update", a.Update, "If true, packages will be updated to latest version.")
+	fs.BoolVar(&a.Build, "build", a.Build, "If true, packages will be built.")
+	fs.BoolVar(&a.Upload, "upload", a.Upload, "If true, packages will be uploaded to CIPD.")
+
+	fs.BoolVar(&a.UpdateSourceLock, "update-source-lock", a.UpdateSourceLock, "If true, source lock file under the package spec directory will be updated.")
 	fs.StringVar(&a.CipdService, "cipd-service", a.CipdService, "CIPD service URL for downloading and uploading packages.")
-	fs.BoolVar(&a.Upload, "upload", a.Upload, "If upload is true, packages will be uploaded to CIPD.")
 	fs.StringVar(&a.CipdPackagePrefix, "cipd-package-prefix", a.CipdPackagePrefix, "Required; The prefix to use for uploading built packages.")
 
 	fs.StringVar(&a.SnoopyService, "snoopy-service", a.SnoopyService, "Snoopy service URL for reporting artifact hash.")
@@ -98,6 +102,15 @@ func (a *Application) Parse(args []string) error {
 		return fmt.Errorf("storage-dir and spec-pool are required")
 	}
 
+	if !a.Update && a.UpdateSourceLock {
+		return fmt.Errorf("-update=true is required for updating source lock file")
+	}
+
+	// Maybe separate build and upload?
+	if !a.Build && a.Upload {
+		return fmt.Errorf("-build=true is required for -upload")
+	}
+
 	if a.CipdPackagePrefix == "" {
 		fs.Usage()
 		return fmt.Errorf("cipd-package-prefix is required")
@@ -117,13 +130,9 @@ func (a *Application) Parse(args []string) error {
 // NewBuilder creates the PackageBuilder used for building packages based on
 // the configuration and platform.
 func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
-	vpythonSpecPath := filepath.Join(a.SpecPool, ".vpython3")
-	if _, err := os.Stat(vpythonSpecPath); err != nil {
-		return nil, errors.Annotate(err, "failed to find vpython3 specs").Err()
-	}
-	specLoaderCfg := spec.DefaultSpecLoaderConfig(vpythonSpecPath, a.TargetPlatform)
+	specLoaderCfg := loader.DefaultSpecLoaderConfig(a.TargetPlatform)
 	specLoaderCfg.CIPDPackagePrefix = a.CipdPackagePrefix
-	loader, err := spec.NewSpecLoader(a.SpecPool, specLoaderCfg)
+	loader, err := loader.NewSpecLoader(a.SpecPool, specLoaderCfg)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load specs").Err()
 	}
@@ -297,7 +306,7 @@ type PackageBuilder struct {
 	CipdService string
 	CIPDHost    string
 	CIPDTarget  string
-	SpecLoader  *spec.SpecLoader
+	SpecLoader  *loader.SpecLoader
 
 	BuildTempDir string
 
@@ -343,11 +352,11 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 		return nil, err
 	}
 
-	var newPkgs []actions.Package
-	if !skipUploaded {
-		newPkgs = slices.Clone(pkgs)
-	} else if newPkgs, err = b.filterUploaded(ctx, pkgs); err != nil {
-		return nil, err
+	newPkgs := slices.Clone(pkgs)
+	if skipUploaded {
+		if newPkgs, err = b.filterUnuploaded(ctx, newPkgs); err != nil {
+			return nil, err
+		}
 	}
 
 	executor := b.packageExecutor
@@ -366,8 +375,8 @@ func (b *PackageBuilder) BuildAll(ctx context.Context, skipUploaded bool) ([]act
 	return pkgs, nil
 }
 
-// filterUploaded filters out package has been built and available in cipd.
-func (b *PackageBuilder) filterUploaded(ctx context.Context, pkgs []actions.Package) (ret []actions.Package, err error) {
+// filterUnuploaded filters out package has been built and available in cipd.
+func (b *PackageBuilder) filterUnuploaded(ctx context.Context, pkgs []actions.Package) (ret []actions.Package, err error) {
 	step, ctx := build.StartStep(ctx, "compute packages to be built")
 	defer func() { step.End(err) }()
 

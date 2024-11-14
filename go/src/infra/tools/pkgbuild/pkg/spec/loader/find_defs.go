@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package spec
+package loader
 
 import (
 	"fmt"
@@ -16,6 +16,8 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 
 	"go.chromium.org/luci/cipkg/base/generators"
+
+	"infra/tools/pkgbuild/pkg/spec"
 )
 
 // Run `protoc -I../recipes --go_out=src ../recipes/recipe_modules/support_3pp/spec.proto`
@@ -27,7 +29,7 @@ type PackageDef struct {
 	// 2. We should always use a package's full name for referencing.
 	packageName string
 
-	Spec      *Spec
+	Spec      *spec.Spec
 	Dir       string
 	Generator generators.Generator
 }
@@ -66,6 +68,7 @@ func (p *PackageDef) FullNameWithOverride() string {
 	return path.Join(upload.PkgPrefix, name)
 }
 
+// CIPDPath returns the path for cipd package.
 func (p *PackageDef) CIPDPath(prefix, host string) string {
 	u := path.Join(prefix, p.FullNameWithOverride())
 	if !p.Spec.GetUpload().GetUniversal() {
@@ -74,6 +77,7 @@ func (p *PackageDef) CIPDPath(prefix, host string) string {
 	return u
 }
 
+// LoadPackageDef loads package spec from directory.
 func LoadPackageDef(dir, name string) (*PackageDef, error) {
 	f, err := os.Open(filepath.Join(dir, "3pp.pb"))
 	if err != nil {
@@ -84,7 +88,7 @@ func LoadPackageDef(dir, name string) (*PackageDef, error) {
 		return nil, fmt.Errorf("failed to read 3pp spec: %w", err)
 	}
 
-	var spec Spec
+	var spec spec.Spec
 	if err := prototext.Unmarshal(b, &spec); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal 3pp spec: %w", err)
 	}
