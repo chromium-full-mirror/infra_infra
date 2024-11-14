@@ -51,7 +51,7 @@ redirect_app = redirect.GenerateRedirectApp()
 app.wsgi_app = redirect.RedirectMiddleware(app.wsgi_app, redirect_app.wsgi_app)
 
 registerpages.ServletRegistry().Register(services, app)
-registerpages.RegisterEndpointsUrls(app)
+# registerpages.RegisterEndpointsUrls(app)
 registerpages.RegisterTeardown(app)
 
 gae_ts_mon.initialize_prod(app)

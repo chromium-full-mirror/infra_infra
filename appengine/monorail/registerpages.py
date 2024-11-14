@@ -116,10 +116,10 @@ class ServletRegistry(object):
     # self._RegisterUserUrls(services)
     self._RegisterTaskUrl(services)
     self._RegisterCronUrl(services)
-    self._RegisterBackendUrl(services)
+    # self._RegisterBackendUrl(services)
     self._RegisterMONSetUrl(services)
     self._RegisterAHUrl(services)
-    self._RegisterPrpcUrl(services)
+    # self._RegisterPrpcUrl(services)
     # self._RegisterWebComponentsUrl(services)
     self._RegisterFlaskUrlRules(flask_instance, self.routes)
 
