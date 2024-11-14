@@ -20,7 +20,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Is not cloudbot",
-				"Is not a partner side",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{
@@ -42,7 +41,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Is not cloudbot",
-				"Is not a partner side",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
@@ -65,7 +63,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Is not cloudbot",
-				"Is not a partner side",
 				"CrosToolRunner is up",
 			},
 			Dependencies: []string{

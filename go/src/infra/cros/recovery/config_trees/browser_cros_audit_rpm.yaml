@@ -20,11 +20,6 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
-            - name: Is not a partner side (RUN_ONCE)
-              exec_name: env_is_not_os_partner_namespace
-              docs:
-                - Check if the process run for partner.
-                - Detection based on usage namespace of the context.
             - name: CrosToolRunner is up
               exec_name: ctr_is_up
               docs:
@@ -44,11 +39,6 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
-            - name: Is not a partner side (RUN_ONCE)
-              exec_name: env_is_not_os_partner_namespace
-              docs:
-                - Check if the process run for partner.
-                - Detection based on usage namespace of the context.
             - name: Testbed has Servo (RUN_ONCE)
               exec_name: dut_servo_host_present
             - name: CrosToolRunner is up
