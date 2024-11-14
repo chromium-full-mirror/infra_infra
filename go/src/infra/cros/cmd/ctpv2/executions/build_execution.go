@@ -264,11 +264,8 @@ func executeFiltersInLuciBuild(
 
 		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIdStr, TestJob: inputTestJobMsg, State: "QUEUED", Type: "STATE_CHANGED"}
 		// create pubsub client
-		// Default to prod
-		atpProjectId := common.ATPSwitcherProjectIDProd
-		if !common.IsProd(buildState.Build().GetBuilder()) {
-			atpProjectId = common.ATPSwitcherProjectIDAlpha
-		}
+		atpProjectId := common.GetAtpProjectID(buildState.Build().GetBuilder())
+		logging.Infof(ctx, "ATP project id that will be used for the run: %s", atpProjectId)
 		client, err := pubsub.NewClient(ctx, atpProjectId)
 		if err != nil {
 			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDProd, err)

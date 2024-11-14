@@ -93,9 +93,9 @@ func (e Environment) String() string {
 }
 
 func GetCTPEnvironment(builderID *buildbucketpb.BuilderID) Environment {
-	if strings.Contains(builderID.Builder, "dev") {
+	if IsDev(builderID) {
 		return Dev
-	} else if strings.Contains(builderID.Builder, "staging") {
+	} else if IsStaging(builderID) {
 		return Staging
 	} else {
 		return Prod
@@ -103,5 +103,24 @@ func GetCTPEnvironment(builderID *buildbucketpb.BuilderID) Environment {
 }
 
 func IsProd(builderID *buildbucketpb.BuilderID) bool {
-	return !(strings.Contains(builderID.Builder, "dev") || strings.Contains(builderID.Builder, "staging"))
+	return !IsDev(builderID) && !IsStaging(builderID)
+}
+
+func IsStaging(builderID *buildbucketpb.BuilderID) bool {
+	return strings.Contains(builderID.Builder, "staging")
+}
+
+func IsDev(builderID *buildbucketpb.BuilderID) bool {
+	return strings.Contains(builderID.Builder, "dev")
+}
+
+func GetAtpProjectID(builderID *buildbucketpb.BuilderID) string {
+	if IsDev(builderID) {
+		return ATPSwitcherProjectIDAlpha
+	} else if IsStaging(builderID) {
+		return ATPSwitcherProjectIDStaging
+	}
+
+	// Default to prod
+	return ATPSwitcherProjectIDProd
 }
