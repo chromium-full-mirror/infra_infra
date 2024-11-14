@@ -301,6 +301,7 @@ func TestUploadInvocationProperties(t *testing.T) {
 			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
 				Properties: []*atp.Property{
+					{Name: "crystalball_ingest", Value: "yes"},
 					{Name: ancestorsPropName, Value: "123"},
 				},
 			},
@@ -319,6 +320,7 @@ func TestUploadInvocationProperties(t *testing.T) {
 			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
 				Properties: []*atp.Property{
+					{Name: "crystalball_ingest", Value: "yes"},
 					{Name: ancestorsPropName, Value: "123,456"},
 				},
 			},
@@ -337,6 +339,7 @@ func TestUploadInvocationProperties(t *testing.T) {
 			wantInv: &atp.Invocation{
 				InvocationId: "I987654321",
 				Properties: []*atp.Property{
+					{Name: "crystalball_ingest", Value: "yes"},
 					{Name: ancestorsPropName, Value: "123"},
 				},
 			},
@@ -344,6 +347,12 @@ func TestUploadInvocationProperties(t *testing.T) {
 		{
 			name:    "envInfoMissing",
 			exeInfo: &artifact.ExecutionInfo{EnvInfo: nil},
+			wantInv: &atp.Invocation{
+				InvocationId: "I987654321",
+				Properties: []*atp.Property{
+					{Name: "crystalball_ingest", Value: "yes"},
+				},
+			},
 		},
 	}
 	for _, tc := range testCases {

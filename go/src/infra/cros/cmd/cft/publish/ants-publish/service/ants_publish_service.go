@@ -144,41 +144,43 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 }
 
 func (aps *AntsPublishService) uploadInvocationProperties() error {
-	var props []*atp.Property
+	// TODO(srinivashegde): Do not enable for all by default.
+	props := []*atp.Property{
+		{Name: "crystalball_ingest", Value: "yes"},
+	}
+
 	envInfo := aps.metadata.GetPrimaryExecutionInfo().GetEnvInfo()
 	if envInfo == nil {
-		log.Println("No env info found. Skipping.")
-		return nil
-	}
-
-	var bbInfo *artifact.BuildbucketInfo
-	switch envInfo.(type) {
-	case *artifact.ExecutionInfo_SatlabInfo:
-		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSatlabInfo().GetBuildbucketInfo()
-	case *artifact.ExecutionInfo_SkylabInfo:
-		bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSkylabInfo().GetBuildbucketInfo()
-	default:
-		return fmt.Errorf("unsupported envInfo: %v", envInfo)
-	}
-
-	ancestorIDs := bbInfo.GetAncestorIds()
-	var err error
-	if len(ancestorIDs) > 0 {
-		ancestors := make([]string, 0, len(ancestorIDs))
-		for _, ancID := range ancestorIDs {
-			ancestors = append(ancestors, strconv.Itoa(int(ancID)))
+		log.Println("No env info found. Skipping env details.")
+	} else {
+		var bbInfo *artifact.BuildbucketInfo
+		switch envInfo.(type) {
+		case *artifact.ExecutionInfo_SatlabInfo:
+			bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSatlabInfo().GetBuildbucketInfo()
+		case *artifact.ExecutionInfo_SkylabInfo:
+			bbInfo = aps.metadata.GetPrimaryExecutionInfo().GetSkylabInfo().GetBuildbucketInfo()
+		default:
+			return fmt.Errorf("unsupported envInfo: %v", envInfo)
 		}
 
-		ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
-		props = append(props, ancestorsProp)
-	}
+		ancestorIDs := bbInfo.GetAncestorIds()
+		if len(ancestorIDs) > 0 {
+			ancestors := make([]string, 0, len(ancestorIDs))
+			for _, ancID := range ancestorIDs {
+				ancestors = append(ancestors, strconv.Itoa(int(ancID)))
+			}
 
-	inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
-	if err != nil {
-		return err
+			ancestorsProp := &atp.Property{Name: ancestorsPropName, Value: strings.Join(ancestors, ",")}
+			props = append(props, ancestorsProp)
+		}
 	}
 
 	if len(props) > 0 {
+		inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
+		if err != nil {
+			return err
+		}
+
 		inv.Properties = append(inv.Properties, props...)
 		_, err = aps.service.InvocationService.Update(aps.metadata.AntsInvocationId, inv)
 		if err != nil {
@@ -187,7 +189,7 @@ func (aps *AntsPublishService) uploadInvocationProperties() error {
 		log.Printf("Added properties to invocation: %v", props)
 	}
 
-	return err
+	return nil
 }
 
 func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
