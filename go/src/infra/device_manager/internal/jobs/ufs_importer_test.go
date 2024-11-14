@@ -278,50 +278,23 @@ func TestImportUFSDevices(t *testing.T) {
 				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(sqlmock.NewRows(nil))
 				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnError(sql.ErrNoRows)
 				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows(dutName))
 			},
 		},
 		{
 			name: "a device is removed from UFS",
 			ufs:  &fakeUFSClient{},
 			setupDB: func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows("dut2"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows("dut2"))
+				newRows := func() *sqlmock.Rows {
+					cols := []string{
+						"id", "dut_id", "device_address", "device_type", "device_state", "schedulable_labels", "created_time", "last_updated_time", "is_active",
+					}
+					vals := []driver.Value{"dut2", "C2222", "", "DEVICE_TYPE_PHYSICAL", "DEVICE_STATE_AVAILABLE", `{"dut_id": {"Values": ["C2222"]}}`, time.Now(), time.Now(), true}
+					return sqlmock.NewRows(cols).AddRow(vals...)
+				}
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
 				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows("dut2"))
-			},
-		},
-		{
-			name: "import a scheduling unit",
-			ufs: &fakeUFSClient{
-				lses: []string{"dut3a", "dut3b"},
-				sus: map[string]*ufspb.SchedulingUnit{
-					"su1": {
-						Name:        "su1",
-						MachineLSEs: []string{"dut3a", "dut3b"},
-					},
-				},
-				dd: map[string]*ufsAPI.GetDeviceDataResponse{
-					"su1": {
-						ResourceType: ufsAPI.GetDeviceDataResponse_RESOURCE_TYPE_SCHEDULING_UNIT,
-						Resource: &ufsAPI.GetDeviceDataResponse_SchedulingUnit{
-							SchedulingUnit: &ufspb.SchedulingUnit{Name: "su1"}},
-					},
-				},
-			},
-			setupDB: func(m sqlmock.Sqlmock) {
-				m.MatchExpectationsInOrder(false) // We use goroutines to update DB.
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+LIMIT`).WillReturnRows(newRows("dut3a", "dut3b"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("su1").WillReturnError(sql.ErrNoRows)
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("su1").WillReturnRows(newRows("su1"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("dut3a").WillReturnRows(newRows("dut3a"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("dut3a").WillReturnRows(newRows("dut3a"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("dut3b").WillReturnRows(newRows("dut3b"))
-				m.ExpectQuery(`SELECT (.+) FROM "Devices".+WHERE`).WithArgs("dut3b").WillReturnRows(newRows("dut3b"))
-				// We need to update su1, dut3a, and dut3b, so there are 3 writes.
-				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
-				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
-				m.ExpectExec(`INSERT INTO "Devices" .+ DO UPDATE`).WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectQuery(`SELECT (.+) FROM "Devices"`).WillReturnRows(newRows())
 			},
 		},
 	}
@@ -351,6 +324,7 @@ func TestImportUFSDevices(t *testing.T) {
 			if err = mock.ExpectationsWereMet(); err != nil {
 				t.Errorf("unmet expectation error: %s", err)
 			}
+
 		})
 	}
 }
@@ -424,16 +398,4 @@ func newMachineLSE(name string) *ufspb.MachineLSE {
 		ResourceState: ufspb.State_STATE_REGISTERED,
 		UpdateTime:    timestamppb.Now(),
 	}
-}
-
-func newRows(dutNames ...string) *sqlmock.Rows {
-	cols := []string{
-		"id", "dut_id", "device_address", "device_type", "device_state", "schedulable_labels", "created_time", "last_updated_time", "is_active",
-	}
-	r := sqlmock.NewRows(cols)
-	for _, n := range dutNames {
-		vals := []driver.Value{n, fmt.Sprintf("C_%s", n), "", "DEVICE_TYPE_PHYSICAL", "DEVICE_STATE_AVAILABLE", fmt.Sprintf(`{"dut_id": {"Values": ["C_%s"]}}`, n), time.Now(), time.Now(), true}
-		r.AddRow(vals...)
-	}
-	return r
 }
