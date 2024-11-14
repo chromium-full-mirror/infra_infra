@@ -233,6 +233,9 @@ const (
 
 	// chromiumHive hive value for a chrome-perf DUT.
 	chromePerfHive string = "chrome-perf"
+
+	// ChromeClankHive hive value for a clank DUT.
+	chromeClankHive string = "chrome-clank"
 )
 
 // GetHiveForDut returns the hive value for a DUT.
@@ -247,6 +250,10 @@ func GetHiveForDut(hostname string, hive string) string {
 	// gTransit DUTs.
 	if gtransitRegex.MatchString(hostname) {
 		return gtransitHive
+	}
+	// Clank DUTs
+	if IsClankHost(hostname) {
+		return chromeClankHive
 	}
 	if IsChromiumLegacyHost(hostname) {
 		return chromiumHive

@@ -48,6 +48,7 @@ const (
 	ChromePool                = "chrome"
 	ChromiumNamePrefix        = "chromium-"
 	ChromeNamePrefix          = "chrome-"
+	ChromeClankPrefix         = "chrome-clank-"
 	ChromePerfNamePrefix      = "chrome-perf-"
 	ChromePerfWaterfallPrefix = "chrome-perf-waterfall-"
 	ChromePerfPinpointPrefix  = "chrome-perf-pinpoint-"
@@ -214,6 +215,11 @@ func IsChromiumLegacyHost(name string) bool {
 // IsChromePerfHost returns if a host is a legacy browser perf host used internally
 func IsChromePerfHost(name string) bool {
 	return strings.HasPrefix(name, ChromePerfNamePrefix)
+}
+
+// IsClankHost returns if a host is a DUT used for clank
+func IsClankHost(name string) bool {
+	return strings.HasPrefix(name, ChromeClankPrefix)
 }
 
 // IsInChromiumPool checks if any chromium pool exist in the given pool labels.
