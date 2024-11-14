@@ -67,7 +67,7 @@ func LuciBuildExecution() {
 			}
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.PartnerConfig.Value)
+			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.GetPartnerConfig().GetValue())
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
