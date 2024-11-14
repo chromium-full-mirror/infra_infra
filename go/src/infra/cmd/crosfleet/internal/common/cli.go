@@ -124,18 +124,21 @@ func protoJSON(message proto.Message) []byte {
 
 // EnvFlags controls selection of the environment: either prod (default) or dev.
 type EnvFlags struct {
-	dev bool
+	dev, staging bool
 }
 
 // Register parses the -dev flag.
 func (f *EnvFlags) Register(fl *flag.FlagSet) {
-	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment.")
+	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment (mutually exclusive with -staging).")
+	fl.BoolVar(&f.staging, "staging", false, "Run in staging environment (mutually exclusive with -dev).")
 }
 
 // Env returns the environment, either dev or prod.
 func (f *EnvFlags) Env() site.Environment {
 	if f.dev {
 		return site.Dev
+	} else if f.staging {
+		return site.Staging
 	}
 	return site.Prod
 }

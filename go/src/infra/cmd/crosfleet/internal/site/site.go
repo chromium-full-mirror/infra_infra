@@ -44,6 +44,24 @@ var Prod = Environment{
 	},
 }
 
+// Staging is the environment for staging.
+var Staging = Environment{
+	SwarmingService: "chromeos-swarming.appspot.com",
+	UFSService:      "ufs.api.cr.dev",
+
+	BuildbucketService: "cr-buildbucket.appspot.com",
+	DefaultCTPBuilder: &buildbucket_pb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "testplatform",
+		Builder: "cros_test_platform-staging",
+	},
+	DUTLeaserBuilder: &buildbucket_pb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "test_runner",
+		Builder: "dut_leaser",
+	},
+}
+
 // Dev is the environment for dev.
 var Dev = Environment{
 	SwarmingService: "chromeos-swarming.appspot.com",
