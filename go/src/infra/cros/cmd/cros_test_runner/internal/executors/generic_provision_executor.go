@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -35,16 +36,29 @@ func NewGenericProvisionExecutor() *GenericProvisionExecutor {
 func (ex *GenericProvisionExecutor) ExecuteCommand(
 	ctx context.Context,
 	cmdInterface interfaces.CommandInterface) error {
-
+	var err error
 	switch cmd := cmdInterface.(type) {
 	case *commands.GenericProvisionCmd:
-		return ex.genericProvisionHandler(ctx, cmd)
+		err = ex.genericProvisionHandler(ctx, cmd)
 	default:
-		return fmt.Errorf(
-			"Command type %s is not supported by %s executor type!",
+		err = fmt.Errorf(
+			"command type %s is not supported by %s executor type",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
+	if err != nil {
+		// Don't wrap err as a TestRunnerError if it already is one.
+		var tre *common.TestRunnerError
+		if errors.As(err, &tre) {
+			return err
+		} else {
+			return &common.TestRunnerError{
+				Type: skylab_test_runner.TestRunnerErrorType_PROVISION,
+				Err:  err,
+			}
+		}
+	}
+	return nil
 }
 
 // provisionStartCommandExecution executes the provision start command.

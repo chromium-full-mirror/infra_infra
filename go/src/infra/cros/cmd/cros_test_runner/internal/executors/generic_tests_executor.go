@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -35,16 +36,29 @@ func NewGenericTestsExecutor() *GenericTestsExecutor {
 func (ex *GenericTestsExecutor) ExecuteCommand(
 	ctx context.Context,
 	cmdInterface interfaces.CommandInterface) error {
-
+	var err error
 	switch cmd := cmdInterface.(type) {
 	case *commands.GenericTestsCmd:
-		return ex.genericTestsHandler(ctx, cmd)
+		err = ex.genericTestsHandler(ctx, cmd)
 	default:
-		return fmt.Errorf(
-			"Command type %s is not supported by %s executor type!",
+		err = fmt.Errorf(
+			"command type %s is not supported by %s executor type",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
+	if err != nil {
+		// Don't wrap err as a TestRunnerError if it already is one.
+		var tre *common.TestRunnerError
+		if errors.As(err, &tre) {
+			return err
+		} else {
+			return &common.TestRunnerError{
+				Type: skylab_test_runner.TestRunnerErrorType_TEST_HARNESS,
+				Err:  err,
+			}
+		}
+	}
+	return nil
 }
 
 // genericTestsHandler handles incoming TestRequests.

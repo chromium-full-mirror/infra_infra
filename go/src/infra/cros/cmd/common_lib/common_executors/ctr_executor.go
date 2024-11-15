@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -104,10 +105,13 @@ func (ex *CtrExecutor) gcloudAuthCommandExecution(
 
 	err = ex.GcloudAuth(ctx, cmd.DockerKeyFileLocation, cmd.UseDockerKeyDirectly)
 	if err != nil {
-		return errors.Annotate(err, "gcloud auth cmd err: ").Err()
+		return &common.TestRunnerError{
+			Type: skylab_test_runner.TestRunnerErrorType_AUTH,
+			Err:  errors.Annotate(err, "gcloud auth cmd err: ").Err(),
+		}
 	}
 
-	return err
+	return nil
 }
 
 // StartAsync starts the ctr server asynchronously.
