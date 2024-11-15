@@ -138,7 +138,7 @@ func SendNotifications(
 			  AND (
 					last_updated_time > last_notification_time
 					OR last_notification_time IS NULL
-					OR NOW() - last_notification_time > '6h'
+					OR NOW() - last_notification_time > '30m'
 				);`
 		lastUpdatedTime sql.NullTime
 	)
