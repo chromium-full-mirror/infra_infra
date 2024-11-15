@@ -306,37 +306,31 @@ func (aps *AntsPublishService) uploadArtifact(path string) (*atp.BuildArtifactMe
 }
 
 func (aps *AntsPublishService) artifactMetadata(path string) *atp.BuildArtifactMetadata {
-	filename := filepath.Base(path)
-	if strings.HasSuffix(path, "log.txt") {
-		// Multiple path names have the same log.txt file
-		// Use the whole path for filename instead for log files.
-		filename = strings.ReplaceAll(strings.TrimPrefix(path, artifactsDir), "/", "_")
-	}
-
 	// Mime type is of the form `text/plain; charset utf-8`
 	// Just use the content type from this.
 	contentType := strings.Split(mime.TypeByExtension(filepath.Ext(path)), ";")[0]
 
 	return &atp.BuildArtifactMetadata{
-		Name:         filename,
+		Name:         strings.TrimPrefix(path, artifactsDir),
 		InvocationId: aps.metadata.AntsInvocationId,
 		WorkUnitId:   aps.metadata.ParentWorkUnitId,
 		ContentType:  contentType,
-		ArtifactType: artifactType(filename),
+		ArtifactType: artifactType(path),
 	}
 }
 
 // artifactType gets the artifact type for the given file
 func artifactType(path string) string {
-	if strings.Contains(path, "device_logcat") {
+	filename := filepath.Base(path)
+	if strings.Contains(filename, "device_logcat") {
 		return "logcat"
-	} else if strings.Contains(path, "adb_log") {
+	} else if strings.Contains(filename, "adb_log") {
 		return "adb log"
-	} else if strings.Contains(path, "host_log") {
+	} else if strings.Contains(filename, "host_log") {
 		return "host log"
-	} else if strings.Contains(path, "perfetto") {
+	} else if strings.Contains(filename, "perfetto") {
 		return "perfetto"
-	} else if strings.Contains(path, "xml") {
+	} else if strings.Contains(filename, "xml") {
 		return "xml"
 	}
 
