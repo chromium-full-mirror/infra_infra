@@ -121,6 +121,7 @@ func (builder *DynamicTrv2FromCft) tryAppendRdbPublishTask(dynamic *DynamicTrv2B
 		DefaultDynamicRdbPublishTaskWrapper(
 			builder.Cft.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath().GetPath()+common.SourceMetadataPath,
 			builder.Cft.GetPrimaryDut().GetProvisionState().GetFirmware() != nil || len(builder.Cft.GetPrimaryDut().GetProvisionState().GetPackages()) > 0,
+			dynamic.Is3DRun,
 		))
 }
 
@@ -481,7 +482,7 @@ func BuildPublishContainerRequest(identifier string, publishType api.CrosPublish
 }
 
 // BuildPublishRequest constructs a PublishRequest with provided dependencies.
-func BuildPublishRequest(dynamicId, artifactPath string, metadata *anypb.Any, deps []*api.DynamicDep) *api.PublishTask {
+func BuildPublishRequest(dynamicId, artifactPath string, metadata *anypb.Any, deps []*api.DynamicDep, is3DRun bool) *api.PublishTask {
 	return &api.PublishTask{
 		ServiceAddress: &labapi.IpEndpoint{},
 		PublishRequest: &api.PublishRequest{
@@ -489,6 +490,7 @@ func BuildPublishRequest(dynamicId, artifactPath string, metadata *anypb.Any, de
 				HostType: _go.StoragePath_LOCAL,
 				Path:     artifactPath},
 			Metadata: metadata,
+			Is_3DRun: is3DRun,
 		},
 		DynamicDeps:       deps,
 		DynamicIdentifier: dynamicId,
@@ -753,7 +755,7 @@ func DefaultDynamicPostProcessTaskWrapper() DynamicTaskBuilder {
 }
 
 // DefaultDynamicRdbPublishTaskWrapper creates the default rdb publish task.
-func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) DynamicTaskBuilder {
+func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DRun bool) DynamicTaskBuilder {
 	return func(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
 		rdbPublishMetadata, _ := anypb.New(&testapi_metadata.PublishRdbMetadata{
 			Sources: &testapi_metadata.PublishRdbMetadata_Sources{
@@ -800,7 +802,7 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty bool) 
 							Key:   "publishRequest.metadata.postProcessResponses",
 							Value: common.NewTaskIdentifier(common.PostProcess).GetRpcResponse("runActivities"),
 						},
-					}),
+					}, is3DRun),
 				},
 				Required: true,
 			},
@@ -835,7 +837,7 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 						Key:   "publishRequest.metadata.gcsPath.path",
 						Value: "gcs-url",
 					},
-				}),
+				}, builder.Is3DRun),
 			},
 			Required: true,
 		},

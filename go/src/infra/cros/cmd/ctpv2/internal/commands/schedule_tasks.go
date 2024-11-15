@@ -848,6 +848,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 		credentialsFile:      cmd.CredentialsFile,
 		envVersion:           cmd.EnvVersion,
 		firestoreDBName:      cmd.FirestoreDBName,
+		is3DRun:              cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetDddSuite(),
 	}
 
 	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))

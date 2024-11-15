@@ -78,6 +78,7 @@ type DynamicTrv2Builder struct {
 	// is prod or something else.
 	EnvVersion      string
 	FirestoreDBName string
+	Is3DRun         bool
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.

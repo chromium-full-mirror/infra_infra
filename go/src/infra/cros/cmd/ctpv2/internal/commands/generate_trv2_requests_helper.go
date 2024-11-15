@@ -92,6 +92,7 @@ type TrV2ReqHelper struct {
 	builderStr       string
 	isAlRun          bool
 	isPartnerRun     bool
+	is3DRun          bool
 }
 
 type HwTarget struct {
@@ -715,7 +716,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 		OrderedTaskBuilders: []common_builders.DynamicTaskBuilder{
 			common_builders.DefaultDynamicTestTaskWrapper(common.CrosTest),
 			common_builders.DefaultDynamicPostProcessTaskWrapper(),
-			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false),
+			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
 			common_builders.DefaultDynamicGcsPublishTask,
 		},
 	}
