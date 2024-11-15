@@ -404,6 +404,11 @@ func executeHwTestsV2(
 		common.LogWarningIfErr(ctx, sk.Injectables.Set("parent_work_unit_id", attemptWUID))
 	}
 
+	env := common.GetCTPEnvironment(buildState.Build().GetBuilder()).String()
+	if env != "" {
+		common.LogWarningIfErr(ctx, sk.Injectables.Set("env", "ENV_"+env))
+	}
+
 	populateRequestQueues(sk, req)
 
 	// Generate config
