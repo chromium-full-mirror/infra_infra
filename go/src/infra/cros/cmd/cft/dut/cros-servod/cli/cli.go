@@ -136,7 +136,7 @@ func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
 
 	logFile, err := createLogFile(a.LogPath)
 	if err != nil {
-		log.Fatalln("Failed to create log file", err)
+		log.Println("Failed to create log file", err)
 		return 2
 	}
 	defer logFile.Close()
@@ -147,12 +147,12 @@ func runCLI(ctx context.Context, cs model.CliSubcommand, d []string) int {
 	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor)
 	defer destructor()
 	if err != nil {
-		logger.Fatalln("Failed to create servod service: ", err)
+		logger.Println("Failed to create servod service: ", err)
 		return 2
 	}
 
 	if _, _, err := servodService.RunCli(cs, a, nil, true); err != nil {
-		logger.Fatalln("Failed to run CLI: ", err)
+		logger.Println("Failed to run CLI: ", err)
 		return 1
 	}
 	return 0
@@ -169,7 +169,7 @@ func startServer(ctx context.Context, d []string) int {
 
 	logFile, err := createLogFile(a.LogPath)
 	if err != nil {
-		log.Fatalln("Failed to create log file", err)
+		log.Println("Failed to create log file", err)
 		return 2
 	}
 	defer logFile.Close()
@@ -180,12 +180,12 @@ func startServer(ctx context.Context, d []string) int {
 	servodService, destructor, err := servodserver.NewServodService(ctx, logger, commandexecutor)
 	defer destructor()
 	if err != nil {
-		logger.Fatalln("Failed to create servod service: ", err)
+		logger.Println("Failed to create servod service: ", err)
 		return 2
 	}
 
 	if err := servodService.StartServer(a.ServerPort); err != nil {
-		logger.Fatalln("Failed to start servod server: ", err)
+		logger.Println("Failed to start servod server: ", err)
 		return 1
 	}
 	return 0
@@ -238,7 +238,7 @@ func getCliSubcommand() (model.CliSubcommand, error) {
 func MainInternal() int {
 	rm, err := getRunMode()
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return 2
 	}
 
@@ -248,7 +248,7 @@ func MainInternal() int {
 		log.Printf("Running CLI mode!")
 		cs, err := getCliSubcommand()
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 			return 2
 		}
 		return runCLI(ctx, cs, os.Args[3:])

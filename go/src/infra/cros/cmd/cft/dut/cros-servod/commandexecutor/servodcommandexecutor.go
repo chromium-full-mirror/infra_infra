@@ -63,13 +63,15 @@ func (s ServodCommandExecutor) Run(addr string, command string, stdin io.Reader,
 		var client *ssh.Client
 		client, err = ssh.Dial("tcp", addr, config)
 		if err != nil {
-			s.logger.Fatal("Failed to dial: ", err)
+			s.logger.Print("Failed to dial: ", err)
+			return bOut, bErr, err
 		}
 		defer client.Close()
 		var session *ssh.Session
 		session, err = client.NewSession()
 		if err != nil {
-			s.logger.Fatal("Failed to create session: ", err)
+			s.logger.Print("Failed to create session: ", err)
+			return bOut, bErr, err
 		}
 		defer session.Close()
 		// Route the incoming Stdin to system Stdin
