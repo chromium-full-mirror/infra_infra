@@ -25,8 +25,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 			Dependencies: []string{
 				"Stop ADB-base",
 			},
-			ExecName:               "ctr_start_adb_container",
-			AllowFailAfterRecovery: true,
+			ExecName: "ctr_start_adb_container",
 		},
 		"Stop ADB-base": {
 			Docs: []string{
@@ -47,8 +46,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 			Dependencies: []string{
 				"Stop Servo-Nexus",
 			},
-			ExecName:               "ctr_servo_nexus_start_container",
-			AllowFailAfterRecovery: true,
+			ExecName: "ctr_servo_nexus_start_container",
 		},
 		"Stop Servo-Nexus": {
 			Docs: []string{

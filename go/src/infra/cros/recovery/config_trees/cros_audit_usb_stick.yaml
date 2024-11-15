@@ -11,7 +11,7 @@ plans:
           exec_name: dut_has_board_name
         - name: DUT has model info (RUN_ONCE)
           exec_name: dut_has_model_name
-        - name: Start ADB-base (Allow to fail)
+        - name: Start ADB-base
           exec_name: ctr_start_adb_container
           docs:
             - Pull and run adb-base container
@@ -30,7 +30,7 @@ plans:
               exec_name: ctr_stop_adb_container
               docs:
                 - Stop adb-base container
-        - name: Start Servo-Nexus (Allow to fail)
+        - name: Start Servo-Nexus
           exec_name: ctr_servo_nexus_start_container
           docs:
             - Pull and run servo-nexus container
