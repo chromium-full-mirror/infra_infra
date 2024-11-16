@@ -67,7 +67,9 @@ func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnv
 	case metadata.PublishAntsMetadata_ENV_STAGING:
 		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Staging)
 	default:
-		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Prod)
+		// TODO: revert this before rolling to prod
+		log.Printf("Forcing to use staging")
+		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Staging)
 	}
 }
 
