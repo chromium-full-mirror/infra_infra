@@ -82,6 +82,8 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
+	// TODO: undo before prod roll
+	apu.PublishPath = common.LabelStaging
 	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, apu.PublishPath, "ants-publish")
 	if err != nil {
 		return req, err
