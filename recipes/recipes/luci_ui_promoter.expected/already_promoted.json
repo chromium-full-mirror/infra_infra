@@ -124,6 +124,54 @@
   },
   {
     "cmd": [
+      "git",
+      "branch",
+      "-D",
+      "roll-attempt"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git branch"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-t",
+      "origin/main",
+      "-b",
+      "roll-attempt"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git checkout (2)"
+  },
+  {
+    "cmd": [
       "vpython3",
       "-u",
       "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
@@ -133,6 +181,7 @@
       "[CACHE]/builder/gae/apps/luci-milo/channels.json",
       "/path/to/tmp/"
     ],
+    "cwd": "[CACHE]/builder/gae",
     "infra_step": true,
     "luci_context": {
       "realm": {
