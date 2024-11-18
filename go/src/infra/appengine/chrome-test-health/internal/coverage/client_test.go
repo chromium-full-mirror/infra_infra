@@ -820,6 +820,7 @@ func TestGetCoverageNumbersForComponent(t *testing.T) {
 }
 
 func TestGetAbsoluteCoverageDataOneYear(t *testing.T) {
+	t.Skip("crbug.com/379569289: test data was 2023/11/17, so fail after 2024/11/17")
 	t.Parallel()
 	ctx := context.Background()
 	client := Client{
