@@ -27,14 +27,14 @@ handlers:
 
 luci_gae_vars:
   chrome-test-health-staging:
-    AUTH_SERVICE_HOST: chrome-infra-auth-dev.appspot.com
+    AUTH_SERVICE_HOST: chrome-infra-auth.appspot.com
     OAUTH_CLIENT_ID: 961841358-3c87679tdm982jrrpebv04a31bl3ibgm.apps.googleusercontent.com
     OAUTH_CLIENT_SECRET: sm://oauth-client-secret
     OAUTH_REDIRECT_URL: https://chrome-test-health-staging.appspot.com/auth/openid/callback
     TINK_AEAD_KEY: sm://tink-aead-primary
     FINDIT_CLOUD_PROJECT: findit-for-me-staging
   google.com:chrome-test-health-staging:
-    AUTH_SERVICE_HOST: chrome-infra-auth-dev.appspot.com
+    AUTH_SERVICE_HOST: chrome-infra-auth.appspot.com
     OAUTH_CLIENT_ID: 98610520980-rtgum5ggpvmenqap9i8es95vcedomlt0.apps.googleusercontent.com
     OAUTH_CLIENT_SECRET: sm://oauth-client-secret
     OAUTH_REDIRECT_URL: https://chrome-test-health-staging.googleplex.com/auth/openid/callback
