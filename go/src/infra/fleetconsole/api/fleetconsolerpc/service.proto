@@ -83,6 +83,8 @@ message ListDevicesRequest {
   // When paginating, all other parameters provided to `ListDevices` must match
   // the call that provided the page token.
   string page_token = 2;
+
+  string order_by = 3;
 }
 
 message ListDevicesResponse {
@@ -99,6 +101,6 @@ message DeviceSpec {
     repeated string values = 1;
   }
 
-  // A map for schedulable labels used to request a matching device.
-  map<string, LabelValues> schedulable_labels = 1;
+  // A map for labels used to request a matching device.
+  map<string, LabelValues> labels = 1;
 }

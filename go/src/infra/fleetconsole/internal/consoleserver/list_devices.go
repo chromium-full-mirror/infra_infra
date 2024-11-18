@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/consoleserver/sorting"
 )
 
 const maxPageSize int = 50
@@ -19,7 +20,11 @@ const mockedDevicesCount int = 60
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (*fleetconsolerpc.ListDevicesResponse, error) {
 	afterDeviceID := pageTokenToDeviceID(req.PageToken)
 
-	devices := getMockDevices()
+	devices, err := sorting.SortDevices(getMockDevices(), req.OrderBy)
+
+	if err != nil {
+		return nil, err
+	}
 
 	pageSize := maxPageSize
 	if req.PageSize != 0 {
@@ -77,7 +82,7 @@ func getMockDevices() []*fleetconsolerpc.Device {
 			Type:  fleetconsolerpc.DeviceType_DEVICE_TYPE_UNSPECIFIED,
 			State: fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE,
 			DeviceSpec: &fleetconsolerpc.DeviceSpec{
-				SchedulableLabels: map[string]*fleetconsolerpc.DeviceSpec_LabelValues{
+				Labels: map[string]*fleetconsolerpc.DeviceSpec_LabelValues{
 					"label1": {
 						Values: []string{"value1_" + id, "value2_" + id},
 					},
