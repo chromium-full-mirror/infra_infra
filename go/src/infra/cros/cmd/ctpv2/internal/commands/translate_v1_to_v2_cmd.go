@@ -283,7 +283,8 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 
 func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage) error {
 	var err error
-	ctpReq.SuiteRequest, err = buildSuiteRequest(testJobMsg)
+	skipAntsFilter := false
+	ctpReq.SuiteRequest, skipAntsFilter, err = buildSuiteRequest(testJobMsg)
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
@@ -297,12 +298,15 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 		return fmt.Errorf("no pool found")
 	}
 	ctpReq.KarbonFilters = getKarbonFilters()
+	if skipAntsFilter {
+		ctpReq.KarbonFilters = getKarbonFiltersWithoutAntsFilter()
+	}
 	ctpReq.RunDynamic = true
 
 	return nil
 }
 
-func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, error) {
+func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, bool, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -314,6 +318,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, er
 	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
 	maxInShard := 10
 	dddSuite := false
+	skipAntsFilter := false
 
 	// build related
 	buildId := ""
@@ -327,27 +332,6 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, er
 	extraBuildFlavor := ""
 	extraBuildType := ""
 	extraBuildTarget := ""
-
-	if testJobMsg.Test != nil {
-		if testJobMsg.Test.Name != "" {
-			suiteName = testJobMsg.Test.Name
-		}
-
-		for _, arg := range testJobMsg.Test.Args {
-			if arg.Key == "tag_include_list" {
-				testCaseTagCriteria.Tags = append(testCaseTagCriteria.Tags, arg.Values...)
-			} else if arg.Key == "tag_exclude_list" {
-				testCaseTagCriteria.TagExcludes = append(testCaseTagCriteria.TagExcludes, arg.Values...)
-			} else if arg.Key == "test_names_include_list" {
-				testCaseTagCriteria.TestNames = append(testCaseTagCriteria.TestNames, arg.Values...)
-			} else if arg.Key == "test_names_exclude_list" {
-				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
-			}
-		}
-
-		totalShards = int(testJobMsg.Test.Shards)
-		retryCount = int(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
-	}
 
 	for _, data := range testJobMsg.PluginData {
 		if data.Key == "ants_invocation_id" {
@@ -406,19 +390,49 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, er
 		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android_build_environment", Value: buildEnv})
 	}
 
+	if testJobMsg.Test != nil {
+		if testJobMsg.Test.Name != "" {
+			suiteName = testJobMsg.Test.Name
+		}
+
+		for _, arg := range testJobMsg.Test.Args {
+			if arg.Key == "tag_include_list" {
+				testCaseTagCriteria.Tags = append(testCaseTagCriteria.Tags, arg.Values...)
+			} else if arg.Key == "tag_exclude_list" {
+				testCaseTagCriteria.TagExcludes = append(testCaseTagCriteria.TagExcludes, arg.Values...)
+			} else if arg.Key == "test_names_include_list" {
+				testCaseTagCriteria.TestNames = append(testCaseTagCriteria.TestNames, arg.Values...)
+			} else if arg.Key == "test_names_exclude_list" {
+				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
+			} else {
+				// directly plumb through any other args
+				for _, value := range arg.Values {
+					// add each value separately since we don't wanna enforce any parsing rule for downstream
+					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
+					if strings.Contains(strings.ToLower(value), "crystalball_ingest:yes") {
+						skipAntsFilter = true
+					}
+				}
+			}
+		}
+
+		totalShards = int(testJobMsg.Test.Shards)
+		retryCount = int(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
+	}
+
 	// Validations
 	if antsInvId == "" {
-		return nil, fmt.Errorf("no ants invocation id found")
+		return nil, skipAntsFilter, fmt.Errorf("no ants invocation id found")
 	}
 	if antsWuId == "" {
-		return nil, fmt.Errorf("no ants workunit id found")
+		return nil, skipAntsFilter, fmt.Errorf("no ants workunit id found")
 	}
 	if buildEnv == "" {
-		return nil, fmt.Errorf("no build env found")
+		return nil, skipAntsFilter, fmt.Errorf("no build env found")
 	}
 
 	if !testCaseTagCriteria.ProtoReflect().IsValid() {
-		return nil, fmt.Errorf("no test case tag criteria found")
+		return nil, skipAntsFilter, fmt.Errorf("no test case tag criteria found")
 	}
 
 	testSuite := &api.TestSuite{
@@ -432,7 +446,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, er
 		MaximumDuration: maxDuration,
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
-		RetryCount:      int64(retryCount)}, nil
+		RetryCount:      int64(retryCount)}, skipAntsFilter, nil
 }
 
 func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage) ([]*api.ScheduleTargets, error) {
@@ -526,6 +540,33 @@ func getKarbonFilters() []*api.CTPFilter {
 			ContainerInfo: &api.ContainerInfo{
 				Container: &build_api.ContainerImageInfo{
 					Name: "ants-publish-filter",
+				},
+			},
+		},
+	}
+}
+
+// Temp solution to support CB with TF internal publish
+func getKarbonFiltersWithoutAntsFilter() []*api.CTPFilter {
+	return []*api.CTPFilter{
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "al-provision-filter",
+				},
+			},
+		},
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "foil-filter",
+				},
+			},
+		},
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &build_api.ContainerImageInfo{
+					Name: "test-finder",
 				},
 			},
 		},
