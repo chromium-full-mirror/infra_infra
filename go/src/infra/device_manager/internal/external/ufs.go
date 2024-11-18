@@ -8,7 +8,6 @@ import (
 	"context"
 	"net/http"
 
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/common/errors"
@@ -20,15 +19,6 @@ import (
 )
 
 const UFSServiceURI = "ufs.api.cr.dev"
-
-// UFSClient interface provides a subset of UFS methods relevant to Device
-// Manager. This provides an interface for testing and to add additional
-// UFS methods as requirements evolve.
-type UFSClient interface {
-	GetDeviceData(context.Context, *ufsAPI.GetDeviceDataRequest, ...grpc.CallOption) (*ufsAPI.GetDeviceDataResponse, error)
-	ListMachines(context.Context, *ufsAPI.ListMachinesRequest, ...grpc.CallOption) (*ufsAPI.ListMachinesResponse, error)
-	ListMachineLSEs(context.Context, *ufsAPI.ListMachineLSEsRequest, ...grpc.CallOption) (*ufsAPI.ListMachineLSEsResponse, error)
-}
 
 // NewUFSClient creates a new client to access UFS.
 func NewUFSClient(ctx context.Context, ufsHostname string) (ufsAPI.FleetClient, error) {
