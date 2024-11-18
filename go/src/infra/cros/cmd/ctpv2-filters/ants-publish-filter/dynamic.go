@@ -170,6 +170,10 @@ func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*api.D
 			Key:   "publishRequest.metadata.parentWorkUnitId",
 			Value: "parent_work_unit_id",
 		},
+		{
+			Key:   "publishRequest.metadata.atpEnvironment",
+			Value: "env",
+		},
 	}
 	return dynamicDeps
 }
