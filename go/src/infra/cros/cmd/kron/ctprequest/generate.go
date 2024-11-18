@@ -9,6 +9,7 @@ package ctprequest
 import (
 	"fmt"
 	"path"
+	"strings"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -219,6 +220,7 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 			},
 			RunViaCft:            config.GetRunOptions().GetRunViaCft(),
 			RunViaTrv2:           config.GetRunOptions().GetRunViaTrv2(),
+			IsAlRun:              strings.HasPrefix(config.GetName(), "AL."),
 			TranslateTrv2Request: config.GetRunOptions().GetDynamicTrv2(),
 			UserDefinedFilters:   append(config.GetKarbonFilters(), config.GetKoffeeFilters()...),
 		},
