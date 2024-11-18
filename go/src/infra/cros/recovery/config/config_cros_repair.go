@@ -108,12 +108,10 @@ func crosRepairActions() map[string]*Action {
 				"Is not cloudbot",
 				// Always reset first.
 				"Mark as Chrome based OS",
-			},
-			Dependencies: []string{
+				"DUT is not SSHable (simple)",
 				"ADB Connect DUT",
 			},
-			ExecName:               "cros_set_as_android_based",
-			AllowFailAfterRecovery: true,
+			ExecName: "cros_set_as_android_based",
 		},
 		"Mark as Chrome based OS": {
 			Docs: []string{
@@ -274,6 +272,16 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"DUT is not SSHable (simple)": {
+			Docs: []string{
+				"Verify that device is not reachable by SSH.",
+			},
+			Dependencies: []string{
+				"Device is SSHable (simple)",
+			},
+			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Device Uptime": {
 			Docs: []string{

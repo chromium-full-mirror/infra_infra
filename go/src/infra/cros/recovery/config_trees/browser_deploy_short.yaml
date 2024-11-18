@@ -7208,11 +7208,13 @@ plans:
                 - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
               dependencies:
                 - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
-        - name: Is Android based (Allow to fail) ('cros_set_as_android_based')
+        - name: Is Android based ('cros_set_as_android_based')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
-          dependencies:
+            - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
+              dependencies:
+                - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: ADB Connect DUT ('ctr_adb_connect')
         - name: Chrome OS checks ('sample_pass')
           conditions:

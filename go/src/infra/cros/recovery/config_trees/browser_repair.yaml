@@ -9963,7 +9963,7 @@ plans:
                   exec_name: labstation_create_reboot_request
                   docs:
                     - Try to create reboot flag file request in the connected labstation.
-        - name: Is Android based (Allow to fail)
+        - name: Is Android based
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android, based on ADB responses.
@@ -9976,7 +9976,16 @@ plans:
               exec_name: cros_set_as_chrome_based
               docs:
                 - Mark DUT as Chrome based.
-          dependencies:
+            - name: DUT is not SSHable (simple) (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Verify that device is not reachable by SSH.
+              dependencies:
+                - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Verify that device is reachable by SSH.
+                    - Limited to 15 seconds.
             - name: ADB Connect DUT
               exec_name: ctr_adb_connect
               exec_args:
