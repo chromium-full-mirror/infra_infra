@@ -8,8 +8,11 @@ package site
 import (
 	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
+
+	ufsUtil "infra/unifiedfleet/app/util"
 
 	"go.chromium.org/luci/auth"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
@@ -105,12 +108,14 @@ var Dev = Environment{
 
 // EnvFlags controls selection of the environment: either prod (default) or dev.
 type EnvFlags struct {
-	dev bool
+	dev       bool
+	namespace string
 }
 
 // Register sets up the -dev argument.
 func (f *EnvFlags) Register(fl *flag.FlagSet) {
 	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment.")
+	fl.StringVar(&f.namespace, "namespace", ufsUtil.OSNamespace, "Namespace where data resides.")
 }
 
 // Env returns the environment, either dev or prod.
@@ -119,6 +124,11 @@ func (f EnvFlags) Env() Environment {
 		return Dev
 	}
 	return Prod
+}
+
+func (f EnvFlags) Namespace() string {
+	ns := strings.ToLower(f.namespace)
+	return ns
 }
 
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra

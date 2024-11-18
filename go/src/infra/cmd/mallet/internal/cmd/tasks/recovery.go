@@ -19,6 +19,7 @@ import (
 
 	"infra/cmd/mallet/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/recovery/namespace"
 	"infra/libs/fleet/device"
 	"infra/libs/fleet/scheduling/schedulers"
 	"infra/libs/skylab/buildbucket"
@@ -45,6 +46,8 @@ var Recovery = &subcommands.Command{
 		c.Flags.BoolVar(&c.updateUFS, "update-ufs", false, "Update result to UFS. By default no.")
 		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
 		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
+		c.Flags.StringVar(&c.bbBucket, "bucket", "", "Buildbucket bucket to use.")
+		c.Flags.StringVar(&c.bbBuilder, "builder", "", "Buildbucket builder to use.")
 		return c
 	},
 }
@@ -63,6 +66,8 @@ type recoveryRun struct {
 	latest       bool
 	adminSession string
 	disableCft   bool
+	bbBucket     string
+	bbBuilder    string
 }
 
 func (c *recoveryRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -75,6 +80,10 @@ func (c *recoveryRun) Run(a subcommands.Application, args []string, env subcomma
 
 func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
+
+	ns := c.envFlags.Namespace()
+	ctx = namespace.Set(ctx, ns)
+
 	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return errors.Annotate(err, "recovery run").Err()
@@ -141,16 +150,19 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			sc,
 			v,
 			&buildbucket.Params{
-				UnitName:         unit,
-				TaskName:         task,
-				EnableRecovery:   !c.onlyVerify,
-				AdminService:     csaAddr,
-				InventoryService: e.UFSService,
-				UpdateInventory:  c.updateUFS,
-				NoStepper:        c.noStepper,
-				NoMetrics:        false,
-				Configuration:    configuration,
-				DisableCft:       c.disableCft,
+				UnitName:           unit,
+				TaskName:           task,
+				BuilderBucket:      c.bbBucket,
+				BuilderName:        c.bbBuilder,
+				EnableRecovery:     !c.onlyVerify,
+				AdminService:       csaAddr,
+				InventoryService:   e.UFSService,
+				InventoryNamespace: ns,
+				UpdateInventory:    c.updateUFS,
+				NoStepper:          c.noStepper,
+				NoMetrics:          false,
+				Configuration:      configuration,
+				DisableCft:         c.disableCft,
 				ExtraTags: []string{
 					sessionTag,
 					fmt.Sprintf("task:%s", task),
