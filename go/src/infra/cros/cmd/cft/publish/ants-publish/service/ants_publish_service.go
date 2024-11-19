@@ -65,9 +65,10 @@ func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnv
 	log.Printf("Getting android service for env: %s", env.String())
 	switch env {
 	case metadata.PublishAntsMetadata_ENV_STAGING:
-		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Staging)
+		log.Printf("Getting android service for staging env.")
+		return androidlib.NewAndroidBuildService(ctx, androidlib.SERVICEACCOUNT, common.Staging)
 	default:
-		return androidlib.NewAndroidBuildService(ctx, androidlib.CONTAINER_SATLAB, common.Prod)
+		return androidlib.NewAndroidBuildService(ctx, androidlib.SERVICEACCOUNT, common.Prod)
 	}
 }
 
