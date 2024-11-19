@@ -132,17 +132,18 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
 	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
 	// get the container MD from, but this will need to be solved long term.
-	board, gcsPath, err := gcsInfo(cmd.CtpReq)
-	if err != nil {
-		return err
-	}
-
-	build := getBuildFromGCSPath(gcsPath)
-
 	var buildContainerMetadata map[string]*buildapi.ContainerImageInfo
+	build := 0
 	if cmd.IsAlRun {
-		step.SetSummaryMarkdown("skipping; AL run doesn't require building container metadata")
+		step.SetSummaryMarkdown("skipping building container metadata from GCS path for AL run")
 	} else {
+		board, gcsPath, err := gcsInfo(cmd.CtpReq)
+		if err != nil {
+			return err
+		}
+
+		build = getBuildFromGCSPath(gcsPath)
+
 		buildContainerMetadata, err = common.FetchImageData(ctx, board, gcsPath)
 		if err != nil {
 			logging.Infof(ctx, fmt.Sprintf("failed to fetch container image data from %s, will continue without build containers. err: %s", gcsPath, err))

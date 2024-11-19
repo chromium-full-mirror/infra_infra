@@ -271,7 +271,7 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 	common.WriteAnyObjectToStepLog(ctx, step, testJobMsg, "decoded atp test job msg")
 
 	// populate the fields from received atp test job msg
-	err = populateCtpRequest(ctx, ctpReq, testJobMsg)
+	err = populateCtpRequest(ctx, ctpReq, testJobMsg, cmd.BuildState)
 	if err != nil {
 		step.SetSummaryMarkdown(err.Error())
 		return errors.Annotate(err, "err while populating ctp request from testJobMsg: %s", err.Error()).Err()
@@ -281,14 +281,14 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 	return nil
 }
 
-func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage) error {
+func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage, buildState *build.State) error {
 	var err error
 	skipAntsFilter := false
-	ctpReq.SuiteRequest, skipAntsFilter, err = buildSuiteRequest(testJobMsg)
+	ctpReq.SuiteRequest, skipAntsFilter, err = buildSuiteRequest(testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
-	ctpReq.ScheduleTargets, err = buildScheduleTargets(ctx, testJobMsg)
+	ctpReq.ScheduleTargets, err = buildScheduleTargets(ctx, testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build schedule targets err: %s", err.Error()).Err()
 	}
@@ -306,7 +306,7 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	return nil
 }
 
-func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, bool, error) {
+func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, bool, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -365,20 +365,24 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, bo
 		extraBuildType = extraBuild.BuildType
 	}
 
-	executionMetadata := &api.ExecutionMetadata{
-		Args: []*api.Arg{
-			{Flag: "branch", Value: branch},
-			{Flag: "build_flavor", Value: buildFlavor},
-			{Flag: "build_id", Value: buildId},
-			{Flag: "build_target", Value: buildTarget},
-			{Flag: "build_type", Value: buildType},
-			{Flag: "extra_branch", Value: extraBranch},
-			{Flag: "extra_build_flavor", Value: extraBuildFlavor},
-			{Flag: "extra_build", Value: extraBuildId},
-			{Flag: "extra_target", Value: extraBuildTarget},
-			{Flag: "extra_build_type", Value: extraBuildType},
-		},
+	executionMetadata := &api.ExecutionMetadata{}
+	if common.IsProd(buildState.Build().GetBuilder()) {
+		executionMetadata = &api.ExecutionMetadata{
+			Args: []*api.Arg{
+				{Flag: "branch", Value: branch},
+				{Flag: "build_flavor", Value: buildFlavor},
+				{Flag: "build_id", Value: buildId},
+				{Flag: "build_target", Value: buildTarget},
+				{Flag: "build_type", Value: buildType},
+				{Flag: "extra_branch", Value: extraBranch},
+				{Flag: "extra_build_flavor", Value: extraBuildFlavor},
+				{Flag: "extra_build", Value: extraBuildId},
+				{Flag: "extra_target", Value: extraBuildTarget},
+				{Flag: "extra_build_type", Value: extraBuildType},
+			},
+		}
 	}
+
 	// add ants info if they are not null
 	if antsInvId != "" {
 		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvId})
@@ -386,8 +390,11 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, bo
 	if antsWuId != "" {
 		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuId})
 	}
-	if buildEnv != "" {
-		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android_build_environment", Value: buildEnv})
+
+	if common.IsProd(buildState.Build().GetBuilder()) {
+		if buildEnv != "" {
+			executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android-build-environment", Value: buildEnv})
+		}
 	}
 
 	if testJobMsg.Test != nil {
@@ -449,7 +456,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage) (*api.SuiteRequest, bo
 		RetryCount:      int64(retryCount)}, skipAntsFilter, nil
 }
 
-func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage) ([]*api.ScheduleTargets, error) {
+func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
 	primaryBoard := ""
 	models := []string{}
 	swarmingDims := []string{}
@@ -502,6 +509,16 @@ func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage
 	if len(models) == 0 {
 		// add empty models so that request with board moves forward
 		models = append(models, "")
+	}
+
+	// Do not set AL gcs path for staging
+	// so that the filter grabs the latest build from prod
+	if common.IsStaging(buildState.Build().GetBuilder()) {
+		// These are set to avoid validation errors donw the line
+		// but these won't really be used anywhere
+		crosBuild := "brya-release/R131-16063.0.0"
+		crosBuildGcsBucket := "chromeos-image-archive"
+		installPath = fmt.Sprintf("gs://%s/%s", crosBuildGcsBucket, crosBuild)
 	}
 	for _, model := range models {
 		hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: model, SwarmingDimensions: swarmingDims}}}
