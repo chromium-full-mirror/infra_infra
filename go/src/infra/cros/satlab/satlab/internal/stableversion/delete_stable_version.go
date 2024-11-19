@@ -68,9 +68,8 @@ func (c *deleteStableVersionRun) Run(a subcommands.Application, args []string, e
 func (c *deleteStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if site.IsPartner() {
 		return c.deleteStableVersionPartner()
-	} else {
-		return c.deleteStableVersionInternal(ctx, a)
 	}
+	return c.deleteStableVersionInternal(ctx, a)
 }
 
 // DeleteStableVersionPartner deletes local stable version.
@@ -81,9 +80,9 @@ func (c *deleteStableVersionRun) deleteStableVersionPartner() error {
 	if c.model == "" {
 		return errors.Reason("Please provide -model").Err()
 	}
+
 	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
-	err := os.Remove(fname)
-	if err != nil {
+	if err := os.Remove(fname); err != nil {
 		return err
 	}
 	fmt.Println("Successfully deleted local stable version!")
