@@ -99,6 +99,18 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 			Key:   "generic.additionalVolumes",
 			Value: "FMT=${env-TEMPDIR}:/tmp/artifacts",
 		},
+		&api.DynamicDep{
+			Key:   "generic.env.0",
+			Value: "FMT=GCE_METADATA_HOST=${env-GCE_METADATA_HOST}",
+		},
+		&api.DynamicDep{
+			Key:   "generic.env",
+			Value: "FMT=GCE_METADATA_IP=${env-GCE_METADATA_IP}",
+		},
+		&api.DynamicDep{
+			Key:   "generic.env",
+			Value: "FMT=GCE_METADATA_ROOT=${env-GCE_METADATA_ROOT}",
+		},
 	)
 
 	log.Printf("publishMetadata: %+v", metadata)
@@ -111,11 +123,15 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 	dynamicDepsDefinition := defineDynamicDeps(antsContainerBuilder)
 	log.Printf("dynamicDepsDefinition: %+v", dynamicDepsDefinition)
 
+	// Setup an env array with a default value to init it correctly.
+	antsContainer := antsContainerBuilder.Build()
+	antsContainer.GetContainer().GetGeneric().Env = []string{"to_be_replaced"}
+
 	generator := generators.NewInsertGenerator()
 	generator.AddInsertion(
 		&api.CrosTestRunnerDynamicRequest_Task{
 			OrderedContainerRequests: []*api.ContainerRequest{
-				antsContainerBuilder.Build(),
+				antsContainer,
 			},
 			Task: &api.CrosTestRunnerDynamicRequest_Task_Publish{
 				Publish: &api.PublishTask{
