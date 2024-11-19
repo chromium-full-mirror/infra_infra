@@ -419,7 +419,7 @@ def _camel_to_snake(s: str) -> str:
 
 
 def _phase_hook(prefix: str, phase: str) -> str:
-  return prefix + phase[0].upper() + phase.rstrip('Phase')[1:]
+  return prefix + phase[0].upper() + phase.removesuffix('Phase')[1:]
 
 
 def _split(s: str, sep: Optional[str] = None) -> List[str]:
