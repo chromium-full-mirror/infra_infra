@@ -10,7 +10,7 @@ import (
 
 type DeviceBuilder struct {
 	id         string
-	dutId      string
+	dutID      string
 	hostname   string
 	port       int
 	state      fleetconsolerpc.DeviceState
@@ -21,7 +21,7 @@ type DeviceBuilder struct {
 func NewDeviceBuilder() *DeviceBuilder {
 	return &DeviceBuilder{
 		id:         "id",
-		dutId:      "dut_id",
+		dutID:      "dut_id",
 		hostname:   "hostname",
 		port:       1234,
 		state:      fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE,
@@ -35,8 +35,8 @@ func (b *DeviceBuilder) WithId(id string) *DeviceBuilder {
 	return b
 }
 
-func (b *DeviceBuilder) WithDutId(dutId string) *DeviceBuilder {
-	b.dutId = dutId
+func (b *DeviceBuilder) WithDutId(dutID string) *DeviceBuilder {
+	b.dutID = dutID
 	return b
 }
 
@@ -68,7 +68,7 @@ func (b *DeviceBuilder) WithLabel(key string, values []string) *DeviceBuilder {
 func (b *DeviceBuilder) Build() *fleetconsolerpc.Device {
 	return &fleetconsolerpc.Device{
 		Id:         b.id,
-		DutId:      b.dutId,
+		DutId:      b.dutID,
 		Address:    &fleetconsolerpc.DeviceAddress{Host: b.hostname, Port: int32(b.port)},
 		Type:       b.deviceType,
 		State:      b.state,
