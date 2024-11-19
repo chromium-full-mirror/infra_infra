@@ -119,20 +119,25 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 
 	var actions []string
 	var taskname string
+	var skipHostList []string
+	cfg := config.Get(ctx)
 	switch req.Task {
 	case fleet.AuditTask_ServoUSBKey:
 		actions = []string{"verify-servo-usb-drive"}
 		taskname = "USB-drive"
+		skipHostList = cfg.GetParis().GetAuditUsb().GetSkipHosts()
 	case fleet.AuditTask_DUTStorage:
 		actions = []string{"verify-dut-storage"}
 		taskname = "Storage"
 		dutStates[fleet.DutState_RepairFailed] = false
 		dutStates[fleet.DutState_NeedsManualRepair] = false
+		skipHostList = cfg.GetParis().GetAuditStorage().GetSkipHosts()
 	case fleet.AuditTask_RPMConfig:
 		actions = []string{"verify-rpm-config"}
 		taskname = "RPM Config"
 		dutStates[fleet.DutState_RepairFailed] = false
 		dutStates[fleet.DutState_NeedsManualRepair] = false
+		skipHostList = cfg.GetParis().GetAuditRpm().GetSkipHosts()
 	}
 
 	if len(actions) == 0 {
@@ -157,7 +162,16 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 			return errors.Annotate(err, "failed to list alive cros bots").Err()
 		}
 		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
-		botIDs := identifyBotsForAudit(ctx, bots, dutStates, req.Task)
+
+		// Remove bots that are skipped through config
+		botsNotSkipped := filterBotBySkipHosts(skipHostList, bots)
+
+		if len(botsNotSkipped) == 0 {
+			logging.Infof(ctx, "No bots for audit")
+			return errors.Reason("failed to push audit bots").Err()
+		}
+
+		botIDs := identifyBotsForAudit(ctx, botsNotSkipped, dutStates, req.Task)
 
 		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname, swarmingPool)
 		if err != nil {
@@ -166,7 +180,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		}
 		return nil
 	}
-	cfg := config.Get(ctx)
+
 	var errs []error
 	for _, pool := range cfg.GetSwarming().GetPoolCfgs() {
 		if !pool.GetAuditEnabled() {
@@ -209,8 +223,16 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	}
 	logging.Infof(ctx, "successfully get %d alive idle labstation bots.", len(bots))
 
+	// Remove bots that are skipped through config
+	botsNotSkipped := filterBotBySkipHosts(cfg.GetParis().GetLabstationRepair().GetSkipHosts(), bots)
+
+	if len(botsNotSkipped) == 0 {
+		logging.Infof(ctx, "No bots for repair labstations")
+		return nil, errors.Reason("failed to push repair labstations").Err()
+	}
+
 	// Parse BOT id to schedule tasks for readability.
-	botIDs := identifyLabstationsForRepair(ctx, bots)
+	botIDs := identifyLabstationsForRepair(ctx, botsNotSkipped)
 
 	err = clients.PushRepairLabstations(ctx, botIDs, swarmingPool)
 	if err != nil {
@@ -402,4 +424,25 @@ func simple3TimesRetry() retry.Factory {
 	return func() retry.Iterator {
 		return &simple3TimesRetryIterator
 	}
+}
+
+func filterBotBySkipHosts(skipHostList []string, bots []*swarmingv2.BotInfo) []*swarmingv2.BotInfo {
+
+	if len(skipHostList) == 0 || len(bots) == 0 {
+		return bots
+	}
+
+	var availableBots []*swarmingv2.BotInfo
+	botsToSkipMap := make(map[string]bool)
+
+	for _, value := range skipHostList {
+		botsToSkipMap[value] = true
+	}
+
+	for _, bot := range bots {
+		if _, skip := botsToSkipMap[bot.BotId]; !skip {
+			availableBots = append(availableBots, bot)
+		}
+	}
+	return availableBots
 }

@@ -314,3 +314,80 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		assert.Loosely(t, repairPaths, should.BeEmpty)
 	})
 }
+
+func TestGetBotsNotSkipped(t *testing.T) {
+	tests := []struct {
+		name          string
+		skipHostList  []string
+		bots          []*swarmingv2.BotInfo
+		expectedCount int
+	}{
+		{
+			"Testing for labstation",
+			[]string{
+				"dut_1", "dut_2", "dut_3",
+			},
+			[]*swarmingv2.BotInfo{
+				{
+					BotId: "dut_1",
+				},
+				{
+					BotId: "dut_2",
+				},
+				{
+					BotId: "dut_4",
+				},
+			},
+			1,
+		},
+		{
+			"Testing for empty skip list",
+			[]string{},
+			[]*swarmingv2.BotInfo{
+				{
+					BotId: "dut_1",
+				},
+				{
+					BotId: "dut_2",
+				},
+				{
+					BotId: "dut_4",
+				},
+			},
+			3,
+		},
+		{
+			"Testing for empty bots list",
+			[]string{
+				"dut_1", "dut_2", "dut_3",
+			},
+			[]*swarmingv2.BotInfo{},
+			0,
+		},
+		{
+			"Testing for no correlation",
+			[]string{
+				"dut_7", "dut_5", "dut_3",
+			},
+			[]*swarmingv2.BotInfo{
+				{
+					BotId: "dut_1",
+				},
+				{
+					BotId: "dut_2",
+				},
+				{
+					BotId: "dut_4",
+				},
+			},
+			3,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			botsNotSkipped := filterBotBySkipHosts(test.skipHostList, test.bots)
+			assert.Loosely(t, len(botsNotSkipped), should.Equal(test.expectedCount))
+		})
+	}
+}
