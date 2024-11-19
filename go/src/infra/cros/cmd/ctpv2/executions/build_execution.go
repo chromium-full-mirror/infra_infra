@@ -288,6 +288,7 @@ func executeFiltersInLuciBuild(
 		RequestKey:         reqKey,
 		DockerKeyFile:      dockerKeyFile,
 		CTPversion:         ctpVersion,
+		Environment:        common.GetCTPEnvironment(buildState.Build().GetBuilder()).String(),
 		AlStateInfo:        alStateInfo,
 		IsAlRun:            req.IsAlRun,
 		IsPartnerRun:       isPartnerRun,

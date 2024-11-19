@@ -32,6 +32,7 @@ type PrepareFilterContainersInfoCmd struct {
 	CtpReq       *testapi.CTPRequest
 	CredsFile    string
 	CTPversion   string
+	Environment  string
 	Experiments  []string
 	IsAlRun      bool
 	IsPartnerRun bool
@@ -92,6 +93,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	cmd.CtpReq = sk.CtpReq
 	cmd.IsAlRun = sk.IsAlRun
 	cmd.IsPartnerRun = sk.IsPartnerRun
+	cmd.Environment = sk.Environment
 	return nil
 }
 
@@ -190,6 +192,14 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 			// TODO (cdelagarza): remove this custom filter check once they are upreved
 			if filter.GetContainerInfo().GetContainer().GetName() != "cros-test-finder" && filter.GetContainerInfo().GetContainer().GetName() != "pre-process-filter" {
 				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-firestore", firestoreDBName)
+			}
+		}
+	}
+
+	if cmd.Environment != common.Prod.String() {
+		for _, filter := range ctpFilters {
+			if filter.GetContainerInfo().GetContainer().GetName() == "ants-publish-filter" {
+				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-publish-path", common.LabelStaging)
 			}
 		}
 	}
