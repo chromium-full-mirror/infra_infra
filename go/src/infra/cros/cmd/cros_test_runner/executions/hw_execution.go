@@ -377,6 +377,7 @@ func executeHwTestsV2(
 	sk.PrimaryDutModel = req.GetParams().GetPrimaryDut()
 	sk.CompanionDutModels = req.GetParams().GetCompanionDuts()
 	sk.HostIp, _ = common.GetHostIp()
+	sk.IsAlRun = isAlRun
 
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions()))

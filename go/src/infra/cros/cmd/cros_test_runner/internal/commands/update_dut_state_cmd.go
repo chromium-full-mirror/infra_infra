@@ -10,8 +10,10 @@ import (
 	"slices"
 	"strings"
 
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -21,6 +23,9 @@ import (
 	"infra/cros/cmd/common_lib/tools/ufs"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/dutstate"
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 var (
@@ -36,11 +41,12 @@ type UpdateDutStateCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	TestResponses      *testapi.CrosTestResponse // optional
-	UfsNameSpace       string                    // optional
-	ProvisionResponses map[string][]*testapi.InstallResponse
-	ProvisionDevices   map[string]*testapi.CrosTestRequest_Device
+	TestResponses      *api.CrosTestResponse // optional
+	UfsNameSpace       string                // optional
+	ProvisionResponses map[string][]*api.InstallResponse
+	ProvisionDevices   map[string]*api.CrosTestRequest_Device
 	SkipReason         string
+	IsAlRun            bool
 
 	// Updates
 	CurrentDutState dutstate.State
@@ -107,17 +113,43 @@ func (cmd *UpdateDutStateCmd) Execute(ctx context.Context) error {
 func (cmd *UpdateDutStateCmd) updateDevice(ctx context.Context, deviceId string) error {
 	device := cmd.ProvisionDevices[deviceId]
 	responses := cmd.ProvisionResponses[deviceId]
+	hostName := device.GetDut().GetId().GetValue()
 
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("Update Dut: %s", device.GetDut().GetId().GetValue()))
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Update Dut: %s", hostName))
 	defer func() { step.End(err) }()
 
 	logging.Infof(ctx, "deviceId: %s", deviceId)
-	triedToUpdateState := false
 
 	// setup new context if ufs namespace was provided
 	if cmd.UfsNameSpace != "" {
 		ctx = ufs.SetupContext(ctx, cmd.UfsNameSpace)
+	}
+	ctx = addNamespaceCtxIfNotPresent(ctx, ufsUtil.OSNamespace)
+
+	ufsClient, err := ufs.NewClient(ctx)
+	if err != nil {
+		logging.Infof(ctx, "failed to create ufs client, %s", err.Error())
+	}
+	machine, err := ufsClient.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, hostName),
+	})
+	if err != nil {
+		err = errors.Annotate(err, "failed to retrieve machineLSE for %s", hostName).Err()
+		logging.Infof(ctx, err.Error())
+		step.SetSummaryMarkdown(err.Error())
+		return nil
+	}
+	dutID := machine.GetMachines()[0]
+	deviceData, err := ufsClient.GetDeviceData(ctx, &ufsAPI.GetDeviceDataRequest{
+		DeviceId: machine.GetMachines()[0],
+		Hostname: hostName,
+	})
+	if err != nil {
+		err = errors.Annotate(err, "failed to get device data for %s", hostName).Err()
+		logging.Infof(ctx, err.Error())
+		step.SetSummaryMarkdown(err.Error())
+		return nil
 	}
 
 	currentDutState, err := ufs.GetDutStateFromUFS(ctx, device.GetDut().GetId().GetValue())
@@ -126,37 +158,66 @@ func (cmd *UpdateDutStateCmd) updateDevice(ctx context.Context, deviceId string)
 	}
 	logging.Infof(ctx, "Dut state before any kind of update: %s", currentDutState)
 
-	for _, response := range responses {
-		logging.Infof(ctx, "Found provision response with status: %s", response.GetStatus().String())
-		if response.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
-			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "provision")
-			break
-		}
-	}
-	if !triedToUpdateState {
-		if cmd.TestResponses == nil || cmd.TestResponses.TestCaseResults == nil || len(cmd.TestResponses.TestCaseResults) == 0 {
-			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "failed before running test(s)")
-		} else if common.IsAnyTestFailure(cmd.TestResponses.TestCaseResults) {
-			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "test(s)")
-		}
+	deviceState := currentDutState
+	repairReason := cmd.determineNeedForRepairAndModify(ctx, deviceData, responses)
+	if repairReason != "" {
+		logging.Infof(ctx, "Setting %s to NEEDS_REPAIR for failure: %s", hostName, repairReason)
+		deviceState = dutstate.NeedsRepair
 	}
 
-	if triedToUpdateState {
-		currentDutState, err = ufs.GetDutStateFromUFS(ctx, device.GetDut().GetId().GetValue())
-		if err != nil {
-			logging.Infof(ctx, "error while getting current dut state: %s", err.Error())
-		}
-		logging.Infof(ctx, "Dut state after update: %s", currentDutState)
+	_, err = updateDutState(ctx, step, ufsClient, hostName, dutID, deviceState, deviceData)
+	if err != nil {
+		logging.Infof(ctx, "error while updating dut state: %s", err.Error())
 	}
 
-	step.SetSummaryMarkdown(fmt.Sprintf("dut state: %s", currentDutState.String()))
-	step.AddTagValue("dut_state", currentDutState.String())
+	step.SetSummaryMarkdown(fmt.Sprintf("dut state: %s", deviceState.String()))
+	step.AddTagValue("dut_state", deviceState.String())
 	return nil
 }
 
+func (cmd *UpdateDutStateCmd) determineNeedForRepairAndModify(ctx context.Context, deviceData *ufsAPI.GetDeviceDataResponse, responses []*api.InstallResponse) (repairReason string) {
+	repairRequest := lab.DutState_REPAIR_REQUEST_UNKNOWN
+	osType := lab.VersionInfo_UNKNOWN
+	foundProvisionError := false
+	for _, response := range responses {
+		logging.Infof(ctx, "Found provision response with status: %s", response.GetStatus().String())
+		if response.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+			repairRequest = determineRepairRequest(response.GetStatus())
+			repairReason = "provision"
+			foundProvisionError = true
+			break
+		}
+	}
+	if !foundProvisionError {
+		osType = lab.VersionInfo_CHROMEOS
+		if cmd.IsAlRun {
+			osType = lab.VersionInfo_ANDROID
+		}
+
+		if cmd.TestResponses == nil || cmd.TestResponses.TestCaseResults == nil || len(cmd.TestResponses.TestCaseResults) == 0 {
+			repairReason = "failed before running test(s)"
+		} else if common.IsAnyTestFailure(cmd.TestResponses.TestCaseResults) {
+			repairReason = "test(s)"
+		}
+	}
+	if deviceData.GetChromeOsDeviceData() != nil {
+		if osType != lab.VersionInfo_UNKNOWN {
+			deviceData.GetChromeOsDeviceData().GetDutState().GetVersionInfo().OsType = osType
+		}
+		if repairRequest != lab.DutState_REPAIR_REQUEST_UNKNOWN {
+			if deviceData.GetChromeOsDeviceData().GetDutState().GetRepairRequests() == nil {
+				deviceData.GetChromeOsDeviceData().GetDutState().RepairRequests = []lab.DutState_RepairRequest{}
+			}
+			deviceData.GetChromeOsDeviceData().GetDutState().RepairRequests = append(deviceData.GetChromeOsDeviceData().GetDutState().RepairRequests, repairRequest)
+		}
+	}
+
+	return
+}
+
 func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
-	cmd.ProvisionResponses = make(map[string][]*testapi.InstallResponse)
-	cmd.ProvisionDevices = make(map[string]*testapi.CrosTestRequest_Device)
+	cmd.ProvisionResponses = make(map[string][]*api.InstallResponse)
+	cmd.ProvisionDevices = make(map[string]*api.CrosTestRequest_Device)
 
 	for _, deviceId := range sk.DeviceIdentifiers {
 		cmd.ProvisionResponses[deviceId] = sk.ProvisionResponses[deviceId]
@@ -173,6 +234,8 @@ func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	} else {
 		cmd.UfsNameSpace = sk.CommonConfig.GetUfsConfig().GetUfsNamespace()
 	}
+
+	cmd.IsAlRun = sk.IsAlRun
 
 	// TODO(cdelagarza): remove when confident in auto_repair
 	pool := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, common.LabelPool)
@@ -206,18 +269,60 @@ func (cmd *UpdateDutStateCmd) updateHwTestStateKeeper(
 }
 
 // updateDutState tries to update dut state
-func updateDutState(ctx context.Context, hostName string, dutState dutstate.State, failureType string) bool {
-	logging.Infof(ctx, "Trying to update dut state to %s due to %s failure.", dutstate.NeedsRepair, failureType)
-	err := ufs.SafeUpdateUFSDUTState(ctx, hostName, dutState)
-	if err != nil {
-		logging.Infof(ctx, "Error while updating dut state: %s", err)
-		return false
+func updateDutState(ctx context.Context, step *build.Step, ufsClient ufsAPI.FleetClient, hostName, dutID string, dutState dutstate.State, deviceData *ufsAPI.GetDeviceDataResponse) (*ufsAPI.UpdateTestDataResponse, error) {
+	request := &ufsAPI.UpdateTestDataRequest{
+		DeviceId:      dutID,
+		Hostname:      hostName,
+		ResourceState: dutstate.ConvertToUFSState(dutState),
+		DeviceData: &ufsAPI.UpdateTestDataRequest_ChromeosData{
+			ChromeosData: &ufsAPI.UpdateTestDataRequest_ChromeOs{
+				DutState: deviceData.GetChromeOsDeviceData().GetDutState(),
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{
+			Paths: []string{
+				"dut.state",
+				"dut_state.version_info",
+				"dut_state.repair_requests",
+			},
+		},
 	}
-	return true
+	common.WriteProtoToStepLog(ctx, step, request, "update request")
+	return ufsClient.UpdateTestData(ctx, request)
 }
 
 func NewUpdateDutStateCmd() *UpdateDutStateCmd {
 	abstractCmd := interfaces.NewAbstractCmd(UpdateDutStateCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &UpdateDutStateCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
+}
+
+// addNamespaceCtxIfNotPresent checks if a namespace is set in the metadata
+// contained in the context. If not, sets it to the default value specified in
+// namespace.
+func addNamespaceCtxIfNotPresent(ctx context.Context, namespace string) context.Context {
+	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
+		// we found a namespace already set in the context, so should just use that
+		if _, ok := existingMetadata[ufsUtil.Namespace]; ok {
+			return ctx
+		}
+	}
+
+	newMetadata := metadata.Pairs(ufsUtil.Namespace, namespace)
+	return metadata.NewOutgoingContext(ctx, newMetadata)
+}
+
+func determineRepairRequest(provisionStatus api.InstallResponse_Status) lab.DutState_RepairRequest {
+	switch provisionStatus {
+	case
+		api.InstallResponse_STATUS_UNSPECIFIED,
+		api.InstallResponse_STATUS_INVALID_REQUEST,
+		api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION,
+		api.InstallResponse_STATUS_DOWNLOADING_IMAGE_FAILED,
+		api.InstallResponse_STATUS_GS_UPLOAD_FAILED,
+		api.InstallResponse_STATUS_SUCCESS:
+		return lab.DutState_REPAIR_REQUEST_UNKNOWN
+	default:
+		return lab.DutState_REPAIR_REQUEST_PROVISION
+	}
 }
