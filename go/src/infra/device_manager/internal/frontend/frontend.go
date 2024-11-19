@@ -169,6 +169,10 @@ func (s *Server) BulkLeaseDevices(ctx context.Context, r *api.BulkLeaseDevicesRe
 
 // ReleaseDevice releases the leased device.
 func (s *Server) ReleaseDevice(ctx context.Context, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
+	logging.Debugf(ctx, "ReleaseDevice: received request %v", r)
+	if r.GetLeaseId() == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "ReleaseDevice: no lease id provided")
+	}
 	return controller.ReleaseDevice(ctx, s.ServiceClients.DBClient.Conn, r)
 }
 
