@@ -10,7 +10,7 @@ unified UI for managing machines in the fleet.
 From the root directory for this repo.
 
 ```sh
-go build  ./cmd/fleetconsoleserver
+go build ./cmd/fleetconsoleserver
 ./fleetconsoleserver
 ```
 
@@ -18,6 +18,31 @@ go build  ./cmd/fleetconsoleserver
 
 * See: [Milo UI docs on running / building code](https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/milo/ui/docs/guides/local_development_workflows.md)
 * Client code dir: https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/milo/ui/src/fleet/
+
+## How to manually test
+
+This codebase include a Fleet Console CLI tool for the purpose of helping test
+the functionality of Fleet Console Server.
+
+To build / run the CLI, run:
+
+```sh
+go build ./cmd/consoleadmin
+./consoleadmin
+```
+
+You can do a liveness check for the local Fleet Console backend like so:
+
+```sh
+./consoleadmin ping
+{}
+```
+
+To see more commands available in the CLI run:
+
+```sh
+./consoleadmin help
+```
 
 ## How to run tests
 
