@@ -295,7 +295,8 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	ctpReq.SchedulerInfo = buildSchedulerInfo(testJobMsg)
 	ctpReq.Pool = getSchedulingPool(testJobMsg)
 	if ctpReq.Pool == "" {
-		return fmt.Errorf("no pool found")
+		// Default to dut_pool_quota
+		ctpReq.Pool = "DUT_POOL_QUOTA"
 	}
 	ctpReq.KarbonFilters = getKarbonFilters()
 	if skipAntsFilter {
@@ -353,6 +354,11 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		buildFlavor = testJobMsg.Build.BuildFlavor
 		buildTarget = testJobMsg.Build.BuildTarget
 		buildType = testJobMsg.Build.BuildType
+	}
+
+	// replace wrong formatted build target
+	if buildFlavor == "brya-userdebug" {
+		buildFlavor = "brya-trunk_staging-userdebug"
 	}
 
 	if len(testJobMsg.ExtraBuilds) != 0 {
@@ -503,6 +509,18 @@ func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage
 	}
 	if buildTarget == "" {
 		return nil, fmt.Errorf("no buildTarget found")
+	}
+
+	// Default values
+	if len(swarmingDims) == 0 {
+		swarmingDims = []string{"label-servo_state:WORKING", "label-servo_usb_state:NORMAL"}
+	}
+	if len(models) == 0 {
+		if primaryBoard == "brya" {
+			models = []string{"marasov"}
+		} else if primaryBoard == "corsola" {
+			models = []string{"magneton"}
+		}
 	}
 
 	scheduleTargetsList := []*api.ScheduleTargets{}
