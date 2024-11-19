@@ -6,12 +6,10 @@ package external
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"google.golang.org/grpc"
 
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/gae/impl/memory"
@@ -19,31 +17,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/util"
 )
-
-type fakeInventoryClient struct {
-	GetDeviceConfigResp    *deviceconfig.Config
-	GetDeviceConfigErr     bool
-	DeviceConfigExistsResp *invV2Api.DeviceConfigsExistsResponse
-	DeviceConfigExistsErr  bool
-}
-
-func (ic *fakeInventoryClient) DeviceConfigsExists(ctx context.Context, in *invV2Api.DeviceConfigsExistsRequest, opts ...grpc.CallOption) (*invV2Api.DeviceConfigsExistsResponse, error) {
-	if ic.DeviceConfigExistsErr {
-		return nil, errors.New("error fetching device configs")
-	}
-	return ic.DeviceConfigExistsResp, nil
-}
-
-func (ic *fakeInventoryClient) GetDeviceConfig(ctx context.Context, in *invV2Api.GetDeviceConfigRequest, opts ...grpc.CallOption) (*deviceconfig.Config, error) {
-	if ic.GetDeviceConfigErr {
-		return nil, errors.New("error fetching device config")
-	}
-	return ic.GetDeviceConfigResp, nil
-}
 
 // makeDevCfgForTesting creates a basic DeviceConfig. These configs have no
 // guarantee to make sense at a domain level, but can be used to verify code
@@ -64,8 +40,6 @@ func TestGetDeviceConfig(t *testing.T) {
 	tests := []struct {
 		name    string
 		inUFS   bool
-		invResp *deviceconfig.Config
-		invErr  bool
 		cfgID   *deviceconfig.ConfigId
 		want    *deviceconfig.Config
 		wantErr bool
@@ -73,8 +47,6 @@ func TestGetDeviceConfig(t *testing.T) {
 		{
 			name:    "empty config",
 			inUFS:   true,
-			invResp: nil,
-			invErr:  true,
 			cfgID:   configuration.GetConfigID("", "", ""),
 			want:    nil,
 			wantErr: true,
@@ -82,8 +54,6 @@ func TestGetDeviceConfig(t *testing.T) {
 		{
 			name:    "config in UFS",
 			inUFS:   true,
-			invResp: nil,
-			invErr:  true,
 			cfgID:   configuration.GetConfigID("zork", "gumboz", ""),
 			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"}),
 			wantErr: false,
@@ -91,49 +61,13 @@ func TestGetDeviceConfig(t *testing.T) {
 		{
 			name:    "fallback config in UFS",
 			inUFS:   true,
-			invResp: nil,
-			invErr:  true,
 			cfgID:   configuration.GetConfigID("zork", "gumboz", "12345"),
-			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"}),
-			wantErr: false,
-		},
-		{
-			name:  "config in inventoryv2",
-			inUFS: false,
-			invResp: &deviceconfig.Config{
-				Id: &deviceconfig.ConfigId{
-					PlatformId: &deviceconfig.PlatformId{Value: "zork"},
-					ModelId:    &deviceconfig.ModelId{Value: "gumboz"},
-					VariantId:  &deviceconfig.VariantId{Value: ""},
-				},
-				Tam: []string{"inventory@google.com"},
-			},
-			invErr:  false,
-			cfgID:   configuration.GetConfigID("zork", "gumboz", ""),
-			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"inventory@google.com"}),
-			wantErr: false,
-		},
-		{
-			name:  "config in inventoryv2 and UFS", // same board/model but inventoryv2 has different TAM
-			inUFS: true,
-			invResp: &deviceconfig.Config{
-				Id: &deviceconfig.ConfigId{
-					PlatformId: &deviceconfig.PlatformId{Value: "zork"},
-					ModelId:    &deviceconfig.ModelId{Value: "gumboz"},
-					VariantId:  &deviceconfig.VariantId{Value: ""},
-				},
-				Tam: []string{"inventory@google.com"},
-			},
-			invErr:  false,
-			cfgID:   configuration.GetConfigID("zork", "gumboz", ""),
 			want:    makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"}),
 			wantErr: false,
 		},
 		{
 			name:    "config nowhere",
 			inUFS:   false,
-			invResp: nil,
-			invErr:  true,
 			cfgID:   configuration.GetConfigID("other", "device", ""),
 			want:    nil,
 			wantErr: true,
@@ -166,13 +100,7 @@ func TestGetDeviceConfig(t *testing.T) {
 			}
 
 			// setup inventory and dual read clients
-			ic := &fakeInventoryClient{
-				GetDeviceConfigResp: tt.invResp,
-				GetDeviceConfigErr:  tt.invErr,
-			}
-			c := &DualDeviceConfigClient{
-				inventoryClient: ic,
-			}
+			c := &DualDeviceConfigClient{}
 
 			got, err := c.GetDeviceConfig(ctx, tt.cfgID)
 
@@ -193,48 +121,24 @@ func TestGetDeviceConfig(t *testing.T) {
 func TestDeviceConfigExists(t *testing.T) {
 	tests := []struct {
 		name    string
-		invResp *invV2Api.DeviceConfigsExistsResponse
-		invErr  bool
 		cfgIDs  []*deviceconfig.ConfigId
 		want    []bool
 		wantErr bool
 	}{
 		{
-			name:    "only UFS has some configs",
-			invResp: nil,
-			invErr:  true,
+			name:    "UFS has some configs",
 			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("zork", "gumboz", "")},
 			want:    []bool{false, true},
 			wantErr: false,
 		},
 		{
 			name:    "UFS has all configs",
-			invResp: nil,
-			invErr:  true,
 			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("zork", "gumboz2", "")},
 			want:    []bool{true, true},
 			wantErr: false,
 		},
 		{
-			name:    "only inventory has some configs",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
-			invErr:  false,
-			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
-			want:    []bool{false, true},
-			wantErr: false,
-		},
-		{
-			name:    "inventory has all configs",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: true, 1: true}},
-			invErr:  false,
-			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
-			want:    []bool{true, true},
-			wantErr: false,
-		},
-		{
 			name:    "neither have configs",
-			invResp: nil,
-			invErr:  true,
 			cfgIDs:  []*deviceconfig.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{false, false},
 			wantErr: false,
@@ -269,14 +173,8 @@ func TestDeviceConfigExists(t *testing.T) {
 				t.Errorf("error setting up test data")
 			}
 
-			// setup inventory and dual read clients
-			ic := &fakeInventoryClient{
-				DeviceConfigExistsResp: tt.invResp,
-				DeviceConfigExistsErr:  tt.invErr,
-			}
-			c := &DualDeviceConfigClient{
-				inventoryClient: ic,
-			}
+			// setup dual read clients
+			c := &DualDeviceConfigClient{}
 
 			got, err := c.DeviceConfigsExists(ctx, tt.cfgIDs)
 			if (err != nil) != tt.wantErr {

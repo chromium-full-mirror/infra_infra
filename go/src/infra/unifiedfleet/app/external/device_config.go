@@ -12,7 +12,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
@@ -41,9 +40,7 @@ type DualDeviceConfigClient struct {
 	inventoryClient InventoryDeviceConfigClient
 }
 
-// GetDeviceConfig fetches a specific device config.
-//
-// Query UFS first, if no response, fallback to call inventoryv2.
+// GetDeviceConfig fetches a specific device config in UFS.
 func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *deviceconfig.ConfigId) (*deviceconfig.Config, error) {
 	if cfgID.GetPlatformId().GetValue() == "" && cfgID.GetModelId().GetValue() == "" {
 		return nil, fmt.Errorf("cannot fetch device config for empty platform and model")
@@ -60,87 +57,26 @@ func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *dev
 		if err == nil {
 			return resp, nil
 		}
-		logging.Debugf(ctx, "GetDeviceConfig: device config IDs %v, %v not found in UFS with error: %s. falling back to inventoryv2", cfgID, fallbackID, err)
+		logging.Debugf(ctx, "GetDeviceConfig: device config IDs %v, %v not found in UFS with error: %s. Please check if this ID exist in go/cros_device_configs.", cfgID, fallbackID, err)
 	} else {
-		logging.Debugf(ctx, "GetDeviceConfig: device config ID %v not found in UFS with error: %s. falling back to inventoryv2", cfgID, err)
+		logging.Debugf(ctx, "GetDeviceConfig: device config ID %v not found in UFS with error: %s. Please check if this ID exist in go/cros_device_configs.", cfgID, err)
 	}
-
-	// if we cannot fetch from UFS, fall back to inventoryv2
-	dc, err := c.inventoryClient.GetDeviceConfig(ctx, &invV2Api.GetDeviceConfigRequest{
-		ConfigId: cfgID,
-	})
-	if err != nil || dc == nil {
-		logging.Debugf(ctx, "device config ID %v was not found in inventoryv2 with error: %s.", cfgID, err)
-	}
-	return dc, err
+	return resp, err
 }
 
 // DeviceConfigsExists detects whether any number of configs exist.
 //
 // The return is an array of booleans, where the ith boolean represents the
 // existence of the ith config.
-// It queries UFS first, if no response, fallback to call inventoryv2.
 func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs []*deviceconfig.ConfigId) ([]bool, error) {
 	ufsResultsArr, err := configuration.DeviceConfigsExistACL(ctx, cfgIDs)
-	if err == nil && allTrue(ufsResultsArr) {
-		return ufsResultsArr, nil
-	}
 	if err != nil {
-		ufsResultsArr = make([]bool, len(cfgIDs))
-		logging.Debugf(ctx, "fail to query device config IDs %v in UFS. falling back to inventoryv2", cfgIDs)
-	} else {
-		for i, r := range ufsResultsArr {
-			if !r {
-				// This is for checking if there's any missing device config ID in UFS.
-				// If not, inventoryv2 call will be deleted.
-				logging.Debugf(ctx, "device config ID %v not found in UFS. falling back to inventoryv2", cfgIDs[i])
-			}
+		return nil, err
+	}
+	for i, r := range ufsResultsArr {
+		if !r {
+			logging.Debugf(ctx, "device config ID %v not found in UFS. Please check if this ID exist in go/cros_device_configs", cfgIDs[i])
 		}
 	}
-
-	resp, err := c.inventoryClient.DeviceConfigsExists(ctx, &invV2Api.DeviceConfigsExistsRequest{
-		ConfigIds: cfgIDs,
-	})
-	if err != nil || resp == nil {
-		return ufsResultsArr, nil
-	}
-	inventoryResultsArr := mapToSlice(len(cfgIDs), resp.Exists)
-	if len(ufsResultsArr) != len(inventoryResultsArr) {
-		return nil, errors.New("unexpected diff in return lengths between UFS and inventory device config exists")
-	}
-	return mergeOr(inventoryResultsArr, ufsResultsArr), nil
-}
-
-// mapToSlice converts a map of bools to an array of bools.
-func mapToSlice(numCfgs int, existsMap map[int32]bool) []bool {
-	existsArr := make([]bool, numCfgs)
-
-	for i := range existsMap {
-		existsArr[i] = existsMap[i]
-	}
-
-	return existsArr
-}
-
-// allTrue returns whether or not the entire array is true.
-func allTrue(a []bool) bool {
-	for _, e := range a {
-		if !e {
-			return false
-		}
-	}
-
-	return true
-}
-
-// mergeOr returns the result of ORing each index in two arrays which are the
-// same size.
-func mergeOr(x []bool, y []bool) []bool {
-	newArr := make([]bool, len(x))
-
-	for i := range newArr {
-		newArr[i] = x[i] || y[i]
-	}
-
-	return newArr
+	return ufsResultsArr, err
 }
