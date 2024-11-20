@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	maxGRPCSize = 1024 * 1024 * 400
+	maxGRPCSize = 1024 * 1024 * 4000 // 4000 MB
 )
 
 type AntsPublishServer struct {
