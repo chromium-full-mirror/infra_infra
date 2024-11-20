@@ -67,11 +67,6 @@ func fetchBtpeerChameleondReleaseConfigExec(ctx context.Context, info *execs.Exe
 // chameleond release bundle based off of the chameleond config and DUT host.
 // The config of the expected bundle is stored in the scope state for later
 // reference.
-//
-// Note: For now this step ignores the DUT host and always selects the latest,
-// non-next bundle. This can be adjusted in the config using the "cros_version"
-// action arg to use a specific version (defaults to "999999999", which would
-// always be higher than every release number to make sure the latest is chosen).
 func identifyExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs.ExecInfo) error {
 	btpeerScopeState, err := getBtpeerScopeState(ctx, info)
 	if err != nil {
@@ -85,7 +80,7 @@ func identifyExpectedChameleondReleaseBundleExec(ctx context.Context, info *exec
 	actionArgs := info.GetActionArgs(ctx)
 	const crosVersionActionArgKey = "cros_version"
 	crosVersion := actionArgs.AsString(ctx, crosVersionActionArgKey, "999999999")
-	expectedBundleConfig, err := chameleond.SelectChameleondBundleByCrosReleaseVersion(btpeerScopeState.GetChameleond().GetReleaseConfig(), crosVersion)
+	expectedBundleConfig, err := chameleond.SelectChameleondBundleForDut(ctx, btpeerScopeState.GetChameleond().GetReleaseConfig(), info.GetDut().Name, crosVersion)
 	if err != nil {
 		return errors.Annotate(err, "failed to select highest non-next chameleond bundle for btpeer").Err()
 	}
