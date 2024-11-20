@@ -388,6 +388,9 @@ func executeHwTestsV2(
 		if accountId := partnerInfo.GetAccountId(); accountId > 0 {
 			common.LogWarningIfErr(ctx, sk.Injectables.Set("account-id", fmt.Sprint(accountId)))
 		}
+		if partnerGcsBucket := partnerInfo.GetGcsBucket(); partnerGcsBucket != "" {
+			common.LogWarningIfErr(ctx, sk.Injectables.Set("partner-gcs-bucket", partnerGcsBucket))
+		}
 	}
 	parentBBID, err := getParentBBID(buildState.Build())
 	if err != nil {

@@ -72,6 +72,45 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
+	// Update partnermetadata to the install request
+	err = generator.AddModification(
+		&api.PartnerMetadata{},
+		map[string]string{
+			"provision.installRequest.partnerMetadata": "",
+		},
+	)
+	if err != nil {
+		log.Printf("Error while adding modification to provision request, %s", err)
+	}
+
+	// Update partner account ID information
+	err = generator.AddModification(
+		&api.DynamicDep{
+			Key:   "installRequest.partnerMetadata.accountId",
+			Value: "account-id",
+		},
+		map[string]string{
+			"provision.dynamicDeps": "",
+		},
+	)
+	if err != nil {
+		log.Printf("Error while adding modification to provision request, %s", err)
+	}
+
+	// Update partner GCS bucket information
+	err = generator.AddModification(
+		&api.DynamicDep{
+			Key:   "installRequest.partnerMetadata.partnerGcsBucket",
+			Value: "partner-gcs-bucket",
+		},
+		map[string]string{
+			"provision.dynamicDeps": "",
+		},
+	)
+	if err != nil {
+		log.Printf("Error while adding modification to provision request, %s", err)
+	}
+
 	err = dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 	if err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
