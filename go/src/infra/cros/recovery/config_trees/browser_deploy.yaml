@@ -22945,7 +22945,7 @@ plans:
               exec_name: sample_fail
               docs:
                 - Verify that device is not reachable by SSH.
-              dependencies:
+              conditions:
                 - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:

@@ -277,7 +277,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Verify that device is not reachable by SSH.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"Device is SSHable (simple)",
 			},
 			ExecName:   "sample_fail",

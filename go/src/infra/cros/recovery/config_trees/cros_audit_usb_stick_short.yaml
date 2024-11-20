@@ -2105,7 +2105,7 @@ plans:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
-              dependencies:
+              conditions:
                 - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: ADB Connect DUT ('ctr_adb_connect')
         - name: Audit USB-drive from DUT ('audit_usb_from_dut_side') (time:'1h0m0s')
