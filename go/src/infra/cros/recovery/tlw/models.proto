@@ -247,6 +247,10 @@ message VersionRequest {
     CROS = 1;
     // AP/PCAP peripheral.
     WIFI_ROUTER = 2;
+    // Tablet for camera-box.
+    TABLET = 3;
+    // Android for ChromeOS.
+    AndroidOS = 4;
   }
   // Version type describe type of versions and device type associated with
   // that.
