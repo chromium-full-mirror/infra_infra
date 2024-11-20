@@ -167,7 +167,7 @@ const (
 // 2) Check if the action is applicable based on conditions. Skip if any fail.
 // 3) Run dependencies of the action. Fail if any fails.
 // 4) Run action exec function. Fail if any fail.
-func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction string, enableRecovery bool, stepNamePrefix string, actionType metrics.ActionType, actionLevel int64) (metric *metrics.Action, status actionRunStatus, rErr error) {
+func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction string, enableRecovery bool, stepNamePrefix string, actionType metrics.ActionType, actionLevel int64) (metric *metrics.Action, rStatus actionRunStatus, rErr error) {
 	// The step and metrics need to know about error but if we need to stop from return then it is here.
 	forgiveError := false
 	defer func() {
@@ -177,12 +177,20 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 		}
 	}()
 	var step *build.Step
+	var stepSummaryMarkdown string
 	act := r.getAction(actionName)
 	if r.args != nil {
 		if r.args.ShowSteps {
 			stepName := fmt.Sprintf("%s: %s", stepNamePrefix, actionName)
 			step, ctx = build.StartStep(ctx, stepName)
-			defer func() { step.End(rErr) }()
+			defer func() {
+				if stepSummaryMarkdown != "" {
+					step.Modify(func(v *build.StepView) {
+						v.SummaryMarkdown = stepSummaryMarkdown
+					})
+				}
+				step.End(rErr)
+			}()
 			stepLogCloser := log.AddStepLog(ctx, r.args.Logger, step, "execution details")
 			defer func() { stepLogCloser() }()
 		}
@@ -278,6 +286,7 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 		if metric != nil {
 			metric.Status = metrics.ActionStatusSkip
 		}
+		stepSummaryMarkdown = fmt.Sprintf("Skipped: due condition %q", conditionName)
 		// Return nil error so we can continue execution of next actions...
 		return metric, actionSkip, nil
 	}
