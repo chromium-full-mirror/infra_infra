@@ -83,6 +83,7 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.devPrintProto, "log-proto", false, "Print proto data of dut. Default is no.")
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
+		c.Flags.BoolVar(&c.noCft, "no-cft", true, "Disable CFT. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
 		c.Flags.BoolVar(&c.devOptionActive, "dev-active", true, `Set DevOption Active. Default true.`)
 		c.Flags.StringVar(&c.namespace, "namespace", "os", `Specify which namespace to use. The default is "os".`)
@@ -108,6 +109,7 @@ type localRecoveryRun struct {
 	generateLogFiles      bool
 	taskName              string
 	namespace             string
+	noCft                 bool
 
 	devPrintProto   bool
 	devOptionActive bool
@@ -229,18 +231,24 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	}
 	params[scopes.ParamKeySwarmingTaskID] = c.swarmingID
 	params[scopes.ParamKeyBuildbucketID] = c.bbID
-	cftInfo := &cft.Info{
-		UnitName:       unit,
-		CreateStep:     c.showSteps,
-		RootDir:        logRoot,
-		SwarmingTaskID: c.swarmingID,
-		BBID:           c.bbID,
-	}
-	if ctr, cftCloser, err := cft.Prepare(ctx, cftInfo, metrics, logger); err != nil {
-		return errors.Annotate(err, "local recovery: start cft").Err()
-	} else {
-		params[scopes.ParamKeyCTRClient] = ctr
-		defer cftCloser(ctx)
+	if !c.noCft {
+		cftInfo := &cft.Info{
+			UnitName:       unit,
+			CreateStep:     c.showSteps,
+			RootDir:        logRoot,
+			SwarmingTaskID: c.swarmingID,
+			BBID:           c.bbID,
+		}
+		if ctr, cftCloser, err := cft.Prepare(ctx, cftInfo, metrics, logger); err != nil {
+			return errors.Annotate(err, "local recovery: start cft").Err()
+		} else {
+			params[scopes.ParamKeyCTRClient] = ctr
+			defer func() {
+				if err := cftCloser(ctx); err != nil {
+					logger.Infof("Fail to close cft client: %s", err)
+				}
+			}()
+		}
 	}
 	ctx = scopes.WithParams(ctx, params)
 	access, err := recovery.NewLocalTLWAccess(ic, csac)
