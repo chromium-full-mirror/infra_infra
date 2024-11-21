@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -187,20 +188,19 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "failed to create filters: ").Err()
 	}
 
-	if cmd.IsAlRun && cmd.IsPartnerRun {
-		for _, filter := range ctpFilters {
-			// TODO (cdelagarza): remove this custom filter check once they are upreved
-			if filter.GetContainerInfo().GetContainer().GetName() != "cros-test-finder" && filter.GetContainerInfo().GetContainer().GetName() != "pre-process-filter" {
+	manuallyUprevedFilters := []string{
+		"cros-test-finder",
+		"pre-process-filter",
+		"cros-ddd-filter",
+		"autovm_test_shifter_filter",
+	}
+	for _, filter := range ctpFilters {
+		// TODO (cdelagarza): remove this custom filter check once they are upreved
+		if !slices.Contains(manuallyUprevedFilters, filter.GetContainerInfo().GetContainer().GetName()) {
+			if cmd.IsAlRun && cmd.IsPartnerRun {
 				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-firestore", firestoreDBName)
 			}
-		}
-	}
-
-	if cmd.Environment != common.Prod.String() {
-		for _, filter := range ctpFilters {
-			if filter.GetContainerInfo().GetContainer().GetName() == "ants-publish-filter" {
-				filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-publish-path", common.LabelStaging)
-			}
+			filter.GetContainerInfo().BinaryArgs = append(filter.GetContainerInfo().GetBinaryArgs(), "-env", cmd.Environment)
 		}
 	}
 

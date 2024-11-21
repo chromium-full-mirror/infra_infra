@@ -82,7 +82,7 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, apu.PublishPath, "ants-publish")
+	apu.PublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, apu.PublishPath, "ants-publish")
 	if err != nil {
 		return req, err
 	}
@@ -101,7 +101,7 @@ func main() {
 	publishRequestUpdater := &ANTSPublishUpdater{}
 
 	fs := flag.NewFlagSet("Run ants publish filter", flag.ExitOnError)
-	fs.StringVar(&publishRequestUpdater.PublishPath, "publish-path", common.LabelProd, "SHA256 value for testing publish container")
+	fs.StringVar(&publishRequestUpdater.PublishPath, "publish-path", "", "SHA256 value for testing publish container")
 	fs.StringVar(&publishRequestUpdater.InvocationID, "invocation-id", "", "ants invocation id")
 	fs.StringVar(&publishRequestUpdater.WorkUnitID, "workunit-id", "", "parent workunit id")
 	fs.StringVar(&publishRequestUpdater.AccountID, "account-id", "", "account id")

@@ -14,6 +14,7 @@ import (
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -309,19 +310,26 @@ func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
 
 // ProcessContainerPath processes a provided path and determines whether it needs to
 // pull from the firestoreDatabase provided.
-func ProcessContainerPath(ctx context.Context, firestoreDatabaseName, creds, path, firestoreName string) (processedPath string, err error) {
-	switch path {
-	case LabelProd, LabelStaging:
-		testContainer, err := FetchFilterFromFirestore(ctx, firestoreDatabaseName, creds, path, firestoreName)
-		if err != nil {
-			return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
-		}
-		processedPath, err = CreateImagePath(testContainer.GetContainerInfo().GetContainer())
-		if err != nil {
-			return "", fmt.Errorf("failed to create image path, %w", err)
-		}
+func ProcessContainerPath(ctx context.Context, commonParams *server.CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
+	if path != "" {
+		return path, nil
+	}
+
+	var env string
+	switch commonParams.Environment {
+	case Prod.String(), LabelProd:
+		env = LabelProd
 	default:
-		processedPath = path
+		env = LabelStaging
+	}
+
+	testContainer, err := FetchFilterFromFirestore(ctx, commonParams.FirestoreDatabaseName, creds, env, firestoreName)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch %s, %w", firestoreName, err)
+	}
+	processedPath, err = CreateImagePath(testContainer.GetContainerInfo().GetContainer())
+	if err != nil {
+		return "", fmt.Errorf("failed to create image path, %w", err)
 	}
 
 	return

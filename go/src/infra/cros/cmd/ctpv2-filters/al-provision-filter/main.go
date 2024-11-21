@@ -39,11 +39,11 @@ func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *l
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	pru.ProvisionPath, err = common.ProcessContainerPath(context.Background(), commonParams.FirestoreDatabaseName, dockerKeyFile, pru.ProvisionPath, "foil-provision")
+	pru.ProvisionPath, err = common.ProcessContainerPath(context.Background(), commonParams, dockerKeyFile, pru.ProvisionPath, "foil-provision")
 	if err != nil {
 		return req, err
 	}
-	pru.ServoPath, err = common.ProcessContainerPath(context.Background(), commonParams.FirestoreDatabaseName, dockerKeyFile, pru.ServoPath, "servo-nexus")
+	pru.ServoPath, err = common.ProcessContainerPath(context.Background(), commonParams, dockerKeyFile, pru.ServoPath, "servo-nexus")
 	if err != nil {
 		return req, err
 	}
@@ -63,8 +63,8 @@ func main() {
 		LatestBuildsByBoard: make(map[string]int),
 	}
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
-	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", common.LabelProd, "SHA256 value for provision container")
-	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", common.LabelProd, "SHA256 value for servo-nexus container")
+	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
+	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
 	err := server.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
 	if err != nil {
 		os.Exit(2)

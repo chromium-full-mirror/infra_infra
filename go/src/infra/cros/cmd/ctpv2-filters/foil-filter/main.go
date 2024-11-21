@@ -34,15 +34,15 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}
 
-	ru.TestPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.TestPath, "foil-test")
+	ru.TestPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.TestPath, "foil-test")
 	if err != nil {
 		return req, err
 	}
-	ru.GcsPublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
+	ru.GcsPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.GcsPublishPath, "gcs-publish")
 	if err != nil {
 		return req, err
 	}
-	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams.FirestoreDatabaseName, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
+	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
 	if err != nil {
 		return req, err
 	}
@@ -74,9 +74,9 @@ func processContainerPath(ctx context.Context, firestoreDatabasename, creds, pat
 func main() {
 	requestUpdater := &FoilRequestUpdater{}
 	fs := flag.NewFlagSet("Run foil request-updater", flag.ExitOnError)
-	fs.StringVar(&requestUpdater.TestPath, "test-path", common.LabelProd, "SHA256 value for test container")
-	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", common.LabelProd, "SHA256 value for gcs publish container")
-	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", common.LabelProd, "SHA256 value for rdb publish container")
+	fs.StringVar(&requestUpdater.TestPath, "test-path", "", "SHA256 value for test container")
+	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
+	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 
 	err := server.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
