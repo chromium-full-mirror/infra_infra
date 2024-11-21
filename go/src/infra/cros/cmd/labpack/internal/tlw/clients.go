@@ -22,6 +22,7 @@ import (
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
+	"infra/cros/recovery/version"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -54,6 +55,7 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoo
 	params := scopes.GetParamCopy(ctx)
 	if csac != nil {
 		params[scopes.ParamKeyStableVersionServicePath] = in.AdminService
+		ctx = version.WithClient(ctx, csac)
 	}
 	if ic != nil {
 		params[scopes.ParamKeyInventoryServicePath] = in.InventoryService

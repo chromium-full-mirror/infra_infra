@@ -34,6 +34,7 @@ import (
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/namespace"
 	"infra/cros/recovery/scopes"
+	"infra/cros/recovery/version"
 	"infra/libs/skylab/buildbucket"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -225,6 +226,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	params := scopes.GetParamCopy(ctx)
 	if csac != nil {
 		params[scopes.ParamKeyStableVersionServicePath] = e.AdminService
+		ctx = version.WithClient(ctx, csac)
 	}
 	if ic != nil {
 		params[scopes.ParamKeyInventoryServicePath] = e.UFSService
