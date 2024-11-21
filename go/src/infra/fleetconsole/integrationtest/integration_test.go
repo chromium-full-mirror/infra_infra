@@ -21,6 +21,8 @@ import (
 
 // TestPing tests the ping RPC.
 func TestPing(t *testing.T) {
+	t.Skip("re-enable the integration test when communication with the backend is working.")
+
 	t.Parallel()
 
 	ctx := context.Background()
