@@ -82,9 +82,6 @@ def RunInfraFrontendTests(api, root_path):
   """This function runs the UI tests in `infra` project.
   """
 
-  cwd = root_path.joinpath('appengine', 'monorail')
-  RunFrontendTests(api, cwd, 'monorail')
-
   cwd = root_path.joinpath('go', 'src', 'infra', 'appengine', 'dashboard',
                            'frontend')
   RunFrontendTests(api, cwd, 'chopsdash')

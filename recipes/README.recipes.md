@@ -1753,7 +1753,7 @@ before we discover that e.g. amd64 is broken.
 [DEPS](/recipes/recipes/infra_frontend_tester.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#108)(api, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#105)(api, cwd, app_name):**
 
 &mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#81)(api, root_path):**
 
@@ -1765,7 +1765,7 @@ This function runs the UI tests in `infra` project.
 This function runs UI tests in `infra_internal` project.
   
 
-&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#97)(api, root_path):**
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#94)(api, root_path):**
 
 This function runs UI tests in the `luci-go` project.
   

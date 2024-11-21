@@ -348,7 +348,7 @@ def run_python_tests(api, checkout, project_name):
 
     if ((api.platform.is_linux or api.platform.is_mac) and
         project_name == 'infra'):
-      for app in ['monorail', 'predator', 'findit']:
+      for app in ['predator', 'findit']:
         cwd = checkout.path / project_name / 'appengine' / app
         if app == 'predator':
           cwd = cwd / 'app'

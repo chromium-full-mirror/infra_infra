@@ -108,7 +108,7 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
           )
 
       if api.platform.is_linux or api.platform.is_mac:
-        for app in ['monorail', 'predator', 'findit']:
+        for app in ['predator', 'findit']:
           if any(f.startswith('appengine/%s' % app) for f in files):
             cwd = api.path.checkout_dir.joinpath('appengine', app)
             if app == 'predator':
@@ -247,8 +247,6 @@ def GenTests(api):
 
   yield (test('infra_internal_with_chromium_dash', internal=True) +
          diff('appengine/chromiumdash/foo.py'))
-
-  yield (test('monorail') + diff('appengine/monorail/foo.py'))
 
   yield (test('predator') + diff('appengine/predator/foo.py'))
 
