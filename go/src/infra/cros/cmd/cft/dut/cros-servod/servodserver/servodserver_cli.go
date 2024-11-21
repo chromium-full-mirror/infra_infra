@@ -107,7 +107,7 @@ func (s *ServodService) startServodOnSatlab(servodDockerContainerName string) er
 	s.dockerClient = dockerClient
 	if ip, err := s.getSatlabServodContainerIP(context.Background(), servodDockerContainerName); err == nil && ip != "" {
 		s.logger.Println("Servo Container already running.")
-		return nil
+		return errors.New(jobRunning)
 	}
 	s.logger.Println("Starting servod container on Satlab.")
 	conn, err := grpc.Dial(SatlabRPCServer, grpc.WithInsecure())
@@ -144,9 +144,7 @@ func (s *ServodService) startServoLabStation(a model.CliArgs) error {
 		return err
 	}
 	bOut, bErr, err = s.commandexecutor.Run(a.ServoHostPath, command, nil, false)
-	if err != nil && strings.Contains(bErr.String(), jobRunning) {
-		return nil
-	} else if err != nil {
+	if err != nil {
 		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
 	}
 	command = fmt.Sprintf("servodtool instance wait-for-active --timeout 60 -p %v", a.ServodPort)
