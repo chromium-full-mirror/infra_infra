@@ -7,6 +7,8 @@ package adb
 
 import (
 	"context"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -89,4 +91,18 @@ func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (
 		return nil, errors.Reason("adb service client: fail to create client").Err()
 	}
 	return client, nil
+}
+
+// Port provides port number for ADB connect.
+func Port(ctx context.Context) int {
+	val := strings.TrimSpace(os.Getenv("ADB_CONNECTION_PORT"))
+	if val != "" {
+		if port, err := strconv.Atoi(val); err != nil {
+			log.Infof(ctx, "Fail to parse ADB port from environment: %q, will use default port 22", val)
+		} else {
+			return port
+		}
+	}
+	// Default ADB port for connection.
+	return 22
 }

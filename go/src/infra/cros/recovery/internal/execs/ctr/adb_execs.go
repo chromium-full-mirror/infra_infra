@@ -125,8 +125,8 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "adb connect").Err()
 	}
 
+	adbPort := adb.Port(ctx)
 	argsMap := info.GetActionArgs(ctx)
-	adbPort := argsMap.AsInt(ctx, "adb_port", 5555)
 	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
