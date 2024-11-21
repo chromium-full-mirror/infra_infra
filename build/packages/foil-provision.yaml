@@ -1,0 +1,10 @@
+package: chromiumos/infra/cft/provision/foil-provision/${platform}
+description: foil-provision is the CFT container handling foil provisioning.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/cft/provision/foil-provision
+root: ../../go/bin
+data:
+  - file: foil-provision${exe_suffix}
+  - version_file: .versions/foil-provision${exe_suffix}.cipd_version
