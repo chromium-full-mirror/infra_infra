@@ -117,7 +117,8 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 		return errors.Annotate(err, "run resource %q", resource).Err()
 	}
 	if runMetric != nil {
-		metricsApplyBoardModel(ctx, dut, runMetric, resource)
+		runMetric.Board = dut.GetBoard()
+		runMetric.Model = dut.GetModel()
 		runMetric.Observations = append(runMetric.Observations,
 			metrics.NewStringObservation("device_type", dut.SetupType.String()),
 			metrics.NewStringObservation("start_dut_state", string(dut.State)),
@@ -505,29 +506,14 @@ func runDUTPlanPerResource(ctx context.Context, resource, planName string, plan 
 				metrics.NewStringObservation("plan_resource", execArgs.ResourceName),
 			)
 			metric.PlanName = planName
-			metricsApplyBoardModel(ctx, execArgs.DUT, metric, resource)
+			metric.Board = execArgs.DUT.GetBoard()
+			metric.Model = execArgs.DUT.GetModel()
 			return metricSaver(metric)
 		}
 		return nil
 	}
 	err := engine.Run(ctx, planName, plan, execArgs, planResourceMetricSaver)
 	return errors.Annotate(err, "run plan %q for %q", planName, execArgs.ResourceName).Err()
-}
-
-func metricsApplyBoardModel(ctx context.Context, dut *tlw.Dut, metric *metrics.Action, resource string) {
-	switch {
-	case dut.GetChromeos() != nil:
-		metric.Board = dut.GetChromeos().GetBoard()
-		metric.Model = dut.GetChromeos().GetModel()
-	case dut.GetAndroid() != nil:
-		metric.Board = dut.GetAndroid().GetBoard()
-		metric.Model = dut.GetAndroid().GetModel()
-	case dut.GetDevBoard() != nil:
-		metric.Board = dut.GetDevBoard().GetBoard()
-		metric.Model = dut.GetDevBoard().GetModel()
-	default:
-		log.Warningf(ctx, "The dut %q is neither CrOS nor Android nor DevBoard", resource)
-	}
 }
 
 // collectResourcesForPlan collect resource names for supported plan.

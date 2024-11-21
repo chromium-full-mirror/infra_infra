@@ -137,3 +137,27 @@ func (d *Dut) GetVersionInfo() *VersionInfo {
 	}
 	return d.VersionInfo
 }
+
+// GetBoard provides board name of DUT.
+func (d *Dut) GetBoard() string {
+	if ch := d.GetChromeos(); ch != nil {
+		return ch.GetBoard()
+	} else if db := d.GetDevBoard(); db != nil {
+		return db.GetBoard()
+	} else if a := d.GetAndroid(); a != nil {
+		return a.GetBoard()
+	}
+	return ""
+}
+
+// GetModel provides model name of DUT.
+func (d *Dut) GetModel() string {
+	if ch := d.GetChromeos(); ch != nil {
+		return ch.GetModel()
+	} else if db := d.GetDevBoard(); db != nil {
+		return db.GetModel()
+	} else if a := d.GetAndroid(); a != nil {
+		return a.GetModel()
+	}
+	return ""
+}
