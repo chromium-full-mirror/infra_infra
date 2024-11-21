@@ -9992,9 +9992,8 @@ plans:
                 - retry_count:3
                 - retry_interval:3
                 - timeout:5
-                - adb_port:5555
               docs:
-                - Exec ADB connect to the DUT by ethernet on port 5555.
+                - Exec ADB connect to the DUT by ethernet.
         - name: Chrome OS checks
           exec_name: sample_pass
           docs:
@@ -96649,7 +96648,7 @@ plans:
                   exec_args:
                     - command:reboot
                   docs:
-                    - Exec ADB connect to the DUT by ethernet on port 5555.
+                    - Reboot by ADB util.
                   conditions:
                     - name: Is Andoid based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
@@ -97400,7 +97399,7 @@ plans:
                   exec_args:
                     - command:reboot
                   docs:
-                    - Exec ADB connect to the DUT by ethernet on port 5555.
+                    - Reboot by ADB util.
                   conditions:
                     - name: Is Andoid based (ALWAYS_RUN)
                       exec_name: cros_is_android_based

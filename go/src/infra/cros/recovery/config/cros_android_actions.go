@@ -71,19 +71,18 @@ func androidActions(actions map[string]*Action) {
 		},
 		"ADB Connect DUT": {
 			Docs: []string{
-				"Exec ADB connect to the DUT by ethernet on port 5555.",
+				"Exec ADB connect to the DUT by ethernet.",
 			},
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
 				"retry_count:3",
 				"retry_interval:3",
 				"timeout:5",
-				"adb_port:5555",
 			},
 		},
 		"Reboot by ADB": {
 			Docs: []string{
-				"Exec ADB connect to the DUT by ethernet on port 5555.",
+				"Reboot by ADB util.",
 			},
 			Conditions: []string{
 				"Is Andoid based",

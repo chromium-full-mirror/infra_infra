@@ -6176,9 +6176,8 @@ plans:
                 - retry_count:3
                 - retry_interval:3
                 - timeout:5
-                - adb_port:5555
               docs:
-                - Exec ADB connect to the DUT by ethernet on port 5555.
+                - Exec ADB connect to the DUT by ethernet.
         - name: Audit USB-drive from DUT (time:'1h0m0s')
           exec_name: audit_usb_from_dut_side
           exec_args:

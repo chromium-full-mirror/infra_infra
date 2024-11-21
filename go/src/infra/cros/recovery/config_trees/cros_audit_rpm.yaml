@@ -6176,9 +6176,8 @@ plans:
                 - retry_count:3
                 - retry_interval:3
                 - timeout:5
-                - adb_port:5555
               docs:
-                - Exec ADB connect to the DUT by ethernet on port 5555.
+                - Exec ADB connect to the DUT by ethernet.
         - name: Verify RPM config
           exec_name: sample_pass
           docs:
