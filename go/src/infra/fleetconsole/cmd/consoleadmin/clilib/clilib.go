@@ -10,10 +10,12 @@ import (
 
 	"github.com/maruel/subcommands"
 
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/fleetconsole/internal/commands"
+	"infra/fleetconsole/internal/site"
 )
 
 // Application returns the consoleadmin command line application.
@@ -28,6 +30,10 @@ func Application() *cli.Application {
 			subcommands.CmdHelp,
 			commands.PingCommand,
 			commands.PingDeviceManagerCommand,
+			subcommands.Section("Authentication"),
+			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
+			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
+			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
 		},
 	}
 }
