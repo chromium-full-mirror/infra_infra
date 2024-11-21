@@ -1,0 +1,83 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	"context"
+	"testing"
+
+	androidapi "infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
+	"infra/cros/cmd/ctpv2/data"
+
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"infra/cros/cmd/common_lib/common"
+
+	"github.com/golang/mock/gomock"
+	"go.chromium.org/chromiumos/config/go/test/api"
+)
+
+func TestUpdateInvocationProperties(t *testing.T) {
+	ctx := context.Background()
+
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
+
+	mockInvService := mock_androidapi.NewMockInvocationService(mockCtl)
+	s := &androidapi.Service{InvocationService: mockInvService}
+	inv := &androidbuildinternal.Invocation{InvocationId: "I123"}
+
+	testCases := []struct {
+		name     string
+		cbIngest bool
+	}{
+		{
+			name:     "cbProp",
+			cbIngest: true,
+		},
+		{
+			name: "noProp",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			args := []*api.Arg{}
+			if tc.cbIngest {
+				args = append(args, &api.Arg{Flag: common.InvocationDataFlag, Value: common.CbIngestionValue})
+			}
+
+			wu := &androidapi.WorkUnitNode{}
+			wu.SetWorkUnit(&androidbuildinternal.WorkUnit{InvocationId: "I123"})
+			cmd := &AlStatusUpdateCmd{
+				AlStateInfo: &data.AlStateInfo{
+					WorkUnitTrees: map[string]*androidapi.WorkUnitTree{"test": {Head: wu}},
+				},
+				CtpRequest: &api.CTPRequest{
+					SuiteRequest: &api.SuiteRequest{
+						SuiteRequest: &api.SuiteRequest_TestSuite{
+							TestSuite: &api.TestSuite{
+								ExecutionMetadata: &api.ExecutionMetadata{Args: args},
+							},
+						},
+					},
+				},
+			}
+
+			if tc.cbIngest {
+				mockInvService.EXPECT().Get("I123").Return(inv, nil)
+				inv.Properties = []*androidbuildinternal.Property{
+					{Name: common.CbPropName, Value: "yes"},
+					{Name: common.CbMetricsPropName, Value: "yes"},
+				}
+				mockInvService.EXPECT().Update("I123", inv).Return(inv, nil)
+			}
+			err := cmd.updateInvocationProperties(ctx, s)
+			if err != nil {
+				t.Errorf("Unexpected error: %q", err)
+			}
+		})
+	}
+}

@@ -7,8 +7,10 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -31,6 +33,9 @@ type AlStatusUpdateCmd struct {
 
 	// Deps
 	AlStateInfo *data.AlStateInfo
+
+	// CTPRequest
+	CtpRequest *testapi.CTPRequest
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -64,7 +69,7 @@ func (cmd *AlStatusUpdateCmd) UpdateStateKeeper(
 	var err error
 	switch sk := ski.(type) {
 	case *data.FilterStateKeeper:
-		err = cmd.updateScheduleStateKeeper(ctx, sk)
+		err = cmd.updateScheduleStateKeeper(sk)
 	}
 
 	if err != nil {
@@ -74,7 +79,7 @@ func (cmd *AlStatusUpdateCmd) UpdateStateKeeper(
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
+func (cmd *AlStatusUpdateCmd) updateScheduleStateKeeper(sk *data.FilterStateKeeper) error {
 	sk.AlStateInfo = cmd.AlStateInfo
 
 	return nil
@@ -92,9 +97,14 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("cmd %q missing dependency: BuildState", cmd.GetCommandType())
 	}
 
+	if sk.CtpReq == nil {
+		return fmt.Errorf("cmd %q missing dependency: CtpRequest", cmd.GetCommandType())
+	}
+
 	cmd.AlStateInfo = sk.AlStateInfo
 	cmd.BuildState = sk.BuildState
 	cmd.BuildsMap = sk.BuildsMap
+	cmd.CtpRequest = sk.CtpReq
 
 	return nil
 }
@@ -249,23 +259,82 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) closeWUTree(ctx context.Context) error {
+func (cmd *AlStatusUpdateCmd) closeWUTree(ctx context.Context, service *androidapi.Service) error {
 	tree := cmd.getWorkUnitTree()
 	if tree == nil {
 		return fmt.Errorf("wu tree was removed unexpectedly")
 	}
 
-	service, err := androidapi.NewAndroidBuildService(context.Background(), androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-	if err != nil {
-		return err
-	}
-
 	// Update the status of each WU.
-	err = updateAllNodes(ctx, service, tree.Head)
+	err := updateAllNodes(ctx, service, tree.Head)
 	if err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func (cmd *AlStatusUpdateCmd) metadataArgExists(flag, value string) bool {
+	if cmd.CtpRequest == nil {
+		return false
+	}
+
+	emArgs := cmd.CtpRequest.GetSuiteRequest().GetTestSuite().GetExecutionMetadata().GetArgs()
+	for _, arg := range emArgs {
+		if arg.GetFlag() == flag && arg.GetValue() == value {
+			return true
+		}
+	}
+	return false
+}
+
+func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, service *androidapi.Service) error {
+	var props []*androidbuildinternal.Property
+
+	if cmd.metadataArgExists(common.InvocationDataFlag, common.CbIngestionValue) {
+		cbProp := &androidbuildinternal.Property{Name: common.CbPropName, Value: "yes"}
+		cbMetricsProp := &androidbuildinternal.Property{Name: common.CbMetricsPropName, Value: "yes"}
+		props = append(props, cbProp, cbMetricsProp)
+	}
+
+	if cmd.BuildState != nil {
+		ancestorIDs := cmd.BuildState.Build().GetAncestorIds()
+		if len(ancestorIDs) > 0 {
+			ancestors := make([]string, 0, len(ancestorIDs))
+			for _, ancID := range ancestorIDs {
+				ancestors = append(ancestors, strconv.Itoa(int(ancID)))
+			}
+
+			ancestorsProp := &androidbuildinternal.Property{
+				Name:  common.AncestorsPropName,
+				Value: strings.Join(ancestors, ","),
+			}
+			props = append(props, ancestorsProp)
+		}
+	}
+
+	tree := cmd.getWorkUnitTree()
+	if tree == nil || tree.Head == nil {
+		logging.Infof(ctx, "No workunit tree present. Skipping update.")
+	}
+
+	invocationID := tree.Head.GetWorkUnit().InvocationId
+	if invocationID == "" || len(props) == 0 {
+		logging.Infof(ctx, "No invocation id or new property found. Skipping update.")
+		return nil
+	}
+
+	inv, err := service.InvocationService.Get(invocationID)
+	if err != nil {
+		return err
+	}
+
+	inv.Properties = append(inv.Properties, props...)
+	_, err = service.InvocationService.Update(invocationID, inv)
+	if err != nil {
+		return err
+	}
+	logging.Infof(ctx, "Added properties to invocation: %v", props)
 	return nil
 }
 
@@ -291,12 +360,25 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	}
 
 	if cmd.AlStateInfo.DoneTesting {
-		err = cmd.closeWUTree(ctx)
+		service, err := androidapi.NewAndroidBuildService(ctx, androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
-			logging.Errorf(ctx, "error while closing WU tree: %s", err.Error())
+			return err
+		}
+		err = cmd.closeWUTree(ctx, service)
+		if err != nil {
+			logging.Errorf(ctx, "error while closing WU tree: %w", err)
 
-			// If this is being ran inside of a LED run then ignore the update
-			// failures.
+			// Ignore update failures if being run inside of a LED run.
+			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
+				return err
+			}
+		}
+
+		err = cmd.updateInvocationProperties(ctx, service)
+		if err != nil {
+			logging.Errorf(ctx, "error while updating Invocation: %w", err)
+
+			// Ignore update failures if being run inside of a LED run.
 			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
 				return err
 			}

@@ -67,6 +67,11 @@ const (
 	CTPBucketShadow                        = "testplatform.shadow"
 	AndroidBuildPrefix                     = "android-build/build_explorer/artifacts_list/"
 	AndroidBuildPathFormat                 = AndroidBuildPrefix + "%s/%s/%s-ota-%s.zip"
+	InvocationDataFlag                     = "invocation-data"
+	CbIngestionValue                       = "invocation-property=crystalball_ingest:yes"
+	AncestorsPropName                      = "ancestor_buildbucket_ids"
+	CbPropName                             = "crystalball_ingest"
+	CbMetricsPropName                      = "crystalball_has_data"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.
