@@ -10,13 +10,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/bq"
-
-	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
-	"infra/cros/lab_inventory/deviceconfig"
 )
 
 // GetPSTTimeStamp returns the PST timestamp for bq table.
@@ -40,24 +35,4 @@ func InitBQUploader(ctx context.Context, project, dataset, table string) (*bq.Up
 		return nil, err
 	}
 	return InitBQUploaderWithClient(ctx, client, dataset, table), nil
-}
-
-// GetDeviceConfigProtos prepares the proto messages for all device configs to upload to bq.
-func GetDeviceConfigProtos(ctx context.Context) []proto.Message {
-	devConfigs, err := deviceconfig.GetAllCachedConfig(ctx)
-	if err != nil {
-		return nil
-	}
-	msgs := make([]proto.Message, len(devConfigs))
-	i := 0
-	for dc, t := range devConfigs {
-		ut := timestamppb.New(t)
-		msgs[i] = &apibq.DeviceConfigInventory{
-			Id:          deviceconfig.GetDeviceConfigIDStr(dc.GetId()),
-			Config:      dc,
-			UpdatedTime: ut,
-		}
-		i++
-	}
-	return msgs
 }

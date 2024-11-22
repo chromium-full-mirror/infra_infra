@@ -6,22 +6,16 @@
 package cron
 
 import (
-	"fmt"
 	"net/http"
-	"time"
-
-	"cloud.google.com/go/bigquery"
 
 	"go.chromium.org/luci/appengine/gaemiddleware"
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
 	"infra/appengine/cros/lab_inventory/app/config"
-	bqlib "infra/cros/lab_inventory/bq"
 	"infra/cros/lab_inventory/cfg2datastore"
 	"infra/cros/lab_inventory/deviceconfig"
 	"infra/libs/git"
@@ -36,10 +30,6 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 
 	r.GET("/internal/cron/import-service-config", mwCron, logAndSetHTTPErr(importServiceConfig))
 
-	r.GET("/internal/cron/dump-to-bq", mwCron, logAndSetHTTPErr(dumpToBQCronHandler))
-
-	r.GET("/internal/cron/dump-other-configs-snapshot", mwCron, logAndSetHTTPErr(dumpOtherConfigsCronHandler))
-
 	r.GET("/internal/cron/sync-dev-config", mwCron, logAndSetHTTPErr(syncDevConfigHandler))
 }
 
@@ -47,11 +37,6 @@ const pageSize = 500
 
 func importServiceConfig(c *router.Context) error {
 	return config.Import(c.Request.Context())
-}
-
-func dumpToBQCronHandler(c *router.Context) (err error) {
-	logging.Infof(c.Request.Context(), "not implemented yet")
-	return nil
 }
 
 func syncDevConfigHandler(c *router.Context) error {
@@ -80,28 +65,6 @@ func syncDevConfigHandler(c *router.Context) error {
 		return deviceconfig.UpdateDatastoreFromBoxster(c.Request.Context(), gitClient, bsCfg.GetJoinedConfigPath(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
 	}
 	return deviceconfig.UpdateDatastore(c.Request.Context(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
-}
-
-func dumpOtherConfigsCronHandler(c *router.Context) error {
-	ctx := c.Request.Context()
-	logging.Infof(ctx, "Start to dump related configs in inventory to bigquery")
-
-	curTime := time.Now()
-	curTimeStr := bqlib.GetPSTTimeStamp(curTime)
-	client, err := bigquery.NewClient(ctx, info.AppID(ctx))
-	if err != nil {
-		return err
-	}
-
-	uploader := bqlib.InitBQUploaderWithClient(ctx, client, "inventory", fmt.Sprintf("deviceconfig$%s", curTimeStr))
-	msgs := bqlib.GetDeviceConfigProtos(ctx)
-	logging.Debugf(ctx, "Dumping %d records of device configs to bigquery", len(msgs))
-	if err := uploader.Put(ctx, msgs...); err != nil {
-		return err
-	}
-
-	logging.Debugf(ctx, "Dump is successfully finished")
-	return nil
 }
 
 func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
