@@ -99,14 +99,13 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 	var entries []*atp.BatchInsertEntry
 	for _, result := range results {
 		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
-		parentwu := module
+		var parentWUID string
 		var testID *atp.TestIdentifier
-		var err error
 		// If testcase exists, use that as the parent module instead
 		if len(names) == 2 {
 			// Create work unit if it does not exist.
 			if tcWorkunits[names[0]] == "" {
-				parentwu, err = aps.insertModuleWorkUnit(names[0], "TF_TEST_RUN", module.Id)
+				parentwu, err := aps.insertModuleWorkUnit(names[0], "TF_TEST_RUN", module.Id)
 				if err != nil {
 					log.Printf("unable to create test run workunit for %s due to %q", names[0], err)
 					return nil, token, err
@@ -114,6 +113,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 				tcWorkunits[names[0]] = parentwu.Id
 			}
 
+			parentWUID = tcWorkunits[names[0]]
 			testID = &atp.TestIdentifier{
 				Module:           module.Name,
 				ModuleParameters: dutProps,
@@ -127,6 +127,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 				TestClass:        module.Name,
 				Method:           names[0],
 			}
+			parentWUID = module.Id
 		} else {
 			return nil, token, fmt.Errorf("unexpected testcaseid: %s", result.GetTestCaseId().GetValue())
 		}
@@ -134,7 +135,7 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 		startTime := result.GetStartTime().AsTime().Unix()
 		tr := &atp.TestResult{
 			InvocationId:     aps.metadata.GetAntsInvocationId(),
-			WorkUnitId:       parentwu.Id,
+			WorkUnitId:       parentWUID,
 			PrimaryBuildInfo: buildInfo,
 			TestIdentifier:   testID,
 			TestStatus:       antsTestStatus(result),

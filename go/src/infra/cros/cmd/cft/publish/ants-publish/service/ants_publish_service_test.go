@@ -281,7 +281,9 @@ func TestResultEntries(t *testing.T) {
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
 	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
-	parentwuID := "WU1"
+	parentWU := &atp.WorkUnit{Id: "WU1", Name: "Parent WU"}
+	returnWUID := "WUTR123"
+
 	dutProps := []*atp.Property{
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
@@ -307,95 +309,134 @@ func TestResultEntries(t *testing.T) {
 	}
 	buildInfo := &atp.BuildDescriptor{Branch: "git-main_cl_dev"}
 	testCases := []struct {
-		name       string
-		wuName     string
-		expectWU   *atp.WorkUnit
-		result     *api.TestCaseResult
-		wantResult *atp.TestResult
+		name        string
+		wu          *atp.WorkUnit
+		expectWU    *atp.WorkUnit
+		results     []*api.TestCaseResult
+		wantResults []*atp.TestResult
 	}{
 		{
-			name:   "crash",
-			wuName: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-			result: &api.TestCaseResult{
-				TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.CtsWrapWrapNoDebugTestCases"},
-				Verdict:    &api.TestCaseResult_Crash_{},
-			},
-			wantResult: &atp.TestResult{
-				TestIdentifier: &atp.TestIdentifier{
-					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					ModuleParameters: dutProps,
-					TestClass:        "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+			name: "crash",
+			results: []*api.TestCaseResult{
+				{
+					TestCaseId: &api.TestCase_Id{Value: "tradefed.cts.CtsWrapWrapNoDebugTestCases"},
+					Verdict:    &api.TestCaseResult_Crash_{},
 				},
-				TestStatus: "testError",
-				Properties: []*atp.Property{
-					{Name: "board", Value: "brya"},
-					{Name: "model", Value: "vell"},
+			},
+			wantResults: []*atp.TestResult{
+				{
+					TestIdentifier: &atp.TestIdentifier{
+						Module:           parentWU.Name,
+						ModuleParameters: dutProps,
+						TestClass:        parentWU.Name,
+						Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
+					},
+					TestStatus: "testError",
+					Properties: []*atp.Property{
+						{Name: "board", Value: "brya"},
+						{Name: "model", Value: "vell"},
+					},
+					WorkUnitId:       parentWU.Id,
+					Timing:           &atp.Timing{},
+					PrimaryBuildInfo: buildInfo,
 				},
 			},
 		},
 		{
-			name:   "Mobly_Pass",
-			wuName: "mobly.CtsWrapWrapNoDebugTestCases",
-			result: &api.TestCaseResult{
-				TestCaseId: &api.TestCase_Id{Value: "testmethod"},
-				Verdict:    &api.TestCaseResult_Pass_{},
-			},
-			wantResult: &atp.TestResult{
-				TestIdentifier: &atp.TestIdentifier{
-					Module:           "mobly.CtsWrapWrapNoDebugTestCases",
-					ModuleParameters: dutProps,
-					TestClass:        "mobly.CtsWrapWrapNoDebugTestCases",
-					Method:           "testmethod",
+			name: "Mobly_Pass",
+			results: []*api.TestCaseResult{
+				{
+					TestCaseId: &api.TestCase_Id{Value: "testmethod"},
+					Verdict:    &api.TestCaseResult_Pass_{},
 				},
-				TestStatus: "pass",
-				Properties: dutProps,
+			},
+			wantResults: []*atp.TestResult{
+				{
+					TestIdentifier: &atp.TestIdentifier{
+						Module:           parentWU.Name,
+						ModuleParameters: dutProps,
+						TestClass:        parentWU.Name,
+						Method:           "testmethod",
+					},
+					TestStatus:       "pass",
+					Properties:       dutProps,
+					WorkUnitId:       parentWU.Id,
+					Timing:           &atp.Timing{},
+					PrimaryBuildInfo: buildInfo,
+				},
 			},
 		},
 		{
-			name:   "TF_Pass",
-			wuName: "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-			result: &api.TestCaseResult{
-				TestCaseId: &api.TestCase_Id{Value: "testcase#testname"},
-				Verdict:    &api.TestCaseResult_Pass_{},
+			name: "TF_Pass",
+			results: []*api.TestCaseResult{
+				{
+					TestCaseId: &api.TestCase_Id{Value: "testcase#testname1"},
+					Verdict:    &api.TestCaseResult_Pass_{},
+				},
+				{
+					TestCaseId: &api.TestCase_Id{Value: "testcase#testname2"},
+					Verdict:    &api.TestCaseResult_Pass_{},
+				},
 			},
 			expectWU: &atp.WorkUnit{
 				Name:       "testcase",
-				ParentId:   parentwuID,
+				ParentId:   parentWU.Id,
 				Type:       "TF_TEST_RUN",
 				Properties: dutProps,
 			},
-			wantResult: &atp.TestResult{
-				TestIdentifier: &atp.TestIdentifier{
-					Module:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
-					ModuleParameters: dutProps,
-					TestClass:        "testcase",
-					Method:           "testname",
+			wantResults: []*atp.TestResult{
+				{
+					TestIdentifier: &atp.TestIdentifier{
+						Module:           parentWU.Name,
+						ModuleParameters: dutProps,
+						TestClass:        "testcase",
+						Method:           "testname1",
+					},
+					TestStatus:       "pass",
+					Properties:       dutProps,
+					WorkUnitId:       returnWUID,
+					Timing:           &atp.Timing{},
+					PrimaryBuildInfo: buildInfo,
 				},
-				TestStatus: "pass",
-				Properties: dutProps,
+				{
+					TestIdentifier: &atp.TestIdentifier{
+						Module:           parentWU.Name,
+						ModuleParameters: dutProps,
+						TestClass:        "testcase",
+						Method:           "testname2",
+					},
+					TestStatus:       "pass",
+					Properties:       dutProps,
+					WorkUnitId:       returnWUID,
+					Timing:           &atp.Timing{},
+					PrimaryBuildInfo: buildInfo,
+				},
 			},
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			wu := &atp.WorkUnit{Id: parentwuID, Name: tc.wuName}
-			results := []*api.TestCaseResult{tc.result}
 			if tc.expectWU != nil {
-				mockWU.EXPECT().Insert(tc.expectWU).Return(wu, nil)
+				returnWU := &atp.WorkUnit{
+					Name:       tc.expectWU.Name,
+					Id:         returnWUID,
+					ParentId:   tc.expectWU.ParentId,
+					Properties: tc.expectWU.Properties,
+				}
+				mockWU.EXPECT().Insert(tc.expectWU).Return(returnWU, nil)
 			}
-			gotEntries, gotToken, err := aps.resultEntries(wu, 0, results, buildInfo)
+			gotEntries, gotToken, err := aps.resultEntries(parentWU, 0, tc.results, buildInfo)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
-			if gotToken != int64(len(results)) {
-				t.Errorf("Unexpected token: got %d, want %d", gotToken, len(results))
+			if gotToken != int64(len(tc.results)) {
+				t.Errorf("Unexpected token: got %d, want %d", gotToken, len(tc.results))
 			}
-			tc.wantResult.WorkUnitId = parentwuID
-			tc.wantResult.Timing = &atp.Timing{}
-			tc.wantResult.PrimaryBuildInfo = buildInfo
-			if diff := cmp.Diff(gotEntries[0].TestResult, tc.wantResult, protocmp.Transform()); diff != "" {
-				t.Errorf("%s", diff)
+
+			for i, entry := range gotEntries {
+				if diff := cmp.Diff(entry.TestResult, tc.wantResults[i], protocmp.Transform()); diff != "" {
+					t.Errorf("%s", diff)
+				}
 			}
 		})
 	}
