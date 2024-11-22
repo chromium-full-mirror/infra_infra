@@ -13,5 +13,6 @@ import (
 
 func main() {
 	modules := serverlib.Modules()
-	server.Main(nil, modules, serverlib.ServerMain)
+	options := serverlib.Options()
+	server.Main(options, modules, serverlib.ServerMain)
 }

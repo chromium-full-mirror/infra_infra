@@ -22,14 +22,13 @@ import (
 )
 
 // consoleClient creates a FleetConsoleClient pointing at a specific host.
+//
+// We always authenticate, even to  local server. However, we use the HTTP as the transport protocol
+// if (and only if) we are talking to a local client.
 func consoleClient(ctx context.Context, host string, authFlags authcli.Flags, useHTTP bool) (fleetconsolerpc.FleetConsoleClient, error) {
-	var httpClient *http.Client
-	if !useHTTP {
-		var err error
-		httpClient, err = authenticatedClient(ctx, host, authFlags)
-		if err != nil {
-			return nil, errors.Annotate(err, "ping").Err()
-		}
+	httpClient, err := authenticatedClient(ctx, host, authFlags)
+	if err != nil {
+		return nil, errors.Annotate(err, "ping").Err()
 	}
 	prpcClient := &prpc.Client{
 		C:    httpClient,
@@ -43,7 +42,7 @@ func consoleClient(ctx context.Context, host string, authFlags authcli.Flags, us
 	return consoleClient, nil
 }
 
-// authenticatedClient creates an authenticated HTTP client.
+// authenticatedClient creates an authenticated HTTPS client.
 func authenticatedClient(ctx context.Context, host string, authFlags authcli.Flags) (*http.Client, error) {
 	authOptions, err := authFlags.Options()
 	if err != nil {

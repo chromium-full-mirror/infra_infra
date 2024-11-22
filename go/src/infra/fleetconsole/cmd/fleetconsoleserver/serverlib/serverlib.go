@@ -9,12 +9,19 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
 	"infra/fleetconsole/internal/consoleserver"
 	"infra/fleetconsole/internal/devicemanagerclient"
 )
+
+func Options() *server.Options {
+	return &server.Options{
+		OpenIDRPCAuthEnable: true,
+	}
+}
 
 // Modules is the slice of luci server modules used by the fleet console.
 func Modules() []module.Module {
@@ -23,10 +30,17 @@ func Modules() []module.Module {
 	}
 }
 
-// ServerMain is the server setup.
+var ACLMap rpcacl.Map = map[string]string{
+	"/fleetconsole.FleetConsole/Ping":              "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingDeviceManager": "fleet-console-access",
+	"/grpc.health.v1.Health/Watch":                 rpcacl.All,
+}
+
 func ServerMain(srv *server.Server) error {
 	logging.Infof(srv.Context, "Begin initialization of console server.")
 	consoleFrontend := consoleserver.NewFleetConsoleFrontend().(*consoleserver.FleetConsoleFrontend)
+	interceptor := rpcacl.Interceptor(ACLMap)
+	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
 	deviceManagerClient, err := devicemanagerclient.NewClient(srv.Context, devicemanagerclient.DMProdURL)
 	if err != nil {
