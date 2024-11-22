@@ -132,25 +132,44 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			return nil, token, fmt.Errorf("unexpected testcaseid: %s", result.GetTestCaseId().GetValue())
 		}
 
-		startTime := result.GetStartTime().AsTime().Unix()
-		tr := &atp.TestResult{
-			InvocationId:     aps.metadata.GetAntsInvocationId(),
-			WorkUnitId:       parentWUID,
-			PrimaryBuildInfo: buildInfo,
-			TestIdentifier:   testID,
-			TestStatus:       antsTestStatus(result),
-			Timing: &atp.Timing{
-				CreationTimestamp: startTime,
-				CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
-			},
-			Properties: dutProps,
-		}
-
+		tr := aps.antsResult(result, dutProps, parentWUID, testID, buildInfo)
 		entries = append(entries, &atp.BatchInsertEntry{TestResult: tr, Token: token})
 		token = token + 1
 	}
 
 	return entries, token, nil
+}
+
+func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*atp.Property, parentWUID string, testID *atp.TestIdentifier, buildInfo *atp.BuildDescriptor) *atp.TestResult {
+	var skipReason *atp.SkippedReason
+	if result.Reason != "" {
+		skipReason = &atp.SkippedReason{ReasonMessage: result.Reason}
+	}
+
+	var debugInfo *atp.DebugInfo
+	if len(result.GetErrors()) > 0 {
+		debugInfo = &atp.DebugInfo{
+			// Use the first error as it is the primary error and
+			// ants only allows one error.
+			ErrorMessage: result.GetErrors()[0].GetMessage(),
+		}
+	}
+
+	startTime := result.GetStartTime().AsTime().Unix()
+	return &atp.TestResult{
+		InvocationId:     aps.metadata.GetAntsInvocationId(),
+		WorkUnitId:       parentWUID,
+		PrimaryBuildInfo: buildInfo,
+		TestIdentifier:   testID,
+		TestStatus:       antsTestStatus(result),
+		Timing: &atp.Timing{
+			CreationTimestamp: startTime,
+			CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
+		},
+		Properties:    props,
+		SkippedReason: skipReason,
+		DebugInfo:     debugInfo,
+	}
 }
 
 func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
