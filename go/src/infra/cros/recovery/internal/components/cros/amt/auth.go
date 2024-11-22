@@ -5,7 +5,12 @@
 package amt
 
 import (
+	"crypto/md5"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"hash"
+	"math/rand"
 	"regexp"
 	"strings"
 )
@@ -147,4 +152,132 @@ func (r *digestResponse) strongestQOP() string {
 		}
 	}
 	return qop
+}
+
+// newAuthorization creates a response to the server's digest challenge.
+func (r *digestResponse) newAuthorization(method, uri, username, password, body string, nc int) (*digestAuthorization, error) {
+	var newHash func() hash.Hash
+	switch r.alg {
+	case "md5", "":
+		newHash = md5.New
+	case "sha-256":
+		newHash = sha256.New
+	case "sha-512":
+		return nil, fmt.Errorf("AMT does not support SHA-512")
+	default:
+		return nil, fmt.Errorf("unknown algorithm: %q", r.alg)
+	}
+	// sum returns the raw hash of one or more colon-separated strings.
+	sum := func(parts ...string) []byte {
+		var b []byte
+		h := newHash()
+		h.Write([]byte(strings.Join(parts, ":")))
+		return h.Sum(b)
+	}
+
+	ha1 := sum(username, r.realm, password)
+	cnonce := fmt.Sprintf("%08x", rand.Uint32())
+	if r.algSess {
+		ha1 = sum(string(ha1), r.nonce, cnonce)
+	}
+	ha1Hex := hex.EncodeToString(ha1)
+
+	qop := r.strongestQOP()
+
+	// b/357592780: auth-int is supported in AMT versions >= 14.0.
+	var ha2 []byte
+	switch qop {
+	case authIntMode:
+		h := newHash()
+		h.Write([]byte(body))
+		ha2 = sum(method, uri, hex.EncodeToString(h.Sum(nil)))
+	default:
+		ha2 = sum(method, uri)
+	}
+	ha2Hex := hex.EncodeToString(ha2)
+
+	var response []byte
+	switch qop {
+	case authMode, authIntMode:
+		response = sum(ha1Hex, r.nonce, fmt.Sprintf("%08x", nc), cnonce, qop, ha2Hex)
+	default:
+		response = sum(ha1Hex, r.nonce, ha2Hex)
+	}
+
+	var userhash bool
+	if r.userhash {
+		username = hex.EncodeToString(sum(username, r.realm))
+		userhash = true
+	}
+
+	return &digestAuthorization{
+		realm:  r.realm,
+		domain: r.domain,
+		nonce:  r.nonce,
+		opaque: r.opaque,
+
+		response: hex.EncodeToString(response),
+		username: username,
+		uri:      uri,
+		qop:      qop,
+		cnonce:   cnonce,
+		nc:       nc,
+		userhash: userhash,
+	}, nil
+}
+
+// digestAuthorization is the response to the server challenge that's passed
+// back to the server in the Authorization header of the next HTTP request.
+type digestAuthorization struct {
+	// Unchanged values from digestResponse.
+	realm  string
+	domain string
+	nonce  string
+	opaque string
+
+	// New or changed values.
+	response string
+	username string
+	uri      string
+	qop      string
+	cnonce   string
+	nc       int
+	userhash bool
+}
+
+func (a digestAuthorization) String() string {
+	params := []struct {
+		key   string
+		value string
+		quote bool
+	}{
+		// Must be quoted.
+		{"username", a.username, true},
+		{"realm", a.realm, true},
+		{"nonce", a.nonce, true},
+		{"uri", a.uri, true},
+		{"response", a.response, true},
+		{"cnonce", a.cnonce, true},
+		{"opaque", a.opaque, true},
+
+		// Must not be quoted.
+		{"qop", a.qop, false},
+		{"nc", fmt.Sprintf("%08x", a.nc), false},
+
+		// Either is fine.
+		{"domain", a.domain, true},
+		{"userhash", digestFormatBool(a.userhash), true},
+	}
+	var parts []string
+	for _, p := range params {
+		if p.value == "" {
+			continue
+		}
+		if p.quote {
+			parts = append(parts, p.key+`="`+p.value+`"`)
+		} else {
+			parts = append(parts, p.key+`=`+p.value)
+		}
+	}
+	return fmt.Sprintf("Digest %s", strings.Join(parts, ", "))
 }
