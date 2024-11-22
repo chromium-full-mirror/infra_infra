@@ -17,8 +17,7 @@ import (
 // AddLinksToStepSummaryMarkdown adds provided links to provided step summary.
 func AddLinksToStepSummaryMarkdown(
 	step *build.Step,
-	testhausURL string,
-	gcsLink string) {
+	testhausURL, gcsLink, antsInvocationID string, isProd bool) {
 
 	links := []string{}
 	if testhausURL != "" {
@@ -26,6 +25,14 @@ func AddLinksToStepSummaryMarkdown(
 	}
 	if gcsLink != "" {
 		links = append(links, fmt.Sprintf("* [Test Artifacts Gcs Link](%s)", gcsLink))
+	}
+	if antsInvocationID != "" {
+		var apiStack string
+		// Append the url field in staging.
+		if !isProd {
+			apiStack = "?api-stack=atp"
+		}
+		links = append(links, fmt.Sprintf("* [ATI Results](%s/%s/%s)", ATILink, antsInvocationID, apiStack))
 	}
 	if len(links) > 0 {
 		step.SetSummaryMarkdown(strings.Join(links, "\n"))

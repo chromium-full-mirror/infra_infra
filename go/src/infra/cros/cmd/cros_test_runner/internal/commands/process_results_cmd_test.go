@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -34,7 +35,7 @@ func TestProcessResultsCmdDeps_MissingDeps(t *testing.T) {
 	t.Parallel()
 	ftt.Run("Cmd missing deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
+		sk := &data.HwTestStateKeeper{CftTestRequest: nil, BuildState: &build.State{}}
 		cmd := commands.NewProcessResultsCmd()
 		err := cmd.ExtractDependencies(ctx, sk)
 		assert.Loosely(t, err, should.BeNil)
@@ -73,6 +74,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 					},
 				},
 			},
+			BuildState: &build.State{},
 		}
 		cmd := commands.NewProcessResultsCmd()
 
@@ -104,6 +106,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 					},
 				},
 			},
+			BuildState: &build.State{},
 		}
 		cmd := commands.NewProcessResultsCmd()
 
@@ -148,6 +151,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
 				},
 			},
+			BuildState: &build.State{},
 		}
 		cmd := commands.NewProcessResultsCmd()
 

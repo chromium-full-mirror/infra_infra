@@ -35,6 +35,9 @@ type SummarizeCmd struct {
 
 	// Updates
 	ExecuteResponses *steps.ExecuteResponses
+
+	AlStateInfo *data.AlStateInfo
+	BuildState  *build.State
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -93,6 +96,10 @@ func (cmd *SummarizeCmd) extractDepsFromFilterStateKeepr(
 	if sk.DddTrackerMap != nil && len(sk.DddTrackerMap) > 0 {
 		cmd.DddTrackerMap = sk.DddTrackerMap
 	}
+
+	cmd.AlStateInfo = sk.AlStateInfo
+
+	cmd.BuildState = sk.BuildState
 
 	return nil
 }
@@ -168,6 +175,23 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 
 		errResultErr := ProcessResultsMap(ctx, errorResultKeys, errorResultMap)
 		nonErrResultErr := ProcessResultsMap(ctx, nonErrorResultKeys, nonErrorResultMap)
+
+		// If we we are in an AL run and have an invocation attached link to the
+		// ATI page.
+		if cmd.AlStateInfo != nil {
+			tree := cmd.AlStateInfo.GetWorkUnitTree()
+			if tree != nil && tree.Head != nil {
+				var apiStack string
+				// Append the url field in staging.
+				if !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
+					apiStack = "?api-stack=atp"
+				}
+
+				link := fmt.Sprintf("* [ATI Results](%s/%s/%s)", common.ATILink, tree.Head.GetWorkUnit().InvocationId, apiStack)
+
+				step.SetSummaryMarkdown(link)
+			}
+		}
 
 		// Assign non nil err (if any) so that this step fails
 		if errResultErr != nil {

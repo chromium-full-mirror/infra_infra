@@ -138,7 +138,7 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 	step, ctx := build.StartStep(ctx, "gcs-publish upload")
 	defer func() { step.End(err) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, "", common.GetGcsClickableLink(cmd.GcsURL))
+	common.AddLinksToStepSummaryMarkdown(step, "", common.GetGcsClickableLink(cmd.GcsURL), "", false)
 
 	// Create request.
 	artifactDirPath := &_go.StoragePath{
@@ -210,7 +210,7 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 	step, ctx := build.StartStep(ctx, "rdb-publish upload")
 	defer func() { step.End(err) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, "")
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, "", "", false)
 
 	// Create request.
 	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{

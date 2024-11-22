@@ -41,6 +41,8 @@ type ProcessResultsCmd struct {
 	SkylabResult           *skylab_test_runner.Result
 	TestExecutionStartTime *timestamp.Timestamp
 	TestExecutionEndTime   *timestamp.Timestamp
+
+	ANTSInvocationID string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -92,7 +94,12 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Results")
 	defer func() { step.End(build.AttachStatus(err, bbpb.Status_FAILURE, nil)) }()
 
-	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, common.GetGcsClickableLink(cmd.GcsURL))
+	var isProd bool
+	if cmd.buildState.Build() != nil {
+		isProd = common.IsProd(cmd.buildState.Build().GetBuilder())
+	}
+
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausURL, common.GetGcsClickableLink(cmd.GcsURL), cmd.ANTSInvocationID, isProd)
 
 	// Default values
 	prejobVerdict := skylab_test_runner.Result_Prejob_Step_VERDICT_UNDEFINED
@@ -114,7 +121,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 				}
 				stepName := fmt.Sprintf("Provision of %s", dutName)
 				provErr := common.CreateStepWithStatus(ctx, stepName, provisionResp.GetStatus().String(), provisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, true)
-				// Propogate error status to parent step
+				// Propagate error status to parent step
 				if err == nil {
 					err = provErr
 				}
@@ -158,6 +165,10 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: CurrentDutState", cmd.GetCommandType())
 	}
 
+	if sk.BuildState == nil {
+		return fmt.Errorf("sk.BuildState cannot be nil")
+	}
+
 	for _, id := range sk.DeviceIdentifiers {
 		responses, ok := sk.ProvisionResponses[id]
 		if ok && len(responses) > 0 {
@@ -178,6 +189,7 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	cmd.TesthausURL = sk.TesthausURL
 	cmd.CurrentDutState = sk.CurrentDutState
 	cmd.buildState = sk.BuildState
+	cmd.ANTSInvocationID = sk.ANTSInvocationID
 	return nil
 }
 

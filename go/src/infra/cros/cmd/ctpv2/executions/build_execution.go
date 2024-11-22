@@ -153,11 +153,17 @@ func executeRequests(
 	}
 
 	var workUnitTrees map[string]*androidapi.WorkUnitTree
-	if sk.AlStateInfo != nil && sk.AlStateInfo.WorkUnitTrees != nil {
-		workUnitTrees = sk.AlStateInfo.WorkUnitTrees
+	var generateInvocation, workUnitsOnly bool
+	if sk.AlStateInfo != nil {
+		if sk.AlStateInfo.WorkUnitTrees != nil {
+			workUnitTrees = sk.AlStateInfo.WorkUnitTrees
+		}
+
+		generateInvocation = sk.AlStateInfo.GenerateInvocation
+		workUnitsOnly = sk.AlStateInfo.WorkUnitsOnly
 	}
 
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees, isPartnerRun)
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees, isPartnerRun, generateInvocation, workUnitsOnly)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -180,7 +186,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun bool) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -206,7 +212,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees, isPartnerRun)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees, isPartnerRun, generateInvocation, workUnitsOnly)
 	}
 	go func() {
 		wg.Wait()
@@ -234,7 +240,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun bool) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) error {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -271,7 +277,11 @@ func executeFiltersInLuciBuild(
 			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDProd, err)
 		}
 		defer client.Close()
-		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJobMsg, CurrentTestJob: inputTestJobMsg, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees}
+		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJobMsg, CurrentTestJob: inputTestJobMsg, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees, GenerateInvocation: generateInvocation}
+	} else if req.IsAlRun {
+		// This gets hit if we are in an AL run not started by atp. e.g. Kron,
+		// crosfleet, LED.
+		alStateInfo = &data.AlStateInfo{GenerateInvocation: generateInvocation, WorkUnitsOnly: workUnitsOnly, WorkUnitTrees: workUnitTrees}
 	} else {
 		alStateInfo = nil
 	}

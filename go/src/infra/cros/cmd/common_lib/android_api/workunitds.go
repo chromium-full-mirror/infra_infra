@@ -28,6 +28,8 @@ func (w WULayer) String() string {
 		return "SHARD"
 	case WULayerAttempt:
 		return "ATTEMPT"
+	case WULayerCTP:
+		return "CTP"
 	default:
 		return ""
 	}
@@ -39,6 +41,7 @@ const (
 	WULayerRun
 	WULayerShard
 	WULayerAttempt
+	WULayerCTP
 )
 
 type WorkUnitTree struct {
@@ -103,6 +106,10 @@ func (w *WorkUnitNode) GetChildren() ChildNodes {
 func (w *WorkUnitNode) AddChild(node *WorkUnitNode) error {
 	// Enforce the layer hierarchy rules
 	switch w.layer {
+	case WULayerCTP:
+		if node.layer != WULayerTestJob {
+			return fmt.Errorf("only TEST_JOB type nodes can be added under CTP")
+		}
 	case WULayerTestJob:
 		if node.layer != WULayerRun {
 			return fmt.Errorf("only RUN type nodes can be added under TEST_JOB")
@@ -237,10 +244,17 @@ func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *
 		childAttemptNumber = runNumber
 	}
 
+	var name string
+	if nodeType == WULayerCTP || nodeType == WULayerTestJob {
+		name = nodeType.String()
+	} else {
+		name = fmt.Sprintf("%s #%d", nodeType.String(), runNumber)
+	}
+
 	// Create the work unit "request" then insert it using the ATP API. The API
 	// will return a WU that has a registered WUID. We do not set that in code
 	// here.
-	workUnit := NewWorkUnit(parentWUId, invocationID, fmt.Sprintf("%s #%d", nodeType.String(), runNumber), childRunNumber, childShardNumber, childAttemptNumber)
+	workUnit := NewWorkUnit(parentWUId, invocationID, name, childRunNumber, childShardNumber, childAttemptNumber)
 	workUnit, err = service.WorkUnitService.Insert(workUnit)
 	if err != nil {
 		return nil, err

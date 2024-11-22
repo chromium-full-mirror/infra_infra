@@ -104,6 +104,8 @@ type HwTestStateKeeper struct {
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner
 	DockerKeyFileLocation string
+
+	ANTSInvocationID string
 }
 
 func NewHwTestStateKeeper() *HwTestStateKeeper {

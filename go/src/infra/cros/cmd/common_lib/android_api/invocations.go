@@ -9,6 +9,42 @@ import (
 	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
+type InvocationState int
+
+func (w InvocationState) String() string {
+	switch w {
+	case InvocationUnspecified:
+		return "unspecified"
+	case InvocationQueued:
+		return "queued"
+	case InvocationRunning:
+		return "running"
+	case InvocationError:
+		return "error"
+	case InvocationCompleted:
+		return "completed"
+	case InvocationCancelled:
+		return "cancelled"
+	case InvocationPending:
+		return "pending"
+	case InvocationSkipped:
+		return "skipped"
+	default:
+		return ""
+	}
+}
+
+const (
+	InvocationUnspecified InvocationState = iota
+	InvocationQueued
+	InvocationRunning
+	InvocationError
+	InvocationCompleted
+	InvocationCancelled
+	InvocationPending
+	InvocationSkipped
+)
+
 // InvocationService handles API calls related to invocations.
 type InvocationService interface {
 	Get(resourceID string) (*atp.Invocation, error)

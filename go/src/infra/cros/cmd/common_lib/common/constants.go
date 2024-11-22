@@ -137,6 +137,8 @@ const (
 	CacheServer                         = "cache-server"
 	TestDynamicDeps                     = "test.dynamicDeps"
 	HostIp                              = "host-ip"
+
+	ATILink = "https://android-build.corp.google.com/test_investigate/invocation"
 )
 
 var (

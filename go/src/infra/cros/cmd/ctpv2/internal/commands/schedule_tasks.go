@@ -500,14 +500,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	if buildsMapLen < logsAndAnalyticsLimit {
 		cmd.ObserveTrSchedulingStart(ctx, buildReq)
 	}
+
+	cmd.ObserveTrSchedulingStart(ctx, buildReq)
+
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
 	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
-		// b/377196624 - limit analytics to avoid bot run oom
-		if buildsMapLen < logsAndAnalyticsLimit {
-			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
-		}
+		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 	}
 	if leaseID != "" {

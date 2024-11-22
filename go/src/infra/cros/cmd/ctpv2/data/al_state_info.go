@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/pubsub"
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"infra/cros/cmd/common_lib/common"
 )
 
@@ -30,4 +31,31 @@ type AlStateInfo struct {
 	// NOTE: For the time being this map will only contain one tree until we
 	// begin to support multiple ATP requests per CTP build.
 	WorkUnitTrees map[string]*androidapi.WorkUnitTree
+
+	// ATP is the instantiated ATP service API that we will reuse throughout the
+	// build.
+	ATP *androidapi.Service
+
+	BuildID string
+
+	// Fields for invocation generation logic.
+
+	GenerateInvocation bool
+	WorkUnitsOnly      bool
+	ATPWorkUnit        *androidbuildinternal.WorkUnit
+	ATPInvocation      *androidbuildinternal.Invocation
+}
+
+// GetWorkUnitTree fetches the ATP work unit tree if one exists and is being
+// tracked.
+func (a *AlStateInfo) GetWorkUnitTree() *androidapi.WorkUnitTree {
+	if a.WorkUnitTrees == nil {
+		return nil
+	}
+
+	if tree, ok := a.WorkUnitTrees["test"]; ok {
+		return tree
+	}
+
+	return nil
 }

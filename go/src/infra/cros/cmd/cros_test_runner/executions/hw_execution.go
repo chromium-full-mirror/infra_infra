@@ -403,6 +403,7 @@ func executeHwTestsV2(
 	invocationID, attemptWUID := getATPIDs(buildState.Build(), ioProps.GetInput(ctx))
 	if invocationID != "" {
 		common.LogWarningIfErr(ctx, sk.Injectables.Set("ants_invocation_id", invocationID))
+		sk.ANTSInvocationID = invocationID
 	}
 	if attemptWUID != "" {
 		common.LogWarningIfErr(ctx, sk.Injectables.Set("parent_work_unit_id", attemptWUID))

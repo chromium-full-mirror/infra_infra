@@ -10,6 +10,42 @@ import (
 	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
+type WorkUnitState int
+
+func (w WorkUnitState) String() string {
+	switch w {
+	case WorkUnitUnspecified:
+		return "unspecified"
+	case WorkUnitQueued:
+		return "queued"
+	case WorkUnitRunning:
+		return "running"
+	case WorkUnitError:
+		return "error"
+	case WorkUnitCompleted:
+		return "completed"
+	case WorkUnitCancelled:
+		return "cancelled"
+	case WorkUnitPending:
+		return "pending"
+	case WorkUnitSkipped:
+		return "skipped"
+	default:
+		return ""
+	}
+}
+
+const (
+	WorkUnitUnspecified WorkUnitState = iota
+	WorkUnitQueued
+	WorkUnitRunning
+	WorkUnitError
+	WorkUnitCompleted
+	WorkUnitCancelled
+	WorkUnitPending
+	WorkUnitSkipped
+)
+
 // WorkUnitService handles API calls related to workunits.
 type WorkUnitService interface {
 	Get(resourceID string) (*atp.WorkUnit, error)

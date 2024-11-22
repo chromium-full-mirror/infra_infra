@@ -39,6 +39,8 @@ type TranslateV1ToV2Cmd struct {
 	DddTrackerMap           map[string]bool
 
 	AlStateInfo *data.AlStateInfo
+
+	IsPartnerRun bool
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -103,6 +105,8 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 		}
 	}
 
+	cmd.IsPartnerRun = sk.IsPartnerRun
+
 	return nil
 }
 
@@ -139,10 +143,10 @@ func (cmd *TranslateV1ToV2Cmd) updateLocalTestStateKeeper(
 // NOTE: CTPv2 currently only supports one ATP request per builder. If we want
 // to support multiple requests then we need to adjust this function to handle
 // that.
-func getATPDeps(req *api.CTPv2Request) (parentWUID, invocationID string) {
+func getATPDeps(reqs []*api.CTPRequest) (parentWUID, invocationID string) {
 	// If the current request is an AL run then fetch the Invocation ID and the
 	// ATP WU ID so that we can build our tree.
-	for _, request := range req.GetRequests() {
+	for _, request := range reqs {
 		if args := request.GetSuiteRequest().GetTestSuite().GetExecutionMetadata().GetArgs(); args != nil {
 			for _, arg := range args {
 				if arg.GetFlag() == "ants_invocation_id" {
@@ -159,6 +163,68 @@ func getATPDeps(req *api.CTPv2Request) (parentWUID, invocationID string) {
 	return
 }
 
+// checkIsALRun returns whether or not the current run is on AL or not.
+//
+// NOTE: This works under the assumption that a run is either all AL or none. If
+// we ever support mixed scheduling then we will need to update this.
+func checkIsALRun(reqs []*api.CTPRequest) bool {
+	for _, request := range reqs {
+		if request.IsAlRun {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits() error {
+	// If we are inside of an AL run then begin building up the WU tree.
+	// If the current run is an AL run then pull the ATP details out of the
+	// request arguments.
+	var parentWUID, invocationID string
+	var isAlRun bool
+
+	// CTPv2 request parsing
+	if cmd.CtpV2Request != nil && len(cmd.CtpV2Request.GetRequests()) > 0 {
+		parentWUID, invocationID = getATPDeps(cmd.CtpV2Request.GetRequests())
+		isAlRun = checkIsALRun(cmd.CtpV2Request.GetRequests())
+	} else {
+		// CTPv1 request parsing.
+		for _, req := range cmd.CtpV2RequestMap {
+			if parentWUID != "" && invocationID != "" {
+				break
+			}
+			if !isAlRun {
+				isAlRun = checkIsALRun([]*api.CTPRequest{req})
+			}
+			parentWUID, invocationID = getATPDeps([]*api.CTPRequest{req})
+		}
+	}
+
+	if parentWUID != "" && invocationID != "" {
+		// Generate the top of the tree node to begin the ATP WU tree.
+		top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+		if err != nil {
+			return err
+		}
+		cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{
+			Head:        top,
+			ShardsByKey: map[string]*androidapi.WorkUnitNode{},
+		}
+		Stdout.Printf("TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
+		Stdout.Printf("parentWUID: %s\tinvocationID: %s\n", parentWUID, invocationID)
+	} else if isAlRun && !cmd.IsPartnerRun {
+		// If we are in an AL run but no ATP information was provided then
+		// generate the invocation details in the during the suite run.
+		Stdout.Println("In AL run but no ATP details provided, generate invocation at runtime.")
+		cmd.AlStateInfo.GenerateInvocation = true
+		cmd.AlStateInfo.WorkUnitsOnly = true
+		cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{}
+	}
+
+	return nil
+}
+
 // Execute executes the command.
 func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	var err error
@@ -173,6 +239,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 		for _, ctpReq := range cmd.CtpV2Request.GetRequests() {
 			// do ATP msg to ctp request translation
 			if ctpReq.GetEncodedAtpTestJobMsg() != "" {
+				cmd.AlStateInfo.IsAlRun = true
 				// if atp encoded test job msg is present, then decode it & construct CTP req from it
 				err = cmd.constructCtpReqFromEncodedTestJobMsg(ctx, ctpReq)
 				if err != nil {
@@ -182,27 +249,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 			}
 		}
 
-		// If the current run is an AL run then pull the ATP details out of the
-		// request arguments.
-		if parentWUID, invocationID := getATPDeps(cmd.CtpV2Request); parentWUID != "" && invocationID != "" {
-			// Set true if not done already.
-			cmd.AlStateInfo.IsAlRun = true
-
-			// Generate the top of the tree node to begin the ATP WU tree.
-			top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-			if err != nil {
-				return err
-			}
-
-			cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{
-				Head:        top,
-				ShardsByKey: map[string]*androidapi.WorkUnitNode{},
-			}
-
-			fmt.Printf("TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
-		}
-
-		return nil
+		return cmd.initiateATPWorkUnits()
 	}
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV1Requests, "Received CtpV1 Request")
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
@@ -219,6 +266,8 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	cmd.RequestToTargetChainMap = finalMap
 	step.SetSummaryMarkdown("Translation succeeded")
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV2RequestMap, "Translated CtpV2 Request Map")
+
+	err = cmd.initiateATPWorkUnits()
 
 	return err
 }
@@ -269,6 +318,8 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 	}
 	logging.Infof(ctx, "successfully decoded test job msg!")
 	common.WriteAnyObjectToStepLog(ctx, step, testJobMsg, "decoded atp test job msg")
+
+	cmd.AlStateInfo.BuildID = testJobMsg.Build.BuildId
 
 	// populate the fields from received atp test job msg
 	err = populateCtpRequest(ctx, ctpReq, testJobMsg, cmd.BuildState)
