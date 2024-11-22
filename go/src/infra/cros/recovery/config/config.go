@@ -88,13 +88,13 @@ func createMissingActions(p *Plan, actions []string) {
 // Check the plans critical action for present of connection to avoid infinity loop running of recovery engine.
 func verifyPlanAcyclic(plan *Plan) error {
 	visited := map[string]bool{}
-	var verifyAction func(string) error
+	var verifyAction func(actionName string, checkRecoveries bool) error
 	// ReferenceName stands for each action's type of dependency list.
 	// ReferenceName can be either one of the three: condition, dependency, recovery.
-	verifyDependActions := func(referenceName string, currentSetOfActions []string) error {
+	verifyDependActions := func(referenceName string, currentSetOfActions []string, checkRecoveries bool) error {
 		for _, actionName := range currentSetOfActions {
 			if _, ok := plan.Actions[actionName]; ok {
-				if err := verifyAction(actionName); err != nil {
+				if err := verifyAction(actionName, checkRecoveries); err != nil {
 					return errors.Annotate(err, "check %q from %s", actionName, referenceName).Err()
 				}
 			}
@@ -102,26 +102,28 @@ func verifyPlanAcyclic(plan *Plan) error {
 		return nil
 	}
 	// Verify the current Action in the current layer of the DFS.
-	verifyAction = func(actionName string) error {
+	verifyAction = func(actionName string, checkRecoveries bool) error {
 		if visited[actionName] {
-			return errors.Reason("found loop").Err()
+			return errors.Reason("found loop with %q", actionName).Err()
 		}
 		visited[actionName] = true
-		if err := verifyDependActions("condition", plan.Actions[actionName].GetConditions()); err != nil {
+		if err := verifyDependActions("condition", plan.Actions[actionName].GetConditions(), false); err != nil {
 			return err
 		}
-		if err := verifyDependActions("dependency", plan.Actions[actionName].GetDependencies()); err != nil {
+		if err := verifyDependActions("dependency", plan.Actions[actionName].GetDependencies(), checkRecoveries); err != nil {
 			return err
 		}
-		if err := verifyDependActions("recovery", plan.Actions[actionName].GetRecoveryActions()); err != nil {
-			return err
+		if checkRecoveries {
+			if err := verifyDependActions("recovery", plan.Actions[actionName].GetRecoveryActions(), false); err != nil {
+				return err
+			}
 		}
 		visited[actionName] = false
 		return nil
 	}
 	for _, eachActionName := range plan.GetCriticalActions() {
 		if _, ok := visited[eachActionName]; !ok {
-			return verifyAction(eachActionName)
+			return verifyAction(eachActionName, true)
 		}
 	}
 	return nil

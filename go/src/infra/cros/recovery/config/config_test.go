@@ -65,6 +65,10 @@ var testValidateCases = []struct {
 							AllowFailAfterRecovery: true,
 							RunControl:             RunControl_RUN_ONCE,
 						},
+						"c1": {
+							ExecName:        "c1",
+							RecoveryActions: []string{"a1-full", "c1"},
+						},
 						"d1": {
 							Dependencies:    []string{"d2"},
 							RecoveryActions: []string{"r1"},
@@ -101,7 +105,8 @@ var testValidateCases = []struct {
 							RunControl:             RunControl_RUN_ONCE,
 						},
 						"c1": {
-							ExecName: "c1",
+							ExecName:        "c1",
+							RecoveryActions: []string{"a1-full", "c1"},
 						},
 						"c2": {
 							ExecName: "c2",
@@ -183,7 +188,7 @@ var cycleTestCases = []struct {
 		[]string{"B", "A"},
 	},
 	{
-		"Bad3: A_dependency -> B_condition -> C_recovery -> A",
+		"Good3: A_dependency -> B_condition -> C : recovery ignored for conditions",
 		&Plan{
 			Actions: map[string]*Action{
 				"A": {Dependencies: []string{"B"}},
@@ -191,7 +196,7 @@ var cycleTestCases = []struct {
 				"C": {RecoveryActions: []string{"A"}},
 			},
 		},
-		[]string{"B", "C", "A"},
+		nil,
 	},
 	{
 		"Bad4: A_dependency -> B_dependency -> C_dependency -> A",
@@ -216,46 +221,18 @@ var cycleTestCases = []struct {
 		[]string{"C", "B", "A"},
 	},
 	{
-		"Bad6: A_dependency -> B_condition -> C_recovery -> D_recovery -> E_dependency -> F_condition -> B",
+		"Bad6: A_dependency -> B_condition -> C_dependency -> D_dependency -> E_dependency -> F_condition -> B",
 		&Plan{
 			Actions: map[string]*Action{
 				"A": {Dependencies: []string{"B"}},
 				"B": {Conditions: []string{"C"}},
-				"C": {RecoveryActions: []string{"D"}},
-				"D": {RecoveryActions: []string{"E"}},
+				"C": {Dependencies: []string{"D"}},
+				"D": {Dependencies: []string{"E"}},
 				"E": {Dependencies: []string{"F"}},
 				"F": {Conditions: []string{"B"}},
 			},
 		},
 		[]string{"B", "C", "D", "E", "F", "B"},
-	},
-	{
-		"Bad7: A_dependency -> B_condition -> C_recovery -> D_recovery -> E_dependency -> F_condition -> B",
-		&Plan{
-			Actions: map[string]*Action{
-				"A": {Dependencies: []string{"B"}},
-				"B": {Conditions: []string{"C"}},
-				"C": {RecoveryActions: []string{"D"}},
-				"D": {RecoveryActions: []string{"E"}},
-				"E": {Dependencies: []string{"F"}},
-				"F": {Conditions: []string{"B"}},
-			},
-		},
-		[]string{"B", "C", "D", "E", "F", "B"},
-	},
-	{
-		"Bad8: A_dependency -> B_condition -> C_recovery -> D_recovery -> E_dependency -> F; A_dependency -> E_dependency -> F; C_condition -> F",
-		&Plan{
-			Actions: map[string]*Action{
-				"A": {Dependencies: []string{"B", "E"}},
-				"B": {Conditions: []string{"C"}},
-				"C": {RecoveryActions: []string{"D", "F"}},
-				"D": {RecoveryActions: []string{"E", "C"}},
-				"E": {Dependencies: []string{"F"}},
-				"F": {},
-			},
-		},
-		[]string{"B", "C", "D", "C"},
 	},
 	// Test Case: Cycle in actions, but not reachable by critical actions.
 	{
@@ -265,7 +242,7 @@ var cycleTestCases = []struct {
 				"A": {Dependencies: []string{"B"}},
 				"B": {Conditions: []string{"C"}},
 				"C": {},
-				"D": {RecoveryActions: []string{"E"}},
+				"D": {Conditions: []string{"F"}, RecoveryActions: []string{"E"}},
 				"E": {Dependencies: []string{"F"}},
 				"F": {RecoveryActions: []string{"D"}},
 			},
