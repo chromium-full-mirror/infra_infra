@@ -19,11 +19,14 @@ import (
 )
 
 // Application returns the consoleadmin command line application.
-func Application() *cli.Application {
+func Application(ctxFuncs ...func(context.Context) context.Context) *cli.Application {
 	return &cli.Application{
 		Name:  "console admin",
 		Title: "console admin command line tool",
 		Context: func(ctx context.Context) context.Context {
+			for _, f := range ctxFuncs {
+				ctx = f(ctx)
+			}
 			return gologger.StdConfig.Use(ctx)
 		},
 		Commands: []*subcommands.Command{
