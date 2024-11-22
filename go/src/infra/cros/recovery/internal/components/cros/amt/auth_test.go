@@ -111,3 +111,37 @@ func TestParseDigestResponseFailure(t *testing.T) {
 		assert.ErrorContains(t, err, tt.expectedErr)
 	}
 }
+
+func TestStrongestQOP(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		testName    string
+		providedQOP string
+		expectedQOP string
+	}{
+		{
+			"Default values",
+			"",
+			"",
+		},
+		{
+			"Supports auth mode",
+			"auth",
+			"auth",
+		},
+		{
+			"Supports integrity mode",
+			"auth,auth-int",
+			"auth-int",
+		},
+	}
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.testName, func(t *testing.T) {
+			t.Parallel()
+			dr, err := parseDigestResponse(getTestResponse("md2", tt.providedQOP, false))
+			assert.Nil(t, err, fmt.Sprintf("error calling parseDigestResponse: %q", err))
+			assert.Equal(t, tt.expectedQOP, dr.strongestQOP())
+		})
+	}
+}

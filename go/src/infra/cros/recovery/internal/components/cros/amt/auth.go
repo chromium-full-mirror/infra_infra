@@ -121,3 +121,30 @@ func (r *digestResponse) String() string {
 	}
 	return fmt.Sprintf("Digest %s", strings.Join(parts, ", "))
 }
+
+const (
+	authIntMode = "auth-int"
+	authMode    = "auth"
+)
+
+// strongestQOP returns the strongest supported quality-of-protection mode from the `qop`
+// member of the digestResponse. It is expected to be quoted string of comma-seperated
+// tokens indicating quality-of-protection modes supported by the server.
+//
+// Modes from strongest to weakest are:
+//
+//	auth-int:       integrity protection mode
+//	auth:           authentication mode
+//	<empty-string>: none
+func (r *digestResponse) strongestQOP() string {
+	var qop string
+	for _, v := range r.qop {
+		// auth-int: mode is supported in AMT versions >= 14.0.
+		if v == authIntMode {
+			return v
+		} else if v == authMode {
+			qop = v
+		}
+	}
+	return qop
+}
