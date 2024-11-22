@@ -20,7 +20,6 @@ import (
 	"infra/cros/hwid"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/caching"
 	"infra/unifiedfleet/app/model/configuration"
@@ -686,5 +685,5 @@ func GetDeviceConfigClient(ctx context.Context) (external.DeviceConfigClient, er
 	if err != nil {
 		return nil, err
 	}
-	return es.NewDeviceConfigInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
+	return es.NewDeviceConfigInterfaceFactory(ctx)
 }

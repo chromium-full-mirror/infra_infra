@@ -8,13 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/logging"
 
-	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/unifiedfleet/app/model/configuration"
 )
 
@@ -26,18 +24,8 @@ type DeviceConfigClient interface {
 	DeviceConfigsExists(ctx context.Context, cfgIDs []*deviceconfig.ConfigId) ([]bool, error)
 }
 
-// InventoryDeviceConfigClient exposes methods needed to read from inventory.
-// This is used when we dual read from inventory and UFS sources.
-type InventoryDeviceConfigClient interface {
-	DeviceConfigsExists(ctx context.Context, in *invV2Api.DeviceConfigsExistsRequest, opts ...grpc.CallOption) (*invV2Api.DeviceConfigsExistsResponse, error)
-	GetDeviceConfig(ctx context.Context, in *invV2Api.GetDeviceConfigRequest, opts ...grpc.CallOption) (*deviceconfig.Config, error)
-}
-
-// DualDeviceConfigClient uses both inventory and UFS data sources to fetch
-// device configs. If it is able to detect a device config in either data
-// source, it treat it as existing.
+// DualDeviceConfigClient can use multiple sources to fetch device configs.
 type DualDeviceConfigClient struct {
-	inventoryClient InventoryDeviceConfigClient
 }
 
 // GetDeviceConfig fetches a specific device config in UFS.

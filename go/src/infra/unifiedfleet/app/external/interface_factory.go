@@ -14,10 +14,8 @@ import (
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
-	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/cros/hwid"
 	"infra/libs/git"
 	"infra/libs/sheet"
@@ -48,7 +46,7 @@ type GitTilesInterfaceFactory func(ctx context.Context, gitilesHost string) (Git
 type HwidInterfaceFactory func(ctx context.Context) (hwid.ClientInterface, error)
 
 // DeviceConfigFactory is a constructor for a DeviceConfigClient
-type DeviceConfigFactory func(ctx context.Context, inventoryHost string) (DeviceConfigClient, error)
+type DeviceConfigFactory func(ctx context.Context) (DeviceConfigClient, error)
 
 // InterfaceFactory provides a collection of interfaces to external clients.
 type InterfaceFactory struct {
@@ -154,25 +152,13 @@ func hwidInterfaceFactoryImpl(ctx context.Context) (hwid.ClientInterface, error)
 }
 
 // NewDeviceConfigInterfaceFactory creates a new device config client
-func (es *InterfaceFactory) NewDeviceConfigInterfaceFactory(ctx context.Context, inventoryHost string) (DeviceConfigClient, error) {
+func (es *InterfaceFactory) NewDeviceConfigInterfaceFactory(ctx context.Context) (DeviceConfigClient, error) {
 	if es.deviceConfigFactory == nil {
 		es.deviceConfigFactory = deviceConfigFactoryImpl
 	}
-	return es.deviceConfigFactory(ctx, inventoryHost)
+	return es.deviceConfigFactory(ctx)
 }
 
-func deviceConfigFactoryImpl(ctx context.Context, inventoryHost string) (DeviceConfigClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsCredentialsForwarder)
-	if err != nil {
-		return nil, err
-	}
-
-	ic := invV2Api.NewInventoryPRPCClient(&prpc.Client{
-		C:    &http.Client{Transport: t},
-		Host: inventoryHost,
-	})
-
-	return &DualDeviceConfigClient{
-		inventoryClient: ic,
-	}, nil
+func deviceConfigFactoryImpl(ctx context.Context) (DeviceConfigClient, error) {
+	return &DualDeviceConfigClient{}, nil
 }
