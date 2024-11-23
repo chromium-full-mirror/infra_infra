@@ -334,8 +334,7 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 
 func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage, buildState *build.State) error {
 	var err error
-	skipAntsFilter := false
-	ctpReq.SuiteRequest, skipAntsFilter, err = buildSuiteRequest(testJobMsg, buildState)
+	ctpReq.SuiteRequest, err = buildSuiteRequest(testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
@@ -343,22 +342,20 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	if err != nil {
 		return errors.Annotate(err, "build schedule targets err: %s", err.Error()).Err()
 	}
-	ctpReq.SchedulerInfo = buildSchedulerInfo(testJobMsg)
 	ctpReq.Pool = getSchedulingPool(testJobMsg)
 	if ctpReq.Pool == "" {
 		// Default to dut_pool_quota
-		ctpReq.Pool = "DUT_POOL_QUOTA"
+		ctpReq.Pool = common.DefaultQuotaPool
 	}
+	triggerType := getTriggerType(testJobMsg)
+	ctpReq.SchedulerInfo = buildSchedulerInfo(ctpReq.Pool, triggerType)
 	ctpReq.KarbonFilters = getKarbonFilters()
-	if skipAntsFilter {
-		ctpReq.KarbonFilters = getKarbonFiltersWithoutAntsFilter()
-	}
 	ctpReq.RunDynamic = true
 
 	return nil
 }
 
-func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, bool, error) {
+func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -370,7 +367,6 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
 	maxInShard := 10
 	dddSuite := false
-	skipAntsFilter := false
 
 	// build related
 	buildId := ""
@@ -473,9 +469,6 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 				for _, value := range arg.Values {
 					// add each value separately since we don't wanna enforce any parsing rule for downstream
 					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
-					if strings.Contains(strings.ToLower(value), "crystalball_ingest:yes") {
-						skipAntsFilter = true
-					}
 				}
 			}
 		}
@@ -486,17 +479,17 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 
 	// Validations
 	if antsInvId == "" {
-		return nil, skipAntsFilter, fmt.Errorf("no ants invocation id found")
+		return nil, fmt.Errorf("no ants invocation id found")
 	}
 	if antsWuId == "" {
-		return nil, skipAntsFilter, fmt.Errorf("no ants workunit id found")
+		return nil, fmt.Errorf("no ants workunit id found")
 	}
 	if buildEnv == "" {
-		return nil, skipAntsFilter, fmt.Errorf("no build env found")
+		return nil, fmt.Errorf("no build env found")
 	}
 
 	if !testCaseTagCriteria.ProtoReflect().IsValid() {
-		return nil, skipAntsFilter, fmt.Errorf("no test case tag criteria found")
+		return nil, fmt.Errorf("no test case tag criteria found")
 	}
 
 	testSuite := &api.TestSuite{
@@ -510,7 +503,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		MaximumDuration: maxDuration,
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
-		RetryCount:      int64(retryCount)}, skipAntsFilter, nil
+		RetryCount:      int64(retryCount)}, nil
 }
 
 func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
@@ -632,36 +625,33 @@ func getKarbonFilters() []*api.CTPFilter {
 	}
 }
 
-// Temp solution to support CB with TF internal publish
-func getKarbonFiltersWithoutAntsFilter() []*api.CTPFilter {
-	return []*api.CTPFilter{
-		{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &build_api.ContainerImageInfo{
-					Name: "al-provision-filter",
-				},
-			},
-		},
-		{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &build_api.ContainerImageInfo{
-					Name: "foil-filter",
-				},
-			},
-		},
-		{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &build_api.ContainerImageInfo{
-					Name: "test-finder",
-				},
-			},
-		},
-	}
-}
+func buildSchedulerInfo(pool string, triggerType ATPTriggerType) *api.SchedulerInfo {
+	if pool == common.DefaultQuotaPool {
+		// For mainpool, run through QS
+		qsAccount := "unmanaged_p2"
+		if triggerType == PRESUBMIT_BLOCKING {
+			qsAccount = "cq"
+		} else if triggerType == POSTSUBMIT_BLOCKING {
+			qsAccount = "postsubmit"
+		}
 
-func buildSchedulerInfo(testJobMsg *common.TestJobMessage) *api.SchedulerInfo {
+		return &api.SchedulerInfo{
+			QsAccount: qsAccount,
+			Scheduler: api.SchedulerInfo_QSCHEDULER,
+		}
+	}
+
+	// default path goes through scheduke
+	// TODO: enable using different qs account when mainpool traffic goes through scheduke
+	// qsAccount := "unmanaged_p1"
+	// if triggerType == PRESUBMIT_BLOCKING {
+	// 	qsAccount = common.ATPBlockingQuotaAccount
+	// } else if triggerType == POSTSUBMIT_BLOCKING {
+	// 	qsAccount = "postsubmit"
+	// }
+
 	return &api.SchedulerInfo{
-		QsAccount: common.ATPBlockingQuotaAccount,
+		QsAccount: common.ATPBlockingQuotaAccount, // In non-mainpool, everything runs with highest pri now
 		Scheduler: api.SchedulerInfo_SCHEDUKE,
 	}
 }
@@ -683,6 +673,43 @@ func getSchedulingPool(testJobMsg *common.TestJobMessage) string {
 	}
 
 	return pool
+}
+
+type ATPTriggerType int
+
+const (
+	PRESUBMIT_BLOCKING ATPTriggerType = iota
+	PRESUBMIT_WARN                    // not used yet
+	POSTSUBMIT_BLOCKING
+	POSTSUBMIT_WARN // not used yet
+	CRON
+)
+
+func getTriggerType(testJobMsg *common.TestJobMessage) ATPTriggerType {
+	// default is cron
+	retVal := CRON
+	for _, eachVal := range testJobMsg.Context {
+		if eachVal.Key == "trigger" {
+			if len(eachVal.Values) == 0 {
+				return retVal
+			}
+			triggerVal := eachVal.Values[0]
+			// Currently we don't know which is presubmit blocking and which is warning;
+			// Considering all presubmit to be blocking for now.
+			if triggerVal == "WORK_NODE" {
+				return PRESUBMIT_BLOCKING
+			} else if triggerVal == "BUILD" {
+				// this actually means that run was created by build trigger type
+				// we still don't know if this was blocking or info/warning
+				// Considering all as BVT blocking for now.
+				return POSTSUBMIT_BLOCKING
+			} else if triggerVal == "CRON" {
+				return CRON
+			}
+		}
+	}
+
+	return retVal
 }
 
 // NewTranslateV1toV2Cmd returns a new TranslateV1ToV2Cmd
