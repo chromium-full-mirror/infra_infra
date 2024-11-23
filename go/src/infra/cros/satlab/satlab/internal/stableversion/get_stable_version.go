@@ -71,9 +71,9 @@ func (c *getStableVersionRun) Run(a subcommands.Application, args []string, env 
 func (c *getStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
 	if site.IsPartner() {
 		return c.getStableVersionPartner()
-	} else {
-		return c.getStableVersionInternal(ctx, a)
 	}
+	return c.getStableVersionInternal(ctx, a)
+
 }
 
 // GetStableVersionPartner fetches local stable version
@@ -89,10 +89,10 @@ func (c *getStableVersionRun) getStableVersionPartner() error {
 	if err != nil {
 		return errors.Annotate(err, "get stable version: stable version not found").Err()
 	}
-	recovery_version := &models.RecoveryVersion{}
-	_ = json.Unmarshal([]byte(f), recovery_version)
+	recoveryVersion := &models.RecoveryVersion{}
+	_ = json.Unmarshal([]byte(f), recoveryVersion)
 
-	rv, err := json.MarshalIndent(recovery_version, "", " ")
+	rv, err := json.MarshalIndent(recoveryVersion, "", " ")
 	if err != nil {
 		return errors.Annotate(err, "marshal recovery version").Err()
 	}
