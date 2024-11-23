@@ -143,8 +143,7 @@ func (c *setStableVersionRun) innerRunBoardModel(ctx context.Context, a subcomma
 	} else if numArgs < 3 { // If partial args provided, throw an error
 		return fmt.Errorf("Please provide all or none of the following: -os, -fw, -fwImage")
 	}
-	err = StageAndWriteLocalStableVersion(ctx, moblabClient, rv)
-	if err != nil {
+	if err := StageAndWriteLocalStableVersion(ctx, moblabClient, rv); err != nil {
 		return errors.Annotate(err, "stage and write local stable version").Err()
 	}
 	return nil
@@ -154,24 +153,23 @@ func (c *setStableVersionRun) innerRunBoardModel(ctx context.Context, a subcomma
 func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *models.RecoveryVersion) error {
 
 	fmt.Println("Internal Satlab user detected...")
-	err := c.validateHostnameArgs()
-	if err != nil {
+	if err := c.validateHostnameArgs(); err != nil {
 		return err
 	}
 	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Annotate(err, "preprocess hostname").Err()
 	}
 	c.hostname = newHostname
 
 	req, err := c.produceRequest(ctx, a, args, env)
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Annotate(err, "produce request").Err()
 	}
 
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
+		return errors.Annotate(err, "create http client").Err()
 	}
 
 	invWithSVClient := fleet.NewInventoryPRPCClient(
@@ -201,27 +199,24 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 // StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally
 func StageAndWriteLocalStableVersion(ctx context.Context, moblabClient MoblabClient, rv *models.RecoveryVersion) error {
 	buildVersion := strings.Split(rv.OsImage, "-")[1]
-	err := run.StageImageToBucket(ctx, moblabClient, rv.Board, rv.Model, buildVersion)
-	if err != nil {
+	if err := run.StageImageToBucket(ctx, moblabClient, rv.Board, rv.Model, buildVersion); err != nil {
 		return errors.Annotate(err, "stage stable version image to bucket").Err()
 	}
-	err = writeLocalStableVersion(rv, site.RecoveryVersionDirectory)
-	if err != nil {
+	if err := writeLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
 		return errors.Annotate(err, "write local stable version").Err()
 	}
 	return nil
 }
 
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path string) error {
+func writeLocalStableVersion(recoveryVersion *models.RecoveryVersion, path string) error {
 
-	// Check if recovery_versions directory created
-	_, err := os.Stat(path)
-	if err != nil {
+	// Check if recoveryVersions directory created
+	if _, err := os.Stat(path); err != nil {
 		return err
 	}
 
-	fname := fmt.Sprintf("%s%s-%s.json", path, recovery_version.Board, recovery_version.Model)
+	fname := fmt.Sprintf("%s%s-%s.json", path, recoveryVersion.Board, recoveryVersion.Model)
 	f, err := os.Create(fname)
 	if err != nil {
 		return err
@@ -233,16 +228,14 @@ func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path stri
 		}
 	}()
 
-	rv, err := json.MarshalIndent(recovery_version, "", " ")
+	rv, err := json.MarshalIndent(recoveryVersion, "", " ")
 	if err != nil {
 		return errors.Annotate(err, "marshal recovery version").Err()
 	}
-	_, err = f.Write(rv)
-	if err != nil {
+	if _, err := f.Write(rv); err != nil {
 		return err
 	}
 	fmt.Println("Recovery Version written locally: ", string(rv))
-
 	return nil
 }
 
@@ -270,12 +263,12 @@ func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board s
 	if err != nil {
 		return nil, err
 	}
-	fw_milestone := strings.Split(milestoneBuild.GetMilestone(), "/")[1]
+	fwMilestone := strings.Split(milestoneBuild.GetMilestone(), "/")[1]
 
 	// fetch firmware build version
 	listBuildVersionsRequest := &moblabpb.ListBuildsRequest{
 		Parent:   fmt.Sprintf("buildTargets/%s/models/%s", board, model),
-		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fw_milestone),
+		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fwMilestone),
 		PageSize: 1,
 	}
 	listBuildVersionsResponse := moblabClient.ListBuilds(ctx, listBuildVersionsRequest)
@@ -283,7 +276,7 @@ func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board s
 	if err != nil {
 		return nil, err
 	}
-	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fw_milestone, firmwareBuild.GetBuildVersion())
+	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, firmwareBuild.GetBuildVersion())
 
 	rv := &models.RecoveryVersion{
 		Board:     board,
