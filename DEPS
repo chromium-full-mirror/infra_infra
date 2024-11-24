@@ -140,7 +140,7 @@ deps = {
 
       {
         'package': 'infra/3pp/tools/golangci-lint/${{platform}}',
-        'version': 'version:2@1.54.2',
+        'version': 'version:3@1.62.0',
       },
     ],
     'dep_type': 'cipd',
