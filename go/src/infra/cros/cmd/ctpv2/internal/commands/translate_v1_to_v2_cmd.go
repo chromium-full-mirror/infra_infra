@@ -177,7 +177,7 @@ func checkIsALRun(reqs []*api.CTPRequest) bool {
 	return false
 }
 
-func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits() error {
+func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits(ctx context.Context) error {
 	// If we are inside of an AL run then begin building up the WU tree.
 	// If the current run is an AL run then pull the ATP details out of the
 	// request arguments.
@@ -211,12 +211,12 @@ func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits() error {
 			Head:        top,
 			ShardsByKey: map[string]*androidapi.WorkUnitNode{},
 		}
-		Stdout.Printf("TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
-		Stdout.Printf("parentWUID: %s\tinvocationID: %s\n", parentWUID, invocationID)
+		logging.Infof(ctx, "TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
+		logging.Infof(ctx, "parentWUID: %s\tinvocationID: %s\n", parentWUID, invocationID)
 	} else if isAlRun && !cmd.IsPartnerRun {
 		// If we are in an AL run but no ATP information was provided then
 		// generate the invocation details in the during the suite run.
-		Stdout.Println("In AL run but no ATP details provided, generate invocation at runtime.")
+		logging.Infof(ctx, "In AL run but no ATP details provided, generate invocation at runtime.")
 		cmd.AlStateInfo.GenerateInvocation = true
 		cmd.AlStateInfo.WorkUnitsOnly = true
 		cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{}
@@ -249,7 +249,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 			}
 		}
 
-		return cmd.initiateATPWorkUnits()
+		return cmd.initiateATPWorkUnits(ctx)
 	}
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV1Requests, "Received CtpV1 Request")
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
@@ -267,7 +267,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	step.SetSummaryMarkdown("Translation succeeded")
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV2RequestMap, "Translated CtpV2 Request Map")
 
-	err = cmd.initiateATPWorkUnits()
+	err = cmd.initiateATPWorkUnits(ctx)
 
 	return err
 }

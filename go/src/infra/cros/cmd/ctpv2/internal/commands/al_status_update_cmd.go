@@ -7,8 +7,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
 	"strconv"
 	"strings"
 
@@ -23,14 +21,6 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/outputprops"
 	"infra/cros/cmd/ctpv2/data"
-)
-
-// TODO(juahurta): Remove this once I figure out the luci logging package. In
-// the meantime this will provide line and file information so that the outputs
-// are similar.
-var (
-	Stdout = log.New(os.Stdout, "", log.Lshortfile|log.LstdFlags)
-	Stderr = log.New(os.Stderr, "", log.Lshortfile|log.LstdFlags)
 )
 
 // AlStatusUpdateCmd represents al state update cmd.
@@ -170,21 +160,21 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 		return nil
 	}
 
-	Stdout.Printf("TOP Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
+	logging.Infof(ctx, "TOP Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
 
 	// Generate and insert the Run Node into the WU tree.
 	runNode, err := androidapi.NewWorkUnitNode(head.GetWorkUnit().Id, head.GetWorkUnit().InvocationId, androidapi.WULayerRun, head, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}
-	Stdout.Printf("NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
+	logging.Infof(ctx, "NEW RUN Node %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), runNode)
 
 	for key := range cmd.BuildsMap {
 		// NOTE: Shards are unique for a given tree/run. When we migrate to
 		// multiple runs this will not collide since they'll be in separate
 		// trees.
 		if _, ok := tree.ShardsByKey[key]; !ok {
-			Stdout.Printf("Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
+			logging.Infof(ctx, "Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
 
 			// Generate and insert the Run Node into the WU tree.
 			shardNode, err := androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.WULayerShard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
@@ -192,7 +182,7 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 				return err
 			}
 
-			Stdout.Printf("NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+			logging.Infof(ctx, "NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
 			tree.ShardsByKey[key] = shardNode
 		}
 	}
@@ -228,7 +218,7 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 		}
 
 		if strings.ToLower(child.GetWorkUnit().State) != strings.ToLower(androidapi.WorkUnitCompleted.String()) {
-			Stdout.Printf("%s-%s: child %s-%s in state %s, allPassed set to FALSE\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, child.GetWorkUnit().Id, child.GetWorkUnit().Name, child.GetWorkUnit().State)
+			logging.Infof(ctx, "%s-%s: child %s-%s in state %s, allPassed set to FALSE\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, child.GetWorkUnit().Id, child.GetWorkUnit().Name, child.GetWorkUnit().State)
 			allPassed = false
 		}
 	}
@@ -245,16 +235,16 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 	// Update the state of the current node based on the child nodes.
 	if allPassed {
 		head.GetWorkUnit().State = common.TaskCompletedState
-		Stdout.Printf("WU %s-%s set as %s, all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
+		logging.Infof(ctx, "WU %s-%s set as %s, all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
 	} else {
 		head.GetWorkUnit().State = common.TaskErrorState
-		Stdout.Printf("WU %s-%s set as %s, not all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
+		logging.Infof(ctx, "WU %s-%s set as %s, not all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
 		head.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
 			ErrorCode:    1,
 			ErrorMessage: "Not all children WUs passed",
 			ErrorName:    "Failed Children",
 		}
-		Stdout.Printf("WU %s-%s completed testing in %s status\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
+		logging.Infof(ctx, "WU %s-%s completed testing in %s status\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
 	}
 
 	// Send the WU to the ATP API to be updated.
@@ -271,7 +261,7 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 
 // sealInvocation updates the top level Work Unit and Invocation once before
 // sealing them with a terminal state status.
-func (cmd *AlStatusUpdateCmd) sealInvocation(tree *androidapi.WorkUnitTree, service *androidapi.Service) error {
+func (cmd *AlStatusUpdateCmd) sealInvocation(ctx context.Context, tree *androidapi.WorkUnitTree, service *androidapi.Service) error {
 	var err error
 
 	// Refresh the work unit in case we are not using the most up-to-date
@@ -283,7 +273,7 @@ func (cmd *AlStatusUpdateCmd) sealInvocation(tree *androidapi.WorkUnitTree, serv
 
 	// Set the top level WU to the same status as the tree's head.
 	cmd.AlStateInfo.ATPWorkUnit.State = tree.Head.GetWorkUnit().State
-	Stdout.Printf("updating Work Unit %s-%s to state %s\n", cmd.AlStateInfo.ATPWorkUnit.Name, cmd.AlStateInfo.ATPWorkUnit.Id, cmd.AlStateInfo.ATPWorkUnit.State)
+	logging.Infof(ctx, "updating Work Unit %s-%s to state %s\n", cmd.AlStateInfo.ATPWorkUnit.Name, cmd.AlStateInfo.ATPWorkUnit.Id, cmd.AlStateInfo.ATPWorkUnit.State)
 
 	_, err = service.WorkUnitService.Update(cmd.AlStateInfo.ATPWorkUnit.Id, cmd.AlStateInfo.ATPWorkUnit)
 	if err != nil {
@@ -299,7 +289,7 @@ func (cmd *AlStatusUpdateCmd) sealInvocation(tree *androidapi.WorkUnitTree, serv
 
 	// Set the invocation to the same status as the tree's head.
 	cmd.AlStateInfo.ATPInvocation.SchedulerState = tree.Head.GetWorkUnit().State
-	Stdout.Printf("updating Invocation %s to state %s\n", cmd.AlStateInfo.ATPInvocation.InvocationId, cmd.AlStateInfo.ATPInvocation.SchedulerState)
+	logging.Infof(ctx, "updating Invocation %s to state %s\n", cmd.AlStateInfo.ATPInvocation.InvocationId, cmd.AlStateInfo.ATPInvocation.SchedulerState)
 
 	_, err = service.InvocationService.Update(cmd.AlStateInfo.ATPInvocation.InvocationId, cmd.AlStateInfo.ATPInvocation)
 	if err != nil {
@@ -326,7 +316,7 @@ func (cmd *AlStatusUpdateCmd) closeWUTree(ctx context.Context, service *androida
 	// NOTE: ATP would normally handle this but because we are handing the
 	// creation of the invocation we now in charge.
 	if cmd.AlStateInfo.ATPWorkUnit != nil {
-		return cmd.sealInvocation(tree, service)
+		return cmd.sealInvocation(ctx, tree, service)
 	}
 
 	return nil
@@ -420,7 +410,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 		return err
 	}
 	invocationID := inv.InvocationId
-	Stdout.Printf("generated invocationID: %s\n", invocationID)
+	logging.Infof(ctx, "generated invocationID: %s\n", invocationID)
 
 	// Generate the top of the tree node to begin the ATP WU tree.
 	ctp, err := androidapi.NewWorkUnitNode("", invocationID, androidapi.WULayerCTP, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
@@ -434,7 +424,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 	cmd.AlStateInfo.ATPInvocation = inv
 
 	parentWUID := ctp.GetWorkUnit().Id
-	Stdout.Printf("generated parentWUID: %s\n", parentWUID)
+	logging.Infof(ctx, "generated parentWUID: %s\n", parentWUID)
 
 	// Generate the top of the tree node to begin the ATP WU tree.
 	top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
@@ -450,7 +440,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 		return fmt.Errorf("a work unit tree was never instantiated")
 	}
 
-	Stdout.Printf("TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
+	logging.Infof(ctx, "TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
 
 	// Once we have generated the invocation, CTP node, and TEST_JOB NODE then
 	// we can unset this field so that we do not create another Invocation.
@@ -537,6 +527,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 
 	step, ctx := build.StartStep(ctx, "Al Status Update")
 	defer func() { step.End(err) }()
+	logging.Infof(ctx, "Al Status Update")
 
 	// ********** WORK UNIT MAINTENANCE **********
 	err = cmd.generateInvocation(ctx, step)
@@ -546,7 +537,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 
 	err = cmd.initRunAndShards(ctx)
 	if err != nil {
-		Stdout.Printf("error while initing run layer: %s", err.Error())
+		logging.Infof(ctx, "error while initing run layer: %s", err.Error())
 		if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
 			return err
 		}
