@@ -72,7 +72,7 @@ func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, dev
 	marshalOpts := protojson.MarshalOptions{EmitUnpopulated: true}
 
 	deviceEvent := &schedulingAPI.DeviceEvent{
-		EventTime:        time.Now().Unix(),
+		EventTime:        time.Now().UnixMicro(),
 		DeviceId:         device.DutID,
 		DeviceReady:      device.IsActive && IsDeviceAvailable(ctx, device.DeviceState),
 		DeviceDimensions: labelsToSwarmingDims(ctx, device.SchedulableLabels),
