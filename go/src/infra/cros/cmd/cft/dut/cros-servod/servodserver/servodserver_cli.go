@@ -229,7 +229,7 @@ func getStartServodEnv(a model.CliArgs, envPrefix string) string {
 // when ServodDockerContainerName is empty.
 func (s *ServodService) getExecCmdCommand(a model.CliArgs) string {
 	if a.ServodDockerContainerName != "" {
-		return fmt.Sprintf("docker exec -d %s '%s'",
+		return fmt.Sprintf("/usr/local/bin/docker exec -d %s '%s'",
 			a.ServodDockerContainerName, a.Command)
 	} else {
 		return a.Command
@@ -250,7 +250,7 @@ func (s *ServodService) getCallServodCommand(a model.CliArgs) string {
 	}
 
 	if a.ServodDockerContainerName != "" {
-		return fmt.Sprintf("docker exec -d %s '%s'",
+		return fmt.Sprintf("/usr/local/bin/docker exec -d %s '%s'",
 			a.ServodDockerContainerName, command)
 	} else {
 		return command
