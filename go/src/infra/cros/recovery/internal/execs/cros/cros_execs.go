@@ -20,6 +20,7 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/version"
 )
 
 // pingExec verifies the DUT is pingable.
@@ -87,12 +88,15 @@ func isOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	expected := argsMap.AsString(ctx, "os_name", "")
 	if expected == "" {
-		deviceType := argsMap.AsString(ctx, "device_type", components.VersionDeviceCros)
-		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource(), "", "")
+		sv, err := version.ByResource(
+			ctx,
+			version.Type(argsMap.AsString(ctx, "device_type", "")),
+			info.GetDut(),
+			info.GetActiveResource())
 		if err != nil {
 			return errors.Annotate(err, "match os version").Err()
 		}
-		expected = sv.OSImage
+		expected = sv.GetOsImagePath()
 	}
 	if expected == "" {
 		return errors.Reason("match os version: expected version is not specified").Err()
@@ -144,11 +148,11 @@ func isOnExpectedVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // notOnStableVersionExec verifies devices OS is not matches stable CrOS version.
 func notOnStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "not os stable version").Err()
 	}
-	stableVersion := sv.OSImage
+	stableVersion := sv.GetOsImagePath()
 	log.Debugf(ctx, "Stable version: %s", stableVersion)
 	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {

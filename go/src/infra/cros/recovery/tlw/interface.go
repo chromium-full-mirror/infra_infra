@@ -161,3 +161,11 @@ func (d *Dut) GetModel() string {
 	}
 	return ""
 }
+
+// GetPools provides list of the pools for the DUT.
+func (d *Dut) GetPools() []string {
+	if d != nil && d.ExtraAttributes != nil {
+		return d.ExtraAttributes[ExtraAttributePools]
+	}
+	return nil
+}

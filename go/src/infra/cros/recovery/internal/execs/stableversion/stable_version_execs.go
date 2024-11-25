@@ -13,6 +13,7 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/scopes"
+	"infra/cros/recovery/version"
 )
 
 // hasStableVersionServicePathExec checks the path of the stable version service in the context params.
@@ -27,12 +28,13 @@ func hasStableVersionServicePathExec(ctx context.Context, info *execs.ExecInfo) 
 // Example: board-release/R90-13816.47.0.
 func hasCrosImageStableVersionActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetDut() != nil {
-		sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+		sv, err := version.ByDut(ctx, info.GetDut())
 		if err != nil {
 			return errors.Annotate(err, "cros has stable version").Err()
 		}
-		log.Debugf(ctx, "Stable version for cros: %q", sv.OSImage)
-		if sv.OSImage != "" && strings.Contains(sv.OSImage, "/") {
+		osImage := sv.GetOsImagePath()
+		log.Debugf(ctx, "Stable version for cros: %q", osImage)
+		if osImage != "" && strings.Contains(osImage, "/") {
 			return nil
 		}
 	}
@@ -43,12 +45,12 @@ func hasCrosImageStableVersionActionExec(ctx context.Context, info *execs.ExecIn
 // Example: Google_Board.13434.261.0.
 func hasFwVersionStableVersionActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetDut() != nil {
-		sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+		sv, err := version.ByDut(ctx, info.GetDut())
 		if err != nil {
 			return errors.Annotate(err, "cros has stable firmware version").Err()
 		}
-		log.Debugf(ctx, "Stable version for firmware version: %q", sv.FwVersion)
-		if sv.FwVersion != "" {
+		log.Debugf(ctx, "Stable version for firmware version: %q", sv.GetFirmwareRoVersion())
+		if sv.GetFirmwareRoVersion() != "" {
 			return nil
 		}
 	}
@@ -59,12 +61,13 @@ func hasFwVersionStableVersionActionExec(ctx context.Context, info *execs.ExecIn
 // Example: board-firmware/R87-13434.261.0
 func hasFwImageStableVersionActionExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetDut() != nil {
-		sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+		sv, err := version.ByDut(ctx, info.GetDut())
 		if err != nil {
 			return errors.Annotate(err, "cros has stable firmware image version").Err()
 		}
-		log.Debugf(ctx, "Stable version for firmware image: %q", sv.FwImage)
-		if sv.FwImage != "" && strings.Contains(sv.FwImage, "/") {
+		fwImage := sv.GetFirmwareRoImagePath()
+		log.Debugf(ctx, "Stable version for firmware image: %q", fwImage)
+		if fwImage != "" && strings.Contains(fwImage, "/") {
 			return nil
 		}
 	}

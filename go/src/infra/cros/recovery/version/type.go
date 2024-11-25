@@ -35,7 +35,7 @@ func ToType(t string) Type {
 	return CrOSType
 }
 
-func validate(t Type, deviceName string) Type {
+func defaultTypeIfEmpty(t Type, deviceName string) Type {
 	if t == UnspecifiedType {
 		t = CrOSType
 	}

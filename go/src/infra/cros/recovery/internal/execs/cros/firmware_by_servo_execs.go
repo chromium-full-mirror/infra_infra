@@ -16,6 +16,7 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
+	"infra/cros/recovery/version"
 )
 
 func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -47,13 +48,13 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "cros provision").Err()
 	}
 	mn := "update fw with fw-image by servo"
 	am := info.GetActionArgs(ctx)
-	imageName := am.AsString(ctx, "version_name", sv.FwImage)
+	imageName := am.AsString(ctx, "version_name", sv.GetFirmwareRoImagePath())
 	log.Debugf(ctx, "Used fw image name: %s", imageName)
 	gsBucket := am.AsString(ctx, "gs_bucket", gsCrOSImageBucket)
 	log.Debugf(ctx, "Used gs bucket name: %s", gsBucket)

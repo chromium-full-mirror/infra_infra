@@ -16,6 +16,7 @@ import (
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/version"
 )
 
 const (
@@ -66,7 +67,7 @@ func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 
 func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossystemControl string) error {
 	logger := info.NewLogger()
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "is on stable firmware version").Err()
 	}
@@ -81,9 +82,9 @@ func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossy
 	if versionNumberOnly {
 		delimiter := "."
 		logger.Debugf("Multi-firmware hwid detected, will only compare version number for firmware match validation.")
-		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.FwVersion, delimiter, logger)
+		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.GetFirmwareRoVersion(), delimiter, logger)
 	} else {
-		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.FwVersion)
+		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.GetFirmwareRoVersion())
 	}
 	return errors.Annotate(err, "is on stable firmware version").Err()
 }
@@ -91,7 +92,7 @@ func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossy
 // isRWFirmwareStableVersionAvailableExec confirms the stable firmware is up to date with the available firmware.
 func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "rw firmware stable version available").Err()
 	}
@@ -103,7 +104,7 @@ func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.Exe
 	if err != nil {
 		return errors.Annotate(err, "rw firmware stable version available").Err()
 	}
-	stableVersion := sv.FwVersion
+	stableVersion := sv.GetFirmwareRoVersion()
 	if availableVersion != stableVersion {
 		return errors.Reason("rw firmware stable version not available, expected %q, found %q", availableVersion, stableVersion).Err()
 	}
@@ -155,13 +156,13 @@ func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // updateFirmwareFromFirmwareImage update RW/RO firmware to a given firmwarm image(stable_version by default).
 func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "update firmware image").Err()
 	}
 	actionArgs := info.GetActionArgs(ctx)
 	// With b/328679244 the version can contains the file name also.
-	imageName := actionArgs.AsString(ctx, "version_name", sv.FwImage)
+	imageName := actionArgs.AsString(ctx, "version_name", sv.GetFirmwareRoImagePath())
 	log.Debugf(ctx, "Used fw image name: %s", imageName)
 	gsBucket := actionArgs.AsString(ctx, "gs_bucket", gsCrOSImageBucket)
 	log.Debugf(ctx, "Used gs bucket name: %s", gsBucket)

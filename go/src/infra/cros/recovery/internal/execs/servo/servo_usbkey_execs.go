@@ -21,6 +21,7 @@ import (
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
+	"infra/cros/recovery/version"
 )
 
 func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -30,11 +31,11 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	// retryInterval is the timeout between retries for reading the ChromeOS image
 	retryInterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	usbFileCheck := argsMap.AsBool(ctx, "usb_file_check", false)
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
 	}
-	expectedImage := sv.OSImage
+	expectedImage := sv.GetOsImagePath()
 	if expectedImage == "" {
 		return errors.Reason("servo usb-key has cros stable image: stable image is not specified").Err()
 	}

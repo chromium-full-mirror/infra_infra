@@ -12,13 +12,13 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/urlpath"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
+	"infra/cros/recovery/version"
 )
 
 // provisionExec performs provisioning of the device.
@@ -29,12 +29,15 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	osImageName := argsMap.AsString(ctx, "os_name", "")
 	if osImageName == "" {
-		deviceType := argsMap.AsString(ctx, "device_type", components.VersionDeviceCros)
-		sv, err := info.Versioner().GetVersion(ctx, deviceType, info.GetActiveResource(), "", "")
+		sv, err := version.ByResource(
+			ctx,
+			version.Type(argsMap.AsString(ctx, "device_type", "")),
+			info.GetDut(),
+			info.GetActiveResource())
 		if err != nil {
 			return errors.Annotate(err, "cros provision").Err()
 		}
-		osImageName = sv.OSImage
+		osImageName = sv.GetOsImagePath()
 	}
 	if osImageName == "" {
 		return errors.Reason("cros provision: os image not provided").Err()
@@ -62,7 +65,7 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 //
 // To provide custom image data please use 'os_name', 'os_bucket', 'os_image_path'.
 func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
+	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}
@@ -73,7 +76,7 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
 	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
-	osImageName := argsMap.AsString(ctx, "os_name", sv.OSImage)
+	osImageName := argsMap.AsString(ctx, "os_name", sv.GetOsImagePath())
 	log.Debugf(ctx, "Used OS image name: %s", osImageName)
 	osImageBucket := argsMap.AsString(ctx, "os_bucket", gsCrOSImageBucket)
 	log.Debugf(ctx, "Used OS bucket name: %s", osImageBucket)
@@ -138,28 +141,14 @@ func isLastProvisionSuccessfulExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
-// Suffix used to distinguish model of the DUT vs tablet used for testbed.
-const tabletModelSuffix = "_tablet"
-
-// getChartOS returns the required os of chart if predefined in chartOSMap
-// TODO(b/248285635): use version service when will be ready.
-func getChartOS(ctx context.Context, info *execs.ExecInfo, suffix string) (string, error) {
-	board := info.GetChromeos().GetBoard()
-	model := fmt.Sprintf("%s%s", info.GetChromeos().GetModel(), suffix)
-	sv, err := info.Versioner().GetVersion(ctx, components.VersionDeviceCros, info.GetDut().Name, board, model)
-	if err != nil {
-		return "", errors.Annotate(err, "get version for %q", suffix).Err()
-	}
-	return sv.OSImage, nil
-}
-
 // isCameraboxTabletOnOSVersionExec check if the tablet is on the required os
 // version.
 func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	expectedOS, err := getChartOS(ctx, info, tabletModelSuffix)
+	rv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "camerabox tablet match os version").Err()
 	}
+	expectedOS := rv.GetOsImagePath()
 	log.Debugf(ctx, "Expected version: %s", expectedOS)
 	fromDevice, err := cros.ReleaseBuildPath(ctx, info.DefaultRunner(), info.NewLogger())
 	if err != nil {
@@ -174,10 +163,11 @@ func isCameraboxTabletOnOSVersionExec(ctx context.Context, info *execs.ExecInfo)
 
 // provisionCameraboxTabletExec
 func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) error {
-	chartOSName, err := getChartOS(ctx, info, tabletModelSuffix)
+	rv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
-		return errors.Annotate(err, "provision camerabox tablet").Err()
+		return errors.Annotate(err, "camerabox tablet match os version").Err()
 	}
+	chartOSName := rv.GetOsImagePath()
 	osImagePath := fmt.Sprintf("%s/%s", gsCrOSImageBucket, chartOSName)
 	log.Debugf(ctx, "Used OS image path: %s", osImagePath)
 	req := &tlw.ProvisionRequest{

@@ -37,6 +37,39 @@ func ByDut(ctx context.Context, dut *tlw.Dut) (Data, error) {
 	return v, errors.Annotate(err, "version by dut").Err()
 }
 
+// ByResource finds version by resource in correlation with version-type by finding board, model and pools infos.
+func ByResource(ctx context.Context, versionType Type, dut *tlw.Dut, resource string) (Data, error) {
+	if dut == nil {
+		return nil, errors.Reason("version by resource: dut is not provided").Err()
+	}
+	if resource == "" {
+		return nil, errors.Reason("version by resource: resource is not specified").Err()
+	}
+	versionType = defaultTypeIfEmpty(versionType, resource)
+	var board, model string
+	switch versionType {
+	case CrOSType, CameraBoxTabletType, AndroidOSType:
+		board = dut.GetBoard()
+		model = dut.GetModel()
+	case WifiRouterType:
+		for _, wr := range dut.GetChromeos().GetWifiRouters() {
+			if wr.GetName() == resource {
+				model = wr.GetModel()
+				// Board and model are the same.
+				board = model
+				break
+			}
+		}
+		if model == "" {
+			return nil, errors.Reason("version by resource: resource not found for WiFi router %s", resource).Err()
+		}
+	default:
+		return nil, errors.Reason("version by resource: unsupported version-type: %s", versionType).Err()
+	}
+	v, err := version(ctx, resource, versionType, board, model, dut.GetPools())
+	return v, errors.Annotate(err, "version by resource").Err()
+}
+
 // ByDetails finds version by board, model and pools info.
 func ByDetails(ctx context.Context, versionType Type, deviceName, board, model string, pools []string) (Data, error) {
 	if deviceName == "" {
@@ -53,7 +86,7 @@ func version(ctx context.Context, deviceName string, versionType Type, board, mo
 	if c == nil {
 		return nil, errors.Reason("version: client not found").Err()
 	}
-	deviceType := toDeviceType(validate(versionType, deviceName))
+	deviceType := toDeviceType(defaultTypeIfEmpty(versionType, deviceName))
 	cacheKey := cacheKey(deviceType, deviceName, board, model, pools)
 	// Check if the version is in the cache before trying to read from outside.
 	// The cache is enabled to prevent instability between two calls that use version information,
@@ -82,7 +115,7 @@ func version(ctx context.Context, deviceName string, versionType Type, board, mo
 		Model:      model,
 		Pools:      pools,
 	}
-	log.Debugf(ctx, "Version uses device type: %q", req.GetDeviceType())
+	log.Debugf(ctx, "Version uses device type: %q, device name: %q, board: %q, model: %q, pools: %v", req.GetDeviceType(), req.GetDeviceName(), req.GetBoard(), req.GetModel(), req.GetPools())
 	res, err := c.GetRecoveryVersion(ctx, req)
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
