@@ -15,7 +15,6 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/internal/env"
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
@@ -41,11 +40,6 @@ type UFSClient interface {
 	ListCachingServices(ctx context.Context, req *ufsAPI.ListCachingServicesRequest, opts ...grpc.CallOption) (*ufsAPI.ListCachingServicesResponse, error)
 }
 
-// CSAClient is a client that knows how to respond to the GetStableVersion RPC call.
-type CSAClient interface {
-	GetStableVersion(ctx context.Context, in *fleet.GetStableVersionRequest, opts ...grpc.CallOption) (*fleet.GetStableVersionResponse, error)
-}
-
 type hostType int64
 
 const (
@@ -61,7 +55,6 @@ const (
 
 // tlwClient holds data and represents the local implementation of TLW Access interface.
 type tlwClient struct {
-	csaClient   CSAClient
 	ufsClient   UFSClient
 	tlwServer   tlw_server.Server
 	tlsServer   tls.Server
@@ -71,14 +64,12 @@ type tlwClient struct {
 	hostTypes map[string]hostType
 	// Map to provide name if the DUT host as value and other hosts as key.
 	hostToParents map[string]string
-	// Map of version requested and received.
-	versionMap map[string]*tlw.VersionResponse
 	// Indicates that the client runs on a cloudbot
 	isCloudBot bool
 }
 
 // New build new local TLW Access instance.
-func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
+func New(ufs UFSClient) (tlw.Access, error) {
 	config, err := ssh.NewDefaultConfig(nil)
 	if err != nil {
 		return nil, errors.Annotate(err, "new tlw client").Err()
@@ -99,12 +90,10 @@ func New(ufs UFSClient, csac CSAClient) (tlw.Access, error) {
 	}
 	c := &tlwClient{
 		ufsClient:     ufs,
-		csaClient:     csac,
 		sshProvider:   ssh.NewProvider(config),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
-		versionMap:    make(map[string]*tlw.VersionResponse),
 		isCloudBot:    isCloudBot,
 		tlwServer:     tlwServer,
 		tlsServer:     tlsServer,

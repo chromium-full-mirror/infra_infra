@@ -236,36 +236,6 @@ message BluetoothPeerScopeState {
   RaspiosCrosBtpeerImage raspios_cros_btpeer_image = 3;
 }
 
-// VersionRequest holds data for version service request.
-message VersionRequest {
-  // Resource name of device.
-  string resource = 1;
-  // VersionType represents type of devices requesting the stable version.
-  enum VersionType {
-    UNSPECIFIED = 0;
-    // Chrome OS.
-    CROS = 1;
-    // AP/PCAP peripheral.
-    WIFI_ROUTER = 2;
-    // Tablet for camera-box.
-    TABLET = 3;
-    // Android for ChromeOS.
-    AndroidOS = 4;
-  }
-  // Version type describe type of versions and device type associated with
-  // that.
-  VersionType type = 2;
-  // Board of the device.
-  string board = 3;
-  // Model of the device.
-  string model = 4;
-}
-
-// VersionResponse holds data received from service.
-message VersionResponse {
-  // All version values.
-  map<string, string> value = 1;
-}
 
 // CrosAudio holds infor for audio information of the DUT.
 message DUTAudio {

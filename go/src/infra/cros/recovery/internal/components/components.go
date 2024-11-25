@@ -75,29 +75,3 @@ type Servod interface {
 	// Port provides port used for running servod daemon.
 	Port() int
 }
-
-// VersionInfo holds information for the device.
-type VersionInfo struct {
-	OSImage   string
-	FwImage   string
-	FwVersion string
-}
-
-// VersionDeviceType is the type of device that a version governs.
-type VersionDeviceType = string
-
-const (
-	// Version for ChromeOS devices.
-	VersionDeviceCros VersionDeviceType = "cros"
-	// Version for Wifi Router devices.
-	VersionDeviceWifiRouter VersionDeviceType = "wifi_router"
-)
-
-// Versioner defines the interface to receive versions information per request.
-type Versioner interface {
-	// Cros return version info for request Chrome OS device.
-	// Deprecated. please use GetVersion.
-	Cros(ctx context.Context, resource string) (*VersionInfo, error)
-	// GetVersion return version info for the requested device.
-	GetVersion(ctx context.Context, deviceType VersionDeviceType, resource, board, model string) (*VersionInfo, error)
-}

@@ -253,7 +253,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		}
 	}
 	ctx = scopes.WithParams(ctx, params)
-	access, err := recovery.NewLocalTLWAccess(ic, csac)
+	access, err := recovery.NewLocalTLWAccess(ic)
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create tlw access").Err()
 	}

@@ -83,7 +83,7 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput, ad *AccessData, logRoo
 		params[scopes.ParamKeyCTRClient] = cftService
 	}
 	ctx = scopes.WithParams(ctx, params)
-	access, err := recovery.NewLocalTLWAccess(ic, csac)
+	access, err := recovery.NewLocalTLWAccess(ic)
 	if err != nil {
 		return nil, nil, nil, errors.Annotate(err, "create tlw access").Err()
 	}

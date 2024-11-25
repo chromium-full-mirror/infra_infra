@@ -10,6 +10,6 @@ import (
 )
 
 // NewLocalTLWAccess provides instance of local implementation of TLW Access.
-func NewLocalTLWAccess(ufs localtlw.UFSClient, csac localtlw.CSAClient) (tlw.Access, error) {
-	return localtlw.New(ufs, csac)
+func NewLocalTLWAccess(ufs localtlw.UFSClient) (tlw.Access, error) {
+	return localtlw.New(ufs)
 }
