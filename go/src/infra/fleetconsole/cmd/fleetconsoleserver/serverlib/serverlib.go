@@ -6,9 +6,12 @@
 package serverlib
 
 import (
+	"context"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
@@ -42,11 +45,13 @@ func ServerMain(srv *server.Server) error {
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
-	deviceManagerClient, err := devicemanagerclient.NewClient(srv.Context, devicemanagerclient.DMProdURL)
-	if err != nil {
-		return errors.Annotate(err, "configuring device manager client").Err()
-	}
-	consoleserver.SetDeviceManagerClient(consoleFrontend, deviceManagerClient)
+	consoleserver.SetDeviceManagerClient(consoleFrontend, func(context.Context) (*devicemanagerclient.Client, error) {
+		deviceManagerClient, err := devicemanagerclient.NewClient(srv.Context, auth.AsSelf, devicemanagerclient.DMProdURL)
+		if err != nil {
+			return nil, errors.Annotate(err, "configuring device manager client").Err()
+		}
+		return deviceManagerClient, nil
+	})
 	logging.Infof(srv.Context, "End initialization of console server.")
 	return nil
 }

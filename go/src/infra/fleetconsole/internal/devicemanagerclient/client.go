@@ -8,12 +8,12 @@ package devicemanagerclient
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"go.chromium.org/luci/server/auth"
 
 	// In the device_manager library, please ONLY depend on the constants that are not specific to Scheduke.
 	"infra/device_manager/client"
@@ -34,15 +34,24 @@ type Client struct {
 }
 
 // NewClient makes a new client.
-func NewClient(ctx context.Context, baseURL string) (*Client, error) {
-	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		UseIDTokens: true,
-		Audience:    fmt.Sprintf("https://%s", baseURL),
-	})
-	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
-	httpClient, err := authenticator.Client()
+func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, baseURL string) (*Client, error) {
+	var opts []auth.RPCOption
+	switch rpcAuthorityKind {
+	case auth.AsCredentialsForwarder:
+		// do nothing
+	case auth.AsSelf:
+		opts = []auth.RPCOption{auth.WithIDToken()}
+	default:
+		opts = []auth.RPCOption{auth.WithScopes(auth.CloudOAuthScopes...)}
+	}
+	if rpcAuthorityKind != auth.AsCredentialsForwarder {
+	}
+	t, err := auth.GetRPCTransport(ctx, rpcAuthorityKind, opts...)
 	if err != nil {
-		return nil, errors.Annotate(err, "setting up DM PRPC client").Err()
+		return nil, errors.Annotate(err, "setting up auth").Err()
+	}
+	httpClient := &http.Client{
+		Transport: t,
 	}
 	prpcClient := &prpc.Client{
 		C:    httpClient,

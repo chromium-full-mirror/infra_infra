@@ -5,6 +5,8 @@
 package consoleserver
 
 import (
+	"context"
+
 	"google.golang.org/grpc"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
@@ -20,7 +22,7 @@ func NewFleetConsoleFrontend() fleetconsolerpc.FleetConsoleServer {
 type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
-	deviceManagerClient *devicemanagerclient.Client
+	deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)
 }
 
 // InstallServices installs services into the server.
@@ -29,6 +31,6 @@ func InstallServices(consoleFrontend fleetconsolerpc.FleetConsoleServer, srv grp
 }
 
 // SetDeviceManagerClient sets the device manager client.
-func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManagerClient *devicemanagerclient.Client) {
+func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)) {
 	consoleFrontend.deviceManagerClient = deviceManagerClient
 }

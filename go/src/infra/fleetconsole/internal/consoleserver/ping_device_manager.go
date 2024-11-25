@@ -16,7 +16,11 @@ import (
 
 // PingDeviceManager pings device manager.
 func (frontend *FleetConsoleFrontend) PingDeviceManager(ctx context.Context, req *fleetconsolerpc.PingDeviceManagerRequest) (*fleetconsolerpc.PingDeviceManagerResponse, error) {
-	_, err := frontend.deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{PageSize: 1})
+	deviceManagerClient, err := frontend.deviceManagerClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "ping device manager").Err()
+	}
+	_, err = deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{PageSize: 1})
 	if err != nil {
 		logging.Infof(ctx, "device manager: %v\n", err)
 		return nil, errors.Annotate(err, "ping device manager").Err()

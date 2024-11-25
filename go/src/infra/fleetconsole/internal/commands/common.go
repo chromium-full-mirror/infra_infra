@@ -13,6 +13,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
@@ -20,6 +21,22 @@ import (
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 )
+
+// dmClient creates a DeviceManager client using the command line method.
+func dmClient(ctx context.Context, host string, authFlags authcli.Flags) (testapi.DeviceLeaseServiceClient, error) {
+	httpClient, err := authenticatedClient(ctx, host, authFlags)
+	if err != nil {
+		return nil, errors.Annotate(err, "ping").Err()
+	}
+	prpcClient := &prpc.Client{
+		C:    httpClient,
+		Host: host,
+		Options: &prpc.Options{
+			PerRPCTimeout: 30 * time.Second,
+		},
+	}
+	return testapi.NewDeviceLeaseServiceClient(prpcClient), nil
+}
 
 // consoleClient creates a FleetConsoleClient pointing at a specific host.
 //
