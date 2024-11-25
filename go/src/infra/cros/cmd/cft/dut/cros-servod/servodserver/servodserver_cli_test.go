@@ -311,7 +311,7 @@ func TestServodCLI_ExecCmdDockerizedSuccess(t *testing.T) {
 
 	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
 
-	expectedCmd := "/usr/local/bin/docker exec -d servodDockerContainerName 'command'"
+	expectedCmd := "docker exec -d servodDockerContainerName 'command'"
 
 	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
@@ -404,7 +404,7 @@ func TestServodCLI_CallServodDockerizedDocSuccess(t *testing.T) {
 
 	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
 
-	expectedCmd := "/usr/local/bin/docker exec -d servodDockerContainerName 'dut-control -p 0 -i args'"
+	expectedCmd := "docker exec -d servodDockerContainerName 'dut-control -p 0 -i args'"
 
 	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
@@ -499,7 +499,7 @@ func TestServodCLI_CallServodDockerizedGetSuccess(t *testing.T) {
 
 	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
 
-	expectedCmd := "/usr/local/bin/docker exec -d servodDockerContainerName 'dut-control -p 0 args'"
+	expectedCmd := "docker exec -d servodDockerContainerName 'dut-control -p 0 args'"
 
 	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
@@ -594,7 +594,7 @@ func TestServodCLI_CallServodDockerizedSetSuccess(t *testing.T) {
 
 	mce := mock_commandexecutor.NewMockCommandExecutorInterface(ctrl)
 
-	expectedCmd := "/usr/local/bin/docker exec -d servodDockerContainerName 'dut-control -p 0 args'"
+	expectedCmd := "docker exec -d servodDockerContainerName 'dut-control -p 0 args'"
 
 	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq(expectedCmd), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
