@@ -7,7 +7,6 @@ package ctr
 
 import (
 	"context"
-	"strings"
 
 	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -19,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/components/cft/foilprovision"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/version"
 )
 
 func startFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -127,56 +127,25 @@ func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
-// TODO(b/374202362): remove manage version on the service.
-// boardBuildNumber holds build number per board.
-var boardBuildNumber = map[string]string{
-	"corsola": "12645826",
-	"dedede":  "12494948",
-	"nissa":   "12645826",
-	"brya":    "12643288",
-}
-
-// TODO(b/374202362): remove manage version on the service.
-func androidImagePath(board string) (string, error) {
-	if board == "" {
-		return "", errors.Reason("android image path: board is not provided").Err()
-	}
-	buildNumber, bnOk := boardBuildNumber[board]
-	if !bnOk {
-		return "", errors.Reason("android image path: buildnumber not defined for %q", board).Err()
-	} else if buildNumber == "" {
-		return "", errors.Reason("android image path: buildnumber is not provided for %q", board).Err()
-	}
-	parts := []string{
-		"android-build",
-		"build_explorer",
-		"artifacts_list",
-		buildNumber,
-		board + "-trunk_staging-userdebug",
-		board + "-ota-" + buildNumber + ".zip",
-	}
-	return strings.Join(parts, "/"), nil
-}
-
 func installFoilProvisionExec(ctx context.Context, info *execs.ExecInfo) error {
 	client, err := cft.FoilProvisionClientFromScope(ctx, info.GetDut())
 	if err != nil {
 		return errors.Reason("install foil-provision service: client is not found").Err()
 	}
 	dut := info.GetDut()
-	if dut.GetChromeos() == nil {
+	if dut == nil {
 		return errors.Reason("install foil-provision service: dut is not detected").Err()
 	}
-	board := info.GetChromeos().GetBoard()
-	targetImage, err := androidImagePath(board)
+	sv, err := version.ByResource(ctx, version.AndroidOSType, dut, dut.Name)
 	if err != nil {
 		return errors.Annotate(err, "install foil-provision service").Err()
 	}
+	log.Debugf(ctx, "Foil-provision uses image: %q", sv.GetOsImagePath())
 	argsMap := info.GetActionArgs(ctx)
 	preventReboot := argsMap.AsBool(ctx, "prevent_reboot", false)
 	imagePath := &lab_go.StoragePath{
 		HostType: lab_go.StoragePath_GS,
-		Path:     targetImage,
+		Path:     sv.GetOsImagePath(),
 	}
 	if err := foilprovision.Install(ctx, client, imagePath, preventReboot); err != nil {
 		return errors.Annotate(err, "install foil-provision service").Err()
