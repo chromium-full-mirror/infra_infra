@@ -162,8 +162,9 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 
 	logging.Infof(ctx, "TOP Parent %s-%s#%d: %+v\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetIndex(), head)
 
+	ctpEnv := common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder())
 	// Generate and insert the Run Node into the WU tree.
-	runNode, err := androidapi.NewWorkUnitNode(head.GetWorkUnit().Id, head.GetWorkUnit().InvocationId, androidapi.WULayerRun, head, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	runNode, err := androidapi.NewWorkUnitNode(ctx, head.GetWorkUnit().Id, head.GetWorkUnit().InvocationId, androidapi.WULayerRun, head, ctpEnv)
 	if err != nil {
 		return err
 	}
@@ -177,7 +178,7 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 			logging.Infof(ctx, "Run Parent %s-%s#%d: %+v\n", runNode.GetWorkUnit().Id, runNode.GetWorkUnit().Name, runNode.GetIndex(), head)
 
 			// Generate and insert the Run Node into the WU tree.
-			shardNode, err := androidapi.NewWorkUnitNode(runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.WULayerShard, runNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+			shardNode, err := androidapi.NewWorkUnitNode(ctx, runNode.GetWorkUnit().Id, runNode.GetWorkUnit().InvocationId, androidapi.WULayerShard, runNode, ctpEnv)
 			if err != nil {
 				return err
 			}
@@ -412,8 +413,9 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 	invocationID := inv.InvocationId
 	logging.Infof(ctx, "generated invocationID: %s\n", invocationID)
 
+	ctpEnv := common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder())
 	// Generate the top of the tree node to begin the ATP WU tree.
-	ctp, err := androidapi.NewWorkUnitNode("", invocationID, androidapi.WULayerCTP, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	ctp, err := androidapi.NewWorkUnitNode(ctx, "", invocationID, androidapi.WULayerCTP, nil, ctpEnv)
 	if err != nil {
 		return err
 	}
@@ -427,7 +429,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 	logging.Infof(ctx, "generated parentWUID: %s\n", parentWUID)
 
 	// Generate the top of the tree node to begin the ATP WU tree.
-	top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	top, err := androidapi.NewWorkUnitNode(ctx, parentWUID, invocationID, androidapi.WULayerTestJob, nil, ctpEnv)
 	if err != nil {
 		return err
 	}

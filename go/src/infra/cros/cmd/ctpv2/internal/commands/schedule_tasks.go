@@ -416,7 +416,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	if shardNode := cmd.getATPShardFromCMDState(key); shardNode != nil {
 		fmt.Printf("SHARD Node Parent %s-%s: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex())
 
-		attemptNode, err = androidapi.NewWorkUnitNode(shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+		attemptNode, err = androidapi.NewWorkUnitNode(ctx, shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode)
 		}

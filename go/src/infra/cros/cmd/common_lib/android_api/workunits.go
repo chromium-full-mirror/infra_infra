@@ -133,5 +133,6 @@ func NewWorkUnit(parentWUId, invocationID, name string, childRunNumber, childSha
 		ChildRunNumber:     int64(childRunNumber),
 		ChildShardNumber:   int64(childShardNumber),
 		ChildAttemptNumber: int64(childAttemptNumber),
+		Type:               "TF_MODULE",
 	}
 }

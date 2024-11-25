@@ -203,7 +203,7 @@ func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits(ctx context.Context) error {
 
 	if parentWUID != "" && invocationID != "" {
 		// Generate the top of the tree node to begin the ATP WU tree.
-		top, err := androidapi.NewWorkUnitNode(parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+		top, err := androidapi.NewWorkUnitNode(ctx, parentWUID, invocationID, androidapi.WULayerTestJob, nil, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return err
 		}

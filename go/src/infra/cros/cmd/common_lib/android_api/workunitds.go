@@ -200,9 +200,9 @@ func (w *WorkUnitNode) FetchAttemptLayer() ([][]*WorkUnitNode, error) {
 
 // NewWorkUnitNode Creates and registers a Work Unit using the ATP API and
 // inserts it into the local Work Unit tree.
-func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
+func NewWorkUnitNode(ctx context.Context, parentWUId, invocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
 	// TODO: Pass this in rather than create a new one each time
-	service, err := NewAndroidBuildService(context.Background(), SERVICEACCOUNT, env)
+	service, err := NewAndroidBuildService(ctx, SERVICEACCOUNT, env)
 	if err != nil {
 		return nil, err
 	}
@@ -223,8 +223,7 @@ func NewWorkUnitNode(parentWUId, invocationID string, nodeType WULayer, parent *
 	//
 	// NOTE: This will only be used by a TEST_JOB type node.
 	if parent != nil {
-		err := parent.AddChild(newWU)
-		if err != nil {
+		if err := parent.AddChild(newWU); err != nil {
 			return nil, err
 		}
 	}
