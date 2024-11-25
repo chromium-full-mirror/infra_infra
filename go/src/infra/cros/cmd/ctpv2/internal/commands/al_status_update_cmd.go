@@ -474,18 +474,21 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 
 	if cmd.BuildState != nil {
 		ancestorIDs := cmd.BuildState.Build().GetAncestorIds()
-		if len(ancestorIDs) > 0 {
-			ancestors := make([]string, 0, len(ancestorIDs))
-			for _, ancID := range ancestorIDs {
-				ancestors = append(ancestors, strconv.Itoa(int(ancID)))
-			}
-
-			ancestorsProp := &androidbuildinternal.Property{
-				Name:  common.AncestorsPropName,
-				Value: strings.Join(ancestors, ","),
-			}
-			props = append(props, ancestorsProp)
+		ancestors := make([]string, 0, len(ancestorIDs))
+		for _, ancID := range ancestorIDs {
+			ancestors = append(ancestors, strconv.Itoa(int(ancID)))
 		}
+
+		// CTP starts the various TR requests and is the immediate parent for
+		// all TR requests which actually run the tests and publish.
+		luciID := cmd.BuildState.Build().GetId()
+		ancestors = append(ancestors, strconv.Itoa(int(luciID)))
+		ancestorsProp := &androidbuildinternal.Property{
+			Name:  common.AncestorsPropName,
+			Value: strings.Join(ancestors, ","),
+		}
+		props = append(props, ancestorsProp)
+
 	}
 
 	tree := cmd.getWorkUnitTree()
@@ -504,6 +507,10 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 		return err
 	}
 
+	if cmd.invocationSealed(inv) {
+		return fmt.Errorf("Cannot update sealed invocation %s. Invocation State: %s.", invocationID, inv.SchedulerState)
+	}
+
 	inv.Properties = append(inv.Properties, props...)
 	_, err = service.InvocationService.Update(invocationID, inv)
 	if err != nil {
@@ -511,6 +518,14 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 	}
 	logging.Infof(ctx, "Added properties to invocation: %v", props)
 	return nil
+}
+
+func (cmd *AlStatusUpdateCmd) invocationSealed(inv *androidbuildinternal.Invocation) bool {
+	state := strings.ToUpper(inv.SchedulerState)
+	if state == "CANCELLED" || state == "ERROR" || state == "COMPLETED" {
+		return true
+	}
+	return false
 }
 
 // Execute executes the command.

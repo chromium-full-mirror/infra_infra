@@ -32,6 +32,7 @@ func TestUpdateInvocationProperties(t *testing.T) {
 	testCases := []struct {
 		name     string
 		cbIngest bool
+		sealInv  bool
 	}{
 		{
 			name:     "cbProp",
@@ -39,6 +40,11 @@ func TestUpdateInvocationProperties(t *testing.T) {
 		},
 		{
 			name: "noProp",
+		},
+		{
+			name:     "sealedInvocation",
+			cbIngest: true,
+			sealInv:  true,
 		},
 	}
 
@@ -67,15 +73,20 @@ func TestUpdateInvocationProperties(t *testing.T) {
 			}
 
 			if tc.cbIngest {
+				if tc.sealInv {
+					inv.SchedulerState = "error"
+				}
 				mockInvService.EXPECT().Get("I123").Return(inv, nil)
 				inv.Properties = []*androidbuildinternal.Property{
 					{Name: common.CbPropName, Value: "yes"},
 					{Name: common.CbMetricsPropName, Value: "yes"},
 				}
-				mockInvService.EXPECT().Update("I123", inv).Return(inv, nil)
+				if !tc.sealInv {
+					mockInvService.EXPECT().Update("I123", inv).Return(inv, nil)
+				}
 			}
 			err := cmd.updateInvocationProperties(ctx, s)
-			if err != nil {
+			if !tc.sealInv && err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
 		})
