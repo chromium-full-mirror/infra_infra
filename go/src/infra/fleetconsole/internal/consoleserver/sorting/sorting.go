@@ -7,11 +7,12 @@ package sorting
 import (
 	"cmp"
 	"fmt"
-	"infra/fleetconsole/api/fleetconsolerpc"
 	"regexp"
 	"slices"
 	"sort"
 	"strings"
+
+	"infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // SortDevices sorts devices based on order, following google.aip.dev/132#ordering

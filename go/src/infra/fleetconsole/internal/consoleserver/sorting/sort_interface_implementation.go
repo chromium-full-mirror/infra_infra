@@ -5,8 +5,9 @@
 package sorting
 
 import (
-	"infra/fleetconsole/api/fleetconsolerpc"
 	"sort"
+
+	"infra/fleetconsole/api/fleetconsolerpc"
 )
 
 var _ sort.Interface = &sortImpl{}

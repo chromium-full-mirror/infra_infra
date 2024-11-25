@@ -7,6 +7,8 @@ package serverlib
 
 import (
 	"context"
+	"strconv"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -16,6 +18,7 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
+	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 	"infra/fleetconsole/internal/consoleserver"
 	"infra/fleetconsole/internal/devicemanagerclient"
 )
@@ -45,13 +48,39 @@ func ServerMain(srv *server.Server) error {
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
-	consoleserver.SetDeviceManagerClient(consoleFrontend, func(context.Context) (*devicemanagerclient.Client, error) {
-		deviceManagerClient, err := devicemanagerclient.NewClient(srv.Context, auth.AsSelf, devicemanagerclient.DMProdURL)
+	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
+	logging.Infof(srv.Context, "End initialization of console server.")
+	return nil
+}
+
+func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, error) {
+	if !*flags.UseLocalDeviceManager && *flags.DeviceManagerAddr != "" {
+		deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, devicemanagerclient.DMProdURL)
 		if err != nil {
 			return nil, errors.Annotate(err, "configuring device manager client").Err()
 		}
 		return deviceManagerClient, nil
-	})
-	logging.Infof(srv.Context, "End initialization of console server.")
-	return nil
+	}
+	deviceManagerAddr := devicemanagerclient.DMProdURL
+	deviceManagerPort := devicemanagerclient.DMLeasesPort
+	if *flags.UseLocalDeviceManager {
+		deviceManagerAddr = "localhost"
+		deviceManagerPort = 8800
+	}
+	if *flags.DeviceManagerAddr != "" {
+		res := strings.Split(*flags.DeviceManagerAddr, ":")
+		deviceManagerAddr = res[0]
+		port, err := strconv.Atoi(res[1])
+		if err != nil {
+			return nil, errors.Annotate(err, "parsing device manager port from flag").Err()
+		}
+
+		deviceManagerPort = port
+	}
+	logging.Infof(ctx, "Initializing device manager client with address: %s:%d", deviceManagerAddr, deviceManagerPort)
+	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, devicemanagerclient.DMProdURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "configuring device manager client").Err()
+	}
+	return deviceManagerClient, nil
 }

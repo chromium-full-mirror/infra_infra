@@ -30,12 +30,12 @@ func NewDeviceBuilder() *DeviceBuilder {
 	}
 }
 
-func (b *DeviceBuilder) WithId(id string) *DeviceBuilder {
+func (b *DeviceBuilder) WithID(id string) *DeviceBuilder {
 	b.id = id
 	return b
 }
 
-func (b *DeviceBuilder) WithDutId(dutID string) *DeviceBuilder {
+func (b *DeviceBuilder) WithDutID(dutID string) *DeviceBuilder {
 	b.dutID = dutID
 	return b
 }

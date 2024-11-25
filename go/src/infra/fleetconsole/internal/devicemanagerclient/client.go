@@ -17,6 +17,7 @@ import (
 
 	// In the device_manager library, please ONLY depend on the constants that are not specific to Scheduke.
 	"infra/device_manager/client"
+	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 )
 
 const (
@@ -54,8 +55,11 @@ func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, base
 		Transport: t,
 	}
 	prpcClient := &prpc.Client{
-		C:    httpClient,
-		Host: fmt.Sprintf("%s:%d", baseURL, DMLeasesPort),
+		C: httpClient,
+		Options: &prpc.Options{
+			Insecure: *flags.UseLocalDeviceManager,
+		},
+		Host: fmt.Sprintf("%s:%d", baseURL, client.DMLeasesPort),
 	}
 	return &Client{
 		Leaser: api.NewDeviceLeaseServiceClient(prpcClient),

@@ -7,20 +7,31 @@ package consoleserver
 import (
 	"context"
 	"fmt"
-	"strconv"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/consoleserver/sorting"
 )
 
 const maxPageSize int = 50
-const mockedDevicesCount int = 60
 
 // ListDevices lists devices provided via DeviceManager.
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (*fleetconsolerpc.ListDevicesResponse, error) {
+	deviceManagerClient, err := frontend.deviceManagerClient(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "list devices").Err()
+	}
 	afterDeviceID := pageTokenToDeviceID(req.PageToken)
 
-	devices, err := sorting.SortDevices(getMockDevices(), req.OrderBy)
+	d, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	devices, err := sorting.SortDevices(mapDevices(d.Devices), req.OrderBy)
 
 	if err != nil {
 		return nil, err
@@ -67,35 +78,36 @@ func getPage(devices []*fleetconsolerpc.Device, afterDeviceID string, pageSize i
 	return nil, fmt.Errorf("couldn't find device id: %s", afterDeviceID)
 }
 
-func getMockDevices() []*fleetconsolerpc.Device {
-	var devices []*fleetconsolerpc.Device
-
-	for i := 1; i <= mockedDevicesCount; i++ {
-		id := strconv.Itoa(i)
-		devices = append(devices, &fleetconsolerpc.Device{
-			Id:    id,
-			DutId: "dut_id_" + id,
-			Address: &fleetconsolerpc.DeviceAddress{
-				Host: "host" + id,
-				Port: 1234,
-			},
-			Type:  fleetconsolerpc.DeviceType_DEVICE_TYPE_UNSPECIFIED,
-			State: fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE,
-			DeviceSpec: &fleetconsolerpc.DeviceSpec{
-				Labels: map[string]*fleetconsolerpc.DeviceSpec_LabelValues{
-					"label1": {
-						Values: []string{"value1_" + id, "value2_" + id},
-					},
-					"label2": {
-						Values: []string{"value3_" + id, "value4_" + id},
-					},
-					"label3": {
-						Values: []string{"value5_" + id},
-					},
-				},
-			},
-		})
+func mapDevices(devices []*api.Device) []*fleetconsolerpc.Device {
+	var mappedDevices []*fleetconsolerpc.Device
+	for _, device := range devices {
+		mappedDevices = append(mappedDevices, mapDevice(device))
 	}
+	return mappedDevices
+}
 
-	return devices
+func mapDevice(device *api.Device) *fleetconsolerpc.Device {
+	return &fleetconsolerpc.Device{
+		Id:    device.Id,
+		DutId: device.DutId,
+		Address: &fleetconsolerpc.DeviceAddress{
+			Host: device.Address.Host,
+			Port: device.Address.Port,
+		},
+		Type:  fleetconsolerpc.DeviceType(device.Type),
+		State: fleetconsolerpc.DeviceState(device.State),
+		DeviceSpec: &fleetconsolerpc.DeviceSpec{
+			Labels: mapLabels(device.HardwareReqs.SchedulableLabels),
+		},
+	}
+}
+
+func mapLabels(labels map[string]*api.HardwareRequirements_LabelValues) map[string]*fleetconsolerpc.DeviceSpec_LabelValues {
+	mappedLabels := make(map[string]*fleetconsolerpc.DeviceSpec_LabelValues)
+	for k, v := range labels {
+		mappedLabels[k] = &fleetconsolerpc.DeviceSpec_LabelValues{
+			Values: v.Values,
+		}
+	}
+	return mappedLabels
 }

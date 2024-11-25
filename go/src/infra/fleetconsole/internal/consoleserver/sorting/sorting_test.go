@@ -7,19 +7,19 @@ package sorting
 import (
 	"testing"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/testutils"
-
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+
+	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/testutils"
 )
 
 func TestSortDescriptor(t *testing.T) {
 	t.Parallel()
 
 	t.Run(`SortByIDAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("2").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("1").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("2").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("1").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "dut_id")
 
@@ -28,8 +28,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByDutIDAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithId("2").Build()
-		d2 := testutils.NewDeviceBuilder().WithId("1").Build()
+		d1 := testutils.NewDeviceBuilder().WithID("2").Build()
+		d2 := testutils.NewDeviceBuilder().WithID("1").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "id")
 
@@ -38,8 +38,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByHostnameAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").WithHostname("2").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithHostname("1").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").WithHostname("2").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithHostname("1").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "address.host")
 
@@ -48,8 +48,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByPortAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").WithPort(9999).Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithPort(1001).Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").WithPort(9999).Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithPort(1001).Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "address.port")
 
@@ -58,8 +58,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByStateAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").WithState(fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE).Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithState(fleetconsolerpc.DeviceState_DEVICE_STATE_UNSPECIFIED).Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").WithState(fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE).Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithState(fleetconsolerpc.DeviceState_DEVICE_STATE_UNSPECIFIED).Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "state")
 
@@ -68,8 +68,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByTypeAscending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").WithType(fleetconsolerpc.DeviceType_DEVICE_TYPE_VIRTUAL).Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithType(fleetconsolerpc.DeviceType_DEVICE_TYPE_UNSPECIFIED).Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").WithType(fleetconsolerpc.DeviceType_DEVICE_TYPE_VIRTUAL).Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithType(fleetconsolerpc.DeviceType_DEVICE_TYPE_UNSPECIFIED).Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "type")
 
@@ -78,8 +78,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByDutIDDescending_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "dut_id desc")
 
@@ -88,8 +88,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithNonexistentField_ReturnsError`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "nonexistent")
 
@@ -98,8 +98,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithWhitespaceInFieldName_IgnoresWhitespaceAndReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, " \ndut_id  \t\t  ")
 
@@ -108,8 +108,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithWhitespaceInDescendingModifier_IgnoresWhitespaceAndReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, " \ndut_id  \t\t  desc \t")
 
@@ -118,8 +118,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithNonexistentNestedField_ReturnsError`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "nonexistent.abcd")
 
@@ -128,8 +128,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithNonexistentLabel_IgnoresFieldAndReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "labels.abcd")
 
@@ -158,8 +158,8 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortWithNonexistentLabel_IgnoresFieldAndReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithLabel("label1", []string{"1"}).Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithLabel("label1", []string{"1"}).Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2}, "labels.label1")
 
@@ -168,9 +168,9 @@ func TestSortDescriptor(t *testing.T) {
 	})
 
 	t.Run(`SortByMultipleFields_ReturnsSortedDevices`, func(t *testing.T) {
-		d1 := testutils.NewDeviceBuilder().WithDutId("1").Build()
-		d2 := testutils.NewDeviceBuilder().WithDutId("2").WithLabel("label1", []string{"1"}).Build()
-		d3 := testutils.NewDeviceBuilder().WithDutId("3").WithLabel("label1", []string{"1"}).Build()
+		d1 := testutils.NewDeviceBuilder().WithDutID("1").Build()
+		d2 := testutils.NewDeviceBuilder().WithDutID("2").WithLabel("label1", []string{"1"}).Build()
+		d3 := testutils.NewDeviceBuilder().WithDutID("3").WithLabel("label1", []string{"1"}).Build()
 
 		devices, err := SortDevices([]*fleetconsolerpc.Device{d1, d2, d3}, "labels.label1, dut_id desc")
 
