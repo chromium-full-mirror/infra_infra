@@ -202,7 +202,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 					Port:    22,
 				},
 				DutModel:       getDutModel(di),
-				Servo:          getServo(p),
+				Servo:          getServo(p.GetServo(), di.dutState),
 				Chameleon:      getChameleon(p, di.dutState),
 				Audio:          getAudio(p),
 				Wifi:           getWifi(p),
@@ -257,22 +257,12 @@ func (inv *Inventory) makeChromeOsDevboardProto(di *deviceInfo) (*labapi.Dut, er
 		Id: &labapi.Dut_Id{Value: hostname},
 		DutType: &labapi.Dut_Devboard_{
 			Devboard: &labapi.Dut_Devboard{
-				Servo: &labapi.Servo{},
+				Servo: getServo(lsed.GetServo(), di.dutState),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
 			Address: cs,
 		},
-	}
-	if s := lsed.GetServo(); s != nil {
-		if s.GetServoHostname() != "" {
-			ret.GetDevboard().GetServo().Present = true
-			ret.GetDevboard().GetServo().Serial = s.GetServoSerial()
-			ret.GetDevboard().GetServo().ServodAddress = &labapi.IpEndpoint{
-				Address: s.GetServoHostname(),
-				Port:    s.GetServoPort(),
-			}
-		}
 	}
 
 	switch mdb.GetBoard().(type) {
@@ -339,10 +329,9 @@ func getDutModel(di *deviceInfo) *labapi.DutModel {
 	}
 }
 
-func getServo(p *lab.Peripherals) *labapi.Servo {
-	s := p.GetServo()
+func getServo(s *lab.Servo, ds *lab.DutState) *labapi.Servo {
 	if s != nil && s.GetServoHostname() != "" {
-		return &labapi.Servo{
+		servo := &labapi.Servo{
 			Present: true,
 			ServodAddress: &labapi.IpEndpoint{
 				Address: s.GetServoHostname(),
@@ -350,6 +339,11 @@ func getServo(p *lab.Peripherals) *labapi.Servo {
 			},
 			Serial: s.GetServoSerial(),
 		}
+		servo.State = labapi.PeripheralState_BROKEN
+		if ds.GetServo() == lab.PeripheralState_WORKING {
+			servo.State = labapi.PeripheralState_WORKING
+		}
+		return servo
 	}
 	return nil
 }

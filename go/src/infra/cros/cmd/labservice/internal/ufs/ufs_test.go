@@ -264,6 +264,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 			},
 			DutState: &lab.DutState{
 				Chameleon: lab.PeripheralState_NOT_APPLICABLE,
+				Servo:     lab.PeripheralState_WORKING,
 			},
 		},
 		CachingServices: &ufsapi.ListCachingServicesResponse{
@@ -307,6 +308,7 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 								Address: "servo_host",
 								Port:    33,
 							},
+							State: labapi.PeripheralState_WORKING,
 						},
 						Ssh: &labapi.IpEndpoint{
 							Address: "200.200.200.200",
@@ -669,6 +671,7 @@ func TestGetChromeOsDevboardTopology_single(t *testing.T) {
 								Address: "servo-host",
 								Port:    33,
 							},
+							State: labapi.PeripheralState_BROKEN,
 						},
 					},
 				},
