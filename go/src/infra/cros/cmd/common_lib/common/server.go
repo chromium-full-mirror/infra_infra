@@ -12,7 +12,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,8 +34,9 @@ func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.Client
 	defer func() { step.End(err) }()
 
 	logging.Infof(ctx, "Trying to connect with address %q with %s timeout", serverAddress, ServiceConnectionTimeout.String())
-
-	conn, err := grpc.Dial(serverAddress, getGrpcDialOpts(ctx, ServiceConnectionTimeout)...)
+	ctx, cancel := context.WithTimeout(context.Background(), ServiceConnectionTimeout)
+	defer cancel()
+	conn, err := grpc.DialContext(ctx, serverAddress, getGrpcDialOpts(ctx)...)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during connecting to service address %s: ", serverAddress).Err()
 	}
@@ -46,10 +46,9 @@ func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.Client
 
 // getGrpcDialOpts provides the grpc dial options used
 // to connect to a service.
-func getGrpcDialOpts(ctx context.Context, timeout time.Duration) []grpc.DialOption {
+func getGrpcDialOpts(ctx context.Context) []grpc.DialOption {
 	opts := []grpc.DialOption{
 		grpc.WithBlock(),
-		grpc.WithTimeout(timeout),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(32 * 1024 * 1024)),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(32 * 1024 * 1024)),

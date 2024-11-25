@@ -8,7 +8,7 @@ import "time"
 
 // All common constants used throughout the service.
 const (
-	ServiceConnectionTimeout               = 5 * time.Minute
+	ServiceConnectionTimeout               = 30 * time.Minute
 	CtrCipdPackage                         = "chromiumos/infra/cros-tool-runner/${platform}"
 	ContainerDefaultNetwork                = "host"
 	LabDockerKeyFileLocation               = "/creds/service_accounts/skylab-drone.json"
