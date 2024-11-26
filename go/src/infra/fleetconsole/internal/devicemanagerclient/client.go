@@ -45,8 +45,6 @@ func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, base
 	default:
 		opts = []auth.RPCOption{auth.WithScopes(auth.CloudOAuthScopes...)}
 	}
-	if rpcAuthorityKind != auth.AsCredentialsForwarder {
-	}
 	t, err := auth.GetRPCTransport(ctx, rpcAuthorityKind, opts...)
 	if err != nil {
 		return nil, errors.Annotate(err, "setting up auth").Err()
