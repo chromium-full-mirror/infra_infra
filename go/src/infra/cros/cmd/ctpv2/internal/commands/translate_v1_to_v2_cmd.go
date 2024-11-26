@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
@@ -334,7 +335,8 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 
 func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage, buildState *build.State) error {
 	var err error
-	ctpReq.SuiteRequest, err = buildSuiteRequest(testJobMsg, buildState)
+	triggerType := getTriggerType(testJobMsg)
+	ctpReq.SuiteRequest, err = buildSuiteRequest(ctx, testJobMsg, triggerType, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
@@ -347,7 +349,6 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 		// Default to dut_pool_quota
 		ctpReq.Pool = common.DefaultQuotaPool
 	}
-	triggerType := getTriggerType(testJobMsg)
 	ctpReq.SchedulerInfo = buildSchedulerInfo(ctpReq.Pool, triggerType)
 	ctpReq.KarbonFilters = getKarbonFilters()
 	ctpReq.RunDynamic = true
@@ -355,7 +356,7 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	return nil
 }
 
-func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, error) {
+func buildSuiteRequest(ctx context.Context, testJobMsg *common.TestJobMessage, triggerType ATPTriggerType, buildState *build.State) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -403,9 +404,24 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		buildType = testJobMsg.Build.BuildType
 	}
 
-	// replace wrong formatted build target
-	if buildFlavor == "brya-userdebug" {
-		buildFlavor = "brya-trunk_staging-userdebug"
+	// For presubmit runs, reformat build flavor if not in correct format
+	if triggerType == PRESUBMIT_BLOCKING {
+		// replace wrong formatted build target
+		buildFlavorFormat := "%s-trunk_staging-%s"
+		// Regular expression to match the desired format
+		re := regexp.MustCompile(`^(.+)-trunk_staging-(.+)$`)
+
+		// Check if buildFlavor matches the format
+		// if doesn't match, force the format
+		if !re.MatchString(buildFlavor) {
+			// If not, it should be in %s-%s format
+			parts := strings.Split(buildFlavor, "-'")
+			if len(parts) != 2 {
+				return nil, fmt.Errorf("Build flavor found in unexpected format: %s", buildFlavor)
+			}
+			buildFlavor = fmt.Sprintf(buildFlavorFormat, parts[0], parts[1])
+			logging.Infof(ctx, "buildFlavor was formatted to: %s", buildFlavor)
+		}
 	}
 
 	if len(testJobMsg.ExtraBuilds) != 0 {
