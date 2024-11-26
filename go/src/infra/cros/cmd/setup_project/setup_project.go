@@ -363,7 +363,8 @@ func (b *setupProject) setupProject(ctx context.Context, gsClient gs.Client, git
 			err = gsClient.DownloadWithGsutil(ctx, file.gsPath, downloadPath)
 			errmsg = fmt.Sprintf("error downloading %s", file.gsPath)
 		} else {
-			err = gitilesClient.DownloadFileFromGitilesToPath(ctx, file.project, file.branch, file.path, downloadPath)
+			err = gitilesClient.DownloadFileFromGitilesToPath(
+				file.project, file.branch, file.path, downloadPath)
 			errmsg = fmt.Sprintf("error downloading file %s/%s/%s from branch %s",
 				chromeInternalHost, file.project, file.path, file.branch)
 		}
