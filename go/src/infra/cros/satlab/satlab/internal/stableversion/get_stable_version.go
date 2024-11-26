@@ -78,19 +78,13 @@ func (c *getStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 
 // GetStableVersionPartner fetches local stable version
 func (c *getStableVersionRun) getStableVersionPartner() error {
-	if c.board == "" {
-		return errors.Reason("Please provide -board").Err()
+	if err := c.validateArgs(); err != nil {
+		return err
 	}
-	if c.model == "" {
-		return errors.Reason("Please provide -model").Err()
-	}
-	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
-	f, err := os.ReadFile(fname)
+	recoveryVersion, err := c.stableVersionFromFile()
 	if err != nil {
-		return errors.Annotate(err, "get stable version: stable version not found").Err()
+		return errors.Annotate(err, "get stable version from file").Err()
 	}
-	recoveryVersion := &models.RecoveryVersion{}
-	_ = json.Unmarshal([]byte(f), recoveryVersion)
 
 	rv, err := json.MarshalIndent(recoveryVersion, "", " ")
 	if err != nil {
@@ -138,4 +132,29 @@ func (c *getStableVersionRun) getStableVersionInternal(ctx context.Context, a su
 	}
 	fmt.Fprintf(a.GetOut(), "%s\n", out)
 	return nil
+}
+
+// validateArgs checks if partner provided board and model.
+func (c *getStableVersionRun) validateArgs() error {
+	if c.board == "" {
+		return errors.Reason("Please provide -board").Err()
+	}
+	if c.model == "" {
+		return errors.Reason("Please provide -model").Err()
+	}
+	return nil
+}
+
+// stableVersionFromFile reads stable version from file.
+func (c *getStableVersionRun) stableVersionFromFile() (*models.RecoveryVersion, error) {
+	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
+	f, err := os.ReadFile(fname)
+	if err != nil {
+		return &models.RecoveryVersion{}, errors.Annotate(err, "read stable version file").Err()
+	}
+	recoveryVersion := &models.RecoveryVersion{}
+	if err := json.Unmarshal([]byte(f), recoveryVersion); err != nil {
+		return &models.RecoveryVersion{}, errors.Annotate(err, "unmarshal json").Err()
+	}
+	return recoveryVersion, nil
 }
