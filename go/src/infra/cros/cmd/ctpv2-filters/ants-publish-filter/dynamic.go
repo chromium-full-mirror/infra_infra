@@ -145,7 +145,7 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 			},
 			Required: true,
 		},
-		dynamic_common.AppendTaskWrapper(dynamic_common.FindLast(api.FocalTaskFinder_PUBLISH)))
+		dynamic_common.AppendTaskWrapper(dynamic_common.FindFirst(api.FocalTaskFinder_PUBLISH)))
 
 	// The dynamic updates are passed by reference and need the full path.
 	// Do not use another var or substitution here.
