@@ -151,6 +151,7 @@ var (
 // for hw test execution configs.
 func DockerEnvVarsToPreserve() []string {
 	return []string{
+		"ADB_CONNECTION_PORT",
 		"LUCI_CONTEXT",
 		"GCE_METADATA_HOST",
 		"GCE_METADATA_IP",
