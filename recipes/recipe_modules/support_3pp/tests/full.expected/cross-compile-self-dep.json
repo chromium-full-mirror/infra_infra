@@ -148,6 +148,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency.cipd describe 3pp/tools/self_dependency/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -239,6 +240,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency.fetch sources.cipd describe 3pp/sources/script/tools/self_dependency/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -329,6 +331,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency.fetch sources.build 3pp/sources/script/tools/self_dependency/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -443,6 +446,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency.build 3pp/tools/self_dependency/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -551,6 +555,7 @@
       "_3PP_PLATFORM": "linux-arm64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).cipd describe 3pp/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -622,6 +627,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/tools/self_dependency/linux-amd64/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -680,6 +686,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).fetch sources.cipd describe 3pp/sources/script/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -770,6 +777,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).fetch sources.build 3pp/sources/script/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -861,6 +869,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).fetch sources.upload source to cipd.cipd describe 3pp/sources/script/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -891,6 +900,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).fetch sources.upload source to cipd.register 3pp/sources/script/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -1079,6 +1089,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).build 3pp/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -1171,6 +1182,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).do upload.cipd describe 3pp/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1205,6 +1217,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).do upload.register 3pp/tools/self_dependency/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1266,6 +1279,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/self_dependency (2).do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

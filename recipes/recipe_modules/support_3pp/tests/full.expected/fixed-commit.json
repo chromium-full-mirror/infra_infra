@@ -193,6 +193,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building tools/tool.cipd describe 3pp/tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -257,6 +258,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -313,6 +315,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.fetch sources.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -512,6 +515,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.fetch sources.build 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -603,6 +607,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -635,6 +640,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/dep/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -697,6 +703,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.build 3pp/tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -789,6 +796,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.do upload.cipd describe 3pp/tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -823,6 +831,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.do upload.register 3pp/tools/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -884,6 +893,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "deadbeef"
     },
+    "infra_step": true,
     "name": "building tools/tool.do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

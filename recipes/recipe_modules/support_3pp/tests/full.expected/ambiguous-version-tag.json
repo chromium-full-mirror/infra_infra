@@ -150,6 +150,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building deps/bottom_dep_git.cipd describe 3pp/deps/bottom_dep_git/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",

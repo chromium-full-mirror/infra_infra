@@ -382,6 +382,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -508,6 +509,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -670,6 +672,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -912,6 +915,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -1038,6 +1042,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -1200,6 +1205,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"

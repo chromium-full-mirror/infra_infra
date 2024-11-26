@@ -128,6 +128,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building deps/tool.cipd describe 3pp/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -219,6 +220,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.fetch sources.cipd describe 3pp/sources/url/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -278,6 +280,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.fetch sources.build 3pp/sources/url/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -369,6 +372,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/url/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -399,6 +403,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.fetch sources.upload source to cipd.register 3pp/sources/url/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -587,6 +592,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.build 3pp/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -679,6 +685,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.do upload.cipd describe 3pp/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -717,6 +724,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.do upload.register 3pp/deps/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -778,6 +786,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.2.3"
     },
+    "infra_step": true,
     "name": "building deps/tool.do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

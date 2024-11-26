@@ -145,6 +145,7 @@
       "_3PP_PLATFORM": "linux-arm64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.cipd describe 3pp/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -218,6 +219,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.installing tools.cipd pkg-fetch infra/tools/external/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -303,6 +305,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/infra/tools/external/linux-amd64/resolved-instance_id-of-version:2@1.4.1-",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -361,6 +364,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.cipd describe 3pp/sources/script/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -451,6 +455,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.build 3pp/sources/script/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -542,6 +547,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.upload source to cipd.cipd describe 3pp/sources/script/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -572,6 +578,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.fetch sources.upload source to cipd.register 3pp/sources/script/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -760,6 +767,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.build 3pp/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -852,6 +860,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.do upload.cipd describe 3pp/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -886,6 +895,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.do upload.register 3pp/tools/external_tool/linux-arm64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -947,6 +957,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building tools/external_tool.do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

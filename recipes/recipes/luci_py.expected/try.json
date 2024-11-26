@@ -514,6 +514,7 @@
       "/path/to/tmp/json"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/auth_service",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -594,6 +595,7 @@
       "/path/to/tmp/json"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/components",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -769,6 +771,7 @@
       "/path/to/tmp/json"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/swarming",
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"

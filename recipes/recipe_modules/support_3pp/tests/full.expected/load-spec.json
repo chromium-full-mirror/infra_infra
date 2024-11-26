@@ -197,6 +197,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.cipd describe 3pp/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -288,6 +289,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.fetch sources.cipd describe 3pp/sources/script/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -378,6 +380,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.fetch sources.build 3pp/sources/script/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -469,6 +472,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.fetch sources.upload source to cipd.cipd describe 3pp/sources/script/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -499,6 +503,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.fetch sources.upload source to cipd.register 3pp/sources/script/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -561,6 +566,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.build 3pp/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -653,6 +659,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.do upload.cipd describe 3pp/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -687,6 +694,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.do upload.register 3pp/p_something/package_repo/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -748,6 +756,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/package_repo.do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -832,6 +841,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building p_something/something.cipd describe 3pp/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -923,6 +933,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.fetch sources.cipd describe 3pp/sources/script/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1013,6 +1024,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.fetch sources.build 3pp/sources/script/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1104,6 +1116,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.fetch sources.upload source to cipd.cipd describe 3pp/sources/script/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -1134,6 +1147,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.fetch sources.upload source to cipd.register 3pp/sources/script/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -1196,6 +1210,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.build 3pp/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -1288,6 +1303,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.do upload.cipd describe 3pp/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1322,6 +1338,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "2.0.0"
     },
+    "infra_step": true,
     "name": "building p_something/something.do upload.register 3pp/p_something/something/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

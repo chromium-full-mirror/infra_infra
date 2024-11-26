@@ -213,6 +213,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.cipd describe 3pp/pkg/tool1/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -279,6 +280,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.fetch sources.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -337,6 +339,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.fetch sources.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64 (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -544,6 +547,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.fetch sources.build 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -638,6 +642,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.fetch sources.upload source to cipd.cipd describe 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -671,6 +676,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.fetch sources.upload source to cipd.register 3pp/sources/git/go.repo/tool/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@3@@@",
@@ -867,6 +873,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.build 3pp/pkg/tool1/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -962,6 +969,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.do upload.cipd describe 3pp/pkg/tool1/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -997,6 +1005,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.do upload.register 3pp/pkg/tool1/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1060,6 +1069,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool1.do upload.ensure_installed",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1149,6 +1159,7 @@
       "_3PP_PLATFORM": "linux-amd64",
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
+    "infra_step": true,
     "name": "building pkg/tool2.cipd describe 3pp/pkg/tool2/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -1251,6 +1262,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool2.fetch sources.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1446,6 +1458,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool2.build 3pp/pkg/tool2/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -1541,6 +1554,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool2.do upload.cipd describe 3pp/pkg/tool2/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",
@@ -1576,6 +1590,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64",
       "_3PP_VERSION": "1.5.0-rc1"
     },
+    "infra_step": true,
     "name": "building pkg/tool2.do upload.register 3pp/pkg/tool2/linux-amd64",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@",

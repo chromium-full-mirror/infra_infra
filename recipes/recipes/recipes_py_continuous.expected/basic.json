@@ -95,6 +95,7 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "infra_step": true,
     "name": "create recipes-py.yaml",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",

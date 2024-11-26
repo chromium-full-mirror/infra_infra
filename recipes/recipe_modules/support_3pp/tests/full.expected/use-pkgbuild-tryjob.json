@@ -68,6 +68,7 @@
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra:try"
