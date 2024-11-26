@@ -42,6 +42,7 @@ require (
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/dustin/go-humanize v1.0.1
+	github.com/electricbubble/gadb v0.1.1-0.20240523030754-97c5a1a929a9
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gliderlabs/ssh v0.3.7
 	github.com/go-delve/delve v1.23.1
