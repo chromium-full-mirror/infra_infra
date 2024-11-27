@@ -84,7 +84,7 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.devPrintProto, "log-proto", false, "Print proto data of dut. Default is no.")
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
-		c.Flags.BoolVar(&c.noCft, "no-cft", true, "Disable CFT. Default is no.")
+		c.Flags.BoolVar(&c.noCft, "no-cft", false, "Disable CFT. Default is no.")
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
 		c.Flags.BoolVar(&c.devOptionActive, "dev-active", true, `Set DevOption Active. Default true.`)
 		c.Flags.StringVar(&c.namespace, "namespace", "os", `Specify which namespace to use. The default is "os".`)
