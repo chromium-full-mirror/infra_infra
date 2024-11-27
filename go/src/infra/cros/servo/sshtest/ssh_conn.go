@@ -1,4 +1,4 @@
-//Copyright 2024 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,8 +90,8 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 
 // Close releases resources associated with td.
 func (td *TestDataConn) Close() {
-	td.Srv.Close()
-	td.Hst.Close(td.Ctx)
+	_ = td.Srv.Close()
+	_ = td.Hst.Close(td.Ctx)
 	td.Cancel()
 }
 

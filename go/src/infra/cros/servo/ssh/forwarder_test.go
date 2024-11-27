@@ -1,4 +1,4 @@
-//Copyright 2024 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ func TestForwarder(t *testing.T) {
 		t.Fatal("newForwarder failed:", err)
 	}
 	t.Log("Forwarder listening at", fwd.ListenAddr())
-	defer fwd.Close()
+	defer fwd.Close() //nolint
 
 	conn, err := net.Dial("tcp", fwd.ListenAddr().String())
 	if err != nil {
@@ -85,7 +85,7 @@ func TestForwarderError(t *testing.T) {
 	if err != nil {
 		t.Fatal("newForwarder failed:", err)
 	}
-	defer fwd.Close()
+	defer fwd.Close() //nolint
 
 	// We should be able to establish a connection to the forwarder's local address,
 	// but the error handler should receive the connection error.

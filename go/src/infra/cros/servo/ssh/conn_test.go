@@ -1,4 +1,4 @@
-//Copyright 2024 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ func TestRetry(t *testing.T) {
 	ctx := context.Background()
 	if hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 1}); err == nil {
 		t.Error("Unexpectedly able to connect to server with inadequate retries")
-		hst.Close(ctx)
+		_ = hst.Close(ctx)
 	}
 
 	// With two retries (i.e. three attempts), the connection should be successfully established.
@@ -39,7 +39,7 @@ func TestRetry(t *testing.T) {
 	if hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 2}); err != nil {
 		t.Error("Failed connecting to server despite adequate retries: ", err)
 	} else {
-		hst.Close(ctx)
+		_ = hst.Close(ctx)
 	}
 }
 
@@ -93,7 +93,7 @@ func TestKeyDir(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	hst.Close(context.Background())
+	_ = hst.Close(context.Background())
 }
 
 func TestGenerateRemoteAddress(t *testing.T) {

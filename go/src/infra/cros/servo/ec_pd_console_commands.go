@@ -1,0 +1,723 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package servo
+
+import (
+	"context"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"infra/cros/servo/errors"
+	"infra/cros/servo/testing"
+)
+
+const (
+	reEcPdRecv  string = `RECV\s([\w]+)`
+	rePDVersion string = `[\r\n](\d|Wrong)`
+	// MaxPorts specifies the maximum number of ports on the EC.
+	MaxPorts int = 4
+	// PDPortUnderTest indicates command should be sent to the PD port connected to servo.
+	PDPortUnderTest int = MaxPorts
+)
+
+// TCPMVersion is a type for denoting a TCPM stack version
+type TCPMVersion int
+
+// Supported TCPM Versions
+const (
+	TCPMv1 TCPMVersion = 1
+	TCPMv2 TCPMVersion = 2
+	PDC    TCPMVersion = 3
+)
+
+// Supported DualRole states
+const (
+	DROn     string = `on`
+	DROff    string = `off`
+	DRFreeze string = `freeze`
+	DRSink   string = `sink`
+	DRSource string = `source`
+)
+
+// DUTPDInfo caches the fixed PD testing information for the DUT.
+type DUTPDInfo struct {
+	version    TCPMVersion // TCPM stack version in use by DUT
+	activePort int         // PD port connected to servo
+	portCount  int         // Total number of PD ports on the DUT
+}
+
+// DPModeValue is a type for storing a type-c alt state dp status
+type DPModeValue int
+
+// MultiFunctionPref is a type for storing a type-c alt state mf pref
+type MultiFunctionPref int
+
+// supported mf pref modes
+const (
+	MFPrefEnable  MultiFunctionPref = 1
+	MFPrefDisable MultiFunctionPref = 0
+)
+
+// supported dp modes
+const (
+	DPEnable  DPModeValue = 1
+	DPDisable DPModeValue = 0
+)
+
+// TypeCInfo stores information retrieved from probing a type-c connection by the DUT.
+type TypeCInfo struct {
+	DPMode   DPModeValue
+	PinsCDEF string
+}
+
+func (pdInfo *DUTPDInfo) getVersionString() string {
+	switch pdInfo.version {
+	case 0:
+		return "Unknown"
+	case TCPMv1:
+		return "TCPMv1"
+	case TCPMv2:
+		return "TCPMv2"
+	case PDC:
+		return "PDC"
+	}
+	return "Invalid"
+}
+
+// RequireDUTPDInfo allocates and caches the fixed information about the PD port under test.
+func (s *Servo) RequireDUTPDInfo(ctx context.Context) error {
+	if s.dutPDInfo != nil {
+		return nil
+	}
+
+	pdInfo := &DUTPDInfo{}
+
+	out, err := s.RunECCommandGetOutputNoConsoleLogs(ctx, "pd version", []string{rePDVersion})
+	if err != nil {
+		return errors.Wrap(err, "EC pd version failed")
+	}
+
+	if ver, err := strconv.Atoi(out[0][1]); err != nil {
+		testing.ContextLog(
+			ctx,
+			"PD Version command is not supported. This test is likely running "+
+				"against an old version of the EC. The test will assume the "+
+				" DUT is running the TCPMv1 stack. This may cause errors.",
+		)
+		pdInfo.version = TCPMv1
+	} else {
+		switch ver {
+		case 1:
+			pdInfo.version = TCPMv1
+		case 2:
+			pdInfo.version = TCPMv2
+		case 3:
+			pdInfo.version = PDC
+		default:
+			return errors.Errorf("invalid TCPM version (%d) Output: %q", ver, out)
+		}
+	}
+
+	numPorts := 0
+	enabledPorts := 0
+	pdPort := MaxPorts
+	for port := 0; port < MaxPorts; port++ {
+		if portInfo, err := s.getPDStateByTargetAndVersion(ctx, pdStateDUT, pdInfo.version, port); err == nil {
+			testing.ContextLogf(ctx, "DUT Port %d state: %#v", port, portInfo)
+
+			if portInfo.IsPDReady() {
+				pdPort = port
+				enabledPorts++
+			}
+			numPorts++
+		} else {
+			testing.ContextLogf(ctx, "DUT Port %d not detected", port)
+		}
+	}
+
+	if numPorts == 0 {
+		return errors.New("no PD ports found on the DUT")
+	}
+	pdInfo.portCount = numPorts
+
+	if enabledPorts == 0 {
+		return errors.New("no active PD ports found")
+	} else if enabledPorts > 1 {
+		return errors.New("more than one active PD port found")
+	}
+	pdInfo.activePort = pdPort
+
+	versionString := pdInfo.getVersionString()
+	testing.ContextLogf(ctx, "DUT PD Port info: %s, testing port %d, port count %d",
+		versionString, pdInfo.activePort, pdInfo.portCount)
+
+	s.dutPDInfo = pdInfo
+
+	return nil
+}
+
+// DUTPDPort returns the active PD port on the DUT.
+func (s *Servo) DUTPDPort() int {
+	return s.dutPDInfo.activePort
+}
+
+const (
+	pdStatePollTimeout  time.Duration = 20 * time.Second
+	pdStatePollInterval time.Duration = 500 * time.Millisecond
+)
+
+// SendRequestSourceVoltage sends a voltage request to the source that's initiated by the DUT.
+func (s *Servo) SendRequestSourceVoltage(ctx context.Context, voltage int) error {
+	var cmd string
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		cmd = fmt.Sprintf("pd %d dev %d", s.dutPDInfo.activePort, voltage)
+	case PDC:
+		cmd = fmt.Sprintf("pdc src_voltage %d %d", s.dutPDInfo.activePort, voltage)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	testing.ContextLog(ctx, "Sending request source voltage: ", cmd)
+	if err := s.RunECCommand(ctx, cmd); err != nil {
+		return errors.Wrap(err, "EC pd command failed")
+	}
+
+	return nil
+}
+
+// SetDualroleState sets the dual-role state of the DUT
+func (s *Servo) SetDualroleState(ctx context.Context, drs string) error {
+	var cmd string
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		cmd = fmt.Sprintf("pd %d dualrole %s", s.dutPDInfo.activePort, drs)
+	case PDC:
+		cmd = fmt.Sprintf("pdc dualrole %d %s", s.dutPDInfo.activePort, drs)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	testing.ContextLog(ctx, "Sending request: ", cmd)
+	if err := s.RunECCommand(ctx, cmd); err != nil {
+		return errors.Wrap(err, "EC pd command failed")
+	}
+
+	return nil
+}
+
+// SendPowerSwapRequest sends power swap request to be initiated by the DUT.
+func (s *Servo) SendPowerSwapRequest(ctx context.Context) error {
+	var cmd string
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		cmd = fmt.Sprintf("pd %d swap power", s.dutPDInfo.activePort)
+	case PDC:
+		cmd = fmt.Sprintf("pdc prs %d", s.dutPDInfo.activePort)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	if err := s.EnablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not enable EC/DUT's PD debug logs")
+	}
+	defer s.DisablePDConsoleDebug(ctx) //nolint
+
+	testing.ContextLog(ctx, "Sending power swap request: ", cmd)
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		out, err := s.RunECCommandGetOutput(ctx, cmd, []string{reEcPdRecv})
+
+		if err != nil {
+			return errors.Wrap(err, "EC pd command failed")
+		}
+		testing.ContextLog(ctx, "PowerSwap reply: ", out)
+	case PDC:
+		err := s.RunECCommand(ctx, cmd)
+
+		if err != nil {
+			return errors.Wrap(err, "EC pdc command failed")
+		}
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	return nil
+}
+
+// SendDataSwapRequest sends data swap request to be initiated by the DUT.
+func (s *Servo) SendDataSwapRequest(ctx context.Context) error {
+	var cmd string
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		cmd = fmt.Sprintf("pd %d swap data", s.dutPDInfo.activePort)
+	case PDC:
+		cmd = fmt.Sprintf("pdc drs %d", s.dutPDInfo.activePort)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	if err := s.EnablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not enable EC/DUT's PD debug logs")
+	}
+	defer s.DisablePDConsoleDebug(ctx) //nolint
+
+	testing.ContextLog(ctx, "Sending data swap request: ", cmd)
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		out, err := s.RunECCommandGetOutput(ctx, cmd, []string{reEcPdRecv})
+
+		if err != nil {
+			return errors.Wrap(err, "EC pd command failed")
+		}
+		testing.ContextLog(ctx, "DataSwap reply: ", out)
+	case PDC:
+		err := s.RunECCommand(ctx, cmd)
+
+		if err != nil {
+			return errors.Wrap(err, "EC pdc command failed")
+		}
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	return nil
+}
+
+// EnablePDConsoleDebug enables PD console debugging level 2 on the DUT.
+func (s *Servo) EnablePDConsoleDebug(ctx context.Context) error {
+	cmd := "pd dump 2"
+
+	if err := s.RunECCommand(ctx, cmd); err != nil {
+		return errors.Wrap(err, "EC pd command failed")
+	}
+
+	return nil
+}
+
+// DisablePDConsoleDebug disables PD console debugging on the DUT.
+func (s *Servo) DisablePDConsoleDebug(ctx context.Context) error {
+	cmd := "pd dump 0"
+
+	if err := s.RunECCommand(ctx, cmd); err != nil {
+		return errors.Wrap(err, "EC pd command failed")
+	}
+
+	return nil
+}
+
+// SetPDPowerRole sets the PD power role for a PD port on the DUT.
+func (s *Servo) SetPDPowerRole(ctx context.Context, role string) error {
+	pdState, err := s.GetDUTPDState(ctx)
+
+	if err != nil {
+		return errors.Wrap(err, "failed to get PD State")
+	}
+
+	if string(pdState.PowerRole) != role {
+		if err := s.SendPowerSwapRequest(ctx); err != nil {
+			return errors.Wrap(err, "send power swap failed")
+		}
+
+		if err := testing.Poll(ctx, func(ctx context.Context) error {
+			if pdState, err := s.GetDUTPDState(ctx); err == nil {
+				testing.ContextLogf(ctx, "PD state after: %#v", pdState)
+				testing.ContextLog(ctx, "PD Role after: ", pdState.PowerRole)
+				if role != string(pdState.PowerRole) {
+					// Because PDC does not send recv msg, retry swap if it is not successful.
+					if s.dutPDInfo.version == PDC {
+						_ = s.SendPowerSwapRequest(ctx)
+					}
+					return errors.Wrap(err, "failed to switch power role")
+				}
+			} else {
+				return errors.Wrap(err, "failed to get PD state")
+			}
+
+			return nil
+		}, &testing.PollOptions{Timeout: pdStatePollTimeout, Interval: pdStatePollInterval}); err != nil {
+			return errors.Wrap(err, "expected PD power swap")
+		}
+
+	} else {
+		testing.ContextLog(ctx, "PD already at power role: ", role)
+	}
+
+	return nil
+}
+
+// RestorePDPort restores DUT PD port state to the SNK role.
+func (s *Servo) RestorePDPort(ctx context.Context) error {
+	// Set DUT PD to SNK so battery charges.
+	if err := s.SetPDPowerRole(ctx, "SNK"); err != nil {
+		return errors.Wrap(err, "failed to set PD role to SNK")
+	}
+
+	return nil
+}
+
+// RestorePDDataRole restores DUT PD port state to the DFP role.
+func (s *Servo) RestorePDDataRole(ctx context.Context) error {
+	pdState, err := s.GetDUTPDState(ctx)
+
+	if err != nil {
+		return errors.Wrap(err, "failed to get PD State")
+	}
+
+	if pdState.DataRole == DataRoleUFP {
+		if err := s.SendDataSwapRequest(ctx); err != nil {
+			return errors.Wrap(err, "send data swap failed")
+		}
+
+		testing.ContextLog(ctx, "check restoration")
+		if err := testing.Poll(ctx, func(ctx context.Context) error {
+			if pdState, err = s.GetServoPDState(ctx); err == nil {
+				if pdState.DataRole == DataRoleDFP {
+					return errors.Wrap(err, "failed to restore servo data role to UFP")
+				}
+			} else {
+				return errors.Wrap(err, "failed to get servo PD state after data swap")
+			}
+
+			testing.ContextLog(ctx, "Servo data role after: ", pdState.DataRole)
+			return nil
+		}, &testing.PollOptions{Timeout: pdStatePollTimeout, Interval: pdStatePollInterval}); err != nil {
+			return errors.Wrap(err, "expected servo restored to UFP")
+		}
+	} else {
+		testing.ContextLog(ctx, "DUT already at DFP")
+	}
+
+	return nil
+}
+
+// IsDUTPDSoftResetSupported determines wither the attached DUT supports initiating PD soft resets
+func (s *Servo) IsDUTPDSoftResetSupported() bool {
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		return true
+	case PDC:
+		return false
+	}
+	return false
+}
+
+// TriggerPDSoftReset triggers a USB-PD Soft Reset from the EC/DUT-side
+func (s *Servo) TriggerPDSoftReset(ctx context.Context) error {
+	if !s.IsDUTPDSoftResetSupported() {
+		return errors.Errorf("DUT soft reset not supported on this TCPM version (%d)",
+			s.dutPDInfo.version)
+	}
+
+	// Get port status
+	pdStateBefore, err := s.GetDUTPDState(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get pre-test EC/DUT-side PD port status")
+	}
+
+	if err := s.EnablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not enable EC/DUT's PD debug logs")
+	}
+
+	// Run the command
+	err = s.RunECCommand(
+		ctx,
+		fmt.Sprintf("pd %d soft", s.dutPDInfo.activePort),
+	)
+	if err != nil {
+		return errors.Wrap(err, "could not trigger soft reset on EC/DUT")
+	}
+
+	// Go back to `pd dump 0` after.
+	if err := s.DisablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not disable EC/DUT's PD debug logs")
+	}
+
+	// Poll until the pre- and post-reset states match or we time out.
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		pdStateAfter, err := s.GetDUTPDState(ctx)
+		if err != nil {
+			return errors.Wrap(err, "cannot read DUT PD state")
+		}
+
+		return pdStateBefore.Compare(pdStateAfter)
+	}, &testing.PollOptions{Timeout: pdStatePollTimeout, Interval: pdStatePollInterval}); err != nil {
+		return errors.Wrap(err, "timed out waiting for states to match after DUT soft reset")
+	}
+
+	// TODO (b/317808083) query the servo's soft reset counter here
+
+	return nil
+}
+
+// TriggerPDHardReset triggers a USB-PD Hard Reset from the EC/DUT-side
+func (s *Servo) TriggerPDHardReset(ctx context.Context) error {
+	var pdStateBefore *PDState
+	var cmd string
+	// Because the pass criteria expects the PE state to be the same after
+	// the hard reset as before, make sure the PE/PD state is in either
+	// the SNK_READY or SRC_READY state
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		var err error
+		if pdStateBefore, err = s.GetDUTPDState(ctx); err == nil {
+			if !pdStateBefore.IsPDReady() {
+				testing.ContextLogf(ctx, "PD State = %s", pdStateBefore.PEStateName)
+				return errors.Wrap(err, "Post hard reset, PE state does not match")
+			}
+		} else {
+			return errors.Wrap(err, "failed to get PD state")
+		}
+		return nil
+	}, &testing.PollOptions{Timeout: pdStatePollTimeout, Interval: pdStatePollInterval}); err != nil {
+		return errors.Wrap(err, "DUT port is not in Ready state")
+	}
+
+	testing.ContextLogf(ctx, "Before status: %s/%s %s", pdStateBefore.PowerRole, pdStateBefore.DataRole, pdStateBefore.PEStateName)
+
+	if err := s.EnablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not enable EC/DUT's PD debug logs")
+	}
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		cmd = fmt.Sprintf("pd %d hard", s.dutPDInfo.activePort)
+	case PDC:
+		cmd = fmt.Sprintf("pdc conn_reset %d hard", s.dutPDInfo.activePort)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	testing.ContextLog(ctx, "Sending hard reset: ", cmd)
+
+	// Initiate hard reset from DUT
+	out, err := s.RunECCommandGetOutput(ctx, cmd, []string{reEcPdRecv})
+
+	if err != nil {
+		// PDC does not send receive message over console, so the err msg is always fail.
+		if s.dutPDInfo.version != PDC {
+			return errors.Wrap(err, "could not trigger hard reset on EC/DUT")
+		}
+	}
+	testing.ContextLog(ctx, "hard reset reply: ", out)
+	// Hard reset should result in the DUT port being in the same power/data
+	// role and PE state it was in prior to the hard reset being initiated.
+	// Poll for this condition, if not reached, then return an error
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		if pdState, err := s.GetDUTPDState(ctx); err == nil {
+			testing.ContextLogf(ctx, "After status: %s/%s %s", pdState.PowerRole, pdState.DataRole, pdState.PEStateName)
+			if pdState.PEStateName != pdStateBefore.PEStateName {
+				return errors.Wrap(err, "Post hard reset, PE state does not match")
+			}
+			if pdState.DataRole != pdStateBefore.DataRole {
+				return errors.Wrap(err, "Post hard reset, data role does not match")
+			}
+			if pdState.PowerRole != pdStateBefore.PowerRole {
+				return errors.Wrap(err, "Post hard reset, power role does not match")
+			}
+		} else {
+			return errors.Wrap(err, "failed to get PD state")
+		}
+
+		return nil
+	}, &testing.PollOptions{Timeout: pdStatePollTimeout, Interval: pdStatePollInterval}); err != nil {
+		return errors.Wrap(err, "Post Hard Reset connection does not match before")
+	}
+
+	// Go back to `pd dump 0` after.
+	if err := s.DisablePDConsoleDebug(ctx); err != nil {
+		return errors.Wrap(err, "could not disable EC/DUT's PD debug logs")
+	}
+
+	return nil
+}
+
+// SaveDUTConsoleChannelMask stores the current console channel mask on the DUT
+func (s *Servo) SaveDUTConsoleChannelMask(ctx context.Context) error {
+	return s.RunECCommand(ctx, "chan save")
+}
+
+// RestoreDUTConsoleChannelMask stores the current console channel mask on the DUT
+func (s *Servo) RestoreDUTConsoleChannelMask(ctx context.Context) error {
+	return s.RunECCommand(ctx, "chan restore")
+}
+
+// SetDUTConsoleChannelMask sets a give console channel mask on the EC
+func (s *Servo) SetDUTConsoleChannelMask(ctx context.Context, mask uint32) error {
+	cmd := fmt.Sprintf("chan %08x", mask)
+
+	if err := s.RunECCommand(ctx, cmd); err != nil {
+		return errors.Wrapf(err, "could not set EC chan mask to 0x%08x", mask)
+	}
+
+	return nil
+}
+
+// GetDUTDualRoleState accepts a port ID and checks for the PD DRP status of this port.
+func (s *Servo) GetDUTDualRoleState(ctx context.Context, port int) (USBPdDualRoleValue, error) {
+	if err := s.RequireDUTPDInfo(ctx); err != nil {
+		return "", errors.Wrap(err, "failed to get DUT PD info")
+	}
+
+	if port == PDPortUnderTest {
+		port = s.dutPDInfo.activePort
+	}
+
+	var outState string
+	var cmd string
+	var matchList []string
+	var retval USBPdDualRoleValue
+
+	if s.dutPDInfo.version == PDC {
+		cmd = fmt.Sprintf("pdc dualrole %d", port)
+		matchList = []string{`Dual role state:\s*(TOGGLE_ON|TOGGLE_OFF|FREEZE|FORCE_SINK|FORCE_SOURCE)\r?\n`}
+	} else if s.dutPDInfo.version == TCPMv1 || s.dutPDInfo.version == TCPMv2 {
+		cmd = fmt.Sprintf("pd %d dualrole", port)
+		matchList = []string{`dual-role toggling:\s+([\w ]+)[\r\n]`}
+	} else {
+		return "", errors.Errorf("unknown TCPM version (%d)", s.dutPDInfo.version)
+	}
+
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		out, err := s.RunECCommandGetOutputNoConsoleLogs(ctx, cmd, matchList)
+		if err != nil {
+			testing.ContextLogf(ctx, "EC command %q failed: %v", cmd, err)
+
+			if s.dutPDInfo.version == TCPMv1 || s.dutPDInfo.version == TCPMv2 {
+				testing.ContextLog(ctx, "Trying older version of command")
+				// Older DUTs running firmware from before cl:1096654 don't have per-port
+				// dualrole settings. Fall back to the old command.
+				out, err = s.RunECCommandGetOutputNoConsoleLogs(ctx, "pd dualrole", matchList)
+				if err != nil {
+					// DUT does not support DRP
+					return errors.Wrapf(err, "ec command %q failed. No way to check dual role state", cmd)
+				}
+				outState = out[0][1]
+			} else { // If not TCPMv1/2 then the older version of the command will not work, return error.
+				return errors.Wrapf(err, "EC command %v failed", cmd)
+			}
+		} else {
+			outState = out[0][1]
+		}
+
+		// The PDC DRP states are output as all caps with underscore separators.
+		// Standardize output to USPdDualRoleValue options.
+		switch outState {
+		case "TOGGLE_ON", "toggle on", "on":
+			retval = USBPdDualRoleOn
+		case "TOGGLE_OFF", "toggle off", "off":
+			retval = USBPdDualRoleOff
+		case "FREEZE", "freeze":
+			retval = USBPdDualRoleFreeze
+		case "FORCE_SINK", "force sink":
+			retval = USBPdDualRoleSink
+		case "FORCE_SOURCE", "force source":
+			retval = USBPdDualRoleSource
+		default:
+			return errors.Errorf("unexpected dualrole output: %v", outState)
+		}
+		return nil
+	}, &testing.PollOptions{Timeout: 5 * time.Second, Interval: 1 * time.Second}); err != nil {
+		return "", errors.Wrap(err, "failed to get dual role")
+	}
+
+	testing.ContextLogf(ctx, "Port %d DRP status: %q", port, retval)
+	return retval, nil
+}
+
+// SetPDTrySrc attempts to set PD TrySrc enable or disabled.
+// returns True is setting was successful, False if feature not supported
+// by the device, or not set as desired.
+func (s *Servo) SetPDTrySrc(ctx context.Context, port, enable int) (bool, error) {
+	var cmd string
+
+	if port == PDPortUnderTest {
+		port = s.dutPDInfo.activePort
+	}
+
+	// TCPMv1 indicates Try.SRC is on by returning 'on'
+	// TCPMv2 and PDC indicates Try.SRC is on by returning 'Forced ON'
+	onVals := []string{"on", "Forced ON"}
+
+	// TCPMv1 indicates Try.SRC is off by returning 'off'
+	// TCPMv2 and PDC indicates Try.SRC is off by returning 'Forced OFF'
+	offVals := []string{"off", "Forced OFF"}
+
+	// Try.SRC on/off is output, if supported feature
+	values := strings.Join(append(onVals, offVals...), `|`)
+	regex := fmt.Sprintf(`Try\.SRC\s(%s)|(Parameter)`, values)
+
+	matchList := []string{regex}
+
+	switch s.dutPDInfo.version {
+	case TCPMv1, TCPMv2:
+		// TrySRC is a global option on TCPMv1/v2 DUTs and does not
+		// take a port parameter
+		cmd = fmt.Sprintf("pd trysrc %d", enable)
+	case PDC:
+		// PDC devices allow setting TrySRC state per-port
+		cmd = fmt.Sprintf("pdc trysrc %d %d", port, enable)
+	default:
+		panic("Unknown TCPM version")
+	}
+
+	out, err := s.RunECCommandGetOutputNoConsoleLogs(ctx, cmd, matchList)
+
+	if err != nil {
+		return false, errors.Wrapf(err, "ec command %q failed", cmd)
+	}
+
+	if !strings.Contains(out[0][0], "Try.SRC") {
+		return false, errors.New("Try.SRC not supported on this PD device")
+	}
+
+	trySrcVal := out[0][1]
+	testing.ContextLogf(ctx, "Try.SRC mode = %s", trySrcVal)
+
+	findStrings := onVals
+	if enable == 0 {
+		findStrings = offVals
+	}
+
+	found := false
+	for _, str := range findStrings {
+		if strings.Contains(trySrcVal, str) {
+			found = true
+			break
+		}
+	}
+
+	return found, nil
+}
+
+// VerifyPins checks that the type-c pin setting is the same as the assignment
+func (s *Servo) VerifyPins(input, output *TypeCInfo, mfPref MultiFunctionPref) error {
+	if input.DPMode != output.DPMode {
+		return errors.Errorf("incorrect DP activity, expected %d, got %d", input.DPMode, output.DPMode)
+	}
+
+	// TODO: b/371041395 track which pin is supposed to be selected in cases where multiple are supported.
+	if len(output.PinsCDEF) == 0 {
+		return errors.Errorf("no pin assignment found, expected %s", input.PinsCDEF)
+	}
+	if mfPref == MFPrefDisable {
+		if input.PinsCDEF[0] != output.PinsCDEF[0] {
+			return errors.Errorf("incorrect pin assignment, expected %c, got %s", input.PinsCDEF[0], output.PinsCDEF)
+		}
+	} else {
+		if input.PinsCDEF[len(input.PinsCDEF)-1] != output.PinsCDEF[0] {
+			return errors.Errorf("incorrect pin assignment, expected %c, got %s", input.PinsCDEF[len(input.PinsCDEF)-1], output.PinsCDEF)
+		}
+	}
+
+	return nil
+}
