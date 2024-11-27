@@ -10,6 +10,7 @@ import (
 	"context"
 	gerrs "errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -86,6 +87,7 @@ func NewProdAPIClient(ctx context.Context, host, gitcookiesPath string) (*ProdAP
 // DownloadFileFromGitiles downloads a file from Gitiles.
 func (g *ProdAPIClient) DownloadFileFromGitiles(project, branch, path string) (string, error) {
 	branch = git.NormalizeRef(branch)
+	log.Printf("Downloading file from Gitiles for project: %s, branch: %s, path: %s", project, branch, path)
 	data, resp, err := g.innerClient.Projects.GetBranchContent(project, branch, path)
 	if err != nil {
 		if resp.StatusCode == 404 {
