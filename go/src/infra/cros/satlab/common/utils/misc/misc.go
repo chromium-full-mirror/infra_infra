@@ -42,15 +42,14 @@ func StageAndWriteLocalStableVersion(
 }
 
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path string) error {
+func writeLocalStableVersion(recoveryVersion *models.RecoveryVersion, path string) error {
 
 	// Check if recovery_versions directory created
-	_, err := os.Stat(path)
-	if err != nil {
+	if _, err := os.Stat(path); err != nil {
 		return err
 	}
 
-	fname := fmt.Sprintf("%s%s-%s.json", path, recovery_version.Board, recovery_version.Model)
+	fname := fmt.Sprintf("%s%s-%s.json", path, recoveryVersion.Board, recoveryVersion.Model)
 	f, err := os.Create(fname)
 	if err != nil {
 		return err
@@ -62,16 +61,28 @@ func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path stri
 		}
 	}()
 
-	rv, err := json.MarshalIndent(recovery_version, "", " ")
+	rv, err := json.MarshalIndent(recoveryVersion, "", " ")
 	if err != nil {
 		return errors.Annotate(err, "marshal recovery version").Err()
 	}
-	_, err = f.Write(rv)
-	if err != nil {
+	if _, err = f.Write(rv); err != nil {
 		return err
 	}
-
 	return nil
+}
+
+// StableVersionFromFile reads stable version from file.
+func StableVersionFromFile(board string, model string) (*models.RecoveryVersion, error) {
+	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, board, model)
+	f, err := os.ReadFile(fname)
+	if err != nil {
+		return &models.RecoveryVersion{}, errors.Annotate(err, "read stable version file").Err()
+	}
+	rv := &models.RecoveryVersion{}
+	if err := json.Unmarshal([]byte(f), rv); err != nil {
+		return &models.RecoveryVersion{}, errors.Annotate(err, "unmarshal json").Err()
+	}
+	return rv, nil
 }
 
 // MakeTempFile makes a temporary file.

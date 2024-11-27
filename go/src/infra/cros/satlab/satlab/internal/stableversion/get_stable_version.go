@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/maruel/subcommands"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -20,8 +19,8 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // GetStableVersionCmd is a command for the GetStableVersion RPC.
@@ -81,7 +80,7 @@ func (c *getStableVersionRun) getStableVersionPartner() error {
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
-	recoveryVersion, err := c.stableVersionFromFile()
+	recoveryVersion, err := misc.StableVersionFromFile(c.board, c.model)
 	if err != nil {
 		return errors.Annotate(err, "get stable version from file").Err()
 	}
@@ -143,18 +142,4 @@ func (c *getStableVersionRun) validateArgs() error {
 		return errors.Reason("Please provide -model").Err()
 	}
 	return nil
-}
-
-// stableVersionFromFile reads stable version from file.
-func (c *getStableVersionRun) stableVersionFromFile() (*models.RecoveryVersion, error) {
-	fname := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, c.board, c.model)
-	f, err := os.ReadFile(fname)
-	if err != nil {
-		return &models.RecoveryVersion{}, errors.Annotate(err, "read stable version file").Err()
-	}
-	recoveryVersion := &models.RecoveryVersion{}
-	if err := json.Unmarshal([]byte(f), recoveryVersion); err != nil {
-		return &models.RecoveryVersion{}, errors.Annotate(err, "unmarshal json").Err()
-	}
-	return recoveryVersion, nil
 }
