@@ -6,6 +6,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestUpdateInvocationProperties(t *testing.T) {
@@ -88,6 +90,74 @@ func TestUpdateInvocationProperties(t *testing.T) {
 			err := cmd.updateInvocationProperties(ctx, s)
 			if !tc.sealInv && err != nil {
 				t.Errorf("Unexpected error: %q", err)
+			}
+		})
+	}
+}
+
+func TestALInvocationInformation(t *testing.T) {
+	testCases := []struct {
+		name           string
+		dutInfo        *labapi.Dut
+		swReqKeyValues []*api.KeyValue
+	}{
+		{
+			name: "allIncluded",
+			dutInfo: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+					},
+				},
+			},
+			swReqKeyValues: []*api.KeyValue{
+				{Key: "al_build_id", Value: "12345"},
+				{Key: "al_build_target", Value: "brya-staging"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := &AlStatusUpdateCmd{
+				BuildsMap: map[string]*data.BuildRequest{
+					"foo": {
+						SuiteInfo: &api.SuiteInfo{
+							SuiteMetadata: &api.SuiteMetadata{
+								SchedulingUnits: []*api.SchedulingUnit{
+									{
+										PrimaryTarget: &api.Target{
+											SwReq: &api.LegacySW{
+												KeyValues: tc.swReqKeyValues,
+											},
+											SwarmingDef: &api.SwarmingDefinition{
+												DutInfo: tc.dutInfo,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+
+			gotBuildID, gotBuildTarget, gotRunTarget := cmd.alInvocationInformation()
+
+			if gotBuildID != "12345" {
+				t.Errorf("Unexpected buildID: got(%s), want(%s)", gotBuildID, "12345")
+			}
+
+			if gotBuildTarget != "brya-staging" {
+				t.Errorf("Unexpected buildTarget: got(%s), want(%s)", gotBuildID, "brya-staging")
+			}
+
+			wantRunTarget := fmt.Sprintf("%s_%s", tc.dutInfo.GetChromeos().DutModel.BuildTarget, tc.dutInfo.GetChromeos().DutModel.ModelName)
+			if gotRunTarget != wantRunTarget {
+				t.Errorf("Unexpected runTarget: got(%s), want(%s)", gotRunTarget, wantRunTarget)
 			}
 		})
 	}

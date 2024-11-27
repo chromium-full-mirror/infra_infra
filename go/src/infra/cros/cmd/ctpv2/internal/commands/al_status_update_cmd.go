@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -323,10 +324,10 @@ func (cmd *AlStatusUpdateCmd) closeWUTree(ctx context.Context, service *androida
 	return nil
 }
 
-// getALInvocationInformation fetches the required Invocation generation from
+// alInvocationInformation fetches the required Invocation generation from
 // the build request. If this information is missing then we cannot generate an
 // invocation.
-func (cmd *AlStatusUpdateCmd) getALInvocationInformation() (string, string, string) {
+func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string) {
 	var buildID, buildTarget, runTarget string
 	for _, item := range cmd.BuildsMap {
 		// Avoid nil pointer in the loop.
@@ -356,7 +357,20 @@ func (cmd *AlStatusUpdateCmd) getALInvocationInformation() (string, string, stri
 				}
 			}
 
-			runTarget = unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
+			dutInfo := unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()
+			var board, model string
+			switch dutInfo.GetDutType().(type) {
+			case *api.Dut_Chromeos:
+				board = dutInfo.GetChromeos().GetDutModel().GetBuildTarget()
+				model = dutInfo.GetChromeos().GetDutModel().GetModelName()
+			}
+			if board == "" && model == "" {
+				continue
+			} else if model == "" {
+				runTarget = board
+			} else {
+				runTarget = fmt.Sprintf("%s_%s", board, model)
+			}
 		}
 	}
 
@@ -369,7 +383,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *buil
 	}
 
 	// Only generate the invocation if we have the requisite information.
-	buildID, buildTarget, runTarget := cmd.getALInvocationInformation()
+	buildID, buildTarget, runTarget := cmd.alInvocationInformation()
 	isReady := buildID != "" && buildTarget != "" && runTarget != ""
 	if !isReady {
 		return nil
