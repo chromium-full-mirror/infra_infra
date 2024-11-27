@@ -243,7 +243,7 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 		logging.Infof(ctx, "WU %s-%s set as %s, not all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
 		head.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
 			ErrorCode:    1,
-			ErrorMessage: "Not all children WUs passed",
+			ErrorMessage: "Not all children work units passed",
 			ErrorName:    "Failed Children",
 		}
 		logging.Infof(ctx, "WU %s-%s completed testing in %s status\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
