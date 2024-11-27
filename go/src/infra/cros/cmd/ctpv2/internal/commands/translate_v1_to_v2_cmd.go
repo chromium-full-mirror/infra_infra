@@ -7,7 +7,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"regexp"
 	"strings"
 
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
@@ -336,11 +335,11 @@ func (cmd *TranslateV1ToV2Cmd) constructCtpReqFromEncodedTestJobMsg(ctx context.
 func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg *common.TestJobMessage, buildState *build.State) error {
 	var err error
 	triggerType := getTriggerType(testJobMsg)
-	ctpReq.SuiteRequest, err = buildSuiteRequest(ctx, testJobMsg, triggerType, buildState)
+	ctpReq.SuiteRequest, err = buildSuiteRequest(testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
-	ctpReq.ScheduleTargets, err = buildScheduleTargets(ctx, testJobMsg, buildState)
+	ctpReq.ScheduleTargets, err = buildScheduleTargets(testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build schedule targets err: %s", err.Error()).Err()
 	}
@@ -356,7 +355,7 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	return nil
 }
 
-func buildSuiteRequest(ctx context.Context, testJobMsg *common.TestJobMessage, triggerType ATPTriggerType, buildState *build.State) (*api.SuiteRequest, error) {
+func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
@@ -399,29 +398,9 @@ func buildSuiteRequest(ctx context.Context, testJobMsg *common.TestJobMessage, t
 	if testJobMsg.Build != nil {
 		buildId = testJobMsg.Build.BuildId
 		branch = testJobMsg.Build.Branch
-		buildFlavor = testJobMsg.Build.BuildFlavor
+		buildFlavor = testJobMsg.Build.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
 		buildTarget = testJobMsg.Build.BuildTarget
 		buildType = testJobMsg.Build.BuildType
-	}
-
-	// For presubmit runs, reformat build flavor if not in correct format
-	if triggerType == PRESUBMIT_BLOCKING {
-		// replace wrong formatted build target
-		buildFlavorFormat := "%s-trunk_staging-%s"
-		// Regular expression to match the desired format
-		re := regexp.MustCompile(`^(.+)-trunk_staging-(.+)$`)
-
-		// Check if buildFlavor matches the format
-		// if doesn't match, force the format
-		if !re.MatchString(buildFlavor) {
-			// If not, it should be in %s-%s format
-			parts := strings.Split(buildFlavor, "-'")
-			if len(parts) != 2 {
-				return nil, fmt.Errorf("Build flavor found in unexpected format: %s", buildFlavor)
-			}
-			buildFlavor = fmt.Sprintf(buildFlavorFormat, parts[0], parts[1])
-			logging.Infof(ctx, "buildFlavor was formatted to: %s", buildFlavor)
-		}
 	}
 
 	if len(testJobMsg.ExtraBuilds) != 0 {
@@ -429,7 +408,7 @@ func buildSuiteRequest(ctx context.Context, testJobMsg *common.TestJobMessage, t
 
 		extraBuildId = extraBuild.BuildId
 		extraBranch = extraBuild.Branch
-		extraBuildFlavor = extraBuild.BuildFlavor
+		extraBuildFlavor = extraBuild.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
 		extraBuildTarget = extraBuild.BuildTarget
 		extraBuildType = extraBuild.BuildType
 	}
@@ -522,7 +501,7 @@ func buildSuiteRequest(ctx context.Context, testJobMsg *common.TestJobMessage, t
 		RetryCount:      int64(retryCount)}, nil
 }
 
-func buildScheduleTargets(ctx context.Context, testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
+func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
 	primaryBoard := ""
 	models := []string{}
 	swarmingDims := []string{}
