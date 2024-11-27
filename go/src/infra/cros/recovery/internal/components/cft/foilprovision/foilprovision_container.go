@@ -8,6 +8,8 @@ package foilprovision
 import (
 	"context"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	lab_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -54,9 +56,14 @@ func Install(ctx context.Context, client api.GenericProvisionServiceClient, imag
 	if client == nil {
 		return errors.Reason("foil-provision install: client is not provided").Err()
 	}
+	metadata, err := anypb.New(&api.CrOSProvisionMetadata{})
+	if err != nil {
+		return errors.Annotate(err, "foil-provision install: fail to create metadata").Err()
+	}
 	req := &api.InstallRequest{
 		ImagePath:     imagePath,
 		PreventReboot: preventReboot,
+		Metadata:      metadata,
 	}
 	log.Debugf(ctx, "Foil-provision install: call with request %v.", req)
 	op, err := client.Install(ctx, req)

@@ -63,7 +63,8 @@ func cacheAddressDetectionkExec(ctx context.Context, info *execs.ExecInfo) error
 		return nil
 	}
 	argsMap := info.GetActionArgs(ctx)
-	cacheAddr := argsMap.AsString(ctx, "labservice_address", "")
+	// Example of cache address for Satlab: 192.168.100.1:8082
+	cacheAddr := argsMap.AsString(ctx, "cache_address", "")
 	if cacheAddr != "" {
 		return scopeAddr(cacheAddr)
 	}
