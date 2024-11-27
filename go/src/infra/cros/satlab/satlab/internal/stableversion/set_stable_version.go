@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/googleapis/gax-go/v2"
@@ -29,6 +28,7 @@ import (
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/misc"
 )
 
 // If allowSetModelBoard is true, then the user is allowed to create new entries for a host&model.
@@ -202,40 +202,9 @@ func StageAndWriteLocalStableVersion(ctx context.Context, moblabClient MoblabCli
 	if err := run.StageImageToBucket(ctx, moblabClient, rv.Board, rv.Model, buildVersion); err != nil {
 		return errors.Annotate(err, "stage stable version image to bucket").Err()
 	}
-	if err := writeLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
+	if err := misc.WriteLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
 		return errors.Annotate(err, "write local stable version").Err()
 	}
-	return nil
-}
-
-// WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func writeLocalStableVersion(recoveryVersion *models.RecoveryVersion, path string) error {
-
-	// Check if recoveryVersions directory created
-	if _, err := os.Stat(path); err != nil {
-		return err
-	}
-
-	fname := fmt.Sprintf("%s%s-%s.json", path, recoveryVersion.Board, recoveryVersion.Model)
-	f, err := os.Create(fname)
-	if err != nil {
-		return err
-	}
-	// close file on exit and check for its returned error
-	defer func() {
-		if err := f.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	rv, err := json.MarshalIndent(recoveryVersion, "", " ")
-	if err != nil {
-		return errors.Annotate(err, "marshal recovery version").Err()
-	}
-	if _, err := f.Write(rv); err != nil {
-		return err
-	}
-	fmt.Println("Recovery Version written locally: ", string(rv))
 	return nil
 }
 

@@ -30,21 +30,19 @@ func StageAndWriteLocalStableVersion(
 	if bucket == "" {
 		return errors.New("GCS_IMAGE_BUCKET not found")
 	}
-	_, err := service.StageBuild(ctx, rv.Board, rv.Model, buildVersion, bucket)
-	if err != nil {
+	if _, err := service.StageBuild(ctx, rv.Board, rv.Model, buildVersion, bucket); err != nil {
 		return errors.Annotate(err, "stage stable version image to bucket").Err()
 	}
-	err = writeLocalStableVersion(rv, site.RecoveryVersionDirectory)
-	if err != nil {
+	if err := WriteLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
 		return errors.Annotate(err, "write local stable version").Err()
 	}
 	return nil
 }
 
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func writeLocalStableVersion(recoveryVersion *models.RecoveryVersion, path string) error {
+func WriteLocalStableVersion(recoveryVersion *models.RecoveryVersion, path string) error {
 
-	// Check if recovery_versions directory created
+	// Check if recoveryVersions directory created
 	if _, err := os.Stat(path); err != nil {
 		return err
 	}
@@ -65,9 +63,10 @@ func writeLocalStableVersion(recoveryVersion *models.RecoveryVersion, path strin
 	if err != nil {
 		return errors.Annotate(err, "marshal recovery version").Err()
 	}
-	if _, err = f.Write(rv); err != nil {
+	if _, err := f.Write(rv); err != nil {
 		return err
 	}
+	fmt.Println("Recovery Version written locally: ", string(rv))
 	return nil
 }
 
