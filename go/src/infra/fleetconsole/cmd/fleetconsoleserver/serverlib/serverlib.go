@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/rpcacl"
@@ -39,12 +40,17 @@ func Modules() []module.Module {
 var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/Ping":              "fleet-console-access",
 	"/fleetconsole.FleetConsole/PingDeviceManager": "fleet-console-access",
+	"/fleetconsole.FleetConsole/ListDevices":       "fleet-console-access",
+	"/discovery.Discovery/Describe":                rpcacl.All,
 	"/grpc.health.v1.Health/Watch":                 rpcacl.All,
 }
 
 func ServerMain(srv *server.Server) error {
 	logging.Infof(srv.Context, "Begin initialization of console server.")
 	consoleFrontend := consoleserver.NewFleetConsoleFrontend().(*consoleserver.FleetConsoleFrontend)
+	if !srv.Options.Prod {
+		ConfigureDevCORS(srv)
+	}
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
@@ -53,14 +59,21 @@ func ServerMain(srv *server.Server) error {
 	return nil
 }
 
-func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, error) {
-	if !*flags.UseLocalDeviceManager && *flags.DeviceManagerAddr != "" {
-		deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, devicemanagerclient.DMProdURL)
-		if err != nil {
-			return nil, errors.Annotate(err, "configuring device manager client").Err()
+func ConfigureDevCORS(srv *server.Server) {
+	srv.ConfigurePRPC(func(prpcSrv *prpc.Server) {
+		prpcSrv.AccessControl = func(ctx context.Context, origin string) prpc.AccessControlDecision {
+			if strings.HasPrefix(origin, "http://localhost:") {
+				return prpc.AllowOriginAll(ctx, origin)
+			}
+			return prpc.AccessControlDecision{
+				AllowCrossOriginRequests: false,
+				AllowCredentials:         false,
+			}
 		}
-		return deviceManagerClient, nil
-	}
+	})
+}
+
+func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, error) {
 	deviceManagerAddr := devicemanagerclient.DMProdURL
 	deviceManagerPort := devicemanagerclient.DMLeasesPort
 	if *flags.UseLocalDeviceManager {
@@ -78,7 +91,7 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 		deviceManagerPort = port
 	}
 	logging.Infof(ctx, "Initializing device manager client with address: %s:%d", deviceManagerAddr, deviceManagerPort)
-	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, devicemanagerclient.DMProdURL)
+	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, deviceManagerAddr, deviceManagerPort)
 	if err != nil {
 		return nil, errors.Annotate(err, "configuring device manager client").Err()
 	}

@@ -35,7 +35,7 @@ type Client struct {
 }
 
 // NewClient makes a new client.
-func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, baseURL string) (*Client, error) {
+func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, hostname string, port int) (*Client, error) {
 	var opts []auth.RPCOption
 	switch rpcAuthorityKind {
 	case auth.AsCredentialsForwarder:
@@ -57,7 +57,7 @@ func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, base
 		Options: &prpc.Options{
 			Insecure: *flags.UseLocalDeviceManager,
 		},
-		Host: fmt.Sprintf("%s:%d", baseURL, client.DMLeasesPort),
+		Host: fmt.Sprintf("%s:%d", hostname, port),
 	}
 	return &Client{
 		Leaser: api.NewDeviceLeaseServiceClient(prpcClient),
