@@ -108,7 +108,8 @@ func setupFoilProvisionServiceExec(ctx context.Context, info *execs.ExecInfo) er
 	}
 	var servoNexusAddr, cachingAddress *lab_api.IpEndpoint
 	argsMap := info.GetActionArgs(ctx)
-	if argsMap.AsBool(ctx, "provide_servo_nexus", false) {
+	// All provisions required USB-drive.
+	if argsMap.AsBool(ctx, "provide_servo_nexus", true) {
 		if addr, err := cft.ServoServiceAddressFromScope(ctx, dut); err != nil {
 			return errors.Annotate(err, "start servo-nexus container").Err()
 		} else {
