@@ -8,6 +8,8 @@ package fleetconsole;
 
 option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 
+import "google/protobuf/empty.proto";
+
 service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.
   rpc Ping(PingRequest) returns (PingResponse);
@@ -17,6 +19,9 @@ service FleetConsole {
 
   // ListDevices managed by Device Manager.
   rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {};
+
+  // GetDeviceDimensions provides overview of devices dimensions and their values
+  rpc GetDeviceDimensions(google.protobuf.Empty) returns (GetDeviceDimensionsResponse);
 }
 
 // PingRequest intentionally contains nothing.
@@ -97,10 +102,16 @@ message ListDevicesResponse {
 }
 
 message DeviceSpec {
-  message LabelValues {
-    repeated string values = 1;
-  }
-
   // A map for labels used to request a matching device.
   map<string, LabelValues> labels = 1;
+}
+
+message GetDeviceDimensionsResponse {
+  map<string, LabelValues> base_dimensions = 1;
+
+  map<string, LabelValues> labels = 2;
+}
+
+message LabelValues {
+  repeated string values = 1;
 }

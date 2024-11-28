@@ -15,6 +15,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,9 +24,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FleetConsole_Ping_FullMethodName              = "/fleetconsole.FleetConsole/Ping"
-	FleetConsole_PingDeviceManager_FullMethodName = "/fleetconsole.FleetConsole/PingDeviceManager"
-	FleetConsole_ListDevices_FullMethodName       = "/fleetconsole.FleetConsole/ListDevices"
+	FleetConsole_Ping_FullMethodName                = "/fleetconsole.FleetConsole/Ping"
+	FleetConsole_PingDeviceManager_FullMethodName   = "/fleetconsole.FleetConsole/PingDeviceManager"
+	FleetConsole_ListDevices_FullMethodName         = "/fleetconsole.FleetConsole/ListDevices"
+	FleetConsole_GetDeviceDimensions_FullMethodName = "/fleetconsole.FleetConsole/GetDeviceDimensions"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -38,6 +40,8 @@ type FleetConsoleClient interface {
 	PingDeviceManager(ctx context.Context, in *PingDeviceManagerRequest, opts ...grpc.CallOption) (*PingDeviceManagerResponse, error)
 	// ListDevices managed by Device Manager.
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
+	// GetDeviceDimensions provides overview of devices dimensions and their values
+	GetDeviceDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDeviceDimensionsResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -78,6 +82,16 @@ func (c *fleetConsoleClient) ListDevices(ctx context.Context, in *ListDevicesReq
 	return out, nil
 }
 
+func (c *fleetConsoleClient) GetDeviceDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDeviceDimensionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetDeviceDimensionsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_GetDeviceDimensions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -88,6 +102,8 @@ type FleetConsoleServer interface {
 	PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error)
 	// ListDevices managed by Device Manager.
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
+	// GetDeviceDimensions provides overview of devices dimensions and their values
+	GetDeviceDimensions(context.Context, *emptypb.Empty) (*GetDeviceDimensionsResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -106,6 +122,9 @@ func (UnimplementedFleetConsoleServer) PingDeviceManager(context.Context, *PingD
 }
 func (UnimplementedFleetConsoleServer) ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDevices not implemented")
+}
+func (UnimplementedFleetConsoleServer) GetDeviceDimensions(context.Context, *emptypb.Empty) (*GetDeviceDimensionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceDimensions not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -182,6 +201,24 @@ func _FleetConsole_ListDevices_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_GetDeviceDimensions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).GetDeviceDimensions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_GetDeviceDimensions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).GetDeviceDimensions(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -200,6 +237,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListDevices",
 			Handler:    _FleetConsole_ListDevices_Handler,
+		},
+		{
+			MethodName: "GetDeviceDimensions",
+			Handler:    _FleetConsole_GetDeviceDimensions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

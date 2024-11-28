@@ -13,6 +13,7 @@ import (
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/consoleserver/sorting"
+	"infra/fleetconsole/internal/devicemanagerclient"
 )
 
 const maxPageSize int = 50
@@ -31,7 +32,7 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		return nil, err
 	}
 
-	devices, err := sorting.SortDevices(mapDevices(d.Devices), req.OrderBy)
+	devices, err := sorting.SortDevices(devicemanagerclient.MapDevices(d.Devices), req.OrderBy)
 
 	if err != nil {
 		return nil, err
@@ -76,38 +77,4 @@ func getPage(devices []*fleetconsolerpc.Device, afterDeviceID string, pageSize i
 		}
 	}
 	return nil, fmt.Errorf("couldn't find device id: %s", afterDeviceID)
-}
-
-func mapDevices(devices []*api.Device) []*fleetconsolerpc.Device {
-	var mappedDevices []*fleetconsolerpc.Device
-	for _, device := range devices {
-		mappedDevices = append(mappedDevices, mapDevice(device))
-	}
-	return mappedDevices
-}
-
-func mapDevice(device *api.Device) *fleetconsolerpc.Device {
-	return &fleetconsolerpc.Device{
-		Id:    device.Id,
-		DutId: device.DutId,
-		Address: &fleetconsolerpc.DeviceAddress{
-			Host: device.Address.Host,
-			Port: device.Address.Port,
-		},
-		Type:  fleetconsolerpc.DeviceType(device.Type),
-		State: fleetconsolerpc.DeviceState(device.State),
-		DeviceSpec: &fleetconsolerpc.DeviceSpec{
-			Labels: mapLabels(device.HardwareReqs.SchedulableLabels),
-		},
-	}
-}
-
-func mapLabels(labels map[string]*api.HardwareRequirements_LabelValues) map[string]*fleetconsolerpc.DeviceSpec_LabelValues {
-	mappedLabels := make(map[string]*fleetconsolerpc.DeviceSpec_LabelValues)
-	for k, v := range labels {
-		mappedLabels[k] = &fleetconsolerpc.DeviceSpec_LabelValues{
-			Values: v.Values,
-		}
-	}
-	return mappedLabels
 }

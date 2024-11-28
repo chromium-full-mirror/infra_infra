@@ -17,6 +17,7 @@ import (
 
 	// In the device_manager library, please ONLY depend on the constants that are not specific to Scheduke.
 	"infra/device_manager/client"
+	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 )
 
@@ -62,4 +63,38 @@ func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, host
 	return &Client{
 		Leaser: api.NewDeviceLeaseServiceClient(prpcClient),
 	}, nil
+}
+
+func MapDevices(devices []*api.Device) []*fleetconsolerpc.Device {
+	var mappedDevices []*fleetconsolerpc.Device
+	for _, device := range devices {
+		mappedDevices = append(mappedDevices, mapDevice(device))
+	}
+	return mappedDevices
+}
+
+func mapDevice(device *api.Device) *fleetconsolerpc.Device {
+	return &fleetconsolerpc.Device{
+		Id:    device.Id,
+		DutId: device.DutId,
+		Address: &fleetconsolerpc.DeviceAddress{
+			Host: device.Address.Host,
+			Port: device.Address.Port,
+		},
+		Type:  fleetconsolerpc.DeviceType(device.Type),
+		State: fleetconsolerpc.DeviceState(device.State),
+		DeviceSpec: &fleetconsolerpc.DeviceSpec{
+			Labels: mapLabels(device.HardwareReqs.SchedulableLabels),
+		},
+	}
+}
+
+func mapLabels(labels map[string]*api.HardwareRequirements_LabelValues) map[string]*fleetconsolerpc.LabelValues {
+	mappedLabels := make(map[string]*fleetconsolerpc.LabelValues)
+	for k, v := range labels {
+		mappedLabels[k] = &fleetconsolerpc.LabelValues{
+			Values: v.Values,
+		}
+	}
+	return mappedLabels
 }

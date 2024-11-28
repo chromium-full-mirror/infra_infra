@@ -15,7 +15,7 @@ type DeviceBuilder struct {
 	port       int
 	state      fleetconsolerpc.DeviceState
 	deviceType fleetconsolerpc.DeviceType
-	labels     map[string]*fleetconsolerpc.DeviceSpec_LabelValues
+	labels     map[string]*fleetconsolerpc.LabelValues
 }
 
 func NewDeviceBuilder() *DeviceBuilder {
@@ -26,7 +26,7 @@ func NewDeviceBuilder() *DeviceBuilder {
 		port:       1234,
 		state:      fleetconsolerpc.DeviceState_DEVICE_STATE_AVAILABLE,
 		deviceType: fleetconsolerpc.DeviceType_DEVICE_TYPE_PHYSICAL,
-		labels:     map[string]*fleetconsolerpc.DeviceSpec_LabelValues{},
+		labels:     map[string]*fleetconsolerpc.LabelValues{},
 	}
 }
 
@@ -61,7 +61,7 @@ func (b *DeviceBuilder) WithType(deviceType fleetconsolerpc.DeviceType) *DeviceB
 }
 
 func (b *DeviceBuilder) WithLabel(key string, values []string) *DeviceBuilder {
-	b.labels[key] = &fleetconsolerpc.DeviceSpec_LabelValues{Values: values}
+	b.labels[key] = &fleetconsolerpc.LabelValues{Values: values}
 	return b
 }
 

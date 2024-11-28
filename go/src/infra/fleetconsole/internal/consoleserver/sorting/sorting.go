@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/consoleserver/dimensions"
 )
 
 // SortDevices sorts devices based on order, following google.aip.dev/132#ordering
@@ -46,22 +47,13 @@ func getSortComparator(path string) (func(a, b *fleetconsolerpc.Device) bool, er
 		return res, nil
 	}
 
-	switch path {
-	case "id":
-		return createComparator(func(d *fleetconsolerpc.Device) string { return d.Id }), nil
-	case "dut_id":
-		return createComparator(func(d *fleetconsolerpc.Device) string { return d.DutId }), nil
-	case "address.host":
-		return createComparator(func(d *fleetconsolerpc.Device) string { return d.Address.Host }), nil
-	case "address.port":
-		return createComparator(func(d *fleetconsolerpc.Device) int { return int(d.Address.Port) }), nil
-	case "state":
-		return createComparator(func(d *fleetconsolerpc.Device) int { return int(d.State) }), nil
-	case "type":
-		return createComparator(func(d *fleetconsolerpc.Device) int { return int(d.Type) }), nil
-	default:
-		return nil, fmt.Errorf("path not found: %s", path)
+	dimensionDescriptor, ok := dimensions.GetDimensionDescriptorsMap()[path]
+
+	if !ok {
+		return nil, fmt.Errorf("unknown field: %s", path)
 	}
+
+	return dimensionDescriptor.Comparator, nil
 }
 
 func getSortImpl(devices []*fleetconsolerpc.Device, orderBy string) (*sortImpl, error) {

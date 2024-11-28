@@ -38,12 +38,13 @@ func Modules() []module.Module {
 }
 
 var ACLMap rpcacl.Map = map[string]string{
-	"/fleetconsole.FleetConsole/Ping":              "fleet-console-access",
-	"/fleetconsole.FleetConsole/PingDeviceManager": "fleet-console-access",
-	"/fleetconsole.FleetConsole/ListDevices":       "fleet-console-access",
-	"/discovery.Discovery/Describe":                rpcacl.All,
-	"/grpc.health.v1.Health/Watch":                 rpcacl.All,
-	"/grpc.health.v1.Health/Check":                 rpcacl.All,
+	"/fleetconsole.FleetConsole/Ping":                "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingDeviceManager":   "fleet-console-access",
+	"/fleetconsole.FleetConsole/ListDevices":         "fleet-console-access",
+	"/fleetconsole.FleetConsole/GetDeviceDimensions": "fleet-console-access",
+	"/discovery.Discovery/Describe":                  rpcacl.All,
+	"/grpc.health.v1.Health/Watch":                   rpcacl.All,
+	"/grpc.health.v1.Health/Check":                   rpcacl.All,
 }
 
 func ServerMain(srv *server.Server) error {
