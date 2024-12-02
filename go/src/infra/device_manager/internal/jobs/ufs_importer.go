@@ -49,13 +49,13 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 	start := time.Now()
 	lses, err := getAllMachineLSEs(ctx, serviceClients.UFSClient)
 	if err != nil {
-		return err
+		return fmt.Errorf("import ufs devices: %w", err)
 	}
 	logging.Debugf(ctx, "ImportUFSDevices: found %d DUTs in UFS OS namespace", len(lses))
 
 	sUnits, err := getAllSchedulingUnits(ctx, serviceClients.UFSClient)
 	if err != nil {
-		return err
+		return fmt.Errorf("import ufs devices: %w", err)
 	}
 	logging.Debugf(ctx, "ImportUFSDevices: found %d SUs in UFS OS namespace", len(sUnits))
 
@@ -66,12 +66,12 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 	var activeDUTs []string
 
 	// map for MachineLSEs associated with SchedulingUnit for easy search
-	lseInSUnitMap := make(map[string]bool)
+	lseInSUnitMap := make(map[string]struct{})
 	for _, su := range sUnits {
 		if len(su.GetMachineLSEs()) > 0 {
 			activeDUTs = append(activeDUTs, su.GetName())
 			for _, lseName := range su.GetMachineLSEs() {
-				lseInSUnitMap[lseName] = true
+				lseInSUnitMap[lseName] = struct{}{}
 			}
 		}
 	}
@@ -79,16 +79,16 @@ func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClient
 
 	// add all individual MachineLSEs as active DUTs
 	for _, lse := range lses {
-		if !lseInSUnitMap[ufsUtil.RemovePrefix(lse.GetName())] {
+		if _, found := lseInSUnitMap[ufsUtil.RemovePrefix(lse.GetName())]; !found {
 			activeDUTs = append(activeDUTs, lse.GetName())
 		}
 	}
 	logging.Debugf(ctx, "ImportUFSDevices: found %d active devices to update", len(activeDUTs))
 
 	// get inactive DUTs
-	inactiveDUTs, err := getInactiveDevices(ctx, serviceClients, activeDUTs)
+	inactiveDUTs, err := getInactiveDevices(ctx, serviceClients.DBClient.Conn, activeDUTs)
 	if err != nil {
-		return err
+		return fmt.Errorf("import ufs devices: %w", err)
 	}
 
 	// loop through all active and inactive MachineLSEs and upsert as Devices
@@ -314,10 +314,10 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 // This function takes a list of Devices and compares them with the list of
 // Devices managed by Device Manager. It marks Devices that are not in the
 // active list as inactive and returns the list.
-func getInactiveDevices(ctx context.Context, serviceClients frontend.ServiceClients, activeDevices []string) ([]string, error) {
-	dmDevices, err := getAllDMDevices(ctx, serviceClients.DBClient.Conn)
+func getInactiveDevices(ctx context.Context, db *sql.DB, activeDevices []string) ([]string, error) {
+	dmDevices, err := getAllDMDevices(ctx, db)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get inactive devices: %w", err)
 	}
 
 	// create a map of active Device names
