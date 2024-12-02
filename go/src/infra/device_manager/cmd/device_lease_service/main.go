@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"time"
 
 	"golang.org/x/oauth2/google"
@@ -106,7 +107,7 @@ func main() {
 		logging.Debugf(srv.Context, "main: installing services")
 
 		deviceLeaseServer := frontend.NewServer()
-		dbConfig := database.DatabaseConfig{
+		dbConfig := &database.DatabaseConfig{
 			DBHost:           *dbHost,
 			DBPort:           *dbPort,
 			DBName:           *dbName,
@@ -117,10 +118,11 @@ func main() {
 			MaxOpenConns:     maxOpenConns,
 		}
 
-		err = frontend.SetUpDBClient(srv.Context, deviceLeaseServer, dbConfig)
+		dbClient, err := frontend.NewDBClient(srv.Context, dbConfig)
 		if err != nil {
-			return err
+			return fmt.Errorf("main: %w", err)
 		}
+		deviceLeaseServer.ServiceClients.DBClient = dbClient
 
 		err = frontend.SetUpBQClient(srv.Context, deviceLeaseServer, srv.Options.CloudProject)
 		if err != nil {

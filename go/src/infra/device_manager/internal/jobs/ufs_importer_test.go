@@ -313,7 +313,7 @@ func TestImportUFSDevices(t *testing.T) {
 			tc.setupDB(mock)
 			clients := frontend.ServiceClients{
 				UFSClient: *tc.ufs,
-				DBClient:  database.Client{Conn: db},
+				DBClient:  &database.Client{Conn: db},
 			}
 
 			ctx := logging.SetLevel(context.Background(), logging.Debug)

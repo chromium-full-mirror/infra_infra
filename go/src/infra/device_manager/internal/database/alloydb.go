@@ -34,26 +34,26 @@ type DatabaseConfig struct {
 
 type Client struct {
 	Conn   *sql.DB
-	Config DatabaseConfig
+	Config *DatabaseConfig
 }
 
 // ConnectDB creates a connection to the database using a TCP socket.
-func ConnectDB(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, error) {
+func ConnectDB(ctx context.Context, dbConfig *DatabaseConfig) (*sql.DB, error) {
 	// Use a TCP socket.
 	db, err := connectTCPSocket(ctx, dbConfig)
 	if err != nil {
 		logging.Errorf(ctx, "ConnectDB: unable to connect: %s", err)
-		return nil, err
+		return nil, fmt.Errorf("connect db: %w", err)
 	}
 
 	return db, nil
 }
 
 // connectTCPSocket initializes a TCP connection pool for an AlloyDB cluster.
-func connectTCPSocket(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, error) {
+func connectTCPSocket(ctx context.Context, dbConfig *DatabaseConfig) (*sql.DB, error) {
 	dbPwd, err := config.GetSecret(ctx, dbConfig.DBPasswordSecret)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("connect tcp socket: %w", err)
 	}
 
 	logging.Debugf(ctx, "connectTCPSocket: connecting as user=%s to host=%s:%s database=%s",
@@ -64,7 +64,7 @@ func connectTCPSocket(ctx context.Context, dbConfig DatabaseConfig) (*sql.DB, er
 	// dbPool is the pool of database connections.
 	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
+		return nil, fmt.Errorf("connect tcp socket: sql.Open: %w", err)
 	}
 	dbPool.SetConnMaxLifetime(dbConfig.ConnMaxLifetime)
 	dbPool.SetMaxIdleConns(dbConfig.MaxIdleConns)

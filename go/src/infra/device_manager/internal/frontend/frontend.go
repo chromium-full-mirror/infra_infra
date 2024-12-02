@@ -40,7 +40,7 @@ type Server struct {
 
 // ServiceClients contains all relevant service clients for Device Manager Service.
 type ServiceClients struct {
-	DBClient     database.Client
+	DBClient     *database.Client
 	PubSubClient external.PubSubClient
 	UFSClient    ufsAPI.FleetClient
 	BQClient     *bigquery.Client
@@ -62,16 +62,12 @@ func InstallServices(s *Server, srv *server.Server) {
 }
 
 // SetUpDBClient sets up a reusable database client for the server
-func SetUpDBClient(ctx context.Context, server *Server, dbconf database.DatabaseConfig) error {
+func NewDBClient(ctx context.Context, dbconf *database.DatabaseConfig) (*database.Client, error) {
 	db, err := database.ConnectDB(ctx, dbconf)
 	if err != nil {
-		return status.Errorf(codes.Internal, "SetUpDBClient: could not set up DB client: %s", err)
+		return nil, status.Errorf(codes.Internal, "new db client: %s", err)
 	}
-
-	server.ServiceClients.DBClient.Conn = db
-	server.ServiceClients.DBClient.Config = dbconf
-
-	return nil
+	return &database.Client{Conn: db, Config: dbconf}, nil
 }
 
 // SetUpPubSubClient sets up a reusable PubSub client for the server
