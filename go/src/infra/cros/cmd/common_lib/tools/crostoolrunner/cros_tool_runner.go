@@ -49,8 +49,7 @@ type CrosToolRunner struct {
 
 // StartCTRServer starts the server and exports service metadata to
 // already created temp dir.
-func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
-	var err error
+func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) (err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start cros-tool-runner server"))
 	defer func() { step.End(err) }()
 
@@ -103,12 +102,11 @@ func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) 
 
 // GetServerAddressFromServiceMetadata waits for the service metadata file and
 // gets ctr server address from it.
-func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Context) (string, error) {
+func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Context) (_ string, err error) {
 	if ctr.CtrTempDirLoc == "" {
 		return "", fmt.Errorf("Cannot retrieve ctr server address with empty temp dir.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Retrieve service metadata"))
 	defer func() { step.End(err) }()
 
@@ -126,8 +124,7 @@ func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Conte
 // ConnectToCTRServer connects to the CTR server in provided server address.
 func (ctr *CrosToolRunner) ConnectToCTRServer(
 	ctx context.Context,
-	serverAddress string) (testapi.CrosToolRunnerContainerServiceClient, error) {
-	var err error
+	serverAddress string) (_ testapi.CrosToolRunnerContainerServiceClient, err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Connect to cros-tool-runner server"))
 	defer func() { step.End(err) }()
 
@@ -202,12 +199,11 @@ func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 // StartContainer starts a non-templated container using ctr client.
 func (ctr *CrosToolRunner) StartContainer(
 	ctx context.Context,
-	startContainerReq *testapi.StartContainerRequest) (*testapi.StartContainerResponse, error) {
+	startContainerReq *testapi.StartContainerRequest) (_ *testapi.StartContainerResponse, err error) {
 	if startContainerReq == nil {
 		return nil, fmt.Errorf("start container request cannot be nil for start container command.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start container %s", startContainerReq.Name))
 	defer func() { step.End(err) }()
 
@@ -232,13 +228,12 @@ func (ctr *CrosToolRunner) StartContainer(
 // StartContainer starts a templated container using ctr client.
 func (ctr *CrosToolRunner) StartTemplatedContainer(
 	ctx context.Context,
-	startContainerReq *testapi.StartTemplatedContainerRequest) (*testapi.StartContainerResponse, error) {
+	startContainerReq *testapi.StartTemplatedContainerRequest) (_ *testapi.StartContainerResponse, err error) {
 
 	if startContainerReq == nil {
 		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start templated container %s", startContainerReq.Name))
 	defer func() { step.End(err) }()
 
@@ -260,12 +255,11 @@ func (ctr *CrosToolRunner) StartTemplatedContainer(
 }
 
 // StopContainer stops the container with provided name.
-func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName string) error {
+func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName string) (err error) {
 	if containerName == "" {
 		return fmt.Errorf("Cannot stop container with empty container name.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Stop container %s", containerName))
 	defer func() { step.End(err) }()
 
@@ -282,7 +276,9 @@ func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName stri
 }
 
 // CreateNetwork creates a bridge network with the provided name.
-func (ctr *CrosToolRunner) CreateNetwork(ctx context.Context, networkName string) (*testapi.CreateNetworkResponse, error) {
+func (ctr *CrosToolRunner) CreateNetwork(
+	ctx context.Context,
+	networkName string) (_ *testapi.CreateNetworkResponse, err error) {
 	if networkName == "" {
 		return nil, fmt.Errorf("Cannot create network with empty network name.")
 	}
@@ -290,7 +286,6 @@ func (ctr *CrosToolRunner) CreateNetwork(ctx context.Context, networkName string
 		return nil, fmt.Errorf("Cannot overwrite default host network.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Create network %s", networkName))
 	defer func() { step.End(err) }()
 
@@ -312,7 +307,9 @@ func (ctr *CrosToolRunner) CreateNetwork(ctx context.Context, networkName string
 }
 
 // GetNetwork provides the network ID of the provided name if it exists.
-func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (*testapi.GetNetworkResponse, error) {
+func (ctr *CrosToolRunner) GetNetwork(
+	ctx context.Context,
+	networkName string) (_ *testapi.GetNetworkResponse, err error) {
 	if networkName == "" {
 		return nil, fmt.Errorf("Cannot get network with empty network name.")
 	}
@@ -320,7 +317,6 @@ func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (
 		return nil, fmt.Errorf("Cannot fetch default host network. Known to exist.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Get network %s", networkName))
 	defer func() {
 		if err != nil {
@@ -349,13 +345,12 @@ func (ctr *CrosToolRunner) GetNetwork(ctx context.Context, networkName string) (
 // GetContainer gets the container with provided name.
 func (ctr *CrosToolRunner) GetContainer(
 	ctx context.Context,
-	containerName string) (*testapi.GetContainerResponse, error) {
+	containerName string) (_ *testapi.GetContainerResponse, err error) {
 
 	if containerName == "" {
 		return nil, fmt.Errorf("Cannot execute get container with empty container name.")
 	}
 
-	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Get container %s", containerName))
 	defer func() { step.End(err) }()
 
@@ -397,7 +392,7 @@ func (ctr *CrosToolRunner) GetContainer(
 func (ctr *CrosToolRunner) GcloudAuth(
 	ctx context.Context,
 	dockerFileLocation string,
-	useDockerKeyDirectly bool) (*testapi.LoginRegistryResponse, error) {
+	useDockerKeyDirectly bool) (_ *testapi.LoginRegistryResponse, err error) {
 	username := Oauth2Username
 	password := Oauth2Password
 	if useDockerKeyDirectly {
@@ -405,7 +400,6 @@ func (ctr *CrosToolRunner) GcloudAuth(
 		password = dockerFileLocation
 	}
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", username))
-	var err error
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
