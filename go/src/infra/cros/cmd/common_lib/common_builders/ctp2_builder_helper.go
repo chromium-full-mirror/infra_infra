@@ -267,7 +267,7 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
 		RunDynamic: v1.GetParams().GetTranslateTrv2Request(),
-		IsAlRun:    getIsALRun(v1),
+		IsAlRun:    getIsALRun(v1, buildState),
 	}
 }
 
@@ -592,10 +592,25 @@ func getTag(tags []string, targetTag string) string {
 	return ""
 }
 
-func getIsALRun(v1 *test_platform.Request) bool {
+func getIsALRun(v1 *test_platform.Request, buildState *build.State) bool {
+	alPrefix := "al."
+	// Check suite name
 	suites := v1.GetTestPlan().GetSuite()
-	if len(suites) > 0 && strings.HasPrefix(strings.ToLower(suites[0].GetName()), "al.") {
+	if len(suites) > 0 && strings.HasPrefix(strings.ToLower(suites[0].GetName()), alPrefix) {
 		return true
 	}
+
+	// Check suite scheduler config name
+	build := buildState.Build()
+	if build != nil {
+		for _, tag := range build.GetTags() {
+			if tag.GetKey() == "suite-scheduler-config" {
+				if strings.HasPrefix(strings.ToLower(tag.GetValue()), alPrefix) {
+					return true
+				}
+			}
+		}
+	}
+
 	return false
 }

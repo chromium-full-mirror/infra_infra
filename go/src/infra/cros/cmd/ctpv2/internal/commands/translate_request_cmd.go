@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gogo/protobuf/jsonpb"
@@ -387,6 +388,10 @@ func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
 
 	// append any kind of direct metadata provided in suite req
 	args.Args = append(args.Args, req.GetSuiteRequest().GetTestSuite().GetExecutionMetadata().GetArgs()...)
+
+	// append is_al_run to execution metadata so that filters can have access to this info
+	// NOTE: test_runner doesn't read this and expects upstream(CTP) to set separete flag in the request directly
+	args.Args = append(args.Args, &testapi.Arg{Flag: "is_al_run", Value: strconv.FormatBool(req.IsAlRun)})
 
 	return args
 }
