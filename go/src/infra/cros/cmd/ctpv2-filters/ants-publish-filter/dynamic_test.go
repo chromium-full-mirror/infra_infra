@@ -16,27 +16,49 @@ import (
 )
 
 func TestSkipTFUpload(t *testing.T) {
-	req := &api.InternalTestplan{
-		SuiteInfo: &api.SuiteInfo{
-			SuiteMetadata: &api.SuiteMetadata{
-				ExecutionMetadata: &api.ExecutionMetadata{
-					Args: []*api.Arg{{Flag: "ants_invocation_id", Value: "test"}},
-				},
-			},
+	testCases := []struct {
+		name  string
+		alRun bool
+	}{
+		{
+			name:  "alRun",
+			alRun: true,
+		},
+		{
+			name: "non-AL",
 		},
 	}
-	log := log.New(os.Stdout, "test", 1)
 
-	skipTFUpload(req, log)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := &api.InternalTestplan{
+				SuiteInfo: &api.SuiteInfo{
+					SuiteMetadata: &api.SuiteMetadata{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{{Flag: "ants_invocation_id", Value: "test"}},
+						},
+					},
+				},
+			}
+			log := log.New(os.Stdout, "test", 1)
+			skipTFUpload(req, tc.alRun, log)
 
-	gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
-	if len(gotArgs) != 2 {
-		t.Errorf("Unexpected number of args: got %d want 2", len(gotArgs))
-	}
+			wantArgs := 1
+			if tc.alRun {
+				wantArgs = 2
+			}
+			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+			if len(gotArgs) != wantArgs {
+				t.Errorf("Unexpected number of args: got %d want %d", len(gotArgs), wantArgs)
+			}
 
-	wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
-	if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
-		t.Errorf("Unexpected diff: %s", diff)
+			if tc.alRun {
+				wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
+				if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
+					t.Errorf("Unexpected diff: %s", diff)
+				}
+			}
+		})
 	}
 }
 
@@ -80,7 +102,7 @@ func TestGeneratePublishTask(t *testing.T) {
 		name   string
 		du     []*api.UserDefinedDynamicUpdate
 		wantDu int
-		addInv bool
+		alRun  bool
 	}{
 		{
 			name: "existingDU",
@@ -88,31 +110,31 @@ func TestGeneratePublishTask(t *testing.T) {
 				{UpdateAction: &api.UpdateAction{Action: &api.UpdateAction_Insert_{}}},
 			},
 			wantDu: 2,
-			addInv: true,
+			alRun:  true,
 		},
 		{
 			name:   "missingDU",
 			wantDu: 1,
-			addInv: true,
+			alRun:  true,
 		},
 		{
-			name:   "missingInv",
+			name:   "nonAL",
 			wantDu: 0,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var invArg *api.Arg
-			if tc.addInv {
-				invArg = &api.Arg{Flag: InvocationIDKey, Value: "I123"}
+			var alRunArg *api.Arg
+			if tc.alRun {
+				alRunArg = &api.Arg{Flag: alRunKey, Value: "true"}
 			}
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
 						DynamicUpdates: tc.du,
 						ExecutionMetadata: &api.ExecutionMetadata{
-							Args: []*api.Arg{invArg},
+							Args: []*api.Arg{alRunArg},
 						},
 					},
 				},
@@ -137,13 +159,13 @@ func TestSkipAntsPublish(t *testing.T) {
 	testCases := []struct {
 		name     string
 		metadata *metadata.PublishAntsMetadata
-		invID    string
+		alRun    bool
 		wantSkip bool
 	}{
 		{
 			name:     "missingAccountID",
 			metadata: &metadata.PublishAntsMetadata{},
-			invID:    "I123",
+			alRun:    true,
 			wantSkip: false,
 		},
 		{
@@ -151,7 +173,7 @@ func TestSkipAntsPublish(t *testing.T) {
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "2",
 			},
-			invID:    "I123",
+			alRun:    true,
 			wantSkip: true,
 		},
 		{
@@ -166,7 +188,7 @@ func TestSkipAntsPublish(t *testing.T) {
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "1",
 			},
-			invID: "I123",
+			alRun: true,
 		},
 	}
 
@@ -174,7 +196,7 @@ func TestSkipAntsPublish(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotSkip := skipAntsPublish(tc.metadata, tc.invID, log)
+			gotSkip := skipAntsPublish(tc.metadata, tc.alRun, log)
 
 			if gotSkip != tc.wantSkip {
 				t.Errorf("Unexpected error: got %v want %v", gotSkip, tc.wantSkip)
