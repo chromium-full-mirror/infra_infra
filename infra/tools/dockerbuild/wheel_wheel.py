@@ -284,6 +284,7 @@ class UniversalSource(Builder):
                patches=(),
                patch_base=None,
                patch_version=None,
+               default=True,
                **kwargs):
     """Universal wheel version of SourceOrPrebuilt that always builds from
     source.
@@ -328,7 +329,7 @@ class UniversalSource(Builder):
             self._pypi_src.version,
             universal=True,
             pyversions=pyversions,
-            default=True,
+            default=default,
             version_suffix=version_suffix,
         ), **kwargs)
 

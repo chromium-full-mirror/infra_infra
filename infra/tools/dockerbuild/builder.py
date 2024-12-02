@@ -128,7 +128,7 @@ class Builder(object):
           (spec.name, plat.name))
 
     if spec.universal:
-      pyversion = '38'
+      pyversion = '311'
     else:
       # e.g. cp311 -> 311
       pyversion = plat.wheel_abi[2:]

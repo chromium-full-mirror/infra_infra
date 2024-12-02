@@ -559,6 +559,7 @@ SPECS.update({
                 ],
                 local=[],
             ),
+            default=False, # source for c code unavailable
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -609,6 +610,7 @@ SPECS.update({
             ),
             packaged=[],
             pyversions=['py3'],
+            default=False, # incompatible with newer Cython
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -1883,7 +1885,7 @@ SPECS.update({
         UniversalSource('PyYAML', '5.3.1', pyversions=['py3']),
         UniversalSource('PyYAML', '6.0.1', pyversions=['py3']),
         UniversalSource('Pympler', '0.8'),
-        UniversalSource('absl-py', '0.7.1'),
+        UniversalSource('absl-py', '0.7.1', default=False), # https://github.com/abseil/abseil-py/issues/161
         UniversalSource('apache-beam', '2.0.0'),
         UniversalSource('backports.ssl_match_hostname', '3.5.0.1'),
         UniversalSource('beartype', '0.15.0', pyversions=['py3']),
@@ -1922,8 +1924,8 @@ SPECS.update({
         UniversalSource('grpc-google-iam-v1', '0.12.3', pyversions=['py3']),
         UniversalSource('grpc-google-iam-v1', '0.12.6', pyversions=['py3']),
         UniversalSource('grpc-google-iam-v1', '0.12.7'),
-        UniversalSource('gym', '0.18.0', pyversions=['py3']),
-        UniversalSource('gym', '0.19.0', pyversions=['py3']),
+        UniversalSource('gym', '0.18.0', pyversions=['py3'], default=False),
+        UniversalSource('gym', '0.19.0', pyversions=['py3'], default=False),
         UniversalSource('hjson', '3.1.0'),
         UniversalSource('httpagentparser', '1.9.3'),
         UniversalSource('httplib2', '0.10.3'),
@@ -1939,7 +1941,7 @@ SPECS.update({
         UniversalSource('jax', '0.4.13', pyversions=['py3']),
         UniversalSource('libcst', '0.3.19', pyversions=['py3']),
         UniversalSource('libusb1', '1.5.3'),
-        UniversalSource('libusb1', '1.7.1'),
+        UniversalSource('libusb1', '1.7.1', default=False),
         UniversalSource('license-expression', '30.1.1', pyversions=['py3']),
         UniversalSource('lit', '13.0.0', pyversions=['py3']),
         UniversalSource('mox', '0.5.3'),
@@ -1978,7 +1980,7 @@ SPECS.update({
         UniversalSource('requests-mock', '1.10.0', pyversions=['py3']),
         UniversalSource('requests-unixsocket', '0.1.5'),
         UniversalSource('retrying', '1.3.3'),
-        UniversalSource('selenium', '2.29.0'),
+        UniversalSource('selenium', '2.29.0', default=False),
         UniversalSource('spdx-tools', '0.7.1'),
         UniversalSource('spdx-tools', '0.8.0', pyversions=['py3']),
         UniversalSource('termcolor', '1.1.0'),
@@ -2173,7 +2175,7 @@ SPECS.update({
         Universal('google-cloud-appengine-logging', '1.1.1'),
         Universal('google-cloud-audit-log', '0.2.0'),
         Universal('google-cloud-bigquery', '0.28.0'),
-        Universal('google-cloud-bigquery', '2.7.0', pyversions=['py3']),
+        Universal('google-cloud-bigquery', '2.7.0', pyversions=['py3'], default=False),
         Universal('google-cloud-bigquery', '3.23.1', pyversions=['py3']),
         Universal('google-cloud-bigquery-storage', '2.16.2',
                   pyversions=['py3']),
