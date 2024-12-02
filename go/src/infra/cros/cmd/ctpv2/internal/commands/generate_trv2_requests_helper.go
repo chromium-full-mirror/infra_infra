@@ -1068,6 +1068,12 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 			secondaryModels = append(secondaryModels, secondary.model)
 		}
 	}
+	// add tag to represent if AL run
+	if trHelper.isAlRun {
+		tags = append(tags, common.OSType+":al")
+	} else {
+		tags = append(tags, common.OSType+":chromeos")
+	}
 
 	if len(secondaryBooards) > 0 {
 		tags = append(tags, "secondary_boards:"+strings.Join(secondaryBooards, ","))

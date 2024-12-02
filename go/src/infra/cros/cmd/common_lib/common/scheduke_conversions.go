@@ -28,6 +28,7 @@ const (
 	deviceNameDimensionKey = "dut_name"
 	poolDimensionKey       = "label-pool"
 	quotaAccountTagKey     = "qs_account"
+	OSType                 = "os_type"
 	// SchedukeTaskRequestKey is the key all Scheduke tasks are launched with.
 	// Scheduke supports batch task creation, but we send individually for now, so
 	// we use this key.
@@ -164,6 +165,23 @@ func trQSAccount(tags []*buildbucketpb.StringPair) string {
 		}
 	}
 	return ""
+}
+
+// trOSType returns corresponding enum int value to scheduke os type enum.
+// This information is used by the scheduler to prioritize scheduling devices with
+// the same OS.
+func trOSType(tags []*buildbucketpb.StringPair) schedukepb.OsType {
+	for _, t := range tags {
+		if t.GetKey() == OSType {
+			switch t.GetKey() {
+			case "al":
+				return schedukepb.OsType_ANDROID
+			default:
+				return schedukepb.OsType_CHROMEOS
+			}
+		}
+	}
+	return schedukepb.OsType_CHROMEOS
 }
 
 // trBuildIsPeriodic checks if the given build is trBuildIsPeriodic by seeing if

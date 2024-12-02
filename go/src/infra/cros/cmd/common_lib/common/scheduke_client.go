@@ -309,6 +309,7 @@ func (s *SchedukeClient) TestRunnerBBReqToSchedukeReq(bbReq *buildbucketpb.Sched
 		ScheduleBuildRequestJson: compressedReqJSON,
 		DeviceName:               deviceName,
 		Experiments:              experiments,
+		OsType:                   trOSType(tags),
 	}
 
 	return &schedukeapi.KeyedTaskRequestEvents{
