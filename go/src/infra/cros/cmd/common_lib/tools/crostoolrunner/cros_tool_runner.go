@@ -64,7 +64,7 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 	// Start the server preserving provided environment vars.
 	writer := step.Log("CTR Stdout")
 	logging.Infof(ctx, "Starting CTR server...")
-	cmd := ctr.sudoCommand(ctx, ctr.EnvVarsToPreserve, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
+	cmd := ctr.runCommand(ctx, ctr.EnvVarsToPreserve, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
 	err = common.RunCommandWithCustomWriter(ctx, cmd, "ctr-start", writer)
 	if err != nil {
 		if strings.Contains(err.Error(), common.CtrCancelingCmdErrString) {
@@ -270,7 +270,7 @@ func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName stri
 	defer func() { step.End(err) }()
 
 	// Stop container
-	cmd := ctr.sudoCommand(ctx, nil, "docker", "stop", containerName)
+	cmd := ctr.runCommand(ctx, nil, "docker", "stop", containerName)
 	common.LogExecutionDetails(ctx, step, cmd.Args)
 	_, _, err = common.RunCommand(ctx, cmd, "docker-stop-container", nil, false)
 	if err != nil {
@@ -440,7 +440,7 @@ func (ctr *CrosToolRunner) GcloudAuth(
 	return resp, nil
 }
 
-func (ctr *CrosToolRunner) sudoCommand(ctx context.Context, envVarsToPreserve []string, cmd string, args ...string) *exec.Cmd {
+func (ctr *CrosToolRunner) runCommand(ctx context.Context, envVarsToPreserve []string, cmd string, args ...string) *exec.Cmd {
 	if ctr.NoSudo {
 		return exec.CommandContext(ctx, cmd, args...)
 	}
