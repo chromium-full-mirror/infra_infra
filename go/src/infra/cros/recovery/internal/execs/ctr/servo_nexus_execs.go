@@ -51,9 +51,8 @@ func startServoNexusContainerExec(ctx context.Context, info *execs.ExecInfo) err
 		Template: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
-					BinaryName: "cros-servod",
+					BinaryName: "servo-nexus",
 					BinaryArgs: []string{
-						"server",
 						"-server_port",
 						"0",
 					},

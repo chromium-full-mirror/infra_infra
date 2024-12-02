@@ -851,8 +851,8 @@ func BuildServoNexusContainerRequest(deviceId *common.DeviceIdentifier) *api.Con
 		Container: &api.Template{
 			Container: &api.Template_Generic{
 				Generic: &api.GenericTemplate{
-					BinaryName:        "cros-servod",
-					BinaryArgs:        []string{"server", "-server_port", "0"},
+					BinaryName:        "servo-nexus",
+					BinaryArgs:        []string{"-server_port", "0"},
 					DockerArtifactDir: "/tmp/servod",
 					AdditionalVolumes: []string{"/creds:/creds"},
 				},
