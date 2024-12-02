@@ -2,7 +2,7 @@ module infra
 
 go 1.22.7
 
-toolchain go1.22.9
+toolchain go1.23.3
 
 require (
 	cloud.google.com/go v0.115.1
