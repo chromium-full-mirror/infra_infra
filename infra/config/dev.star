@@ -490,6 +490,7 @@ luci.realm(
         luci.binding(
             roles = "role/swarming.poolUser",
             groups = "project-infra-tests-submitters",
+            projects = "cq-test",
         ),
     ],
 )
