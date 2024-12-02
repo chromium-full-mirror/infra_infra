@@ -261,8 +261,8 @@ func (c *serviceInfoImpl) start(ctx context.Context) error {
 			CtrTempDirLoc:  c.metadataDir,
 		},
 		EnvVarsToPreserve: common.DockerEnvVarsToPreserve(),
-		// No sudo as some command configured without sudo.
-		NoSudo: true,
+		// Do not use sudo when run on localhost.
+		NoSudo: dev.IsActive(ctx),
 	}
 	if err := ctr.StartCTRServerAsync(ctx); err != nil {
 		return errors.Annotate(err, "start CTR").Err()
