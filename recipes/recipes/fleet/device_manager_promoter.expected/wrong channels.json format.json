@@ -1,0 +1,176 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::bot_update]/resources/bot_update.py",
+      "--spec-path",
+      "cache_dir = '[CACHE]/git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': True, 'name': 'infra-data-cloud-run', 'url': 'https://chrome-internal.googlesource.com/infradata/cloud-run.git'}]",
+      "--revision_mapping_file",
+      "{\"got_revision\": \"infra-data-cloud-run\"}",
+      "--git-cache-dir",
+      "[CACHE]/git",
+      "--cleanup-dir",
+      "[CLEANUP]/bot_update",
+      "--output_json",
+      "/path/to/tmp/json",
+      "--revision",
+      "infra-data-cloud-run@HEAD"
+    ],
+    "env": {
+      "DEPOT_TOOLS_COLLECT_METRICS": "0",
+      "GIT_BACKENDINFO": "1",
+      "GIT_DAPPER_TRACE": "1",
+      "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
+      "GIT_HTTP_LOW_SPEED_TIME": "1800",
+      "GIT_SSH_COMMAND": "ssh -o SendEnv=GIT_DAPPER_TRACE -o SendEnv=GIT_BACKENDINFO",
+      "GIT_TRACE2_EVENT": "[CLEANUP]/trace2-event",
+      "GIT_TRACE_CURL": "[CLEANUP]/trace-curl",
+      "GIT_TRACE_CURL_NO_DATA": "1",
+      "GIT_TRACE_PACKET": "[CLEANUP]/trace-packet"
+    },
+    "env_suffixes": {
+      "DEPOT_TOOLS_UPDATE": [
+        "0"
+      ],
+      "PATH": [
+        "RECIPE_REPO[depot_tools]"
+      ]
+    },
+    "infra_step": true,
+    "name": "bot_update",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Some step text@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"did_run\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"fixed_revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"infra-data-cloud-run\": \"HEAD\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"infra-data-cloud-run\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"repository\": \"https://fake.org/infra-data-cloud-run.git\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"cf63414dcbbbfd0ac7c0e49397d42bf48e4cb3ef\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"patch_root\": null,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"properties\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_revision\": \"cf63414dcbbbfd0ac7c0e49397d42bf48e4cb3ef\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"got_revision_cp\": \"refs/heads/main@{#288493}\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"root\": \"infra-data-cloud-run\",@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"source_manifest\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"directories\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"infra-data-cloud-run\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"git_checkout\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"repo_url\": \"https://fake.org/infra-data-cloud-run.git\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"cf63414dcbbbfd0ac7c0e49397d42bf48e4cb3ef\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"version\": 0@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"step_text\": \"Some step text\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision@\"cf63414dcbbbfd0ac7c0e49397d42bf48e4cb3ef\"@@@",
+      "@@@SET_BUILD_PROPERTY@got_revision_cp@\"refs/heads/main@{#288493}\"@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/packages",
+      "-ensure-file",
+      "infra/tools/luci/lucicfg/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "infra_step": true,
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/lucicfg/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "create local branch"
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-D",
+      "fleet_device_manager_promoter"
+    ],
+    "cwd": "[START_DIR]/infra-data-cloud-run",
+    "infra_step": true,
+    "name": "create local branch.git branch",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-t",
+      "origin/main",
+      "-b",
+      "fleet_device_manager_promoter"
+    ],
+    "cwd": "[START_DIR]/infra-data-cloud-run",
+    "infra_step": true,
+    "name": "create local branch.git checkout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "check/update channels json",
+    "~followup_annotations": [
+      "@@@STEP_FAILURE@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[START_DIR]/infra-data-cloud-run/projects/device-manager/device-lease-service/channels.json",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[START_DIR]/infra-data-cloud-run",
+    "infra_step": true,
+    "name": "check/update channels json.read channels json for service device-lease-service",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@channels.json@{}@@@",
+      "@@@STEP_LOG_END@channels.json@@@"
+    ]
+  },
+  {
+    "failure": {
+      "failure": {},
+      "humanReason": "wrong channels.json format of service device-lease-service: {}"
+    },
+    "name": "$result"
+  }
+]

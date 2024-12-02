@@ -41,6 +41,7 @@
   * [depot_tools_builder](#recipes-depot_tools_builder) &mdash; Recipe to build windows depot_tools bootstrap zipfile.
   * [docker:examples/full](#recipes-docker_examples_full)
   * [docker_image_builder](#recipes-docker_image_builder)
+  * [fleet/device_manager_promoter](#recipes-fleet_device_manager_promoter) &mdash; Promote the fleet Device Manager to canary/prod.
   * [fleet_systems/dhcp](#recipes-fleet_systems_dhcp) &mdash; Test chrome-golo repo DHCP configs using dhcpd binaries via docker.
   * [gae_tarball_uploader](#recipes-gae_tarball_uploader)
   * [gcs_dep_autoroller](#recipes-gcs_dep_autoroller)
@@ -1649,6 +1650,23 @@ Recipe to build windows depot_tools bootstrap zipfile.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/docker_image_builder.py#36)(api, arch_type):**
+### *recipes* / [fleet/device\_manager\_promoter](/recipes/recipes/fleet/device_manager_promoter.py)
+
+[DEPS](/recipes/recipes/fleet/device_manager_promoter.py#14): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+
+
+Promote the fleet Device Manager to canary/prod.
+
+The recipe parse the channel.json to update the canary/prod docker image to the
+same version w/ the staging.
+
+&mdash; **def [RunSteps](/recipes/recipes/fleet/device_manager_promoter.py#86)(api):**
+
+&mdash; **def [gen\_channels\_json](/recipes/recipes/fleet/device_manager_promoter.py#32)(service: str, staging='v1', canary='v1', stable='v1'):**
+
+&mdash; **def [get\_image\_name](/recipes/recipes/fleet/device_manager_promoter.py#28)(service: str):**
+
+&mdash; **def [try\_update\_service](/recipes/recipes/fleet/device_manager_promoter.py#47)(api, service: str):**
 ### *recipes* / [fleet\_systems/dhcp](/recipes/recipes/fleet_systems/dhcp.py)
 
 [DEPS](/recipes/recipes/fleet_systems/dhcp.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [docker](#recipe_modules-docker), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
