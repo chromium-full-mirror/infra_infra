@@ -202,11 +202,6 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	log.Printf("Update parent workunit properties.")
-	if err := aps.uploadParentWorkUnitProperties(); err != nil {
-		return err
-	}
-
 	if len(aps.results) == 0 {
 		log.Println("no given test results to upload. Skipping results upload")
 		return nil
@@ -264,31 +259,6 @@ func (aps *AntsPublishService) dutProperties() ([]*atp.Property, error) {
 	}
 
 	return props, nil
-}
-
-func (aps *AntsPublishService) workunitProperties() ([]*atp.Property, error) {
-	props, err := aps.dutProperties()
-	if err != nil {
-		return nil, err
-	}
-
-	return props, nil
-}
-
-func (aps *AntsPublishService) uploadParentWorkUnitProperties() error {
-	pwu, err := aps.service.WorkUnitService.Get(aps.metadata.ParentWorkUnitId)
-	if err != nil {
-		return err
-	}
-
-	props, err := aps.workunitProperties()
-	if err != nil {
-		return err
-	}
-
-	pwu.Properties = append(pwu.Properties, props...)
-	_, err = aps.service.WorkUnitService.Update(pwu.Id, pwu)
-	return err
 }
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {

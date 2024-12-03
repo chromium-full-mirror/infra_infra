@@ -212,11 +212,10 @@ func TestArtifactType(t *testing.T) {
 		})
 	}
 }
-func TestWorkUnitProperties(t *testing.T) {
+func TestDutProperties(t *testing.T) {
 	testCases := []struct {
 		name      string
 		dut       *labapi.Dut
-		luciInvID string
 		wantProps []*atp.Property
 	}{
 		{
@@ -258,17 +257,14 @@ func TestWorkUnitProperties(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			aps := &AntsPublishService{
 				metadata: &metadata.PublishAntsMetadata{
-					AntsInvocationId: "I123",
-					ParentWorkUnitId: "WU1",
-					LuciInvocationId: tc.luciInvID,
 					PrimaryExecutionInfo: &artifact.ExecutionInfo{
 						DutInfo: &artifact.DutInfo{Dut: tc.dut},
 					},
 				},
 			}
-			got, err := aps.workunitProperties()
+			got, err := aps.dutProperties()
 			if err != nil {
-				t.Errorf("error calling invocation properties: %q", err)
+				t.Errorf("error calling dut properties: %q", err)
 			}
 			if diff := cmp.Diff(tc.wantProps, got, protocmp.Transform()); diff != "" {
 				t.Errorf("Unexpected diff: diff: %s", diff)
