@@ -7,7 +7,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
 import time
 
 import ezt
@@ -19,7 +18,6 @@ from framework import permissions
 from framework import servlet
 from framework import timestr
 from framework import urls
-from gae_ts_mon import flask_handlers
 from tracker import component_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants

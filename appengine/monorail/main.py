@@ -22,7 +22,7 @@ import import_utils
 
 import_utils.FixImports()
 
-import gae_ts_mon
+# import gae_ts_mon
 
 import registerpages
 from framework import sorting
@@ -54,4 +54,4 @@ registerpages.ServletRegistry().Register(services, app)
 # registerpages.RegisterEndpointsUrls(app)
 registerpages.RegisterTeardown(app)
 
-gae_ts_mon.initialize_prod(app)
+# gae_ts_mon.initialize_prod(app)
