@@ -1,4 +1,4 @@
-runtime: go122
+runtime: go123
 app_engine_apis: true
 instance_class: F4
 service: default
