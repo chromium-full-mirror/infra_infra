@@ -107,7 +107,7 @@ func (s Starter) Start(c Config) (b Bot, err error) {
 			_ = f.Close()
 		}
 	}()
-	cmd := exec.Command("python3.8", c.botZipPath(), "start_bot")
+	cmd := exec.Command(c.PythonVersion, c.botZipPath(), "start_bot")
 	cmd.Stdout = f
 	cmd.Stderr = f
 	cmd.Env = append(c.env(), os.Environ()...)
@@ -168,7 +168,8 @@ type Config struct {
 	// of the drain file.
 	WorkDirectory string
 	// The Linux compute resources (CPU, RAM, I/O, etc.) assigned to this bot.
-	Resources *specs.LinuxResources
+	Resources     *specs.LinuxResources
+	PythonVersion string
 }
 
 func (c Config) drainFilePath() string {

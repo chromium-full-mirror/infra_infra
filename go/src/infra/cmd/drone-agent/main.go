@@ -48,8 +48,7 @@ const (
 // Derived from standard environment variables.
 // Don't add new settings as environment variables; use the config file.
 var (
-	workingDirPath = filepath.Join(os.Getenv("HOME"), "skylab_bots")
-	authOptions    = auth.Options{
+	authOptions = auth.Options{
 		Method:                 auth.ServiceAccountMethod,
 		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
 	}
@@ -148,7 +147,7 @@ func innerMain() error {
 	version := readVersionFile(*versionFilePath)
 	log.Printf("drone-agent-version from file: %v", version)
 
-	ctx, err, cf := setupContext(version)
+	ctx, cf, err := setupContext(version, cfg)
 	defer cf()
 	if err != nil {
 		return err
@@ -176,7 +175,7 @@ func innerMain() error {
 
 	if cfg.EnableMegadrone {
 		a := megadrone.Agent{
-			WorkingDir:   workingDirPath,
+			WorkingDir:   cfg.WorkingDirPath,
 			StartBotFunc: bot.NewStarter(h, cfg.SwarmingURL).Start,
 			BotPrefix:    megadronePrefix(cfg, hostname),
 			NumBots:      cfg.NumBots,
@@ -188,13 +187,14 @@ func innerMain() error {
 				C:    h,
 				Host: cfg.QueenService,
 			}),
-			WorkingDir:        workingDirPath,
+			WorkingDir:        cfg.WorkingDirPath,
 			ReportingInterval: cfg.ReportingInterval(),
 			DUTCapacity:       cfg.DUTCapacity,
 			StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
 			Hive:              cfg.Hive,
 			BotPrefix:         cfg.BotPrefix,
 			BotResources:      makeBotResources(cfg),
+			PythonVersion:     cfg.PythonVersion,
 		}
 		a.Run(ctx)
 	}
@@ -204,7 +204,7 @@ func innerMain() error {
 // setupContext sets up global context for main.
 //
 // The caller must defer/call the cleanup even if an error is returned.
-func setupContext(version string) (_ context.Context, _ error, cleanup func()) {
+func setupContext(version string, cfg *config) (_ context.Context, cleanup func(), _ error) {
 	var ds deferStack
 
 	// Set up top level context and cancellation.
@@ -212,13 +212,13 @@ func setupContext(version string) (_ context.Context, _ error, cleanup func()) {
 	ds.add(cancel)
 	ctx, cancel = notifySIGTERM(ctx)
 	ds.add(cancel)
-	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
-	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
-		return ctx, err, ds.run
+	ctx = notifyDraining(ctx, filepath.Join(cfg.WorkingDirPath, drainingFile))
+	if err := os.MkdirAll(cfg.WorkingDirPath, 0777); err != nil {
+		return ctx, ds.run, err
 	}
 
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
-	return ctx, nil, ds.run
+	return ctx, ds.run, nil
 }
 
 func setupTracing(version string) (_ *sdktrace.TracerProvider, cleanup func()) {

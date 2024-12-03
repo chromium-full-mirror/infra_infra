@@ -7,6 +7,7 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -38,6 +39,12 @@ type config struct {
 	// BotPrefix is used as the prefix for the bot ID.
 	// Default value is 'crossk-'
 	BotPrefix string
+	// PythonVersion is the python version to invoke swarming bot.
+	// Default value is 'python3.8'
+	PythonVersion string `yaml:"pythonVersion"`
+	// WorkingDirPath is the path where tests are run on.
+	// Default value is $HOME/skylab_bots
+	WorkingDirPath string `yaml:"workingDirPath"`
 
 	// Block IO throttle settings. 0 means no throttling. Only /dev/sda (device
 	// number 8:0) is supported.
@@ -73,6 +80,8 @@ func parseConfigFile(path string) *config {
 		ReportingIntervalMins: 1,
 		BotPrefix:             "crossk-",
 		NumBots:               1,
+		PythonVersion:         "python3.8",
+		WorkingDirPath:        filepath.Join(os.Getenv("HOME"), "skylab_bots"),
 	}
 	addBackwardCompatConfig(&cfg)
 	if path == "" {

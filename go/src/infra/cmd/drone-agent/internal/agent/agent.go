@@ -55,6 +55,8 @@ type Agent struct {
 	// used for instrumenting the state for testing.  If nil, this
 	// is a no-op.
 	wrapStateFunc func(*state.State) stateInterface
+	// Python version used for swarming bot
+	PythonVersion string
 }
 
 // logger defines the logging interface used by Agent.
@@ -323,6 +325,7 @@ func (a *Agent) botConfig(botID string, workDir string) bot.Config {
 		BotID:         a.BotPrefix + botID,
 		WorkDirectory: workDir,
 		Resources:     a.BotResources,
+		PythonVersion: a.PythonVersion,
 	}
 }
 
