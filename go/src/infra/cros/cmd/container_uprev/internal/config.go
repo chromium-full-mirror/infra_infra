@@ -231,7 +231,7 @@ func GetConfigs() []*UprevConfig {
 		{
 			Name: "servo-nexus",
 			CIPDPackages: []*CIPDPackage{
-				NewCIPDPackage("chromiumos/infra/cft/dut/servo-nexus/${platform}"),
+				NewCIPDPackage("chromiumos/infra/cft/dut/cros-servod/${platform}"),
 			},
 			Repositories: []*Repository{
 				DefaultRepository,

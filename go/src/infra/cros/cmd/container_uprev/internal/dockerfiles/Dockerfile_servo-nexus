@@ -3,4 +3,4 @@
 # found in the LICENSE file.
 
 FROM us-docker.pkg.dev/chromeos-hw-tools/servod/servod:release
-COPY servo-nexus /usr/bin/
+COPY cros-servod /usr/bin/
