@@ -49,13 +49,7 @@ func isInternal(accountID string, log *log.Logger) bool {
 	return id == internalAccountID
 }
 
-func skipAntsPublish(metadata *metadata.PublishAntsMetadata, alRun bool, log *log.Logger) bool {
-	if !alRun {
-		// Skip calling ants-publish for non-AL runs.
-		log.Print("Non-AL run found.")
-		return true
-	}
-
+func skipAntsPublish(metadata *metadata.PublishAntsMetadata, log *log.Logger) bool {
 	if !isInternal(metadata.GetAccountId(), log) {
 		// Skip calling ants-publish for external partners.
 		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
@@ -65,15 +59,11 @@ func skipAntsPublish(metadata *metadata.PublishAntsMetadata, alRun bool, log *lo
 	return false
 }
 
-func skipTFUpload(req *api.InternalTestplan, alRun bool, log *log.Logger) {
-	if alRun {
-		log.Printf("Got AL run, setting skip tradefed upload flag")
-		em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
-		args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
-		req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
-	} else {
-		log.Printf("Not an AL run. Not skipping TF upload.")
-	}
+func skipTFUpload(req *api.InternalTestplan, log *log.Logger) {
+	log.Printf("Got AL run, setting skip tradefed upload flag")
+	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+	args := append(em.GetArgs(), &api.Arg{Flag: skipTFUploadFlag, Value: "true"})
+	req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().Args = args
 }
 
 func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAntsMetadata, publishPath string, log *log.Logger) error {
@@ -88,14 +78,16 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 		}
 	}
 
-	if skipAntsPublish(metadata, alRun, log) {
-		log.Printf("Skipping ants-publish task.")
+	if alRun {
+		log.Printf("AL run. Skipping Ants upload through Tf plugin.")
+		skipTFUpload(req, log)
+	} else {
+		log.Printf("Non-AL run found. Skipping ants-publish task.")
+		skipAntsPublish(metadata, log)
+
+		// Since this is non-AL run, return without doing anything.
 		return nil
 	}
-
-	// Skip uploading to Ants using TF plugin.
-	log.Printf("Skipping Ants upload through Tf plugin.")
-	skipTFUpload(req, alRun, log)
 
 	antsContainerBuilder := builders.NewContainerBuilder(
 		containerID,  //  ContainerID

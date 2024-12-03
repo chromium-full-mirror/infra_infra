@@ -15,53 +15,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 )
 
-func TestSkipTFUpload(t *testing.T) {
-	testCases := []struct {
-		name  string
-		alRun bool
-	}{
-		{
-			name:  "alRun",
-			alRun: true,
-		},
-		{
-			name: "non-AL",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			req := &api.InternalTestplan{
-				SuiteInfo: &api.SuiteInfo{
-					SuiteMetadata: &api.SuiteMetadata{
-						ExecutionMetadata: &api.ExecutionMetadata{
-							Args: []*api.Arg{{Flag: "ants_invocation_id", Value: "test"}},
-						},
-					},
-				},
-			}
-			log := log.New(os.Stdout, "test", 1)
-			skipTFUpload(req, tc.alRun, log)
-
-			wantArgs := 1
-			if tc.alRun {
-				wantArgs = 2
-			}
-			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
-			if len(gotArgs) != wantArgs {
-				t.Errorf("Unexpected number of args: got %d want %d", len(gotArgs), wantArgs)
-			}
-
-			if tc.alRun {
-				wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
-				if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
-					t.Errorf("Unexpected diff: %s", diff)
-				}
-			}
-		})
-	}
-}
-
 func TestIsInternal(t *testing.T) {
 	testCases := []struct {
 		name      string
@@ -123,25 +76,24 @@ func TestGeneratePublishTask(t *testing.T) {
 		},
 	}
 
+	log := log.New(os.Stdout, "test", 1)
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			var alRunArg *api.Arg
+			var args []*api.Arg
 			if tc.alRun {
-				alRunArg = &api.Arg{Flag: alRunKey, Value: "true"}
+				args = []*api.Arg{{Flag: alRunKey, Value: "true"}}
 			}
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
 						DynamicUpdates: tc.du,
 						ExecutionMetadata: &api.ExecutionMetadata{
-							Args: []*api.Arg{alRunArg},
+							Args: args,
 						},
 					},
 				},
 			}
 			m := &metadata.PublishAntsMetadata{}
-			log := log.New(os.Stdout, "test", 1)
-
 			err := GeneratePublishTask(req, m, "path", log)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
@@ -151,6 +103,21 @@ func TestGeneratePublishTask(t *testing.T) {
 			if len(du) != tc.wantDu {
 				t.Errorf("Unexpected dynamic updates length. got %d want %d", len(du), tc.wantDu)
 			}
+
+			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+			if tc.alRun {
+				if len(gotArgs) != 2 {
+					t.Errorf("Unexpected execution metadata args len: got(%d), want(2)", len(gotArgs))
+				}
+				wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
+				if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
+					t.Errorf("Unexpected diff: %s", diff)
+				}
+			} else {
+				if len(gotArgs) != 0 {
+					t.Errorf("Unexpected execution metadata args len: got(%d), want(0)", len(gotArgs))
+				}
+			}
 		})
 	}
 }
@@ -159,27 +126,17 @@ func TestSkipAntsPublish(t *testing.T) {
 	testCases := []struct {
 		name     string
 		metadata *metadata.PublishAntsMetadata
-		alRun    bool
 		wantSkip bool
 	}{
 		{
 			name:     "missingAccountID",
 			metadata: &metadata.PublishAntsMetadata{},
-			alRun:    true,
 			wantSkip: false,
 		},
 		{
 			name: "externalPartner",
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "2",
-			},
-			alRun:    true,
-			wantSkip: true,
-		},
-		{
-			name: "missingInv",
-			metadata: &metadata.PublishAntsMetadata{
-				AccountId: "1",
 			},
 			wantSkip: true,
 		},
@@ -188,7 +145,6 @@ func TestSkipAntsPublish(t *testing.T) {
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "1",
 			},
-			alRun: true,
 		},
 	}
 
@@ -196,12 +152,11 @@ func TestSkipAntsPublish(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotSkip := skipAntsPublish(tc.metadata, tc.alRun, log)
+			gotSkip := skipAntsPublish(tc.metadata, log)
 
 			if gotSkip != tc.wantSkip {
 				t.Errorf("Unexpected error: got %v want %v", gotSkip, tc.wantSkip)
 			}
-
 		})
 	}
 }
