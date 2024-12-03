@@ -7,6 +7,7 @@ package ctr
 import (
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -211,13 +212,27 @@ func (c *serviceInfoImpl) GetContainer(ctx context.Context, name string) (BaseCo
 
 // StopContainer stops a container.
 func (c *serviceInfoImpl) StopContainer(ctx context.Context, name string) error {
-	if err := c.ctr.StopContainer(ctx, name); err != nil {
+	if name == "" {
+		log.Infof(ctx, "Container name is empty. Skipping!")
+		return nil
+	}
+	stopCmd := exec.CommandContext(ctx, "docker", "stop", name)
+	if _, _, err := common.RunCommand(ctx, stopCmd, "docker-stop-container", nil, false); err != nil {
 		return errors.Annotate(err, "stop container %q", name).Err()
 	}
 	// Clear the cache if it is listed there.
 	delete(c.containerCache, name)
 	log.Infof(ctx, "Container %q stopped!", name)
 	return nil
+}
+
+func (c *serviceInfoImpl) printContainers(ctx context.Context) {
+	printCmd := exec.CommandContext(ctx, "docker", "ps", "-a")
+	if out, _, err := common.RunCommand(ctx, printCmd, "docker-ps-a", nil, false); err != nil {
+		log.Infof(ctx, "Fail to print container lits: %s", err)
+	} else {
+		log.Infof(ctx, "Container lits:\n %s", out)
+	}
 }
 
 // CreateContainer creates a requested container.
@@ -244,6 +259,8 @@ func (c *serviceInfoImpl) CreateContainer(ctx context.Context, req *api.StartTem
 	}
 	res, err := c.ctr.StartTemplatedContainer(ctx, req)
 	if err != nil {
+		// Just print containers for future debugging.
+		c.printContainers(ctx)
 		return nil, errors.Annotate(err, "get container %q", container.name).Err()
 	}
 	c.containerCache[container.name] = container
