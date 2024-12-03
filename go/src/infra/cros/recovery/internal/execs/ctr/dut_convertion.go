@@ -30,7 +30,7 @@ func toLabDut(d *tlw.Dut, cacheAddr *api.IpEndpoint) *api.Dut {
 		chromeos.Servo.Serial = sh.GetSerialNumber()
 		chromeos.Servo.ServodAddress = &api.IpEndpoint{
 			Address: sh.GetName(),
-			Port:    22,
+			Port:    sh.GetServodPort(),
 		}
 		if n := sh.GetContainerName(); n != "" {
 			chromeos.Servo.ServodAddress.Address = n

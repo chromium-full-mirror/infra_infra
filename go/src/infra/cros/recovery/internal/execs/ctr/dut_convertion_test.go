@@ -92,6 +92,7 @@ func TestToLabDut(t *testing.T) {
 				Servo: &tlw.ServoHost{
 					Name:         "servo-host1",
 					SerialNumber: "servo-v4p1",
+					ServodPort:   9995,
 				},
 			},
 		}
@@ -115,7 +116,7 @@ func TestToLabDut(t *testing.T) {
 						Serial:  "servo-v4p1",
 						ServodAddress: &api.IpEndpoint{
 							Address: "servo-host1",
-							Port:    22,
+							Port:    9995,
 						},
 					},
 				},
@@ -138,6 +139,7 @@ func TestToLabDut(t *testing.T) {
 					Name:          "servo-host1",
 					SerialNumber:  "servo-v4p1",
 					ContainerName: "container1",
+					ServodPort:    9996,
 				},
 			},
 		}
@@ -161,7 +163,7 @@ func TestToLabDut(t *testing.T) {
 						Serial:  "servo-v4p1",
 						ServodAddress: &api.IpEndpoint{
 							Address: "container1",
-							Port:    22,
+							Port:    9996,
 						},
 					},
 				},
@@ -184,6 +186,7 @@ func TestToLabDut(t *testing.T) {
 					Name:          "servo-host1",
 					SerialNumber:  "servo-v4p1",
 					ContainerName: "container1",
+					ServodPort:    0,
 				},
 			},
 		}
@@ -211,7 +214,7 @@ func TestToLabDut(t *testing.T) {
 						Serial:  "servo-v4p1",
 						ServodAddress: &api.IpEndpoint{
 							Address: "container1",
-							Port:    22,
+							Port:    0,
 						},
 					},
 				},
