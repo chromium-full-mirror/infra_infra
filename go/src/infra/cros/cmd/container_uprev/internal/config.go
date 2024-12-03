@@ -254,16 +254,16 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/cft/provision/cros-fw-provision/${platform}"),
 			},
 		},
-		{
-			Name: "tradefed",
-			CIPDPackages: []*CIPDPackage{
-				NewCIPDPackage("chromiumos/infra/cft/execution/cros-test/${platform}"),
-			},
-			Repositories: []*Repository{
-				DefaultRepository,
-			},
-			Prepper: preppers.InternalTF,
-		},
+		// {
+		// 	Name: "tradefed",
+		// 	CIPDPackages: []*CIPDPackage{
+		// 		NewCIPDPackage("chromiumos/infra/cft/execution/cros-test/${platform}"),
+		// 	},
+		// 	Repositories: []*Repository{
+		// 		DefaultRepository,
+		// 	},
+		// 	Prepper: preppers.InternalTF,
+		// },
 	}
 
 	return CleanConfigs(configs)
