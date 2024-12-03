@@ -1624,12 +1624,12 @@ The protos are exported via a symlink in
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#18)(api):**
 ### *recipes* / [cv\_testing/tryjob](/recipes/recipes/cv_testing/tryjob.py)
 
-[DEPS](/recipes/recipes/cv_testing/tryjob.py#11): [recipe\_engine/cv][recipe_engine/recipe_modules/cv], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/cv_testing/tryjob.py#12): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cv][recipe_engine/recipe_modules/cv], [recipe\_engine/findings][recipe_engine/recipe_modules/findings], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
 Recipe to test LUCI CQ/CV itself.
 
-&mdash; **def [RunSteps](/recipes/recipes/cv_testing/tryjob.py#20)(api, properties):**
+&mdash; **def [RunSteps](/recipes/recipes/cv_testing/tryjob.py#23)(api, properties):**
 ### *recipes* / [depot\_tools\_builder](/recipes/recipes/depot_tools_builder.py)
 
 [DEPS](/recipes/recipes/depot_tools_builder.py#9): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [zip](#recipe_modules-zip), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -2116,6 +2116,7 @@ This recipe executes offline_winpe_customization.
 [recipe_engine/recipe_modules/cv]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-cv
 [recipe_engine/recipe_modules/defer]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-defer
 [recipe_engine/recipe_modules/file]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-file
+[recipe_engine/recipe_modules/findings]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-findings
 [recipe_engine/recipe_modules/futures]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-futures
 [recipe_engine/recipe_modules/golang]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-golang
 [recipe_engine/recipe_modules/json]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/f6ea534bb4fcfa563d3464d1c37e11246594618c/README.recipes.md#recipe_modules-json

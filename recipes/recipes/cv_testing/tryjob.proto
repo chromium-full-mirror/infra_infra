@@ -11,4 +11,5 @@ message Input {
   bool reuse_own_mode_only = 1;
   bool fail = 2;
   bool infra_fail = 3;
+  bool emit_findings = 4;
 }
