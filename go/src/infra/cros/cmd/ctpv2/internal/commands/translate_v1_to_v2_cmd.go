@@ -554,13 +554,6 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 	if len(swarmingDims) == 0 {
 		swarmingDims = []string{"label-servo_state:WORKING", "label-servo_usb_state:NORMAL"}
 	}
-	if len(models) == 0 {
-		if primaryBoard == "brya" {
-			models = []string{"marasov"}
-		} else if primaryBoard == "corsola" {
-			models = []string{"magneton"}
-		}
-	}
 
 	scheduleTargetsList := []*api.ScheduleTargets{}
 	if len(models) == 0 {

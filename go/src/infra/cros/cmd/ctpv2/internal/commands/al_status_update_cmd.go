@@ -356,6 +356,10 @@ func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string)
 					buildTarget = pair.GetValue()
 				}
 			}
+			if cmd.BuildState != nil && !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
+				// TODO (b/380912126): remove hardcoded build once filter supports fetching latest staging
+				buildID = "3618514"
+			}
 
 			dutInfo := unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()
 			var board, model string
