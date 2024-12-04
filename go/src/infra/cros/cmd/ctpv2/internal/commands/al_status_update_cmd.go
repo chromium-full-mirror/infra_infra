@@ -583,9 +583,10 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		err = cmd.closeWUTree(ctx, service)
+
+		err = cmd.updateInvocationProperties(ctx, service)
 		if err != nil {
-			logging.Errorf(ctx, "error while closing WU tree: %w", err)
+			logging.Errorf(ctx, "error while updating Invocation: %w", err)
 
 			// Ignore update failures if being run inside of a LED run.
 			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
@@ -593,9 +594,10 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 			}
 		}
 
-		err = cmd.updateInvocationProperties(ctx, service)
+		// This closes WU tree and seals the invocation
+		err = cmd.closeWUTree(ctx, service)
 		if err != nil {
-			logging.Errorf(ctx, "error while updating Invocation: %w", err)
+			logging.Errorf(ctx, "error while closing WU tree: %w", err)
 
 			// Ignore update failures if being run inside of a LED run.
 			if !common.IsLedRun(cmd.BuildState.Build().GetBuilder()) {
