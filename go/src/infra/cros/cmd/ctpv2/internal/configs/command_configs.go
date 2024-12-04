@@ -63,6 +63,8 @@ func (cfg *CommandConfig) GetCommand(
 
 	case commands.AlStatusUpdateCmdType:
 		cmd = commands.NewAlStatusUpdateCmd()
+	case commands.AlStatusCleanUpCmdType:
+		cmd = commands.NewAlStatusCleanUpCmd()
 
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)

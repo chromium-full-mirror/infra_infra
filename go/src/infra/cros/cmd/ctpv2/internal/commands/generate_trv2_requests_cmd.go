@@ -67,6 +67,8 @@ type GenerateTrv2RequestsCmd struct {
 	schedulingUnitsMetadataMap map[string][]*api.SchedulingUnit
 	TrReqsStart                []*analytics.TaskData
 	TrReqsEnd                  []*analytics.TaskData
+
+	ExecutionError error
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -163,6 +165,8 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	// Convert scheduling units into map for better searching.
 	cmd.schedulingUnitsMetadataMap = buildSchedUnitMap(cmd.InternalTestPlan.GetSuiteInfo())
 
+	cmd.ExecutionError = sk.ExecutionError
+
 	return nil
 }
 
@@ -184,6 +188,8 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 		cmd.AlStateInfo.CurrentTestJobEvent.State = "RUNNING"
 		cmd.AlStateInfo.CurrentTestJobEvent.TestJob.TestJobState = "RUNNING"
 	}
+
+	sk.ExecutionError = cmd.ExecutionError
 	return nil
 }
 
@@ -196,6 +202,10 @@ func (cmd *GenerateTrv2RequestsCmd) Execute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Generate Trv2 Requests")
 	defer func() { step.End(err) }()
+
+	defer func(err error) {
+		cmd.ExecutionError = err
+	}(err)
 
 	cmd.ObserveCmdStart(ctx)
 	cmd.ObserveEnumerationStart(ctx)

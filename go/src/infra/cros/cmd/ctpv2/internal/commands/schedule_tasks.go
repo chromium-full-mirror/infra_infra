@@ -78,6 +78,8 @@ type ScheduleTasksCmd struct {
 	StartTrSchedulingTime time.Time
 	StartTrBuildTime      time.Time
 	Config                *config.Config
+
+	ExecutionError error
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -184,6 +186,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("cmd %q specified invalid scheduler type %s", cmd.GetCommandType(), s)
 	}
 
+	cmd.ExecutionError = sk.ExecutionError
 	return nil
 }
 
@@ -194,6 +197,7 @@ func (cmd *ScheduleTasksCmd) updateScheduleStateKeeper(ctx context.Context, sk *
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 
 	sk.AlStateInfo = cmd.AlStateInfo
+	sk.ExecutionError = cmd.ExecutionError
 
 	// Update current test job event
 	cmd.updateCurrentTestJobEvent()
@@ -398,6 +402,10 @@ func (cmd *ScheduleTasksCmd) getATPShardFromCMDState(key string) *androidapi.Wor
 func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, buildsMapLen int, bbClient buildbucketpb.BuildsClient) error {
 	defer wg.Done()
 	var err error
+
+	defer func(err error) {
+		cmd.ExecutionError = err
+	}(err)
 
 	suiteName := suiteName(buildReq.SuiteInfo)
 	stepName := key

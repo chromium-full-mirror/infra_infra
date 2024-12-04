@@ -37,6 +37,8 @@ type AlStatusUpdateCmd struct {
 
 	// CTPRequest
 	CtpRequest *testapi.CTPRequest
+
+	ExecutionError error
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -82,6 +84,7 @@ func (cmd *AlStatusUpdateCmd) UpdateStateKeeper(
 
 func (cmd *AlStatusUpdateCmd) updateScheduleStateKeeper(sk *data.FilterStateKeeper) error {
 	sk.AlStateInfo = cmd.AlStateInfo
+	sk.ExecutionError = cmd.ExecutionError
 
 	return nil
 }
@@ -107,6 +110,8 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.CtpRequest = sk.CtpReq
 
+	cmd.ExecutionError = sk.ExecutionError
+
 	return nil
 }
 
@@ -123,28 +128,12 @@ func (cmd *AlStatusUpdateCmd) extractDepsFromPrePostStateKeeper(
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) getWorkUnitTree() *androidapi.WorkUnitTree {
-	if cmd.AlStateInfo == nil {
-		return nil
-	}
-
-	if cmd.AlStateInfo.WorkUnitTrees == nil {
-		return nil
-	}
-
-	if tree, ok := cmd.AlStateInfo.WorkUnitTrees["test"]; ok {
-		return tree
-	}
-
-	return nil
-}
-
 func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 	if cmd.BuildsMap == nil {
 		return nil
 	}
 
-	tree := cmd.getWorkUnitTree()
+	tree := cmd.AlStateInfo.GetWorkUnitTree()
 	if tree == nil {
 		return fmt.Errorf("WU tree was not initialized")
 	}
@@ -187,138 +176,6 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 			logging.Infof(ctx, "NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
 			tree.ShardsByKey[key] = shardNode
 		}
-	}
-
-	return nil
-}
-
-// updateAllNodes recursively iterates through the tree updating the status of
-// each node from the bottom layers upward.
-//
-// NOTE: This leverages the fact that we set the state for the attempt nodes
-// inside the schedule_tasks command.
-func updateAllNodes(ctx context.Context, service *androidapi.Service, head *androidapi.WorkUnitNode) error {
-	children := head.GetChildren()
-	// Once we've reached the attempt layer update the WU and return.
-	if children.Len() == 0 {
-		newWU, err := service.WorkUnitService.Update(head.GetWorkUnit().Id, head.GetWorkUnit())
-		if err != nil {
-			return err
-		}
-		head.SetWorkUnit(newWU)
-
-		return nil
-	}
-
-	// Determine if all child nodes passed.
-	allPassed := true
-	for _, child := range children {
-		// Recursively call on all children so they can update their statuses
-		err := updateAllNodes(ctx, service, child)
-		if err != nil {
-			return err
-		}
-
-		if strings.ToLower(child.GetWorkUnit().State) != strings.ToLower(androidapi.WorkUnitCompleted.String()) {
-			logging.Infof(ctx, "%s-%s: child %s-%s in state %s, allPassed set to FALSE\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, child.GetWorkUnit().Id, child.GetWorkUnit().Name, child.GetWorkUnit().State)
-			allPassed = false
-		}
-	}
-
-	// If the WU changed in anyway inside TestRunner then our current WU
-	// is going to be outdated. This will refresh the CTP WU so that we
-	// can make updates without conflict.
-	refreshedWU, err := head.Service.Get(head.GetWorkUnit().Id)
-	if err != nil {
-		return err
-	}
-	head.SetWorkUnit(refreshedWU)
-
-	// Update the state of the current node based on the child nodes.
-	if allPassed {
-		head.GetWorkUnit().State = common.TaskCompletedState
-		logging.Infof(ctx, "WU %s-%s set as %s, all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
-	} else {
-		head.GetWorkUnit().State = common.TaskErrorState
-		logging.Infof(ctx, "WU %s-%s set as %s, not all children passed\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
-		head.GetWorkUnit().DebugInfo = &androidbuildinternal.DebugInfo{
-			ErrorCode:    1,
-			ErrorMessage: "Not all children work units passed",
-			ErrorName:    "Failed Children",
-		}
-		logging.Infof(ctx, "WU %s-%s completed testing in %s status\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, head.GetWorkUnit().State)
-	}
-
-	// Send the WU to the ATP API to be updated.
-	newWU, err := service.WorkUnitService.Update(head.GetWorkUnit().Id, head.GetWorkUnit())
-	if err != nil {
-		return err
-	}
-
-	// Insert the returned (updated) WU into the current node.
-	head.SetWorkUnit(newWU)
-
-	return nil
-}
-
-// sealInvocation updates the top level Work Unit and Invocation once before
-// sealing them with a terminal state status.
-func (cmd *AlStatusUpdateCmd) sealInvocation(ctx context.Context, tree *androidapi.WorkUnitTree, service *androidapi.Service) error {
-	var err error
-
-	// Refresh the work unit in case we are not using the most up-to-date
-	// revision.
-	cmd.AlStateInfo.ATPWorkUnit, err = service.WorkUnitService.Get(cmd.AlStateInfo.ATPWorkUnit.Id)
-	if err != nil {
-		return errors.Annotate(err, "error while refreshing ATP WorkUnit").Err()
-	}
-
-	// Set the top level WU to the same status as the tree's head.
-	cmd.AlStateInfo.ATPWorkUnit.State = tree.Head.GetWorkUnit().State
-	logging.Infof(ctx, "updating Work Unit %s-%s to state %s\n", cmd.AlStateInfo.ATPWorkUnit.Name, cmd.AlStateInfo.ATPWorkUnit.Id, cmd.AlStateInfo.ATPWorkUnit.State)
-
-	_, err = service.WorkUnitService.Update(cmd.AlStateInfo.ATPWorkUnit.Id, cmd.AlStateInfo.ATPWorkUnit)
-	if err != nil {
-		return errors.Annotate(err, "error while updating ATP WorkUnit").Err()
-	}
-
-	// Refresh the invocation in case we are not using the most up-to-date
-	// revision.
-	cmd.AlStateInfo.ATPInvocation, err = service.InvocationService.Get(cmd.AlStateInfo.ATPInvocation.InvocationId)
-	if err != nil {
-		return errors.Annotate(err, "error while refreshing ATP Invocation").Err()
-	}
-
-	// Set the invocation to the same status as the tree's head.
-	cmd.AlStateInfo.ATPInvocation.SchedulerState = tree.Head.GetWorkUnit().State
-	logging.Infof(ctx, "updating Invocation %s to state %s\n", cmd.AlStateInfo.ATPInvocation.InvocationId, cmd.AlStateInfo.ATPInvocation.SchedulerState)
-
-	_, err = service.InvocationService.Update(cmd.AlStateInfo.ATPInvocation.InvocationId, cmd.AlStateInfo.ATPInvocation)
-	if err != nil {
-		return errors.Annotate(err, "error while updating ATP Invocation").Err()
-	}
-	return nil
-}
-
-func (cmd *AlStatusUpdateCmd) closeWUTree(ctx context.Context, service *androidapi.Service) error {
-	tree := cmd.getWorkUnitTree()
-	if tree == nil {
-		return fmt.Errorf("wu tree was removed unexpectedly")
-	}
-
-	// Update the status of each WU.
-	err := updateAllNodes(ctx, service, tree.Head)
-	if err != nil {
-		return err
-	}
-
-	// If we generated the invocation and the starting ATP WorkUnit then close
-	// out the work unit and invocation to fully seal the run.
-	//
-	// NOTE: ATP would normally handle this but because we are handing the
-	// creation of the invocation we now in charge.
-	if cmd.AlStateInfo.ATPWorkUnit != nil {
-		return cmd.sealInvocation(ctx, tree, service)
 	}
 
 	return nil
@@ -511,7 +368,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 
 	}
 
-	tree := cmd.getWorkUnitTree()
+	tree := cmd.AlStateInfo.GetWorkUnitTree()
 	if tree == nil || tree.Head == nil {
 		logging.Infof(ctx, "No workunit tree present. Skipping update.")
 	}
@@ -527,7 +384,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 		return err
 	}
 
-	if cmd.invocationSealed(inv) {
+	if common.InvocationSealed(inv) {
 		return fmt.Errorf("Cannot update sealed invocation %s. Invocation State: %s.", invocationID, inv.SchedulerState)
 	}
 
@@ -540,17 +397,14 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 	return nil
 }
 
-func (cmd *AlStatusUpdateCmd) invocationSealed(inv *androidbuildinternal.Invocation) bool {
-	state := strings.ToUpper(inv.SchedulerState)
-	if state == "CANCELLED" || state == "ERROR" || state == "COMPLETED" {
-		return true
-	}
-	return false
-}
-
 // Execute executes the command.
 func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	var err error
+
+	defer func(err error) {
+		cmd.ExecutionError = err
+	}(err)
+
 	// Skip the step completely for now if the event state is nil. If we are
 	// manually creating an invocation then allow this to go through.
 	// TODO (azrahman:atp): undo this once output props support is added here
@@ -595,7 +449,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		}
 
 		// This closes WU tree and seals the invocation
-		err = cmd.closeWUTree(ctx, service)
+		err = cmd.AlStateInfo.CloseWUTree(ctx, service, "", "")
 		if err != nil {
 			logging.Errorf(ctx, "error while closing WU tree: %w", err)
 

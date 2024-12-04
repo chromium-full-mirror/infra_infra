@@ -20,4 +20,5 @@ const (
 	GenerateTrv2RequestsCmdType    interfaces.CommandType = "GenerateTrv2Requests"
 	SummarizeCmdType               interfaces.CommandType = "Summarize"
 	AlStatusUpdateCmdType          interfaces.CommandType = "AlStatusUpdate"
+	AlStatusCleanUpCmdType         interfaces.CommandType = "AlStatusCleanUp"
 )

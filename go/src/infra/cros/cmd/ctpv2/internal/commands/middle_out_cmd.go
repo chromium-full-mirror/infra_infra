@@ -45,6 +45,8 @@ type MiddleOutRequestCmd struct {
 	BQClient *bigquery.Client
 	// BuildState
 	BuildState *build.State
+
+	ExecutionError error
 }
 
 const (
@@ -116,6 +118,8 @@ func (cmd *MiddleOutRequestCmd) extractDepsFromFilterStateKeeper(
 		cmd.BQClient = sk.BQClient
 	}
 	cmd.BuildState = sk.BuildState
+
+	cmd.ExecutionError = sk.ExecutionError
 	return nil
 }
 
@@ -127,6 +131,7 @@ func (cmd *MiddleOutRequestCmd) updateFilterStateKeeper(
 		sk.MiddledOutResp = cmd.MiddledOutResp
 	}
 
+	sk.ExecutionError = cmd.ExecutionError
 	return nil
 }
 
@@ -135,6 +140,10 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Middle Out")
 	defer func() { step.End(err) }()
+
+	defer func(err error) {
+		cmd.ExecutionError = err
+	}(err)
 
 	key := "middleout-execute"
 

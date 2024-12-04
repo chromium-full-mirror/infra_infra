@@ -60,4 +60,6 @@ type FilterStateKeeper struct {
 
 	// BQ Client for writing CTP level task info to.
 	BQClient *bigquery.Client
+
+	ExecutionError error
 }

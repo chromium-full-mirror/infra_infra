@@ -32,6 +32,7 @@ var MiddleOut_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandTy
 var GenerateTrv2Reqs_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenerateTrv2RequestsCmdType, ExecutorType: common_executors.NoExecutorType}
 var ScheduleTasks_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ScheduleTasksCmdType, ExecutorType: common_executors.NoExecutorType}
 var AlStatusUpdate_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AlStatusUpdateCmdType, ExecutorType: common_executors.NoExecutorType}
+var AlStatusCleanUp_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AlStatusCleanUpCmdType, ExecutorType: common_executors.NoExecutorType}
 
 // GenerateFilterConfigs generates cmd execution for ctpv2.
 func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
@@ -68,7 +69,11 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	mainConfigs = append(mainConfigs, ScheduleTasks_NoExecutor)
 	mainConfigs = append(mainConfigs, AlStatusUpdate_NoExecutor)
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
+	cleanUpCommands := []*common_configs.CommandExecutorPairedConfig{
+		AlStatusCleanUp_NoExecutor,
+	}
+
+	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanUpCommands}
 }
 
 // GeneratePreConfigs generates pre cmd execution for ctpv2.

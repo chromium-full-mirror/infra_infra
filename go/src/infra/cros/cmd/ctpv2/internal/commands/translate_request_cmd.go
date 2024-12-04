@@ -39,6 +39,8 @@ type TranslateRequestCmd struct {
 
 	// Updates
 	InternalTestPlan *testapi.InternalTestplan
+
+	ExecutionError error
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -49,7 +51,7 @@ func (cmd *TranslateRequestCmd) ExtractDependencies(
 	var err error
 	switch sk := ski.(type) {
 	case *data.FilterStateKeeper:
-		err = cmd.extractDepsFromFilterStateKeepr(ctx, sk)
+		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -80,7 +82,7 @@ func (cmd *TranslateRequestCmd) UpdateStateKeeper(
 	return nil
 }
 
-func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeepr(
+func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
 
@@ -93,6 +95,8 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeepr(
 	}
 
 	cmd.CtpReq = sk.CtpReq
+
+	cmd.ExecutionError = sk.ExecutionError
 	return nil
 }
 
@@ -104,6 +108,8 @@ func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(
 		sk.InitialInternalTestPlan = cmd.InternalTestPlan
 	}
 
+	sk.ExecutionError = cmd.ExecutionError
+
 	return nil
 }
 
@@ -112,6 +118,10 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Translate request")
 	defer func() { step.End(err) }()
+
+	defer func(err error) {
+		cmd.ExecutionError = err
+	}(err)
 
 	req := step.Log("request received")
 	marsh := jsonpb.Marshaler{Indent: "  "}

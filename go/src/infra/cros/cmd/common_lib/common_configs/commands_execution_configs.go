@@ -159,11 +159,14 @@ func (tecfg *CmdExecutionConfig) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "error during processing clean up configs for config type %s: ", tecfg.GetConfigType()).Err()
 	}
 
-	err = tecfg.executeCommands(ctx, cmds, tecfg.Configs.MainConfigs, false)
+	err = tecfg.executeCommands(ctx, cmds, tecfg.Configs.MainConfigs, false, false)
 	if err != nil {
+		step, ctx := build.StartStep(ctx, "Clean up commands")
+		defer func() { step.End(err) }()
+
 		logging.Infof(ctx, "error during execution of main config commmands, %s", err)
 		// execute clean up commands
-		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds, tecfg.Configs.CleanupConfigs, true)
+		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds, tecfg.Configs.CleanupConfigs, true, true)
 		if cleanupErr != nil {
 			err = fmt.Errorf("main error: %w; cleanup error: %s", err, cleanupErr)
 		}
@@ -200,7 +203,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 	ctx context.Context,
 	cmds []interfaces.CommandInterface,
 	cmdExecPairConfigs []*CommandExecutorPairedConfig,
-	executeAllCmds bool) error {
+	executeAllCmds, isCleanup bool) error {
 	var allErr error
 	var singleErr error
 	foundErr := false
@@ -209,7 +212,11 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			continue
 		}
 		cmdType := cmd.GetCommandType()
-		logging.Infof(ctx, "Executing cmd: %s", cmdType)
+		var cleanUpTag string
+		if isCleanup {
+			cleanUpTag = "(CLEAN UP)"
+		}
+		logging.Infof(ctx, "Executing cmd: %s %s", cleanUpTag, cmdType)
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
