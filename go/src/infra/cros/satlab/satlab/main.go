@@ -8,6 +8,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 
 	"github.com/maruel/subcommands"
@@ -16,11 +18,14 @@ import (
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/misc"
 	"infra/cros/satlab/satlab/internal/components/run"
 	"infra/cros/satlab/satlab/internal/meta"
 	"infra/cros/satlab/satlab/internal/stableversion"
 	"infra/cros/satlab/satlab/internal/subcmds"
 )
+
+const StandaloneSatlabEnvVar = "STANDALONE_SATLAB"
 
 // GetApplication returns the main application.
 func getApplication() *cli.Application {
@@ -61,7 +66,23 @@ func getApplication() *cli.Application {
 	}
 }
 
+// isSatlabConfigured checks if Satlab is configured.
+// It can be omitted with the STANDALONE_SATLAB environment variable.
+func isSatlabConfigured() bool {
+	if misc.BoolVal(os.Getenv(StandaloneSatlabEnvVar)) {
+		return true
+	}
+	if _, err := os.Stat(site.GetServiceAccountPath()); errors.Is(err, os.ErrNotExist) {
+		fmt.Println("Please set up your satlab first")
+		return false
+	}
+	return true
+}
+
 // Main is the entrypoint for "satlab".
 func main() {
+	if !isSatlabConfigured() {
+		os.Exit(1)
+	}
 	os.Exit(meta.UpdateThenRun(getApplication()))
 }

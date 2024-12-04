@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -132,6 +133,15 @@ func GetEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+// BoolVal fetches a bool val from a string. Returns false if unable to parse.
+func BoolVal(val string) bool {
+	b, err := strconv.ParseBool(val)
+	if err != nil {
+		return false
+	}
+	return b
 }
 
 // StrTestArgsToMap converts a TestArgs string into map[string]string.
