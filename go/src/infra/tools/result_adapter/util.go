@@ -55,6 +55,15 @@ const (
 	// ResultDB limits the total size of the error protos to 3172 bytes.
 	maxErrorsBytes = 3*1024 + 100
 
+	// Limits each individual error message in the properties field to 2048
+	// bytes which can cover up to P99.9 of error messages for Android test
+	// results.
+	maxPropErrorMessageBytes = 2 * 1024
+
+	// Limits the total size of the errors in the properties field to 4196
+	// bytes.
+	maxPropErrorsBytes = 4*1024 + 100
+
 	// ResultSink limits a tag's value size to 256 bytes.
 	maxTagValueBytes = 256
 

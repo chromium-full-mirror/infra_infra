@@ -1,6 +1,6 @@
-// Copyright 2022 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/duration"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	configpb "go.chromium.org/chromiumos/config/go"
@@ -164,7 +165,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		results := &CrosTestResult{}
 		err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, results.TestResult, should.Resemble(testResult))
+		assert.Loosely(t, results.TestResult, should.Match(testResult))
 	})
 
 	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
@@ -236,7 +237,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			assert.Loosely(t, testResults, should.HaveLength(2))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			for _, tr := range testResults {
 				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
@@ -275,7 +276,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			for _, tr := range gotTestResults {
 				gotArtifacts = append(gotArtifacts, tr.GetArtifacts())
 			}
-			assert.Loosely(t, gotArtifacts, should.Resemble(wantArtifacts))
+			assert.Loosely(t, gotArtifacts, should.Match(wantArtifacts))
 		})
 
 		t.Run("Skips test artifacts upload when result dir is invalid", func(t *ftt.Test) {
@@ -342,7 +343,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 
 			assert.Loosely(t, testResults, should.HaveLength(2))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			for _, tr := range testResults {
 				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
@@ -374,7 +375,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 			}
 
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			for _, tr := range testResults {
 				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
@@ -425,7 +426,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 			}
 
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			for _, tr := range testResults {
 				assert.Loosely(t, tr.GetProperties().GetFields(), should.NotBeEmpty)
 			}
@@ -543,7 +544,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			assert.Loosely(t, testResults, should.HaveLength(1))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			assert.Loosely(t, testResults[0].GetProperties().GetFields(), should.NotBeEmpty)
 		})
 
@@ -591,7 +592,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 
 			assert.Loosely(t, testResults, should.HaveLength(1))
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			assert.Loosely(t, testResults[0].GetProperties().GetFields(), should.NotBeEmpty)
 		})
 
@@ -636,14 +637,169 @@ func TestCrosTestResultConversions(t *testing.T) {
 				assert.Loosely(t, err, should.BeNil)
 			}
 
-			assert.Loosely(t, testResults, should.Resemble(expected))
+			assert.Loosely(t, testResults, should.Match(expected))
 			for _, tr := range testResults {
 				assert.Loosely(t, tr.GetProperties().
 					GetFields()["testCaseInfo"].GetStructValue().
 					GetFields()["testCaseResult"].GetStructValue().
 					GetFields()["reason"].GetStringValue(),
-					should.HaveLength(1024))
+					should.HaveLength(2048))
 			}
 		})
 	})
+}
+
+func TestPopulateProperties(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name           string
+		input          *sinkpb.TestResult
+		reason         string
+		errors         []*apipb.TestCaseResult_Error
+		expectedReason *structpb.Value
+		expectedErrors *structpb.Value
+	}{
+		{
+			name: "Basic",
+			input: &sinkpb.TestResult{
+				TestId: "rlz_CheckPing",
+			},
+			reason: "Test failed",
+			errors: []*apipb.TestCaseResult_Error{
+				{
+					Message: strings.Repeat("b", 1024),
+				},
+			},
+			expectedReason: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
+					StringValue: "Test failed",
+				},
+			},
+			expectedErrors: &structpb.Value{
+				Kind: &structpb.Value_ListValue{
+					ListValue: &structpb.ListValue{
+						Values: []*structpb.Value{
+							{
+								Kind: &structpb.Value_StructValue{
+									StructValue: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"message": {
+												Kind: &structpb.Value_StringValue{StringValue: strings.Repeat("b", 1024)}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Long reason",
+			input: &sinkpb.TestResult{
+				TestId: "rlz_CheckPing",
+			},
+			reason: strings.Repeat("a", 3072), // Exceeds the limit
+			errors: []*apipb.TestCaseResult_Error{},
+			expectedReason: &structpb.Value{
+				Kind: &structpb.Value_StringValue{
+					StringValue: strings.Repeat("a", maxPropErrorMessageBytes-3) + "...", // Truncated
+				},
+			},
+			expectedErrors: &structpb.Value{},
+		},
+		{
+			name: "Long errors",
+			input: &sinkpb.TestResult{
+				TestId: "rlz_CheckPing",
+			},
+			reason: "",
+			errors: []*apipb.TestCaseResult_Error{
+				{
+					Message: strings.Repeat("b", 3072), // Exceeds the limit
+				},
+				{
+					Message: strings.Repeat("c", 3072), // Exceeds the limit
+				},
+			},
+			expectedReason: &structpb.Value{
+				Kind: &structpb.Value_StringValue{},
+			},
+			expectedErrors: &structpb.Value{
+				Kind: &structpb.Value_ListValue{
+					ListValue: &structpb.ListValue{
+						Values: []*structpb.Value{
+							{
+								Kind: &structpb.Value_StructValue{
+									StructValue: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"message": {
+												Kind: &structpb.Value_StringValue{StringValue: strings.Repeat("b", maxPropErrorMessageBytes-3) + "..."}}, // Truncated
+										},
+									},
+								},
+							},
+							{
+								Kind: &structpb.Value_StructValue{
+									StructValue: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"message": {
+												Kind: &structpb.Value_StringValue{StringValue: strings.Repeat("c", maxPropErrorMessageBytes-3) + "..."}}, // Truncated
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			testRun := &artifactpb.TestRun{
+				TestCaseInfo: &artifactpb.TestCaseInfo{
+					TestCaseResult: &apipb.TestCaseResult{
+						Reason: tc.reason,
+						Errors: tc.errors,
+					},
+				},
+			}
+			wantTestResult := &sinkpb.TestResult{
+				TestId: "rlz_CheckPing",
+				Properties: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"testCaseInfo": {
+							Kind: &structpb.Value_StructValue{
+								StructValue: &structpb.Struct{
+									Fields: map[string]*structpb.Value{
+										"testCaseResult": {
+											Kind: &structpb.Value_StructValue{
+												StructValue: &structpb.Struct{
+													Fields: map[string]*structpb.Value{},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+			if tc.reason != "" {
+				wantTestResult.Properties.Fields["testCaseInfo"].GetStructValue().Fields["testCaseResult"].GetStructValue().Fields["reason"] = tc.expectedReason
+			}
+			if len(tc.errors) != 0 {
+				wantTestResult.Properties.Fields["testCaseInfo"].GetStructValue().Fields["testCaseResult"].GetStructValue().Fields["errors"] = tc.expectedErrors
+			}
+
+			err := PopulateProperties(tc.input, testRun)
+
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, tc.input, should.Match(wantTestResult))
+		})
+	}
 }

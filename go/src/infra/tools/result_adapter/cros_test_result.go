@@ -1,6 +1,6 @@
-// Copyright 2022 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -181,13 +181,35 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 		return errors.Reason("the input test result is nil").Err()
 	}
 
-	// Truncates the reason field in advance to reduce the amount of bytes
-	// stored in the properties field of test result.
-	testCaseInfo := testRun.GetTestCaseInfo()
-	testCaseResult := testCaseInfo.GetTestCaseResult()
+	// Truncates the errors and reason field in advance to reduce the amount of
+	// bytes stored in the properties field of test result.
+	testCaseResult := testRun.GetTestCaseInfo().GetTestCaseResult()
 	if testCaseResult.GetReason() != "" {
 		testCaseResult.Reason = truncateString(
-			testCaseResult.GetReason(), maxErrorMessageBytes)
+			testCaseResult.GetReason(), maxPropErrorMessageBytes)
+	}
+
+	errorsSize := len(testCaseResult.Errors)
+	if errorsSize > 0 {
+		// Truncates the error messages if needed before uploading to the
+		// properties field.
+		propErrors := make([]*apipb.TestCaseResult_Error, 0, errorsSize)
+		curErrorsSize := 0
+		for _, e := range testCaseResult.Errors {
+			propMessage := truncateString(e.Message, maxPropErrorMessageBytes)
+			errorSize := len(propMessage)
+			if curErrorsSize+errorSize > maxPropErrorsBytes {
+				// No more errors fit.
+				break
+			}
+
+			propError := &apipb.TestCaseResult_Error{
+				Message: propMessage,
+			}
+			propErrors = append(propErrors, propError)
+			curErrorsSize += errorSize
+		}
+		testCaseResult.Errors = propErrors
 	}
 
 	data, err := protojson.Marshal(testRun)
