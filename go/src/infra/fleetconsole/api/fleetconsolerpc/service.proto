@@ -90,6 +90,9 @@ message ListDevicesRequest {
   string page_token = 2;
 
   string order_by = 3;
+
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  string filter = 4;
 }
 
 message ListDevicesResponse {

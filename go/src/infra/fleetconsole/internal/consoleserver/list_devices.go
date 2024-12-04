@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/consoleserver/filtering"
 	"infra/fleetconsole/internal/consoleserver/sorting"
 	"infra/fleetconsole/internal/devicemanagerclient"
 )
@@ -32,7 +33,13 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		return nil, err
 	}
 
-	devices, err := sorting.SortDevices(devicemanagerclient.MapDevices(d.Devices), req.OrderBy)
+	devicesFiltered, err := filtering.FilterDevices(devicemanagerclient.MapDevices(d.Devices), req.Filter)
+
+	if err != nil {
+		return nil, err
+	}
+
+	devices, err := sorting.SortDevices(devicesFiltered, req.OrderBy)
 
 	if err != nil {
 		return nil, err
