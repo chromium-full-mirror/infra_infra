@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 RUN dpkg --add-architecture i386
 # chromium uses python3
 # ld.ldd requires libxml2 libicu70
@@ -18,7 +18,7 @@ RUN apt-get update && \
    libc6:i386 \
    libgcc1:i386 \
    libglib2.0-0 \
-   libicu70 \
+   libicu74 \
    libnss3 \
    libwayland-client0 \
    libxml2 \
