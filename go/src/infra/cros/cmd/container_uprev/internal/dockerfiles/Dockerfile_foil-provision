@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+FROM us-docker.pkg.dev/cros-registry/base-images/ubuntu:ubuntuProd
+RUN apt-get update
+RUN apt-get install -y curl
+
+# Replace to internal tools
+COPY aapt /usr/bin/aapt
+COPY aapt2 /usr/bin/aapt2
+COPY adb /usr/bin/adb
+
+COPY foil-provision /usr/bin/
+
+RUN chmod 750 /usr/bin/adb
+RUN chmod 750 /usr/bin/aapt
+RUN chmod 750 /usr/bin/aapt2

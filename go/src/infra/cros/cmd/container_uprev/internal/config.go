@@ -254,6 +254,17 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/cft/provision/cros-fw-provision/${platform}"),
 			},
 		},
+		{
+			Name: "foil-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/foil-provision/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+			Prepper: preppers.AdbBase,
+		},
 		// {
 		// 	Name: "tradefed",
 		// 	CIPDPackages: []*CIPDPackage{
