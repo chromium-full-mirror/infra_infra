@@ -153,6 +153,17 @@ func TestStartContainer_nilExpose_passValidation(t *testing.T) {
 	}
 }
 
+func checkExecutedCommands(commands []string, executor *mockExecutor, t *testing.T) {
+	if c := len(executor.commandsExecuted); c != len(commands) {
+		t.Fatalf("Expect %d commands has been executed, but got %d", len(commands), c)
+	}
+	for i, command := range commands {
+		if got := executor.commandsExecuted[i]; got != command {
+			t.Fatalf("Expect execution of %q but executed %q", command, got)
+		}
+	}
+}
+
 func TestStartContainer_pullError_ignored(t *testing.T) {
 	errorMapping := make(map[string]string)
 	errorMapping["*commands.DockerPull"] = "Permission \"artifactregistry.repositories.downloadArtifacts\" denied on resource"
@@ -166,12 +177,30 @@ func TestStartContainer_pullError_ignored(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect pull error to be ignored")
 	}
-	if len(executor.commandsExecuted) != 1 {
-		t.Fatalf("Expect 1 command has been executed")
+	commands := []string{
+		"*commands.DockerStop",
+		"*commands.DockerRun",
 	}
-	if executor.commandsExecuted[0] != "*commands.DockerRun" {
-		t.Fatalf("Expect docker run have been executed")
+	checkExecutedCommands(commands, &executor, t)
+}
+func TestStartContainer_stopError_ignored(t *testing.T) {
+	errorMapping := make(map[string]string)
+	errorMapping["*commands.DockerStop"] = "some error"
+	executor := mockExecutor{commandsToThrowError: errorMapping}
+	service := getService(&executor)
+	_, err := service.StartContainer(context.Background(), &api.StartContainerRequest{
+		Name:           "my-container",
+		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457",
+		StartCommand:   []string{"cros-dut"},
+	})
+	if err != nil {
+		t.Fatalf("Expect stop error to be ignored")
 	}
+	commands := []string{
+		"*commands.DockerPull",
+		"*commands.DockerRun",
+	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestStartContainer_runError(t *testing.T) {
@@ -187,12 +216,11 @@ func TestStartContainer_runError(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expect unknown error")
 	}
-	if len(executor.commandsExecuted) != 1 {
-		t.Fatalf("Expect 1 command has been executed")
+	commands := []string{
+		"*commands.DockerPull",
+		"*commands.DockerStop",
 	}
-	if executor.commandsExecuted[0] != "*commands.DockerPull" {
-		t.Fatalf("Expect docker pull have been executed")
-	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestStartContainer_success(t *testing.T) {
@@ -206,15 +234,12 @@ func TestStartContainer_success(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect success")
 	}
-	if len(executor.commandsExecuted) != 2 {
-		t.Fatalf("Expect 2 commands have been executed")
+	commands := []string{
+		"*commands.DockerPull",
+		"*commands.DockerStop",
+		"*commands.DockerRun",
 	}
-	if executor.commandsExecuted[0] != "*commands.DockerPull" {
-		t.Fatalf("Expect docker pull have been executed")
-	}
-	if executor.commandsExecuted[1] != "*commands.DockerRun" {
-		t.Fatalf("Expect docker run have been executed")
-	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestStackCommands(t *testing.T) {
@@ -240,21 +265,14 @@ func TestStackCommands(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect success")
 	}
-	if len(executor.commandsExecuted) != 4 {
-		t.Fatalf("Expect 4 commands have been executed")
+	commands := []string{
+		"*commands.NetworkCreate",
+		"*commands.NetworkList",
+		"*commands.DockerPull",
+		"*commands.DockerStop",
+		"*commands.DockerRun",
 	}
-	if executor.commandsExecuted[0] != "*commands.NetworkCreate" {
-		t.Fatalf("Expect docker network create have been executed")
-	}
-	if executor.commandsExecuted[1] != "*commands.NetworkList" {
-		t.Fatalf("Expect docker network list have been executed")
-	}
-	if executor.commandsExecuted[2] != "*commands.DockerPull" {
-		t.Fatalf("Expect docker pull have been executed")
-	}
-	if executor.commandsExecuted[3] != "*commands.DockerRun" {
-		t.Fatalf("Expect docker run have been executed")
-	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestLoginRegistry_withActualTokenValue(t *testing.T) {
@@ -268,9 +286,10 @@ func TestLoginRegistry_withActualTokenValue(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect success")
 	}
-	if len(executor.commandsExecuted) != 1 || executor.commandsExecuted[0] != "*commands.DockerLogin" {
-		t.Fatalf("Expect only login command to be executed")
+	commands := []string{
+		"*commands.DockerLogin",
 	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestLoginRegistry_withCommandSubstitution(t *testing.T) {
@@ -284,9 +303,11 @@ func TestLoginRegistry_withCommandSubstitution(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect success")
 	}
-	if len(executor.commandsExecuted) != 2 || executor.commandsExecuted[0] != "*commands.GcloudAuthTokenPrint" {
-		t.Fatalf("Expect gcloud token and docker login commands to be executed")
+	commands := []string{
+		"*commands.GcloudAuthTokenPrint",
+		"*commands.DockerLogin",
 	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestLoginRegistry_withExtension(t *testing.T) {
@@ -303,9 +324,12 @@ func TestLoginRegistry_withExtension(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Expect success")
 	}
-	if len(executor.commandsExecuted) != 3 || executor.commandsExecuted[0] != "*commands.GcloudAuthServiceAccount" {
-		t.Fatalf("Expect gcloud activate-service-account, gcloud token and docker login commands to be executed")
+	commands := []string{
+		"*commands.GcloudAuthServiceAccount",
+		"*commands.GcloudAuthTokenPrint",
+		"*commands.DockerLogin",
 	}
+	checkExecutedCommands(commands, &executor, t)
 }
 
 func TestLoginRegistry_withExtensionError(t *testing.T) {

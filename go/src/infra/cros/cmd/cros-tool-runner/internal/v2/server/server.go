@@ -166,17 +166,16 @@ func (s *ContainerServerImpl) handleLoginRegistryExtension(ctx context.Context, 
 
 // StartContainer pulls image and then calls docker run to start a container.
 func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.StartContainerRequest) (*api.StartContainerResponse, error) {
-	if request.Name == "" {
+	if request.GetName() == "" {
 		return nil, utils.invalidArgument("Missing name")
 	}
-	if request.ContainerImage == "" {
+	if request.GetContainerImage() == "" {
 		return nil, utils.invalidArgument("Missing container_image")
 	}
-	if request.StartCommand == nil || len(request.StartCommand) == 0 {
+	if len(request.GetStartCommand()) == 0 {
 		return nil, utils.invalidArgument("Missing start_command")
 	}
-	if request.AdditionalOptions != nil {
-		options := request.AdditionalOptions
+	if options := request.GetAdditionalOptions(); options != nil {
 		if len(options.Expose) > 1 {
 			return nil, utils.unimplemented("Exposing multiple ports are not supported")
 		}
@@ -184,11 +183,15 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 			return nil, utils.unimplemented("Exposing a range of ports are not supported")
 		}
 	}
-	pullErr := s.pullImage(ctx, request.ContainerImage)
-	if pullErr != nil {
+	if pullErr := s.pullImage(ctx, request.ContainerImage); pullErr != nil {
 		log.Printf("warning: error when pulling image: %s", pullErr)
 	}
-
+	// Stop previous started container if was not removed before.
+	if stopErr := s.stopContainer(ctx, request.Name); stopErr != nil {
+		log.Printf("warning: error when try to stop container %q: %s", request.Name, stopErr)
+	} else {
+		log.Printf("Stopped previous running container %q", request.Name)
+	}
 	cmd := commands.DockerRun{StartContainerRequest: request}
 	id, stderr, err := s.executor.Execute(ctx, &cmd)
 	if err != nil && stderr != "" {
@@ -239,6 +242,39 @@ func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error
 		return err
 	}
 	log.Println("success: pulled image", image)
+	return nil
+}
+
+// stopContainer stops container by name or id.
+func (s *ContainerServerImpl) stopContainer(ctx context.Context, containerID string) error {
+	if containerID == "" {
+		log.Printf("Attempt to stop container without Id")
+		return nil
+	}
+	log.Printf("Stop container: %s\n", containerID)
+	cmd := commands.DockerStop{ContainerName: containerID}
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
+	if err != nil && stdout == "" && stderr != "" {
+		return utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
+			switch {
+			// docker error
+			case strings.Contains(s, "denied on resource"):
+				fallthrough
+			// podman error
+			case strings.Contains(s, "failed authentication"):
+				return codes.PermissionDenied
+			// common error string (podman lower case and docker is upper case)
+			case strings.Contains(strings.ToLower(s), "no such container"):
+				return codes.NotFound
+			default:
+				return codes.Unknown
+			}
+		})
+	}
+	if err != nil {
+		return err
+	}
+	log.Printf("Success: stopped container %q\n", containerID)
 	return nil
 }
 
