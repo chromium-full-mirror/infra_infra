@@ -8032,7 +8032,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
                   dependencies:
@@ -29119,7 +29119,7 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
                   dependencies:
@@ -29358,7 +29358,7 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
                   dependencies:
@@ -29578,7 +29578,7 @@ plans:
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: Provision Android OS ('ctr_foil_provision_install') (time:'15m0s')
+                - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
                   dependencies:

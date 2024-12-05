@@ -126,8 +126,8 @@ func androidActions(actions map[string]*Action) {
 			ExecName: "ctr_foil_provision_install",
 			ExecTimeout: &durationpb.Duration{
 				// The provision now requires USB-drive by default!
-				// The provisioning may take about 15 minutes.
-				Seconds: 900,
+				// Set 1 hour just in case.
+				Seconds: 3600,
 			},
 		},
 	}

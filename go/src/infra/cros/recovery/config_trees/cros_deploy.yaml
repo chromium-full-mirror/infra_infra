@@ -39008,7 +39008,7 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (time:'15m0s')
+                - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
@@ -109664,7 +109664,7 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (time:'15m0s')
+                - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
@@ -110415,7 +110415,7 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (time:'15m0s')
+                - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
@@ -111125,7 +111125,7 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (time:'15m0s')
+                - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
