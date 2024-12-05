@@ -94,7 +94,6 @@ func TestGetClangUtil(t *testing.T) {
 		detail.TypeUrl = "kythe.io/proto/kythe.proto.BuildDetails"
 		assert.Loosely(t, cu.Argument, should.Resemble(
 			[]string{"clang++", "bar", "baz",
-				"-target", "x86_64-apple-darwin20.6.0",
 				"-DKYTHE_IS_RUNNING=1", "-w"}))
 	})
 }

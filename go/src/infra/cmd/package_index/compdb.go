@@ -199,12 +199,7 @@ func getClangUnit(ctx context.Context, clangInfo *clangUnitInfo, rootPath, outDi
 			// Shorten the list of commands such that it starts with the path to
 			// the clang executable.
 			commandList = commandList[i:]
-			// TODO(sokcevic): Don't use hardcoded target for mac.
-			if buildConfig == "mac" {
-				commandList = append(commandList,
-					"-target",
-					"x86_64-apple-darwin20.6.0")
-			} else if clangTargetArch != "" {
+			if clangTargetArch != "" {
 				commandList = append(commandList, "-target", clangTargetArch)
 			}
 			break
