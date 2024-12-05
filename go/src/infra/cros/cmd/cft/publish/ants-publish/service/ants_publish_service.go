@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -73,6 +74,9 @@ func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnv
 }
 
 func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
+	start := time.Now()
+	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
+
 	dutProps, err := aps.dutProperties()
 	if err != nil {
 		return nil, err
@@ -173,6 +177,9 @@ func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*a
 }
 
 func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
+	start := time.Now()
+	defer timeTrack(start, "upload test results")
+
 	var chunks [][]*atp.BatchInsertEntry
 	for i := 0; i < len(entries); i += chunkSize {
 		end := i + chunkSize
@@ -206,6 +213,10 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		log.Println("no given test results to upload. Skipping results upload")
 		return nil
 	}
+
+	// Track time taken to upload results
+	start := time.Now()
+	defer timeTrack(start, "Overall result upload")
 
 	var buildInfo *atp.BuildDescriptor
 	inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
@@ -263,6 +274,10 @@ func (aps *AntsPublishService) dutProperties() ([]*atp.Property, error) {
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
 	log.Printf("Uploading artifacts from: %s", artifactsDir)
+
+	// Track time taken to upload artifacts
+	start := time.Now()
+	defer timeTrack(start, "Overall artifacts upload")
 
 	return filepath.Walk(artifactsDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -363,6 +378,11 @@ func validateAntsPublishRequest(req *api.PublishRequest) error {
 	}
 
 	return nil
+}
+
+func timeTrack(start time.Time, msg string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took: %s", msg, elapsed)
 }
 
 // unpackMetadata unpacks the Any metadata field into PublishGcsMetadata
