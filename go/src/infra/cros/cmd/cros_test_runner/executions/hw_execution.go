@@ -86,7 +86,9 @@ func HwExecution() {
 		} else if input.CftTestRequest.TranslateTrv2Request || shouldRunDynamic(input.CftTestRequest) {
 			metrics.IsDynamic = true
 			// If the request is a CrosTestRunner non-dynamic request with translation flag...
-			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun)
+			botDims, _ := protoutil.BotDimensions(st.Build())
+			buildExperiments := st.Build().GetInput().GetExperiments()
+			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun, input.CommonConfig, botDims, buildExperiments)
 			if err == nil {
 				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 			}

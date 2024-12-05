@@ -147,7 +147,18 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 	gcsPath := &_go.StoragePath{
 		HostType: _go.StoragePath_GS,
 		Path:     cmd.GcsURL}
-	gcsMetadata, err := anypb.New(&testapi.PublishGcsMetadata{GcsPath: gcsPath})
+	gcsMetadata, err := anypb.New(&testapi.PublishGcsMetadata{
+		GcsPath: gcsPath,
+		XtsArchiverMetadata: &testapi.XtsArchiverMetadata{
+			AlRun:                cmd.IsALRun,
+			Product:              cmd.Product,
+			Build:                cmd.Build,
+			ParentSwarmingTaskId: cmd.ParentSwarmingTaskID,
+			ResultsGcsPrefix:     cmd.XTSResultsGCSPrefix,
+			ApfeGcsPrefix:        cmd.XTSAPFEGCSPrefix,
+		},
+		EnableXtsArchiver: cmd.EnableXTSArchiver,
+	})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish gcs metadata err: ").Err()
 	}

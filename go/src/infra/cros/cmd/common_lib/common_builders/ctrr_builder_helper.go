@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -20,6 +21,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
 	"infra/cros/cmd/common_lib/common"
 )
@@ -33,7 +35,7 @@ var (
 )
 
 // buildDynamicRequest constructs the base DynamicTrv2Builder for DynamicTrv2FromCft.
-func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string) *DynamicTrv2Builder {
+func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string, commonConfig *skylab_test_runner.CommonConfig, botDims []*buildbucketpb.StringPair, buildExperiments []string, isALRun bool) *DynamicTrv2Builder {
 	keyvals := builder.Cft.GetAutotestKeyvals()
 	if keyvals == nil {
 		keyvals = make(map[string]string)
@@ -57,6 +59,10 @@ func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string) *
 		CompanionDuts:        []*labapi.DutModel{},
 		OrderedTaskBuilders:  []DynamicTaskBuilder{},
 		FirestoreDBName:      firestoreDBName,
+		IsALRun:              isALRun,
+		CommonConfig:         commonConfig,
+		BotDims:              botDims,
+		BuildExperiments:     buildExperiments,
 	}
 }
 
@@ -812,10 +818,21 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DR
 
 // DefaultDynamicGcsPublishTask creates the default gsc publish task.
 func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
+	product := common.GetProductName(builder.PrimaryDut, builder.BotDims, builder.BuildString)
 	gcsPublishMetadata, _ := anypb.New(&api.PublishGcsMetadata{
 		GcsPath: &_go.StoragePath{
 			HostType: _go.StoragePath_GS,
 		},
+		XtsArchiverMetadata: &api.XtsArchiverMetadata{
+			AlRun:                builder.IsALRun,
+			Product:              product,
+			Build:                builder.BuildString,
+			ParentSwarmingTaskId: builder.Keyvals["parent_job_id"],
+			// TODO: b/379711782 - Get the GCS paths from common config
+			ResultsGcsPrefix: "gs://chromeos-cts-staging",
+			ApfeGcsPrefix:    "gs://chromeos-cts-staging",
+		},
+		EnableXtsArchiver: slices.Contains(builder.BuildExperiments, common.EnableXTSArchiverExperiment),
 	})
 	return []*api.CrosTestRunnerDynamicRequest_Task{
 		{

@@ -7,6 +7,7 @@ package common
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -18,10 +19,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 // GetMockedTestResultProto returns a mock result proto
@@ -364,4 +367,49 @@ func GetDims(dims []string) (map[string]string, []*steps.ExecuteResponse_TaskRes
 		r2 = append(r2, &steps.ExecuteResponse_TaskResult_RejectedTaskDimension{Key: dimsList[0], Value: dimsList[1]})
 	}
 	return r1, r2
+}
+
+// GetProductName gets the product/device name in the following format:
+// <board>.<model>-<board_variant> expected by the XTS result pipeline.
+// The board and model info is obtained from dutModel falling back to labels in
+// botDims, and the board variant is extracted from the build.
+// If any of the properties is missing, it will be left out of the product.
+// TODO: b/379711782 - Verify and update this logic for AL
+func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPair, build string) string {
+	// Get primary board, model from DUT model falling back to bot dimensions
+	board := dutModel.GetBuildTarget()
+	model := dutModel.GetModelName()
+
+	if board == "" || model == "" {
+		for _, dim := range botDims {
+			if board == "" && dim.GetKey() == "label-board" {
+				board = dim.GetValue()
+			}
+
+			if model == "" && dim.GetKey() == "label-model" {
+				model = dim.GetValue()
+			}
+		}
+	}
+
+	// If board name is empty, skip finding the board variant
+	if board == "" {
+		return model
+	}
+
+	// Extract the variant from the build
+	// e.g. "-arc-t-release" from "brya-arc-t-release/R114-15437.0.0"
+	variant := ""
+	variantRegexp := regexp.MustCompile(fmt.Sprintf(`^%s(.*)\/.*`, board))
+	matches := variantRegexp.FindStringSubmatch(build)
+	if len(matches) > 1 {
+		// remove the "-release" suffix if present in the variant
+		variant = strings.TrimSuffix(matches[1], "-release")
+	}
+
+	if model == "" {
+		return fmt.Sprintf("%s%s", board, variant)
+	}
+
+	return fmt.Sprintf("%s.%s%s", board, model, variant)
 }

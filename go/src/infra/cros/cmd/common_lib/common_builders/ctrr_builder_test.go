@@ -39,7 +39,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			ContainerMetadata: &buildapi.ContainerMetadata{
 				Containers: make(map[string]*buildapi.ContainerImageMap),
 			},
-		}).BuildRequest(context.Background(), false, false)
+		}).BuildRequest(context.Background(), false, false, nil, nil, nil)
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -91,7 +91,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			ContainerMetadata: &buildapi.ContainerMetadata{
 				Containers: make(map[string]*buildapi.ContainerImageMap),
 			},
-		}).BuildRequest(context.Background(), false, false)
+		}).BuildRequest(context.Background(), false, false, nil, nil, nil)
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -143,7 +143,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 			ContainerMetadata: &buildapi.ContainerMetadata{
 				Containers: make(map[string]*buildapi.ContainerImageMap),
 			},
-		}).BuildRequest(context.Background(), false, false)
+		}).BuildRequest(context.Background(), false, false, nil, nil, nil)
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
@@ -219,7 +219,7 @@ func TestCrosTestRunnerRequestBuilder(t *testing.T) {
 					Name: "test1",
 				},
 			},
-		}).BuildRequest(context.Background(), false, false)
+		}).BuildRequest(context.Background(), false, false, nil, nil, nil)
 
 		expected := &api.CrosTestRunnerDynamicRequest{
 			StartRequest: &api.CrosTestRunnerDynamicRequest_Build{

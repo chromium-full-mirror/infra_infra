@@ -139,6 +139,9 @@ const (
 	HostIp                              = "host-ip"
 
 	ATILink = "https://android-build.corp.google.com/test_investigate/invocation"
+
+	// Build Experiments
+	EnableXTSArchiverExperiment = "chromeos.cros_infra_config.enable_xts_archiver"
 )
 
 var (

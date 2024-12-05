@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/common"
@@ -34,14 +35,14 @@ func NewDynamicTrv2FromCftBuilder(cft *skylab_test_runner.CFTTestRequest) *Dynam
 
 // BuildRequest extracts necessary information from the cft test request to build out the
 // dynamic trv2 request.
-func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool, isPartnerRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
+func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool, isPartnerRun bool, commonConfig *skylab_test_runner.CommonConfig, botDims []*buildbucketpb.StringPair, buildExperiments []string) (*api.CrosTestRunnerDynamicRequest, error) {
 	// Grab correct firestore db name to be used
 	firestoreDBName := common.TestPlatformFireStore
 	if isALRun && isPartnerRun {
 		firestoreDBName = common.PartnerTestPlatformFireStore
 	}
 
-	dynamic := builder.buildDynamicRequest(firestoreDBName)
+	dynamic := builder.buildDynamicRequest(firestoreDBName, commonConfig, botDims, buildExperiments, isALRun)
 
 	builder.tryAppendProvisionTask(dynamic)
 	builder.tryAppendTestTask(dynamic)
@@ -76,9 +77,13 @@ type DynamicTrv2Builder struct {
 	CredentialsFile      string
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
-	EnvVersion      string
-	FirestoreDBName string
-	Is3DRun         bool
+	EnvVersion       string
+	FirestoreDBName  string
+	Is3DRun          bool
+	IsALRun          bool
+	CommonConfig     *skylab_test_runner.CommonConfig
+	BotDims          []*buildbucketpb.StringPair
+	BuildExperiments []string
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.

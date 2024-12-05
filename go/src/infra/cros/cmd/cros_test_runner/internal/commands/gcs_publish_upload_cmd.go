@@ -7,9 +7,12 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -19,7 +22,14 @@ type GcsPublishUploadCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	GcsURL string
+	GcsURL               string
+	IsALRun              bool
+	Product              string
+	Build                string
+	ParentSwarmingTaskID string
+	XTSResultsGCSPrefix  string
+	XTSAPFEGCSPrefix     string
+	EnableXTSArchiver    bool
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -52,6 +62,35 @@ func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	cmd.GcsURL = sk.GcsURL
+
+	// Fetch build name and parent task ID from buildbucket tags
+	buildName := ""
+	parentTaskID := ""
+	build := sk.BuildState.Build()
+	if build != nil {
+		for _, tag := range build.GetTags() {
+			if tag.GetKey() == "build" {
+				buildName = tag.GetValue()
+			} else if tag.GetKey() == "parent_task_id" {
+				parentTaskID = tag.GetValue()
+			}
+
+			if buildName != "" && parentTaskID != "" {
+				break
+			}
+		}
+	}
+
+	botDims, _ := protoutil.BotDimensions(build)
+	cmd.IsALRun = sk.IsAlRun
+	cmd.Product = common.GetProductName(sk.PrimaryDutModel, botDims, buildName)
+	cmd.Build = buildName
+	cmd.ParentSwarmingTaskID = parentTaskID
+	// TODO: b/379711782 - Get the GCS paths from common config
+	cmd.XTSResultsGCSPrefix = "gs://chromeos-cts-staging"
+	cmd.XTSAPFEGCSPrefix = "gs://chromeos-cts-staging"
+	cmd.EnableXTSArchiver = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), common.EnableXTSArchiverExperiment)
+
 	return nil
 }
 
