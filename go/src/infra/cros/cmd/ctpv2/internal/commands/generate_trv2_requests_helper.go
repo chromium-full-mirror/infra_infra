@@ -1125,6 +1125,9 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 		tags = append(tags, "parent_buildbucket_id:0")
 	}
 
+	// add scheduler info
+	tags = append(tags, "scheduler:"+trHelper.suiteInfo.GetSuiteMetadata().GetSchedulerInfo().GetScheduler().String())
+
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))
