@@ -6,14 +6,15 @@ package amt
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/beevik/etree"
-	dac "github.com/xinsnake/go-http-digest-auth-client"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -53,41 +54,105 @@ func findPowerState(response string) (int, error) {
 type AMTClient struct {
 	uri, username, password string
 	useTLS                  bool
+	t                       *http.Transport
+	// The "nonce count" tracks the number of requests sent in
+	// response to a given nonce value. Required when using "auth"
+	// or "auth-int" modes.
+	nc int
 }
 
 // NewAMTClient returns a new AMTClient instance.
 func NewAMTClient(ctx context.Context, hostname string, username string, password string, useTLS bool) *AMTClient {
 	protocol, port := "http", 16992
+	t := http.Transport{}
 	if useTLS {
 		protocol, port = "https", 16993
+		tlsConfig := tls.Config{InsecureSkipVerify: true}
+		t = http.Transport{
+			TLSClientConfig: &tlsConfig,
+		}
 	}
 	uri := fmt.Sprintf("%s://%s:%d/wsman", protocol, hostname, port)
 	log.Infof(ctx, "Using AMT manager URI: %s", uri)
-	return &AMTClient{uri, username, password, useTLS}
+	return &AMTClient{uri, username, password, useTLS, &t, 0}
 }
 
+// post does an HTTP POST with the given request envelope and returns the
+// response envelope. An error is always returned if there's a soap:Fault
+// element in the response body or the HTTP status isn't 200.
 func (c AMTClient) post(ctx context.Context, request string) (string, error) {
 	log.Debugf(ctx, "Posting HTTP request: %s", request)
-	t := dac.NewTransport(c.username, c.password)
-	r, err := http.NewRequest("POST", c.uri, strings.NewReader(request))
+	response, err := c.roundTrip("", request)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to create the request").Err()
+		return "", err
 	}
-	r.Header.Add("Content-Type", "application/soap+xml;charset=UTF-8")
-	resp, err := t.RoundTrip(r)
+	// Respond to any HTTP digest challenge.
+	if response.status == http.StatusUnauthorized {
+		dr, err := parseDigestResponse(response.authHeader)
+		if err != nil {
+			return "", err
+		}
+		uri, err := parseURI(c.uri)
+		if err != nil {
+			return "", err
+		}
+		// Increment the nonce counter.
+		c.nc++
+		da, err := dr.newAuthorization(http.MethodPost, uri, c.username, c.password, request, c.nc)
+		if err != nil {
+			return "", err
+		}
+		response, err = c.roundTrip(da.String(), request)
+		if err != nil {
+			return "", err
+		}
+	}
+	log.Debugf(ctx, "Received HTTP status code: %d", response.status)
+	if response.status != http.StatusOK {
+		// Ensure that we return an error if the status isn't "200 OK".
+		return "", errors.Reason("responded with HTTP status %q", http.StatusText(response.status)).Err()
+	}
+	log.Debugf(ctx, "Received HTTP response: %s", response.body)
+	return response.body, nil
+}
+
+func parseURI(urlRaw string) (string, error) {
+	u, err := url.ParseRequestURI(urlRaw)
 	if err != nil {
-		return "", errors.Annotate(err, "failed to post the data").Err()
+		return "", err
 	}
-	log.Debugf(ctx, "Received HTTP status code: %d", resp.StatusCode)
-	// Work around the following linter error:
-	// Error return value of `resp.Body.Close` is not checked (errcheck)
-	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode != http.StatusOK {
-		return "", errors.Reason("responded with status %d", resp.StatusCode).Err()
+	return u.RequestURI(), nil
+}
+
+// httpResponse holds response data returned by roundTrip.
+type httpResponse struct {
+	status     int
+	authHeader string
+	body       string
+}
+
+// roundTrip posts the given envelope XML and returns an httpResponse.
+func (c AMTClient) roundTrip(authHdr, body string) (httpResponse, error) {
+	req, err := http.NewRequest(http.MethodPost, c.uri, strings.NewReader(body))
+	if err != nil {
+		return httpResponse{}, err
 	}
-	body, _ := io.ReadAll(resp.Body)
-	log.Debugf(ctx, "Received HTTP response: %s", body)
-	return string(body), nil
+	req.Header.Add("content-type", "application/soap+xml; charset=utf-8")
+	if authHdr != "" {
+		req.Header.Add("Authorization", authHdr)
+	}
+
+	resp, err := c.t.RoundTrip(req)
+	if err != nil {
+		return httpResponse{}, err
+	}
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return httpResponse{}, err
+	}
+
+	return httpResponse{resp.StatusCode, resp.Header.Get("WWW-Authenticate"), string(respBody)}, nil
 }
 
 // GetPowerState returns the power state as an int.

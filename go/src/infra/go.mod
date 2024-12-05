@@ -90,7 +90,6 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/ulikunitz/xz v0.5.12
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
-	github.com/xinsnake/go-http-digest-auth-client v0.6.0
 	go.chromium.org/chromiumos/config/go v0.0.0-20240309015314-b8a183866804
 	go.chromium.org/chromiumos/ctp v0.0.0-00010101000000-000000000000
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20240530000842-7d34be97f98c

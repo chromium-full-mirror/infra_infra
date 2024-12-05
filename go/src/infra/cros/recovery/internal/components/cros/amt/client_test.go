@@ -6,6 +6,7 @@ package amt
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -50,4 +51,34 @@ func TestNewAmtClient(t *testing.T) {
 			assert.Equal(t, tt.expectedURI, amt.uri)
 		})
 	}
+}
+
+func TestParseURI(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		testName    string
+		providedStr string
+		expectedStr string
+	}{
+		{
+			"With path and query string",
+			"https://192.168.231.123:16993/path?abc=123",
+			"/path?abc=123",
+		},
+		{
+			"Without path or query string",
+			"http://192.168.231.123:16992",
+			"/",
+		},
+	}
+	for _, tt := range testCases {
+		tt := tt
+		t.Run(tt.testName, func(t *testing.T) {
+			t.Parallel()
+			uri, err := parseURI(tt.providedStr)
+			assert.Nil(t, err, fmt.Sprintf("error calling parseURI: %q", err))
+			assert.Equal(t, uri, tt.expectedStr)
+		})
+	}
+
 }
