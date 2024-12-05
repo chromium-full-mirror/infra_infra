@@ -37,13 +37,20 @@ type Module struct {
 	Owners        []string `json:"owners"`
 }
 
+type TargetBuild struct {
+	Target  string `json:"target"`
+	BuildId string `json:"build_id"`
+	Abi     string `json:"abi"`
+}
+
 type TradefedMetadata struct {
-	Version string   `json:"version"`
-	Suite   string   `json:"suite"`
-	Branch  string   `json:"branch"`
-	BuildId string   `json:"build_id"`
-	Targets []string `json:"targets"`
-	Modules []Module `json:"modules"`
+	Version      string        `json:"version"`
+	Suite        string        `json:"suite"`
+	Branch       string        `json:"branch"`
+	BuildId      string        `json:"build_id"`
+	Targets      []string      `json:"targets"`
+	Modules      []Module      `json:"modules"`
+	TargetBuilds []TargetBuild `json:"target_builds"`
 }
 
 func parseTradefedMetadataJson(file string) (*TradefedMetadata, error) {
@@ -75,8 +82,15 @@ func compileMetadata(metadata *TradefedMetadata) []*api.TestCaseMetadata {
 		for _, param := range module.Parameters {
 			tags = append(tags, &api.TestCase_Tag{Value: "param:" + param})
 		}
-		for _, abi := range module.Abis {
-			tags = append(tags, &api.TestCase_Tag{Value: "abi:" + abi})
+		if len(metadata.TargetBuilds) > 0 {
+			for _, tb := range metadata.TargetBuilds {
+				tbTag := fmt.Sprintf("target_build=target:%s,build_id:%s,abi:%s", tb.Target, tb.BuildId, tb.Abi)
+				tags = append(tags, &api.TestCase_Tag{Value: tbTag})
+			}
+		} else {
+			for _, abi := range module.Abis {
+				tags = append(tags, &api.TestCase_Tag{Value: "abi:" + abi})
+			}
 		}
 		testCase := &api.TestCase{
 			Id:   &api.TestCase_Id{Value: "tradefed." + tcName},
