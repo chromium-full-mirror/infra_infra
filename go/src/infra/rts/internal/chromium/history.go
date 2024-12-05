@@ -38,14 +38,15 @@ const (
 )
 
 type baseHistoryRun struct {
-	out          string
-	startTime    time.Time
-	endTime      time.Time
-	builderRegex string
-	testIDRegex  string
-	clOwner      string
-	ignoreFile   bool
-	append       bool
+	out             string
+	startTime       time.Time
+	endTime         time.Time
+	builderRegex    string
+	testIDRegex     string
+	testSuiteRegexp string
+	clOwner         string
+	ignoreFile      bool
+	append          bool
 
 	authOpt       *auth.Options
 	authenticator *auth.Authenticator
@@ -64,8 +65,9 @@ func (r *baseHistoryRun) RegisterBaseFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.out, "out", "", "Path to the output directory")
 	fs.Var(luciflag.Date(&r.startTime), "from", "Fetch results starting from this date; format: 2020-01-15")
 	fs.Var(luciflag.Date(&r.endTime), "to", "Fetch results until this date; format: 2020-01-15")
-	fs.StringVar(&r.builderRegex, "builder", ".*", "A regular expression for builder. Implicitly wrapped with ^ and $.")
-	fs.StringVar(&r.testIDRegex, "test", ".*", "A regular expression for test. Implicitly wrapped with ^ and $.")
+	fs.StringVar(&r.builderRegex, "builder", ".*", "A regular expression for builder. Implicitly wrapped with ^ and $. For example, 'linux-rel'.")
+	fs.StringVar(&r.testIDRegex, "test", ".*", "A regular expression for test id. Implicitly wrapped with ^ and $. For example, '.*PasswordManagerBrowserTest.*'.")
+	fs.StringVar(&r.testSuiteRegexp, "test_suite", ".*", "A regular expression for test suite name. Implicitly wrapped with ^ and $. For example, 'browser_tests'.")
 	fs.StringVar(&r.clOwner, "cl-owner", "", "CL owner, e.g. someone@chromium.org")
 	fs.BoolVar(&r.ignoreFile, "ignore-file", false, "ignores the filename and includes results with no filename and all /third_party/ results")
 	fs.BoolVar(&r.append, "append", false, text.Doc(`
@@ -137,6 +139,7 @@ func (r *baseHistoryRun) runQuery(ctx context.Context, sql string, extraParams .
 		{Name: "endTime", Value: r.endTime},
 		{Name: "builderRegexp", Value: prepRe(r.builderRegex)},
 		{Name: "testIdRegexp", Value: prepRe(r.testIDRegex)},
+		{Name: "testSuiteRegexp", Value: prepRe(r.testSuiteRegexp)},
 		{Name: "minChangedFiles", Value: MinChangedFiles},
 		{Name: "maxChangedFiles", Value: MaxChangedFiles},
 		{Name: "clOwner", Value: r.clOwner},

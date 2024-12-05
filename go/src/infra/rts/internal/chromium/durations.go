@@ -176,6 +176,7 @@ WITH
 		WHERE partition_time BETWEEN TIMESTAMP_SUB(@startTime, INTERVAL 1 DAY) and TIMESTAMP_ADD(@endTime, INTERVAL 1 DAY)
 			AND (@testIdRegexp = '' OR REGEXP_CONTAINS(test_id, @testIdRegexp))
 			AND (@builderRegexp = '' OR EXISTS (SELECT 0 FROM tr.variant WHERE key='builder' AND REGEXP_CONTAINS(value, @builderRegexp)))
+			AND (@testSuiteRegexp = '' OR EXISTS (SELECT 0 FROM tr.variant WHERE key='test_suite' AND REGEXP_CONTAINS(value, @testSuiteRegexp)))
 
 			# Exclude third-party tests (except Web Tests) because they test code
 			# which isn't in src.git.
