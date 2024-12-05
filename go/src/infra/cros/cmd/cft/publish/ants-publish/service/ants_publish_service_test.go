@@ -212,11 +212,13 @@ func TestArtifactType(t *testing.T) {
 		})
 	}
 }
+
 func TestDutProperties(t *testing.T) {
 	testCases := []struct {
-		name      string
-		dut       *labapi.Dut
-		wantProps []*atp.Property
+		name                string
+		dut                 *labapi.Dut
+		wantProps           []*atp.Property
+		wantIdentifierProps []*atp.Property
 	}{
 		{
 			name: "crosDut",
@@ -227,10 +229,16 @@ func TestDutProperties(t *testing.T) {
 							BuildTarget: "brya",
 							ModelName:   "mithrax",
 						},
+						Sku: "pujja_10G",
 					},
 				},
 			},
 			wantProps: []*atp.Property{
+				{Name: "sku", Value: "pujja_10G"},
+				{Name: "board", Value: "brya"},
+				{Name: "model", Value: "mithrax"},
+			},
+			wantIdentifierProps: []*atp.Property{
 				{Name: "board", Value: "brya"},
 				{Name: "model", Value: "mithrax"},
 			},
@@ -248,6 +256,11 @@ func TestDutProperties(t *testing.T) {
 				},
 			},
 			wantProps: []*atp.Property{
+				{Name: "sku", Value: ""},
+				{Name: "board", Value: "brya"},
+				{Name: "model", Value: "mithrax"},
+			},
+			wantIdentifierProps: []*atp.Property{
 				{Name: "board", Value: "brya"},
 				{Name: "model", Value: "mithrax"},
 			},
@@ -262,12 +275,15 @@ func TestDutProperties(t *testing.T) {
 					},
 				},
 			}
-			got, err := aps.dutProperties()
+			gotProps, gotIdentifierProps, err := aps.dutProperties()
 			if err != nil {
 				t.Errorf("error calling dut properties: %q", err)
 			}
-			if diff := cmp.Diff(tc.wantProps, got, protocmp.Transform()); diff != "" {
-				t.Errorf("Unexpected diff: diff: %s", diff)
+			if diff := cmp.Diff(tc.wantProps, gotProps, protocmp.Transform()); diff != "" {
+				t.Errorf("Unexpected properties diff: diff: %s", diff)
+			}
+			if diff := cmp.Diff(tc.wantIdentifierProps, gotIdentifierProps, protocmp.Transform()); diff != "" {
+				t.Errorf("Unexpected identifier properties diff: diff: %s", diff)
 			}
 		})
 	}
@@ -280,7 +296,13 @@ func TestResultEntries(t *testing.T) {
 	parentWU := &atp.WorkUnit{Id: "WU1", Name: "Parent WU"}
 	returnWUID := "WUTR123"
 
+	testIdentifierProps := []*atp.Property{
+		{Name: "board", Value: "brya"},
+		{Name: "model", Value: "vell"},
+	}
+
 	dutProps := []*atp.Property{
+		{Name: "sku", Value: "pujj_10G"},
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
 	}
@@ -290,6 +312,7 @@ func TestResultEntries(t *testing.T) {
 				DutType: &labapi.Dut_Chromeos{
 					Chromeos: &labapi.Dut_ChromeOS{
 						DutModel: &labapi.DutModel{BuildTarget: "brya", ModelName: "vell"},
+						Sku:      "pujj_10G",
 					},
 				},
 			},
@@ -323,7 +346,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestIdentifier: &atp.TestIdentifier{
 						Module:           parentWU.Name,
-						ModuleParameters: dutProps,
+						ModuleParameters: testIdentifierProps,
 						TestClass:        parentWU.Name,
 						Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					},
@@ -348,7 +371,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestIdentifier: &atp.TestIdentifier{
 						Module:           parentWU.Name,
-						ModuleParameters: dutProps,
+						ModuleParameters: testIdentifierProps,
 						TestClass:        parentWU.Name,
 						Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					},
@@ -373,7 +396,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestIdentifier: &atp.TestIdentifier{
 						Module:           parentWU.Name,
-						ModuleParameters: dutProps,
+						ModuleParameters: testIdentifierProps,
 						TestClass:        parentWU.Name,
 						Method:           "testmethod",
 					},
@@ -408,7 +431,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestIdentifier: &atp.TestIdentifier{
 						Module:           parentWU.Name,
-						ModuleParameters: dutProps,
+						ModuleParameters: testIdentifierProps,
 						TestClass:        "testcase",
 						Method:           "testname1",
 					},
@@ -421,7 +444,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestIdentifier: &atp.TestIdentifier{
 						Module:           parentWU.Name,
-						ModuleParameters: dutProps,
+						ModuleParameters: testIdentifierProps,
 						TestClass:        "testcase",
 						Method:           "testname2",
 					},

@@ -77,7 +77,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	start := time.Now()
 	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
 
-	dutProps, err := aps.dutProperties()
+	dutProps, _, err := aps.dutProperties()
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 
 func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
-	dutProps, err := aps.dutProperties()
+	dutProps, testIdentifierProps, err := aps.dutProperties()
 	if err != nil {
 		log.Printf("Cannot find dut properties due to: %q", err)
 	}
@@ -120,14 +120,14 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 			parentWUID = tcWorkunits[names[0]]
 			testID = &atp.TestIdentifier{
 				Module:           module.Name,
-				ModuleParameters: dutProps,
+				ModuleParameters: testIdentifierProps,
 				TestClass:        names[0],
 				Method:           names[1],
 			}
 		} else if len(names) == 1 {
 			testID = &atp.TestIdentifier{
 				Module:           module.Name,
-				ModuleParameters: dutProps,
+				ModuleParameters: testIdentifierProps,
 				TestClass:        module.Name,
 				Method:           names[0],
 			}
@@ -248,28 +248,34 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	return aps.uploadResults(ctx, entries, defaultChunkSize)
 }
 
-func (aps *AntsPublishService) dutProperties() ([]*atp.Property, error) {
-	var props []*atp.Property
+func (aps *AntsPublishService) dutProperties() ([]*atp.Property, []*atp.Property, error) {
 	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
-
 	var model *labapi.DutModel
+	var sku string
 	switch dutInfo.GetDut().GetDutType().(type) {
 	case *labapi.Dut_Android_:
 		model = dutInfo.GetDut().GetAndroid().GetDutModel()
 	case *labapi.Dut_Chromeos:
 		model = dutInfo.GetDut().GetChromeos().GetDutModel()
+		sku = dutInfo.GetDut().GetChromeos().GetSku()
 	default:
-		return nil, fmt.Errorf("unsupported dut type")
+		return nil, nil, fmt.Errorf("unsupported dut type")
 	}
 
-	props = append(props, &atp.Property{Name: "board", Value: model.GetBuildTarget()})
-	props = append(props, &atp.Property{Name: "model", Value: model.GetModelName()})
+	boardProp := &atp.Property{Name: "board", Value: model.GetBuildTarget()}
+	modelProp := &atp.Property{Name: "model", Value: model.GetModelName()}
+	props := []*atp.Property{
+		{Name: "sku", Value: sku},
+		boardProp,
+		modelProp,
+	}
 
 	for k, v := range dutInfo.GetTags() {
 		props = append(props, &atp.Property{Name: k, Value: v})
 	}
 
-	return props, nil
+	testIdentifierProps := []*atp.Property{boardProp, modelProp}
+	return props, testIdentifierProps, nil
 }
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
