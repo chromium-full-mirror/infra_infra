@@ -1,0 +1,10 @@
+package: chromiumos/infra/ctpv2-filters/pre_process_filter/${platform}
+description: CTPv2 filter responsible for removing flaky tests from execution
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/pre_process_filter
+root: ../../go/bin
+data:
+  - file: pre_process_filter${exe_suffix}
+  - version_file: .versions/pre_process_filter${exe_suffix}.cipd_version

@@ -156,6 +156,16 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 		{
+			Name: "pre_process_filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/pre_process_filter/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
+		{
 			Name: "al-provision-filter",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/al-provision-filter/${platform}"),
