@@ -7,6 +7,7 @@ package serverlib
 
 import (
 	"context"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -51,7 +52,7 @@ func ServerMain(srv *server.Server) error {
 	logging.Infof(srv.Context, "Begin initialization of console server.")
 	consoleFrontend := consoleserver.NewFleetConsoleFrontend().(*consoleserver.FleetConsoleFrontend)
 	if !srv.Options.Prod {
-		ConfigureDevCORS(srv)
+		ConfigureDevCORS(srv.Context, srv)
 	}
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
@@ -61,10 +62,17 @@ func ServerMain(srv *server.Server) error {
 	return nil
 }
 
-func ConfigureDevCORS(srv *server.Server) {
+func ConfigureDevCORS(ctx context.Context, srv *server.Server) {
 	srv.ConfigurePRPC(func(prpcSrv *prpc.Server) {
 		prpcSrv.AccessControl = func(ctx context.Context, origin string) prpc.AccessControlDecision {
-			if strings.HasPrefix(origin, "http://localhost:") {
+			logging.Infof(ctx, "origin is %s", origin)
+			addresses := []string{"localhost:", "luci-milo-dev.appspot.com/"}
+
+			matches := slices.ContainsFunc(addresses, func(address string) bool {
+				return strings.HasPrefix(origin, "https://"+address) || strings.HasPrefix(origin, "http://"+address)
+			})
+
+			if matches {
 				return prpc.AllowOriginAll(ctx, origin)
 			}
 			return prpc.AccessControlDecision{
@@ -76,7 +84,7 @@ func ConfigureDevCORS(srv *server.Server) {
 }
 
 func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, error) {
-	deviceManagerAddr := devicemanagerclient.DMProdURL
+	deviceManagerAddr := devicemanagerclient.DMDevURL
 	deviceManagerPort := devicemanagerclient.DMLeasesPort
 	if *flags.UseLocalDeviceManager {
 		deviceManagerAddr = "localhost"
