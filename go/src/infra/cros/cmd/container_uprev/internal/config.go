@@ -263,7 +263,6 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
-			Prepper: preppers.AdbBase,
 		},
 		// {
 		// 	Name: "tradefed",
