@@ -251,6 +251,7 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 			if buildInfo != nil {
 				buildName := buildInfo.Name
 				tags = AppendTags(tags, "image", buildName)
+				tags = AppendTags(tags, "builder_name", strings.Split(buildName, "/")[0])
 				tags = AppendTags(tags, "build", strings.Split(buildName, "/")[1])
 				tags = AppendTags(tags, "board", buildInfo.Board)
 				tags = AppendTags(tags, "board_type", buildInfo.BoardType)
