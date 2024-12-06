@@ -588,6 +588,11 @@ func getImageGcsPath(softwareDeps []*test_platform.Request_Params_SoftwareDepend
 	if chromeosBuildGcsBucket == "" {
 		chromeosBuildGcsBucket = DefaultChromeosBuildGcsBucket
 	}
+	if strings.HasPrefix(chromeosBuild, "android-build") {
+		// assume that direct android build image is provided and use it for downstream
+		// NOTE: Used by partner runs
+		return chromeosBuild
+	}
 	return fmt.Sprintf("gs://%s/%s", chromeosBuildGcsBucket, chromeosBuild)
 }
 
