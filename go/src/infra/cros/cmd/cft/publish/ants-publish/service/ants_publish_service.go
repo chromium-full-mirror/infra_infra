@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"golang.org/x/sync/errgroup"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
@@ -191,20 +192,24 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 		chunks = append(chunks, entries[i:end])
 	}
 
+	g, ctx := errgroup.WithContext(ctx)
 	for i, chunk := range chunks {
 		request := &atp.TestResultBatchInsertRequest{
 			TestResults:     chunk,
 			InsertBatchSize: int64(len(chunk)),
 		}
+		g.Go(func() error {
+			log.Printf("worker %d start", i)
+			if _, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request); err != nil {
+				return err
+			}
 
-		result, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
-		if err != nil {
-			return err
-		}
-		log.Printf("BatchInsert test results response for chunk %d: %d", i, result.ServerResponse.HTTPStatusCode)
+			log.Printf("worker %d done", i)
+			return nil
+		})
 	}
 
-	return nil
+	return g.Wait()
 }
 
 // UploadToAnts uploads test results to Ants.

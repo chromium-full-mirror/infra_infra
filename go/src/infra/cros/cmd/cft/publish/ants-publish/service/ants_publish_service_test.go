@@ -11,7 +11,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -487,9 +486,10 @@ func TestResultEntries(t *testing.T) {
 }
 
 func TestUploadResults(t *testing.T) {
-	ctx := context.Background()
 	invID := "I123"
-	okResp := &atp.TestResultBatchInsertResponse{ServerResponse: googleapi.ServerResponse{HTTPStatusCode: 200}}
+	parentCtx := context.Background()
+	ctx, cancel := context.WithCancel(parentCtx)
+	defer cancel()
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
@@ -513,7 +513,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 1,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(2)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(2)
 			},
 		},
 		{
@@ -525,7 +525,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 2,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(2)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(2)
 			},
 		},
 		{
@@ -537,7 +537,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 5,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(okResp, nil).Times(1)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(1)
 			},
 		},
 	}
@@ -548,7 +548,7 @@ func TestUploadResults(t *testing.T) {
 				tc.expectations()
 			}
 
-			err := aps.uploadResults(ctx, tc.entries, tc.chunkSize)
+			err := aps.uploadResults(parentCtx, tc.entries, tc.chunkSize)
 			if err != nil {
 				t.Errorf("Unexpected error for uploadResults(): %q", err)
 			}
