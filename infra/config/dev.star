@@ -91,7 +91,16 @@ luci.logdog(
     cloud_logging_project = "luci-logdog-dev",
 )
 
-luci.bucket(name = "ci")
+luci.bucket(
+    name = "ci",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = "mdb/chrome-troopers",
+            users = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
+        ),
+    ],
+)
 
 luci.bucket(
     name = "ci.shadow",
