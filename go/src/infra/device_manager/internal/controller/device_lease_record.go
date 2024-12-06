@@ -486,14 +486,14 @@ func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
 
 	releasedLeases, err := model.ExpireLeases(ctx, tx, queryTime)
 	if err != nil {
-		return err
+		return fmt.Errorf("expireLeases: %w", err)
 	}
 
 	// Pull device data from UFS
 	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	ufsClient, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
-		return err
+		return fmt.Errorf("expireLeases: %w", err)
 	}
 
 	var (
@@ -525,7 +525,7 @@ func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
 	// Wait for all Devices to be processed before committing transaction.
 	wg.Wait()
 	if err = tx.Commit(); err != nil {
-		return err
+		return fmt.Errorf("expireLeases: %w", err)
 	}
 
 	if len(successChan) > 0 || len(failureChan) > 0 {

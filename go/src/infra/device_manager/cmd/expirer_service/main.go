@@ -111,8 +111,6 @@ func main() {
 
 		srv.RunInBackground("device_manager.expirer", func(ctx context.Context) {
 			for ctx.Err() == nil {
-				nextWakeUp := time.Now().Add(time.Second)
-
 				err := controller.ExpireLeases(
 					ctx,
 					deviceLeaseServer.ServiceClients.DBClient.Conn,
@@ -121,10 +119,7 @@ func main() {
 				if err != nil {
 					logging.Errorf(ctx, "main: failure to execute ExpireLeases loop")
 				}
-
-				if sleepTime := time.Until(nextWakeUp); sleepTime > 0 {
-					time.Sleep(sleepTime)
-				}
+				time.Sleep(time.Second)
 			}
 		})
 		return nil
