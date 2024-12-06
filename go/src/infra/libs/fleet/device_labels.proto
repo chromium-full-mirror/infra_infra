@@ -1,0 +1,53 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This proto definition describes an interface layer of a device.
+
+syntax = "proto3";
+
+package fleet.device.labels;
+
+option go_package = "infra/libs/fleet;";
+
+import "google/protobuf/any.proto";
+
+
+// NEXT TAG: 3
+message Device {
+  repeated  DeviceLabel device_labels = 1;
+  ResourceType resource_type = 2;
+}
+
+// NEXT TAG: 3
+enum ResourceType {
+  RESOURCETYPE_UNSPECIFIED = 0;
+  RESOURCETYPE_CROS = 1;
+  RESOURCETYPE_BROWSER = 2;
+}
+
+// NEXT TAG: 7
+message DeviceLabel {
+  // The generic name of this label;
+  string key = 1;
+  // The value of this label, could be Enum, string, int, bool;
+  google.protobuf.Any value = 2;
+  // The id used in scheduling layer;
+  string schedulable_id = 3;
+
+  // NEXT TAG: 5
+  enum SOURCE {
+    SOURCE_UNSPECIFIED = 0;
+    SOURCE_HART = 1;
+    SOURCE_HWID_SERVER = 2;
+    SOURCE_MANUAL_INPUT = 3;
+    SOURCE_AUTO_DETECTED = 4;
+  }
+
+  // The source of this device label;
+  SOURCE source = 4;
+  // The owner of this device label;
+  string owner = 5;
+  // The reason to add this device label;
+  string reason_to_add = 6;
+}
