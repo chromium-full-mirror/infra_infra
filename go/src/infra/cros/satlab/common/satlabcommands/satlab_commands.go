@@ -7,6 +7,7 @@ package satlabcommands
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -128,47 +129,56 @@ func GetHostIP(ctx context.Context, executor executor.IExecCommander) (string, e
 
 // GetMacAddress gets hostname and mac address of satlab.
 func GetMacAddress(ctx context.Context, executor executor.IExecCommander) (string, error) {
-	hostIP, err := GetHostIP(ctx, executor)
-	if err != nil {
-		return "", err
+	if _, err := os.Stat(paths.GetHostMACScript); errors.Is(err, os.ErrNotExist) {
+		// TODO: this if statement can be removed once we fully roll out crrev.com/c/6072857
+		hostIP, err := GetHostIP(ctx, executor)
+		if err != nil {
+			return "", err
+		}
+
+		multipleCmdsExecutor := multiCmdExcutor.New(
+			exec.CommandContext(
+				ctx,
+				paths.DockerPath,
+				"exec",
+				"dhcp",
+				"ip",
+				"route",
+				"show",
+			),
+			exec.CommandContext(ctx, paths.Grep, hostIP),
+		)
+		hostIPInfo, err := multipleCmdsExecutor.Exec(executor)
+		if err != nil {
+			return "", err
+		}
+
+		hostIPInfoArr := strings.Split(string(hostIPInfo), " ")
+		if len(hostIPInfoArr) < 3 {
+			return "", errors.New("Can not get network interface control name.")
+		}
+
+		NICIndex := 2
+		NICName := hostIPInfoArr[NICIndex]
+
+		cmd := fmt.Sprintf(paths.NetInfoPathTemplate, NICName)
+		out, err := executor.CombinedOutput(
+			exec.CommandContext(
+				ctx,
+				paths.DockerPath,
+				"exec",
+				"dhcp",
+				"cat",
+				cmd,
+			),
+		)
+		if err != nil {
+			return "", err
+		}
+		return parseOutput(string(out)), nil
 	}
 
-	multipleCmdsExecutor := multiCmdExcutor.New(
-		exec.CommandContext(
-			ctx,
-			paths.DockerPath,
-			"exec",
-			"dhcp",
-			"ip",
-			"route",
-			"show",
-		),
-		exec.CommandContext(ctx, paths.Grep, hostIP),
-	)
-	hostIPInfo, err := multipleCmdsExecutor.Exec(executor)
-	if err != nil {
-		return "", err
-	}
-
-	hostIPInfoArr := strings.Split(string(hostIPInfo), " ")
-	if len(hostIPInfoArr) < 3 {
-		return "", errors.New("Can not get network interface control name.")
-	}
-
-	NICIndex := 2
-	NICName := hostIPInfoArr[NICIndex]
-
-	cmd := fmt.Sprintf(paths.NetInfoPathTemplate, NICName)
-	out, err := executor.CombinedOutput(
-		exec.CommandContext(
-			ctx,
-			paths.DockerPath,
-			"exec",
-			"dhcp",
-			"cat",
-			cmd,
-		),
-	)
+	out, err := executor.CombinedOutput(exec.CommandContext(ctx, paths.GetHostMACScript))
 	if err != nil {
 		return "", err
 	}

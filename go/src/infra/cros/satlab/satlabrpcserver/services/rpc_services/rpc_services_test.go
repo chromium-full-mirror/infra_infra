@@ -1762,6 +1762,8 @@ func TestGetNetworkInfoShouldSuccess(t *testing.T) {
 				), nil
 			} else if in.Path == paths.Grep {
 				return []byte(expected.Hostname), nil
+			} else if in.Path == paths.GetHostMACScript {
+				return []byte(expected.MacAddress), nil
 			}
 			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
 		},

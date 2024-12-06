@@ -29,6 +29,9 @@ const (
 	// GetHostIPScript is the path to get the host ip script.
 	GetHostIPScript = "/usr/local/bin/get_host_ip"
 
+	// GetHostMACScript is the path to get the host mac address script.
+	GetHostMACScript = "/usr/local/bin/get_host_mac"
+
 	// NetInfoPathTemplate is the path to get internet info of satlab machine.
 	NetInfoPathTemplate = "/sys/class/net/%v/address"
 
