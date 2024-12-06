@@ -176,9 +176,7 @@ def RunSteps(api):
               "--force",
               "--bypass-hooks",
               "--use-commit-queue",
-              # TODO b/379124711 comment out below line to enable auto
-              # commit.
-              # "--set-bot-commit",
+              "--set-bot-commit",
           ],
       )
       # Put a link to the uploaded CL.
@@ -198,7 +196,8 @@ def RunSteps(api):
     api.step.empty("device manager push to prod: done")
     return result_pb2.RawResult(
         status=common_pb.SUCCESS,
-        summary_markdown="push to prod done",
+        # summary_markdown has a 4000 bytes limit.
+        summary_markdown="\n".join(desc)[:4000],
     )
 
 
