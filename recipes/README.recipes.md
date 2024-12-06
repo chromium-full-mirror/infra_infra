@@ -1652,7 +1652,7 @@ Recipe to build windows depot_tools bootstrap zipfile.
 &mdash; **def [RunSteps](/recipes/recipes/docker_image_builder.py#36)(api, arch_type):**
 ### *recipes* / [fleet/device\_manager\_promoter](/recipes/recipes/fleet/device_manager_promoter.py)
 
-[DEPS](/recipes/recipes/fleet/device_manager_promoter.py#14): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/fleet/device_manager_promoter.py#14): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/git\_cl][depot_tools/recipe_modules/git_cl], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
 
 
 Promote the fleet Device Manager to canary/prod.
@@ -1660,13 +1660,24 @@ Promote the fleet Device Manager to canary/prod.
 The recipe parse the channel.json to update the canary/prod docker image to the
 same version w/ the staging.
 
-&mdash; **def [RunSteps](/recipes/recipes/fleet/device_manager_promoter.py#86)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/fleet/device_manager_promoter.py#128)(api):**
 
-&mdash; **def [gen\_channels\_json](/recipes/recipes/fleet/device_manager_promoter.py#32)(service: str, staging='v1', canary='v1', stable='v1'):**
+&mdash; **def [container\_tag\_to\_git\_version](/recipes/recipes/fleet/device_manager_promoter.py#87)(tag: str):**
 
-&mdash; **def [get\_image\_name](/recipes/recipes/fleet/device_manager_promoter.py#28)(service: str):**
+Parse the container tag and extract the part of git version.
 
-&mdash; **def [try\_update\_service](/recipes/recipes/fleet/device_manager_promoter.py#47)(api, service: str):**
+The container tag is like ci-2024.12.05-70377-332cc31, where the last part is
+the git version.
+
+&mdash; **def [gen\_channels\_json](/recipes/recipes/fleet/device_manager_promoter.py#33)(service: str, staging='v1', canary='v1', stable='v1'):**
+
+&mdash; **def [gen\_cl\_description](/recipes/recipes/fleet/device_manager_promoter.py#95)(api, service_name: str, original_version: dict):**
+
+Generate the CL description and the gitiles link for the changes.
+
+&mdash; **def [get\_image\_name](/recipes/recipes/fleet/device_manager_promoter.py#29)(service: str):**
+
+&mdash; **def [try\_update\_service](/recipes/recipes/fleet/device_manager_promoter.py#48)(api, service: str):**
 ### *recipes* / [fleet\_systems/dhcp](/recipes/recipes/fleet_systems/dhcp.py)
 
 [DEPS](/recipes/recipes/fleet_systems/dhcp.py#10): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [docker](#recipe_modules-docker), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]

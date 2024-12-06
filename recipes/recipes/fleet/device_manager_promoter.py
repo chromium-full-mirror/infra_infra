@@ -22,6 +22,7 @@ DEPS = [
     "recipe_engine/json",
     "recipe_engine/path",
     "recipe_engine/step",
+    "recipe_engine/url",
 ]
 
 
@@ -44,7 +45,7 @@ def gen_channels_json(service: str,
   }
 
 
-def try_update_service(api, service: str):
+def try_update_service(api, service: str) -> dict:
   channels_json = "projects/device-manager/{}/channels.json".format(service)
   image_name = get_image_name(service)
 
@@ -83,6 +84,47 @@ def try_update_service(api, service: str):
   return origin_versions
 
 
+def container_tag_to_git_version(tag: str) -> str:
+  """Parse the container tag and extract the part of git version.
+
+  The container tag is like ci-2024.12.05-70377-332cc31, where the last part is
+  the git version."""
+  return tag.split("-")[-1]
+
+
+def gen_cl_description(api, service_name: str, original_version: dict) -> str:
+  """Generate the CL description and the gitiles link for the changes."""
+  tot = container_tag_to_git_version(original_version["staging"])
+  stable_base = container_tag_to_git_version(original_version["stable"])
+
+  link_template = "https://chromium.googlesource.com/infra/infra/+log/{}..{}/go/src/infra/device_manager"
+  link = link_template.format(stable_base, tot)
+  desc = [service_name, link]
+  v = api.url.get_json(
+      link + "?format=json",
+      log=True,
+      strip_prefix=api.url.GERRIT_JSON_PREFIX,
+      default_test_data={
+          "log": [{
+              "commit": "aaabbbccc",
+              "message": "title\n\ndetails",
+              "author": {
+                  "name": "AUTHOR"
+              },
+              "committer": {
+                  "time": "2024-01-01"
+              }
+          }]
+      })
+
+  for cl in v.output["log"]:
+    desc.append("{}: '{}' by {}@{}".format(cl["commit"][:7],
+                                           cl["message"].split("\n")[0],
+                                           cl["author"]["name"],
+                                           cl["committer"]["time"]))
+  return "\n".join(desc)
+
+
 def RunSteps(api):
   api.gclient.set_config("infradata_cloud_run")
   update_result = api.bot_update.ensure_checkout()
@@ -118,13 +160,17 @@ def RunSteps(api):
       # and cause uploading issue. To fix this, we need to reset the fetch URL
       # with the push URL.
       repo_url = api.git.config_get("remote.origin.pushurl")
-      api.git("config", "set", "remote.origin.url", repo_url.decode('utf-8'))
+      # The git command used by recipe doesn't support `git config set`
+      api.git("remote", "set-url", "origin", repo_url.decode('utf-8'))
 
       api.git("add", ".")
-      # TODO b/379124711 - add the cl list to the commit message.
-      api.git("commit", "-m", "device-manager: push to prod")
+      desc = ["device-manager: push to prod", ""]
+      desc.append(gen_cl_description(api, "device-lease-service", c1))
+      desc.append("")
+      desc.append(gen_cl_description(api, "notifier-service", c2))
+      api.git("commit", "-m", "\n".join(desc))
       api.git_cl.upload(
-          "device-manager: push to prod",
+          "\n".join(desc),
           name="git cl upload",
           upload_args=[
               "--force",
