@@ -126,25 +126,25 @@ func TestSkipAntsPublish(t *testing.T) {
 	testCases := []struct {
 		name     string
 		metadata *metadata.PublishAntsMetadata
-		wantSkip bool
+		wantAdd  bool
 	}{
 		{
 			name:     "missingAccountID",
 			metadata: &metadata.PublishAntsMetadata{},
-			wantSkip: false,
+			wantAdd:  true,
 		},
 		{
 			name: "externalPartner",
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "2",
 			},
-			wantSkip: true,
 		},
 		{
 			name: "success",
 			metadata: &metadata.PublishAntsMetadata{
 				AccountId: "1",
 			},
+			wantAdd: true,
 		},
 	}
 
@@ -152,10 +152,10 @@ func TestSkipAntsPublish(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotSkip := skipAntsPublish(tc.metadata, log)
+			gotAdd := addAntsPublish(tc.metadata, log)
 
-			if gotSkip != tc.wantSkip {
-				t.Errorf("Unexpected error: got %v want %v", gotSkip, tc.wantSkip)
+			if gotAdd != tc.wantAdd {
+				t.Errorf("Unexpected error: got %v want %v", gotAdd, tc.wantAdd)
 			}
 		})
 	}

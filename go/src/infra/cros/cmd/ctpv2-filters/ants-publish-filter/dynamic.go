@@ -49,14 +49,14 @@ func isInternal(accountID string, log *log.Logger) bool {
 	return id == internalAccountID
 }
 
-func skipAntsPublish(metadata *metadata.PublishAntsMetadata, log *log.Logger) bool {
+func addAntsPublish(metadata *metadata.PublishAntsMetadata, log *log.Logger) bool {
 	if !isInternal(metadata.GetAccountId(), log) {
 		// Skip calling ants-publish for external partners.
 		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
-		return true
+		return false
 	}
 
-	return false
+	return true
 }
 
 func skipTFUpload(req *api.InternalTestplan, log *log.Logger) {
@@ -78,12 +78,11 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 		}
 	}
 
-	if alRun {
-		log.Printf("AL run. Skipping Ants upload through Tf plugin.")
+	if alRun && addAntsPublish(metadata, log) {
+		log.Printf("AL run. Adding ants-publish step and skipping upload through TF plugin.")
 		skipTFUpload(req, log)
 	} else {
-		log.Printf("Non-AL run found. Skipping ants-publish task.")
-		skipAntsPublish(metadata, log)
+		log.Printf("Skipping ants-publish task.")
 
 		// Since this is non-AL run, return without doing anything.
 		return nil

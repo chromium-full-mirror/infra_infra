@@ -555,3 +555,40 @@ func TestUploadResults(t *testing.T) {
 		})
 	}
 }
+
+func TestUploadResultPartners(t *testing.T) {
+	ctx := context.Background()
+	testCases := []struct {
+		name      string
+		accountID string
+	}{
+		{
+			name:      "partner",
+			accountID: "2",
+		},
+		{
+			name:      "internal",
+			accountID: "1",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			aps := &AntsPublishService{
+				metadata: &metadata.PublishAntsMetadata{
+					AccountId: tc.accountID,
+				},
+			}
+
+			err := aps.UploadToAnts(ctx)
+			if err != nil {
+				t.Errorf("Unexpected error for result upload.")
+			}
+
+			err = aps.UploadArtifacts(ctx)
+			if err != nil {
+				t.Errorf("Unexpected error for artifacts upload.")
+			}
+		})
+	}
+}

@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -54,9 +53,7 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetada
 		publishMetadata.ParentWorkUnitId = apu.WorkUnitID
 	}
 
-	if apu.AccountID == "" {
-		publishMetadata.AccountId = strconv.Itoa(internalAccountID)
-	} else {
+	if apu.AccountID != "" {
 		publishMetadata.AccountId = apu.AccountID
 	}
 
