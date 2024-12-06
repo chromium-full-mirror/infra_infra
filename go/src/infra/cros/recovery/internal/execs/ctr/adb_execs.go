@@ -36,7 +36,7 @@ func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "start adb container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod_adb-base")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/base-adb")
 	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.ADBBase, containerTag)

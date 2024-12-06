@@ -32,7 +32,7 @@ func startCrosDutContainerExec(ctx context.Context, info *execs.ExecInfo) error 
 		return errors.Annotate(err, "start cros-dut container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod_cros-dut")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/cros-dut")
 	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.CrosDUT, containerTag)

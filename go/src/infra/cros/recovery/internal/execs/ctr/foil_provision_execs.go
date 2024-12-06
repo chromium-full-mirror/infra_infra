@@ -35,7 +35,7 @@ func startFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) 
 		return errors.Annotate(err, "start foil-provision container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod_foil-provision")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/provisionservice")
 	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.FoilProvision, containerTag)

@@ -37,7 +37,7 @@ func startServoNexusContainerExec(ctx context.Context, info *execs.ExecInfo) err
 		return errors.Annotate(err, "start servo-nexus container").Err()
 	}
 	argsMap := info.GetActionArgs(ctx)
-	containerTag := argsMap.AsString(ctx, "container_tag", "prod")
+	containerTag := argsMap.AsString(ctx, "container_tag", "prod_servo-nexus")
 	volumes := argsMap.AsStringSlice(ctx, "container_volumes", []string{"/creds:/creds"})
 	artifactDir := argsMap.AsString(ctx, "artifact_dir", "/tmp/servod")
 	containerImage, err := ctrInfo.GenerateContainerImagePath(ctx, cft.ServoNexux, containerTag)
