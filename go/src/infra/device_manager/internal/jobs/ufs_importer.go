@@ -21,6 +21,7 @@ import (
 	shivasUtil "infra/cmd/shivas/utils"
 	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/metrics"
 	"infra/device_manager/internal/model"
@@ -46,6 +47,7 @@ var (
 // ImportUFSDevices registers the cron to trigger import for all Device
 // information from UFS.
 func ImportUFSDevices(ctx context.Context, serviceClients frontend.ServiceClients, project string) error {
+	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	start := time.Now()
 	lses, err := getAllMachineLSEs(ctx, serviceClients.UFSClient)
 	if err != nil {

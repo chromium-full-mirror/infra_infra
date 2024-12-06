@@ -25,7 +25,6 @@ import (
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/jobs"
-	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 func main() {
@@ -137,7 +136,6 @@ func main() {
 
 		frontend.InstallServices(deviceLeaseServer, srv)
 		cron.RegisterHandler("import-ufs-devices", func(ctx context.Context) error {
-			ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 			return jobs.ImportUFSDevices(ctx, deviceLeaseServer.ServiceClients, c.ProjectID)
 		})
 		cron.RegisterHandler("expire-leases", func(ctx context.Context) error {
