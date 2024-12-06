@@ -17,7 +17,7 @@ import (
 	"infra/cros/satlab/common/utils/misc"
 )
 
-// RunStorageQual run a storage qualification suite
+// RunStorageQual run a storage qualification suite or test
 func (s *SatlabRpcServiceServer) RunStorageQual(
 	ctx context.Context,
 	in *pb.RunStorageQualRequest,
@@ -42,8 +42,11 @@ func (s *SatlabRpcServiceServer) RunStorageQual(
 	}
 
 	testArgs := fmt.Sprintf("buildartifactsurl=gs://%s/%s-%s/R%s-%s/ bug_id=%s qual_run_id=%d", site.GetGCSPartnerBucket(), in.GetBoard(), p, in.GetMilestone(), in.GetBuild(), bugId, testRunId)
+	// `run` wants an array of tests, so we wrap the single test in an array.
+	individualTestArray := []string{in.GetTest()}
 	r := &run.Run{
 		Suite:     in.GetSuite(),
+		Tests:     individualTestArray,
 		TestArgs:  testArgs,
 		Model:     in.GetModel(),
 		Board:     in.GetBoard(),
