@@ -93,13 +93,18 @@ func (cmd *AlStatusCleanUpCmd) extractDepsFromFilterStateKeeper(ctx context.Cont
 }
 
 func (cmd *AlStatusCleanUpCmd) Execute(ctx context.Context) error {
-	if cmd.AlStateInfo == nil {
-		return nil
-	}
-
 	var err error
 	step, ctx := build.StartStep(ctx, "AL Status Clean up")
 	defer func() { step.End(err) }()
+
+	if cmd.AlStateInfo == nil {
+		logging.Infof(ctx, "AlStateInfo needs to be populated for proper cleanup execution of AL work")
+		return nil
+	}
+
+	if cmd.ExecutionError == nil {
+		cmd.ExecutionError = fmt.Errorf("undefined error occurred during suite execution")
+	}
 
 	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
