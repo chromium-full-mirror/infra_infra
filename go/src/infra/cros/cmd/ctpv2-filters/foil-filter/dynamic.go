@@ -25,6 +25,7 @@ func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdat
 	filterOutFaultyTests(req, updater, log)
 	removePostProcess(req, log)
 	modifyRdbPublishRequest(req, log)
+	modifyGCSPublishRequest(req, updater.EnableXtsArchiver, log)
 	return nil
 }
 
@@ -120,6 +121,35 @@ func modifyRdbPublishRequest(req *api.InternalTestplan, log *log.Logger) {
 	err := dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
 	if err != nil {
 		log.Printf("Error while modifying rdb publish request. %s", err)
+	}
+}
+
+// modifyGCSPublishRequest modifies the GCS publish dynamic request to set
+// the enableXtsArchiver flag in the metadata.
+func modifyGCSPublishRequest(req *api.InternalTestplan, enableXtsArchiver bool, log *log.Logger) {
+	if !enableXtsArchiver {
+		return
+	}
+
+	log.Println("Modifying GCS publish request")
+	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.GcsPublish))
+	err := generator.AddModification(
+		&api.DynamicDep{
+			Key:   "publishRequest.metadata.enableXtsArchiver",
+			Value: "BOOL=true",
+		},
+		map[string]string{
+			"publish.dynamicDeps": "",
+		},
+	)
+	if err != nil {
+		log.Printf("Error while generating modifications to GCS publish request. %s", err)
+		return
+	}
+
+	err = dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
+	if err != nil {
+		log.Printf("Error while modifying GCS publish request. %s", err)
 	}
 }
 

@@ -18,10 +18,11 @@ import (
 )
 
 type FoilRequestUpdater struct {
-	TestPath       string
-	GcsPublishPath string
-	RdbPublishPath string
-	FilterTests    bool
+	TestPath          string
+	GcsPublishPath    string
+	RdbPublishPath    string
+	FilterTests       bool
+	EnableXtsArchiver bool
 }
 
 func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
@@ -78,6 +79,7 @@ func main() {
 	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
 	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
+	fs.BoolVar(&requestUpdater.EnableXtsArchiver, "enable-xts-archiver", false, "Whether to archive xTS results for release qualification")
 
 	err := server.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
 	if err != nil {
