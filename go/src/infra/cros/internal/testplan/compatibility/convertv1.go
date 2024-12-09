@@ -460,6 +460,8 @@ type suiteInfo struct {
 	licenses []lab.LicenseType
 	// optional, the total number of shards to be used in a test run.
 	totalShards int64
+	// optional, see test_platform.Request.TestPlan.max_in_shard.
+	maxInShard int64
 	// optional, if true then run test suites in this rule via CFT workflow.
 	runViaCft bool
 	// optional, if true then autotest tests will be sharded.
@@ -743,6 +745,7 @@ func coverageRuleToSuiteInfo(
 					boardVariant:           boardVariant,
 					profile:                profile,
 					totalShards:            suite.GetTotalShards(),
+					maxInShard:             suite.GetMaxInShard(),
 					licenses:               licenses,
 					runViaCft:              rule.GetRunViaCft(),
 					enableAutotestSharding: rule.GetEnableAutotestSharding(),
@@ -1059,6 +1062,7 @@ func ToCTP1(
 					EnableAutotestSharding: suiteInfo.enableAutotestSharding,
 					TagCriteria:            suiteInfo.tagCriteria,
 					TotalShards:            suiteInfo.totalShards,
+					MaxInShard:             suiteInfo.maxInShard,
 					Companions:             suiteInfo.companions,
 				}
 
