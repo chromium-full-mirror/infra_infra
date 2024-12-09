@@ -274,8 +274,6 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 // buildSchedulerInfo produces the scheduling system to be used,
 // as well as the qs account for qs scheduling.
 func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *testapi.SchedulerInfo {
-	schedukeMainPoolExp := slices.Contains(buildState.Build().GetInput().GetExperiments(), "chromeos.cros_infra_config.scheduke_labsteak_mainpool")
-	isMainPoolReq := getSchedulingPool(v1) == "DUT_POOL_QUOTA"
 	dryRun := v1.GetParams().GetDryRunCtpv2()
 	runWithQs := v1.GetParams().GetRunCtpv2WithQs()
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
@@ -283,14 +281,6 @@ func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *tes
 		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
 	} else if runWithQs || isVmlabPoolReq(v1) {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
-	}
-	// Override QS if main pool and experiment is present. If both true then main pool request will be scheduled via Scheduke.
-	if isMainPoolReq {
-		if schedukeMainPoolExp {
-			scheduler = testapi.SchedulerInfo_SCHEDUKE
-		} else {
-			scheduler = testapi.SchedulerInfo_QSCHEDULER
-		}
 	}
 
 	// Run via QS if external CTP bucket.
