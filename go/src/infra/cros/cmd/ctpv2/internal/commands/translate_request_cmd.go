@@ -41,6 +41,7 @@ type TranslateRequestCmd struct {
 	InternalTestPlan *testapi.InternalTestplan
 
 	ExecutionError error
+	IsPartnerRun   bool
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -72,7 +73,7 @@ func (cmd *TranslateRequestCmd) UpdateStateKeeper(
 	var err error
 	switch sk := ski.(type) {
 	case *data.FilterStateKeeper:
-		err = cmd.updateLocalTestStateKeeper(ctx, sk)
+		err = cmd.updateLocalTestStateKeeper(sk)
 	}
 
 	if err != nil {
@@ -95,21 +96,17 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.CtpReq = sk.CtpReq
-
+	cmd.IsPartnerRun = sk.IsPartnerRun
 	cmd.ExecutionError = sk.ExecutionError
 	return nil
 }
 
-func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(
-	ctx context.Context,
-	sk *data.FilterStateKeeper) error {
-
+func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(sk *data.FilterStateKeeper) error {
 	if cmd.InternalTestPlan != nil {
 		sk.InitialInternalTestPlan = cmd.InternalTestPlan
 	}
 
 	sk.ExecutionError = cmd.ExecutionError
-
 	return nil
 }
 
@@ -132,7 +129,7 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	internalStruct := &testapi.InternalTestplan{}
 	suitemd := &testapi.SuiteMetadata{
 		Pool:              cmd.CtpReq.GetPool(),
-		ExecutionMetadata: executionMetadata(cmd.CtpReq),
+		ExecutionMetadata: executionMetadata(cmd.CtpReq, cmd.IsPartnerRun),
 		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
 	}
 
@@ -358,10 +355,12 @@ func generateSchedulerInfo(req *api.CTPRequest) *api.SchedulerInfo {
 	return req.GetSchedulerInfo()
 }
 
-func executionMetadata(req *api.CTPRequest) *api.ExecutionMetadata {
+func executionMetadata(req *api.CTPRequest, isPartnerRun bool) *api.ExecutionMetadata {
 	ta := req.GetSuiteRequest().GetTestArgs()
 	args := &testapi.ExecutionMetadata{}
-	things := []*testapi.Arg{}
+	things := []*testapi.Arg{
+		{Flag: "is_partner_run", Value: strconv.FormatBool(isPartnerRun)},
+	}
 
 	// ta will often be a comma deliminated string such as:
 	// "foo=bar,zoo=mar"
