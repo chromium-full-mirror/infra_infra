@@ -13,7 +13,6 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/buildbucket"
 	bb "go.chromium.org/luci/buildbucket/proto"
@@ -138,17 +137,17 @@ func (c *client) GetBuildStatus(buildID int64) (*bb.Build, error) {
 // GenerateBuilderID returns a BuildBucket BuilderID definition for based on the
 // provided arguments. This is aimed to be used only for partner builder
 // generation.
-func GenerateBuilderID(customBuilder *suschpb.SchedulerConfig_RunOptions_BuilderID, isProd bool) *bb.BuilderID {
+func GenerateBuilderID(project, bucket, builder string, isProd bool) *bb.BuilderID {
 	// If the config is a partner config then return the request dimensions as a
 	// BuilderId type.
 	//
 	// NOTE: There will be no differentiation between prod/staging for partner
 	// builds.
-	if customBuilder.GetProject() != "" && customBuilder.GetBucket() != "" && customBuilder.GetBuilder() != "" {
+	if project != "" && bucket != "" && builder != "" {
 		return &bb.BuilderID{
-			Project: customBuilder.GetProject(),
-			Bucket:  customBuilder.GetBucket(),
-			Builder: customBuilder.GetBuilder(),
+			Project: project,
+			Bucket:  bucket,
+			Builder: builder,
 		}
 	}
 

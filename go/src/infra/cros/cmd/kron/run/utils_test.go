@@ -56,139 +56,6 @@ func TestOnlyStagingRequests(t *testing.T) {
 	}
 }
 
-func TestOnlyStagingRequests3d(t *testing.T) {
-	ctpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{
-		{Name: "abc"}: {
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 1,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "TSEStagingConfig"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 2,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 3,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-			},
-		},
-		{Name: "abc123"}: {
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 1,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 2,
-			},
-		},
-	}
-	gotStagingMap := onlyStagingRequests3d(ctpMapByConfig)
-
-	eventCount := 0
-	for _, eventsByBranch := range gotStagingMap {
-		for _, eventByBranch := range eventsByBranch {
-			for _, e := range eventByBranch.events {
-				if !strings.HasPrefix(e.config.GetName(), common.StagingConfigsPrefix) {
-					t.Errorf("%s config was incorrectly allowlisted", e.config.GetName())
-					return
-				}
-				eventCount += 1
-			}
-		}
-	}
-	if eventCount != 3 {
-		t.Errorf("Expected 3 events, got %d", eventCount)
-		return
-	}
-}
-
-func TestOnlyStagingRequests3dEmpty(t *testing.T) {
-	ctpMapByConfig := map[*suschpb.SchedulerConfig][]ctpEventsPerBranch{
-		{Name: "abc"}: {
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 1,
-			},
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc"},
-					},
-				},
-				branch: 2,
-			},
-		},
-		{Name: "abc123"}: {
-			{
-				events: []*ctpEvent{
-					{
-						config: &suschpb.SchedulerConfig{Name: "abc123"},
-					},
-				},
-				branch: 1,
-			},
-		},
-	}
-	gotStagingMap := onlyStagingRequests3d(ctpMapByConfig)
-	if len(gotStagingMap) != 0 {
-		t.Errorf("Expected 0 events, got %d", len(gotStagingMap))
-		return
-	}
-}
-
 func TestBuildPerModelConfigsMultipleModels(t *testing.T) {
 	SetUp()
 	models := []string{
@@ -677,5 +544,221 @@ func TestRemoveDuplicateRequestsDuplicateNotSeen(t *testing.T) {
 	if dedupedFakes[2].ctpRequest != fakeCtpRequests[0].ctpRequest && dedupedFakes[2].ctpRequest != fakeCtpRequests[1].ctpRequest && dedupedFakes[2].ctpRequest != fakeCtpRequests[2].ctpRequest {
 		t.Errorf("returned item 3 did not match of the originally passed in requests.")
 		return
+	}
+}
+func TestBatchCTPRequest(t *testing.T) {
+	config1 := &suschpb.SchedulerConfig{
+		Name: "",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "abc",
+				Bucket:  "abc",
+				Builder: "abc",
+			},
+		},
+	}
+
+	config2 := &suschpb.SchedulerConfig{
+		Name: "",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "def",
+				Bucket:  "def",
+				Builder: "def",
+			},
+		},
+	}
+
+	config3 := &suschpb.SchedulerConfig{
+		Name: "",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "ghi",
+				Bucket:  "ghi",
+				Builder: "ghi",
+			},
+		},
+	}
+
+	req := &test_platform.Request{
+		Params: &test_platform.Request_Params{
+			SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+				{
+					Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{
+						ChromeosBuild: "abc",
+					},
+				},
+			},
+		},
+	}
+
+	ctpRequests := []*ctpEvent{
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+	}
+
+	batches, err := batchCTPRequests(ctpRequests, true, true)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// Make this calculable at runtime in case the max request size changes.
+	// This comes out to (# Full batches) + (Maybe 1 partial batch).
+	expectedBatchSize := (len(ctpRequests) / common.MultirequestSize)
+	if (len(ctpRequests) % common.MultirequestSize) != 0 {
+		expectedBatchSize += 1
+	}
+
+	if len(batches) != expectedBatchSize {
+		t.Errorf("expected 2 batches got %d", len(batches))
 	}
 }

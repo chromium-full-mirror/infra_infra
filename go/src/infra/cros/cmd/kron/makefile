@@ -31,3 +31,6 @@ staging-uprev:
 prod-uprev:
 	cipd set-ref $(CIPDTARGET) -version prod -ref prev-prod
 	cipd set-ref $(CIPDTARGET) -version staging -ref prod
+
+revert:
+	cipd set-ref $(CIPDTARGET) -version prev-prod -ref prod

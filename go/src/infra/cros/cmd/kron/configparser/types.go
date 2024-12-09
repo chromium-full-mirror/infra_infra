@@ -190,7 +190,7 @@ func (s *SuiteSchedulerConfigs) addConfigToDailyMap(config *suschpb.SchedulerCon
 	configHour := int(config.LaunchCriteria.Hour)
 	err := isHourCompliant(configHour)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 
 	if _, ok := s.dailyMap[configHour]; !ok {
@@ -214,12 +214,12 @@ func (s *SuiteSchedulerConfigs) addConfigToWeeklyMap(config *suschpb.SchedulerCo
 	configDay := int(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 	configHour := int(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 
 	if _, ok := s.weeklyMap[configDay]; !ok {
@@ -248,12 +248,12 @@ func (s *SuiteSchedulerConfigs) addConfigToFortnightlyMap(config *suschpb.Schedu
 	configDay := int(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 	configHour := int(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 
 	if _, ok := s.fortnightlyMap[configDay]; !ok {
@@ -282,13 +282,13 @@ func (s *SuiteSchedulerConfigs) addConfigToNDayMap(config *suschpb.SchedulerConf
 	configDay := int(config.LaunchCriteria.Day)
 	err := isDayCompliant(configDay, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_FORTNIGHTLY, config.GetLaunchCriteria().GetLaunchProfile() == suschpb.SchedulerConfig_LaunchCriteria_N_DAYS)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 
 	configHour := int(config.LaunchCriteria.Hour)
 	err = isHourCompliant(configHour)
 	if err != nil {
-		return fmt.Errorf(fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
+		return fmt.Errorf("%s", fmt.Sprintf("Ingesting %s encountered %s", config.Name, err))
 	}
 
 	if _, ok := s.nDaysMap[configDay]; !ok {

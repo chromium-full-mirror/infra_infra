@@ -413,7 +413,7 @@ func (c *CrOSTimedEventCommand) FetchBuilds(requiredBuildsMap map[builds.Require
 
 	common.Stdout.Printf("The following %d builds were fetched from long term storage and remain after filtering", fetchedBuildsPrefilterLength)
 	common.Stdout.Printf("************************************************")
-	common.Stdout.Printf(string(fetchedBuildsList))
+	common.Stdout.Printf("%s", string(fetchedBuildsList))
 	common.Stdout.Printf("************************************************")
 
 	// Convert the builds map to a type compatible for the ScheduleRequests
