@@ -15,47 +15,14 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 )
 
-func TestIsInternal(t *testing.T) {
-	testCases := []struct {
-		name      string
-		accountID string
-		want      bool
-	}{
-		{
-			name:      "internal",
-			accountID: "1",
-			want:      true,
-		},
-		{
-			name:      "external",
-			accountID: "2",
-			want:      false,
-		},
-		{
-			name:      "missing",
-			accountID: "",
-			want:      true,
-		},
-	}
-
-	log := log.New(os.Stdout, "test", 1)
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			got := isInternal(tc.accountID, log)
-			if got != tc.want {
-				t.Errorf("Unexpected. want %v got %v", tc.want, got)
-			}
-		})
-	}
-}
-
 func TestGeneratePublishTask(t *testing.T) {
 	testCases := []struct {
-		name   string
-		du     []*api.UserDefinedDynamicUpdate
-		wantDu int
-		alRun  bool
+		name       string
+		du         []*api.UserDefinedDynamicUpdate
+		alRun      bool
+		partnerRun bool
+		wantDu     int
+		wantArgs   int
 	}{
 		{
 			name: "existingDU",
@@ -71,8 +38,13 @@ func TestGeneratePublishTask(t *testing.T) {
 			alRun:  true,
 		},
 		{
-			name:   "nonAL",
-			wantDu: 0,
+			name: "nonAL",
+		},
+		{
+			name:       "partner",
+			alRun:      true,
+			partnerRun: true,
+			wantArgs:   2,
 		},
 	}
 
@@ -81,8 +53,12 @@ func TestGeneratePublishTask(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			var args []*api.Arg
 			if tc.alRun {
-				args = []*api.Arg{{Flag: alRunKey, Value: "true"}}
+				args = append(args, &api.Arg{Flag: alRunKey, Value: "true"})
 			}
+			if tc.partnerRun {
+				args = append(args, &api.Arg{Flag: partnerRunKey, Value: "true"})
+			}
+
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
@@ -105,7 +81,7 @@ func TestGeneratePublishTask(t *testing.T) {
 			}
 
 			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
-			if tc.alRun {
+			if tc.alRun && !tc.partnerRun {
 				if len(gotArgs) != 2 {
 					t.Errorf("Unexpected execution metadata args len: got(%d), want(2)", len(gotArgs))
 				}
@@ -114,37 +90,32 @@ func TestGeneratePublishTask(t *testing.T) {
 					t.Errorf("Unexpected diff: %s", diff)
 				}
 			} else {
-				if len(gotArgs) != 0 {
-					t.Errorf("Unexpected execution metadata args len: got(%d), want(0)", len(gotArgs))
+				if len(gotArgs) != tc.wantArgs {
+					t.Errorf("Unexpected execution metadata args len: got(%d), want(%d)", len(gotArgs), tc.wantArgs)
 				}
 			}
 		})
 	}
 }
 
-func TestSkipAntsPublish(t *testing.T) {
+func TestAddAntsPublish(t *testing.T) {
 	testCases := []struct {
-		name     string
-		metadata *metadata.PublishAntsMetadata
-		wantAdd  bool
+		name         string
+		isPartnerRun string
+		wantAdd      bool
 	}{
 		{
-			name:     "missingAccountID",
-			metadata: &metadata.PublishAntsMetadata{},
-			wantAdd:  true,
-		},
-		{
-			name: "externalPartner",
-			metadata: &metadata.PublishAntsMetadata{
-				AccountId: "2",
-			},
-		},
-		{
-			name: "success",
-			metadata: &metadata.PublishAntsMetadata{
-				AccountId: "1",
-			},
+			name:    "missingAccountID",
 			wantAdd: true,
+		},
+		{
+			name:         "externalPartner",
+			isPartnerRun: "true",
+		},
+		{
+			name:         "success",
+			isPartnerRun: "false",
+			wantAdd:      true,
 		},
 	}
 
@@ -152,7 +123,7 @@ func TestSkipAntsPublish(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			gotAdd := addAntsPublish(tc.metadata, log)
+			gotAdd := addAntsPublish(tc.isPartnerRun, log)
 
 			if gotAdd != tc.wantAdd {
 				t.Errorf("Unexpected error: got %v want %v", gotAdd, tc.wantAdd)

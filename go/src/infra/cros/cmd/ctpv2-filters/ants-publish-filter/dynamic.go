@@ -26,33 +26,24 @@ const (
 	dynamicIdentifier = "ants-publish"
 	skipTFUploadFlag  = "skip_ants_upload"
 	alRunKey          = "is_al_run"
+	partnerRunKey     = "is_partner_run"
 )
 
-func isInternal(accountID string, log *log.Logger) bool {
-	// Sometimes, we do not have accountId for internal users.
-	if accountID == "" {
-		log.Printf("accountID is empty")
+func addAntsPublish(isPartnerRun string, log *log.Logger) bool {
+	if isPartnerRun == "" {
+		log.Println("Empty value found for partner run")
 		return true
 	}
 
-	id, err := strconv.Atoi(accountID)
+	isPartner, err := strconv.ParseBool(isPartnerRun)
 	if err != nil {
-		log.Printf("Cannot convert accountID %s to int", accountID)
-		return false
+		log.Printf("Error converting %s to bool: %v", isPartnerRun, err)
+		return true
 	}
 
-	if id < 1 {
-		log.Printf("Account ID %s not supported", accountID)
-		return false
-	}
-
-	return id == internalAccountID
-}
-
-func addAntsPublish(metadata *metadata.PublishAntsMetadata, log *log.Logger) bool {
-	if !isInternal(metadata.GetAccountId(), log) {
+	if isPartner {
 		// Skip calling ants-publish for external partners.
-		log.Printf("External partner accountId(%s) found.", metadata.AccountId)
+		log.Printf("External partner run found.")
 		return false
 	}
 
@@ -78,7 +69,7 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 		}
 	}
 
-	if alRun && addAntsPublish(metadata, log) {
+	if alRun && addAntsPublish(suiteExecutionMetadataArgValue(req, partnerRunKey), log) {
 		log.Printf("AL run. Adding ants-publish step and skipping upload through TF plugin.")
 		skipTFUpload(req, log)
 	} else {
