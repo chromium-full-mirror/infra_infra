@@ -576,6 +576,62 @@
     ]
   },
   {
+    "cmd": [],
+    "name": "upload 2 findings to ResultDB",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@artifact_id: findings-00000000-0000-0000-0000-000000001337@@@",
+      "@@@STEP_LOG_LINE@findings.json@{@@@",
+      "@@@STEP_LOG_LINE@findings.json@  \"findings\": [@@@",
+      "@@@STEP_LOG_LINE@findings.json@    {@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint (deadcode)\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"location\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"client/cmd/isolate/lib/batch_archive.go\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"gerrit_change_ref\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"change\": \"607472\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"patchset\": \"2\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"project\": \"infra\"@@@",
+      "@@@STEP_LOG_LINE@findings.json@        },@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"range\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"end_line\": 250,@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"start_line\": 250@@@",
+      "@@@STEP_LOG_LINE@findings.json@        }@@@",
+      "@@@STEP_LOG_LINE@findings.json@      },@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"`foo` is unused\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"severity_level\": \"SEVERITY_LEVEL_WARNING\"@@@",
+      "@@@STEP_LOG_LINE@findings.json@    },@@@",
+      "@@@STEP_LOG_LINE@findings.json@    {@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint (gci)\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"location\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"auth_service/impl/model/init.go\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"gerrit_change_ref\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"change\": \"607472\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"host\": \"chromium-review.googlesource.com\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"patchset\": \"2\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"project\": \"infra\"@@@",
+      "@@@STEP_LOG_LINE@findings.json@        },@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"range\": {@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"end_line\": 20,@@@",
+      "@@@STEP_LOG_LINE@findings.json@          \"start_line\": 20@@@",
+      "@@@STEP_LOG_LINE@findings.json@        }@@@",
+      "@@@STEP_LOG_LINE@findings.json@      },@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"\\nImport order is not sorted.\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"severity_level\": \"SEVERITY_LEVEL_WARNING\"@@@",
+      "@@@STEP_LOG_LINE@findings.json@    }@@@",
+      "@@@STEP_LOG_LINE@findings.json@  ]@@@",
+      "@@@STEP_LOG_LINE@findings.json@}@@@",
+      "@@@STEP_LOG_END@findings.json@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "upload 2 findings to ResultDB.buildbucket.add_tags_to_current_build",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@SET_BUILD_PROPERTY@$recipe_engine/buildbucket/runtime-tags@{\"has_code_findings\": [\"true\"]}@@@"
+    ]
+  },
+  {
     "cmd": [
       "rdb",
       "rpc",
@@ -612,16 +668,17 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "upload findings as an invocation artifact",
-    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-8945511751514863184\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAACA5XPsU7EMAwGYLUCdMqCVG6ouuDlBDe0eQ5WJrY2l7itpSQ+JWnhFRh5NZ6E+SbSESQGNuu39Puz+ChEPbFVftLUWvIJHg0qo9ngsToJKUDPgR0trg24Er52E/NkMfISNHaaXXVNfgyq/no/QFk9aEvok9TOSIq5OKG0dJInlfTcq6BnWjF3NDe7S1FfiuZ2GJkHoAiLXyIaKMVnIe5+mfJ0rF7+z7lXS5r7iGEljZLc2UqXX7OSPKWNcbXb1/umF0/uzCEBB4Nhw3hOEHOCphPPi4fhJyjkqG1HeoM/DgyQGLZ9mil2UH4D/ofW8GkBAAA=\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
+    "name": "upload 2 findings to ResultDB.upload_invocation_artifacts",
+    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAACA5XPsU7EMAwGYLUCdMqCVG6ouuDlBDe0eQ5WJrY2l7itpSQ+JWnhFRh5NZ6E+SbSESQGNuu39Puz+ChEPbFVftLUWvIJHg0qo9ngsToJKUDPgR0trg24Er52E/NkMfISNHaaXXVNfgyq/no/QFk9aEvok9TOSIq5OKG0dJInlfTcq6BnWjF3NDe7S1FfiuZ2GJkHoAiLXyIaKMVnIe5+mfJ0rF7+z7lXS5r7iGEljZLc2UqXX7OSPKWNcbXb1/umF0/uzCEBB4Nhw3hOEHOCphPPi4fhJyjkqG1HeoM/DgyQGLZ9mil2UH4D/ofW8GkBAAA=\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
     "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{}@@@",
       "@@@STEP_LOG_END@json.output@@@",
       "@@@STEP_LOG_LINE@json.input@{@@@",
       "@@@STEP_LOG_LINE@json.input@  \"requests\": [@@@",
       "@@@STEP_LOG_LINE@json.input@    {@@@",
       "@@@STEP_LOG_LINE@json.input@      \"artifact\": {@@@",
-      "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-8945511751514863184\",@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\",@@@",
       "@@@STEP_LOG_LINE@json.input@        \"contentType\": \"application/vnd.google.protobuf+gzip\",@@@",
       "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAACA5XPsU7EMAwGYLUCdMqCVG6ouuDlBDe0eQ5WJrY2l7itpSQ+JWnhFRh5NZ6E+SbSESQGNuu39Puz+ChEPbFVftLUWvIJHg0qo9ngsToJKUDPgR0trg24Er52E/NkMfISNHaaXXVNfgyq/no/QFk9aEvok9TOSIq5OKG0dJInlfTcq6BnWjF3NDe7S1FfiuZ2GJkHoAiLXyIaKMVnIe5+mfJ0rF7+z7lXS5r7iGEljZLc2UqXX7OSPKWNcbXb1/umF0/uzCEBB4Nhw3hOEHOCphPPi4fhJyjkqG1HeoM/DgyQGLZ9mil2UH4D/ofW8GkBAAA=\"@@@",
       "@@@STEP_LOG_LINE@json.input@      },@@@",
