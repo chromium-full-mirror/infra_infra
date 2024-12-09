@@ -47,6 +47,7 @@ const (
 	prodTag                 = "prod"
 	desktopPrefix           = "AL."
 	dummySuiteName          = "TestSuite"
+	crosTestProdTag         = "AOSP-Prod"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -310,12 +311,6 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 		}, &api.CTPFilter{
 			ContainerInfo: &api.ContainerInfo{
 				Container: &buildapi.ContainerImageInfo{
-					Name: "foil-filter",
-				},
-			},
-		}, &api.CTPFilter{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &buildapi.ContainerImageInfo{
 					Name: "test-finder",
 				},
 			},
@@ -326,6 +321,17 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 				},
 			},
 		})
+		foilFilter := &api.CTPFilter{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name: "foil-filter",
+				},
+			},
+		}
+		if site.IsPartner() {
+			foilFilter.ContainerInfo.BinaryArgs = []string{"-test-path", fmt.Sprintf("%s/cros-registry/%s/cros-test:%s", hostname, site.GetGCSImageBucket(), crosTestProdTag)}
+		}
+		userDefinedFilters = append(userDefinedFilters, foilFilter)
 	}
 	return userDefinedFilters
 }
