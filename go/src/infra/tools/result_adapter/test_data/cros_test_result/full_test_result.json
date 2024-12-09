@@ -16,7 +16,9 @@
                 "build_metadata":{
                     "firmware":{
                         "ro_version":"Google_Voema.13672.224.0",
-                        "rw_version":"Google_Voema.13672.224.0"
+                        "rw_version": "Google_Voema.13672.224.0",
+                        "ap_ro_version": "Google_Voema.13672.224.0",
+                        "ap_rw_version": "Google_Voema.13672.224.0"
                     },
                     "kernel":{
                         "version":"5.4.151-16902-g93699f4e73de"

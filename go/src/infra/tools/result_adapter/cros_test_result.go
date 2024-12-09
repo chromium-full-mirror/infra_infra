@@ -389,6 +389,8 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 	if firmware != nil {
 		newTags = AppendTags(newTags, "ro_fwid", firmware.GetRoVersion())
 		newTags = AppendTags(newTags, "rw_fwid", firmware.GetRwVersion())
+		newTags = AppendTags(newTags, "ap_ro_fwid", firmware.GetApRoVersion())
+		newTags = AppendTags(newTags, "ap_rw_fwid", firmware.GetApRwVersion())
 	}
 
 	chipset := buildMetadata.GetChipset()

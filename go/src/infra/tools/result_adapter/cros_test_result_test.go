@@ -453,6 +453,8 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("account_id", "4"),
 						pbutil.StringPair("analytics_name", "Bluetooth_Sa_Perbuild"),
 						pbutil.StringPair("ancestor_buildbucket_ids", "8814950840874708945,8814951792758733697"),
+						pbutil.StringPair("ap_ro_fwid", "Google_Voema.13672.224.0"),
+						pbutil.StringPair("ap_rw_fwid", "Google_Voema.13672.224.0"),
 						pbutil.StringPair("ash_version", "109.0.5391.0"),
 						pbutil.StringPair("avl_part_model", "0x0000f5 MMC32G"),
 						pbutil.StringPair("avl_part_firmware", "0xa200000000000000"),
