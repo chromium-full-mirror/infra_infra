@@ -212,10 +212,15 @@ func TestArtifactType(t *testing.T) {
 	}
 }
 
-func TestDutProperties(t *testing.T) {
+func TestTestProperties(t *testing.T) {
+	trProps := []*atp.Property{
+		{Name: "board", Value: "brya"},
+		{Name: "model", Value: "mithrax"},
+	}
 	testCases := []struct {
 		name                string
 		dut                 *labapi.Dut
+		invID               string
 		wantProps           []*atp.Property
 		wantIdentifierProps []*atp.Property
 	}{
@@ -234,13 +239,29 @@ func TestDutProperties(t *testing.T) {
 			},
 			wantProps: []*atp.Property{
 				{Name: "sku", Value: "pujja_10G"},
-				{Name: "board", Value: "brya"},
-				{Name: "model", Value: "mithrax"},
+				{Name: luciInvPropName, Value: ""},
 			},
-			wantIdentifierProps: []*atp.Property{
-				{Name: "board", Value: "brya"},
-				{Name: "model", Value: "mithrax"},
+			wantIdentifierProps: trProps,
+		},
+		{
+			name: "crosDutAndInv",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+						Sku: "pujja_10G",
+					},
+				},
 			},
+			invID: "inv/12345678",
+			wantProps: []*atp.Property{
+				{Name: "sku", Value: "pujja_10G"},
+				{Name: luciInvPropName, Value: "inv/12345678"},
+			},
+			wantIdentifierProps: trProps,
 		},
 		{
 			name: "AndroidDut",
@@ -256,13 +277,9 @@ func TestDutProperties(t *testing.T) {
 			},
 			wantProps: []*atp.Property{
 				{Name: "sku", Value: ""},
-				{Name: "board", Value: "brya"},
-				{Name: "model", Value: "mithrax"},
+				{Name: luciInvPropName, Value: ""},
 			},
-			wantIdentifierProps: []*atp.Property{
-				{Name: "board", Value: "brya"},
-				{Name: "model", Value: "mithrax"},
-			},
+			wantIdentifierProps: trProps,
 		},
 	}
 	for _, tc := range testCases {
@@ -274,10 +291,15 @@ func TestDutProperties(t *testing.T) {
 					},
 				},
 			}
-			gotProps, gotIdentifierProps, err := aps.dutProperties()
+			if tc.invID != "" {
+				aps.metadata.LuciInvocationId = tc.invID
+			}
+
+			gotProps, gotIdentifierProps, err := aps.testProperties()
 			if err != nil {
 				t.Errorf("error calling dut properties: %q", err)
 			}
+			tc.wantProps = append(tc.wantProps, tc.wantIdentifierProps...)
 			if diff := cmp.Diff(tc.wantProps, gotProps, protocmp.Transform()); diff != "" {
 				t.Errorf("Unexpected properties diff: diff: %s", diff)
 			}
@@ -300,11 +322,14 @@ func TestResultEntries(t *testing.T) {
 		{Name: "model", Value: "vell"},
 	}
 
-	dutProps := []*atp.Property{
+	luciInvID := "inv/12345678"
+	trProps := []*atp.Property{
 		{Name: "sku", Value: "pujj_10G"},
+		{Name: luciInvPropName, Value: luciInvID},
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
 	}
+
 	executionInfo := &artifact.ExecutionInfo{
 		DutInfo: &artifact.DutInfo{
 			Dut: &labapi.Dut{
@@ -323,6 +348,7 @@ func TestResultEntries(t *testing.T) {
 		},
 		metadata: &metadata.PublishAntsMetadata{
 			PrimaryExecutionInfo: executionInfo,
+			LuciInvocationId:     luciInvID,
 		},
 	}
 	buildInfo := &atp.BuildDescriptor{Branch: "git-main_cl_dev"}
@@ -350,7 +376,7 @@ func TestResultEntries(t *testing.T) {
 						Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					},
 					TestStatus:       "testError",
-					Properties:       dutProps,
+					Properties:       trProps,
 					WorkUnitId:       parentWU.Id,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,
@@ -375,7 +401,7 @@ func TestResultEntries(t *testing.T) {
 						Method:           "tradefed.cts.CtsWrapWrapNoDebugTestCases",
 					},
 					TestStatus:       "testSkipped",
-					Properties:       dutProps,
+					Properties:       trProps,
 					WorkUnitId:       parentWU.Id,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,
@@ -400,7 +426,7 @@ func TestResultEntries(t *testing.T) {
 						Method:           "testmethod",
 					},
 					TestStatus:       "pass",
-					Properties:       dutProps,
+					Properties:       trProps,
 					WorkUnitId:       parentWU.Id,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,
@@ -424,7 +450,7 @@ func TestResultEntries(t *testing.T) {
 				Name:       "testcase",
 				ParentId:   parentWU.Id,
 				Type:       "TF_TEST_RUN",
-				Properties: dutProps,
+				Properties: trProps,
 			},
 			wantResults: []*atp.TestResult{
 				{
@@ -435,7 +461,7 @@ func TestResultEntries(t *testing.T) {
 						Method:           "testname1",
 					},
 					TestStatus:       "pass",
-					Properties:       dutProps,
+					Properties:       trProps,
 					WorkUnitId:       returnWUID,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,
@@ -448,7 +474,7 @@ func TestResultEntries(t *testing.T) {
 						Method:           "testname2",
 					},
 					TestStatus:       "fail",
-					Properties:       dutProps,
+					Properties:       trProps,
 					WorkUnitId:       returnWUID,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,

@@ -32,6 +32,7 @@ import (
 const (
 	artifactsDir      = "/tmp/artifacts/"
 	ancestorsPropName = "ancestor_buildbucket_ids"
+	luciInvPropName   = "luci_invocation_id"
 	defaultChunkSize  = 1000
 	internalAccountID = 1
 )
@@ -80,7 +81,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	start := time.Now()
 	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
 
-	dutProps, _, err := aps.dutProperties()
+	dutProps, _, err := aps.testProperties()
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +99,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 
 func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
-	dutProps, testIdentifierProps, err := aps.dutProperties()
+	dutProps, testIdentifierProps, err := aps.testProperties()
 	if err != nil {
 		log.Printf("Cannot find dut properties due to: %q", err)
 	}
@@ -259,7 +260,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	return aps.uploadResults(ctx, entries, defaultChunkSize)
 }
 
-func (aps *AntsPublishService) dutProperties() ([]*atp.Property, []*atp.Property, error) {
+func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Property, error) {
 	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
 	var model *labapi.DutModel
 	var sku string
@@ -277,6 +278,7 @@ func (aps *AntsPublishService) dutProperties() ([]*atp.Property, []*atp.Property
 	modelProp := &atp.Property{Name: "model", Value: model.GetModelName()}
 	props := []*atp.Property{
 		{Name: "sku", Value: sku},
+		{Name: luciInvPropName, Value: aps.metadata.GetLuciInvocationId()},
 		boardProp,
 		modelProp,
 	}
