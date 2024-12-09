@@ -97,7 +97,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	return aps.service.WorkUnitService.Insert(wu)
 }
 
-func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
+func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
 	dutProps, testIdentifierProps, err := aps.testProperties()
 	if err != nil {
@@ -109,19 +109,11 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
 		var parentWUID string
 		var testID *atp.TestIdentifier
-		// If testcase exists, use that as the parent module instead
 		if len(names) == 2 {
-			// Create work unit if it does not exist.
-			if tcWorkunits[names[0]] == "" {
-				parentwu, err := aps.insertModuleWorkUnit(names[0], "TF_TEST_RUN", module.Id)
-				if err != nil {
-					log.Printf("unable to create test run workunit for %s due to %q", names[0], err)
-					return nil, token, err
-				}
-				tcWorkunits[names[0]] = parentwu.Id
-			}
-
-			parentWUID = tcWorkunits[names[0]]
+			// Add test class name as parent ID for now. This will be later
+			// replaced by the actual id once wu is created.
+			tcWorkunits[names[0]] = ""
+			parentWUID = names[0]
 			testID = &atp.TestIdentifier{
 				Module:           module.Name,
 				ModuleParameters: testIdentifierProps,
@@ -145,7 +137,32 @@ func (aps *AntsPublishService) resultEntries(module *atp.WorkUnit, token int64, 
 		token = token + 1
 	}
 
-	return entries, token, nil
+	log.Printf("Create %d parent test class workunits in parallel", len(tcWorkunits))
+	g, ctx := errgroup.WithContext(ctx)
+	for wuName := range tcWorkunits {
+		g.Go(func() error {
+			parentwu, err := aps.insertModuleWorkUnit(wuName, "TF_TEST_RUN", module.Id)
+			if err != nil {
+				log.Printf("unable to create test run workunit for %s due to %q", wuName, err)
+				return err
+			}
+			tcWorkunits[wuName] = parentwu.Id
+			return nil
+		})
+	}
+
+	if err = g.Wait(); err != nil {
+		return nil, token, err
+	}
+
+	log.Print("Replace parent names with workunit ids.")
+	for _, entry := range entries {
+		if v, ok := tcWorkunits[entry.TestResult.WorkUnitId]; ok {
+			entry.TestResult.WorkUnitId = v
+		}
+	}
+
+	return entries, token, err
 }
 
 func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*atp.Property, parentWUID string, testID *atp.TestIdentifier, buildInfo *atp.BuildDescriptor) *atp.TestResult {
@@ -250,7 +267,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		}
 
 		var childEntries []*atp.BatchInsertEntry
-		childEntries, token, err = aps.resultEntries(mwu, token, result.GetChildTestCaseResults(), buildInfo)
+		childEntries, token, err = aps.resultEntries(ctx, mwu, token, result.GetChildTestCaseResults(), buildInfo)
 		if err != nil {
 			return err
 		}
@@ -401,8 +418,6 @@ func validateAntsPublishRequest(req *api.PublishRequest) error {
 		return fmt.Errorf("ants invocation id is required")
 	} else if m.GetParentWorkUnitId() == "" {
 		return fmt.Errorf("parent workunit id is required")
-	} else if m.GetAccountId() == "" {
-		return fmt.Errorf("partner account id is required")
 	}
 
 	return nil

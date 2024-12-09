@@ -63,6 +63,7 @@ func TestAntsStatus(t *testing.T) {
 		})
 	}
 }
+
 func TestValidateAntsPublishRequest(t *testing.T) {
 	defaultResult := &api.TestCaseResult{TestCaseId: &api.TestCase_Id{Value: "test"}}
 	testCases := []struct {
@@ -93,7 +94,7 @@ func TestValidateAntsPublishRequest(t *testing.T) {
 				ParentWorkUnitId: "WU1",
 				AntsInvocationId: "I1234",
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 		{
 			name: "givenResult",
@@ -483,6 +484,8 @@ func TestResultEntries(t *testing.T) {
 			},
 		},
 	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.expectWU != nil {
@@ -494,7 +497,7 @@ func TestResultEntries(t *testing.T) {
 				}
 				mockWU.EXPECT().Insert(tc.expectWU).Return(returnWU, nil)
 			}
-			gotEntries, gotToken, err := aps.resultEntries(parentWU, 0, tc.results, buildInfo)
+			gotEntries, gotToken, err := aps.resultEntries(ctx, parentWU, 0, tc.results, buildInfo)
 			if err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
