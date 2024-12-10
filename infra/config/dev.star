@@ -293,7 +293,7 @@ adhoc_builder(
         ],
     },
     schedule = "with 10m interval",
-    max_concurrent_builds = 4,
+    max_concurrent_builds = 40,
     triggering_policy = scheduler.newest_first(
         max_concurrent_invocations = 10,
     ),
